@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.sip,v 1.1.1.1 2006-02-09 09:18:13 exact Exp $
+ * $Id: BigFloat.sip,v 1.2 2006-02-09 12:45:44 exact Exp $
  ***************************************************************************/
 
 // TODO: add support for Mpfr after Mpfr is finalized
@@ -271,6 +271,7 @@ public:
     sipRes = PyString_FromString(str.c_str());
 %End
   BigInt get_z() const;
+  BigRat get_q() const;
 
 public:
   void swap(BigFloat&);

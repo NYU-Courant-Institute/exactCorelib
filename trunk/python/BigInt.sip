@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigInt.sip,v 1.1.1.1 2006-02-09 09:18:13 exact Exp $
+ * $Id: BigInt.sip,v 1.2 2006-02-09 12:45:44 exact Exp $
  ***************************************************************************/
 
 class BigInt {
@@ -36,6 +36,7 @@ public:
   void set(const BigInt&);
   void set(int /Constrained/);
   void set(double);
+  int set(const char*, int =0);
   
   void add(const BigInt&, const BigInt&);
   void add(const BigInt&, int /Constrained/);

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigRat.sip,v 1.1.1.1 2006-02-09 09:18:13 exact Exp $
+ * $Id: BigRat.sip,v 1.2 2006-02-09 12:45:44 exact Exp $
  ***************************************************************************/
 
 class BigRat {
@@ -38,6 +38,7 @@ public:
   void set(const BigInt&);
   void set(int /Constrained/);
   void set(double);
+  int set(const char*, int =0);
 
 public:
   void add(const BigRat&, const BigRat&);
