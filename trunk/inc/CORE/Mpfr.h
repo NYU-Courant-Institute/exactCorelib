@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Mpfr.h,v 1.1.1.1 2006-02-09 09:18:05 exact Exp $
+ * $Id: Mpfr.h,v 1.2 2006-02-10 15:04:22 exact Exp $
  ***************************************************************************/
 #ifndef __MPFR_H__
 #define __MPFR_H__
@@ -81,7 +81,7 @@ inline int mpfr_sqrt_si(mpfr_ptr z, long x, rnd_t rnd)
 #endif
 
 /* remove trailing zeros (by limbs) */
-void mpfr_remove_trailing_zeroes(mpfr_t x);
+void mpfr_remove_trailing_zeros(mpfr_t x);
 /* C++-style input of mpfr */
 std::istream& operator>> (std::istream &, mpfr_ptr);
 /* convert mpfr to string */
@@ -913,6 +913,9 @@ public:
   /// return lower bound of MSB
   long lMSB() const
   { BigInt x; exp_t e = get_z_exp(x); return x.floorlg() + e; }
+  /// remove trailing zeros
+  void remove_trailing_zeros()
+  { mpfr_remove_trailing_zeros(mp()); }
 
   void rint(const Mpfr& x, rnd_t rnd = MPFR_RND)
   { mpfr_rint(m_mp, x.m_mp, rnd); }

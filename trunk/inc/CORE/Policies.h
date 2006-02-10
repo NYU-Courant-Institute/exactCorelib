@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Policies.h,v 1.1.1.1 2006-02-09 09:18:05 exact Exp $
+ * $Id: Policies.h,v 1.2 2006-02-10 15:04:22 exact Exp $
  ***************************************************************************/
 #ifndef __POLICIES_H__
 #define __POLICIES_H__
@@ -106,11 +106,14 @@ struct AutoArithmeticPolicy {
   { z.set_prec(T::count_prec(x)); return z.neg(x, rnd) == 0; }
 
   static bool add(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
-  { z.set_prec(T::add_prec(x, y)); return z.add(x, y, rnd) == 0; }
+  //{ z.set_prec(T::add_prec(x, y)); return z.add(x, y, rnd) == 0; }
+  { z.set_prec(T::add_prec(x, y)); int r = z.add(x, y, rnd) == 0; z.remove_trailing_zeros(); return r; }
   static bool sub(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
-  { z.set_prec(T::add_prec(x, y)); return z.sub(x, y, rnd) == 0; }
+  //{ z.set_prec(T::add_prec(x, y)); return z.sub(x, y, rnd) == 0; }
+  { z.set_prec(T::add_prec(x, y)); int r = z.sub(x, y, rnd) == 0;  z.remove_trailing_zeros(); return r;}
   static bool mul(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
-  { z.set_prec(T::mul_prec(x, y)); return z.mul(x, y, rnd) == 0; }
+  //{ z.set_prec(T::mul_prec(x, y)); return z.mul(x, y, rnd) == 0; }
+  { z.set_prec(T::mul_prec(x, y)); int r = z.mul(x, y, rnd) == 0;  z.remove_trailing_zeros(); return r;}
 };
 
 #ifdef CORE_END_NAMESPACE
