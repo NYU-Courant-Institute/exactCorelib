@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigRat.h,v 1.1.1.1 2006-02-09 09:18:04 exact Exp $
+ * $Id: BigRat.h,v 1.2 2006-02-27 04:37:28 exact Exp $
  ***************************************************************************/
 #ifndef __BIGRAT_H__
 #define __BIGRAT_H__
@@ -57,20 +57,6 @@ public:
   BigRat(const BigRat& rhs)
   { mpq_init_set(m_mp, rhs.m_mp); }
 
-  /// constructor for <tt>char</tt>
-  BigRat(char i)
-  { mpq_init_set_si(m_mp, i); }
-  /// constructor for <tt>unsigned char</tt>
-  BigRat(unsigned char i)
-  { mpq_init_set_ui(m_mp, i); }
-
-  /// constructor for <tt>short</tt>
-  BigRat(short i)
-  { mpq_init_set_si(m_mp, i); }
-  /// constructor for <tt>unsigned short</tt>
-  BigRat(unsigned short i)
-  { mpq_init_set_ui(m_mp, i); }
-
   /// constructor for <tt>int</tt>
   BigRat(int i)
   { mpq_init_set_si(m_mp, i); }
@@ -85,9 +71,6 @@ public:
   BigRat(unsigned long i)
   { mpq_init_set_ui(m_mp, i); }
 
-  /// constructor for <tt>float</tt>
-  BigRat(float i)
-  { mpq_init_set_d(m_mp, i); }
   /// constructor for <tt>double</tt>
   BigRat(double i)
   { mpq_init_set_d(m_mp, i); }
@@ -121,18 +104,6 @@ public:
   /// assignment function for <tt>BigRat</tt>
   void set(const BigRat& rhs)
   { mpq_set(m_mp, rhs.m_mp); }
-  /// assignment function for <tt>char</tt>
-  void set(char i, unsigned long den = 1)
-  { mpq_set_si(m_mp, i, den); }
-  /// assignment function for <tt>unsigned char</tt>
-  void set(unsigned char i, unsigned long den = 1)
-  { mpq_set_ui(m_mp, i, den); }
-  /// assignment function for <tt>short</tt>
-  void set(short i, unsigned long den = 1)
-  { mpq_set_si(m_mp, i, den); }
-  /// assignment function for <tt>unsigned short</tt>
-  void set(unsigned short i, unsigned long den = 1)
-  { mpq_set_ui(m_mp, i, den); }
   /// assignment function for <tt>int</tt>
   void set(int i, unsigned long den = 1)
   { mpq_set_si(m_mp, i, den); }
@@ -145,9 +116,6 @@ public:
   /// assignment function for <tt>unsigned long</tt>
   void set(unsigned long i, unsigned long den = 1)
   { mpq_set_ui(m_mp, i, den); }
-  /// assignment function for <tt>float</tt>
-  void set(float i)
-  { mpq_set_d(m_mp, i); }
   /// assignment function for <tt>double</tt>
   void set(double i)
   { mpq_set_d(m_mp, i); }
@@ -193,8 +161,26 @@ public:
   /// \name shift functions
   //@{
   /// left shift
+  void mul_2exp(const BigRat& x, int y)
+  { if (y>=0) mpq_mul_2exp(m_mp,x.m_mp,y); else mpq_div_2exp(m_mp,x.m_mp,-y); }
+  /// left shift
+  void mul_2exp(const BigRat& x, unsigned int y)
+  { mpq_mul_2exp(m_mp, x.m_mp, y); }
+  /// left shift
+  void mul_2exp(const BigRat& x, long y)
+  { if (y>=0) mpq_mul_2exp(m_mp,x.m_mp,y); else mpq_div_2exp(m_mp,x.m_mp,-y); }
+  /// left shift
   void mul_2exp(const BigRat& x, unsigned long y)
   { mpq_mul_2exp(m_mp, x.m_mp, y); }
+  /// right shift
+  void div_2exp(const BigRat& x, int y)
+  { if (y>=0) mpq_div_2exp(m_mp,x.m_mp,y); else mpq_mul_2exp(m_mp,x.m_mp,-y); }
+  /// right shift
+  void div_2exp(const BigRat& x, unsigned int y)
+  { mpq_div_2exp(m_mp, x.m_mp, y); }
+  /// right shift
+  void div_2exp(const BigRat& x, long y)
+  { if (y>=0) mpq_div_2exp(m_mp,x.m_mp,y); else mpq_mul_2exp(m_mp,x.m_mp,-y); }
   /// right shift
   void div_2exp(const BigRat& x, unsigned long y)
   { mpq_div_2exp(m_mp, x.m_mp, y); }
@@ -202,21 +188,9 @@ public:
   
   /// \name comparison functions
   //@{ 
-  /// compare with <tt>BigInt</tt>
+  /// compare with <tt>BigRat</tt>
   int cmp(const BigRat& x) const
   { return mpq_cmp(m_mp, x.m_mp); }
-  /// compare with <tt>char</tt>
-  int cmp(char x, unsigned long den) const
-  { return mpq_cmp_si(m_mp, x, den); }
-  /// compare with <tt>unsigned char</tt>
-  int cmp(unsigned char x, unsigned long den) const
-  { return mpq_cmp_ui(m_mp, x, den); }
-  /// compare with <tt>short</tt>
-  int cmp(short x, unsigned long den) const
-  { return mpq_cmp_si(m_mp, x, den); }
-  /// compare with <tt>unsigned short</tt>
-  int cmp(unsigned short x, unsigned long den) const
-  { return mpq_cmp_ui(m_mp, x, den); }
   /// compare with <tt>int</tt>
   int cmp(int x, unsigned long den) const
   { return mpq_cmp_si(m_mp, x, den); }
@@ -227,8 +201,11 @@ public:
   int cmp(long x, unsigned long den) const
   { return mpq_cmp_si(m_mp, x, den); }
   /// compare with <tt>unsigned long</tt>
-  int cmp(unsigned long x, unsigned den) const
+  int cmp(unsigned long x, unsigned long den) const
   { return mpq_cmp_ui(m_mp, x, den); }
+  /// compare with <tt>double</tt>
+  int cmp(double x) const
+  { return this->cmp(BigRat(x)); }
   /// return non-zero if equals (faster than cmp)
   int equal(const BigRat& x) const
   { return mpq_equal(m_mp, x.m_mp); }
@@ -313,13 +290,34 @@ public: // C++ operators
 
   /// \name assignment and compound assignment operators
   //@{
-  /// assignment operator for <tt>BigInt</tt>
+  /// assignment operator for <tt>BigRat</tt>
   BigRat& operator=(const BigRat& rhs)
   { set(rhs); return *this; }
-  /// generic assignment operator for <tt>T</tt>
-  template <typename T>
-  BigRat& operator=(const T& rhs)
+  /// assignment operator for <tt>int</tt>
+  BigRat& operator=(int rhs)
   { set(rhs); return *this; }
+  /// assignment operator for <tt>unsigned int</tt>
+  BigRat& operator=(unsigned int rhs)
+  { set(rhs); return *this; }
+  /// assignment operator for <tt>long</tt>
+  BigRat& operator=(long rhs)
+  { set(rhs); return *this; }
+  /// assignment operator for <tt>unsigned long</tt>
+  BigRat& operator=(unsigned long rhs)
+  { set(rhs); return *this; }
+  /// assignment operator for <tt>double</tt>
+  BigRat& operator=(double rhs)
+  { set(rhs); return *this; }
+  /// assignment operator for <tt>char*</tt>
+  BigRat& operator=(const char* rhs)
+  { set(rhs); return *this; }
+  /// assignment operator for <tt>std::string</tt>
+  BigRat& operator=(const std::string& rhs)
+  { set(rhs); return *this; }
+  /// assignment operator for <tt>BigInt</tt>
+  BigRat& operator=(const BigInt& rhs)
+  { set(rhs); return *this; }
+
   /// compound assignment operator <tt>+=</tt>
   BigRat& operator+=(const BigRat& rhs)
   { add(*this, rhs); return *this; }
@@ -332,9 +330,28 @@ public: // C++ operators
   /// compound assignment operator <tt>/=</tt>
   BigRat& operator/=(const BigRat& rhs)
   { div(*this, rhs); return *this; }
+
+  /// compound assignment operator <tt><<=</tt>
+  BigRat& operator<<=(int i)
+  { mul_2exp(*this, i); return *this; }
+  /// compound assignment operator <tt><<=</tt>
+  BigRat& operator<<=(unsigned int ui)
+  { mul_2exp(*this, ui); return *this; }
+  /// compound assignment operator <tt><<=</tt>
+  BigRat& operator<<=(long l)
+  { mul_2exp(*this, l); return *this; }
   /// compound assignment operator <tt><<=</tt>
   BigRat& operator<<=(unsigned long ul)
   { mul_2exp(*this, ul); return *this; }
+  /// compound assignment operator <tt>>>=</tt>
+  BigRat& operator>>=(int i) 
+  { div_2exp(*this, i); return *this; }
+  /// compound assignment operator <tt>>>=</tt>
+  BigRat& operator>>=(unsigned int ui) 
+  { div_2exp(*this, ui); return *this; }
+  /// compound assignment operator <tt>>>=</tt>
+  BigRat& operator>>=(long l) 
+  { div_2exp(*this, l); return *this; }
   /// compound assignment operator <tt>>>=</tt>
   BigRat& operator>>=(unsigned long ul) 
   { div_2exp(*this, ul); return *this; }
@@ -375,9 +392,27 @@ inline BigRat operator*(const BigRat& x, const BigRat& y)
 /// BigRat / BigRat
 inline BigRat operator/(const BigRat& x, const BigRat& y)
 { BigRat r; r.div(x, y); return r; }
+/// BigRat << int
+inline BigRat operator<<(const BigRat& x, int y)
+{ BigRat r; r.mul_2exp(x, y); return r; }
+/// BigRat << unsigned int
+inline BigRat operator<<(const BigRat& x, unsigned int y)
+{ BigRat r; r.mul_2exp(x, y); return r; }
+/// BigRat << long
+inline BigRat operator<<(const BigRat& x, long y)
+{ BigRat r; r.mul_2exp(x, y); return r; }
 /// BigRat << unsigned long
 inline BigRat operator<<(const BigRat& x, unsigned long y)
 { BigRat r; r.mul_2exp(x, y); return r; }
+/// BigRat >> int
+inline BigRat operator>>(const BigRat& x, int y)
+{ BigRat r; r.div_2exp(x, y); return r; }
+/// BigRat >> unsigned int
+inline BigRat operator>>(const BigRat& x, unsigned int y)
+{ BigRat r; r.div_2exp(x, y); return r; }
+/// BigRat >> long
+inline BigRat operator>>(const BigRat& x, long y)
+{ BigRat r; r.div_2exp(x, y); return r; }
 /// BigRat >> unsigned long
 inline BigRat operator>>(const BigRat& x, unsigned long y)
 { BigRat r; r.div_2exp(x, y); return r; }
@@ -385,77 +420,209 @@ inline BigRat operator>>(const BigRat& x, unsigned long y)
 
 /// \addtogroup BigRatComparisonOperators
 //@{
-/// BigRat == BigRat (use equal instead of cmp will be fast)
+/// BigRat == BigRat
 inline bool operator==(const BigRat& x, const BigRat& y)
 { return x.equal(y) != 0; }
-/// BigRat == T
-template <typename T>
-inline bool operator==(const BigRat& x, const T& y)
+/// BigRat == int
+inline bool operator==(const BigRat& x, int y)
 { return x.cmp(y, 1UL) == 0; }
-/// T == BigRat
-template <typename T>
-inline bool operator==(const T& x, const BigRat& y)
+/// int == BigRat
+inline bool operator==(int x, const BigRat& y)
 { return y.cmp(x, 1UL) == 0; }
+/// BigRat == unsigned int
+inline bool operator==(const BigRat& x, unsigned int y)
+{ return x.cmp(y, 1UL) == 0; }
+/// unsigned int == BigRat
+inline bool operator==(unsigned int x, const BigRat& y)
+{ return y.cmp(x, 1UL) == 0; }
+/// BigRat == long
+inline bool operator==(const BigRat& x, long y)
+{ return x.cmp(y, 1UL) == 0; }
+/// long == BigRat
+inline bool operator==(long x, const BigRat& y)
+{ return y.cmp(x, 1UL) == 0; }
+/// BigRat == unsigned long
+inline bool operator==(const BigRat& x, unsigned long y)
+{ return x.cmp(y, 1UL) == 0; }
+/// unsigned long == BigRat
+inline bool operator==(unsigned long x, const BigRat& y)
+{ return y.cmp(x, 1UL) == 0; }
+/// BigRat == double
+inline bool operator==(const BigRat& x, double y)
+{ return x.cmp(y) == 0; }
+/// double == BigRat
+inline bool operator==(double x, const BigRat& y)
+{ return y.cmp(x) == 0; }
 
-/// BigRat != BigRat (use equal instead of cmp will be fast)
+/// BigRat != BigRat
 inline bool operator!=(const BigRat& x, const BigRat& y)
 { return x.equal(y) == 0; }
-/// BigRat != T
-template <typename T>
-inline bool operator!=(const BigRat& x, const T& y)
+/// BigRat != int
+inline bool operator!=(const BigRat& x, int y)
 { return x.cmp(y, 1UL) != 0; }
-/// T != BigRat
-template <typename T>
-inline bool operator!=(const T& x, const BigRat& y)
+/// int != BigRat
+inline bool operator!=(int x, const BigRat& y)
 { return y.cmp(x, 1UL) != 0; }
+/// BigRat != unsigned int
+inline bool operator!=(const BigRat& x, unsigned int y)
+{ return x.cmp(y, 1UL) != 0; }
+/// unsigned int != BigRat
+inline bool operator!=(unsigned int x, const BigRat& y)
+{ return y.cmp(x, 1UL) != 0; }
+/// BigRat != long
+inline bool operator!=(const BigRat& x, long y)
+{ return x.cmp(y, 1UL) != 0; }
+/// long != BigRat
+inline bool operator!=(long x, const BigRat& y)
+{ return y.cmp(x, 1UL) != 0; }
+/// BigRat != unsigned long
+inline bool operator!=(const BigRat& x, unsigned long y)
+{ return x.cmp(y, 1UL) != 0; }
+/// unsigned long != BigRat
+inline bool operator!=(unsigned long x, const BigRat& y)
+{ return y.cmp(x, 1UL) != 0; }
+/// BigRat != double
+inline bool operator!=(const BigRat& x, double y)
+{ return x.cmp(y) != 0; }
+/// double != BigRat
+inline bool operator!=(double x, const BigRat& y)
+{ return y.cmp(x) != 0; }
 
 /// BigRat >= BigRat
 inline bool operator>=(const BigRat& x, const BigRat& y)
 { return x.cmp(y) >= 0; }
-/// BigRat >= T
-template <typename T>
-inline bool operator>=(const BigRat& x, const T& y)
+/// BigRat >= int
+inline bool operator>=(const BigRat& x, int y)
 { return x.cmp(y, 1UL) >= 0; }
-/// T >= BigRat
-template <typename T>
-inline bool operator>=(const T& x, const BigRat& y)
+/// int >= BigRat
+inline bool operator>=(int x, const BigRat& y)
 { return y.cmp(x, 1UL) <= 0; }
+/// BigRat >= unsigned int
+inline bool operator>=(const BigRat& x, unsigned int y)
+{ return x.cmp(y, 1UL) >= 0; }
+/// unsigned int >= BigRat
+inline bool operator>=(unsigned int x, const BigRat& y)
+{ return y.cmp(x, 1UL) <= 0; }
+/// BigRat >= long
+inline bool operator>=(const BigRat& x, long y)
+{ return x.cmp(y, 1UL) >= 0; }
+/// long >= BigRat
+inline bool operator>=(long x, const BigRat& y)
+{ return y.cmp(x, 1UL) <= 0; }
+/// BigRat >= unsigned long
+inline bool operator>=(const BigRat& x, unsigned long y)
+{ return x.cmp(y, 1UL) >= 0; }
+/// unsigned long >= BigRat
+inline bool operator>=(unsigned long x, const BigRat& y)
+{ return y.cmp(x, 1UL) <= 0; }
+/// BigRat >= double
+inline bool operator>=(const BigRat& x, double y)
+{ return x.cmp(y) >= 0; }
+/// double >= BigRat
+inline bool operator>=(double x, const BigRat& y)
+{ return y.cmp(x) <= 0; }
 
 /// BigRat <= BigRat
 inline bool operator<=(const BigRat& x, const BigRat& y)
 { return x.cmp(y) <= 0; }
-/// BigRat <= T
-template <typename T>
-inline bool operator<=(const BigRat& x, const T& y)
+/// BigRat <= int
+inline bool operator<=(const BigRat& x, int y)
 { return x.cmp(y, 1UL) <= 0; }
-/// T <= BigRat
-template <typename T>
-inline bool operator<=(const T& x, const BigRat& y)
+/// int <= BigRat
+inline bool operator<=(int x, const BigRat& y)
 { return y.cmp(x, 1UL) >= 0; }
+/// BigRat <= unsigned int
+inline bool operator<=(const BigRat& x, unsigned int y)
+{ return x.cmp(y, 1UL) <= 0; }
+/// unsigned int <= BigRat
+inline bool operator<=(unsigned int x, const BigRat& y)
+{ return y.cmp(x, 1UL) >= 0; }
+/// BigRat <= long
+inline bool operator<=(const BigRat& x, long y)
+{ return x.cmp(y, 1UL) <= 0; }
+/// long <= BigRat
+inline bool operator<=(long x, const BigRat& y)
+{ return y.cmp(x, 1UL) >= 0; }
+/// BigRat <= unsigned long
+inline bool operator<=(const BigRat& x, unsigned long y)
+{ return x.cmp(y, 1UL) <= 0; }
+/// unsigned long <= BigRat
+inline bool operator<=(unsigned long x, const BigRat& y)
+{ return y.cmp(x, 1UL) >= 0; }
+/// BigRat <= double
+inline bool operator<=(const BigRat& x, double y)
+{ return x.cmp(y) <= 0; }
+/// double <= BigRat
+inline bool operator<=(double x, const BigRat& y)
+{ return y.cmp(x) >= 0; }
 
 /// BigRat > BigRat
 inline bool operator>(const BigRat& x, const BigRat& y)
 { return x.cmp(y) > 0; }
-/// BigRat > T
-template <typename T>
-inline bool operator>(const BigRat& x, const T& y)
+/// BigRat > int
+inline bool operator>(const BigRat& x, int y)
 { return x.cmp(y, 1UL) > 0; }
-/// T > BigRat
-template <typename T>
-inline bool operator>(const T& x, const BigRat& y)
+/// int > BigRat
+inline bool operator>(int x, const BigRat& y)
 { return y.cmp(x, 1UL) < 0; }
+/// BigRat > unsigned int
+inline bool operator>(const BigRat& x, unsigned int y)
+{ return x.cmp(y, 1UL) > 0; }
+/// unsigned int > BigRat
+inline bool operator>(unsigned int x, const BigRat& y)
+{ return y.cmp(x, 1UL) < 0; }
+/// BigRat > long
+inline bool operator>(const BigRat& x, long y)
+{ return x.cmp(y, 1UL) > 0; }
+/// long > BigRat
+inline bool operator>(long x, const BigRat& y)
+{ return y.cmp(x, 1UL) < 0; }
+/// BigRat > unsigned long
+inline bool operator>(const BigRat& x, unsigned long y)
+{ return x.cmp(y, 1UL) > 0; }
+/// unsigned long > BigRat
+inline bool operator>(unsigned long x, const BigRat& y)
+{ return y.cmp(x, 1UL) < 0; }
+/// BigRat > double
+inline bool operator>(const BigRat& x, double y)
+{ return x.cmp(y) > 0; }
+/// double > BigRat
+inline bool operator>(double x, const BigRat& y)
+{ return y.cmp(x) < 0; }
 
 /// BigRat < BigRat
 inline bool operator<(const BigRat& x, const BigRat& y)
 { return x.cmp(y) < 0; }
-/// BigRat < T
-template <typename T>
-inline bool operator<(const BigRat& x, const T& y)
+/// BigRat < int
+inline bool operator<(const BigRat& x, int y)
 { return x.cmp(y, 1UL) < 0; }
-/// T < BigRat
-template <typename T>
-inline bool operator<(const T& x, const BigRat& y)
+/// int < BigRat
+inline bool operator<(int x, const BigRat& y)
 { return y.cmp(x, 1UL) > 0; }
+/// BigRat < unsigned int
+inline bool operator<(const BigRat& x, unsigned int y)
+{ return x.cmp(y, 1UL) < 0; }
+/// unsigned int < BigRat
+inline bool operator<(unsigned int x, const BigRat& y)
+{ return y.cmp(x, 1UL) > 0; }
+/// BigRat < long
+inline bool operator<(const BigRat& x, long y)
+{ return x.cmp(y, 1UL) < 0; }
+/// long < BigRat
+inline bool operator<(long x, const BigRat& y)
+{ return y.cmp(x, 1UL) > 0; }
+/// BigRat < unsigned long
+inline bool operator<(const BigRat& x, unsigned long y)
+{ return x.cmp(y, 1UL) < 0; }
+/// unsigned long < BigRat
+inline bool operator<(unsigned long x, const BigRat& y)
+{ return y.cmp(x, 1UL) > 0; }
+/// BigRat < double
+inline bool operator<(const BigRat& x, double y)
+{ return x.cmp(y) < 0; }
+/// double < BigRat
+inline bool operator<(double x, const BigRat& y)
+{ return y.cmp(x) > 0; }
 //@}
 
 /// \addtogroup BigRatIostreamOperators 

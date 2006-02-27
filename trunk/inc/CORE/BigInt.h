@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigInt.h,v 1.1.1.1 2006-02-09 09:18:04 exact Exp $
+ * $Id: BigInt.h,v 1.2 2006-02-27 04:37:28 exact Exp $
  ***************************************************************************/
 #ifndef __BIGINT_H__
 #define __BIGINT_H__
@@ -96,20 +96,6 @@ public:
   BigInt(const BigInt& rhs)
   { mpz_init_set(m_mp, rhs.m_mp); }
 
-  /// constructor for <tt>char</tt>
-  BigInt(char i)
-  { mpz_init_set_si(m_mp, i); }
-  /// constructor for <tt>unsigned char</tt>
-  BigInt(unsigned char i)
-  { mpz_init_set_ui(m_mp, i); }
-
-  /// constructor for <tt>short</tt>
-  BigInt(short i)
-  { mpz_init_set_si(m_mp, i); }
-  /// constructor for <tt>unsigned short</tt>
-  BigInt(unsigned short i)
-  { mpz_init_set_ui(m_mp, i); }
-
   /// constructor for <tt>int</tt>
   BigInt(int i)
   { mpz_init_set_si(m_mp, i); }
@@ -124,9 +110,6 @@ public:
   BigInt(unsigned long i)
   { mpz_init_set_ui(m_mp, i); }
 
-  /// constructor for <tt>float</tt>
-  BigInt(float i)
-  { mpz_init_set_d(m_mp, i); }
   /// constructor for <tt>double</tt>
   BigInt(double i)
   { mpz_init_set_d(m_mp, i); }
@@ -134,7 +117,8 @@ public:
   /// constructor for <tt>char*</tt> (no implicit conversion)
   explicit BigInt(const char* str, int base = 0)
   { mpz_init_set_str(m_mp, str, base); }
-  /// constructor for <tt>std::string</tt> (no implicit conversion)
+
+  /// constructor for <tt>std::string&</tt> (no implicit conversion)
   explicit BigInt(const std::string& str, int base = 0)
   { mpz_init_set_str(m_mp, str.c_str(), base); }
 
@@ -153,18 +137,6 @@ public:
   /// assignment function for <tt>BigInt</tt>
   void set(const BigInt& rhs)
   { mpz_set(m_mp, rhs.m_mp); }
-  /// assignment function for <tt>char</tt>
-  void set(char i)
-  { mpz_set_si(m_mp, i); }
-  /// assignment function for <tt>unsigned char</tt>
-  void set(unsigned char i)
-  { mpz_set_ui(m_mp, i); }
-  /// assignment function for <tt>short</tt>
-  void set(short i)
-  { mpz_set_si(m_mp, i); }
-  /// assignment function for <tt>unsigned short</tt>
-  void set(unsigned short i)
-  { mpz_set_ui(m_mp, i); }
   /// assignment function for <tt>int</tt>
   void set(int i)
   { mpz_set_si(m_mp, i); }
@@ -177,16 +149,13 @@ public:
   /// assignment function for <tt>unsigned long</tt>
   void set(unsigned long i)
   { mpz_set_ui(m_mp, i); }
-  /// assignment function for <tt>float</tt>
-  void set(float i)
-  { mpz_set_d(m_mp, i); }
   /// assignment function for <tt>double</tt>
   void set(double i)
   { mpz_set_d(m_mp, i); }
   /// assignment function for <tt>char*</tt>
   int set(const char* str, int base = 0)
   { return mpz_set_str(m_mp, str, base); }
-  /// assignment function for <tt>std::string</tt>
+  /// assignment function for <tt>std::string&</tt>
   int set(const std::string& str, int base = 0)
   { return mpz_set_str(m_mp, str.c_str(), base); }
   //@}
@@ -196,18 +165,6 @@ public:
   /// addition for <tt>BigInt + BigInt</tt>
   void add(const BigInt& x, const BigInt& y)
   { mpz_add(m_mp, x.m_mp, y.m_mp); }
-  /// addition for <tt>BigInt + char</tt>
-  void add(const BigInt& x, char y)
-  { mpz_add_si(m_mp, x.m_mp, y); }
-  /// addition for <tt>BigInt + unsigned char</tt>
-  void add(const BigInt& x, unsigned char y)
-  { mpz_add_ui(m_mp, x.m_mp, y); }
-  /// addition for <tt>BigInt + short</tt>
-  void add(const BigInt& x, short y)
-  { mpz_add_si(m_mp, x.m_mp, y); }
-  /// addition for <tt>BigInt + unsigned short</tt>
-  void add(const BigInt& x, unsigned short y)
-  { mpz_add_ui(m_mp, x.m_mp, y); }
   /// addition for <tt>BigInt + int</tt>
   void add(const BigInt& x, int y)
   { mpz_add_si(m_mp, x.m_mp, y); }
@@ -220,15 +177,24 @@ public:
   /// addition for <tt>BigInt + unsigned long</tt>
   void add(const BigInt& x, unsigned long y)
   { mpz_add_ui(m_mp, x.m_mp, y); }
-  /// addition for <tt>BigInt + float</tt>
-  void add(const BigInt& x, float y)
-  { add(x, BigInt(y)); }
   /// addition for <tt>BigInt + double</tt>
   void add(const BigInt& x, double y)
-  { add(x, BigInt(y)); }
-  /// addition for <tt>T + BigInt</tt>
-  template <typename T> void add(const T&x, const BigInt& y)
-  { add(y, x); }
+  { this->add(x, BigInt(y)); }
+  /// addition for <tt>int + BigInt</tt>
+  void add(int x, const BigInt& y)
+  { this->add(y, x); }
+  /// addition for <tt>unsigned int + BigInt</tt>
+  void add(unsigned int x, const BigInt& y)
+  { this->add(y, x); }
+  /// addition for <tt>long + BigInt</tt>
+  void add(long x, const BigInt& y)
+  { this->add(y, x); }
+  /// addition for <tt>unsigned long + BigInt</tt>
+  void add(unsigned long x, const BigInt& y)
+  { this->add(y, x); }
+  /// addition for <tt>double + BigInt</tt>
+  void add(double x, const BigInt& y)
+  { this->add(y, x); }
   //@}
 
   /// \name arithmetic functions -- subtraction
@@ -236,18 +202,6 @@ public:
   /// subtraction for <tt>BigInt - BigInt</tt>
   void sub(const BigInt& x, const BigInt& y)
   { mpz_sub(m_mp, x.m_mp, y.m_mp); }
-  /// subtraction for <tt>BigInt - char</tt>
-  void sub(const BigInt& x, char y)
-  { mpz_sub_si(m_mp, x.m_mp, y); }
-  /// subtraction for <tt>BigInt - unsigned char</tt>
-  void sub(const BigInt& x, unsigned char y)
-  { mpz_sub_ui(m_mp, x.m_mp, y); }
-  /// subtraction for <tt>BigInt - short</tt>
-  void sub(const BigInt& x, short y)
-  { mpz_sub_si(m_mp, x.m_mp, y); }
-  /// subtraction for <tt>BigInt - unsigned short</tt>
-  void sub(const BigInt& x, unsigned short y)
-  { mpz_sub_ui(m_mp, x.m_mp, y); }
   /// subtraction for <tt>BigInt - int</tt>
   void sub(const BigInt& x, int y)
   { mpz_sub_si(m_mp, x.m_mp, y); }
@@ -260,24 +214,9 @@ public:
   /// subtraction for <tt>BigInt - unsigned long</tt>
   void sub(const BigInt& x, unsigned long y)
   { mpz_sub_ui(m_mp, x.m_mp, y); }
-  /// subtraction for <tt>BigInt - float</tt>
-  void sub(const BigInt& x, float y)
-  { sub(x, BigInt(y)); }
   /// subtraction for <tt>BigInt - double</tt>
   void sub(const BigInt& x, double y)
-  { sub(x, BigInt(y)); }
-  /// subtraction for <tt>char - BigInt</tt>
-  void sub(char x, const BigInt& y)
-  { mpz_si_sub(m_mp, x, y.m_mp); }
-  /// subtraction for <tt>unsigned char - BigInt</tt>
-  void sub(unsigned char x, const BigInt& y)
-  { mpz_ui_sub(m_mp, x, y.m_mp); }
-  /// subtraction for <tt>short - BigInt</tt>
-  void sub(short x, const BigInt& y)
-  { mpz_si_sub(m_mp, x, y.m_mp); }
-  /// subtraction for <tt>unsigned short - BigInt</tt>
-  void sub(unsigned short x, const BigInt& y)
-  { mpz_ui_sub(m_mp, x, y.m_mp); }
+  { this->sub(x, BigInt(y)); }
   /// subtraction for <tt>int - BigInt</tt>
   void sub(int x, const BigInt& y)
   { mpz_si_sub(m_mp, x, y.m_mp); }
@@ -290,31 +229,16 @@ public:
   /// subtraction for <tt>unsigned long - BigInt</tt>
   void sub(unsigned long x, const BigInt& y)
   { mpz_ui_sub(m_mp, x, y.m_mp); }
-  /// subtraction for <tt>float - BigInt</tt>
-  void sub(float x, const BigInt& y)
-  { sub(BigInt(x), y); }
   /// subtraction for <tt>double - BigInt</tt>
   void sub(double x, const BigInt& y)
-  { sub(BigInt(x), y); }
+  { this->sub(y, x); }
   //@}
-  
+
   /// \name arithmetic functions -- multiplication
   //@{
   /// multiplication for <tt>BigInt * BigInt</tt>
   void mul(const BigInt& x, const BigInt& y)
   { mpz_mul(m_mp, x.m_mp, y.m_mp); }
-  /// multiplication for <tt>BigInt * char</tt>
-  void mul(const BigInt& x, char y)
-  { mpz_mul_si(m_mp, x.m_mp, y); }
-  /// multiplication for <tt>BigInt * unsigned char</tt>
-  void mul(const BigInt& x, unsigned char y)
-  { mpz_mul_ui(m_mp, x.m_mp, y); }
-  /// multiplication for <tt>BigInt * short</tt>
-  void mul(const BigInt& x, short y)
-  { mpz_mul_si(m_mp, x.m_mp, y); }
-  /// multiplication for <tt>BigInt * unsigned short</tt>
-  void mul(const BigInt& x, unsigned short y)
-  { mpz_mul_ui(m_mp, x.m_mp, y); }
   /// multiplication for <tt>BigInt * int</tt>
   void mul(const BigInt& x, int y)
   { mpz_mul_si(m_mp, x.m_mp, y); }
@@ -327,15 +251,24 @@ public:
   /// multiplication for <tt>BigInt * unsigned long</tt>
   void mul(const BigInt& x, unsigned long y)
   { mpz_mul_ui(m_mp, x.m_mp, y); }
-  /// multiplication for <tt>BigInt * float</tt>
-  void mul(const BigInt& x, float y)
-  { mul(x, BigInt(y)); }
   /// multiplication for <tt>BigInt * double</tt>
   void mul(const BigInt& x, double y)
-  { mul(x, BigInt(y)); }
-  /// addition for <tt>T * BigInt</tt>
-  template <typename T> void mul(const T&x, const BigInt& y)
-  { mul(y, x); }
+  { this->mul(x, BigInt(y)); }
+  /// multiplication for <tt>int * BigInt</tt>
+  void mul(int x, const BigInt& y)
+  { this->mul(y, x); }
+  /// multiplication for <tt>unsigned int * BigInt</tt>
+  void mul(unsigned int x, const BigInt& y)
+  { this->mul(y, x); }
+  /// multiplication for <tt>long * BigInt</tt>
+  void mul(long x, const BigInt& y)
+  { this->mul(y, x); }
+  /// multiplication for <tt>unsigned long * BigInt</tt>
+  void mul(unsigned long x, const BigInt& y)
+  { this->mul(y, x); }
+  /// multiplication for <tt>double * BigInt</tt>
+  void mul(double x, const BigInt& y)
+  { this->mul(y, x); }
   //@}
 
   /// \name arithmetic functions -- division
@@ -343,18 +276,6 @@ public:
   /// division for <tt>BigInt / BigInt</tt>
   void div(const BigInt& x, const BigInt& y)
   { mpz_div(m_mp, x.m_mp, y.m_mp); }
-  /// division for <tt>BigInt / char</tt>
-  void div(const BigInt& x, char y)
-  { mpz_div_si(m_mp, x.m_mp, y); }
-  /// division for <tt>BigInt / unsigned char</tt>
-  void div(const BigInt& x, unsigned char y)
-  { mpz_div_ui(m_mp, x.m_mp, y); }
-  /// division for <tt>BigInt / short</tt>
-  void div(const BigInt& x, short y)
-  { mpz_div_si(m_mp, x.m_mp, y); }
-  /// division for <tt>BigInt / unsigned short</tt>
-  void div(const BigInt& x, unsigned short y)
-  { mpz_div_ui(m_mp, x.m_mp, y); }
   /// division for <tt>BigInt / int</tt>
   void div(const BigInt& x, int y)
   { mpz_div_si(m_mp, x.m_mp, y); }
@@ -367,43 +288,31 @@ public:
   /// division for <tt>BigInt / unsigned long</tt>
   void div(const BigInt& x, unsigned long y)
   { mpz_div_ui(m_mp, x.m_mp, y); }
-  /// division for <tt>BigInt / float</tt>
-  void div(const BigInt& x, float y)
-  { div(x, BigInt(y)); }
   /// division for <tt>BigInt / double</tt>
   void div(const BigInt& x, double y)
-  { div(x, BigInt(y)); }
+  { this->div(x, BigInt(y)); }
   //@}
 
   /// \name arithmetic functions -- modular
   //@{
-  /// modular for <tt>BigInt %  BigInt</tt>
+  /// modular for <tt>BigInt % BigInt</tt>
   void mod(const BigInt& x, const BigInt& y)
   { mpz_mod(m_mp, x.m_mp, y.m_mp); }
-  /// modular for <tt>BigInt %  char</tt>
-  void mod(const BigInt& x, char y)
-  { mpz_mod_si(m_mp, x.m_mp, y); }
-  /// modular for <tt>BigInt %  unsigned char</tt>
-  void mod(const BigInt& x, unsigned char y)
-  { mpz_mod_ui(m_mp, x.m_mp, y); }
-  /// modular for <tt>BigInt %  short</tt>
-  void mod(const BigInt& x, short y)
-  { mpz_mod_si(m_mp, x.m_mp, y); }
-  /// modular for <tt>BigInt %  unsigned short</tt>
-  void mod(const BigInt& x, unsigned short y)
-  { mpz_mod_ui(m_mp, x.m_mp, y); }
-  /// modular for <tt>BigInt %  int</tt>
+  /// modular for <tt>BigInt % int</tt>
   void mod(const BigInt& x, int y)
   { mpz_mod_si(m_mp, x.m_mp, y); }
-  /// modular for <tt>BigInt %  unsigned int</tt>
+  /// modular for <tt>BigInt % unsigned int</tt>
   void mod(const BigInt& x, unsigned int y)
   { mpz_mod_ui(m_mp, x.m_mp, y); }
-  /// modular for <tt>BigInt %  long</tt>
+  /// modular for <tt>BigInt % long</tt>
   void mod(const BigInt& x, long y)
   { mpz_mod_si(m_mp, x.m_mp, y); }
-  /// modular for <tt>BigInt %  unsigned long</tt>
+  /// modular for <tt>BigInt % unsigned long</tt>
   void mod(const BigInt& x, unsigned long y)
   { mpz_mod_ui(m_mp, x.m_mp, y); }
+  /// modular for <tt>BigInt % double</tt>
+  void mod(const BigInt& x, double y)
+  { this->mod(x, BigInt(y)); }
   //@}
 
   /// \name arithmetic functions -- exact division
@@ -411,18 +320,6 @@ public:
   /// exact division for <tt>BigInt / BigInt</tt>
   void divexact(const BigInt& x, const BigInt& y)
   { mpz_divexact(m_mp, x.m_mp, y.m_mp); }
-  /// exact division for <tt>BigInt / char</tt>
-  void divexact(const BigInt& x, char y)
-  { mpz_divexact_si(m_mp, x.m_mp, y); }
-  /// exact division for <tt>BigInt / unsigned char</tt>
-  void divexact(const BigInt& x, unsigned char y)
-  { mpz_divexact_ui(m_mp, x.m_mp, y); }
-  /// exact division for <tt>BigInt / short</tt>
-  void divexact(const BigInt& x, short y)
-  { mpz_divexact_si(m_mp, x.m_mp, y); }
-  /// exact division for <tt>BigInt / unsigned short</tt>
-  void divexact(const BigInt& x, unsigned short y)
-  { mpz_divexact_ui(m_mp, x.m_mp, y); }
   /// exact division for <tt>BigInt / int</tt>
   void divexact(const BigInt& x, int y)
   { mpz_divexact_si(m_mp, x.m_mp, y); }
@@ -435,12 +332,9 @@ public:
   /// exact division for <tt>BigInt / unsigned long</tt>
   void divexact(const BigInt& x, unsigned long y)
   { mpz_divexact_ui(m_mp, x.m_mp, y); }
-  /// exact division for <tt>BigInt / float</tt>
-  void divexact(const BigInt& x, float y)
-  { divexact(x, BigInt(y)); }
   /// exact division for <tt>BigInt / double</tt>
   void divexact(const BigInt& x, double y)
-  { divexact(x, BigInt(y)); }
+  { this->divexact(x, BigInt(y)); }
   //@}
 
   /// \name arithmetic functions -- division with remainder
@@ -448,18 +342,6 @@ public:
   /// division with remainder for <tt>BigInt / BigInt</tt>
   void divrem(BigInt& r, const BigInt& x, const BigInt& y)
   { mpz_divrem(m_mp, r.m_mp, x.m_mp, y.m_mp); }
-  /// division with remainder for <tt>BigInt / char</tt>
-  void divrem(BigInt& r, const BigInt& x, char y)
-  { mpz_divrem_si(m_mp, r.m_mp, x.m_mp, y); }
-  /// division with remainder for <tt>BigInt / unsigned char</tt>
-  void divrem(BigInt& r, const BigInt& x, unsigned char y)
-  { mpz_divrem_ui(m_mp, r.m_mp, x.m_mp, y); }
-  /// division with remainder for <tt>BigInt / short</tt>
-  void divrem(BigInt& r, const BigInt& x, short y)
-  { mpz_divrem_si(m_mp, r.m_mp, x.m_mp, y); }
-  /// division with remainder for <tt>BigInt / unsigned short</tt>
-  void divrem(BigInt& r, const BigInt& x, unsigned short y)
-  { mpz_divrem_ui(m_mp, r.m_mp, x.m_mp, y); }
   /// division with remainder for <tt>BigInt / int</tt>
   void divrem(BigInt& r, const BigInt& x, int y)
   { mpz_divrem_si(m_mp, r.m_mp, x.m_mp, y); }
@@ -472,13 +354,9 @@ public:
   /// division with remainder for <tt>BigInt / unsigned long</tt>
   void divrem(BigInt& r, const BigInt& x, unsigned long y)
   { mpz_divrem_ui(m_mp, r.m_mp, x.m_mp, y); }
-  /// division with remainder for <tt>BigInt / float</tt>
-  void divrem(BigInt& r, const BigInt& x, float y)
-  { divrem(r, x, BigInt(y)); }
   /// division with remainder for <tt>BigInt / double</tt>
   void divrem(BigInt& r, const BigInt& x, double y)
-  { divrem(r, x, BigInt(y)); }
-  //@}
+  { this->divrem(r, x, BigInt(y)); }
 
   /// \name squart root function
   //@{
@@ -492,18 +370,6 @@ public:
   /// power function for <tt>BigInt</tt>
   void pow(const BigInt& x, unsigned long y)
   { mpz_pow_ui(m_mp, x.m_mp, y); }
-  /// power function for <tt>char</tt>
-  void pow(char x, unsigned long y)
-  { mpz_si_pow_ui(m_mp, x, y); }
-  /// power function for <tt>unsigned char</tt>
-  void pow(unsigned char x, unsigned long y)
-  { mpz_ui_pow_ui(m_mp, x, y); }
-  /// power function for <tt>short</tt>
-  void pow(short x, unsigned long y)
-  { mpz_si_pow_ui(m_mp, x, y); }
-  /// power function for <tt>unsigned short</tt>
-  void pow(unsigned short x, unsigned long y)
-  { mpz_ui_pow_ui(m_mp, x, y); }
   /// power function for <tt>int</tt>
   void pow(int x, unsigned long y)
   { mpz_si_pow_ui(m_mp, x, y); }
@@ -531,8 +397,26 @@ public:
   /// \name shift functions
   //@{
   /// left shift
+  void mul_2exp(const BigInt& x, int y)
+  { if (y>=0) mpz_mul_2exp(m_mp,x.m_mp,y); else mpz_div_2exp(m_mp,x.m_mp,-y); }
+  /// left shift
+  void mul_2exp(const BigInt& x, unsigned int y)
+  { mpz_mul_2exp(m_mp, x.m_mp, y); }
+  /// left shift
+  void mul_2exp(const BigInt& x, long y)
+  { if (y>=0) mpz_mul_2exp(m_mp,x.m_mp,y); else mpz_div_2exp(m_mp,x.m_mp,-y); }
+  /// left shift
   void mul_2exp(const BigInt& x, unsigned long y)
   { mpz_mul_2exp(m_mp, x.m_mp, y); }
+  /// right shift
+  void div_2exp(const BigInt& x, int y)
+  { if (y>=0) mpz_div_2exp(m_mp,x.m_mp,y); else mpz_mul_2exp(m_mp,x.m_mp,-y);}
+  /// right shift
+  void div_2exp(const BigInt& x, unsigned int y)
+  { mpz_div_2exp(m_mp, x.m_mp, y); }
+  /// right shift
+  void div_2exp(const BigInt& x, long y)
+  { if (y>=0) mpz_div_2exp(m_mp,x.m_mp,y); else mpz_mul_2exp(m_mp,x.m_mp,-y);}
   /// right shift
   void div_2exp(const BigInt& x, unsigned long y)
   { mpz_div_2exp(m_mp, x.m_mp, y); }
@@ -543,18 +427,6 @@ public:
   /// compare with <tt>BigInt</tt>
   int cmp(const BigInt& x) const
   { return mpz_cmp(m_mp, x.m_mp); }
-  /// compare with <tt>char</tt>
-  int cmp(char x) const
-  { return mpz_cmp_si(m_mp, x); }
-  /// compare with <tt>unsigned char</tt>
-  int cmp(unsigned char x) const
-  { return mpz_cmp_ui(m_mp, x); }
-  /// compare with <tt>short</tt>
-  int cmp(short x) const
-  { return mpz_cmp_si(m_mp, x); }
-  /// compare with <tt>unsigned short</tt>
-  int cmp(unsigned short x) const
-  { return mpz_cmp_ui(m_mp, x); }
   /// compare with <tt>int</tt>
   int cmp(int x) const
   { return mpz_cmp_si(m_mp, x); }
@@ -567,9 +439,6 @@ public:
   /// compare with <tt>unsigned long</tt>
   int cmp(unsigned long x) const
   { return mpz_cmp_ui(m_mp, x); }
-  /// compare with <tt>float</tt>
-  int cmp(float x) const
-  { return mpz_cmp_d(m_mp, x); }
   /// compare with <tt>double</tt>
   int cmp(double x) const
   { return mpz_cmp_d(m_mp, x); }
@@ -580,18 +449,6 @@ public:
   /// compare (in absolute value) with <tt>BigInt</tt>
   int cmpabs(const BigInt& x) const
   { return mpz_cmpabs(m_mp, x.m_mp); }
-  /// compare (in absolute value) with <tt>char</tt>
-  int cmpabs(char x) const
-  { return mpz_cmpabs_si(m_mp, x); }
-  /// compare (in absolute value) with <tt>unsigned char</tt>
-  int cmpabs(unsigned char x) const
-  { return mpz_cmpabs_ui(m_mp, x); }
-  /// compare (in absolute value) with <tt>short</tt>
-  int cmpabs(short x) const
-  { return mpz_cmpabs_si(m_mp, x); }
-  /// compare (in absolute value) with <tt>unsigned short</tt>
-  int cmpabs(unsigned short x) const
-  { return mpz_cmpabs_ui(m_mp, x); }
   /// compare (in absolute value) with <tt>int</tt>
   int cmpabs(int x) const
   { return mpz_cmpabs_si(m_mp, x); }
@@ -604,9 +461,6 @@ public:
   /// compare (in absolute value) with <tt>unsigned long</tt>
   int cmpabs(unsigned long x) const
   { return mpz_cmpabs_ui(m_mp, x); }
-  /// compare (in absolute value) with <tt>float</tt>
-  int cmpabs(float x) const
-  { return mpz_cmpabs_d(m_mp, x); }
   /// compare (in absolute value) with <tt>double</tt>
   int cmpabs(double x) const
   { return mpz_cmp_d(m_mp, x); }
@@ -743,30 +597,109 @@ public: // C++ operators
   /// assignment operator for <tt>BigInt</tt>
   BigInt& operator=(const BigInt& rhs)
   { set(rhs); return *this; }
-  /// generic assignment operator for <tt>T</tt>
-  template <typename T>
-  BigInt& operator=(const T& rhs)
+  /// assignment operator for <tt>int</tt>
+  BigInt& operator=(int rhs)
   { set(rhs); return *this; }
-  /// generic compound assignment operator <tt>+=</tt>
-  template <typename T>
-  BigInt& operator+=(const T& rhs)
+  /// assignment operator for <tt>unsigned int</tt>
+  BigInt& operator=(unsigned int rhs)
+  { set(rhs); return *this; }
+  /// assignment operator for <tt>long</tt>
+  BigInt& operator=(long rhs)
+  { set(rhs); return *this; }
+  /// assignment operator for <tt>unsigned long</tt>
+  BigInt& operator=(unsigned long rhs)
+  { set(rhs); return *this; }
+  /// assignment operator for <tt>double</tt>
+  BigInt& operator=(double rhs)
+  { set(rhs); return *this; }
+  /// assignment operator for <tt>char*</tt>
+  BigInt& operator=(const char* rhs)
+  { set(rhs); return *this; }
+  /// assignment operator for <tt>std::string</tt>
+  BigInt& operator=(const std::string& rhs)
+  { set(rhs); return *this; }
+
+  /// compound assignment operator <tt>+=</tt>
+  BigInt& operator+=(int rhs)
   { add(*this, rhs); return *this; }
-  /// generic compound assignment operator <tt>-=</tt>
-  template <typename T>
-  BigInt& operator-=(const T& rhs)
+  /// compound assignment operator <tt>+=</tt>
+  BigInt& operator+=(unsigned int rhs)
+  { add(*this, rhs); return *this; }
+  /// compound assignment operator <tt>+=</tt>
+  BigInt& operator+=(long rhs)
+  { add(*this, rhs); return *this; }
+  /// compound assignment operator <tt>+=</tt>
+  BigInt& operator+=(unsigned long rhs)
+  { add(*this, rhs); return *this; }
+  /// compound assignment operator <tt>+=</tt>
+  BigInt& operator+=(double rhs)
+  { add(*this, rhs); return *this; }
+
+  /// compound assignment operator <tt>-=</tt>
+  BigInt& operator-=(int rhs)
   { sub(*this, rhs); return *this; }
-  /// generic compound assignment operator <tt>*=</tt>
-  template <typename T>
-  BigInt& operator*=(const T& rhs)
+  /// compound assignment operator <tt>-=</tt>
+  BigInt& operator-=(unsigned int rhs)
+  { sub(*this, rhs); return *this; }
+  /// compound assignment operator <tt>-=</tt>
+  BigInt& operator-=(long rhs)
+  { sub(*this, rhs); return *this; }
+  /// compound assignment operator <tt>-=</tt>
+  BigInt& operator-=(unsigned long rhs)
+  { sub(*this, rhs); return *this; }
+  /// compound assignment operator <tt>-=</tt>
+  BigInt& operator-=(double rhs)
+  { sub(*this, rhs); return *this; }
+
+  /// compound assignment operator <tt>*=</tt>
+  BigInt& operator*=(int rhs)
   { mul(*this, rhs); return *this; }
-  /// generic compound assignment operator <tt>/=</tt>
-  template <typename T>
-  BigInt& operator/=(const T& rhs)
+  /// compound assignment operator <tt>*=</tt>
+  BigInt& operator*=(unsigned int rhs)
+  { mul(*this, rhs); return *this; }
+  /// compound assignment operator <tt>*=</tt>
+  BigInt& operator*=(long rhs)
+  { mul(*this, rhs); return *this; }
+  /// compound assignment operator <tt>*=</tt>
+  BigInt& operator*=(unsigned long rhs)
+  { mul(*this, rhs); return *this; }
+  /// compound assignment operator <tt>*=</tt>
+  BigInt& operator*=(double rhs)
+  { mul(*this, rhs); return *this; }
+
+  /// compound assignment operator <tt>/=</tt>
+  BigInt& operator/=(int rhs)
   { div(*this, rhs); return *this; }
-  /// generic compound assignment operator <tt>\%=</tt>
-  template <typename T>
-  BigInt& operator%=(const T& rhs)
+  /// compound assignment operator <tt>/=</tt>
+  BigInt& operator/=(unsigned int rhs)
+  { div(*this, rhs); return *this; }
+  /// compound assignment operator <tt>/=</tt>
+  BigInt& operator/=(long rhs)
+  { div(*this, rhs); return *this; }
+  /// compound assignment operator <tt>/=</tt>
+  BigInt& operator/=(unsigned long rhs)
+  { div(*this, rhs); return *this; }
+  /// compound assignment operator <tt>/=</tt>
+  BigInt& operator/=(double rhs)
+  { div(*this, rhs); return *this; }
+
+  /// compound assignment operator <tt>%=</tt>
+  BigInt& operator%=(int rhs)
   { mod(*this, rhs); return *this; }
+  /// compound assignment operator <tt>%=</tt>
+  BigInt& operator%=(unsigned int rhs)
+  { mod(*this, rhs); return *this; }
+  /// compound assignment operator <tt>%=</tt>
+  BigInt& operator%=(long rhs)
+  { mod(*this, rhs); return *this; }
+  /// compound assignment operator <tt>%=</tt>
+  BigInt& operator%=(unsigned long rhs)
+  { mod(*this, rhs); return *this; }
+  /// compound assignment operator <tt>%=</tt>
+  BigInt& operator%=(double rhs)
+  { mod(*this, rhs); return *this; }
+
+  //@}
   /// compound assignment operator <tt>&=</tt>
   BigInt& operator&=(const BigInt& rhs)
   { logical_and(*this, rhs); return *this; }
@@ -777,8 +710,26 @@ public: // C++ operators
   BigInt& operator^=(const BigInt& rhs)
   { logical_xor(*this, rhs); return *this; }
   /// compound assignment operator <tt><<=</tt>
+  BigInt& operator<<=(int i)
+  { mul_2exp(*this, i); return *this; }
+  /// compound assignment operator <tt><<=</tt>
+  BigInt& operator<<=(unsigned int ui)
+  { mul_2exp(*this, ui); return *this; }
+  /// compound assignment operator <tt><<=</tt>
+  BigInt& operator<<=(long l)
+  { mul_2exp(*this, l); return *this; }
+  /// compound assignment operator <tt><<=</tt>
   BigInt& operator<<=(unsigned long ul)
   { mul_2exp(*this, ul); return *this; }
+  /// compound assignment operator <tt>>>=</tt>
+  BigInt& operator>>=(int i)
+  { div_2exp(*this, i); return *this; }
+  /// compound assignment operator <tt>>>=</tt>
+  BigInt& operator>>=(unsigned int ui)
+  { div_2exp(*this, ui); return *this; }
+  /// compound assignment operator <tt>>>=</tt>
+  BigInt& operator>>=(long l)
+  { div_2exp(*this, l); return *this; }
   /// compound assignment operator <tt>>>=</tt>
   BigInt& operator>>=(unsigned long ul)
   { div_2exp(*this, ul); return *this; }
@@ -808,47 +759,141 @@ public: // C++ operators
 /// BigInt + BigInt
 inline BigInt operator+(const BigInt& x, const BigInt& y)
 { BigInt r; r.add(x, y); return r; }
-/// BigInt + T
-template <typename T>
-inline BigInt operator+(const BigInt& x, const T& y)
+/// BigInt + int
+inline BigInt operator+(const BigInt& x, int y)
 { BigInt r; r.add(x, y); return r; }
-/// T + BigInt
-template <typename T>
-inline BigInt operator+(const T& x, const BigInt& y)
-{ BigInt r; r.add(x, y); return r; }                  
+/// int + BigInt
+inline BigInt operator+(int x, const BigInt& y)
+{ BigInt r; r.add(x, y); return r; }
+/// BigInt + unsigned int
+inline BigInt operator+(const BigInt& x, unsigned int y)
+{ BigInt r; r.add(x, y); return r; }
+/// unsigned int + BigInt
+inline BigInt operator+(unsigned int x, const BigInt& y)
+{ BigInt r; r.add(x, y); return r; }
+/// BigInt + long
+inline BigInt operator+(const BigInt& x, long y)
+{ BigInt r; r.add(x, y); return r; }
+/// long + BigInt
+inline BigInt operator+(long x, const BigInt& y)
+{ BigInt r; r.add(x, y); return r; }
+/// BigInt + unsigned long
+inline BigInt operator+(const BigInt& x, unsigned long y)
+{ BigInt r; r.add(x, y); return r; }
+/// unsigned long + BigInt
+inline BigInt operator+(unsigned long x, const BigInt& y)
+{ BigInt r; r.add(x, y); return r; }
+/// BigInt + double
+inline BigInt operator+(const BigInt& x, double y)
+{ BigInt r; r.add(x, y); return r; }
+/// double + BigInt
+inline BigInt operator+(double x, const BigInt& y)
+{ BigInt r; r.add(x, y); return r; }
 
 /// BigInt - BigInt
 inline BigInt operator-(const BigInt& x, const BigInt& y)
 { BigInt r; r.sub(x, y); return r; }
-/// BigInt - T
-template <typename T>
-inline BigInt operator-(const BigInt& x, const T& y)
+/// BigInt - int
+inline BigInt operator-(const BigInt& x, int y)
 { BigInt r; r.sub(x, y); return r; }
-/// T - BigInt
-template <typename T>
-inline BigInt operator-(const T& x, const BigInt& y)
-{ BigInt r; r.sub(x, y); return r; }                  
+/// int - BigInt
+inline BigInt operator-(int x, const BigInt& y)
+{ BigInt r; r.sub(x, y); return r; }
+/// BigInt - unsigned int
+inline BigInt operator-(const BigInt& x, unsigned int y)
+{ BigInt r; r.sub(x, y); return r; }
+/// unsigned int - BigInt
+inline BigInt operator-(unsigned int x, const BigInt& y)
+{ BigInt r; r.sub(x, y); return r; }
+/// BigInt - long
+inline BigInt operator-(const BigInt& x, long y)
+{ BigInt r; r.sub(x, y); return r; }
+/// long - BigInt
+inline BigInt operator-(long x, const BigInt& y)
+{ BigInt r; r.sub(x, y); return r; }
+/// BigInt - unsigned long
+inline BigInt operator-(const BigInt& x, unsigned long y)
+{ BigInt r; r.sub(x, y); return r; }
+/// unsigned long - BigInt
+inline BigInt operator-(unsigned long x, const BigInt& y)
+{ BigInt r; r.sub(x, y); return r; }
+/// BigInt - double
+inline BigInt operator-(const BigInt& x, double y)
+{ BigInt r; r.sub(x, y); return r; }
+/// double - BigInt
+inline BigInt operator-(double x, const BigInt& y)
+{ BigInt r; r.sub(x, y); return r; }
 
 /// BigInt * BigInt
 inline BigInt operator*(const BigInt& x, const BigInt& y)
 { BigInt r; r.mul(x, y); return r; }
-template <typename T>
-/// BigInt * T
-inline BigInt operator*(const BigInt& x, const T& y)
+/// BigInt * int
+inline BigInt operator*(const BigInt& x, int y)
 { BigInt r; r.mul(x, y); return r; }
-/// T * BigInt
-template <typename T>
-inline BigInt operator*(const T& x, const BigInt& y)
-{ BigInt r; r.mul(x, y); return r; }                  
+/// int * BigInt
+inline BigInt operator*(int x, const BigInt& y)
+{ BigInt r; r.mul(x, y); return r; }
+/// BigInt * unsigned int
+inline BigInt operator*(const BigInt& x, unsigned int y)
+{ BigInt r; r.mul(x, y); return r; }
+/// unsigned int * BigInt
+inline BigInt operator*(unsigned int x, const BigInt& y)
+{ BigInt r; r.mul(x, y); return r; }
+/// BigInt * long
+inline BigInt operator*(const BigInt& x, long y)
+{ BigInt r; r.mul(x, y); return r; }
+/// long * BigInt
+inline BigInt operator*(long x, const BigInt& y)
+{ BigInt r; r.mul(x, y); return r; }
+/// BigInt * unsigned long
+inline BigInt operator*(const BigInt& x, unsigned long y)
+{ BigInt r; r.mul(x, y); return r; }
+/// unsigned long * BigInt
+inline BigInt operator*(unsigned long x, const BigInt& y)
+{ BigInt r; r.mul(x, y); return r; }
+/// BigInt * double
+inline BigInt operator*(const BigInt& x, double y)
+{ BigInt r; r.mul(x, y); return r; }
+/// double * BigInt
+inline BigInt operator*(double x, const BigInt& y)
+{ BigInt r; r.mul(x, y); return r; }
 
-/// BigInt / T
-template <typename T>
-inline BigInt operator/(const BigInt& x, const T& y)
+/// BigInt / BigInt
+inline BigInt operator/(const BigInt& x, const BigInt& y)
+{ BigInt r; r.div(x, y); return r; }
+/// BigInt / int
+inline BigInt operator/(const BigInt& x, int y)
+{ BigInt r; r.div(x, y); return r; }
+/// BigInt / unsigned int
+inline BigInt operator/(const BigInt& x, unsigned int y)
+{ BigInt r; r.div(x, y); return r; }
+/// BigInt / long
+inline BigInt operator/(const BigInt& x, long y)
+{ BigInt r; r.div(x, y); return r; }
+/// BigInt / unsigned long
+inline BigInt operator/(const BigInt& x, unsigned long y)
+{ BigInt r; r.div(x, y); return r; }
+/// BigInt / double
+inline BigInt operator/(const BigInt& x, double y)
 { BigInt r; r.div(x, y); return r; }
 
-/// BigInt \% T
-template <typename T>
-inline BigInt operator%(const BigInt& x, const T& y)
+/// BigInt % BigInt
+inline BigInt operator%(const BigInt& x, const BigInt& y)
+{ BigInt r; r.mod(x, y); return r; }
+/// BigInt % int
+inline BigInt operator%(const BigInt& x, int y)
+{ BigInt r; r.mod(x, y); return r; }
+/// BigInt % unsigned int
+inline BigInt operator%(const BigInt& x, unsigned int y)
+{ BigInt r; r.mod(x, y); return r; }
+/// BigInt % long
+inline BigInt operator%(const BigInt& x, long y)
+{ BigInt r; r.mod(x, y); return r; }
+/// BigInt % unsigned long
+inline BigInt operator%(const BigInt& x, unsigned long y)
+{ BigInt r; r.mod(x, y); return r; }
+/// BigInt % double
+inline BigInt operator%(const BigInt& x, double y)
 { BigInt r; r.mod(x, y); return r; }
 
 /// BigInt & BigInt
@@ -861,9 +906,27 @@ inline BigInt operator|(const BigInt& x, const BigInt& y)
 inline BigInt operator^(const BigInt& x, const BigInt& y)
 { BigInt r; r.logical_xor(x, y); return r; }
 
+/// BigInt << int
+inline BigInt operator<<(const BigInt& x, int y)
+{ BigInt r; r.mul_2exp(x, y); return r; }
+/// BigInt << unsigned int
+inline BigInt operator<<(const BigInt& x, unsigned int y)
+{ BigInt r; r.mul_2exp(x, y); return r; }
+/// BigInt << long
+inline BigInt operator<<(const BigInt& x, long y)
+{ BigInt r; r.mul_2exp(x, y); return r; }
 /// BigInt << unsigned long
 inline BigInt operator<<(const BigInt& x, unsigned long y)
 { BigInt r; r.mul_2exp(x, y); return r; }
+/// BigInt >> int
+inline BigInt operator>>(const BigInt& x, int y)
+{ BigInt r; r.div_2exp(x, y); return r; }
+/// BigInt >> unsigned int
+inline BigInt operator>>(const BigInt& x, unsigned int y)
+{ BigInt r; r.div_2exp(x, y); return r; }
+/// BigInt >> long
+inline BigInt operator>>(const BigInt& x, long y)
+{ BigInt r; r.div_2exp(x, y); return r; }
 /// BigInt >> unsigned long
 inline BigInt operator>>(const BigInt& x, unsigned long y)
 { BigInt r; r.div_2exp(x, y); return r; }
@@ -874,73 +937,205 @@ inline BigInt operator>>(const BigInt& x, unsigned long y)
 /// BigInt == BigInt
 inline bool operator==(const BigInt& x, const BigInt& y)
 { return x.cmp(y) == 0; }
-/// BigInt == T
-template <typename T>
-inline bool operator==(const BigInt& x, const T& y)
+/// BigInt == int
+inline bool operator==(const BigInt& x, int y)
 { return x.cmp(y) == 0; }
-/// T == BigInt
-template <typename T>
-inline bool operator==(const T& x, const BigInt& y)
+/// int == BigInt
+inline bool operator==(int x, const BigInt& y)
+{ return y.cmp(x) == 0; }
+/// BigInt == unsigned int
+inline bool operator==(const BigInt& x, unsigned int y)
+{ return x.cmp(y) == 0; }
+/// unsigned int == BigInt
+inline bool operator==(unsigned int x, const BigInt& y)
+{ return y.cmp(x) == 0; }
+/// BigInt == long
+inline bool operator==(const BigInt& x, long y)
+{ return x.cmp(y) == 0; }
+/// long == BigInt
+inline bool operator==(long x, const BigInt& y)
+{ return y.cmp(x) == 0; }
+/// BigInt == unsigned long
+inline bool operator==(const BigInt& x, unsigned long y)
+{ return x.cmp(y) == 0; }
+/// unsigned long == BigInt
+inline bool operator==(unsigned long x, const BigInt& y)
+{ return y.cmp(x) == 0; }
+/// BigInt == double
+inline bool operator==(const BigInt& x, double y)
+{ return x.cmp(y) == 0; }
+/// double == BigInt
+inline bool operator==(double x, const BigInt& y)
 { return y.cmp(x) == 0; }
 
 /// BigInt != BigInt
 inline bool operator!=(const BigInt& x, const BigInt& y)
 { return x.cmp(y) != 0; }
-/// BigInt != T
-template <typename T>
-inline bool operator!=(const BigInt& x, const T& y)
+/// BigInt != int
+inline bool operator!=(const BigInt& x, int y)
 { return x.cmp(y) != 0; }
-/// T != BigInt
-template <typename T>
-inline bool operator!=(const T& x, const BigInt& y)
+/// int != BigInt
+inline bool operator!=(int x, const BigInt& y)
+{ return y.cmp(x) != 0; }
+/// BigInt != unsigned int
+inline bool operator!=(const BigInt& x, unsigned int y)
+{ return x.cmp(y) != 0; }
+/// unsigned int != BigInt
+inline bool operator!=(unsigned int x, const BigInt& y)
+{ return y.cmp(x) != 0; }
+/// BigInt != long
+inline bool operator!=(const BigInt& x, long y)
+{ return x.cmp(y) != 0; }
+/// long != BigInt
+inline bool operator!=(long x, const BigInt& y)
+{ return y.cmp(x) != 0; }
+/// BigInt != unsigned long
+inline bool operator!=(const BigInt& x, unsigned long y)
+{ return x.cmp(y) != 0; }
+/// unsigned long != BigInt
+inline bool operator!=(unsigned long x, const BigInt& y)
+{ return y.cmp(x) != 0; }
+/// BigInt != double
+inline bool operator!=(const BigInt& x, double y)
+{ return x.cmp(y) != 0; }
+/// double != BigInt
+inline bool operator!=(double x, const BigInt& y)
 { return y.cmp(x) != 0; }
 
 /// BigInt >= BigInt
 inline bool operator>=(const BigInt& x, const BigInt& y)
 { return x.cmp(y) >= 0; }
-/// BigInt >= T
-template <typename T>
-inline bool operator>=(const BigInt& x, const T& y)
+/// BigInt >= int
+inline bool operator>=(const BigInt& x, int y)
 { return x.cmp(y) >= 0; }
-/// T >= BigInt
-template <typename T>
-inline bool operator>=(const T& x, const BigInt& y)
+/// int >= BigInt
+inline bool operator>=(int x, const BigInt& y)
+{ return y.cmp(x) <= 0; }
+/// BigInt >= unsigned int
+inline bool operator>=(const BigInt& x, unsigned int y)
+{ return x.cmp(y) >= 0; }
+/// unsigned int >= BigInt
+inline bool operator>=(unsigned int x, const BigInt& y)
+{ return y.cmp(x) <= 0; }
+/// BigInt >= long
+inline bool operator>=(const BigInt& x, long y)
+{ return x.cmp(y) >= 0; }
+/// long >= BigInt
+inline bool operator>=(long x, const BigInt& y)
+{ return y.cmp(x) <= 0; }
+/// BigInt >= unsigned long
+inline bool operator>=(const BigInt& x, unsigned long y)
+{ return x.cmp(y) >= 0; }
+/// unsigned long >= BigInt
+inline bool operator>=(unsigned long x, const BigInt& y)
+{ return y.cmp(x) <= 0; }
+/// BigInt >= double
+inline bool operator>=(const BigInt& x, double y)
+{ return x.cmp(y) >= 0; }
+/// double >= BigInt
+inline bool operator>=(double x, const BigInt& y)
 { return y.cmp(x) <= 0; }
 
 /// BigInt <= BigInt
 inline bool operator<=(const BigInt& x, const BigInt& y)
 { return x.cmp(y) <= 0; }
-/// BigInt <= T
-template <typename T>
-inline bool operator<=(const BigInt& x, const T& y)
+/// BigInt <= int
+inline bool operator<=(const BigInt& x, int y)
 { return x.cmp(y) <= 0; }
-/// T <= BigInt
-template <typename T>
-inline bool operator<=(const T& x, const BigInt& y)
+/// int <= BigInt
+inline bool operator<=(int x, const BigInt& y)
+{ return y.cmp(x) >= 0; }
+/// BigInt <= unsigned int
+inline bool operator<=(const BigInt& x, unsigned int y)
+{ return x.cmp(y) <= 0; }
+/// unsigned int <= BigInt
+inline bool operator<=(unsigned int x, const BigInt& y)
+{ return y.cmp(x) >= 0; }
+/// BigInt <= long
+inline bool operator<=(const BigInt& x, long y)
+{ return x.cmp(y) <= 0; }
+/// long <= BigInt
+inline bool operator<=(long x, const BigInt& y)
+{ return y.cmp(x) >= 0; }
+/// BigInt <= unsigned long
+inline bool operator<=(const BigInt& x, unsigned long y)
+{ return x.cmp(y) <= 0; }
+/// unsigned long <= BigInt
+inline bool operator<=(unsigned long x, const BigInt& y)
+{ return y.cmp(x) >= 0; }
+/// BigInt <= double
+inline bool operator<=(const BigInt& x, double y)
+{ return x.cmp(y) <= 0; }
+/// double <= BigInt
+inline bool operator<=(double x, const BigInt& y)
 { return y.cmp(x) >= 0; }
 
 /// BigInt > BigInt
 inline bool operator>(const BigInt& x, const BigInt& y)
 { return x.cmp(y) > 0; }
-/// BigInt > T
-template <typename T>
-inline bool operator>(const BigInt& x, const T& y)
+/// BigInt > int
+inline bool operator>(const BigInt& x, int y)
 { return x.cmp(y) > 0; }
-/// T > BigInt
-template <typename T>
-inline bool operator>(const T& x, const BigInt& y)
+/// int > BigInt
+inline bool operator>(int x, const BigInt& y)
+{ return y.cmp(x) < 0; }
+/// BigInt > unsigned int
+inline bool operator>(const BigInt& x, unsigned int y)
+{ return x.cmp(y) > 0; }
+/// unsigned int > BigInt
+inline bool operator>(unsigned int x, const BigInt& y)
+{ return y.cmp(x) < 0; }
+/// BigInt > long
+inline bool operator>(const BigInt& x, long y)
+{ return x.cmp(y) > 0; }
+/// long > BigInt
+inline bool operator>(long x, const BigInt& y)
+{ return y.cmp(x) < 0; }
+/// BigInt > unsigned long
+inline bool operator>(const BigInt& x, unsigned long y)
+{ return x.cmp(y) > 0; }
+/// unsigned long > BigInt
+inline bool operator>(unsigned long x, const BigInt& y)
+{ return y.cmp(x) < 0; }
+/// BigInt > double
+inline bool operator>(const BigInt& x, double y)
+{ return x.cmp(y) > 0; }
+/// double > BigInt
+inline bool operator>(double x, const BigInt& y)
 { return y.cmp(x) < 0; }
 
 /// BigInt < BigInt
 inline bool operator<(const BigInt& x, const BigInt& y)
 { return x.cmp(y) < 0; }
-/// BigInt < T
-template <typename T>
-inline bool operator<(const BigInt& x, const T& y)
+/// BigInt < int
+inline bool operator<(const BigInt& x, int y)
 { return x.cmp(y) < 0; }
-/// T < BigInt
-template <typename T>
-inline bool operator<(const T& x, const BigInt& y)
+/// int < BigInt
+inline bool operator<(int x, const BigInt& y)
+{ return y.cmp(x) > 0; }
+/// BigInt < unsigned int
+inline bool operator<(const BigInt& x, unsigned int y)
+{ return x.cmp(y) < 0; }
+/// unsigned int < BigInt
+inline bool operator<(unsigned int x, const BigInt& y)
+{ return y.cmp(x) > 0; }
+/// BigInt < long
+inline bool operator<(const BigInt& x, long y)
+{ return x.cmp(y) < 0; }
+/// long < BigInt
+inline bool operator<(long x, const BigInt& y)
+{ return y.cmp(x) > 0; }
+/// BigInt < unsigned long
+inline bool operator<(const BigInt& x, unsigned long y)
+{ return x.cmp(y) < 0; }
+/// unsigned long < BigInt
+inline bool operator<(unsigned long x, const BigInt& y)
+{ return y.cmp(x) > 0; }
+/// BigInt < double
+inline bool operator<(const BigInt& x, double y)
+{ return x.cmp(y) < 0; }
+/// double < BigInt
+inline bool operator<(double x, const BigInt& y)
 { return y.cmp(x) > 0; }
 //@}
 
