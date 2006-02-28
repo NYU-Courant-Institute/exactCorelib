@@ -19,13 +19,16 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigInt.h,v 1.2 2006-02-27 04:37:28 exact Exp $
+ * $Id: BigInt.h,v 1.3 2006-02-28 18:00:15 exact Exp $
  ***************************************************************************/
 #ifndef __BIGINT_H__
 #define __BIGINT_H__
 
-#include <gmp.h>
+#include <CORE/Gmpz.h>
 #include <string>
+#include <iostream>
+
+CORE_BEGIN_NAMESPACE
 
 /* _gmp_alloc_cstr */
 struct _gmp_alloc_cstr {
@@ -34,493 +37,411 @@ struct _gmp_alloc_cstr {
   ~_gmp_alloc_cstr() { delete[] str; }
 };
 
-/* addition */
-inline void mpz_add_si(mpz_ptr z, mpz_srcptr x, long y)
-{ y >= 0 ? mpz_add_ui(z, x, y) : mpz_sub_ui(z, x, -(y)); }
-    
-/* subtraction */
-inline void mpz_sub_si(mpz_ptr z, mpz_srcptr x, long y)
-{ y >= 0 ? mpz_sub_ui(z, x, y) : mpz_add_ui(z, x, -(y)); }     
-inline void mpz_si_sub(mpz_ptr z, long x, mpz_srcptr y)
-{ if (x >= 0) mpz_ui_sub(z, x, y); else { mpz_add_ui(z, y, -(x)); mpz_neg(z, z); } }
-
-/* division */
-inline void mpz_div_si(mpz_ptr z, mpz_srcptr x, long y) 
-{ if (y >= 0) mpz_div_ui(z, x, y); else { mpz_div_ui(z, x, -(y)); mpz_neg(z, z); } }
-
-/* modular */
-inline void mpz_mod_si(mpz_ptr z, mpz_srcptr x, long y) 
-{ if (y >= 0) mpz_mod_ui(z, x, y); else { mpz_mod_ui(z, x, -(y)); mpz_neg(z, z); } }
-
-/* exact division (faster) */
-inline void mpz_divexact_si(mpz_ptr z, mpz_srcptr x, long y) 
-{ if (y >= 0) mpz_divexact_ui(z, x, y); else { mpz_divexact_ui(z, x, -(y)); mpz_neg(z, z); } }
-
-/* division with remainder */
-inline void mpz_divrem(mpz_ptr z, mpz_ptr r, mpz_srcptr x, mpz_srcptr y)
-{ mpz_fdiv_qr(z, r, x, y); }
-inline void mpz_divrem_ui(mpz_ptr z, mpz_ptr r, mpz_srcptr x, unsigned long y) 
-{ mpz_fdiv_qr_ui(z, r, x, y); }
-inline void mpz_divrem_si(mpz_ptr z, mpz_ptr r, mpz_srcptr x, long y) 
-{ if (y >= 0) mpz_divrem_ui(z, r, x, y); else { mpz_divrem_ui(z, r, x, -(y)); mpz_neg(z, z); } }
- 
-/* comparison */
-inline int mpz_cmpabs_si(mpz_srcptr z, long x) 
-{ return x >= 0 ? mpz_cmpabs_ui(z, x) : mpz_cmpabs_ui(z, -x); }
-
-/* power function */
-inline void mpz_si_pow_ui(mpz_ptr z, long base, unsigned long exp) 
-{ if (base >= 0) mpz_ui_pow_ui(z, base, exp); else { mpz_ui_pow_ui(z, -(base), exp); if (exp % 2 == 1) mpz_neg(z, z); } }
-
-#ifdef CORE_BEGIN_NAMESPACE
-CORE_BEGIN_NAMESPACE
+#ifndef CORE_DISABLE_REFCOUNTING
+  typedef RcGmpz BigIntBase;
+#else
+  typedef Gmpz BigIntBase;
 #endif
 
 /// \class BigInt BigInt.h
 /// \brief BigInt is a wrapper class of <tt>mpz</tt> in GMP
-class BigInt {
-private:
-  mpz_t m_mp;
-public:
-  //internal structure accessors
-  const mpz_t& mp() const { return m_mp; }
-  mpz_t& mp() { return m_mp; }
-
+class BigInt : public BigIntBase {
+  typedef BigIntBase base_cls;
 public:
   /// \name constructors and destructor
   //@{
   /// default constructor
-  BigInt()
-  { mpz_init(m_mp); }
-  /// copy constructor
-  BigInt(const BigInt& rhs)
-  { mpz_init_set(m_mp, rhs.m_mp); }
-
+  BigInt() {}
   /// constructor for <tt>int</tt>
-  BigInt(int i)
-  { mpz_init_set_si(m_mp, i); }
+  BigInt(int i) : base_cls(static_cast<long>(i)) {}
   /// constructor for <tt>unsigned int</tt>
-  BigInt(unsigned int i)
-  { mpz_init_set_ui(m_mp, i); }
-
+  BigInt(unsigned int i) : base_cls(static_cast<unsigned long>(i)) {}
   /// constructor for <tt>long</tt>
-  BigInt(long i)
-  { mpz_init_set_si(m_mp, i); }
+  BigInt(long i) : base_cls(i) {}
   /// constructor for <tt>unsigned long</tt>
-  BigInt(unsigned long i)
-  { mpz_init_set_ui(m_mp, i); }
-
+  BigInt(unsigned long i) : base_cls(i) {}
   /// constructor for <tt>double</tt>
-  BigInt(double i)
-  { mpz_init_set_d(m_mp, i); }
-
+  BigInt(double i) : base_cls(i) {}
   /// constructor for <tt>char*</tt> (no implicit conversion)
-  explicit BigInt(const char* str, int base = 0)
-  { mpz_init_set_str(m_mp, str, base); }
-
-  /// constructor for <tt>std::string&</tt> (no implicit conversion)
-  explicit BigInt(const std::string& str, int base = 0)
-  { mpz_init_set_str(m_mp, str.c_str(), base); }
-
+  explicit BigInt(const char* s,int base=0) : base_cls(s,base) {}
+  /// constructor for <tt>std::string</tt> (no implicit conversion)
+  explicit BigInt(const std::string& s,int base=0) : base_cls(s.c_str(),base){} 
   // internal used by BigRat
-  explicit BigInt(const mpz_t x)
-  { mpz_init_set(m_mp, x); }
-
-  /// destructor
-  ~BigInt()
-  { mpz_clear(m_mp); }
+  explicit BigInt(const mpz_t x) : base_cls(x) {}
   //@}
-  
+
 public:
   /// \name assignment functions
   //@{
   /// assignment function for <tt>BigInt</tt>
-  void set(const BigInt& rhs)
-  { mpz_set(m_mp, rhs.m_mp); }
+  void set(const BigInt& rhs) { base_cls::operator=(rhs); }
   /// assignment function for <tt>int</tt>
-  void set(int i)
-  { mpz_set_si(m_mp, i); }
+  void set(int i) { set(static_cast<long>(i)); }
   /// assignment function for <tt>unsigned int</tt>
-  void set(unsigned int i)
-  { mpz_set_ui(m_mp, i); }
+  void set(unsigned int i) { set(static_cast<unsigned long>(i)); }
   /// assignment function for <tt>long</tt>
-  void set(long i)
-  { mpz_set_si(m_mp, i); }
+  void set(long i) { mpz_set_si(mp(), i); }
   /// assignment function for <tt>unsigned long</tt>
-  void set(unsigned long i)
-  { mpz_set_ui(m_mp, i); }
+  void set(unsigned long i) { mpz_set_ui(mp(), i); }
   /// assignment function for <tt>double</tt>
-  void set(double i)
-  { mpz_set_d(m_mp, i); }
+  void set(double i) { mpz_set_d(mp(), i); }
   /// assignment function for <tt>char*</tt>
-  int set(const char* str, int base = 0)
-  { return mpz_set_str(m_mp, str, base); }
+  int set(const char* str, int base = 0) 
+  { return mpz_set_str(mp(), str, base); }
   /// assignment function for <tt>std::string&</tt>
-  int set(const std::string& str, int base = 0)
-  { return mpz_set_str(m_mp, str.c_str(), base); }
+  int set(const std::string& str, int base = 0) 
+  { return mpz_set_str(mp(), str.c_str(), base); }
+  //@}
+
+  /// \name other arithmetic functions
+  //@{
+  /// self-negation function
+  void neg()
+  { mpz_neg(mp(), mp()); }
+  /// negation function
+  void neg(const BigInt& x)
+  { mpz_neg(mp(), x.mp()); }
+  /// absolute value function (self)
+  void abs()
+  { mpz_abs(mp(), mp()); }
+  /// absolute value function
+  void abs(const BigInt& x)
+  { mpz_abs(mp(), x.mp()); }
   //@}
 
   /// \name arithmetic functions -- addition
   //@{
   /// addition for <tt>BigInt + BigInt</tt>
-  void add(const BigInt& x, const BigInt& y)
-  { mpz_add(m_mp, x.m_mp, y.m_mp); }
+  void add(const BigInt& x, const BigInt& y) 
+  { mpz_add(mp(), x.mp(), y.mp()); }
   /// addition for <tt>BigInt + int</tt>
-  void add(const BigInt& x, int y)
-  { mpz_add_si(m_mp, x.m_mp, y); }
+  void add(const BigInt& x, int y) 
+  { add(x, static_cast<long>(y)); }
   /// addition for <tt>BigInt + unsigned int</tt>
-  void add(const BigInt& x, unsigned int y)
-  { mpz_add_ui(m_mp, x.m_mp, y); }
+  void add(const BigInt& x, unsigned int y) 
+  { add(x, static_cast<unsigned long>(y)); }
   /// addition for <tt>BigInt + long</tt>
-  void add(const BigInt& x, long y)
-  { mpz_add_si(m_mp, x.m_mp, y); }
+  void add(const BigInt& x, long y) 
+  { if (y>=0) mpz_add_ui(mp(), x.mp(), y); else mpz_sub_ui(mp(), x.mp(), -y); }
   /// addition for <tt>BigInt + unsigned long</tt>
-  void add(const BigInt& x, unsigned long y)
-  { mpz_add_ui(m_mp, x.m_mp, y); }
+  void add(const BigInt& x, unsigned long y) 
+  { mpz_add_ui(mp(), x.mp(), y); }
   /// addition for <tt>BigInt + double</tt>
-  void add(const BigInt& x, double y)
-  { this->add(x, BigInt(y)); }
+  void add(const BigInt& x, double y) { add(x, BigInt(y)); }
   /// addition for <tt>int + BigInt</tt>
-  void add(int x, const BigInt& y)
-  { this->add(y, x); }
+  void add(int x, const BigInt& y) { add(y, x); }
   /// addition for <tt>unsigned int + BigInt</tt>
-  void add(unsigned int x, const BigInt& y)
-  { this->add(y, x); }
+  void add(unsigned int x, const BigInt& y) { add(y, x); }
   /// addition for <tt>long + BigInt</tt>
-  void add(long x, const BigInt& y)
-  { this->add(y, x); }
+  void add(long x, const BigInt& y) { add(y, x); }
   /// addition for <tt>unsigned long + BigInt</tt>
-  void add(unsigned long x, const BigInt& y)
-  { this->add(y, x); }
+  void add(unsigned long x, const BigInt& y) { add(y, x); }
   /// addition for <tt>double + BigInt</tt>
-  void add(double x, const BigInt& y)
-  { this->add(y, x); }
+  void add(double x, const BigInt& y) { add(y, x); }
   //@}
 
   /// \name arithmetic functions -- subtraction
   //@{
   /// subtraction for <tt>BigInt - BigInt</tt>
-  void sub(const BigInt& x, const BigInt& y)
-  { mpz_sub(m_mp, x.m_mp, y.m_mp); }
+  void sub(const BigInt& x, const BigInt& y) 
+  { mpz_sub(mp(), x.mp(), y.mp()); }
   /// subtraction for <tt>BigInt - int</tt>
-  void sub(const BigInt& x, int y)
-  { mpz_sub_si(m_mp, x.m_mp, y); }
+  void sub(const BigInt& x, int y) 
+  { sub(x, static_cast<long>(y)); }
   /// subtraction for <tt>BigInt - unsigned int</tt>
-  void sub(const BigInt& x, unsigned int y)
-  { mpz_sub_ui(m_mp, x.m_mp, y); }
+  void sub(const BigInt& x, unsigned int y) 
+  { sub(x, static_cast<unsigned long>(y)); }
   /// subtraction for <tt>BigInt - long</tt>
-  void sub(const BigInt& x, long y)
-  { mpz_sub_si(m_mp, x.m_mp, y); }
+  void sub(const BigInt& x, long y) 
+  { if (y>=0) mpz_sub_ui(mp(), x.mp(), y); else mpz_add_ui(mp(), x.mp(), -y); }
   /// subtraction for <tt>BigInt - unsigned long</tt>
-  void sub(const BigInt& x, unsigned long y)
-  { mpz_sub_ui(m_mp, x.m_mp, y); }
+  void sub(const BigInt& x, unsigned long y) 
+  { mpz_sub_ui(mp(), x.mp(), y); }
   /// subtraction for <tt>BigInt - double</tt>
-  void sub(const BigInt& x, double y)
-  { this->sub(x, BigInt(y)); }
+  void sub(const BigInt& x, double y) { sub(x, BigInt(y)); }
   /// subtraction for <tt>int - BigInt</tt>
-  void sub(int x, const BigInt& y)
-  { mpz_si_sub(m_mp, x, y.m_mp); }
+  void sub(int x, const BigInt& y) 
+  { sub(static_cast<long>(x), y); }
   /// subtraction for <tt>unsigned int - BigInt</tt>
-  void sub(unsigned int x, const BigInt& y)
-  { mpz_ui_sub(m_mp, x, y.m_mp); }
+  void sub(unsigned int x, const BigInt& y) 
+  { sub(static_cast<unsigned long>(x), y); }
   /// subtraction for <tt>long - BigInt</tt>
-  void sub(long x, const BigInt& y)
-  { mpz_si_sub(m_mp, x, y.m_mp); }
+  void sub(long x, const BigInt& y) 
+  { if (x>=0) mpz_ui_sub(mp(), x, y.mp()); else {add(y, -x); neg();} }
   /// subtraction for <tt>unsigned long - BigInt</tt>
-  void sub(unsigned long x, const BigInt& y)
-  { mpz_ui_sub(m_mp, x, y.m_mp); }
+  void sub(unsigned long x, const BigInt& y) 
+  { mpz_ui_sub(mp(), x, y.mp()); }
   /// subtraction for <tt>double - BigInt</tt>
-  void sub(double x, const BigInt& y)
-  { this->sub(y, x); }
+  void sub(double x, const BigInt& y) { sub(BigInt(x), y); }
   //@}
 
   /// \name arithmetic functions -- multiplication
   //@{
   /// multiplication for <tt>BigInt * BigInt</tt>
   void mul(const BigInt& x, const BigInt& y)
-  { mpz_mul(m_mp, x.m_mp, y.m_mp); }
+  { mpz_mul(mp(), x.mp(), y.mp()); }
   /// multiplication for <tt>BigInt * int</tt>
   void mul(const BigInt& x, int y)
-  { mpz_mul_si(m_mp, x.m_mp, y); }
+  { mul(x, static_cast<long>(y)); }
   /// multiplication for <tt>BigInt * unsigned int</tt>
   void mul(const BigInt& x, unsigned int y)
-  { mpz_mul_ui(m_mp, x.m_mp, y); }
+  { mul(x, static_cast<unsigned long>(y)); }
   /// multiplication for <tt>BigInt * long</tt>
   void mul(const BigInt& x, long y)
-  { mpz_mul_si(m_mp, x.m_mp, y); }
+  { if (y>=0) mpz_mul_ui(mp(), x.mp(), y); else {mul(x, -y); neg();} }
   /// multiplication for <tt>BigInt * unsigned long</tt>
   void mul(const BigInt& x, unsigned long y)
-  { mpz_mul_ui(m_mp, x.m_mp, y); }
+  { mpz_mul_ui(mp(), x.mp(), y); }
   /// multiplication for <tt>BigInt * double</tt>
-  void mul(const BigInt& x, double y)
-  { this->mul(x, BigInt(y)); }
+  void mul(const BigInt& x, double y) { mul(x, BigInt(y)); }
   /// multiplication for <tt>int * BigInt</tt>
-  void mul(int x, const BigInt& y)
-  { this->mul(y, x); }
+  void mul(int x, const BigInt& y) { mul(y, x); }
   /// multiplication for <tt>unsigned int * BigInt</tt>
-  void mul(unsigned int x, const BigInt& y)
-  { this->mul(y, x); }
+  void mul(unsigned int x, const BigInt& y) { mul(y, x); }
   /// multiplication for <tt>long * BigInt</tt>
-  void mul(long x, const BigInt& y)
-  { this->mul(y, x); }
+  void mul(long x, const BigInt& y) { mul(y, x); }
   /// multiplication for <tt>unsigned long * BigInt</tt>
-  void mul(unsigned long x, const BigInt& y)
-  { this->mul(y, x); }
+  void mul(unsigned long x, const BigInt& y) { mul(y, x); }
   /// multiplication for <tt>double * BigInt</tt>
-  void mul(double x, const BigInt& y)
-  { this->mul(y, x); }
+  void mul(double x, const BigInt& y) { mul(BigInt(x), y); }
   //@}
 
   /// \name arithmetic functions -- division
   //@{
   /// division for <tt>BigInt / BigInt</tt>
   void div(const BigInt& x, const BigInt& y)
-  { mpz_div(m_mp, x.m_mp, y.m_mp); }
+  { mpz_div(mp(), x.mp(), y.mp()); }
   /// division for <tt>BigInt / int</tt>
   void div(const BigInt& x, int y)
-  { mpz_div_si(m_mp, x.m_mp, y); }
+  { div(x, static_cast<long>(y)); }
   /// division for <tt>BigInt / unsigned int</tt>
   void div(const BigInt& x, unsigned int y)
-  { mpz_div_ui(m_mp, x.m_mp, y); }
+  { div(x, static_cast<unsigned long>(y)); }
   /// division for <tt>BigInt / long</tt>
   void div(const BigInt& x, long y)
-  { mpz_div_si(m_mp, x.m_mp, y); }
+  { if (y>=0) mpz_div_ui(mp(), x.mp(), y); else {div(x, -y); neg();} }
   /// division for <tt>BigInt / unsigned long</tt>
   void div(const BigInt& x, unsigned long y)
-  { mpz_div_ui(m_mp, x.m_mp, y); }
+  { mpz_div_ui(mp(), x.mp(), y); }
   /// division for <tt>BigInt / double</tt>
-  void div(const BigInt& x, double y)
-  { this->div(x, BigInt(y)); }
+  void div(const BigInt& x, double y) { div(x, BigInt(y)); }
   //@}
 
   /// \name arithmetic functions -- modular
   //@{
   /// modular for <tt>BigInt % BigInt</tt>
   void mod(const BigInt& x, const BigInt& y)
-  { mpz_mod(m_mp, x.m_mp, y.m_mp); }
+  { mpz_mod(mp(), x.mp(), y.mp()); }
   /// modular for <tt>BigInt % int</tt>
   void mod(const BigInt& x, int y)
-  { mpz_mod_si(m_mp, x.m_mp, y); }
+  { mod(x, static_cast<long>(y)); }
   /// modular for <tt>BigInt % unsigned int</tt>
   void mod(const BigInt& x, unsigned int y)
-  { mpz_mod_ui(m_mp, x.m_mp, y); }
+  { mod(x, static_cast<unsigned long>(y)); }
   /// modular for <tt>BigInt % long</tt>
   void mod(const BigInt& x, long y)
-  { mpz_mod_si(m_mp, x.m_mp, y); }
+  { if (y>=0) mpz_mod_ui(mp(), x.mp(), y); else {mod(x, -y); neg();} }
   /// modular for <tt>BigInt % unsigned long</tt>
   void mod(const BigInt& x, unsigned long y)
-  { mpz_mod_ui(m_mp, x.m_mp, y); }
+  { mpz_mod_ui(mp(), x.mp(), y); }
   /// modular for <tt>BigInt % double</tt>
-  void mod(const BigInt& x, double y)
-  { this->mod(x, BigInt(y)); }
+  void mod(const BigInt& x, double y) { mod(x, BigInt(y)); }
   //@}
 
   /// \name arithmetic functions -- exact division
   //@{
   /// exact division for <tt>BigInt / BigInt</tt>
   void divexact(const BigInt& x, const BigInt& y)
-  { mpz_divexact(m_mp, x.m_mp, y.m_mp); }
+  { mpz_divexact(mp(), x.mp(), y.mp()); }
   /// exact division for <tt>BigInt / int</tt>
   void divexact(const BigInt& x, int y)
-  { mpz_divexact_si(m_mp, x.m_mp, y); }
+  { divexact(x, static_cast<long>(y)); }
   /// exact division for <tt>BigInt / unsigned int</tt>
   void divexact(const BigInt& x, unsigned int y)
-  { mpz_divexact_ui(m_mp, x.m_mp, y); }
+  { divexact(x, static_cast<unsigned long>(y)); }
   /// exact division for <tt>BigInt / long</tt>
   void divexact(const BigInt& x, long y)
-  { mpz_divexact_si(m_mp, x.m_mp, y); }
+  { if (y>=0) mpz_divexact_ui(mp(), x.mp(), y); else {divexact(x,-y); neg();} }
   /// exact division for <tt>BigInt / unsigned long</tt>
   void divexact(const BigInt& x, unsigned long y)
-  { mpz_divexact_ui(m_mp, x.m_mp, y); }
+  { mpz_divexact_ui(mp(), x.mp(), y); }
   /// exact division for <tt>BigInt / double</tt>
-  void divexact(const BigInt& x, double y)
-  { this->divexact(x, BigInt(y)); }
+  void divexact(const BigInt& x, double y) { divexact(x, BigInt(y)); }
   //@}
 
   /// \name arithmetic functions -- division with remainder
   //@{
   /// division with remainder for <tt>BigInt / BigInt</tt>
   void divrem(BigInt& r, const BigInt& x, const BigInt& y)
-  { mpz_divrem(m_mp, r.m_mp, x.m_mp, y.m_mp); }
+  { mpz_fdiv_qr(mp(), r.mp(), x.mp(), y.mp()); }
   /// division with remainder for <tt>BigInt / int</tt>
   void divrem(BigInt& r, const BigInt& x, int y)
-  { mpz_divrem_si(m_mp, r.m_mp, x.m_mp, y); }
+  { divrem(r, x, static_cast<long>(y)); }
   /// division with remainder for <tt>BigInt / unsigned int</tt>
   void divrem(BigInt& r, const BigInt& x, unsigned int y)
-  { mpz_divrem_ui(m_mp, r.m_mp, x.m_mp, y); }
+  { divrem(r, x, static_cast<unsigned long>(y)); }
   /// division with remainder for <tt>BigInt / long</tt>
   void divrem(BigInt& r, const BigInt& x, long y)
-  { mpz_divrem_si(m_mp, r.m_mp, x.m_mp, y); }
+  {if (y>=0) mpz_fdiv_qr_ui(mp(),r.mp(),x.mp(),y); else {divrem(r,x,-y);neg();}}
   /// division with remainder for <tt>BigInt / unsigned long</tt>
   void divrem(BigInt& r, const BigInt& x, unsigned long y)
-  { mpz_divrem_ui(m_mp, r.m_mp, x.m_mp, y); }
+  { mpz_fdiv_qr_ui(mp(), r.mp(), x.mp(), y); }
   /// division with remainder for <tt>BigInt / double</tt>
-  void divrem(BigInt& r, const BigInt& x, double y)
-  { this->divrem(r, x, BigInt(y)); }
+  void divrem(BigInt& r, const BigInt& x, double y) { divrem(r, x, BigInt(y)); }
 
   /// \name squart root function
   //@{
   /// square root for <tt>BigInt</tt>
   void sqrt(const BigInt& x)
-  { mpz_sqrt(m_mp, x.m_mp); }
+  { mpz_sqrt(mp(), x.mp()); }
   //@}
 
   /// \name power functions
   //@{
   /// power function for <tt>BigInt</tt>
   void pow(const BigInt& x, unsigned long y)
-  { mpz_pow_ui(m_mp, x.m_mp, y); }
+  { mpz_pow_ui(mp(), x.mp(), y); }
   /// power function for <tt>int</tt>
   void pow(int x, unsigned long y)
-  { mpz_si_pow_ui(m_mp, x, y); }
+  { pow(static_cast<long>(x), y); }
   /// power function for <tt>unsigned int</tt>
   void pow(unsigned int x, unsigned long y)
-  { mpz_ui_pow_ui(m_mp, x, y); }
+  { pow(static_cast<unsigned long>(x), y); }
   /// power function for <tt>long</tt>
   void pow(long x, unsigned long y)
-  { mpz_si_pow_ui(m_mp, x, y); }
+  { mpz_ui_pow_ui(mp(), (x>=0?x:-x), y); if (x<0&&x%2==1) neg(); }
   /// power function for <tt>unsigned long</tt>
   void pow(unsigned long x, unsigned long y)
-  { mpz_ui_pow_ui(m_mp, x, y); }
-  //@}
-
-  /// \name other arithmetic functions
-  //@{
-  /// negation function
-  void neg(const BigInt& x)
-  { mpz_neg(m_mp, x.m_mp); }
-  /// absolute value function
-  void abs(const BigInt& x)
-  { mpz_abs(m_mp, x.m_mp); }
+  { mpz_ui_pow_ui(mp(), x, y); }
   //@}
   
   /// \name shift functions
   //@{
   /// left shift
   void mul_2exp(const BigInt& x, int y)
-  { if (y>=0) mpz_mul_2exp(m_mp,x.m_mp,y); else mpz_div_2exp(m_mp,x.m_mp,-y); }
+  { mul_2exp(x, static_cast<long>(y)); }
   /// left shift
   void mul_2exp(const BigInt& x, unsigned int y)
-  { mpz_mul_2exp(m_mp, x.m_mp, y); }
+  { mul_2exp(x, static_cast<unsigned long>(y)); }
   /// left shift
   void mul_2exp(const BigInt& x, long y)
-  { if (y>=0) mpz_mul_2exp(m_mp,x.m_mp,y); else mpz_div_2exp(m_mp,x.m_mp,-y); }
+  { if (y>=0) mpz_mul_2exp(mp(),x.mp(),y); else mpz_div_2exp(mp(),x.mp(),-y); }
   /// left shift
   void mul_2exp(const BigInt& x, unsigned long y)
-  { mpz_mul_2exp(m_mp, x.m_mp, y); }
+  { mpz_mul_2exp(mp(), x.mp(), y); }
   /// right shift
   void div_2exp(const BigInt& x, int y)
-  { if (y>=0) mpz_div_2exp(m_mp,x.m_mp,y); else mpz_mul_2exp(m_mp,x.m_mp,-y);}
+  { div_2exp(x, static_cast<long>(y)); }
   /// right shift
   void div_2exp(const BigInt& x, unsigned int y)
-  { mpz_div_2exp(m_mp, x.m_mp, y); }
+  { div_2exp(x, static_cast<unsigned long>(y)); }
   /// right shift
   void div_2exp(const BigInt& x, long y)
-  { if (y>=0) mpz_div_2exp(m_mp,x.m_mp,y); else mpz_mul_2exp(m_mp,x.m_mp,-y);}
+  { if (y>=0) mpz_div_2exp(mp(),x.mp(),y); else mpz_mul_2exp(mp(),x.mp(),-y);}
   /// right shift
   void div_2exp(const BigInt& x, unsigned long y)
-  { mpz_div_2exp(m_mp, x.m_mp, y); }
+  { mpz_div_2exp(mp(), x.mp(), y); }
   //@}
 
   /// \name comparison functions
   //@{
   /// compare with <tt>BigInt</tt>
   int cmp(const BigInt& x) const
-  { return mpz_cmp(m_mp, x.m_mp); }
+  { return mpz_cmp(mp(), x.mp()); }
   /// compare with <tt>int</tt>
   int cmp(int x) const
-  { return mpz_cmp_si(m_mp, x); }
+  { return cmp(static_cast<long>(x)); }
   /// compare with <tt>unsigned int</tt>
   int cmp(unsigned int x) const
-  { return mpz_cmp_ui(m_mp, x); }
+  { return cmp(static_cast<unsigned long>(x)); }
   /// compare with <tt>long</tt>
   int cmp(long x) const
-  { return mpz_cmp_si(m_mp, x); }
+  { return mpz_cmp_si(mp(), x); }
   /// compare with <tt>unsigned long</tt>
   int cmp(unsigned long x) const
-  { return mpz_cmp_ui(m_mp, x); }
+  { return mpz_cmp_ui(mp(), x); }
   /// compare with <tt>double</tt>
   int cmp(double x) const
-  { return mpz_cmp_d(m_mp, x); }
+  { return mpz_cmp_d(mp(), x); }
   //@}
 
   /// \name comparison functions (in absolute value)
   //@{
   /// compare (in absolute value) with <tt>BigInt</tt>
   int cmpabs(const BigInt& x) const
-  { return mpz_cmpabs(m_mp, x.m_mp); }
+  { return mpz_cmpabs(mp(), x.mp()); }
   /// compare (in absolute value) with <tt>int</tt>
   int cmpabs(int x) const
-  { return mpz_cmpabs_si(m_mp, x); }
+  { return cmpabs(static_cast<long>(x)); }
   /// compare (in absolute value) with <tt>unsigned int</tt>
   int cmpabs(unsigned int x) const
-  { return mpz_cmpabs_ui(m_mp, x); }
+  { return cmpabs(static_cast<unsigned long>(x)); }
   /// compare (in absolute value) with <tt>long</tt>
   int cmpabs(long x) const
-  { return mpz_cmpabs_si(m_mp, x); }
+  { return mpz_cmpabs_ui(mp(), x>=0? x:-x); }
   /// compare (in absolute value) with <tt>unsigned long</tt>
   int cmpabs(unsigned long x) const
-  { return mpz_cmpabs_ui(m_mp, x); }
+  { return mpz_cmpabs_ui(mp(), x); }
   /// compare (in absolute value) with <tt>double</tt>
   int cmpabs(double x) const
-  { return mpz_cmp_d(m_mp, x); }
+  { return mpz_cmp_d(mp(), x); }
   //@}
 
   /// \name logical and bit manipulation functions
   //@{
   /// logical and
   void logical_and(const BigInt& x, const BigInt& y)
-  { mpz_and(m_mp, x.m_mp, y.m_mp); }
+  { mpz_and(mp(), x.mp(), y.mp()); }
   /// logical ior
   void logical_ior(const BigInt& x, const BigInt& y)
-  { mpz_ior(m_mp, x.m_mp, y.m_mp); }
+  { mpz_ior(mp(), x.mp(), y.mp()); }
   /// logical xor
   void logical_xor(const BigInt& x, const BigInt& y)
-  { mpz_xor(m_mp, x.m_mp, y.m_mp); }
+  { mpz_xor(mp(), x.mp(), y.mp()); }
   /// logical com
   void logical_com(const BigInt& x)
-  { mpz_com(m_mp, x.m_mp); }
+  { mpz_com(mp(), x.mp()); }
   //@}
   
   /// \name conversion functions
   //@{
   /// return double value
   double get_d() const
-  { return mpz_get_d(m_mp); }
+  { return mpz_get_d(mp()); }
   /// find d and exp s.t. \f$d*2^{exp}\f$ with \f$0.5\le|d|<1\f$
   double get_d_2exp(long* exp) const
-  { return mpz_get_d_2exp(exp, m_mp); }
+  { return mpz_get_d_2exp(exp, mp()); }
   /// return long value
   long get_si() const
-  { return mpz_get_si(m_mp); }
+  { return mpz_get_si(mp()); }
   /// return unsigned long value
   unsigned long get_ui() const
-  { return mpz_get_ui(m_mp); }
+  { return mpz_get_ui(mp()); }
   /// return the string representation
   std::string get_str(int base = 10) const {
-    int len = mpz_sizeinbase(m_mp, base) + 2;
+    int len = mpz_sizeinbase(mp(), base) + 2;
     _gmp_alloc_cstr tmp(len);
-    return std::string(mpz_get_str(tmp.str, base, m_mp));
+    return std::string(mpz_get_str(tmp.str, base, mp()));
   }
   /// get exponent of power 2
   unsigned long get_2exp() const
-  { return mpz_scan1(m_mp, 0); }
+  { return mpz_scan1(mp(), 0); }
   /// get exponent of power k
   unsigned long get_k_exp(BigInt& m, unsigned long k) const
-  { return mpz_remove(m.m_mp, m_mp, BigInt(k).m_mp); }
+  { return mpz_remove(m.mp(), mp(), BigInt(k).mp()); }
   //@}
   
   /// \name miscellaneous functions
   //@{
   /// swap function 
   void swap(BigInt& other)
-  { mpz_swap(m_mp, other.m_mp); }
+  { mpz_swap(mp(), other.mp()); }
   /// gcd function
   void gcd(const BigInt& x, const BigInt& y)
-  { mpz_gcd(m_mp, x.m_mp, y.m_mp); }
+  { mpz_gcd(mp(), x.mp(), y.mp()); }
   /// return size in base
   size_t sizeinbase(int base = 2) const
-  { return mpz_sizeinbase(m_mp, base); }
+  { return mpz_sizeinbase(mp(), base); }
   /// return \f$\lceil\log|x|\rceil\f$
   unsigned long ceillg() const
   { unsigned long len=sizeinbase(); return (get_2exp()==len-1)?(len-1):len; }
@@ -529,7 +450,7 @@ public:
   { return sizeinbase() - 1; }
   /// return sign
   int sgn() const
-  { return mpz_sgn(m_mp); }
+  { return mpz_sgn(mp()); }
   /// return upper bound of MSB
   long uMSB() const
   { return ceillg(); } 
@@ -542,31 +463,31 @@ public:
   //@{
   /// return true if it is divisible
   bool is_divisible(const BigInt& x) const
-  { return mpz_divisible_p(m_mp, x.m_mp) != 0; }  
+  { return mpz_divisible_p(mp(), x.mp()) != 0; }  
   /// return true if it is odd
   bool is_odd() const
-  { return mpz_odd_p(m_mp) != 0; }
+  { return mpz_odd_p(mp()) != 0; }
   /// return true if it is even
   bool is_even() const
-  { return mpz_even_p(m_mp) != 0; }
+  { return mpz_even_p(mp()) != 0; }
   /// return true if it fits unsigned long
   bool is_ulong() const
-  { return mpz_fits_ulong_p(m_mp) != 0; }
+  { return mpz_fits_ulong_p(mp()) != 0; }
   /// return true if it fits signed long
   bool is_slong() const
-  { return mpz_fits_slong_p(m_mp) != 0; }
+  { return mpz_fits_slong_p(mp()) != 0; }
   /// return true if it fits unsigned int
   bool is_uint() const
-  { return mpz_fits_uint_p(m_mp) != 0; }
+  { return mpz_fits_uint_p(mp()) != 0; }
   /// return true if it fits signed int
   bool is_sint() const
-  { return mpz_fits_sint_p(m_mp) != 0; }
+  { return mpz_fits_sint_p(mp()) != 0; }
   /// return true if it fits unsigned short
   bool is_ushort() const
-  { return mpz_fits_ushort_p(m_mp) != 0; }
+  { return mpz_fits_ushort_p(mp()) != 0; }
   /// return true if it fits signed short
   bool is_sshort() const
-  { return mpz_fits_sshort_p(m_mp) != 0; }
+  { return mpz_fits_sshort_p(mp()) != 0; }
   //@}
 
 public: // C++ operators
@@ -620,6 +541,9 @@ public: // C++ operators
   { set(rhs); return *this; }
 
   /// compound assignment operator <tt>+=</tt>
+  BigInt& operator+=(const BigInt& rhs)
+  { add(*this, rhs); return *this; }
+  /// compound assignment operator <tt>+=</tt>
   BigInt& operator+=(int rhs)
   { add(*this, rhs); return *this; }
   /// compound assignment operator <tt>+=</tt>
@@ -635,6 +559,9 @@ public: // C++ operators
   BigInt& operator+=(double rhs)
   { add(*this, rhs); return *this; }
 
+  /// compound assignment operator <tt>-=</tt>
+  BigInt& operator-=(const BigInt& rhs)
+  { sub(*this, rhs); return *this; }
   /// compound assignment operator <tt>-=</tt>
   BigInt& operator-=(int rhs)
   { sub(*this, rhs); return *this; }
@@ -652,6 +579,9 @@ public: // C++ operators
   { sub(*this, rhs); return *this; }
 
   /// compound assignment operator <tt>*=</tt>
+  BigInt& operator*=(const BigInt& rhs)
+  { mul(*this, rhs); return *this; }
+  /// compound assignment operator <tt>*=</tt>
   BigInt& operator*=(int rhs)
   { mul(*this, rhs); return *this; }
   /// compound assignment operator <tt>*=</tt>
@@ -668,6 +598,9 @@ public: // C++ operators
   { mul(*this, rhs); return *this; }
 
   /// compound assignment operator <tt>/=</tt>
+  BigInt& operator/=(const BigInt& rhs)
+  { div(*this, rhs); return *this; }
+  /// compound assignment operator <tt>/=</tt>
   BigInt& operator/=(int rhs)
   { div(*this, rhs); return *this; }
   /// compound assignment operator <tt>/=</tt>
@@ -683,6 +616,9 @@ public: // C++ operators
   BigInt& operator/=(double rhs)
   { div(*this, rhs); return *this; }
 
+  /// compound assignment operator <tt>%=</tt>
+  BigInt& operator%=(const BigInt& rhs)
+  { mod(*this, rhs); return *this; }
   /// compound assignment operator <tt>%=</tt>
   BigInt& operator%=(int rhs)
   { mod(*this, rhs); return *this; }
@@ -735,7 +671,7 @@ public: // C++ operators
   { div_2exp(*this, ul); return *this; }
   //@}
 
-#ifdef CORE_OLDNAMES
+#ifndef CORE_DISABLE_OLDNAMES
   /// \name back-compatiable functions
   //@{
   /// Has Exact Division
@@ -1170,7 +1106,7 @@ inline BigInt randomize(const BigInt& a)
 { BigInt r; mpz_urandomm(r.mp(), *getRandstate(), a.mp()); return r; }
 //@}
 
-#ifdef CORE_OLDNAMES 
+#ifndef CORE_DISABLE_OLDNAMES 
 /// \addtogroup BigIntBackCompatiableFunctions
 //@{
 /// comparison
@@ -1237,8 +1173,6 @@ inline long ceilLg(const BigInt& a) { return a.ceillg(); }
 //@}
 #endif
 
-#ifdef CORE_END_NAMESPACE
 CORE_END_NAMESPACE
-#endif
 
 #endif /*__BIGINT_H__*/

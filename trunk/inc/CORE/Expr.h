@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.1.1.1 2006-02-09 09:18:04 exact Exp $
+ * $Id: Expr.h,v 1.2 2006-02-28 18:00:15 exact Exp $
  ***************************************************************************/
 #ifndef __EXPR_H__
 #define __EXPR_H__
@@ -37,6 +37,10 @@ CORE_BEGIN_NAMESPACE
 template <typename RootBd, typename Filter, typename Kernel = BigFloat>
 class ExprT {
 public: // public typedefs
+  typedef RootBd     RootBdT;
+  typedef Filter     FilterT;
+  typedef Kernel     KernelT;
+
   typedef typename Kernel::ZT ZT;
   typedef typename Kernel::QT QT;
   typedef typename Kernel::FT FT;

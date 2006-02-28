@@ -19,24 +19,12 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CORE.h,v 1.1.1.1 2006-02-09 09:18:04 exact Exp $
+ * $Id: CORE.h,v 1.2 2006-02-28 18:00:15 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_H__
 #define __CORE_H__
 
-// define version number
-#define CORE_VERSION            2
-#define CORE_VERSION_MINOR      0
-#define CORE_VERSION_PATCHLEVEL 0
-
-// macros for defining namespace
-#define CORE_BEGIN_NAMESPACE    namespace CORE {
-#define CORE_END_NAMESPACE      };
-#define CORE_NS			CORE
-
-// other macros 
-#define CORE_OLDNAMES 1
-
+#include <CORE/Config.h>
 #include <CORE/CoreDefs.h>
 
 // level 1

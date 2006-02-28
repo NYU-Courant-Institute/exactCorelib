@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.1.1.1 2006-02-09 09:18:04 exact Exp $
+ * $Id: ExprRep.h,v 1.2 2006-02-28 18:00:15 exact Exp $
  ***************************************************************************/
 #ifndef __EXPRREP_H__
 #define __EXPRREP_H__
@@ -387,10 +387,10 @@ public:
   { if (!is_self) first->inc_ref(); second->inc_ref(); }
   virtual ~BinaryOpRepT()
   { first->dec_ref(); second->dec_ref(); }
-protected:
   /// check whether the operation and child nodes are both exact
   bool check_exact(bool ret)
   { return ret && first->is_exact() && second->is_exact(); }
+protected:
   ExprRep* first;  /// <- pointer to the first child node
   ExprRep* second; /// <- pointer to the second child node
 };
@@ -470,7 +470,7 @@ protected:
   virtual void compute_rootBd()
   {this->rootBd().addsub(this->first->get_rootBd(),this->second->get_rootBd());}
   virtual bool compute_a_approx(prec_t prec) {
-    return this->check_exact(this->appValue().addsub(this->first->a_approx(prec+1), this->second->a_approx(prec+1), this->abs2rel(prec), is_add)); 
+    return this->check_exact(this->appValue().addsub(this->first->a_approx(prec+2), this->second->a_approx(prec+2), this->abs2rel(prec+1), is_add)); 
   } 
 private:
   void refine() {
@@ -482,7 +482,7 @@ private:
     if (this->rootBd().is_constructive()) this->compute_rootBd();
     msb_t rootbd = this->rootBd().get_bound();
     for (int prec=std::min(rootbd, DEF_INIT_PREC); prec<=rootbd; prec<<=1) {
-      value.addsub(this->first->a_approx(prec+1), this->second->a_approx(prec+1), this->abs2rel(prec), is_add); 
+      value.addsub(this->first->a_approx(prec+2), this->second->a_approx(prec+2), this->abs2rel(prec+1), is_add); 
       if (!value.has_zero()) {
 #ifdef CORE_DEBUG_ROOTBOUND
         std::cerr << "found sign =" << value.sgn() << std::endl;
@@ -504,23 +504,38 @@ private:
 template <typename RootBd, typename Filter, typename Kernel>
 class MulRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  typedef BinaryOpRepT<RootBd, Filter, Kernel> BinaryOpRep;
+  using BinaryOpRep::first; 
+  using BinaryOpRep::second; 
+  using ExprRep::m_filter;
+  using ExprRep::rootBd;
+  using ExprRep::sign;
+  using ExprRep::uMSB;
+  using ExprRep::lMSB;
+  using ExprRep::appValue;
 public:
   MulRepT(ExprRep* f, ExprRep* s, bool b = false)
     : BinaryOpRepT<RootBd, Filter, Kernel>(f, s, b)
-  { this->m_filter.mul(this->first->m_filter, this->second->m_filter); }
+  //{ this->m_filter.mul(this->first->m_filter, this->second->m_filter); }
+  { m_filter.mul(first->m_filter, second->m_filter); }
   virtual ~MulRepT() 
   {}
 protected:
   virtual void compute_sign() 
-  { this->sign() = this->first->get_sign() * this->second->get_sign(); }
+  //{ this->sign() = this->first->get_sign() * this->second->get_sign(); }
+  { sign() = first->get_sign() * second->get_sign(); }
   virtual void compute_uMSB() 
-  { this->uMSB() = this->first->get_uMSB() + this->second->get_uMSB(); }
+  //{ this->uMSB() = this->first->get_uMSB() + this->second->get_uMSB(); }
+  { uMSB() = first->get_uMSB() + second->get_uMSB(); }
   virtual void compute_lMSB() 
-  { this->lMSB() = this->first->get_lMSB() + this->second->get_lMSB(); }
+  //{ this->lMSB() = this->first->get_lMSB() + this->second->get_lMSB(); }
+  { lMSB() = first->get_lMSB() + second->get_lMSB(); }
   virtual void compute_rootBd()
-  { this->rootBd().mul(this->first->get_rootBd(), this->second->get_rootBd()); }
+  //{ this->rootBd().mul(this->first->get_rootBd(), this->second->get_rootBd()); }
+  { rootBd().mul(first->get_rootBd(), second->get_rootBd()); }
   virtual bool compute_r_approx(prec_t prec) {
-    return this->check_exact(this->appValue().mul(this->first->r_approx(prec+1), this->second->r_approx(prec+2), prec));
+    //return this->check_exact(this->appValue().mul(this->first->r_approx(prec+2), this->second->r_approx(prec+2), prec+1));
+    return check_exact(appValue().mul(first->r_approx(prec+2), second->r_approx(prec+2), prec+1));
   }
 };
 
@@ -545,7 +560,7 @@ protected:
   virtual void compute_rootBd()
   { this->rootBd().div(this->first->get_rootBd(), this->second->get_rootBd()); }
   virtual bool compute_r_approx(prec_t prec) {
-    return this->check_exact(this->appValue().div(this->first->r_approx(prec+2), this->second->r_approx(prec+2), prec));
+    return this->check_exact(this->appValue().div(this->first->r_approx(prec+2), this->second->r_approx(prec+2), prec+1));
   }
 };
 

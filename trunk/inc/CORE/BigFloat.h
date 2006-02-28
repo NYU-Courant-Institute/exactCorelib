@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.1.1.1 2006-02-09 09:18:04 exact Exp $
+ * $Id: BigFloat.h,v 1.2 2006-02-28 18:00:15 exact Exp $
  ***************************************************************************/
 #ifndef __BIGFLOAT_H__
 #define __BIGFLOAT_H__
@@ -53,7 +53,7 @@ public: // public typedefs
   typedef BigRat QT;
   typedef Mpfr   FT;
 
-private:
+public: //private:
   FT   m_l;      ///<- lower bound
   FT   m_r;      ///<- upper bound
   bool m_exact;  ///<- exact flag (when it is true, m_l is the exact value
@@ -728,11 +728,11 @@ private:
 inline BigFloat operator+(const BigFloat& x, const BigFloat& y)
 { BigFloat r; r.add(x, y); return r; }
 /// BigFloat + T
-template <typename T> inline BigFloat operator+(const BigFloat& x, const T& y)
-{ BigFloat r; r.add(x, y); return r; }
+//template <typename T> inline BigFloat operator+(const BigFloat& x, const T& y)
+//{ BigFloat r; r.add(x, y); return r; }
 /// T + BigFloat
-template <typename T> inline BigFloat operator+(const T& x, const BigFloat& y)
-{ BigFloat r; r.add(x, y); return r; }
+//template <typename T> inline BigFloat operator+(const T& x, const BigFloat& y)
+//{ BigFloat r; r.add(x, y); return r; }
 
 /// BigFloat - BigFloat
 inline BigFloat operator-(const BigFloat& x, const BigFloat& y)
