@@ -19,17 +19,13 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.cpp,v 1.1.1.1 2006-02-09 09:18:13 exact Exp $
+ * $Id: CoreDefs.cpp,v 1.2 2006-02-28 18:05:11 exact Exp $
  ***************************************************************************/
-#include <CORE/CORE.h>
+#include <CORE/Config.h>
 
-#ifdef CORE_BEGIN_NAMESPACE
 CORE_BEGIN_NAMESPACE
-#endif
 
 // filter flag
 bool fpFilterFlag = true;
 
-#ifdef CORE_END_NAMESPACE
 CORE_END_NAMESPACE
-#endif

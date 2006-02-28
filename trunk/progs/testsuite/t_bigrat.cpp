@@ -1,7 +1,7 @@
 //
 // test all functions of BigInt
 //
-#include <CORE/BigRat.h>
+#include <CORE/CORE.h>
 #include <iostream>
 
 typedef BigRat NT;
@@ -15,6 +15,7 @@ int main() {
   // testing constructors
   NT x0;
   NT xx(x0);
+  std::cout << "here?" << std::endl;
   NT x1(char(1));
   NT x2(uchar(1));
   NT x3(short(1));
@@ -71,6 +72,7 @@ int main() {
   // test c++ operator
   NT x(210);
   NT y(10);
+  std::cout << "end?" << std::endl;
   NT z;
 
   y++;
@@ -81,6 +83,10 @@ int main() {
   std::cout << "x=" << x << std::endl;
   x += y;
   std::cout << "x=" << x << std::endl;
+  
+  std::cout << "z=x" << std::endl;
+  z = x;
+  std::cout << "z=x" << std::endl;
 
   z = x + y;
   std::cout << "z=" << z << std::endl;

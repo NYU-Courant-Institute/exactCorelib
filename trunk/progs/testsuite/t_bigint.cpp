@@ -1,7 +1,7 @@
 //
 // test all functions of BigInt
 //
-#include <CORE/BigInt.h>
+#include <CORE/CORE.h>
 #include <iostream>
 
 typedef BigInt NT;

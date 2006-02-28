@@ -22,7 +22,7 @@ copyright = """\
  * WWW URL: %s
  * Email: %s
  *
- * $Id: copyright.py,v 1.1.1.1 2006-02-09 09:18:13 exact Exp $
+ * $Id: copyright.py,v 1.2 2006-02-28 18:05:11 exact Exp $
  ***************************************************************************/
 """
 
@@ -75,13 +75,17 @@ def add_header(path, filename, description):
 def handle_header_files(path):
     filelist = { 
                  "CORE.h" : "The main inclusion file for the Core Library",
+                 "Config.h" : "Configuration Macros",
                  "CoreAux.h" : "Auxilliary functions for the Core Library",
                  "CoreDefs.h" : "Global parameters for the Core Library",
+                 "Gmpz.h" : "A C++ wrapper class for GMP mpz",
                  "BigInt.h" : "A C++ wrapper class for GMP mpz",
+                 "Gmpq.h" : "A C++ wrapper class for GMP mpq",
                  "BigRat.h" : "A C++ wrapper class for GMP mpq",
                  "Mpfr.h" : "A C++ wrapper class for MPFR mpfr",
-                 "BigFloat.h" : "A C++ number class providing arbitrary precision",
-                 "BigFloat.inl" : "Inline functions for BigFloat",
+                 "BigFloat.h" : "A C++ wrapper class for MPFR mpfr",
+                 "BigFloat2.h" : "A C++ number class providing arbitrary precision",
+                 "BigFloat2.inl" : "Inline functions for BigFloat",
                  "ExprRep.h" : "Internal Representation for Expr",
                  "Expr.h" : "A C++ number class providing guarranteed precision",
                  "Filters.h" : "Floating-point filters",

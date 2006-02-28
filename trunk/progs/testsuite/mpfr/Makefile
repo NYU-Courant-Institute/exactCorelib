@@ -6,7 +6,8 @@ CORE2_DIR=../..
 INCS=-I${SFW_DIR}/include -I${CORE2_DIR}/inc
 LIBS=-L${SFW_DIR}/lib -L${CORE2_DIR}/lib -lcore2++ -lgmp -lmpfr
 
-TARGETS=t_prec_round t_returned_value t_divbyzero t_get_str t_prec t_auto
+TARGETS=t_prec_round t_returned_value t_divbyzero t_get_str t_prec t_auto \
+        t_mul t_add
 
 all: ${TARGETS}
 
@@ -21,6 +22,10 @@ t_get_str: t_get_str.o
 t_prec: t_prec.o
 
 t_auto: t_auto.o
+
+t_mul: t_mul.o
+
+t_add: t_add.o
 
 #=================================================
 # Rules
