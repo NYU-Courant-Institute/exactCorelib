@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Gmpz.h,v 1.1 2006-02-28 18:00:15 exact Exp $
+ * $Id: Gmpz.h,v 1.2 2006-03-01 03:40:01 exact Exp $
  ***************************************************************************/
 #ifndef __GMPZ_H__
 #define __GMPZ_H__
@@ -40,15 +40,8 @@ class Gmpz
   : public RcRepImpl<Gmpz>
 #endif
 {
-private:
-  mpz_t m_mp;
 public:
-  //internal structure accessors
-  const mpz_t& mp() const { return m_mp; }
-  mpz_t& mp() { return m_mp; }
-
-public:
-  /// \name constructors and destructor
+  /// \name constructors, destructor and assignment operator
   //@{
   /// default constructor
   Gmpz()
@@ -56,6 +49,9 @@ public:
   /// copy constructor
   Gmpz(const Gmpz& rhs)
   { mpz_init_set(m_mp, rhs.m_mp); }
+  /// destructor
+  ~Gmpz()
+  { mpz_clear(m_mp); }
 
   /// constructor for <tt>long</tt>
   Gmpz(long i)
@@ -63,77 +59,66 @@ public:
   /// constructor for <tt>unsigned long</tt>
   Gmpz(unsigned long i)
   { mpz_init_set_ui(m_mp, i); }
-
   /// constructor for <tt>double</tt>
   Gmpz(double i)
   { mpz_init_set_d(m_mp, i); }
-
   /// constructor for <tt>char*</tt> (no implicit conversion)
   explicit Gmpz(const char* str, int base)
   { mpz_init_set_str(m_mp, str, base); }
-
-  // internal used by Gmpq
-  explicit Gmpz(const mpz_t x)
+  /// constructor for <tt>mpz_t</tt>
+  explicit Gmpz(const mpz_t& x)
   { mpz_init_set(m_mp, x); }
 
-  /// destructor
-  ~Gmpz()
-  { mpz_clear(m_mp); }
-  //@}
-  
-  /// \name assignment operator
-  //@{
   /// assignment operator for <tt>Gmpz</tt>
   Gmpz& operator=(const Gmpz& rhs) {
     if (this != &rhs)  mpz_set(m_mp, rhs.m_mp); 
     return *this;
   }
   //@}
+public:
+  //internal structure accessors
+  const mpz_t& mp() const { return m_mp; }
+  mpz_t& mp() { return m_mp; }
+private:
+  mpz_t m_mp;
 };
 
 #ifndef CORE_DISABLE_REFCOUNTING
 /// \class RcGmpz Gmpz.h
-/// \brief RcGmpz is a wrapper class of <tt>Gmpz</tt> with referecen counting
+/// \brief RcGmpz is a wrapper class of <tt>Gmpz</tt> with reference counting
 class RcGmpz : public RcImpl<Gmpz> {
   typedef RcImpl<Gmpz> base_cls;
 public:
-  //internal structure accessors
-  const mpz_t& mp() const { return ((const Gmpz*)_rep)->mp(); }
-  mpz_t& mp() { return _rep->mp(); }
-
-public:
-  /// \name constructors and destructor
+  /// \name constructors, destructor and assignment operator
   //@{
   /// default constructor
   RcGmpz() : base_cls(new Gmpz()) {}
   /// copy constructor
   RcGmpz(const RcGmpz& rhs) : base_cls(rhs._rep) { _rep->inc_rc(); }
+  /// destructor
+  ~RcGmpz() { _rep->dec_rc(); }
 
   /// constructor for <tt>long</tt>
   RcGmpz(long i) : base_cls(new Gmpz(i)) {}
   /// constructor for <tt>unsigned long</tt>
   RcGmpz(unsigned long i) : base_cls(new Gmpz(i)) {}
-
   /// constructor for <tt>double</tt>
   RcGmpz(double i) : base_cls(new Gmpz(i)) {}
-
   /// constructor for <tt>char*</tt> (no implicit conversion)
   explicit RcGmpz(const char* str, int base) : base_cls(new Gmpz(str, base)) {}
-
-  // internal used by Gmpq
-  explicit RcGmpz(const mpz_t x) : base_cls(new Gmpz(x)) {}
-
-  /// destructor
-  ~RcGmpz() { _rep->dec_rc(); }
-  //@}
+  /// constructor for <tt>mpz_t</tt>
+  explicit RcGmpz(const mpz_t& x) : base_cls(new Gmpz(x)) {}
   
-  /// \name assignment operator
-  //@{
   /// assignment operator for <tt>RcGmpz</tt>
   RcGmpz& operator=(const RcGmpz& rhs) {
     if (this != &rhs) { _rep->dec_rc(); _rep = rhs._rep; _rep->inc_rc(); } 
     return *this;
   }
+  //@}
+public:
+  //internal structure accessors
+  const mpz_t& mp() const { return ((const Gmpz*)_rep)->mp(); }
+  mpz_t& mp() { return _rep->mp(); }
 };
 #endif
 
