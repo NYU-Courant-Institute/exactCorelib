@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigInt.h,v 1.3 2006-02-28 18:00:15 exact Exp $
+ * $Id: BigInt.h,v 1.4 2006-03-01 01:04:05 exact Exp $
  ***************************************************************************/
 #ifndef __BIGINT_H__
 #define __BIGINT_H__
@@ -225,6 +225,16 @@ public:
   { mpz_div_ui(mp(), x.mp(), y); }
   /// division for <tt>BigInt / double</tt>
   void div(const BigInt& x, double y) { div(x, BigInt(y)); }
+  /// division for <tt>int / BigInt</tt>
+  void div(int x, const BigInt& y) { div(BigInt(x), y); }
+  /// division for <tt>unsigned int / BigInt</tt>
+  void div(unsigned int x, const BigInt& y) { div(BigInt(x), y); }
+  /// division for <tt>long / BigInt</tt>
+  void div(long x, const BigInt& y) { div(BigInt(x), y); }
+  /// division for <tt>unsigned long / BigInt</tt>
+  void div(unsigned long x, const BigInt& y) { div(BigInt(x), y); }
+  /// division for <tt>double / BigInt</tt>
+  void div(double x, const BigInt& y) { div(BigInt(x), y); }
   //@}
 
   /// \name arithmetic functions -- modular
@@ -246,6 +256,16 @@ public:
   { mpz_mod_ui(mp(), x.mp(), y); }
   /// modular for <tt>BigInt % double</tt>
   void mod(const BigInt& x, double y) { mod(x, BigInt(y)); }
+  /// modular for <tt>int % BigInt</tt>
+  void mod(int x, const BigInt& y) { mod(BigInt(x), y); }
+  /// modular for <tt>unsigned int % BigInt</tt>
+  void mod(unsigned int x, const BigInt& y) { mod(BigInt(x), y); }
+  /// modular for <tt>long % BigInt</tt>
+  void mod(long x, const BigInt& y) { mod(BigInt(x), y); }
+  /// modular for <tt>unsigned long % BigInt</tt>
+  void mod(unsigned long x, const BigInt& y) { mod(BigInt(x), y); }
+  /// modular for <tt>double % BigInt</tt>
+  void mod(double x, const BigInt& y) { mod(BigInt(x), y); }
   //@}
 
   /// \name arithmetic functions -- exact division
@@ -800,17 +820,32 @@ inline BigInt operator/(const BigInt& x, const BigInt& y)
 /// BigInt / int
 inline BigInt operator/(const BigInt& x, int y)
 { BigInt r; r.div(x, y); return r; }
+/// int / BigInt
+inline BigInt operator/(int x, const BigInt& y)
+{ BigInt r; r.div(x, y); return r; }
 /// BigInt / unsigned int
 inline BigInt operator/(const BigInt& x, unsigned int y)
+{ BigInt r; r.div(x, y); return r; }
+/// unsigned int / BigInt
+inline BigInt operator/(unsigned int x, const BigInt& y)
 { BigInt r; r.div(x, y); return r; }
 /// BigInt / long
 inline BigInt operator/(const BigInt& x, long y)
 { BigInt r; r.div(x, y); return r; }
+/// long / BigInt
+inline BigInt operator/(long x, const BigInt& y)
+{ BigInt r; r.div(x, y); return r; }
 /// BigInt / unsigned long
 inline BigInt operator/(const BigInt& x, unsigned long y)
 { BigInt r; r.div(x, y); return r; }
+/// unsigned long / BigInt
+inline BigInt operator/(unsigned long x, const BigInt& y)
+{ BigInt r; r.div(x, y); return r; }
 /// BigInt / double
 inline BigInt operator/(const BigInt& x, double y)
+{ BigInt r; r.div(x, y); return r; }
+/// double / BigInt
+inline BigInt operator/(double x, const BigInt& y)
 { BigInt r; r.div(x, y); return r; }
 
 /// BigInt % BigInt
@@ -819,17 +854,32 @@ inline BigInt operator%(const BigInt& x, const BigInt& y)
 /// BigInt % int
 inline BigInt operator%(const BigInt& x, int y)
 { BigInt r; r.mod(x, y); return r; }
+/// int % BigInt
+inline BigInt operator%(int x, const BigInt& y)
+{ BigInt r; r.mod(x, y); return r; }
 /// BigInt % unsigned int
 inline BigInt operator%(const BigInt& x, unsigned int y)
+{ BigInt r; r.mod(x, y); return r; }
+/// unsigned int % BigInt
+inline BigInt operator%(unsigned int x, const BigInt& y)
 { BigInt r; r.mod(x, y); return r; }
 /// BigInt % long
 inline BigInt operator%(const BigInt& x, long y)
 { BigInt r; r.mod(x, y); return r; }
+/// long % BigInt
+inline BigInt operator%(long x, const BigInt& y)
+{ BigInt r; r.mod(x, y); return r; }
 /// BigInt % unsigned long
 inline BigInt operator%(const BigInt& x, unsigned long y)
 { BigInt r; r.mod(x, y); return r; }
+/// unsigned long % BigInt
+inline BigInt operator%(unsigned long x, const BigInt& y)
+{ BigInt r; r.mod(x, y); return r; }
 /// BigInt % double
 inline BigInt operator%(const BigInt& x, double y)
+{ BigInt r; r.mod(x, y); return r; }
+/// double % BigInt
+inline BigInt operator%(double x, const BigInt& y)
 { BigInt r; r.mod(x, y); return r; }
 
 /// BigInt & BigInt

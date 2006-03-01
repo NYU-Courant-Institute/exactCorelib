@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Filters.h,v 1.1.1.1 2006-02-09 09:18:04 exact Exp $
+ * $Id: Filters.h,v 1.2 2006-03-01 01:04:05 exact Exp $
  ***************************************************************************/
 #ifndef __FILTERS_H__
 #define __FILTERS_H__
@@ -80,9 +80,9 @@ inline bool setFpFilterFlag(bool f) {
 const double DBL_INFTY = ::ldexp(DBL_MAX, 1);
 const double CORE_EPS = ::ldexp(1.0, -52);
 
-// k-th root for double (using MPFR for now)
+// k-th root for double (using BigFloat for now)
 inline double root(double x, unsigned long k) 
-{ Mpfr r(x); r.root(x, k); return r.get_d(); }
+{ BigFloat r(x); r.root(x, k); return r.get_d(); }
 
 /// \class filteredFp Filter.h
 /// \brief filteredFp is a simple filtered floating point number.

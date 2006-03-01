@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigRat.h,v 1.3 2006-02-28 18:00:15 exact Exp $
+ * $Id: BigRat.h,v 1.4 2006-03-01 01:04:05 exact Exp $
  ***************************************************************************/
 #ifndef __BIGRAT_H__
 #define __BIGRAT_H__
@@ -205,6 +205,12 @@ public:
   /// canonicalization
   void canonicalize() 
   { mpq_canonicalize(mp()); }
+  BigRat reciprocal() const { 
+    BigRat r; 
+    mpz_set(mpq_numref(r.mp()), mpq_denref(mp()));  
+    mpz_set(mpq_denref(r.mp()), mpq_numref(mp()));  
+    return r;
+  }
   /// return numerator
   BigInt numerator() const
   { return BigInt(mpq_numref(mp())); }
@@ -346,15 +352,164 @@ public: // C++ operators
 /// BigRat + BigRat
 inline BigRat operator+(const BigRat& x, const BigRat& y)
 { BigRat r; r.add(x, y); return r; }
+/// BigRat + int
+inline BigRat operator+(const BigRat& x, int y)
+{ return x + BigRat(y); }
+/// int + BigRat
+inline BigRat operator+(int x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat + unsigned int
+inline BigRat operator+(const BigRat& x, unsigned int y)
+{ return x + BigRat(y); }
+/// unsigned int + BigRat
+inline BigRat operator+(unsigned int x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat + long
+inline BigRat operator+(const BigRat& x, long y)
+{ return x + BigRat(y); }
+/// long + BigRat
+inline BigRat operator+(long x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat + unsigned long
+inline BigRat operator+(const BigRat& x, unsigned long y)
+{ return x + BigRat(y); }
+/// unsigned long + BigRat
+inline BigRat operator+(unsigned long x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat + double
+inline BigRat operator+(const BigRat& x, double y)
+{ return x + BigRat(y); }
+/// double + BigRat
+inline BigRat operator+(double x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat + BigInt
+inline BigRat operator+(const BigRat& x, const BigInt& y)
+{ return x + BigRat(y); }
+/// BigInt + BigRat
+inline BigRat operator+(const BigInt& x, const BigRat& y)
+{ return BigRat(x) + y; }
+
 /// BigRat - BigRat
 inline BigRat operator-(const BigRat& x, const BigRat& y)
 { BigRat r; r.sub(x, y); return r; }
+/// BigRat - int
+inline BigRat operator-(const BigRat& x, int y)
+{ return x + BigRat(y); }
+/// int - BigRat
+inline BigRat operator-(int x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat - unsigned int
+inline BigRat operator-(const BigRat& x, unsigned int y)
+{ return x + BigRat(y); }
+/// unsigned int - BigRat
+inline BigRat operator-(unsigned int x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat - long
+inline BigRat operator-(const BigRat& x, long y)
+{ return x + BigRat(y); }
+/// long - BigRat
+inline BigRat operator-(long x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat - unsigned long
+inline BigRat operator-(const BigRat& x, unsigned long y)
+{ return x + BigRat(y); }
+/// unsigned long - BigRat
+inline BigRat operator-(unsigned long x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat - double
+inline BigRat operator-(const BigRat& x, double y)
+{ return x + BigRat(y); }
+/// double - BigRat
+inline BigRat operator-(double x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat - BigInt
+inline BigRat operator-(const BigRat& x, const BigInt& y)
+{ return x + BigRat(y); }
+/// BigInt - BigRat
+inline BigRat operator-(const BigInt& x, const BigRat& y)
+{ return BigRat(x) + y; }
+
 /// BigRat * BigRat
 inline BigRat operator*(const BigRat& x, const BigRat& y)
 { BigRat r; r.mul(x, y); return r; }
+/// BigRat * int
+inline BigRat operator*(const BigRat& x, int y)
+{ return x + BigRat(y); }
+/// int * BigRat
+inline BigRat operator*(int x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat * unsigned int
+inline BigRat operator*(const BigRat& x, unsigned int y)
+{ return x + BigRat(y); }
+/// unsigned int * BigRat
+inline BigRat operator*(unsigned int x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat * long
+inline BigRat operator*(const BigRat& x, long y)
+{ return x + BigRat(y); }
+/// long * BigRat
+inline BigRat operator*(long x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat * unsigned long
+inline BigRat operator*(const BigRat& x, unsigned long y)
+{ return x + BigRat(y); }
+/// unsigned long * BigRat
+inline BigRat operator*(unsigned long x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat * double
+inline BigRat operator*(const BigRat& x, double y)
+{ return x + BigRat(y); }
+/// double * BigRat
+inline BigRat operator*(double x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat * BigInt
+inline BigRat operator*(const BigRat& x, const BigInt& y)
+{ return x + BigRat(y); }
+/// BigInt * BigRat
+inline BigRat operator*(const BigInt& x, const BigRat& y)
+{ return BigRat(x) + y; }
+
 /// BigRat / BigRat
 inline BigRat operator/(const BigRat& x, const BigRat& y)
 { BigRat r; r.div(x, y); return r; }
+/// BigRat / int
+inline BigRat operator/(const BigRat& x, int y)
+{ return x + BigRat(y); }
+/// int / BigRat
+inline BigRat operator/(int x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat / unsigned int
+inline BigRat operator/(const BigRat& x, unsigned int y)
+{ return x + BigRat(y); }
+/// unsigned int / BigRat
+inline BigRat operator/(unsigned int x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat / long
+inline BigRat operator/(const BigRat& x, long y)
+{ return x + BigRat(y); }
+/// long / BigRat
+inline BigRat operator/(long x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat / unsigned long
+inline BigRat operator/(const BigRat& x, unsigned long y)
+{ return x + BigRat(y); }
+/// unsigned long / BigRat
+inline BigRat operator/(unsigned long x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat / double
+inline BigRat operator/(const BigRat& x, double y)
+{ return x + BigRat(y); }
+/// double / BigRat
+inline BigRat operator/(double x, const BigRat& y)
+{ return BigRat(x) + y; }
+/// BigRat / BigInt
+inline BigRat operator/(const BigRat& x, const BigInt& y)
+{ return x + BigRat(y); }
+/// BigInt / BigRat
+inline BigRat operator/(const BigInt& x, const BigRat& y)
+{ return BigRat(x) + y; }
+//@}
+
 /// BigRat << int
 inline BigRat operator<<(const BigRat& x, int y)
 { BigRat r; r.mul_2exp(x, y); return r; }

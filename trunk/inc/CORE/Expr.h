@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.2 2006-02-28 18:00:15 exact Exp $
+ * $Id: Expr.h,v 1.3 2006-03-01 01:04:05 exact Exp $
  ***************************************************************************/
 #ifndef __EXPR_H__
 #define __EXPR_H__
@@ -34,7 +34,7 @@ CORE_BEGIN_NAMESPACE
 
 /// \class ExprT
 /// Kernel -- internal representation 
-template <typename RootBd, typename Filter, typename Kernel = BigFloat>
+template <typename RootBd, typename Filter, typename Kernel = BigFloat2>
 class ExprT {
 public: // public typedefs
   typedef RootBd     RootBdT;
@@ -209,12 +209,12 @@ private:
 
 /*
 #include <CORE/IA.hpp>
-typedef IA<Mpfr> Real;
+typedef IA<BigFloat> Real;
 typedef ExprT<BfmssRootBd<Real>, Real> Expr;
 */
 
 // BFMSS root bound + BFS filter + BigFloat
-typedef ExprT<BfmssRootBd<BigFloat>, BfsFilter<BigFloat>, BigFloat> Expr;
+typedef ExprT<BfmssRootBd<BigFloat2>, BfsFilter<BigFloat2>, BigFloat2> Expr;
 
 // BFMSS root bound + Dummy filter + BigFloat
 //typedef ExprT<BfmssRootBd<BigFloat>, DummyFilter, BigFloat> Expr;
