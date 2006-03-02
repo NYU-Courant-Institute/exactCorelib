@@ -19,13 +19,19 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.cpp,v 1.2 2006-02-28 18:05:11 exact Exp $
+ * $Id: CoreDefs.cpp,v 1.3 2006-03-02 21:11:09 exact Exp $
  ***************************************************************************/
 #include <CORE/Config.h>
+#include <CORE/BigFloat.h>
 
 CORE_BEGIN_NAMESPACE
 
 // filter flag
 bool fpFilterFlag = true;
+
+// default output rounding mode
+mp_rnd_t def_output_rounding_mode = MPFR_RND;
+// default output base
+int def_output_base = 0;
 
 CORE_END_NAMESPACE

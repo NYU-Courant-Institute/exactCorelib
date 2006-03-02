@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: MpfrIO.cpp,v 1.1.1.1 2006-02-09 09:18:13 exact Exp $
+ * $Id: MpfrIO.cpp,v 1.2 2006-03-02 21:11:09 exact Exp $
  ***************************************************************************/
 #include <mpfr.h>
 #include <string>
@@ -70,48 +70,111 @@ static char* itoa(int val, int base) {
   return &buf[i+1];
 }
 
-// format floating point string
-static void formatFloat(std::string& str, mp_exp_t exp, int base, bool fixed) {
+/* _mpfr_alloc_cstr */
+struct _mpfr_alloc_cstr {
+  char *str;
+  _mpfr_alloc_cstr() : str(0) { }
+  void alloc(int len) { delete[] str; str = new char[len]; }
+  ~_mpfr_alloc_cstr() { delete[] str; }
+};
+
+// IO format:
+//
+// 1. we use exact precision bits returned from cout.precision(), while
+//    C++ IO use it as bits after decimal point.
+// 2. we use exact digits to output exponents, while C++ IO use 2 or more 
+//    digits.
+
+// convert mpfr to string
+std::string mpfr2str(
+  mpfr_srcptr mp,   // mpfr
+  size_t ndigits,   // number of digits
+  int base,         // base
+  int fmt,          // format
+  mp_rnd_t rnd,     // round mode
+  bool showpoint,   // show decimal point
+  bool showpos,     // show '+' sign
+  bool uppercase    // show in uppercase
+) {
+  // check zero
+  bool is_zero = mpfr_zero_p(mp) != 0;
+  // if zero and fmt = 0
+  if (is_zero && fmt == 0) return std::string("0");
+
+  mp_exp_t exp;
+  char *str;
+  _mpfr_alloc_cstr tmp;
+  unsigned long len;
+
+  // get the digits 
+  if (ndigits == 0) { // impossible to predetermine the size of string
+    str = mpfr_get_str(0, &exp, base, ndigits, mp, rnd);
+  } else {
+    len = std::max(ndigits + 2, 7UL);
+    tmp.alloc(len);
+    str = mpfr_get_str(tmp.str, &exp, base, ndigits, mp, rnd);
+  }
+  
+  // if failed, return empty string
+  if (str == 0) return std::string();
+
   // find the start position implicit radix point
   std::string::size_type first = (str[0] == '-') ? 1 : 0;
   
-  if (fixed) { // fixed format
-    if (exp > 0) {
-      if (first + exp > str.length()) // integer need padding 0
-        str.append(first + exp - str.length(), '0');
-      else if (first + exp < str.length()) // float point value
-        str.insert(first + exp, ".");
+  // choose format by value
+  len = strlen(str) - first;
+  if (fmt == 0) {
+    unsigned long e = (exp >= 0) ? exp : (-exp);
+    if (e > len) // too small/big
+      fmt = 2;
+    else
+      fmt = 1; 
+  }
+  
+  // now formatting
+  std::string result;
+
+  if (fmt == 1) { // fixed format
+    // counting trailing zeros
+    while (len > 0 && str[len-1] == '0')
+      len --;
+
+    result.assign(str, len);
+    if (exp > 0) {  
+      if ((unsigned long)exp > len) // integer need padding 0
+        result.append(exp - len, '0');
+      else if ((unsigned long)exp < len) // float point value
+        result.insert(first + exp, ".");
     } else if (exp < 0) {
-      str.insert(first, -exp, '0');
-      str.insert(first, ".");
+      result.insert(first, -exp, '0');
+      result.insert(first, ".");
     } else
-      str.insert(first, "0.");
+      result.insert(first, "0.");
   } else { // scientific format
-    str.insert(first, "0.");
-    // add exponent
-    if (exp != 0) {
-      if (base <= 10) 
-        str.append("e");
-      else
-        str.append("@");
-      if (exp > 0)
-        str.append(itoa(exp, base));
-      else {
-        str.append("-"); str.append(itoa(-exp, base));
-      }
+    result.assign(str);
+    // put the decimal before the second digit
+    result.insert(first+1, ".");
+    // decrease the exponent by 1
+    if (!is_zero) --exp;
+    // output exponent
+    if (base <= 10)
+      result.append(uppercase ? "E" : "e");
+    else
+      result.append("@");
+    if (exp == 0) {
+      result.append("+0");
+    } else if (exp > 0) {
+      result.append("+"); result.append(itoa(exp, base));
+    } else {
+      result.append("-"); result.append(itoa(-exp, base));
     }
   }
+  // insert "+" if show pos
+  if (first == 0 && showpos) result.insert(0, "+");
+
+  // free memory allocated by mpfr_get_str
+  if (ndigits == 0) mpfr_free_str(str);
+
+  return result;
 }
 
-// convert mpfr to string
-std::string mpfr2str(mpfr_srcptr mp, size_t ndigits, int base, bool fixed, mp_rnd_t rnd) {
-  mp_exp_t exp;
-  char* s = mpfr_get_str(0, &exp, base, ndigits, mp, rnd);
-  if (s != NULL) {
-    std::string str(s);
-    formatFloat(str, exp, base, fixed);
-    mpfr_free_str(s);
-    return str;
-  } else
-    return std::string();
-}
