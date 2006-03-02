@@ -19,360 +19,517 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.1.1.1 2006-02-09 09:18:04 exact Exp $
+ * $Id: BigFloat.inl,v 1.2 2006-03-02 04:55:16 exact Exp $
  ***************************************************************************/
-#define BF_RNDD GMP_RNDD
-#define BF_RNDU GMP_RNDU
 
-////////////////////////////////////////////////////////////////////////////////
-/// assignment -- set(BigFloat)
-template <template <typename, typename, typename> class Policy>
-inline bool BigFloat::_set(const BigFloat& x, prec_t prec) {
-  if (x.is_exact())
-    return this->_set<Policy, FT>(x.m_l, prec);
-  else {
-    Policy<FT, FT, FT>::set(m_l, x.m_l, prec, BF_RNDD);
-    Policy<FT, FT, FT>::set(m_r, x.m_r, prec, BF_RNDU);
-    set_exact(false);
-  }
-  return is_exact();
-}
-/// assignment -- set(const char*, int base)
-template <template <typename, typename, typename> class Policy>
-inline bool BigFloat::_set(const char* x, int base, prec_t prec) {
-  // since MPFR set_str() function cannot tell the exactness of result,
-  // we need compare the two results after conversion
-  Policy<FT, FT, FT>::set(m_l, x, base, prec, BF_RNDD);
-  Policy<FT, FT, FT>::set(m_r, x, base, prec, BF_RNDU);
-  set_exact(m_l.cmp(m_r));
-  return is_exact();
-}
-/// assignment -- set(T)
-template <template <typename, typename, typename> class Policy, typename T>
-inline bool BigFloat::_set(const T& x, prec_t prec) {
-  set_exact(Policy<FT, T, FT>::set(m_l, x, prec, BF_RNDD));
-  if (!is_exact()) Policy<FT, T, FT>::set(m_r, x, prec, BF_RNDU);
-  return is_exact();
-}
-/// assignment -- set_2exp(long)
-template <template <typename, typename, typename> class Policy>
-inline bool BigFloat::_set_2exp(long x, exp_t e, prec_t prec) {
-  set_exact(Policy<FT, FT, FT>::set_2exp(m_l, x, e, prec, BF_RNDD));
-  if (!is_exact()) Policy<FT, FT, FT>::set_2exp(m_l, x, e, prec, BF_RNDU);
-  return is_exact();
-}
-/// assignment -- set_2exp(long)
-template <template <typename, typename, typename> class Policy>
-inline bool BigFloat::_set_2exp(unsigned long x, exp_t e, prec_t prec) {
-  set_exact(Policy<FT, FT, FT>::set_2exp(m_l, x, e, prec, BF_RNDD));
-  if (!is_exact()) Policy<FT, FT, FT>::set_2exp(m_l, x, e, prec, BF_RNDU);
-  return is_exact();
-}
+/// \addtogroup BigFloatArithmeticOperators
+//@{
+/// BigFloat + BigFloat
+inline BigFloat operator+(const BigFloat& x, const BigFloat& y)
+{ BigFloat r; r.add(x, y); return r; }
+/// BigFloat + int
+inline BigFloat operator+(const BigFloat& x, int y)
+{ BigFloat r; r.add(x, y); return r; }
+/// int + BigFloat
+inline BigFloat operator+(int x, const BigFloat& y)
+{ BigFloat r; r.add(x, y); return r; }
+/// BigFloat + unsigned int
+inline BigFloat operator+(const BigFloat& x, unsigned int y)
+{ BigFloat r; r.add(x, y); return r; }
+/// unsigned int + BigFloat
+inline BigFloat operator+(unsigned int x, const BigFloat& y)
+{ BigFloat r; r.add(x, y); return r; }
+/// BigFloat + long
+inline BigFloat operator+(const BigFloat& x, long y)
+{ BigFloat r; r.add(x, y); return r; }
+/// long + BigFloat
+inline BigFloat operator+(long x, const BigFloat& y)
+{ BigFloat r; r.add(x, y); return r; }
+/// BigFloat + unsigned long
+inline BigFloat operator+(const BigFloat& x, unsigned long y)
+{ BigFloat r; r.add(x, y); return r; }
+/// unsigned long + BigFloat
+inline BigFloat operator+(unsigned long x, const BigFloat& y)
+{ BigFloat r; r.add(x, y); return r; }
+/// BigFloat + double
+inline BigFloat operator+(const BigFloat& x, double y)
+{ BigFloat r; r.add(x, y); return r; }
+/// double + BigFloat
+inline BigFloat operator+(double x, const BigFloat& y)
+{ BigFloat r; r.add(x, y); return r; }
+/// BigFloat + BigInt
+inline BigFloat operator+(const BigFloat& x, const BigInt& y)
+{ BigFloat r; r.add(x, y); return r; }
+/// BigInt + BigFloat
+inline BigFloat operator+(const BigInt& x, const BigFloat& y)
+{ BigFloat r; r.add(x, y); return r; }
+/// BigFloat + BigRat
+inline BigFloat operator+(const BigFloat& x, const BigRat& y)
+{ BigFloat r; r.add(x, y); return r; }
+/// BigRat + BigFloat
+inline BigFloat operator+(const BigRat& x, const BigFloat& y)
+{ BigFloat r; r.add(x, y); return r; }
 
-////////////////////////////////////////////////////////////////////////////////
-/// negation -- neg(BigFloat)
-template <template <typename, typename, typename> class Policy>
-inline bool BigFloat::_neg(const BigFloat& x, prec_t prec) {
-  if (x.is_exact())
-    return this->_neg<Policy, FT>(x.m_l, prec);
-  else {
-    Policy<FT, FT, FT>::neg(m_l, x.m_r, prec, BF_RNDD);
-    Policy<FT, FT, FT>::neg(m_r, x.m_l, prec, BF_RNDU);
-    set_exact(false);
-  }
-  return is_exact();
-}
-/// negation -- neg(T)
-template <template <typename, typename, typename> class Policy, typename T>
-inline bool BigFloat::_neg(const T& x, prec_t prec) {
-  set_exact(Policy<FT, T, FT>::neg(m_l, x, prec, BF_RNDD));
-  if (!is_exact()) Policy<FT, T, FT>::neg(m_r, x, prec, BF_RNDU);
-  return is_exact();
-}
+/// BigFloat - BigFloat
+inline BigFloat operator-(const BigFloat& x, const BigFloat& y)
+{ BigFloat r; r.sub(x, y); return r; }
+/// BigFloat - int
+inline BigFloat operator-(const BigFloat& x, int y)
+{ BigFloat r; r.sub(x, y); return r; }
+/// int - BigFloat
+inline BigFloat operator-(int x, const BigFloat& y)
+{ BigFloat r; r.sub(x, y); return r; }
+/// BigFloat - unsigned int
+inline BigFloat operator-(const BigFloat& x, unsigned int y)
+{ BigFloat r; r.sub(x, y); return r; }
+/// unsigned int - BigFloat
+inline BigFloat operator-(unsigned int x, const BigFloat& y)
+{ BigFloat r; r.sub(x, y); return r; }
+/// BigFloat - long
+inline BigFloat operator-(const BigFloat& x, long y)
+{ BigFloat r; r.sub(x, y); return r; }
+/// long - BigFloat
+inline BigFloat operator-(long x, const BigFloat& y)
+{ BigFloat r; r.sub(x, y); return r; }
+/// BigFloat - unsigned long
+inline BigFloat operator-(const BigFloat& x, unsigned long y)
+{ BigFloat r; r.sub(x, y); return r; }
+/// unsigned long - BigFloat
+inline BigFloat operator-(unsigned long x, const BigFloat& y)
+{ BigFloat r; r.sub(x, y); return r; }
+/// BigFloat - double
+inline BigFloat operator-(const BigFloat& x, double y)
+{ BigFloat r; r.sub(x, y); return r; }
+/// double - BigFloat
+inline BigFloat operator-(double x, const BigFloat& y)
+{ BigFloat r; r.sub(x, y); return r; }
+/// BigFloat - BigInt
+inline BigFloat operator-(const BigFloat& x, const BigInt& y)
+{ BigFloat r; r.sub(x, y); return r; }
+/// BigInt - BigFloat
+inline BigFloat operator-(const BigInt& x, const BigFloat& y)
+{ BigFloat r; r.sub(x, y); return r; }
+/// BigFloat - BigRat
+inline BigFloat operator-(const BigFloat& x, const BigRat& y)
+{ BigFloat r; r.sub(x, y); return r; }
+/// BigRat - BigFloat
+inline BigFloat operator-(const BigRat& x, const BigFloat& y)
+{ BigFloat r; r.sub(x, y); return r; }
 
-////////////////////////////////////////////////////////////////////////////////
-/// square root -- sqrt(BigFloat)
-template <template <typename, typename, typename> class Policy>
-inline bool BigFloat::_sqrt(const BigFloat& x, prec_t prec) {
-  if (x.is_exact())
-    return this->_sqrt<Policy, FT>(x.m_l, prec);
-  else {
-    Policy<FT, FT, FT>::sqrt(m_l, x.m_l, prec, BF_RNDD);
-    Policy<FT, FT, FT>::sqrt(m_r, x.m_r, prec, BF_RNDU);
-    set_exact(false);
-  }
-  return is_exact();
-}
-/// square root -- sqrt(T)
-template <template <typename, typename, typename> class Policy, typename T>
-inline bool BigFloat::_sqrt(const T& x, prec_t prec) {
-  set_exact(Policy<FT, T, FT>::sqrt(m_l, x, prec, BF_RNDD));
-  if (!is_exact()) Policy<FT, T, FT>::sqrt(m_r, x, prec, BF_RNDU);
-  return is_exact();
-}
+/// BigFloat * BigFloat
+inline BigFloat operator*(const BigFloat& x, const BigFloat& y)
+{ BigFloat r; r.mul(x, y); return r; }
+/// BigFloat * int
+inline BigFloat operator*(const BigFloat& x, int y)
+{ BigFloat r; r.mul(x, y); return r; }
+/// int * BigFloat
+inline BigFloat operator*(int x, const BigFloat& y)
+{ BigFloat r; r.mul(x, y); return r; }
+/// BigFloat * unsigned int
+inline BigFloat operator*(const BigFloat& x, unsigned int y)
+{ BigFloat r; r.mul(x, y); return r; }
+/// unsigned int * BigFloat
+inline BigFloat operator*(unsigned int x, const BigFloat& y)
+{ BigFloat r; r.mul(x, y); return r; }
+/// BigFloat * long
+inline BigFloat operator*(const BigFloat& x, long y)
+{ BigFloat r; r.mul(x, y); return r; }
+/// long * BigFloat
+inline BigFloat operator*(long x, const BigFloat& y)
+{ BigFloat r; r.mul(x, y); return r; }
+/// BigFloat * unsigned long
+inline BigFloat operator*(const BigFloat& x, unsigned long y)
+{ BigFloat r; r.mul(x, y); return r; }
+/// unsigned long * BigFloat
+inline BigFloat operator*(unsigned long x, const BigFloat& y)
+{ BigFloat r; r.mul(x, y); return r; }
+/// BigFloat * double
+inline BigFloat operator*(const BigFloat& x, double y)
+{ BigFloat r; r.mul(x, y); return r; }
+/// double * BigFloat
+inline BigFloat operator*(double x, const BigFloat& y)
+{ BigFloat r; r.mul(x, y); return r; }
+/// BigFloat * BigInt
+inline BigFloat operator*(const BigFloat& x, const BigInt& y)
+{ BigFloat r; r.mul(x, y); return r; }
+/// BigInt * BigFloat
+inline BigFloat operator*(const BigInt& x, const BigFloat& y)
+{ BigFloat r; r.mul(x, y); return r; }
+/// BigFloat * BigRat
+inline BigFloat operator*(const BigFloat& x, const BigRat& y)
+{ BigFloat r; r.mul(x, y); return r; }
+/// BigRat * BigFloat
+inline BigFloat operator*(const BigRat& x, const BigFloat& y)
+{ BigFloat r; r.mul(x, y); return r; }
 
-////////////////////////////////////////////////////////////////////////////////
-/// cubic root -- cbrt(BigFloat)
-template <template <typename, typename, typename> class Policy>
-inline bool BigFloat::_cbrt(const BigFloat& x, prec_t prec) {
-  if (x.is_exact())
-    return this->_cbrt<Policy, FT>(x.m_l, prec);
-  else {
-    Policy<FT, FT, FT>::cbrt(m_l, x.m_l, prec, BF_RNDD);
-    Policy<FT, FT, FT>::cbrt(m_r, x.m_r, prec, BF_RNDU);
-    set_exact(false);
-  }
-  return is_exact();
-}
-/// cubic root -- cbrt(T)
-template <template <typename, typename, typename> class Policy, typename T>
-inline bool BigFloat::_cbrt(const T& x, prec_t prec) {
-  set_exact(Policy<FT, T, FT>::cbrt(m_l, x, prec, BF_RNDD));
-  if (!is_exact()) Policy<FT, T, FT>::cbrt(m_r, x, prec, BF_RNDU);
-  return is_exact();
-}
+/// BigFloat / BigFloat
+inline BigFloat operator/(const BigFloat& x, const BigFloat& y)
+{ BigFloat r; r.div(x, y); return r; }
+/// BigFloat / int
+inline BigFloat operator/(const BigFloat& x, int y)
+{ BigFloat r; r.div(x, y); return r; }
+/// BigFloat / unsigned int
+inline BigFloat operator/(const BigFloat& x, unsigned int y)
+{ BigFloat r; r.div(x, y); return r; }
+/// BigFloat / long
+inline BigFloat operator/(const BigFloat& x, long y)
+{ BigFloat r; r.div(x, y); return r; }
+/// BigFloat / unsigned long
+inline BigFloat operator/(const BigFloat& x, unsigned long y)
+{ BigFloat r; r.div(x, y); return r; }
+/// BigFloat / double
+inline BigFloat operator/(const BigFloat& x, double y)
+{ BigFloat r; r.div(x, y); return r; }
+/// BigFloat / BigInt
+inline BigFloat operator/(const BigFloat& x, const BigInt& y)
+{ BigFloat r; r.div(x, y); return r; }
+/// BigFloat / BigRat
+inline BigFloat operator/(const BigFloat& x, const BigRat& y)
+{ BigFloat r; r.div(x, y); return r; }
+//@}
 
-////////////////////////////////////////////////////////////////////////////////
-/// k-th root -- root(BigFloat)
-template <template <typename, typename, typename> class Policy>
-inline bool BigFloat::_root(const BigFloat& x, unsigned long k, prec_t prec) {
-  if (x.is_exact())
-    return this->_root<Policy, FT>(x.m_l, k, prec);
-  else {
-    Policy<FT, FT, FT>::root(m_l, x.m_l, k, prec, BF_RNDD);
-    Policy<FT, FT, FT>::root(m_r, x.m_r, k, prec, BF_RNDU);
-    set_exact(false);
-  }
-  return is_exact();
-}
-/// k-th root -- root(T)
-template <template <typename, typename, typename> class Policy, typename T>
-inline bool BigFloat::_root(const T& x, unsigned long k, prec_t prec) {
-  set_exact(Policy<FT, T, FT>::root(m_l, x, k, prec, BF_RNDD));
-  if (!is_exact()) Policy<FT, T, FT>::root(m_r, x, k, prec, BF_RNDU);
-  return is_exact();
-}
+/// BigFloat  << int
+inline BigFloat  operator<<(const BigFloat & x, int y)
+{ BigFloat  r; r.mul_2exp(x, y); return r; }
+/// BigFloat  << unsigned int
+inline BigFloat  operator<<(const BigFloat & x, unsigned int y)
+{ BigFloat  r; r.mul_2exp(x, y); return r; }
+/// BigFloat  << long
+inline BigFloat  operator<<(const BigFloat & x, long y)
+{ BigFloat  r; r.mul_2exp(x, y); return r; }
+/// BigFloat  << unsigned long
+inline BigFloat  operator<<(const BigFloat & x, unsigned long y)
+{ BigFloat  r; r.mul_2exp(x, y); return r; }
+/// BigFloat  >> int
+inline BigFloat  operator>>(const BigFloat & x, int y)
+{ BigFloat  r; r.div_2exp(x, y); return r; }
+/// BigFloat  >> unsigned int
+inline BigFloat  operator>>(const BigFloat & x, unsigned int y)
+{ BigFloat  r; r.div_2exp(x, y); return r; }
+/// BigFloat  >> long
+inline BigFloat  operator>>(const BigFloat & x, long y)
+{ BigFloat  r; r.div_2exp(x, y); return r; }
+/// BigFloat  >> unsigned long
+inline BigFloat  operator>>(const BigFloat & x, unsigned long y)
+{ BigFloat  r; r.div_2exp(x, y); return r; }
+//@}
 
-////////////////////////////////////////////////////////////////////////////////
-/// addition -- (BigFloat + BigFloat)
-template <template <typename, typename, typename> class Policy>
-inline bool BigFloat::_add(const BigFloat& x, const BigFloat& y, prec_t prec) {
-  if (x.is_exact())
-    return this->_add<Policy, FT>(x.m_l, y, prec);
-  else if (y.is_exact())
-    return this->_add<Policy, FT>(x, y.m_l, prec);
-  else {
-    Policy<FT, FT, FT>::add(m_l, x.m_l, y.m_l, prec, BF_RNDD);
-    Policy<FT, FT, FT>::add(m_r, x.m_r, y.m_r, prec, BF_RNDU);
-    set_exact(false);
-    return is_exact();
-  }
-}
-/// addition -- (BigFloat + T)
-template <template <typename, typename, typename> class Policy, typename T>
-inline bool BigFloat::_add(const BigFloat& x, const T& y, prec_t prec) {
-  set_exact(Policy<FT, FT, T>::add(m_l, x.m_l, y, prec, BF_RNDD));
-  if (!is_exact() || !x.is_exact()) {
-    Policy<FT, FT, T>::add(m_r, x.m_r, y, prec, BF_RNDU);
-    set_exact(false);
-  }
-  return is_exact();
-}
-/// addition -- (T + BigFloat)
-template <template <typename, typename, typename> class Policy, typename T>
-inline bool BigFloat::_add(const T& x, const BigFloat& y, prec_t prec) {
-  set_exact(Policy<FT, T, FT>::add(m_l, x, y.m_l, prec, BF_RNDD));
-  if (!is_exact() || !y.is_exact()) {
-    Policy<FT, T, FT>::add(m_r, x, y.m_r, prec, BF_RNDU);
-    set_exact(false);
-  } 
-  return is_exact();
-}
+/// \addtogroup BigFloatComparisonOperators
+//@{
+/// BigFloat  == BigFloat 
+inline bool operator==(const BigFloat & x, const BigFloat & y)
+{ return x.cmp(y) == 0; }
+/// BigFloat  == int
+inline bool operator==(const BigFloat & x, int y)
+{ return x.cmp(y) == 0; }
+/// int == BigFloat 
+inline bool operator==(int x, const BigFloat & y)
+{ return y.cmp(x) == 0; }
+/// BigFloat  == unsigned int
+inline bool operator==(const BigFloat & x, unsigned int y)
+{ return x.cmp(y) == 0; }
+/// unsigned int == BigFloat 
+inline bool operator==(unsigned int x, const BigFloat & y)
+{ return y.cmp(x) == 0; }
+/// BigFloat  == long
+inline bool operator==(const BigFloat & x, long y)
+{ return x.cmp(y) == 0; }
+/// long == BigFloat 
+inline bool operator==(long x, const BigFloat & y)
+{ return y.cmp(x) == 0; }
+/// BigFloat  == unsigned long
+inline bool operator==(const BigFloat & x, unsigned long y)
+{ return x.cmp(y) == 0; }
+/// unsigned long == BigFloat 
+inline bool operator==(unsigned long x, const BigFloat & y)
+{ return y.cmp(x) == 0; }
+/// BigFloat  == double
+inline bool operator==(const BigFloat & x, double y)
+{ return x.cmp(y) == 0; }
+/// double == BigFloat 
+inline bool operator==(double x, const BigFloat & y)
+{ return y.cmp(x) == 0; }
+/// BigFloat  == BigInt
+inline bool operator==(const BigFloat & x, const BigInt& y)
+{ return x.cmp(y) == 0; }
+/// BigInt == BigFloat 
+inline bool operator==(const BigInt& x, const BigFloat & y)
+{ return y.cmp(x) == 0; }
+/// BigFloat  == BigRat
+inline bool operator==(const BigFloat & x, const BigRat& y)
+{ return x.cmp(y) == 0; }
+/// BigRat == BigFloat 
+inline bool operator==(const BigRat& x, const BigFloat & y)
+{ return y.cmp(x) == 0; }
 
-////////////////////////////////////////////////////////////////////////////////
-/// subtraction -- (BigFloat - BigFloat)
-template <template <typename, typename, typename> class Policy>
-inline bool BigFloat::_sub(const BigFloat& x, const BigFloat& y, prec_t prec) {
-  if (x.is_exact())
-    return this->_sub<Policy, FT>(x.m_l, y, prec);
-  else if (y.is_exact())
-    return this->_sub<Policy, FT>(x, y.m_l, prec);
-  else {
-    Policy<FT, FT, FT>::sub(m_l, x.m_l, y.m_r, prec, BF_RNDD);
-    Policy<FT, FT, FT>::sub(m_r, x.m_r, y.m_l, prec, BF_RNDU);
-    set_exact(false);
-    return is_exact();
-  }
-}
-/// subtraction -- (BigFloat - T)
-template <template <typename, typename, typename> class Policy, typename T>
-inline bool BigFloat::_sub(const BigFloat& x, const T& y, prec_t prec) {
-  set_exact(Policy<FT, FT, T>::sub(m_l, x.m_l, y, prec, BF_RNDD));
-  if (!is_exact() || !x.is_exact()) {
-    Policy<FT, FT, T>::sub(m_r, x.m_r, y, prec, BF_RNDU);
-    set_exact(false);
-  }
-  return is_exact();
-}
-/// subtraction -- (T - BigFloat)
-template <template <typename, typename, typename> class Policy, typename T>
-inline bool BigFloat::_sub(const T& x, const BigFloat& y, prec_t prec) {
-  set_exact(Policy<FT, T, FT>::sub(m_l, x, y.m_l, prec, BF_RNDD));
-  if (!is_exact() || !y.is_exact()) {
-    Policy<FT, T, FT>::sub(m_r, x, y.m_r, prec, BF_RNDU);
-    set_exact(false);
-  } 
-  return is_exact();
-}
+/// BigFloat  != BigFloat 
+inline bool operator!=(const BigFloat & x, const BigFloat & y)
+{ return x.cmp(y) != 0; }
+/// BigFloat  != int
+inline bool operator!=(const BigFloat & x, int y)
+{ return x.cmp(y) != 0; }
+/// int != BigFloat 
+inline bool operator!=(int x, const BigFloat & y)
+{ return y.cmp(x) != 0; }
+/// BigFloat  != unsigned int
+inline bool operator!=(const BigFloat & x, unsigned int y)
+{ return x.cmp(y) != 0; }
+/// unsigned int != BigFloat 
+inline bool operator!=(unsigned int x, const BigFloat & y)
+{ return y.cmp(x) != 0; }
+/// BigFloat  != long
+inline bool operator!=(const BigFloat & x, long y)
+{ return x.cmp(y) != 0; }
+/// long != BigFloat 
+inline bool operator!=(long x, const BigFloat & y)
+{ return y.cmp(x) != 0; }
+/// BigFloat  != unsigned long
+inline bool operator!=(const BigFloat & x, unsigned long y)
+{ return x.cmp(y) != 0; }
+/// unsigned long != BigFloat 
+inline bool operator!=(unsigned long x, const BigFloat & y)
+{ return y.cmp(x) != 0; }
+/// BigFloat  != double
+inline bool operator!=(const BigFloat & x, double y)
+{ return x.cmp(y) != 0; }
+/// double != BigFloat 
+inline bool operator!=(double x, const BigFloat & y)
+{ return y.cmp(x) != 0; }
+/// BigFloat  != BigInt
+inline bool operator!=(const BigFloat & x, const BigInt& y)
+{ return x.cmp(y) != 0; }
+/// BigInt != BigFloat 
+inline bool operator!=(const BigInt& x, const BigFloat & y)
+{ return y.cmp(x) != 0; }
+/// BigFloat  != BigRat
+inline bool operator!=(const BigFloat & x, const BigRat& y)
+{ return x.cmp(y) != 0; }
+/// BigRat != BigFloat 
+inline bool operator!=(const BigRat& x, const BigFloat & y)
+{ return y.cmp(x) != 0; }
 
-////////////////////////////////////////////////////////////////////////////////
-/// multiplication -- (BigFloat * BigFloat)
-template <template <typename, typename, typename> class Policy>
-inline bool BigFloat::_mul(const BigFloat& x, const BigFloat& y, prec_t prec) {
-  if (x.is_exact())
-    return this->_mul<Policy, FT>(x.m_l, y, prec);
-  else if (y.is_exact())
-    return this->_mul<Policy, FT>(x, y.m_l, prec);
-  else {
-    typedef Policy<FT, FT, FT> P;
-    if (x.m_l.sgn() >= 0) {
-      if (y.m_l.sgn() >= 0) {
-        P::mul(m_l, x.m_l, y.m_l, prec, BF_RNDD);
-        P::mul(m_r, x.m_r, y.m_r, prec, BF_RNDU);
-      } else if (y.m_r.sgn() <= 0) {
-        P::mul(m_l, x.m_r, y.m_l, prec, BF_RNDD);
-        P::mul(m_r, x.m_l, y.m_r, prec, BF_RNDU);
-      } else {
-        P::mul(m_l, x.m_r, y.m_l, prec, BF_RNDD);
-        P::mul(m_r, x.m_r, y.m_r, prec, BF_RNDU);
-      }
-    } else if (x.m_r.sgn() <= 0) {
-      if (y.m_l.sgn() >= 0) {
-        P::mul(m_l, x.m_l, y.m_r, prec, BF_RNDD);
-        P::mul(m_r, x.m_r, y.m_l, prec, BF_RNDU);
-      } else if (y.m_r.sgn() <= 0) {
-        P::mul(m_l, x.m_r, y.m_r, prec, BF_RNDD);
-        P::mul(m_r, x.m_l, y.m_l, prec, BF_RNDU);
-      } else {
-        P::mul(m_l, x.m_l, y.m_r, prec, BF_RNDD);
-        P::mul(m_r, x.m_l, y.m_l, prec, BF_RNDU);
-      }
-    } else {
-      if (y.m_l.sgn() >= 0) {
-        P::mul(m_l, x.m_l, y.m_r, prec, BF_RNDD);
-        P::mul(m_r, x.m_r, y.m_r, prec, BF_RNDU);
-      } else if (y.m_r.sgn() <= 0) {
-        P::mul(m_l, x.m_r, y.m_l, prec, BF_RNDD);
-        P::mul(m_r, x.m_l, y.m_l, prec, BF_RNDU);
-      } else {
-        FT tmp;
-        // compute min{x.m_l*y.m_r, x.m_r*y.m_l}
-        P::mul(m_l, x.m_l, y.m_r, prec, BF_RNDD);
-        tmp.set_prec(m_l.get_prec());
-        P::mul(tmp, x.m_r, y.m_l, prec, BF_RNDD);
-        if (m_l.cmp(tmp) > 0) m_l.swap(tmp);
-        // compute max{x.m_r*y.m_r, x.m_l*y.m_l}
-        P::mul(m_r, x.m_r, y.m_r, prec, BF_RNDU);
-        tmp.set_prec(m_r.get_prec());
-        P::mul(tmp, x.m_l, y.m_l, prec, BF_RNDU);
-        if (m_r.cmp(tmp) < 0) m_r.swap(tmp);
-      }
-    }
-    set_exact(false);
-    return is_exact();
-  }
-}
-/// multiplication -- (BigFloat * T)
-template <template <typename, typename, typename> class Policy, typename T>
-inline bool BigFloat::_mul(const BigFloat& x, const T& y, prec_t prec) {
-  typedef Policy<FT, FT, T> P;
-  if (x.is_exact()) {
-    set_exact(P::mul(m_l, x.m_l, y, prec, BF_RNDD));
-    if (!is_exact()) P::mul(m_r, x.m_l, y, prec, BF_RNDU);
-  } else {
-    set_exact(P::mul(m_l, (y>0?x.m_l:x.m_r), y, prec, BF_RNDD));
-    if (!is_exact()) P::mul(m_r, (y>0?x.m_r:x.m_l), y, prec, BF_RNDU);
-  } 
-  return is_exact();
-}
-/// multiplication -- (T * BigFloat)
-template <template <typename, typename, typename> class Policy, typename T>
-inline bool BigFloat::_mul(const T& x, const BigFloat& y, prec_t prec) {
-  typedef Policy<FT, T, FT> P;
-  if (y.is_exact()) {
-    set_exact(P::mul(m_l, x, y.m_l, prec, BF_RNDD));
-    if (!is_exact()) P::mul(m_r, x, y.m_l, prec, BF_RNDU);
-  } else {
-    set_exact(P::mul(m_l, x, (x>0?y.m_l:y.m_r), prec, BF_RNDD));
-    if (!is_exact()) P::mul(m_r, x, (x>0?y.m_r:y.m_l), prec, BF_RNDU);
-  } 
-  return is_exact();
-}
+/// BigFloat  >= BigFloat 
+inline bool operator>=(const BigFloat & x, const BigFloat & y)
+{ return x.cmp(y) >= 0; }
+/// BigFloat  >= int
+inline bool operator>=(const BigFloat & x, int y)
+{ return x.cmp(y) >= 0; }
+/// int >= BigFloat 
+inline bool operator>=(int x, const BigFloat & y)
+{ return y.cmp(x) <= 0; }
+/// BigFloat  >= unsigned int
+inline bool operator>=(const BigFloat & x, unsigned int y)
+{ return x.cmp(y) >= 0; }
+/// unsigned int >= BigFloat 
+inline bool operator>=(unsigned int x, const BigFloat & y)
+{ return y.cmp(x) <= 0; }
+/// BigFloat  >= long
+inline bool operator>=(const BigFloat & x, long y)
+{ return x.cmp(y) >= 0; }
+/// long >= BigFloat 
+inline bool operator>=(long x, const BigFloat & y)
+{ return y.cmp(x) <= 0; }
+/// BigFloat  >= unsigned long
+inline bool operator>=(const BigFloat & x, unsigned long y)
+{ return x.cmp(y) >= 0; }
+/// unsigned long >= BigFloat 
+inline bool operator>=(unsigned long x, const BigFloat & y)
+{ return y.cmp(x) <= 0; }
+/// BigFloat  >= double
+inline bool operator>=(const BigFloat & x, double y)
+{ return x.cmp(y) >= 0; }
+/// double >= BigFloat 
+inline bool operator>=(double x, const BigFloat & y)
+{ return y.cmp(x) <= 0; }
+/// BigFloat  >= BigInt
+inline bool operator>=(const BigFloat & x, const BigInt& y)
+{ return x.cmp(y) >= 0; }
+/// BigInt >= BigFloat 
+inline bool operator>=(const BigInt& x, const BigFloat & y)
+{ return y.cmp(x) <= 0; }
+/// BigFloat  >= BigRat
+inline bool operator>=(const BigFloat & x, const BigRat& y)
+{ return x.cmp(y) >= 0; }
+/// BigRat >= BigFloat 
+inline bool operator>=(const BigRat& x, const BigFloat & y)
+{ return y.cmp(x) <= 0; }
 
-////////////////////////////////////////////////////////////////////////////////
-/// division -- (BigFloat / BigFloat)
-template <template <typename, typename, typename> class Policy>
-inline bool BigFloat::_div(const BigFloat& x, const BigFloat& y, prec_t prec) {
-  if (x.is_exact())
-    return this->_div<Policy, FT>(x.m_l, y, prec);
-  else if (y.is_exact())
-    return this->_div<Policy, FT>(x, y.m_l, prec);
-  else if (y.has_zero()) {
-    set_inf();
-  } else {
-    typedef Policy<FT, FT, FT> P;
-    if (x.m_l.sgn() >= 0) {
-      if (y.m_l.sgn() >= 0) {
-        P::div(m_l, x.m_l, y.m_r, prec, BF_RNDD);
-        P::div(m_r, x.m_r, y.m_l, prec, BF_RNDU);
-      } else if (y.m_r.sgn() <= 0) {
-        P::div(m_l, x.m_r, y.m_r, prec, BF_RNDD);
-        P::div(m_r, x.m_l, y.m_l, prec, BF_RNDU);
-      }
-    } else if (x.m_r.sgn() <= 0) {
-      if (y.m_l.sgn() >= 0) {
-        P::div(m_l, x.m_l, y.m_l, prec, BF_RNDD);
-        P::div(m_r, x.m_r, y.m_r, prec, BF_RNDU);
-      } else if (y.m_r.sgn() <= 0) {
-        P::div(m_l, x.m_r, y.m_l, prec, BF_RNDD);
-        P::div(m_r, x.m_l, y.m_r, prec, BF_RNDU);
-      }
-    } else {
-      if (y.m_l.sgn() > 0) {
-        P::div(m_l, x.m_l, y.m_l, prec, BF_RNDD);
-        P::div(m_r, x.m_r, y.m_l, prec, BF_RNDU);
-      } else if (y.m_r.sgn() < 0) {
-        P::div(m_l, x.m_r, y.m_r, prec, BF_RNDD);
-        P::div(m_r, x.m_l, y.m_r, prec, BF_RNDU);
-      }
-    }
-    set_exact(false);
-  }
-  return is_exact();
-}
-/// division -- (BigFloat / T)
-template <template <typename, typename, typename> class Policy, typename T>
-inline bool BigFloat::_div(const BigFloat& x, const T& y, prec_t prec) {
-  typedef Policy<FT, FT, T> P;
-  if (x.is_exact()) {
-    set_exact(P::div(m_l, x.m_l, y, prec, BF_RNDD));
-    if (!is_exact()) P::div(m_r, x.m_l, y, prec, BF_RNDU);
-  } else {
-    set_exact(P::div(m_l, (y>0?x.m_l:x.m_r), y, prec, BF_RNDD));
-    if (!is_exact()) P::div(m_r, (y>0?x.m_r:x.m_l), y, prec, BF_RNDU);
-  }
-  return is_exact();
-}
-/// division -- (T / BigFloat)
-template <template <typename, typename, typename> class Policy, typename T>
-inline bool BigFloat::_div(const T& x, const BigFloat& y, prec_t prec) {
-  typedef Policy<FT, T, FT> P;
-  if (y.is_exact()) {
-    set_exact(P::div(m_l, x, y.m_l, prec, BF_RNDD));
-    if (!is_exact()) P::div(m_r, x, y.m_l, prec, BF_RNDU);
-  } else {
-    set_exact(P::div(m_l, x, (x>0?y.m_r:y.m_l), prec, BF_RNDD));
-    if (!is_exact()) P::div(m_r, x, (x>0?y.m_l:y.m_r), prec, BF_RNDU);
-  } 
-  return is_exact();
-}
+/// BigFloat  <= BigFloat 
+inline bool operator<=(const BigFloat & x, const BigFloat & y)
+{ return x.cmp(y) <= 0; }
+/// BigFloat  <= int
+inline bool operator<=(const BigFloat & x, int y)
+{ return x.cmp(y) <= 0; }
+/// int <= BigFloat 
+inline bool operator<=(int x, const BigFloat & y)
+{ return y.cmp(x) >= 0; }
+/// BigFloat  <= unsigned int
+inline bool operator<=(const BigFloat & x, unsigned int y)
+{ return x.cmp(y) <= 0; }
+/// unsigned int <= BigFloat 
+inline bool operator<=(unsigned int x, const BigFloat & y)
+{ return y.cmp(x) >= 0; }
+/// BigFloat  <= long
+inline bool operator<=(const BigFloat & x, long y)
+{ return x.cmp(y) <= 0; }
+/// long <= BigFloat 
+inline bool operator<=(long x, const BigFloat & y)
+{ return y.cmp(x) >= 0; }
+/// BigFloat  <= unsigned long
+inline bool operator<=(const BigFloat & x, unsigned long y)
+{ return x.cmp(y) <= 0; }
+/// unsigned long <= BigFloat 
+inline bool operator<=(unsigned long x, const BigFloat & y)
+{ return y.cmp(x) >= 0; }
+/// BigFloat  <= double
+inline bool operator<=(const BigFloat & x, double y)
+{ return x.cmp(y) <= 0; }
+/// double <= BigFloat 
+inline bool operator<=(double x, const BigFloat & y)
+{ return y.cmp(x) >= 0; }
+/// BigFloat  <= BigInt
+inline bool operator<=(const BigFloat & x, const BigInt& y)
+{ return x.cmp(y) <= 0; }
+/// BigInt <= BigFloat 
+inline bool operator<=(const BigInt& x, const BigFloat & y)
+{ return y.cmp(x) >= 0; }
+/// BigFloat  <= BigRat
+inline bool operator<=(const BigFloat & x, const BigRat& y)
+{ return x.cmp(y) <= 0; }
+/// BigRat <= BigFloat 
+inline bool operator<=(const BigRat& x, const BigFloat & y)
+{ return y.cmp(x) >= 0; }
+
+/// BigFloat  > BigFloat 
+inline bool operator>(const BigFloat & x, const BigFloat & y)
+{ return x.cmp(y) > 0; }
+/// BigFloat  > int
+inline bool operator>(const BigFloat & x, int y)
+{ return x.cmp(y) > 0; }
+/// int > BigFloat 
+inline bool operator>(int x, const BigFloat & y)
+{ return y.cmp(x) < 0; }
+/// BigFloat  > unsigned int
+inline bool operator>(const BigFloat & x, unsigned int y)
+{ return x.cmp(y) > 0; }
+/// unsigned int > BigFloat 
+inline bool operator>(unsigned int x, const BigFloat & y)
+{ return y.cmp(x) < 0; }
+/// BigFloat  > long
+inline bool operator>(const BigFloat & x, long y)
+{ return x.cmp(y) > 0; }
+/// long > BigFloat 
+inline bool operator>(long x, const BigFloat & y)
+{ return y.cmp(x) < 0; }
+/// BigFloat  > unsigned long
+inline bool operator>(const BigFloat & x, unsigned long y)
+{ return x.cmp(y) > 0; }
+/// unsigned long > BigFloat 
+inline bool operator>(unsigned long x, const BigFloat & y)
+{ return y.cmp(x) < 0; }
+/// BigFloat  > double
+inline bool operator>(const BigFloat & x, double y)
+{ return x.cmp(y) > 0; }
+/// double > BigFloat 
+inline bool operator>(double x, const BigFloat & y)
+{ return y.cmp(x) < 0; }
+/// BigFloat  > BigInt
+inline bool operator>(const BigFloat & x, const BigInt& y)
+{ return x.cmp(y) > 0; }
+/// BigInt > BigFloat 
+inline bool operator>(const BigInt& x, const BigFloat & y)
+{ return y.cmp(x) < 0; }
+/// BigFloat  > BigRat
+inline bool operator>(const BigFloat & x, const BigRat& y)
+{ return x.cmp(y) > 0; }
+/// BigRat > BigFloat 
+inline bool operator>(const BigRat& x, const BigFloat & y)
+{ return y.cmp(x) < 0; }
+
+/// BigFloat  < BigFloat 
+inline bool operator<(const BigFloat & x, const BigFloat & y)
+{ return x.cmp(y) < 0; }
+/// BigFloat  < int
+inline bool operator<(const BigFloat & x, int y)
+{ return x.cmp(y) < 0; }
+/// int < BigFloat 
+inline bool operator<(int x, const BigFloat & y)
+{ return y.cmp(x) > 0; }
+/// BigFloat  < unsigned int
+inline bool operator<(const BigFloat & x, unsigned int y)
+{ return x.cmp(y) < 0; }
+/// unsigned int < BigFloat 
+inline bool operator<(unsigned int x, const BigFloat & y)
+{ return y.cmp(x) > 0; }
+/// BigFloat  < long
+inline bool operator<(const BigFloat & x, long y)
+{ return x.cmp(y) < 0; }
+/// long < BigFloat 
+inline bool operator<(long x, const BigFloat & y)
+{ return y.cmp(x) > 0; }
+/// BigFloat  < unsigned long
+inline bool operator<(const BigFloat & x, unsigned long y)
+{ return x.cmp(y) < 0; }
+/// unsigned long < BigFloat 
+inline bool operator<(unsigned long x, const BigFloat & y)
+{ return y.cmp(x) > 0; }
+/// BigFloat  < double
+inline bool operator<(const BigFloat & x, double y)
+{ return x.cmp(y) < 0; }
+/// double < BigFloat 
+inline bool operator<(double x, const BigFloat & y)
+{ return y.cmp(x) > 0; }
+/// BigFloat  < BigInt
+inline bool operator<(const BigFloat & x, const BigInt& y)
+{ return x.cmp(y) < 0; }
+/// BigInt < BigFloat 
+inline bool operator<(const BigInt& x, const BigFloat & y)
+{ return y.cmp(x) > 0; }
+/// BigFloat  < BigRat
+inline bool operator<(const BigFloat & x, const BigRat& y)
+{ return x.cmp(y) < 0; }
+/// BigRat < BigFloat 
+inline bool operator<(const BigRat& x, const BigFloat & y)
+{ return y.cmp(x) > 0; }
+//@}
+
+/// \addtogroup BigFloatIostreamOperators
+//@{
+/// istream operator for <tt>BigFloat</tt>
+inline std::istream& operator>>(std::istream& is, BigFloat& x)
+{ return is >> x.mp(); }
+/// ostream operator for <tt>BigFloat</tt>
+inline std::ostream& operator<<(std::ostream& os, const BigFloat& x)
+{ return os << x.get_str(); }
+//@}
+
+/// \addtogroup BigFloatGlobalFunctions
+//@{
+/// square root
+inline BigFloat sqrt(const BigFloat& x, prec_t prec = MPFR_DEF_SQRT_PREC)
+{ BigFloat r(0, prec); r.sqrt(x); return r; }
+/// cubic root
+inline BigFloat cbrt(const BigFloat& x, prec_t prec = MPFR_DEF_CBRT_PREC)
+{ BigFloat r(0, prec); r.cbrt(x); return r; }
+/// k-th root
+inline BigFloat root(const BigFloat& x, unsigned long k, prec_t prec = MPFR_DEF_ROOT_PREC)
+{ BigFloat r(0, prec); r.root(x, k); return r; }
+//@}
+
+#ifndef CORE_DISABLE_OLDNAMES 
+/// \addtogroup BigFloatBackCompatiableFunctions
+//@{
+/// comparison
+inline int cmp(const BigFloat& x, const BigFloat& y) { return x.cmp(y); }
+/// sign 
+inline int sign(const BigFloat& a) { return a.sgn(); }
+/// abs
+inline BigFloat abs(const BigFloat& a) { BigFloat r; r.abs(a); return r; }
+/// neg
+inline BigFloat neg(const BigFloat& a) { BigFloat r; r.neg(a); return r; }
+/// pow 
+//inline BigFloat pow(const BigFloat& a, unsigned long p) 
+//{ BigFloat r; r.pow(a, p); return r; }
+//@}
+#endif
+

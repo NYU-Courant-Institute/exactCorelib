@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.4 2006-03-02 01:02:17 exact Exp $
+ * $Id: BigFloat.h,v 1.5 2006-03-02 04:55:16 exact Exp $
  ***************************************************************************/
 #ifndef __BIGFLOAT_H__
 #define __BIGFLOAT_H__
@@ -34,12 +34,6 @@
 
   1. mpfr_set_str() returns 0 if the string is a valid number, otherwise 
      returns -1. So you cannot get the exactness of the results.
-
-  2. C++ style operators didn't work now since I haven't implement automatic
-     version functions.
-  
-  3. when implementing automatic version, need notice the input could be the
-     output, in that case, set_prec will reset the input value. 
  */
 
 // default rouning mode
@@ -47,19 +41,25 @@
 #define MPFR_RND mpfr_get_default_rounding_mode()
 #endif
 
+// Invert a round mode
+#define INVERT_RND(rnd) \
+((rnd == GMP_RNDU) ? GMP_RNDD : ((rnd == GMP_RNDD) ? GMP_RNDU : rnd))
+// Invert sign
+inline void invert_sgn(mpfr_ptr x)
+{ MPFR_SIGN(x) = -MPFR_SIGN(x); }
+
 /* subtraction */
-/* TODO: need take more care of rounding mode */
-inline int mpfr_z_sub(mpfr_ptr z, mpz_srcptr x, mpfr_srcptr y, rnd_t rnd)
-{ int r = mpfr_sub_z(z, y, x, rnd); mpfr_neg(z, z, rnd); return -r; }
-inline int mpfr_q_sub(mpfr_ptr z, mpq_srcptr x, mpfr_srcptr y, rnd_t rnd)
-{ int r = mpfr_sub_q(z, y, x, rnd); mpfr_neg(z, z, rnd); return -r; }
+inline int mpfr_z_sub(mpfr_ptr z, mpz_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
+{ int r = -mpfr_sub_z(z, y, x, INVERT_RND(rnd)); invert_sgn(z); return r; }
+inline int mpfr_q_sub(mpfr_ptr z, mpq_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
+{ int r = -mpfr_sub_q(z, y, x, INVERT_RND(rnd)); invert_sgn(z); return r; }
 
 /* remove trailing zeros (by limbs) */
 void mpfr_remove_trailing_zeros(mpfr_t x);
 /* C++-style input of mpfr */
 std::istream& operator>> (std::istream &, mpfr_ptr);
 /* convert mpfr to string */
-std::string mpfr2str(mpfr_srcptr mp, size_t ndigits, int base, bool fixed, rnd_t rnd = MPFR_RND);
+std::string mpfr2str(mpfr_srcptr, size_t, int, bool, rnd_t);
   
 #ifdef CORE_BEGIN_NAMESPACE
 CORE_BEGIN_NAMESPACE
@@ -82,7 +82,7 @@ const prec_t MPFR_DEF_DIV_PREC = DOUBLE_PREC;
 #endif
 
 /// \class BigFloat BigFloat.h
-/// \brief BigFloat is a wrapper class of <tt>mpfr</tt> in MPFR
+/// \brief BigFloat is a big floating-point number class based on MPFR
 class BigFloat : public BigFloatBase {
   typedef BigFloatBase base_cls;
 public: // public typedefs
@@ -241,50 +241,37 @@ public:
   //@{
   /// assignment functions for <tt>T</tt>
   template <typename T> int set(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
-  { mpfr_set_prec(mp(), prec); r_set(x, rnd); }
+  { set_prec(prec); return r_set(x, rnd); }
   /// assignment functions for <tt>char*</tt>
   int set(const char* x, int base, prec_t prec, rnd_t rnd = MPFR_RND)
-  { mpfr_set_prec(mp(), prec); r_set(x, base, rnd); }
+  { set_prec(prec); return r_set(x, base, rnd); }
   /// assignment functions for <tt>std::string</tt>
   int set(const std::string& x, int base, prec_t prec, rnd_t rnd = MPFR_RND)
-  { mpfr_set_prec(mp(), prec); r_set(x.c_str(), base, rnd); }
+  { set_prec(prec); return r_set(x.c_str(), base, rnd); }
   /// set value to be \f$i*2^e\f$ for <tt>T</tt>
-  template <typename T> int set_2exp(const T& x,prec_t prec,rnd_t rnd=MPFR_RND)
-  { set_prec(prec); r_set_2exp(x, rnd); }
+  template <typename T> 
+  int set_2exp(const T& x, exp_t e, prec_t prec, rnd_t rnd = MPFR_RND)
+  { set_prec(prec); return r_set_2exp(x, e, rnd); }
   //@}
 
   /// \name assignment functions (auto version)
   //@{
   /// assignment functions for <tt>T</tt>
   template <typename T> int set(const T& x, rnd_t rnd = MPFR_RND)
-  { mpfr_set_prec(mp(), count_prec(x)); r_set(x, rnd); }
+  { set_prec(count_prec(x)); return r_set(x, rnd); }
   /// assignment functions for <tt>char*</tt>
   int set(const char* x, int base = 10, rnd_t rnd = MPFR_RND)
-  { mpfr_set_prec(mp(), count_prec(x)); r_set(x, base, rnd); }
+  { set_prec(count_prec(x)); return r_set(x, base, rnd); }
   /// assignment functions for <tt>std::string</tt>
   int set(const std::string& x, int base = 10, rnd_t rnd = MPFR_RND)
-  { mpfr_set_prec(mp(), count_prec(x)); r_set(x, base, rnd); }
+  { set_prec(count_prec(x)); return r_set(x, base, rnd); }
   /// set value to be \f$i*2^e\f$ for <tt>T</tt>
-  template <typename T> int set_2exp(const T& x, rnd_t rnd = MPFR_RND)
-  { set_prec(count_prec(x)); r_set(x, rnd); }
+  template <typename T> 
+  int set_2exp(const T& x, exp_t e, rnd_t rnd = MPFR_RND)
+  { set_prec(count_prec(x)); return r_set_2exp(x, e, rnd); }
   //@}
 
 public:
-  /// \name arithmetic functions -- addition/subtraction (raw version)
-  //@{
-  /// addition/subtraction for <tt>BigFloat</tt>
-  int addsub(const BigFloat& x, const BigFloat& y, bool isadd, rnd_t rnd = MPFR_RND)
-  { return isadd ? add(x, y, rnd) : sub(x, y, rnd); }
-  /// addition/subtraction for <tt>BigFloat, T</tt>
-  template <typename T>
-  int addsub(const BigFloat& x, const T& y, bool isadd, rnd_t rnd = MPFR_RND)
-  { return isadd ? add(x, y, rnd) : sub(x, y, rnd); }
-  /// addition/subtraction for <tt>T, BigFloat</tt>
-  template <typename T>
-  int addsub(const T& x, const BigFloat& y, bool isadd, rnd_t rnd = MPFR_RND)
-  { return isadd ? add(x, y, rnd) : sub(x, y, rnd); }
-  //@}
-
   /// \name arithmetic functions -- addition (raw version)
   //@{
   /// addition for <tt>BigFloat+BigFloat</tt>  (raw version)
@@ -292,10 +279,10 @@ public:
   { return mpfr_add(mp(), x.mp(), y.mp(), rnd); }
   /// addition for <tt>BigFloat+int</tt> (raw version)
   int r_add(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
-  { return add(x, static_cast<long>(y), rnd); }
+  { return r_add(x, static_cast<long>(y), rnd); }
   /// addition for <tt>BigFloat+unsigned int</tt> (raw version)
   int r_add(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
-  { return add(x, static_cast<unsigned long>(y), rnd); }
+  { return r_add(x, static_cast<unsigned long>(y), rnd); }
   /// addition for <tt>BigFloat+long</tt> (raw version)
   int r_add(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
   { return mpfr_add_si(mp(), x.mp(), y, rnd); }
@@ -304,7 +291,7 @@ public:
   { return mpfr_add_ui(mp(), x.mp(), y, rnd); }
   /// addition for <tt>BigFloat+double</tt> (raw version)
   int r_add(const BigFloat& x, double y, rnd_t rnd = MPFR_RND)
-  { return add(x, BigFloat(y), rnd); }
+  { return r_add(x, BigFloat(y), rnd); }
   /// addition for <tt>BigFloat+BigInt</tt> (raw version)
   int r_add(const BigFloat& x, const BigInt& y, rnd_t rnd = MPFR_RND)
   { return mpfr_add_z(mp(), x.mp(), y.mp(), rnd); }
@@ -372,10 +359,10 @@ public:
   { return mpfr_sub(mp(), x.mp(), y.mp(), rnd); }
   /// subtraction for <tt>BigFloat-int</tt> (raw version)
   int r_sub(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
-  { return sub(x, static_cast<long>(y), rnd); }
+  { return r_sub(x, static_cast<long>(y), rnd); }
   /// subtraction for <tt>BigFloat-unsigned int</tt> (raw version)
   int r_sub(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
-  { return sub(x, static_cast<unsigned long>(y), rnd); }
+  { return r_sub(x, static_cast<unsigned long>(y), rnd); }
   /// subtraction for <tt>BigFloat-long</tt> (raw version)
   int r_sub(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
   { return mpfr_sub_si(mp(), x.mp(), y, rnd); }
@@ -384,7 +371,7 @@ public:
   { return mpfr_sub_ui(mp(), x.mp(), y, rnd); }
   /// subtraction for <tt>BigFloat-double</tt> (raw version)
   int r_sub(const BigFloat& x, double y, rnd_t rnd = MPFR_RND)
-  { return sub(x, BigFloat(y), rnd); }
+  { return r_sub(x, BigFloat(y), rnd); }
   /// subtraction for <tt>BigFloat-BigInt</tt> (raw version)
   int r_sub(const BigFloat& x, const BigInt& y, rnd_t rnd = MPFR_RND)
   { return mpfr_sub_z(mp(), x.mp(), y.mp(), rnd); }
@@ -393,10 +380,10 @@ public:
   { return mpfr_sub_q(mp(), x.mp(), y.mp(), rnd); }
   /// subtraction for <tt>int-BigFloat</tt> (raw version)
   int r_sub(int x, const BigFloat& y, rnd_t rnd = MPFR_RND)
-  { return sub(static_cast<long>(x), y, rnd); }
+  { return r_sub(static_cast<long>(x), y, rnd); }
   /// subtraction for <tt>unsigned int-BigFloat</tt> (raw version)
   int r_sub(unsigned int x, const BigFloat& y, rnd_t rnd = MPFR_RND)
-  { return sub(static_cast<unsigned long>(x), y, rnd); }
+  { return r_sub(static_cast<unsigned long>(x), y, rnd); }
   /// subtraction for <tt>long-BigFloat</tt> (raw version)
   int r_sub(long x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_si_sub(mp(), x, y.mp(), rnd); }
@@ -405,7 +392,7 @@ public:
   { return mpfr_ui_sub(mp(), x, y.mp(), rnd); }
   /// subtraction for <tt>double-BigFloat</tt> (raw version)
   int r_sub(double x, const BigFloat& y, rnd_t rnd = MPFR_RND)
-  { return sub(BigFloat(x), y, rnd); }
+  { return r_sub(BigFloat(x), y, rnd); }
   /// subtraction for <tt>BigInt-BigFloat</tt> (raw version)
   int r_sub(const BigInt& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_z_sub(mp(), x.mp(), y.mp(), rnd); }
@@ -474,32 +461,32 @@ public:
   /// \name arithmetic functions -- multiplication (raw version)
   //@{
   /// multiplication for <tt>BigFloat*BigFloat</tt>
-  int mul(const BigFloat& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  int r_mul(const BigFloat& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_mul(mp(), x.mp(), y.mp(), rnd); }
   /// multiplication for <tt>BigFloat*int</tt>
-  int mul(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
-  { return mul(x, static_cast<long>(y), rnd); }
+  int r_mul(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
+  { return r_mul(x, static_cast<long>(y), rnd); }
   /// multiplication for <tt>BigFloat*unsigned int</tt>
-  int mul(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
-  { return mul(x, static_cast<unsigned long>(y), rnd); }
+  int r_mul(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
+  { return r_mul(x, static_cast<unsigned long>(y), rnd); }
   /// multiplication for <tt>BigFloat*long</tt>
-  int mul(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
+  int r_mul(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
   { return mpfr_mul_si(mp(), x.mp(), y, rnd); }
   /// multiplication for <tt>BigFloat*unsigned long</tt>
-  int mul(const BigFloat& x, unsigned long y, rnd_t rnd = MPFR_RND)
+  int r_mul(const BigFloat& x, unsigned long y, rnd_t rnd = MPFR_RND)
   { return mpfr_mul_ui(mp(), x.mp(), y, rnd); }
   /// multiplication for <tt>BigFloat*double</tt>
-  int mul(const BigFloat& x, double y, rnd_t rnd = MPFR_RND)
-  { return mul(x, BigFloat(y), rnd); }
+  int r_mul(const BigFloat& x, double y, rnd_t rnd = MPFR_RND)
+  { return r_mul(x, BigFloat(y), rnd); }
   /// multiplication for <tt>BigFloat*BigInt</tt>
-  int mul(const BigFloat& x, const BigInt& y, rnd_t rnd = MPFR_RND)
+  int r_mul(const BigFloat& x, const BigInt& y, rnd_t rnd = MPFR_RND)
   { return mpfr_mul_z(mp(), x.mp(), y.mp(), rnd); }
   /// multiplication for <tt>BigFloat*BigRat</tt>
-  int mul(const BigFloat& x, const BigRat& y, rnd_t rnd = MPFR_RND)
+  int r_mul(const BigFloat& x, const BigRat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_mul_q(mp(), x.mp(), y.mp(), rnd); }
   template <typename T> 
-  int mul(const T& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
-  { return mul(y, x, rnd); }
+  int r_mul(const T& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  { return r_mul(y, x, rnd); }
   //@}
 
   /// \name arithmetic functions -- multiplication (fixed version)
@@ -553,56 +540,57 @@ public:
   /// \name arithmetic functions -- division (raw version)
   //@{
   /// division for <tt>BigFloat/BigFloat</tt>
-  int div(const BigFloat& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  int r_div(const BigFloat& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_div(mp(), x.mp(), y.mp(), rnd); }
   /// division for <tt>BigFloat/int</tt>
-  int div(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
-  { return div(x, static_cast<long>(y), rnd); }
+  int r_div(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
+  { return r_div(x, static_cast<long>(y), rnd); }
   /// division for <tt>BigFloat/unsigned int</tt>
-  int div(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
-  { return div(x, static_cast<unsigned long>(y), rnd); }
+  int r_div(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
+  { return r_div(x, static_cast<unsigned long>(y), rnd); }
   /// division for <tt>BigFloat/long</tt>
-  int div(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
+  int r_div(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
   { return mpfr_div_si(mp(), x.mp(), y, rnd); }
   /// division for <tt>BigFloat/unsigned long</tt>
-  int div(const BigFloat& x, unsigned long y, rnd_t rnd = MPFR_RND)
+  int r_div(const BigFloat& x, unsigned long y, rnd_t rnd = MPFR_RND)
   { return mpfr_div_ui(mp(), x.mp(), y, rnd); }
   /// division for <tt>BigFloat/double</tt>
-  int div(const BigFloat& x, double y, rnd_t rnd = MPFR_RND)
-  { return div(x, BigFloat(y), rnd); }
+  int r_div(const BigFloat& x, double y, rnd_t rnd = MPFR_RND)
+  { return r_div(x, BigFloat(y), rnd); }
   /// division for <tt>BigFloat/BigInt</tt>
-  int div(const BigFloat& x, const BigInt& y, rnd_t rnd = MPFR_RND)
+  int r_div(const BigFloat& x, const BigInt& y, rnd_t rnd = MPFR_RND)
   { return mpfr_div_z(mp(), x.mp(), y.mp(), rnd); }
   /// division for <tt>BigFloat/BigRat</tt>
-  int div(const BigFloat& x, const BigRat& y, rnd_t rnd = MPFR_RND)
+  int r_div(const BigFloat& x, const BigRat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_div_q(mp(), x.mp(), y.mp(), rnd); }
   /// division for <tt>int/BigFloat</tt>
-  int div(int x, const BigFloat& y, rnd_t rnd = MPFR_RND)
-  { return div(static_cast<long>(x), y, rnd); }
+  int r_div(int x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  { return r_div(static_cast<long>(x), y, rnd); }
   /// division for <tt>unsigned int/BigFloat</tt>
-  int div(unsigned int x, const BigFloat& y, rnd_t rnd = MPFR_RND)
-  { return div(static_cast<unsigned long>(x), y, rnd); }
+  int r_div(unsigned int x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  { return r_div(static_cast<unsigned long>(x), y, rnd); }
   /// division for <tt>long/BigFloat</tt>
-  int div(long x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  int r_div(long x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_si_div(mp(), x, y.mp(), rnd); }
   /// division for <tt>unsigned long/BigFloat</tt>
-  int div(unsigned long x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  int r_div(unsigned long x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_ui_div(mp(), x, y.mp(), rnd); }
   /// division for <tt>double/BigFloat</tt>
-  int div(double x, const BigFloat& y, rnd_t rnd = MPFR_RND)
-  { return div(BigFloat(x), y, rnd); }
+  int r_div(double x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  { return r_div(BigFloat(x), y, rnd); }
   /// division for <tt>BigInt/BigFloat</tt>
-  int div(const BigInt& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
-  { return div(BigFloat(x), y, rnd); }
+  int r_div(const BigInt& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  { return r_div(BigFloat(x), y, rnd); }
   /// division for <tt>BigRat/BigFloat</tt> (BigRat will be converted)
-  int div(const BigRat& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
-  { return div(BigFloat(x), y, rnd); }
+  int r_div(const BigRat& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  { return r_div(BigFloat(x), y, rnd); }
   //@}
 
   /// \name arithmetic functions -- division (fixed version)
   //@{
-  /// division for <tt>BigFloat-BigFloat</tt> (fixed version)
-  int div(const BigFloat& x, const BigFloat& y,prec_t prec,rnd_t rnd=MPFR_RND){
+  /// division for <tt>BigFloat/BigFloat</tt> (fixed version)
+  int div(const BigFloat& x, const BigFloat& y, 
+          prec_t prec = MPFR_DEF_DIV_PREC, rnd_t rnd = MPFR_RND) {
     if (&x == this || &y == this) { // if one of inputs are output
        BigFloat result(0, prec);
        int r = result.r_div(x, y, rnd);
@@ -611,9 +599,10 @@ public:
        set_prec(prec); return r_div(x, y, rnd);
      } 
   }  
-  /// division for <tt>BigFloat-T</tt> (fixed version)
+  /// division for <tt>BigFloat/T</tt> (fixed version)
   template <typename T> 
-  int div(const BigFloat& x, const T& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+  int div(const BigFloat& x, const T& y, 
+          prec_t prec = MPFR_DEF_DIV_PREC, rnd_t rnd = MPFR_RND) {
     if (&x == this) { // if x is same as output 
        BigFloat result(0, prec);
        int r = result.r_div(x, y, rnd);
@@ -622,9 +611,10 @@ public:
        set_prec(prec); return r_div(x, y, rnd);
      } 
   }  
-  /// division for <tt>T-BigFloat</tt> (fixed version)
+  /// division for <tt>T/BigFloat</tt> (fixed version)
   template <typename T>
-  int div(const T& x, const BigFloat& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+  int div(const T& x, const BigFloat& y, 
+          prec_t prec = MPFR_DEF_DIV_PREC, rnd_t rnd = MPFR_RND) {
     if (&y == this) { // if y is same as output
        BigFloat result(0, prec);
        int r = result.r_div(x, y, rnd);
@@ -642,10 +632,10 @@ public:
   { return mpfr_sqrt(mp(), x.mp(), rnd); }
   /// square root function for <tt>int</tt> (raw version)
   int r_sqrt(int x, rnd_t rnd = MPFR_RND)
-  { return sqrt(static_cast<long>(x), rnd); }
+  { return r_sqrt(static_cast<long>(x), rnd); }
   /// square root function for <tt>unsigned int</tt> (raw version)
   int r_sqrt(unsigned int x, rnd_t rnd = MPFR_RND)
-  { return sqrt(static_cast<unsigned long>(x), rnd); }
+  { return r_sqrt(static_cast<unsigned long>(x), rnd); }
   /// square root function for <tt>long</tt> (raw version)
   int r_sqrt(long x, rnd_t rnd = MPFR_RND)
   { assert(x>=0); return mpfr_sqrt_ui(mp(), x, rnd); }
@@ -654,13 +644,14 @@ public:
   { return mpfr_sqrt_ui(mp(), x, rnd); }
   /// square root function for <tt>double</tt> (raw version)
   int r_sqrt(double x, rnd_t rnd = MPFR_RND)
-  { return sqrt(BigFloat(x), rnd); }
+  { return r_sqrt(BigFloat(x), rnd); }
   //@}
 
   /// \name square root functions (fixed version)
   //@{
   /// square root function for <tt>BigFloat</tt> (fixed version)
-  int sqrt(const BigFloat& x, prec_t prec, rnd_t rnd = MPFR_RND) {
+  int sqrt(const BigFloat& x, 
+           prec_t prec = MPFR_DEF_SQRT_PREC, rnd_t rnd = MPFR_RND) {
     if (&x == this) { // if x is same as ouput
       BigFloat result(0, prec);
       int r = result.r_sqrt(x, rnd);
@@ -670,7 +661,8 @@ public:
     }
   }
   /// square root function for <tt>T</tt> (fixed version)
-  template <typename T> int sqrt(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
+  template <typename T> 
+  int sqrt(const T& x, prec_t prec = MPFR_DEF_SQRT_PREC, rnd_t rnd = MPFR_RND)
   { set_prec(prec); return r_sqrt(x, rnd); }
   //@}
 
@@ -682,10 +674,10 @@ public:
   { return mpfr_pow(mp(), x.mp(), y.mp(), rnd); }
   /// power function for <tt>BigFloat^int</tt> (raw version)
   int r_pow(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
-  { return pow(x, static_cast<long>(y), rnd); }
+  { return r_pow(x, static_cast<long>(y), rnd); }
   /// power function for <tt>BigFloat^unsigned int</tt> (raw version)
   int r_pow(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
-  { return pow(x, static_cast<unsigned long>(y), rnd); }
+  { return r_pow(x, static_cast<unsigned long>(y), rnd); }
   /// power function for <tt>BigFloat^long</tt> (raw version)
   int r_pow(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
   { return mpfr_pow_si(mp(), x.mp(), y, rnd); }
@@ -771,7 +763,8 @@ public:
      }
   }
   /// cubic root (fixed version)
-  int cbrt(const BigFloat& x, prec_t prec, rnd_t rnd = MPFR_RND) {
+  int cbrt(const BigFloat& x, 
+           prec_t prec = MPFR_DEF_CBRT_PREC, rnd_t rnd = MPFR_RND) {
     if (&x == this) { // if y is same as output
        BigFloat result(0, prec);
        int r = result.r_cbrt(x, rnd);
@@ -781,7 +774,8 @@ public:
      }
   }
   /// kth root (fixed version)
-  int root(const BigFloat& x, unsigned long k,prec_t prec,rnd_t rnd=MPFR_RND){
+  int root(const BigFloat& x, unsigned long k,
+           prec_t prec = MPFR_DEF_ROOT_PREC, rnd_t rnd=MPFR_RND) {
     if (&x == this) { // if y is same as output
        BigFloat result(0, prec);
        int r = result.r_root(x, k, rnd);
@@ -1246,7 +1240,6 @@ public: // C++ operators
   /// compound assignment operator <tt>/=</tt>
   BigFloat& operator/=(const BigRat& rhs)
   { div(*this, rhs); return *this; }
-  //@}
 
   /// compound assignment operator <tt><<=</tt>
   BigFloat& operator<<=(int i)
@@ -1299,517 +1292,7 @@ public:
 
 };
 
-/// \addtogroup BigFloatArithmeticOperators
-//@{
-/// BigFloat + BigFloat
-inline BigFloat operator+(const BigFloat& x, const BigFloat& y)
-{ BigFloat r; r.add(x, y); return r; }
-/// BigFloat + int
-inline BigFloat operator+(const BigFloat& x, int y)
-{ BigFloat r; r.add(x, y); return r; }
-/// int + BigFloat
-inline BigFloat operator+(int x, const BigFloat& y)
-{ BigFloat r; r.add(x, y); return r; }
-/// BigFloat + unsigned int
-inline BigFloat operator+(const BigFloat& x, unsigned int y)
-{ BigFloat r; r.add(x, y); return r; }
-/// unsigned int + BigFloat
-inline BigFloat operator+(unsigned int x, const BigFloat& y)
-{ BigFloat r; r.add(x, y); return r; }
-/// BigFloat + long
-inline BigFloat operator+(const BigFloat& x, long y)
-{ BigFloat r; r.add(x, y); return r; }
-/// long + BigFloat
-inline BigFloat operator+(long x, const BigFloat& y)
-{ BigFloat r; r.add(x, y); return r; }
-/// BigFloat + unsigned long
-inline BigFloat operator+(const BigFloat& x, unsigned long y)
-{ BigFloat r; r.add(x, y); return r; }
-/// unsigned long + BigFloat
-inline BigFloat operator+(unsigned long x, const BigFloat& y)
-{ BigFloat r; r.add(x, y); return r; }
-/// BigFloat + double
-inline BigFloat operator+(const BigFloat& x, double y)
-{ BigFloat r; r.add(x, y); return r; }
-/// double + BigFloat
-inline BigFloat operator+(double x, const BigFloat& y)
-{ BigFloat r; r.add(x, y); return r; }
-/// BigFloat + BigInt
-inline BigFloat operator+(const BigFloat& x, const BigInt& y)
-{ BigFloat r; r.add(x, y); return r; }
-/// BigInt + BigFloat
-inline BigFloat operator+(const BigInt& x, const BigFloat& y)
-{ BigFloat r; r.add(x, y); return r; }
-/// BigFloat + BigRat
-inline BigFloat operator+(const BigFloat& x, const BigRat& y)
-{ BigFloat r; r.add(x, y); return r; }
-/// BigRat + BigFloat
-inline BigFloat operator+(const BigRat& x, const BigFloat& y)
-{ BigFloat r; r.add(x, y); return r; }
-
-/// BigFloat - BigFloat
-inline BigFloat operator-(const BigFloat& x, const BigFloat& y)
-{ BigFloat r; r.sub(x, y); return r; }
-/// BigFloat - int
-inline BigFloat operator-(const BigFloat& x, int y)
-{ BigFloat r; r.sub(x, y); return r; }
-/// int - BigFloat
-inline BigFloat operator-(int x, const BigFloat& y)
-{ BigFloat r; r.sub(x, y); return r; }
-/// BigFloat - unsigned int
-inline BigFloat operator-(const BigFloat& x, unsigned int y)
-{ BigFloat r; r.sub(x, y); return r; }
-/// unsigned int - BigFloat
-inline BigFloat operator-(unsigned int x, const BigFloat& y)
-{ BigFloat r; r.sub(x, y); return r; }
-/// BigFloat - long
-inline BigFloat operator-(const BigFloat& x, long y)
-{ BigFloat r; r.sub(x, y); return r; }
-/// long - BigFloat
-inline BigFloat operator-(long x, const BigFloat& y)
-{ BigFloat r; r.sub(x, y); return r; }
-/// BigFloat - unsigned long
-inline BigFloat operator-(const BigFloat& x, unsigned long y)
-{ BigFloat r; r.sub(x, y); return r; }
-/// unsigned long - BigFloat
-inline BigFloat operator-(unsigned long x, const BigFloat& y)
-{ BigFloat r; r.sub(x, y); return r; }
-/// BigFloat - double
-inline BigFloat operator-(const BigFloat& x, double y)
-{ BigFloat r; r.sub(x, y); return r; }
-/// double - BigFloat
-inline BigFloat operator-(double x, const BigFloat& y)
-{ BigFloat r; r.sub(x, y); return r; }
-/// BigFloat - BigInt
-inline BigFloat operator-(const BigFloat& x, const BigInt& y)
-{ BigFloat r; r.sub(x, y); return r; }
-/// BigInt - BigFloat
-inline BigFloat operator-(const BigInt& x, const BigFloat& y)
-{ BigFloat r; r.sub(x, y); return r; }
-/// BigFloat - BigRat
-inline BigFloat operator-(const BigFloat& x, const BigRat& y)
-{ BigFloat r; r.sub(x, y); return r; }
-/// BigRat - BigFloat
-inline BigFloat operator-(const BigRat& x, const BigFloat& y)
-{ BigFloat r; r.sub(x, y); return r; }
-
-/// BigFloat * BigFloat
-inline BigFloat operator*(const BigFloat& x, const BigFloat& y)
-{ BigFloat r; r.mul(x, y); return r; }
-/// BigFloat * int
-inline BigFloat operator*(const BigFloat& x, int y)
-{ BigFloat r; r.mul(x, y); return r; }
-/// int * BigFloat
-inline BigFloat operator*(int x, const BigFloat& y)
-{ BigFloat r; r.mul(x, y); return r; }
-/// BigFloat * unsigned int
-inline BigFloat operator*(const BigFloat& x, unsigned int y)
-{ BigFloat r; r.mul(x, y); return r; }
-/// unsigned int * BigFloat
-inline BigFloat operator*(unsigned int x, const BigFloat& y)
-{ BigFloat r; r.mul(x, y); return r; }
-/// BigFloat * long
-inline BigFloat operator*(const BigFloat& x, long y)
-{ BigFloat r; r.mul(x, y); return r; }
-/// long * BigFloat
-inline BigFloat operator*(long x, const BigFloat& y)
-{ BigFloat r; r.mul(x, y); return r; }
-/// BigFloat * unsigned long
-inline BigFloat operator*(const BigFloat& x, unsigned long y)
-{ BigFloat r; r.mul(x, y); return r; }
-/// unsigned long * BigFloat
-inline BigFloat operator*(unsigned long x, const BigFloat& y)
-{ BigFloat r; r.mul(x, y); return r; }
-/// BigFloat * double
-inline BigFloat operator*(const BigFloat& x, double y)
-{ BigFloat r; r.mul(x, y); return r; }
-/// double * BigFloat
-inline BigFloat operator*(double x, const BigFloat& y)
-{ BigFloat r; r.mul(x, y); return r; }
-/// BigFloat * BigInt
-inline BigFloat operator*(const BigFloat& x, const BigInt& y)
-{ BigFloat r; r.mul(x, y); return r; }
-/// BigInt * BigFloat
-inline BigFloat operator*(const BigInt& x, const BigFloat& y)
-{ BigFloat r; r.mul(x, y); return r; }
-/// BigFloat * BigRat
-inline BigFloat operator*(const BigFloat& x, const BigRat& y)
-{ BigFloat r; r.mul(x, y); return r; }
-/// BigRat * BigFloat
-inline BigFloat operator*(const BigRat& x, const BigFloat& y)
-{ BigFloat r; r.mul(x, y); return r; }
-
-/// BigFloat / BigFloat
-inline BigFloat operator/(const BigFloat& x, const BigFloat& y)
-{ BigFloat r; r.div(x, y); return r; }
-/// BigFloat / int
-inline BigFloat operator/(const BigFloat& x, int y)
-{ BigFloat r; r.div(x, y); return r; }
-/// BigFloat / unsigned int
-inline BigFloat operator/(const BigFloat& x, unsigned int y)
-{ BigFloat r; r.div(x, y); return r; }
-/// BigFloat / long
-inline BigFloat operator/(const BigFloat& x, long y)
-{ BigFloat r; r.div(x, y); return r; }
-/// BigFloat / unsigned long
-inline BigFloat operator/(const BigFloat& x, unsigned long y)
-{ BigFloat r; r.div(x, y); return r; }
-/// BigFloat / double
-inline BigFloat operator/(const BigFloat& x, double y)
-{ BigFloat r; r.div(x, y); return r; }
-/// BigFloat / BigInt
-inline BigFloat operator/(const BigFloat& x, const BigInt& y)
-{ BigFloat r; r.div(x, y); return r; }
-/// BigFloat / BigRat
-inline BigFloat operator/(const BigFloat& x, const BigRat& y)
-{ BigFloat r; r.div(x, y); return r; }
-//@}
-
-/// BigFloat  << int
-inline BigFloat  operator<<(const BigFloat & x, int y)
-{ BigFloat  r; r.mul_2exp(x, y); return r; }
-/// BigFloat  << unsigned int
-inline BigFloat  operator<<(const BigFloat & x, unsigned int y)
-{ BigFloat  r; r.mul_2exp(x, y); return r; }
-/// BigFloat  << long
-inline BigFloat  operator<<(const BigFloat & x, long y)
-{ BigFloat  r; r.mul_2exp(x, y); return r; }
-/// BigFloat  << unsigned long
-inline BigFloat  operator<<(const BigFloat & x, unsigned long y)
-{ BigFloat  r; r.mul_2exp(x, y); return r; }
-/// BigFloat  >> int
-inline BigFloat  operator>>(const BigFloat & x, int y)
-{ BigFloat  r; r.div_2exp(x, y); return r; }
-/// BigFloat  >> unsigned int
-inline BigFloat  operator>>(const BigFloat & x, unsigned int y)
-{ BigFloat  r; r.div_2exp(x, y); return r; }
-/// BigFloat  >> long
-inline BigFloat  operator>>(const BigFloat & x, long y)
-{ BigFloat  r; r.div_2exp(x, y); return r; }
-/// BigFloat  >> unsigned long
-inline BigFloat  operator>>(const BigFloat & x, unsigned long y)
-{ BigFloat  r; r.div_2exp(x, y); return r; }
-//@}
-
-/// \addtogroup BigFloat ComparisonOperators
-//@{
-/// BigFloat  == BigFloat 
-inline bool operator==(const BigFloat & x, const BigFloat & y)
-{ return x.cmp(y) == 0; }
-/// BigFloat  == int
-inline bool operator==(const BigFloat & x, int y)
-{ return x.cmp(y) == 0; }
-/// int == BigFloat 
-inline bool operator==(int x, const BigFloat & y)
-{ return y.cmp(x) == 0; }
-/// BigFloat  == unsigned int
-inline bool operator==(const BigFloat & x, unsigned int y)
-{ return x.cmp(y) == 0; }
-/// unsigned int == BigFloat 
-inline bool operator==(unsigned int x, const BigFloat & y)
-{ return y.cmp(x) == 0; }
-/// BigFloat  == long
-inline bool operator==(const BigFloat & x, long y)
-{ return x.cmp(y) == 0; }
-/// long == BigFloat 
-inline bool operator==(long x, const BigFloat & y)
-{ return y.cmp(x) == 0; }
-/// BigFloat  == unsigned long
-inline bool operator==(const BigFloat & x, unsigned long y)
-{ return x.cmp(y) == 0; }
-/// unsigned long == BigFloat 
-inline bool operator==(unsigned long x, const BigFloat & y)
-{ return y.cmp(x) == 0; }
-/// BigFloat  == double
-inline bool operator==(const BigFloat & x, double y)
-{ return x.cmp(y) == 0; }
-/// double == BigFloat 
-inline bool operator==(double x, const BigFloat & y)
-{ return y.cmp(x) == 0; }
-/// BigFloat  == BigInt
-inline bool operator==(const BigFloat & x, const BigInt& y)
-{ return x.cmp(y) == 0; }
-/// BigInt == BigFloat 
-inline bool operator==(const BigInt& x, const BigFloat & y)
-{ return y.cmp(x) == 0; }
-/// BigFloat  == BigRat
-inline bool operator==(const BigFloat & x, const BigRat& y)
-{ return x.cmp(y) == 0; }
-/// BigRat == BigFloat 
-inline bool operator==(const BigRat& x, const BigFloat & y)
-{ return y.cmp(x) == 0; }
-
-/// BigFloat  != BigFloat 
-inline bool operator!=(const BigFloat & x, const BigFloat & y)
-{ return x.cmp(y) != 0; }
-/// BigFloat  != int
-inline bool operator!=(const BigFloat & x, int y)
-{ return x.cmp(y) != 0; }
-/// int != BigFloat 
-inline bool operator!=(int x, const BigFloat & y)
-{ return y.cmp(x) != 0; }
-/// BigFloat  != unsigned int
-inline bool operator!=(const BigFloat & x, unsigned int y)
-{ return x.cmp(y) != 0; }
-/// unsigned int != BigFloat 
-inline bool operator!=(unsigned int x, const BigFloat & y)
-{ return y.cmp(x) != 0; }
-/// BigFloat  != long
-inline bool operator!=(const BigFloat & x, long y)
-{ return x.cmp(y) != 0; }
-/// long != BigFloat 
-inline bool operator!=(long x, const BigFloat & y)
-{ return y.cmp(x) != 0; }
-/// BigFloat  != unsigned long
-inline bool operator!=(const BigFloat & x, unsigned long y)
-{ return x.cmp(y) != 0; }
-/// unsigned long != BigFloat 
-inline bool operator!=(unsigned long x, const BigFloat & y)
-{ return y.cmp(x) != 0; }
-/// BigFloat  != double
-inline bool operator!=(const BigFloat & x, double y)
-{ return x.cmp(y) != 0; }
-/// double != BigFloat 
-inline bool operator!=(double x, const BigFloat & y)
-{ return y.cmp(x) != 0; }
-/// BigFloat  != BigInt
-inline bool operator!=(const BigFloat & x, const BigInt& y)
-{ return x.cmp(y) != 0; }
-/// BigInt != BigFloat 
-inline bool operator!=(const BigInt& x, const BigFloat & y)
-{ return y.cmp(x) != 0; }
-/// BigFloat  != BigRat
-inline bool operator!=(const BigFloat & x, const BigRat& y)
-{ return x.cmp(y) != 0; }
-/// BigRat != BigFloat 
-inline bool operator!=(const BigRat& x, const BigFloat & y)
-{ return y.cmp(x) != 0; }
-
-/// BigFloat  >= BigFloat 
-inline bool operator>=(const BigFloat & x, const BigFloat & y)
-{ return x.cmp(y) >= 0; }
-/// BigFloat  >= int
-inline bool operator>=(const BigFloat & x, int y)
-{ return x.cmp(y) >= 0; }
-/// int >= BigFloat 
-inline bool operator>=(int x, const BigFloat & y)
-{ return y.cmp(x) <= 0; }
-/// BigFloat  >= unsigned int
-inline bool operator>=(const BigFloat & x, unsigned int y)
-{ return x.cmp(y) >= 0; }
-/// unsigned int >= BigFloat 
-inline bool operator>=(unsigned int x, const BigFloat & y)
-{ return y.cmp(x) <= 0; }
-/// BigFloat  >= long
-inline bool operator>=(const BigFloat & x, long y)
-{ return x.cmp(y) >= 0; }
-/// long >= BigFloat 
-inline bool operator>=(long x, const BigFloat & y)
-{ return y.cmp(x) <= 0; }
-/// BigFloat  >= unsigned long
-inline bool operator>=(const BigFloat & x, unsigned long y)
-{ return x.cmp(y) >= 0; }
-/// unsigned long >= BigFloat 
-inline bool operator>=(unsigned long x, const BigFloat & y)
-{ return y.cmp(x) <= 0; }
-/// BigFloat  >= double
-inline bool operator>=(const BigFloat & x, double y)
-{ return x.cmp(y) >= 0; }
-/// double >= BigFloat 
-inline bool operator>=(double x, const BigFloat & y)
-{ return y.cmp(x) <= 0; }
-/// BigFloat  >= BigInt
-inline bool operator>=(const BigFloat & x, const BigInt& y)
-{ return x.cmp(y) >= 0; }
-/// BigInt >= BigFloat 
-inline bool operator>=(const BigInt& x, const BigFloat & y)
-{ return y.cmp(x) <= 0; }
-/// BigFloat  >= BigRat
-inline bool operator>=(const BigFloat & x, const BigRat& y)
-{ return x.cmp(y) >= 0; }
-/// BigRat >= BigFloat 
-inline bool operator>=(const BigRat& x, const BigFloat & y)
-{ return y.cmp(x) <= 0; }
-
-/// BigFloat  <= BigFloat 
-inline bool operator<=(const BigFloat & x, const BigFloat & y)
-{ return x.cmp(y) <= 0; }
-/// BigFloat  <= int
-inline bool operator<=(const BigFloat & x, int y)
-{ return x.cmp(y) <= 0; }
-/// int <= BigFloat 
-inline bool operator<=(int x, const BigFloat & y)
-{ return y.cmp(x) >= 0; }
-/// BigFloat  <= unsigned int
-inline bool operator<=(const BigFloat & x, unsigned int y)
-{ return x.cmp(y) <= 0; }
-/// unsigned int <= BigFloat 
-inline bool operator<=(unsigned int x, const BigFloat & y)
-{ return y.cmp(x) >= 0; }
-/// BigFloat  <= long
-inline bool operator<=(const BigFloat & x, long y)
-{ return x.cmp(y) <= 0; }
-/// long <= BigFloat 
-inline bool operator<=(long x, const BigFloat & y)
-{ return y.cmp(x) >= 0; }
-/// BigFloat  <= unsigned long
-inline bool operator<=(const BigFloat & x, unsigned long y)
-{ return x.cmp(y) <= 0; }
-/// unsigned long <= BigFloat 
-inline bool operator<=(unsigned long x, const BigFloat & y)
-{ return y.cmp(x) >= 0; }
-/// BigFloat  <= double
-inline bool operator<=(const BigFloat & x, double y)
-{ return x.cmp(y) <= 0; }
-/// double <= BigFloat 
-inline bool operator<=(double x, const BigFloat & y)
-{ return y.cmp(x) >= 0; }
-/// BigFloat  <= BigInt
-inline bool operator<=(const BigFloat & x, const BigInt& y)
-{ return x.cmp(y) <= 0; }
-/// BigInt <= BigFloat 
-inline bool operator<=(const BigInt& x, const BigFloat & y)
-{ return y.cmp(x) >= 0; }
-/// BigFloat  <= BigRat
-inline bool operator<=(const BigFloat & x, const BigRat& y)
-{ return x.cmp(y) <= 0; }
-/// BigRat <= BigFloat 
-inline bool operator<=(const BigRat& x, const BigFloat & y)
-{ return y.cmp(x) >= 0; }
-
-/// BigFloat  > BigFloat 
-inline bool operator>(const BigFloat & x, const BigFloat & y)
-{ return x.cmp(y) > 0; }
-/// BigFloat  > int
-inline bool operator>(const BigFloat & x, int y)
-{ return x.cmp(y) > 0; }
-/// int > BigFloat 
-inline bool operator>(int x, const BigFloat & y)
-{ return y.cmp(x) < 0; }
-/// BigFloat  > unsigned int
-inline bool operator>(const BigFloat & x, unsigned int y)
-{ return x.cmp(y) > 0; }
-/// unsigned int > BigFloat 
-inline bool operator>(unsigned int x, const BigFloat & y)
-{ return y.cmp(x) < 0; }
-/// BigFloat  > long
-inline bool operator>(const BigFloat & x, long y)
-{ return x.cmp(y) > 0; }
-/// long > BigFloat 
-inline bool operator>(long x, const BigFloat & y)
-{ return y.cmp(x) < 0; }
-/// BigFloat  > unsigned long
-inline bool operator>(const BigFloat & x, unsigned long y)
-{ return x.cmp(y) > 0; }
-/// unsigned long > BigFloat 
-inline bool operator>(unsigned long x, const BigFloat & y)
-{ return y.cmp(x) < 0; }
-/// BigFloat  > double
-inline bool operator>(const BigFloat & x, double y)
-{ return x.cmp(y) > 0; }
-/// double > BigFloat 
-inline bool operator>(double x, const BigFloat & y)
-{ return y.cmp(x) < 0; }
-/// BigFloat  > BigInt
-inline bool operator>(const BigFloat & x, const BigInt& y)
-{ return x.cmp(y) > 0; }
-/// BigInt > BigFloat 
-inline bool operator>(const BigInt& x, const BigFloat & y)
-{ return y.cmp(x) < 0; }
-/// BigFloat  > BigRat
-inline bool operator>(const BigFloat & x, const BigRat& y)
-{ return x.cmp(y) > 0; }
-/// BigRat > BigFloat 
-inline bool operator>(const BigRat& x, const BigFloat & y)
-{ return y.cmp(x) < 0; }
-
-/// BigFloat  < BigFloat 
-inline bool operator<(const BigFloat & x, const BigFloat & y)
-{ return x.cmp(y) < 0; }
-/// BigFloat  < int
-inline bool operator<(const BigFloat & x, int y)
-{ return x.cmp(y) < 0; }
-/// int < BigFloat 
-inline bool operator<(int x, const BigFloat & y)
-{ return y.cmp(x) > 0; }
-/// BigFloat  < unsigned int
-inline bool operator<(const BigFloat & x, unsigned int y)
-{ return x.cmp(y) < 0; }
-/// unsigned int < BigFloat 
-inline bool operator<(unsigned int x, const BigFloat & y)
-{ return y.cmp(x) > 0; }
-/// BigFloat  < long
-inline bool operator<(const BigFloat & x, long y)
-{ return x.cmp(y) < 0; }
-/// long < BigFloat 
-inline bool operator<(long x, const BigFloat & y)
-{ return y.cmp(x) > 0; }
-/// BigFloat  < unsigned long
-inline bool operator<(const BigFloat & x, unsigned long y)
-{ return x.cmp(y) < 0; }
-/// unsigned long < BigFloat 
-inline bool operator<(unsigned long x, const BigFloat & y)
-{ return y.cmp(x) > 0; }
-/// BigFloat  < double
-inline bool operator<(const BigFloat & x, double y)
-{ return x.cmp(y) < 0; }
-/// double < BigFloat 
-inline bool operator<(double x, const BigFloat & y)
-{ return y.cmp(x) > 0; }
-/// BigFloat  < BigInt
-inline bool operator<(const BigFloat & x, const BigInt& y)
-{ return x.cmp(y) < 0; }
-/// BigInt < BigFloat 
-inline bool operator<(const BigInt& x, const BigFloat & y)
-{ return y.cmp(x) > 0; }
-/// BigFloat  < BigRat
-inline bool operator<(const BigFloat & x, const BigRat& y)
-{ return x.cmp(y) < 0; }
-/// BigRat < BigFloat 
-inline bool operator<(const BigRat& x, const BigFloat & y)
-{ return y.cmp(x) > 0; }
-//@}
-
-/// \addtogroup BigFloatIostreamOperators
-//@{
-/// istream operator for <tt>BigFloat</tt>
-inline std::istream& operator>>(std::istream& is, BigFloat& x)
-{ return is >> x.mp(); }
-/// ostream operator for <tt>BigFloat</tt>
-inline std::ostream& operator<<(std::ostream& os, const BigFloat& x)
-{ return os << x.get_str(); }
-//@}
-
-/// \addtogroup BigFloatGlobalFunctions
-//@{
-/// square root
-inline BigFloat sqrt(const BigFloat& x, prec_t prec = MPFR_DEF_SQRT_PREC)
-{ BigFloat r(0, prec); r.sqrt(x); return r; }
-/// cubic root
-inline BigFloat cbrt(const BigFloat& x, prec_t prec = MPFR_DEF_CBRT_PREC)
-{ BigFloat r(0, prec); r.cbrt(x); return r; }
-/// k-th root
-inline BigFloat root(const BigFloat& x, unsigned long k, prec_t prec = MPFR_DEF_ROOT_PREC)
-{ BigFloat r(0, prec); r.root(x, k); return r; }
-//@}
-
-#ifndef CORE_DISABLE_OLDNAMES 
-/// \addtogroup BigFloatBackCompatiableFunctions
-//@{
-/// comparison
-inline int cmp(const BigFloat& x, const BigFloat& y) { return x.cmp(y); }
-/// sign 
-inline int sign(const BigFloat& a) { return a.sgn(); }
-/// abs
-inline BigFloat abs(const BigFloat& a) { BigFloat r; r.abs(a); return r; }
-/// neg
-inline BigFloat neg(const BigFloat& a) { BigFloat r; r.neg(a); return r; }
-/// pow 
-inline BigFloat pow(const BigFloat& a, unsigned long p) 
-{ BigFloat r; r.pow(a, p); return r; }
-//@}
-#endif
-
+#include <CORE/BigFloat.inl>
 
 CORE_END_NAMESPACE
 

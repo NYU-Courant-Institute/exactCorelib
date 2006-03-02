@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigRat.h,v 1.4 2006-03-01 01:04:05 exact Exp $
+ * $Id: BigRat.h,v 1.5 2006-03-02 04:55:16 exact Exp $
  ***************************************************************************/
 #ifndef __BIGRAT_H__
 #define __BIGRAT_H__
@@ -35,7 +35,7 @@ CORE_BEGIN_NAMESPACE
 #endif
 
 /// \class BigRat BigRat.h
-/// \brief BigRat is a wrapper class of <tt>mpq</tt> in GMP
+/// \brief BigRat is a big rational number class based on <tt>mpq</tt> in GMP
 class BigRat : public BigRatBase {
   typedef BigRatBase base_cls;
 public:
@@ -261,7 +261,7 @@ public: // C++ operators
   //@{
   /// assignment operator for <tt>BigRat</tt>
   BigRat& operator=(const BigRat& rhs)
-  { set(rhs); return *this; }
+  { base_cls::operator=(rhs); return *this; }
   /// assignment operator for <tt>int</tt>
   BigRat& operator=(int rhs)
   { set(rhs); return *this; }

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigInt.h,v 1.4 2006-03-01 01:04:05 exact Exp $
+ * $Id: BigInt.h,v 1.5 2006-03-02 04:55:16 exact Exp $
  ***************************************************************************/
 #ifndef __BIGINT_H__
 #define __BIGINT_H__
@@ -44,7 +44,7 @@ struct _gmp_alloc_cstr {
 #endif
 
 /// \class BigInt BigInt.h
-/// \brief BigInt is a wrapper class of <tt>mpz</tt> in GMP
+/// \brief BigInt is a big integer number class based on <tt>mpz</tt> in GMP
 class BigInt : public BigIntBase {
   typedef BigIntBase base_cls;
 public:
@@ -67,7 +67,7 @@ public:
   /// constructor for <tt>std::string</tt> (no implicit conversion)
   explicit BigInt(const std::string& s,int base=0) : base_cls(s.c_str(),base){} 
   // internal used by BigRat
-  explicit BigInt(const mpz_t x) : base_cls(x) {}
+  explicit BigInt(mpz_srcptr x) : base_cls(x) {}
   //@}
 
 public:
@@ -329,7 +329,7 @@ public:
   { pow(static_cast<unsigned long>(x), y); }
   /// power function for <tt>long</tt>
   void pow(long x, unsigned long y)
-  { mpz_ui_pow_ui(mp(), (x>=0?x:-x), y); if (x<0&&x%2==1) neg(); }
+  { mpz_ui_pow_ui(mp(), (x>=0?x:-x), y); if (x<0&&x%2!=0) neg(); }
   /// power function for <tt>unsigned long</tt>
   void pow(unsigned long x, unsigned long y)
   { mpz_ui_pow_ui(mp(), x, y); }
@@ -537,7 +537,7 @@ public: // C++ operators
   //@{
   /// assignment operator for <tt>BigInt</tt>
   BigInt& operator=(const BigInt& rhs)
-  { set(rhs); return *this; }
+  { base_cls::operator=(rhs); return *this; }
   /// assignment operator for <tt>int</tt>
   BigInt& operator=(int rhs)
   { set(rhs); return *this; }
@@ -655,7 +655,6 @@ public: // C++ operators
   BigInt& operator%=(double rhs)
   { mod(*this, rhs); return *this; }
 
-  //@}
   /// compound assignment operator <tt>&=</tt>
   BigInt& operator&=(const BigInt& rhs)
   { logical_and(*this, rhs); return *this; }
