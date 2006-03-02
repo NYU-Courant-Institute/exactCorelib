@@ -117,9 +117,9 @@ inline void set_output_showpos(bool showpos, std::ostream& os = std::cout)
 { if (showpos) show_pos(os); else hide_pos(os); }
 
 #ifndef CORE_DISABLE_OLDNAMES
-void setPositionalFormat(std::ostream& os = std::cout)
+inline void setPositionalFormat(std::ostream& os = std::cout)
 { set_fixed_output(os); }
-void setScientificFormat(std::ostream& os = std::cout)
+inline void setScientificFormat(std::ostream& os = std::cout)
 { set_scientific_output(os); }
 #endif
 CORE_END_NAMESPACE
