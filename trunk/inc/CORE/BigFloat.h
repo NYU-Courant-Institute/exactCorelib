@@ -19,12 +19,14 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.5 2006-03-02 04:55:16 exact Exp $
+ * $Id: BigFloat.h,v 1.6 2006-03-02 21:12:08 exact Exp $
  ***************************************************************************/
 #ifndef __BIGFLOAT_H__
 #define __BIGFLOAT_H__
 
 #include <CORE/Mpfr.h>
+#include <CORE/CoreIO.h>
+#include <CORE/BigRat.h>
 #include <string>
 #include <iostream>
 #include <cassert>
@@ -58,12 +60,10 @@ inline int mpfr_q_sub(mpfr_ptr z, mpq_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 void mpfr_remove_trailing_zeros(mpfr_t x);
 /* C++-style input of mpfr */
 std::istream& operator>> (std::istream &, mpfr_ptr);
-/* convert mpfr to string */
-std::string mpfr2str(mpfr_srcptr, size_t, int, bool, rnd_t);
-  
-#ifdef CORE_BEGIN_NAMESPACE
+/* convert mpfr to string using specified ndigits, base, fmt, rnd, etc.*/
+std::string mpfr2str(mpfr_srcptr, size_t, int, int, rnd_t, bool, bool, bool);
+
 CORE_BEGIN_NAMESPACE
-#endif
 
 // constant of default precision for integer, IEEE single and double
 const size_t INT_PREC = sizeof(int)*8;
@@ -180,6 +180,9 @@ public:
   /// set current precision (bit length of mantissa)
   void set_prec(prec_t prec)
   { mpfr_set_prec(mp(), prec); }
+  /// round precision
+  void prec_round(prec_t prec, rnd_t rnd = MPFR_RND)
+  { mpfr_prec_round(mp(), prec, rnd); }
   //@}
 
   /// \name exponent accessors
@@ -916,17 +919,16 @@ public:
       BigRat q; q.div_2exp(x, -e); return q;
     }
   }
-  /// return the string representation
-  std::string get_str(size_t ndigits=0,int base=10,rnd_t rnd=MPFR_RND) const {
-    if (is_integer()) {
-      BigInt z = get_z();
-      if (ndigits == 0 || z.sizeinbase(base) < ndigits) return z.get_str();
-    } 
-    return mpfr2str(mp(), ndigits, base, false, rnd);
+  /// return the string representation in scienfic format
+  std::string get_str(size_t n=0,int b=10, rnd_t rnd=MPFR_RND) const {
+    return mpfr2str(mp(), n, b, 2, rnd, get_output_showpoint(),
+                  get_output_showpos(), get_output_uppercase());
   }
   /// return the string representation in fixed format
-  std::string get_fixed_str(size_t ndigits = 0, int base = 10, rnd_t rnd = MPFR_RND) const
-  { return mpfr2str(mp(), ndigits, base, true, rnd); }
+  std::string get_fixed_str(size_t n=0, int b=10, rnd_t rnd=MPFR_RND) const {
+    return mpfr2str(mp(), n, b, 1, rnd, get_output_showpoint(),
+                  get_output_showpos(), get_output_uppercase());
+  }
   //@}
   
   /// \name helper functions

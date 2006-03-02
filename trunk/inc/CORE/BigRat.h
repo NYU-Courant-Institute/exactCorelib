@@ -19,12 +19,13 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigRat.h,v 1.5 2006-03-02 04:55:16 exact Exp $
+ * $Id: BigRat.h,v 1.6 2006-03-02 21:12:08 exact Exp $
  ***************************************************************************/
 #ifndef __BIGRAT_H__
 #define __BIGRAT_H__
 
 #include <CORE/Gmpq.h>
+#include <CORE/BigInt.h>
 
 CORE_BEGIN_NAMESPACE
 

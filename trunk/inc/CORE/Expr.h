@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.3 2006-03-01 01:04:05 exact Exp $
+ * $Id: Expr.h,v 1.4 2006-03-02 21:12:08 exact Exp $
  ***************************************************************************/
 #ifndef __EXPR_H__
 #define __EXPR_H__
@@ -180,7 +180,7 @@ public:
   { FT val; is >> val; if (is) x = val; return is; }
   friend std::ostream& operator<<(std::ostream& os, const ExprT& x) {
     ExprT* p = const_cast<ExprT*>(&x);
-    if (p->sign()) os << p->r_approx(60); else os << "0"; return os;
+    if (p->sign()) os << (p->r_approx(60)).get_f(); else os << "0"; return os;
   }
 public: // public methods
   /// return relative approximation

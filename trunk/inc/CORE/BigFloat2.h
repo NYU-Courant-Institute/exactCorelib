@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.2 2006-03-02 04:56:07 exact Exp $
+ * $Id: BigFloat2.h,v 1.3 2006-03-02 21:12:08 exact Exp $
  ***************************************************************************/
 #ifndef __BIGFLOAT2_H__
 #define __BIGFLOAT2_H__
@@ -516,6 +516,20 @@ public:
       den.mul_2exp(num, -e);
     return QT(num, den);
   }
+  /// return <tt>BigFloat</tt> value
+  FT get_f() const {
+    if (is_exact()) 
+      return m_l;
+    else {
+      // get validate bits
+      long bits = abs_diam().get_exp();
+      if (bits < 0) bits = -bits;
+      // round up to validate bits
+      FT result(m_l);
+      result.prec_round(bits);
+      return result;
+    }
+  }
   //@}
 
   /// \name miscellaneous functions
@@ -772,7 +786,7 @@ inline std::istream& operator>>(std::istream& is, BigFloat2& x)
 { BigFloat2::FT tmp; is >> tmp; x.set(tmp); return is; }
 /// ostream operator for <tt>BigFloat2</tt>
 inline std::ostream& operator<<(std::ostream& os, const BigFloat2& x)
-{ return os << x.get_str(); }
+{ return os << x.get_str(get_output_precision()); }
 //@}
 
 /// \addtogroup BigFloat2GlobalFunctions
