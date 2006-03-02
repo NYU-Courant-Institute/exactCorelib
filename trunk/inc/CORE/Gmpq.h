@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Gmpq.h,v 1.2 2006-03-01 03:44:48 exact Exp $
+ * $Id: Gmpq.h,v 1.3 2006-03-02 22:53:27 exact Exp $
  ***************************************************************************/
 #ifndef __GMPQ_H__
 #define __GMPQ_H__
@@ -65,11 +65,11 @@ public:
   /// constructor for <tt>char*</tt> (no implicit conversion)
   explicit Gmpq(const char* str)
   { mpq_init(m_mp); mpq_set_str(m_mp, str, 0); mpq_canonicalize(m_mp); }
-  /// constructor for <tt>mpz_t</tt>
-  explicit Gmpq(const mpz_t& z)
+  /// constructor for <tt>mpz_srcptr</tt>
+  explicit Gmpq(mpz_srcptr z)
   { mpq_init(m_mp); mpq_set_z(m_mp, z); }
-  /// constructor for <tt>mpz_t, mpz_t</tt>
-  explicit Gmpq(const mpz_t& num, const mpz_t& den) {
+  /// constructor for <tt>mpz_srcptr, mpz_srcptr</tt>
+  explicit Gmpq(mpz_srcptr& num, mpz_srcptr den) {
     mpq_init(m_mp); 
     mpz_set(mpq_numref(m_mp), num); mpz_set(mpq_denref(m_mp), den);
     mpq_canonicalize(m_mp);
@@ -83,8 +83,8 @@ public:
   //@}
 public:
   //internal structure accessors
-  const mpq_t& mp() const { return m_mp; }
-  mpq_t& mp() { return m_mp; }
+  mpq_srcptr mp() const { return m_mp; }
+  mpq_ptr mp() { return m_mp; }
 private:
   mpq_t m_mp;
 };
@@ -112,10 +112,10 @@ public:
   RcGmpq(double i) : base_cls(new Gmpq(i)) {}
   /// constructor for <tt>char*</tt> (no implicit conversion)
   explicit RcGmpq(const char* str) : base_cls(new Gmpq(str)) {}
-  /// constructor for <tt>mpz_t</tt>
-  explicit RcGmpq(const mpz_t& z) : base_cls(new Gmpq(z)) {}
-  /// constructor for <tt>mpz_t, mpz_t</tt>
-  explicit RcGmpq(const mpz_t& num, const mpz_t& den) 
+  /// constructor for <tt>mpz_srcptr</tt>
+  explicit RcGmpq(mpz_srcptr z) : base_cls(new Gmpq(z)) {}
+  /// constructor for <tt>mpz_srcptr, mpz_srcptr</tt>
+  explicit RcGmpq(mpz_srcptr num, mpz_srcptr den) 
     : base_cls(new Gmpq(num, den)) {}
 
   /// assignment operator for <tt>RcGmpq</tt>
@@ -126,8 +126,8 @@ public:
   //@}
 public:
   //internal structure accessors
-  const mpq_t& mp() const { return ((const Gmpq*)_rep)->mp(); }
-  mpq_t& mp() { return _rep->mp(); }
+  mpq_srcptr mp() const { return ((const Gmpq*)_rep)->mp(); }
+  mpq_ptr mp() { make_copy(); return _rep->mp(); }
 };
 #endif
 

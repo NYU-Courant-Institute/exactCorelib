@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.4 2006-03-02 21:12:08 exact Exp $
+ * $Id: Expr.h,v 1.5 2006-03-02 22:53:27 exact Exp $
  ***************************************************************************/
 #ifndef __EXPR_H__
 #define __EXPR_H__
@@ -54,7 +54,7 @@ private: // private typedefs
   typedef ConstRepT<RootBd, Filter, Kernel, ZT> ConstZTRep;
   typedef ConstRepT<RootBd, Filter, Kernel, QT> ConstQTRep;
   typedef ConstRepT<RootBd, Filter, Kernel, FT> ConstFTRep;
-  typedef ConstRepT<RootBd, Filter, Kernel, KT> ConstKTRep;
+  //typedef ConstRepT<RootBd, Filter, Kernel, KT> ConstKTRep;
   typedef NegRepT<RootBd, Filter, Kernel> NegRep;
   typedef SqrtRepT<RootBd, Filter, Kernel> SqrtRep;
   typedef CbrtRepT<RootBd, Filter, Kernel> CbrtRep;
@@ -80,7 +80,7 @@ public:
   ExprT(const FT& f) : m_rep(new ConstFTRep(f)) {}
   ExprT(const QT& q) 
   { FT f; (f.set(q)==0)?(m_rep=new ConstFTRep(f)):(m_rep=new ConstQTRep(q)); }
-  ExprT(const KT& k) : m_rep(new ConstKTRep(k)) {}
+  ExprT(const KT& k) : m_rep(new ConstFTRep(k.get_f())) {}
 public:
   ExprT(ExprRep* r) : m_rep(r) {}
   ExprT(const ExprT& r) : m_rep(r.m_rep) { m_rep->inc_ref(); }
@@ -189,6 +189,9 @@ public: // public methods
   /// return absolute approximation
   KT& a_approx(prec_t prec)
   { return m_rep->a_approx(prec); }
+  
+  FT BigFloatValue() 
+  { return m_rep->appValue().get_f(); }
 
   /// return sign
   sign_t sign() 

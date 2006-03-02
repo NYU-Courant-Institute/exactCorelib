@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CORE.h,v 1.4 2006-03-02 04:56:07 exact Exp $
+ * $Id: CORE.h,v 1.5 2006-03-02 22:53:27 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_H__
 #define __CORE_H__
@@ -36,6 +36,7 @@
 // level 3
 #include <CORE/CoreAux.h>
 #include <CORE/Expr.h>
+#include <CORE/poly/Poly.h>
 
 // some standard library
 #include <iostream>

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Mpfr.h,v 1.5 2006-03-02 04:56:07 exact Exp $
+ * $Id: Mpfr.h,v 1.6 2006-03-02 22:53:27 exact Exp $
  ***************************************************************************/
 #ifndef __MPFR_H__
 #define __MPFR_H__
@@ -69,14 +69,14 @@ public:
   /// constructor for <tt>double</tt> with specified precision
   Mpfr(double i, prec_t prec, rnd_t rnd)
   { mpfr_init2(m_mp, prec); mpfr_set_d(m_mp, i, rnd); }
-  /// constructor for <tt>mpz_t</tt> with specified precision
-  explicit Mpfr(const mpz_t& x, prec_t prec, rnd_t rnd)
+  /// constructor for <tt>mpz_srcptr</tt> with specified precision
+  explicit Mpfr(mpz_srcptr x, prec_t prec, rnd_t rnd)
   { mpfr_init2(m_mp, prec); mpfr_set_z(m_mp, x, rnd); }
-  /// constructor for <tt>mpq_t</tt> with specified precision
-  explicit Mpfr(const mpq_t& x, prec_t prec, rnd_t rnd)
+  /// constructor for <tt>mpq_srcptr</tt> with specified precision
+  explicit Mpfr(mpq_srcptr x, prec_t prec, rnd_t rnd)
   { mpfr_init2(m_mp, prec); mpfr_set_q(m_mp, x, rnd); }
-  /// constructor for <tt>mpfr_t</tt> with specified precision
-  explicit Mpfr(const mpfr_t& x, prec_t prec, rnd_t rnd)
+  /// constructor for <tt>mpfr_srcptr</tt> with specified precision
+  explicit Mpfr(mpfr_srcptr x, prec_t prec, rnd_t rnd)
   { mpfr_init2(m_mp, prec); mpfr_set(m_mp, x, rnd); }
   /// constructor for <tt>char*</tt> with specified precision
   explicit Mpfr(const char* s, int base, prec_t prec, rnd_t rnd)
@@ -99,8 +99,8 @@ public:
   //@}
 public:
   //internal structure accessors
-  const mpfr_t& mp() const { return m_mp; }
-  mpfr_t& mp() { return m_mp; }
+  mpfr_srcptr mp() const { return m_mp; }
+  mpfr_ptr mp() { return m_mp; }
 private:
   mpfr_t m_mp;
 };
@@ -132,14 +132,14 @@ public:
   /// constructor for <tt>char*</tt> (no implicit conversion)
   explicit RcMpfr(const char* str, int base, prec_t prec, rnd_t rnd) 
     : base_cls(new Mpfr(str, base, prec, rnd)) {}
-  /// constructor for <tt>mpz_t</tt>
-  explicit RcMpfr(const mpz_t& z, prec_t prec, rnd_t rnd) 
+  /// constructor for <tt>mpz_srcptr</tt>
+  explicit RcMpfr(mpz_srcptr z, prec_t prec, rnd_t rnd) 
     : base_cls(new Mpfr(z, prec, rnd)) {}
-  /// constructor for <tt>mpq_t</tt>
-  explicit RcMpfr(const mpq_t& q, prec_t prec, rnd_t rnd) 
+  /// constructor for <tt>mpq_srcptr</tt>
+  explicit RcMpfr(mpq_srcptr q, prec_t prec, rnd_t rnd) 
     : base_cls(new Mpfr(q, prec, rnd)) {}
-  /// constructor for <tt>mpfr_t</tt>
-  explicit RcMpfr(const mpfr_t& f, prec_t prec, rnd_t rnd)
+  /// constructor for <tt>mpfr_srcptr</tt>
+  explicit RcMpfr(mpfr_srcptr f, prec_t prec, rnd_t rnd)
     : base_cls(new Mpfr(f, prec, rnd)) {}
   /// constructor with value \f$i*2^e\f$ for <tt>long</tt>
   RcMpfr(long i, exp_t e, prec_t prec, rnd_t rnd)
@@ -155,8 +155,8 @@ public:
   }
 public:
   //internal structure accessors
-  const mpfr_t& mp() const { return ((const Mpfr*)_rep)->mp(); }
-  mpfr_t& mp() { return _rep->mp(); }
+  mpfr_srcptr mp() const { return ((const Mpfr*)_rep)->mp(); }
+  mpfr_ptr mp() { make_copy(); return _rep->mp(); }
 };
 #endif
 

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Gmpz.h,v 1.3 2006-03-02 04:56:07 exact Exp $
+ * $Id: Gmpz.h,v 1.4 2006-03-02 22:53:27 exact Exp $
  ***************************************************************************/
 #ifndef __GMPZ_H__
 #define __GMPZ_H__
@@ -65,7 +65,7 @@ public:
   /// constructor for <tt>char*</tt> (no implicit conversion)
   explicit Gmpz(const char* str, int base)
   { mpz_init_set_str(m_mp, str, base); }
-  /// constructor for <tt>mpz_t</tt>
+  /// constructor for <tt>mpz_srcptr</tt>
   explicit Gmpz(mpz_srcptr x)
   { mpz_init_set(m_mp, x); }
 
@@ -77,8 +77,8 @@ public:
   //@}
 public:
   //internal structure accessors
-  const mpz_t& mp() const { return m_mp; }
-  mpz_t& mp() { return m_mp; }
+  mpz_srcptr mp() const { return m_mp; }
+  mpz_ptr mp() { return m_mp; }
 private:
   mpz_t m_mp;
 };
@@ -106,7 +106,7 @@ public:
   RcGmpz(double i) : base_cls(new Gmpz(i)) {}
   /// constructor for <tt>char*</tt> (no implicit conversion)
   explicit RcGmpz(const char* str, int base) : base_cls(new Gmpz(str, base)) {}
-  /// constructor for <tt>mpz_t</tt>
+  /// constructor for <tt>mpz_srcptr</tt>
   explicit RcGmpz(mpz_srcptr x) : base_cls(new Gmpz(x)) {}
   
   /// assignment operator for <tt>RcGmpz</tt>
@@ -117,8 +117,8 @@ public:
   //@}
 public:
   //internal structure accessors
-  const mpz_t& mp() const { return ((const Gmpz*)_rep)->mp(); }
-  mpz_t& mp() { return _rep->mp(); }
+  mpz_srcptr mp() const { return ((const Gmpz*)_rep)->mp(); }
+  mpz_ptr mp() { make_copy(); return _rep->mp(); }
 };
 #endif
 
