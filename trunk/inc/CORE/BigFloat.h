@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.3 2006-03-01 01:04:05 exact Exp $
+ * $Id: BigFloat.h,v 1.4 2006-03-02 01:02:17 exact Exp $
  ***************************************************************************/
 #ifndef __BIGFLOAT_H__
 #define __BIGFLOAT_H__
@@ -41,6 +41,12 @@
   3. when implementing automatic version, need notice the input could be the
      output, in that case, set_prec will reset the input value. 
  */
+
+// default rouning mode
+#ifndef MPFR_RND
+#define MPFR_RND mpfr_get_default_rounding_mode()
+#endif
+
 /* subtraction */
 /* TODO: need take more care of rounding mode */
 inline int mpfr_z_sub(mpfr_ptr z, mpz_srcptr x, mpfr_srcptr y, rnd_t rnd)
@@ -120,9 +126,6 @@ public:
 
   /// \name constructors (fixed version)
   //@{
-  /// constructor for <tt>BigFloat</tt> with specified precision
-  BigFloat(const BigFloat& rhs, prec_t prec, rnd_t rnd = MPFR_RND)
-    : base_cls(rhs, prec, rnd) {}
   /// constructor for <tt>short</tt> with specified precision
   BigFloat(int i, prec_t prec, rnd_t rnd = MPFR_RND)
     : base_cls(static_cast<long>(i), prec, rnd) {}
@@ -143,6 +146,9 @@ public:
     : base_cls(x.mp(), prec, rnd) {}
   /// constructor for <tt>BigRat</tt> with specified precision
   BigFloat(const BigRat& x, prec_t prec, rnd_t rnd = MPFR_RND)
+    : base_cls(x.mp(), prec, rnd) {}
+  /// constructor for <tt>BigFloat</tt> with specified precision
+  BigFloat(const BigFloat& x, prec_t prec, rnd_t rnd = MPFR_RND)
     : base_cls(x.mp(), prec, rnd) {}
   /// constructor for <tt>char*</tt> with specified precision
   explicit BigFloat(const char* s, int base, prec_t prec, rnd_t rnd = MPFR_RND)
@@ -168,10 +174,10 @@ public:
 public:
   /// \name precision accessors
   //@{
-  /// return current precision
+  /// return current precision (bit length of mantissa)
   prec_t get_prec() const
   { return mpfr_get_prec(mp()); }
-  /// set current precision
+  /// set current precision (bit length of mantissa)
   void set_prec(prec_t prec)
   { mpfr_set_prec(mp(), prec); }
   //@}
@@ -181,57 +187,86 @@ public:
   /// return exponent
   exp_t get_exp() const
   { return sgn() ? mpfr_get_exp(mp()) : 0; }
-  /// set exponent (never need?)
-  void set_exp(exp_t e)
-  { mpfr_set_exp(mp(), e); }
   //@}
 
 public:
   /// \name assignment functions (raw version)
   //@{
   /// assignment functions for <tt>BigFloat</tt>
-  int set(const BigFloat& rhs, rnd_t rnd = MPFR_RND)
+  int r_set(const BigFloat& rhs, rnd_t rnd = MPFR_RND)
   { return mpfr_set(mp(), rhs.mp(), rnd); }
   /// assignment functions for <tt>int</tt>
-  int set(int i, rnd_t rnd = MPFR_RND)
+  int r_set(int i, rnd_t rnd = MPFR_RND)
   { return mpfr_set_si(mp(), i, rnd); }
   /// assignment functions for <tt>unsigned int</tt>
-  int set(unsigned int i, rnd_t rnd = MPFR_RND)
+  int r_set(unsigned int i, rnd_t rnd = MPFR_RND)
   { return mpfr_set_ui(mp(), i, rnd); }
   /// assignment functions for <tt>long</tt>
-  int set(long i, rnd_t rnd = MPFR_RND)
+  int r_set(long i, rnd_t rnd = MPFR_RND)
   { return mpfr_set_si(mp(), i, rnd); }
   /// assignment functions for <tt>unsigned long</tt>
-  int set(unsigned long i, rnd_t rnd = MPFR_RND)
+  int r_set(unsigned long i, rnd_t rnd = MPFR_RND)
   { return mpfr_set_ui(mp(), i, rnd); }
   /// assignment functions for <tt>double</tt>
-  int set(double i, rnd_t rnd = MPFR_RND)
+  int r_set(double i, rnd_t rnd = MPFR_RND)
   { return mpfr_set_d(mp(), i, rnd); }
   /// assignment functions for <tt>BigInt</tt>
-  int set(const BigInt& x, rnd_t rnd = MPFR_RND)
+  int r_set(const BigInt& x, rnd_t rnd = MPFR_RND)
   { return mpfr_set_z(mp(), x.mp(), rnd); }
   /// assignment functions for <tt>BigRat</tt>
-  int set(const BigRat& x, rnd_t rnd = MPFR_RND) // use DOUBLE_PREC
+  int r_set(const BigRat& x, rnd_t rnd = MPFR_RND) // use DOUBLE_PREC
   { return mpfr_set_q(mp(), x.mp(), rnd); }
   /// assignment functions for <tt>char*</tt>
-  int set(const char* str, int base = 10, rnd_t rnd = MPFR_RND)
+  int r_set(const char* str, int base = 10, rnd_t rnd = MPFR_RND)
   { return mpfr_set_str(mp(), str, base, rnd); }
   /// assignment functions for <tt>std::string</tt>
-  int set(const std::string& str, int base = 10, rnd_t rnd = MPFR_RND)
+  int r_set(const std::string& str, int base = 10, rnd_t rnd = MPFR_RND)
   { return mpfr_set_str(mp(), str.c_str(), base, rnd); }
 
   /// set value to be \f$i*2^e\f$ for <tt>int</tt>
-  int set_2exp(int i, exp_t e, rnd_t rnd = MPFR_RND)
+  int r_set_2exp(int i, exp_t e, rnd_t rnd = MPFR_RND)
   { return mpfr_set_si_2exp(mp(), i, e, rnd); }
   /// set value to be \f$i*2^e\f$ for <tt>unsigned int</tt>
-  int set_2exp(unsigned int i, exp_t e, rnd_t rnd = MPFR_RND)
+  int r_set_2exp(unsigned int i, exp_t e, rnd_t rnd = MPFR_RND)
   { return mpfr_set_ui_2exp(mp(), i, e, rnd); }
   /// set value to be \f$i*2^e\f$ for <tt>long</tt>
-  int set_2exp(long i, exp_t e, rnd_t rnd = MPFR_RND)
+  int r_set_2exp(long i, exp_t e, rnd_t rnd = MPFR_RND)
   { return mpfr_set_si_2exp(mp(), i, e, rnd); }
   /// set value to be \f$i*2^e\f$ for <tt>unsigned long</tt>
-  int set_2exp(unsigned long i, exp_t e, rnd_t rnd = MPFR_RND)
+  int r_set_2exp(unsigned long i, exp_t e, rnd_t rnd = MPFR_RND)
   { return mpfr_set_ui_2exp(mp(), i, e, rnd); }
+  //@}
+
+  /// \name assignment functions (fixed version)
+  //@{
+  /// assignment functions for <tt>T</tt>
+  template <typename T> int set(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
+  { mpfr_set_prec(mp(), prec); r_set(x, rnd); }
+  /// assignment functions for <tt>char*</tt>
+  int set(const char* x, int base, prec_t prec, rnd_t rnd = MPFR_RND)
+  { mpfr_set_prec(mp(), prec); r_set(x, base, rnd); }
+  /// assignment functions for <tt>std::string</tt>
+  int set(const std::string& x, int base, prec_t prec, rnd_t rnd = MPFR_RND)
+  { mpfr_set_prec(mp(), prec); r_set(x.c_str(), base, rnd); }
+  /// set value to be \f$i*2^e\f$ for <tt>T</tt>
+  template <typename T> int set_2exp(const T& x,prec_t prec,rnd_t rnd=MPFR_RND)
+  { set_prec(prec); r_set_2exp(x, rnd); }
+  //@}
+
+  /// \name assignment functions (auto version)
+  //@{
+  /// assignment functions for <tt>T</tt>
+  template <typename T> int set(const T& x, rnd_t rnd = MPFR_RND)
+  { mpfr_set_prec(mp(), count_prec(x)); r_set(x, rnd); }
+  /// assignment functions for <tt>char*</tt>
+  int set(const char* x, int base = 10, rnd_t rnd = MPFR_RND)
+  { mpfr_set_prec(mp(), count_prec(x)); r_set(x, base, rnd); }
+  /// assignment functions for <tt>std::string</tt>
+  int set(const std::string& x, int base = 10, rnd_t rnd = MPFR_RND)
+  { mpfr_set_prec(mp(), count_prec(x)); r_set(x, base, rnd); }
+  /// set value to be \f$i*2^e\f$ for <tt>T</tt>
+  template <typename T> int set_2exp(const T& x, rnd_t rnd = MPFR_RND)
+  { set_prec(count_prec(x)); r_set(x, rnd); }
   //@}
 
 public:
@@ -252,30 +287,79 @@ public:
 
   /// \name arithmetic functions -- addition (raw version)
   //@{
-  /// addition for <tt>BigFloat+BigFloat</tt>
-  int add(const BigFloat& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  /// addition for <tt>BigFloat+BigFloat</tt>  (raw version)
+  int r_add(const BigFloat& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_add(mp(), x.mp(), y.mp(), rnd); }
-  /// addition for <tt>BigFloat+int</tt>
-  int add(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
+  /// addition for <tt>BigFloat+int</tt> (raw version)
+  int r_add(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
   { return add(x, static_cast<long>(y), rnd); }
-  /// addition for <tt>BigFloat+unsigned int</tt>
-  int add(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
+  /// addition for <tt>BigFloat+unsigned int</tt> (raw version)
+  int r_add(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
   { return add(x, static_cast<unsigned long>(y), rnd); }
-  /// addition for <tt>BigFloat+long</tt>
-  int add(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
+  /// addition for <tt>BigFloat+long</tt> (raw version)
+  int r_add(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
   { return mpfr_add_si(mp(), x.mp(), y, rnd); }
-  /// addition for <tt>BigFloat+unsigned long</tt>
-  int add(const BigFloat& x, unsigned long y, rnd_t rnd = MPFR_RND)
+  /// addition for <tt>BigFloat+unsigned long</tt> (raw version)
+  int r_add(const BigFloat& x, unsigned long y, rnd_t rnd = MPFR_RND)
   { return mpfr_add_ui(mp(), x.mp(), y, rnd); }
-  /// addition for <tt>BigFloat+double</tt>
-  int add(const BigFloat& x, double y, rnd_t rnd = MPFR_RND)
+  /// addition for <tt>BigFloat+double</tt> (raw version)
+  int r_add(const BigFloat& x, double y, rnd_t rnd = MPFR_RND)
   { return add(x, BigFloat(y), rnd); }
-  /// addition for <tt>BigFloat+BigInt</tt>
-  int add(const BigFloat& x, const BigInt& y, rnd_t rnd = MPFR_RND)
+  /// addition for <tt>BigFloat+BigInt</tt> (raw version)
+  int r_add(const BigFloat& x, const BigInt& y, rnd_t rnd = MPFR_RND)
   { return mpfr_add_z(mp(), x.mp(), y.mp(), rnd); }
-  /// addition for <tt>BigFloat+BigRat</tt>
-  int add(const BigFloat& x, const BigRat& y, rnd_t rnd = MPFR_RND)
+  /// addition for <tt>BigFloat+BigRat</tt> (raw version)
+  int r_add(const BigFloat& x, const BigRat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_add_q(mp(), x.mp(), y.mp(), rnd); }
+  /// addition for <tt>T+BigFloat</tt> (raw version)
+  template <typename T> 
+  int r_add(const T& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  { return r_add(y, x, rnd); }
+  //@}
+
+  /// \name arithmetic functions -- addition (fixed version)
+  //@{
+  /// addition for <tt>BigFloat+BigFloat</tt> (fixed version)
+  int add(const BigFloat& x, const BigFloat& y,prec_t prec,rnd_t rnd=MPFR_RND){
+    if (&x == this || &y == this) { // if one of inputs are output
+       BigFloat result(0, prec);
+       int r = result.r_add(x, y, rnd);
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_add(x, y, rnd); 
+     }
+  }
+  /// addition for <tt>BigFloat+T</tt> (fixed version)
+  template <typename T> 
+  int add(const BigFloat& x, const T& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+    if (&x == this) { // if x is same as output
+       BigFloat result(0, prec);
+       int r = result.r_add(x, y, rnd);
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_add(x, y, rnd); 
+     }
+  }
+  /// addition for <tt>T+BigFloat</tt> (fixed version)
+  template <typename T> 
+  int add(const T& x, const BigFloat& y, prec_t prec, rnd_t rnd = MPFR_RND)
+  { return add(y, x, prec, rnd); }
+  //@}
+
+  /// \name arithmetic functions -- addition (auto version)
+  //@{
+  /// addition for <tt>BigFloat+BigFloat</tt> (auto version)
+  int add(const BigFloat& x, const BigFloat& y, rnd_t rnd = MPFR_RND) {
+    int r = add(x, y, add_prec(x, y), rnd);  // call fixed version
+    remove_trailing_zeros(); return r;       // remove extra zeros
+  }
+  /// addition for <tt>BigFloat+T</tt> (auto version)
+  template <typename T> 
+  int add(const BigFloat& x, const T& y, rnd_t rnd = MPFR_RND) { 
+    int r = add(x, y, add_prec(x, count_prec(y)), rnd);  // call fixed version
+    remove_trailing_zeros(); return r;                   // remove extra zeros
+  }
+  /// addition for <tt>T+BigFloat</tt> (auto version)
   template <typename T> 
   int add(const T& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return add(y, x, rnd); }
@@ -283,53 +367,110 @@ public:
 
   /// \name arithmetic functions -- subtraction (raw version)
   //@{
-  /// subtraction for <tt>BigFloat-BigFloat</tt>
-  int sub(const BigFloat& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>BigFloat-BigFloat</tt> (raw version)
+  int r_sub(const BigFloat& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_sub(mp(), x.mp(), y.mp(), rnd); }
-  /// subtraction for <tt>BigFloat-int</tt>
-  int sub(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>BigFloat-int</tt> (raw version)
+  int r_sub(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
   { return sub(x, static_cast<long>(y), rnd); }
-  /// subtraction for <tt>BigFloat-unsigned int</tt>
-  int sub(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>BigFloat-unsigned int</tt> (raw version)
+  int r_sub(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
   { return sub(x, static_cast<unsigned long>(y), rnd); }
-  /// subtraction for <tt>BigFloat-long</tt>
-  int sub(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>BigFloat-long</tt> (raw version)
+  int r_sub(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
   { return mpfr_sub_si(mp(), x.mp(), y, rnd); }
-  /// subtraction for <tt>BigFloat-unsigned long</tt>
-  int sub(const BigFloat& x, unsigned long y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>BigFloat-unsigned long</tt> (raw version)
+  int r_sub(const BigFloat& x, unsigned long y, rnd_t rnd = MPFR_RND)
   { return mpfr_sub_ui(mp(), x.mp(), y, rnd); }
-  /// subtraction for <tt>BigFloat-double</tt>
-  int sub(const BigFloat& x, double y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>BigFloat-double</tt> (raw version)
+  int r_sub(const BigFloat& x, double y, rnd_t rnd = MPFR_RND)
   { return sub(x, BigFloat(y), rnd); }
-  /// subtraction for <tt>BigFloat-BigInt</tt>
-  int sub(const BigFloat& x, const BigInt& y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>BigFloat-BigInt</tt> (raw version)
+  int r_sub(const BigFloat& x, const BigInt& y, rnd_t rnd = MPFR_RND)
   { return mpfr_sub_z(mp(), x.mp(), y.mp(), rnd); }
-  /// subtraction for <tt>BigFloat-BigRat</tt>
-  int sub(const BigFloat& x, const BigRat& y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>BigFloat-BigRat</tt> (raw version)
+  int r_sub(const BigFloat& x, const BigRat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_sub_q(mp(), x.mp(), y.mp(), rnd); }
-  /// subtraction for <tt>int-BigFloat</tt>
-  int sub(int x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>int-BigFloat</tt> (raw version)
+  int r_sub(int x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return sub(static_cast<long>(x), y, rnd); }
-  /// subtraction for <tt>unsigned int-BigFloat</tt>
-  int sub(unsigned int x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>unsigned int-BigFloat</tt> (raw version)
+  int r_sub(unsigned int x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return sub(static_cast<unsigned long>(x), y, rnd); }
-  /// subtraction for <tt>long-BigFloat</tt>
-  int sub(long x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>long-BigFloat</tt> (raw version)
+  int r_sub(long x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_si_sub(mp(), x, y.mp(), rnd); }
-  /// subtraction for <tt>unsigned long-BigFloat</tt>
-  int sub(unsigned long x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>unsigned long-BigFloat</tt> (raw version)
+  int r_sub(unsigned long x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_ui_sub(mp(), x, y.mp(), rnd); }
-  /// subtraction for <tt>double-BigFloat</tt>
-  int sub(double x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>double-BigFloat</tt> (raw version)
+  int r_sub(double x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return sub(BigFloat(x), y, rnd); }
-  /// subtraction for <tt>BigInt-BigFloat</tt>
-  int sub(const BigInt& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>BigInt-BigFloat</tt> (raw version)
+  int r_sub(const BigInt& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_z_sub(mp(), x.mp(), y.mp(), rnd); }
-  /// subtraction for <tt>BigRat-BigFloat</tt>
-  int sub(const BigRat& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  /// subtraction for <tt>BigRat-BigFloat</tt> (raw version)
+  int r_sub(const BigRat& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_q_sub(mp(), x.mp(), y.mp(), rnd); }
   //@}
   
+  /// \name arithmetic functions -- subtraction (fixed version)
+  //@{
+  /// subtraction for <tt>BigFloat-BigFloat</tt> (fixed version)
+  int sub(const BigFloat& x, const BigFloat& y,prec_t prec,rnd_t rnd=MPFR_RND){
+    if (&x == this || &y == this) { // if one of inputs are output
+       BigFloat result(0, prec);
+       int r = result.r_sub(x, y, rnd);
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_sub(x, y, rnd);
+     }
+  }
+  /// subtraction for <tt>BigFloat-T</tt> (fixed version)
+  template <typename T> 
+  int sub(const BigFloat& x, const T& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+    if (&x == this) { // if x is same as output
+       BigFloat result(0, prec);
+       int r = result.r_sub(x, y, rnd); 
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_sub(x, y, rnd);  
+     }
+  }
+  /// subtraction for <tt>T-BigFloat</tt> (fixed version)
+  template <typename T> 
+  int sub(const T& x, const BigFloat& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+    if (&y == this) { // if y is same as output
+       BigFloat result(0, prec);
+       int r = result.r_sub(x, y, rnd); 
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_sub(x, y, rnd);  
+     }
+  }
+  //@}
+
+  /// \name arithmetic functions -- subtraction (auto version)
+  //@{
+  /// subtraction for <tt>BigFloat-BigFloat</tt> (auto version)
+  int sub(const BigFloat& x, const BigFloat& y, rnd_t rnd = MPFR_RND) {
+    int r = sub(x, y, add_prec(x, y), rnd);  // call fixed version
+    remove_trailing_zeros(); return r;       // remove extra zeros
+  } 
+  /// subtraction for <tt>BigFloat-T</tt> (auto version)
+  template <typename T>  
+  int sub(const BigFloat& x, const T& y, rnd_t rnd = MPFR_RND) {
+    int r = sub(x, y, add_prec(x, count_prec(y)), rnd);  // call fixed version
+    remove_trailing_zeros(); return r;                   // remove extra zeros
+  } 
+  /// subtraction for <tt>T-BigFloat</tt> (auto version)
+  template <typename T> 
+  int sub(const T& x, const BigFloat& y, rnd_t rnd = MPFR_RND) {
+    int r = sub(x, y, add_prec(y, count_prec(x)), rnd);  // call fixed version
+    remove_trailing_zeros(); return r;                   // remove extra zeros
+  } 
+  //@}
+
   /// \name arithmetic functions -- multiplication (raw version)
   //@{
   /// multiplication for <tt>BigFloat*BigFloat</tt>
@@ -357,6 +498,54 @@ public:
   int mul(const BigFloat& x, const BigRat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_mul_q(mp(), x.mp(), y.mp(), rnd); }
   template <typename T> 
+  int mul(const T& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  { return mul(y, x, rnd); }
+  //@}
+
+  /// \name arithmetic functions -- multiplication (fixed version)
+  //@{
+  /// multiplication for <tt>BigFloat*BigFloat</tt> (fixed version)
+  int mul(const BigFloat& x, const BigFloat& y,prec_t prec,rnd_t rnd=MPFR_RND){
+    if (&x == this || &y == this) { // if one of inputs are output
+       BigFloat result(0, prec);
+       int r = result.r_mul(x, y, rnd);
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_mul(x, y, rnd);
+     }
+  }
+  /// multiplication for <tt>BigFloat*T</tt> (fixed version)
+  template <typename T>
+  int mul(const BigFloat& x, const T& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+    if (&x == this) { // if x is same as output
+       BigFloat result(0, prec);
+       int r = result.r_mul(x, y, rnd);
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_mul(x, y, rnd);
+     }
+  }
+  /// multiplication for <tt>T*BigFloat</tt> (fixed version)
+  template <typename T>
+  int mul(const T& x, const BigFloat& y, prec_t prec, rnd_t rnd = MPFR_RND)
+  { return mul(y, x, prec, rnd); }
+  //@}
+
+  /// \name arithmetic functions -- multiplication (auto version)
+  //@{
+  /// multiplication for <tt>BigFloat*BigFloat</tt> (auto version)
+  int mul(const BigFloat& x, const BigFloat& y, rnd_t rnd = MPFR_RND) {
+    int r = mul(x, y, mul_prec(x, y), rnd);  // call fixed version
+    remove_trailing_zeros(); return r;       // remove extra zeros
+  }
+  /// multiplication for <tt>BigFloat*T</tt> (auto version)
+  template <typename T>
+  int mul(const BigFloat& x, const T& y, rnd_t rnd = MPFR_RND) {
+    int r = mul(x, y, mul_prec(x, count_prec(y)), rnd);  // call fixed version
+    remove_trailing_zeros(); return r;                   // remove extra zeros
+  }
+  /// multiplication for <tt>T*BigFloat</tt> (auto version)
+  template <typename T>
   int mul(const T& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mul(y, x, rnd); }
   //@}
@@ -410,75 +599,229 @@ public:
   { return div(BigFloat(x), y, rnd); }
   //@}
 
+  /// \name arithmetic functions -- division (fixed version)
+  //@{
+  /// division for <tt>BigFloat-BigFloat</tt> (fixed version)
+  int div(const BigFloat& x, const BigFloat& y,prec_t prec,rnd_t rnd=MPFR_RND){
+    if (&x == this || &y == this) { // if one of inputs are output
+       BigFloat result(0, prec);
+       int r = result.r_div(x, y, rnd);
+       swap(result); return r; 
+     } else {
+       set_prec(prec); return r_div(x, y, rnd);
+     } 
+  }  
+  /// division for <tt>BigFloat-T</tt> (fixed version)
+  template <typename T> 
+  int div(const BigFloat& x, const T& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+    if (&x == this) { // if x is same as output 
+       BigFloat result(0, prec);
+       int r = result.r_div(x, y, rnd);
+       swap(result); return r; 
+     } else {
+       set_prec(prec); return r_div(x, y, rnd);
+     } 
+  }  
+  /// division for <tt>T-BigFloat</tt> (fixed version)
+  template <typename T>
+  int div(const T& x, const BigFloat& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+    if (&y == this) { // if y is same as output
+       BigFloat result(0, prec);
+       int r = result.r_div(x, y, rnd);
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_div(x, y, rnd);
+     }
+  }
+  //@}
+
   /// \name square root functions (raw version)
   //@{
-  /// square root function for <tt>BigFloat</tt>
-  int sqrt(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  /// square root function for <tt>BigFloat</tt> (raw version)
+  int r_sqrt(const BigFloat& x, rnd_t rnd = MPFR_RND)
   { return mpfr_sqrt(mp(), x.mp(), rnd); }
-  /// square root function for <tt>int</tt>
-  int sqrt(int x, rnd_t rnd = MPFR_RND)
+  /// square root function for <tt>int</tt> (raw version)
+  int r_sqrt(int x, rnd_t rnd = MPFR_RND)
   { return sqrt(static_cast<long>(x), rnd); }
-  /// square root function for <tt>unsigned int</tt>
-  int sqrt(unsigned int x, rnd_t rnd = MPFR_RND)
+  /// square root function for <tt>unsigned int</tt> (raw version)
+  int r_sqrt(unsigned int x, rnd_t rnd = MPFR_RND)
   { return sqrt(static_cast<unsigned long>(x), rnd); }
-  /// square root function for <tt>long</tt>
-  int sqrt(long x, rnd_t rnd = MPFR_RND)
+  /// square root function for <tt>long</tt> (raw version)
+  int r_sqrt(long x, rnd_t rnd = MPFR_RND)
   { assert(x>=0); return mpfr_sqrt_ui(mp(), x, rnd); }
-  /// square root function for <tt>unsigned long</tt>
-  int sqrt(unsigned long x, rnd_t rnd = MPFR_RND)
+  /// square root function for <tt>unsigned long</tt> (raw version)
+  int r_sqrt(unsigned long x, rnd_t rnd = MPFR_RND)
   { return mpfr_sqrt_ui(mp(), x, rnd); }
-  /// square root function for <tt>double</tt>
-  int sqrt(double x, rnd_t rnd = MPFR_RND)
+  /// square root function for <tt>double</tt> (raw version)
+  int r_sqrt(double x, rnd_t rnd = MPFR_RND)
   { return sqrt(BigFloat(x), rnd); }
   //@}
 
+  /// \name square root functions (fixed version)
+  //@{
+  /// square root function for <tt>BigFloat</tt> (fixed version)
+  int sqrt(const BigFloat& x, prec_t prec, rnd_t rnd = MPFR_RND) {
+    if (&x == this) { // if x is same as ouput
+      BigFloat result(0, prec);
+      int r = result.r_sqrt(x, rnd);
+      swap(result); return r;
+    } else {
+      set_prec(prec); return r_sqrt(x, rnd);
+    }
+  }
+  /// square root function for <tt>T</tt> (fixed version)
+  template <typename T> int sqrt(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
+  { set_prec(prec); return r_sqrt(x, rnd); }
+  //@}
+
+
   /// \name power functions (raw version)
   //@{
-  /// power function for <tt>BigFloat^BigFloat</tt>
-  int pow(const BigFloat& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  /// power function for <tt>BigFloat^BigFloat</tt> (raw version)
+  int r_pow(const BigFloat& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_pow(mp(), x.mp(), y.mp(), rnd); }
-  /// power function for <tt>BigFloat^int</tt>
-  int pow(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
+  /// power function for <tt>BigFloat^int</tt> (raw version)
+  int r_pow(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
   { return pow(x, static_cast<long>(y), rnd); }
-  /// power function for <tt>BigFloat^unsigned int</tt>
-  int pow(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
+  /// power function for <tt>BigFloat^unsigned int</tt> (raw version)
+  int r_pow(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
   { return pow(x, static_cast<unsigned long>(y), rnd); }
-  /// power function for <tt>BigFloat^long</tt>
-  int pow(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
+  /// power function for <tt>BigFloat^long</tt> (raw version)
+  int r_pow(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
   { return mpfr_pow_si(mp(), x.mp(), y, rnd); }
-  /// power function for <tt>BigFloat^unsigned long</tt>
-  int pow(const BigFloat& x, unsigned long y, rnd_t rnd = MPFR_RND)
+  /// power function for <tt>BigFloat^unsigned long</tt> (raw version)
+  int r_pow(const BigFloat& x, unsigned long y, rnd_t rnd = MPFR_RND)
   { return mpfr_pow_ui(mp(), x.mp(), y, rnd); }
-  /// power function for <tt>BigFloat^BigInt</tt>
-  int pow(const BigFloat& x, const BigInt& y, rnd_t rnd = MPFR_RND)
+  /// power function for <tt>BigFloat^BigInt</tt> (raw version)
+  int r_pow(const BigFloat& x, const BigInt& y, rnd_t rnd = MPFR_RND)
   { return mpfr_pow_z(mp(), x.mp(), y.mp(), rnd); }
-  /// power function for <tt>unsigned long^BigFloat</tt>
-  int pow(unsigned long x, const BigFloat& y, rnd_t rnd = MPFR_RND)
+  /// power function for <tt>unsigned long^BigFloat</tt> (raw version)
+  int r_pow(unsigned long x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mpfr_ui_pow(mp(), x, y.mp(), rnd); }
-  /// power function for <tt>unsigned long^unsigned long</tt>
-  int pow(unsigned long x, unsigned long y, rnd_t rnd = MPFR_RND)
+  /// power function for <tt>unsigned long^unsigned long</tt> (raw version)
+  int r_pow(unsigned long x, unsigned long y, rnd_t rnd = MPFR_RND)
   { return mpfr_ui_pow_ui(mp(), x, y, rnd); }
+  //@}
+
+  /// \name power functions (fixed version)
+  //@{
+  /// power function for <tt>BigFloat^BigFloat</tt> (fixed version)
+  int pow(const BigFloat& x, const BigFloat& y,prec_t prec,rnd_t rnd=MPFR_RND){
+    if (&x == this || &y == this) { // if one of inputs are output
+       BigFloat result(0, prec);
+       int r = result.r_pow(x, y, rnd);
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_pow(x, y, rnd);
+     }
+  }
+  /// power function for <tt>BigFloat^T</tt> (fixed version)
+  template <typename T>
+  int pow(const BigFloat& x, const T& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+    if (&x == this) { // if x is same as output 
+       BigFloat result(0, prec);
+       int r = result.r_pow(x, y, rnd);
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_pow(x, y, rnd);
+     }
+  }
+  /// power function for <tt>T^BigFloat</tt> (fixed version)
+  template <typename T>
+  int pow(const T& x, const BigFloat& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+    if (&y == this) { // if y is same as output
+       BigFloat result(0, prec);
+       int r = result.r_pow(x, y, rnd);
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_pow(x, y, rnd);
+     }
+  }
   //@}
 
   /// \name other arithmetic functions (raw version)
   //@{
   /// square
-  int sqr(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  int r_sqr(const BigFloat& x, rnd_t rnd = MPFR_RND)
   { return mpfr_sqr(mp(), x.mp(), rnd); }
   /// cubic root
-  int cbrt(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  int r_cbrt(const BigFloat& x, rnd_t rnd = MPFR_RND)
   { return mpfr_cbrt(mp(), x.mp(), rnd); }
   /// kth root
-  int root(const BigFloat& x, unsigned long k, rnd_t rnd = MPFR_RND)
+  int r_root(const BigFloat& x, unsigned long k, rnd_t rnd = MPFR_RND)
   { return mpfr_root(mp(), x.mp(), k, rnd); }
   /// negation
-  int neg(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  int r_neg(const BigFloat& x, rnd_t rnd = MPFR_RND)
   { return mpfr_neg(mp(), x.mp(), rnd); }
   /// absolute value
-  int abs(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  int r_abs(const BigFloat& x, rnd_t rnd = MPFR_RND)
   { return mpfr_abs(mp(), x.mp(), rnd); }
   //@}
   
+  /// \name other arithmetic functions (fixed version)
+  //@{
+  /// square (fixed version)
+  int sqr(const BigFloat& x, prec_t prec, rnd_t rnd = MPFR_RND) {
+    if (&x == this) { // if y is same as output
+       BigFloat result(0, prec);
+       int r = result.r_sqr(x, rnd);
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_sqr(x, rnd);
+     }
+  }
+  /// cubic root (fixed version)
+  int cbrt(const BigFloat& x, prec_t prec, rnd_t rnd = MPFR_RND) {
+    if (&x == this) { // if y is same as output
+       BigFloat result(0, prec);
+       int r = result.r_cbrt(x, rnd);
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_cbrt(x, rnd);
+     }
+  }
+  /// kth root (fixed version)
+  int root(const BigFloat& x, unsigned long k,prec_t prec,rnd_t rnd=MPFR_RND){
+    if (&x == this) { // if y is same as output
+       BigFloat result(0, prec);
+       int r = result.r_root(x, k, rnd);
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_root(x, k, rnd);
+     }
+  }
+  /// negation (fixed version)
+  int neg(const BigFloat& x, prec_t prec, rnd_t rnd = MPFR_RND) {
+    if (&x == this) { // if y is same as output
+       BigFloat result(0, prec);
+       int r = result.neg(x, rnd);
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_neg(x, rnd);
+     }
+  }
+  /// absolute value (fixed version)
+  int abs(const BigFloat& x, prec_t prec, rnd_t rnd = MPFR_RND) {
+    if (&x == this) { // if y is same as output
+       BigFloat result(0, prec);
+       int r = result.r_abs(x, rnd);
+       swap(result); return r;
+     } else {
+       set_prec(prec); return r_abs(x, rnd);
+     }
+  }
+  //@}
+
+  /// \name other arithmetic functions (auto version)
+  //@{
+  /// negation (auto version)
+  int neg(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  { if (&x != this) set_prec(x.get_prec()); return r_neg(x, rnd); }
+  /// absolute value (auto version)
+  int abs(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  { if (&x != this) set_prec(x.get_prec()); return r_abs(x, rnd); }
+  //@}
+
   /// \name shift functions
   //@{
   /// left shift for <tt>int</tt>
@@ -715,24 +1058,38 @@ public:
   static prec_t count_prec(const BigFloat& z)
   { return z.get_prec(); }
   // count the precision in a string representation
-  //   prec <= len*log_2(base) <= len*(1+ilogb(base))
+  //   prec <= len*ilogb(base) <= len*(1+ilogb(base))
   static prec_t count_prec(const char* str, int base = 10)
   { return strlen(str)*(1+ilogb(base)); }	
   static prec_t count_prec(const std::string& str, int base = 10)
   { return str.length()*(1+ilogb(base)); }	
 
-  // count how many precision needed for addition/subtraction
-  static prec_t add_prec(const BigFloat& x, const BigFloat& y) {
-    exp_t diff = x.get_exp() - y.get_exp();
+  // count how many precision needed for exact addition/subtraction
+  // between one bigfloat and one integer
+  static prec_t add_prec(const BigFloat& x, prec_t prec) {
+    exp_t diff = x.get_exp() - x.get_prec();
     if (diff >= 0)
-      return std::max(x.get_prec() + diff, y.get_prec());
+      return 1+std::max(x.get_prec() + diff, prec);
     else
-      return std::max(x.get_prec(), y.get_prec() - diff);
+      return 1+std::max(x.get_prec(), prec - diff);
   }
-  // count how many precision needed for muliplication
+  // count how many precision needed for exact addition/subtraction
+  // of two bigfloats, see lemma in Zilin's thesis
+  static prec_t add_prec(const BigFloat& x, const BigFloat& y) {
+    exp_t diff = x.get_exp() - x.get_prec() - y.get_exp() + y.get_prec();
+    if (diff >= 0)
+      return 1+std::max(x.get_prec() + diff, y.get_prec());
+    else
+      return 1+std::max(x.get_prec(), y.get_prec() - diff);
+  }
+  // count how many precision needed for exact multiplication
+  // between one bigfloat and one integer
+  static prec_t mul_prec(const BigFloat& x, prec_t prec) 
+  { return x.get_prec() + prec; }
+  // count how many precision needed for exact multiplication of two bigfloats
+  // see lemma in Zilin's thesis
   static prec_t mul_prec(const BigFloat& x, const BigFloat& y) 
   { return x.get_prec() + y.get_prec(); }
-
 
 public: // C++ operators
   /// \name unary, increment, decrement operators
@@ -761,7 +1118,7 @@ public: // C++ operators
   //@{
   /// assignment operator for <tt>BigFloat</tt>
   BigFloat& operator=(const BigFloat& rhs)
-  { set(rhs); return *this; }
+  { base_cls::operator=(rhs); return *this; }
   /// assignment operator for <tt>int</tt>
   BigFloat& operator=(int rhs)
   { set(rhs); return *this; }
