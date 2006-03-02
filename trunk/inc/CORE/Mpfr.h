@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Mpfr.h,v 1.4 2006-03-01 03:58:34 exact Exp $
+ * $Id: Mpfr.h,v 1.5 2006-03-02 04:56:07 exact Exp $
  ***************************************************************************/
 #ifndef __MPFR_H__
 #define __MPFR_H__
@@ -31,12 +31,12 @@
   #include <CORE/RefCounting.h>
 #endif
 
-CORE_BEGIN_NAMESPACE
-
 // typedefs
 typedef mp_rnd_t rnd_t;
 typedef mp_exp_t exp_t;
 typedef mp_prec_t prec_t;
+
+CORE_BEGIN_NAMESPACE
 
 /// \class Mpfr Mpfr.h
 /// \brief Mpfr is a wrapper class of <tt>mpfr</tt> in MPFR

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CORE.h,v 1.3 2006-03-01 01:04:05 exact Exp $
+ * $Id: CORE.h,v 1.4 2006-03-02 04:56:07 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_H__
 #define __CORE_H__
@@ -41,6 +41,9 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+
+// timer
+#include <CORE/Timer.h>
 
 typedef double machine_double;
 typedef long machine_long;

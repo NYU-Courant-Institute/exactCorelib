@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Gmpz.h,v 1.2 2006-03-01 03:40:01 exact Exp $
+ * $Id: Gmpz.h,v 1.3 2006-03-02 04:56:07 exact Exp $
  ***************************************************************************/
 #ifndef __GMPZ_H__
 #define __GMPZ_H__
@@ -66,7 +66,7 @@ public:
   explicit Gmpz(const char* str, int base)
   { mpz_init_set_str(m_mp, str, base); }
   /// constructor for <tt>mpz_t</tt>
-  explicit Gmpz(const mpz_t& x)
+  explicit Gmpz(mpz_srcptr x)
   { mpz_init_set(m_mp, x); }
 
   /// assignment operator for <tt>Gmpz</tt>
@@ -107,7 +107,7 @@ public:
   /// constructor for <tt>char*</tt> (no implicit conversion)
   explicit RcGmpz(const char* str, int base) : base_cls(new Gmpz(str, base)) {}
   /// constructor for <tt>mpz_t</tt>
-  explicit RcGmpz(const mpz_t& x) : base_cls(new Gmpz(x)) {}
+  explicit RcGmpz(mpz_srcptr x) : base_cls(new Gmpz(x)) {}
   
   /// assignment operator for <tt>RcGmpz</tt>
   RcGmpz& operator=(const RcGmpz& rhs) {

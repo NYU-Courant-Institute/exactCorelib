@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Policies.h,v 1.2 2006-02-10 15:04:22 exact Exp $
+ * $Id: Policies.h,v 1.3 2006-03-02 04:56:07 exact Exp $
  ***************************************************************************/
 #ifndef __POLICIES_H__
 #define __POLICIES_H__
@@ -32,6 +32,68 @@ CORE_BEGIN_NAMESPACE
 template <typename T, typename TL = T, typename TR = T>
 struct RawArithmeticPolicy {
   static bool set(T& z, const TL& x, prec_t, rnd_t rnd = MPFR_RND)
+  { return z.r_set(x, rnd) == 0; }
+  static bool set(T& z, const char* x, int b, prec_t, rnd_t rnd = MPFR_RND)
+  { return z.r_set(x, b, rnd) == 0; }
+  static bool set_2exp(T& z, long x, exp_t e, prec_t, rnd_t rnd)
+  { return z.r_set_2exp(x, e, rnd) == 0; }
+  static bool set_2exp(T& z, unsigned long x, exp_t e, prec_t, rnd_t rnd)
+  { return z.r_set_2exp(x, e, rnd) == 0; }
+
+  static bool neg(T& z, const TL& x, prec_t, rnd_t rnd)
+  { return z.r_neg(x, rnd) == 0; }
+  static bool sqrt(T& z, const TL& x, prec_t, rnd_t rnd)
+  { return z.r_sqrt(x, rnd) == 0; }
+  static bool cbrt(T& z, const TL& x, prec_t, rnd_t rnd)
+  { return z.r_cbrt(x, rnd) == 0; }
+  static bool root(T& z, const TL& x, unsigned long k, prec_t, rnd_t rnd)
+  { return z.r_root(x, k, rnd) == 0; }
+
+  static bool add(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
+  { return z.r_add(x, y, rnd) == 0; }
+  static bool sub(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
+  { return z.r_sub(x, y, rnd) == 0; }
+  static bool mul(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
+  { return z.r_mul(x, y, rnd) == 0; }
+  static bool div(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
+  { return z.r_div(x, y, rnd) == 0; }
+};
+
+// fix version (call with specified precision)
+template <typename T, typename TL = T, typename TR = T>
+struct FixedArithmeticPolicy {
+  static bool set(T& z, const TL& x, prec_t prec, rnd_t rnd = MPFR_RND)
+  { return z.set(x, prec, rnd) == 0; }
+  static bool set(T& z, const char* x, int b, prec_t prec, rnd_t rnd = MPFR_RND)
+  { return z.set(x, b, prec, rnd) == 0; }
+  static bool set_2exp(T& z, long x, exp_t e, prec_t prec, rnd_t rnd)
+  { return z.set_2exp(x, e, prec, rnd) == 0; }
+  static bool set_2exp(T& z, unsigned long x, exp_t e, prec_t prec, rnd_t rnd)
+  { return z.set_2exp(x, e, prec, rnd) == 0; }
+
+  static bool neg(T& z, const TL& x, prec_t prec, rnd_t rnd)
+  { return z.neg(x, prec, rnd) == 0; }
+  static bool sqrt(T& z, const TL& x, prec_t prec, rnd_t rnd)
+  { return z.sqrt(x, prec, rnd) == 0; }
+  static bool cbrt(T& z, const TL& x, prec_t prec, rnd_t rnd)
+  { return z.cbrt(x, prec, rnd) == 0; }
+  static bool root(T& z, const TL& x, unsigned long k, prec_t prec, rnd_t rnd)
+  { return z.root(x, k, prec, rnd) == 0; }
+
+  static bool add(T& z, const TL& x, const TR& y, prec_t prec, rnd_t rnd)
+  { return z.add(x, y, prec, rnd) == 0; }
+  static bool sub(T& z, const TL& x, const TR& y, prec_t prec, rnd_t rnd)
+  { return z.sub(x, y, prec, rnd) == 0; }
+  static bool mul(T& z, const TL& x, const TR& y, prec_t prec, rnd_t rnd)
+  { return z.mul(x, y, prec, rnd) == 0; }
+  static bool div(T& z, const TL& x, const TR& y, prec_t prec, rnd_t rnd)
+  { return z.div(x, y, prec, rnd) == 0; }
+};
+
+// auto version (precision will be determinated automatically)
+template <typename T, typename TL = T, typename TR = T>
+struct AutoArithmeticPolicy {
+  static bool set(T& z, const TL& x, prec_t, rnd_t rnd = MPFR_RND)
   { return z.set(x, rnd) == 0; }
   static bool set(T& z, const char* x, int b, prec_t, rnd_t rnd = MPFR_RND)
   { return z.set(x, b, rnd) == 0; }
@@ -42,12 +104,6 @@ struct RawArithmeticPolicy {
 
   static bool neg(T& z, const TL& x, prec_t, rnd_t rnd)
   { return z.neg(x, rnd) == 0; }
-  static bool sqrt(T& z, const TL& x, prec_t, rnd_t rnd)
-  { return z.sqrt(x, rnd) == 0; }
-  static bool cbrt(T& z, const TL& x, prec_t, rnd_t rnd)
-  { return z.cbrt(x, rnd) == 0; }
-  static bool root(T& z, const TL& x, unsigned long k, prec_t, rnd_t rnd)
-  { return z.root(x, k, rnd) == 0; }
 
   static bool add(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
   { return z.add(x, y, rnd) == 0; }
@@ -55,65 +111,6 @@ struct RawArithmeticPolicy {
   { return z.sub(x, y, rnd) == 0; }
   static bool mul(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
   { return z.mul(x, y, rnd) == 0; }
-  static bool div(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
-  { return z.div(x, y, rnd) == 0; }
-};
-
-// fix version (call with specified precision)
-template <typename T, typename TL = T, typename TR = T>
-struct FixedArithmeticPolicy {
-  static bool set(T& z, const TL& x, prec_t prec, rnd_t rnd = MPFR_RND)
-  { z.set_prec(prec); return z.set(x, rnd) == 0; }
-  static bool set(T& z, const char* x, int b, prec_t prec, rnd_t rnd = MPFR_RND)
-  { z.set_prec(prec); return z.set(x, b, rnd) == 0; }
-  static bool set_2exp(T& z, long x, exp_t e, prec_t prec, rnd_t rnd)
-  { z.set_prec(prec); return z.set_2exp(x, e, rnd) == 0; }
-  static bool set_2exp(T& z, unsigned long x, exp_t e, prec_t prec, rnd_t rnd)
-  { z.set_prec(prec); return z.set_2exp(x, e, rnd) == 0; }
-
-  static bool neg(T& z, const TL& x, prec_t prec, rnd_t rnd)
-  { z.set_prec(prec); return z.neg(x, rnd) == 0; }
-  static bool sqrt(T& z, const TL& x, prec_t prec, rnd_t rnd)
-  { z.set_prec(prec); return z.sqrt(x, rnd) == 0; }
-  static bool cbrt(T& z, const TL& x, prec_t prec, rnd_t rnd)
-  { z.set_prec(prec); return z.cbrt(x, rnd) == 0; }
-  static bool root(T& z, const TL& x, unsigned long k, prec_t prec, rnd_t rnd)
-  { z.set_prec(prec); return z.root(x, k, rnd) == 0; }
-
-  static bool add(T& z, const TL& x, const TR& y, prec_t prec, rnd_t rnd)
-  { z.set_prec(prec); return z.add(x, y, rnd) == 0; }
-  static bool sub(T& z, const TL& x, const TR& y, prec_t prec, rnd_t rnd)
-  { z.set_prec(prec); return z.sub(x, y, rnd) == 0; }
-  static bool mul(T& z, const TL& x, const TR& y, prec_t prec, rnd_t rnd)
-  { z.set_prec(prec); return z.mul(x, y, rnd) == 0; }
-  static bool div(T& z, const TL& x, const TR& y, prec_t prec, rnd_t rnd)
-  { z.set_prec(prec); return z.div(x, y, rnd) == 0; }
-};
-
-// auto version (precision will be determinated automatically)
-template <typename T, typename TL = T, typename TR = T>
-struct AutoArithmeticPolicy {
-  static bool set(T& z, const TL& x, prec_t, rnd_t rnd = MPFR_RND)
-  { z.set_prec(T::count_prec(x)); return z.set(x, rnd) == 0; }
-  static bool set(T& z, const char* x, int b, prec_t, rnd_t rnd = MPFR_RND)
-  { z.set_prec(T::count_prec(x, b)); return z.set(x, b, rnd) == 0; }
-  static bool set_2exp(T& z, long x, exp_t e, prec_t, rnd_t rnd)
-  { z.set_prec(INT_PREC); return z.set_2exp(x, e, rnd) == 0; }
-  static bool set_2exp(T& z, unsigned long x, exp_t e, prec_t, rnd_t rnd)
-  { z.set_prec(INT_PREC); return z.set_2exp(x, e, rnd) == 0; }
-
-  static bool neg(T& z, const TL& x, prec_t, rnd_t rnd)
-  { z.set_prec(T::count_prec(x)); return z.neg(x, rnd) == 0; }
-
-  static bool add(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
-  //{ z.set_prec(T::add_prec(x, y)); return z.add(x, y, rnd) == 0; }
-  { z.set_prec(T::add_prec(x, y)); int r = z.add(x, y, rnd) == 0; z.remove_trailing_zeros(); return r; }
-  static bool sub(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
-  //{ z.set_prec(T::add_prec(x, y)); return z.sub(x, y, rnd) == 0; }
-  { z.set_prec(T::add_prec(x, y)); int r = z.sub(x, y, rnd) == 0;  z.remove_trailing_zeros(); return r;}
-  static bool mul(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
-  //{ z.set_prec(T::mul_prec(x, y)); return z.mul(x, y, rnd) == 0; }
-  { z.set_prec(T::mul_prec(x, y)); int r = z.mul(x, y, rnd) == 0;  z.remove_trailing_zeros(); return r;}
 };
 
 #ifdef CORE_END_NAMESPACE

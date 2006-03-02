@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.1 2006-03-01 01:04:55 exact Exp $
+ * $Id: BigFloat2.h,v 1.2 2006-03-02 04:56:07 exact Exp $
  ***************************************************************************/
 #ifndef __BIGFLOAT2_H__
 #define __BIGFLOAT2_H__
@@ -46,7 +46,7 @@ const prec_t BF_DEF_DIV_PREC = DOUBLE_PREC;
 //
 
 /// \class BigFloat2
-/// \brief floating-point interval (use MPFR + Interval Arithmetic)
+/// \brief BigFloat2 is a floating-point interval class 
 class BigFloat2 {
 public: // public typedefs
   typedef BigInt   ZT;
