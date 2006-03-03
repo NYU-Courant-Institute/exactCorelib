@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Mpfr.h,v 1.8 2006-03-03 16:53:46 exact Exp $
+ * $Id: Mpfr.h,v 1.9 2006-03-03 17:19:58 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_MPFR_H__
 #define __CORE_MPFR_H__
@@ -107,7 +107,7 @@ private:
 
 #ifndef CORE_DISABLE_REFCOUNTING
 /// \class RcMpfr Mpfr.h
-/// \brief RcMpfr is a wrapper class of <tt>Mpfr</tt> with referecen counting
+/// \brief RcMpfr is a wrapper class of <tt>Mpfr</tt> with reference counting
 class RcMpfr : public RcImpl<Mpfr> {
   typedef RcImpl<Mpfr> base_cls;
 public:

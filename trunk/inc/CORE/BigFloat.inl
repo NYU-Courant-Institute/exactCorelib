@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.4 2006-03-03 16:53:45 exact Exp $
+ * $Id: BigFloat.inl,v 1.5 2006-03-03 17:19:58 exact Exp $
  ***************************************************************************/
 
 /// \addtogroup BigFloatArithmeticOperators

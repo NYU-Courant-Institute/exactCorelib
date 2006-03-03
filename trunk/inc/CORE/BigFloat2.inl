@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.inl,v 1.2 2006-03-03 16:53:45 exact Exp $
+ * $Id: BigFloat2.inl,v 1.3 2006-03-03 17:19:58 exact Exp $
  ***************************************************************************/
 #define BF_RNDD GMP_RNDD
 #define BF_RNDU GMP_RNDU

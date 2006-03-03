@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.8 2006-03-03 16:53:45 exact Exp $
+ * $Id: Expr.h,v 1.9 2006-03-03 17:19:58 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -186,7 +186,7 @@ public: // public methods
   KT& a_approx(prec_t prec)
   { return m_rep->a_approx(prec); }
   
-  /// return approximation [r, \infty] or [\infty, a]
+  /// return approximation \f$[r, \infty]\f$ or \f$[\infty, a]\f$
   FT approx(prec_t r_prec = defRelPrec, prec_t a_prec = defAbsPrec) {
     if (a_prec == CORE_INFTY)
       return r_approx(r_prec).get_f();

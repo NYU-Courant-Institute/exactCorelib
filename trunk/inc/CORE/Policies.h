@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Policies.h,v 1.5 2006-03-03 16:53:46 exact Exp $
+ * $Id: Policies.h,v 1.6 2006-03-03 17:19:58 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_POLICIES_H__
 #define __CORE_POLICIES_H__

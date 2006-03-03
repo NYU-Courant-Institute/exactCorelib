@@ -19,6 +19,6 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CORE.h,v 1.1.1.1 2006-02-09 09:18:03 exact Exp $
+ * $Id: CORE.h,v 1.2 2006-03-03 17:21:06 exact Exp $
  ***************************************************************************/
 #include <CORE/CORE.h>
