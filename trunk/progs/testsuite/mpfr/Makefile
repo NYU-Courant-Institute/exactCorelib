@@ -1,16 +1,23 @@
 # Makefile
 
-include ../../Make.config
+# set the core library directory and include Make.config
+CORE_DIR=../..
+include ${CORE_DIR}/Make.config
 
-CORE2_DIR=../..
-INCS=-I${SFW_DIR}/include -I${CORE2_DIR}/inc
-LIBS=-L${SFW_DIR}/lib -L${CORE2_DIR}/lib -lcore2++ -lgmp -lmpfr
+# define targets list
+TARGETS=t_prec_round \
+	t_returned_value \
+	t_divbyzero \
+	t_get_str \
+	t_prec t_auto \
+        t_mul \
+	t_add \
+	t_io
 
-TARGETS=t_prec_round t_returned_value t_divbyzero t_get_str t_prec t_auto \
-        t_mul t_add
-
+# default target
 all: ${TARGETS}
 
+#@begin targets
 t_prec_round: t_prec_round.o
 
 t_returned_value: t_returned_value.o
@@ -27,19 +34,11 @@ t_mul: t_mul.o
 
 t_add: t_add.o
 
-#=================================================
-# Rules
-#=================================================
-%: %.o
-	${CXX} $(LDFLAGS) $< $(LIBS) -o $@
+t: t.o
 
-.cpp.o:
-	${CXX} -c $(CXXFLAGS) $(INCS) $< -o $@
+t_io: t_io.o
 
-#=================================================
-# Clean object files
-#=================================================
-clean:
-	-@test -z "*.o" || rm -f *.o
-	rm -f ${TARGETS}
+#@end targets
 
+#include standard rules from Make.rules
+include ${CORE_DIR}/Make.rules

@@ -86,6 +86,15 @@ int main() {
   std::cout << "x=" << x << std::endl;
   std::cout << "y=" << y << std::endl;
   
+  z = x / y;
+  std::cout << "z=" << z << std::endl;
+  z = x / 100;
+  std::cout << "z=" << z << std::endl;
+  z = 100 / x;
+  std::cout << "z=" << z << std::endl;
+  std::cout << "x=" << x << std::endl;
+  std::cout << "y=" << y << std::endl;
+  
   // test comparison operator
   bool b;
   b = x == y;

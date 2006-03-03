@@ -22,14 +22,14 @@ copyright = """\
  * WWW URL: %s
  * Email: %s
  *
- * $Id: copyright.py,v 1.2 2006-02-28 18:05:11 exact Exp $
+ * $%s$
  ***************************************************************************/
 """
 
 def gen_copyright(filename, description, name, version, time, 
                   start_year, end_year, project, url, email):
     return copyright % (filename, description, name, version, time, 
-           start_year, end_year, project, name, url, name, url, email)
+           start_year, end_year, project, name, url, name, url, email, 'Id')
 
 def gen_header(filename, description):
     name = "Core Library"
@@ -78,20 +78,26 @@ def handle_header_files(path):
                  "Config.h" : "Configuration Macros",
                  "CoreAux.h" : "Auxilliary functions for the Core Library",
                  "CoreDefs.h" : "Global parameters for the Core Library",
-                 "Gmpz.h" : "A C++ wrapper class for GMP mpz",
-                 "BigInt.h" : "A C++ wrapper class for GMP mpz",
-                 "Gmpq.h" : "A C++ wrapper class for GMP mpq",
-                 "BigRat.h" : "A C++ wrapper class for GMP mpq",
-                 "Mpfr.h" : "A C++ wrapper class for MPFR mpfr",
-                 "BigFloat.h" : "A C++ wrapper class for MPFR mpfr",
-                 "BigFloat2.h" : "A C++ number class providing arbitrary precision",
-                 "BigFloat2.inl" : "Inline functions for BigFloat",
+                 "Gmpz.h" : "C++ wrapper class for mpz in GMP",
+                 "BigInt.h" : "Big Integer number class based on mpz in GMP",
+                 "Gmpq.h" : "C++ wrapper class for mpq in GMP",
+                 "BigRat.h" : "Big Rational number class based on mpq in GMP",
+                 "Mpfr.h" : "C++ wrapper class for mpfr in MPFR",
+                 "BigFloat.h" : "Big Floating-point number class based on mpfr in MPFR",
+                 "BigFloat.inl" : "Inline functions for BigFloat",
+                 "BigFloat2.h" : "Big Floating-point number class providing arbitrary precision",
+                 "BigFloat2.inl" : "Inline functions for BigFloat2",
+                 "Policies.h" : "Computation policies for BigFloat2",
                  "ExprRep.h" : "Internal Representation for Expr",
-                 "Expr.h" : "A C++ number class providing guarranteed precision",
+                 "ExprRep.inl" : "Inline functions for ExprRep",
+                 "Expr.h" : "EGC number class providing guarranteed precision",
                  "Filters.h" : "Floating-point filters",
-                 "Policies.h" : "Computation policies for BigFloat",
                  "RootBounds.h" : "Constructive root bounds",
                  "Timer.h" : "A C++ class providing timing",
+                 "Promote.h" : "Templates providing type promotion",
+                 #"PolyBase.h" : "Polynomial Base Class"
+                 #"Poly.h" : "Template Polynomial Class"
+                 #"PolyFun.h" : "Template Polynomial Functions"
                }
     for key in filelist.keys():
         add_header(path+"inc/CORE/", key, filelist[key])
@@ -121,6 +127,6 @@ def handle_python_files(path):
 
 if __name__ == "__main__":
     #print gen_header("CORE.h", "The main inclusion file for the Core Library")
-    #handle_header_files("../../")
+    handle_header_files("../../")
     #handle_src_files("../../")
-    handle_python_files("../../")
+    #handle_python_files("../../")

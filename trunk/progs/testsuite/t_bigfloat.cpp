@@ -1,7 +1,8 @@
-#include <CORE/BigFloat.h>
+#define CORE_LEVEL 4
+#include <CORE/CORE.h>
 #include <iostream>
 
-typedef BigFloat NT;
+typedef BigFloat2 NT;
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
@@ -43,7 +44,6 @@ void test_constructors() {
   test_constructor<double>(0.3, "double");
   test_constructor<BigInt>(1234567, "BigInt");
   test_constructor<BigRat>(BigRat(1, 3), "BigRat");
-  test_constructor<Mpfr>(0.01, "Mpfr");
   test_constructor<BigFloat>(0.01, "BigFloat");
 
   show_msg("test assignment functions");
@@ -59,7 +59,6 @@ void test_constructors() {
   test_set<double>(0.3, "double");
   test_set<BigInt>(1234567, "BigInt");
   test_set<BigRat>(BigRat(1, 3), "BigRat");
-  test_set<Mpfr>(0.01, "Mpfr");
   test_set<BigFloat>(0.01, "BigFloat");
   x.set_prec(40);
   x.set("1234.567890");
