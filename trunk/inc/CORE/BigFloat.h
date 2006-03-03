@@ -1,5 +1,5 @@
 /****************************************************************************
- * BigFloat.h -- A C++ wrapper class for MPFR mpfr
+ * BigFloat.h -- Big Floating-point number class based on mpfr in MPFR
  *
  * Core Library Version 2.0, March 2006
  * Copyright (c) 1995-2006 Exact Computation Project
@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.7 2006-03-03 16:22:25 exact Exp $
+ * $Id: BigFloat.h,v 1.8 2006-03-03 16:53:45 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__

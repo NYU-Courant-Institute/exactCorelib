@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Timer.h,v 1.2 2006-03-03 16:22:25 exact Exp $
+ * $Id: Timer.h,v 1.3 2006-03-03 16:53:46 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_TIMER_H__
 #define __CORE_IIMER_H__

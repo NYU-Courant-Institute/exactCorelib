@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CORE.h,v 1.6 2006-03-03 16:22:25 exact Exp $
+ * $Id: CORE.h,v 1.7 2006-03-03 16:53:45 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_CORE_H__
 #define __CORE_CORE_H__

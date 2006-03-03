@@ -1,5 +1,5 @@
 /****************************************************************************
- * Mpfr.h -- A C++ wrapper class for MPFR mpfr
+ * Mpfr.h -- C++ wrapper class for mpfr in MPFR
  *
  * Core Library Version 2.0, March 2006
  * Copyright (c) 1995-2006 Exact Computation Project
@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Mpfr.h,v 1.7 2006-03-03 16:22:25 exact Exp $
+ * $Id: Mpfr.h,v 1.8 2006-03-03 16:53:46 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_MPFR_H__
 #define __CORE_MPFR_H__

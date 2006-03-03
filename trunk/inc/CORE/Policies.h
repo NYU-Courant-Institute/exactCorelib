@@ -1,5 +1,5 @@
 /****************************************************************************
- * Policies.h -- Computation policies for BigFloat
+ * Policies.h -- Computation policies for BigFloat2
  *
  * Core Library Version 2.0, March 2006
  * Copyright (c) 1995-2006 Exact Computation Project
@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Policies.h,v 1.4 2006-03-03 16:22:25 exact Exp $
+ * $Id: Policies.h,v 1.5 2006-03-03 16:53:46 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_POLICIES_H__
 #define __CORE_POLICIES_H__
