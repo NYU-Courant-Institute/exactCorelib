@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.cpp,v 1.3 2006-03-02 21:11:09 exact Exp $
+ * $Id: CoreDefs.cpp,v 1.4 2006-03-03 17:58:10 exact Exp $
  ***************************************************************************/
 #include <CORE/Config.h>
 #include <CORE/BigFloat.h>
@@ -33,5 +33,8 @@ bool fpFilterFlag = true;
 mp_rnd_t def_output_rounding_mode = MPFR_RND;
 // default output base
 int def_output_base = 0;
+
+long defAbsPrec = LONG_MAX;
+long defRelPrec = 52;
 
 CORE_END_NAMESPACE

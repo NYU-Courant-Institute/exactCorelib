@@ -121,7 +121,9 @@ operator>> (istream &i, mpf_ptr f)
     mpf_set_str(f, s.c_str(), base); // extract the number
   else
     {
+#if HAVE_LOCALECONV
     fail:
+#endif
       i.setstate(ios::failbit); // read failed
     }
 
