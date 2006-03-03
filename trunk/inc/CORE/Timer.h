@@ -19,17 +19,14 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Timer.h,v 1.1.1.1 2006-02-09 09:18:05 exact Exp $
+ * $Id: Timer.h,v 1.2 2006-03-03 16:22:25 exact Exp $
  ***************************************************************************/
-#ifndef __TIMER_H__
-#define __IIMER_H__
+#ifndef __CORE_TIMER_H__
+#define __CORE_IIMER_H__
 
 #include <ctime>
 
-#ifdef CORE_BEGIN_NAMESPACE
 CORE_BEGIN_NAMESPACE
-#endif
-
 
 /// \class Timer Timer.h
 /// \brief a timer using clock() function, return in seconds, less precise
@@ -73,8 +70,6 @@ private:
   }
 };
 
-#ifdef CORE_END_NAMESPACE
 CORE_END_NAMESPACE
-#endif
 
-#endif /*__TIMER_H__*/
+#endif /*__CORE_TIMER_H__*/

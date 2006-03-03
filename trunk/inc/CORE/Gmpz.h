@@ -19,10 +19,10 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Gmpz.h,v 1.4 2006-03-02 22:53:27 exact Exp $
+ * $Id: Gmpz.h,v 1.5 2006-03-03 16:22:25 exact Exp $
  ***************************************************************************/
-#ifndef __GMPZ_H__
-#define __GMPZ_H__
+#ifndef __CORE_GMPZ_H__
+#define __CORE_GMPZ_H__
 
 #include <gmp.h>
 #include <CORE/Config.h>
@@ -124,4 +124,4 @@ public:
 
 CORE_END_NAMESPACE
 
-#endif /*__GMPZ_H__*/
+#endif /*__CORE_GMPZ_H__*/

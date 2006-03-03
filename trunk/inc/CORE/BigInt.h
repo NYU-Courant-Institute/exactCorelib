@@ -19,10 +19,10 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigInt.h,v 1.5 2006-03-02 04:55:16 exact Exp $
+ * $Id: BigInt.h,v 1.6 2006-03-03 16:22:25 exact Exp $
  ***************************************************************************/
-#ifndef __BIGINT_H__
-#define __BIGINT_H__
+#ifndef __CORE_BIGINT_H__
+#define __CORE_BIGINT_H__
 
 #include <CORE/Gmpz.h>
 #include <string>
@@ -1224,4 +1224,4 @@ inline long ceilLg(const BigInt& a) { return a.ceillg(); }
 
 CORE_END_NAMESPACE
 
-#endif /*__BIGINT_H__*/
+#endif /*__CORE_BIGINT_H__*/

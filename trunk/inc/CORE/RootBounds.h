@@ -19,18 +19,14 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: RootBounds.h,v 1.1.1.1 2006-02-09 09:18:05 exact Exp $
+ * $Id: RootBounds.h,v 1.2 2006-03-03 16:22:25 exact Exp $
  ***************************************************************************/
-#ifndef __ROOTBOUNDS_H__
-#define __ROOTBOUNDS_H__
+#ifndef __CORE_ROOTBOUNDS_H__
+#define __CORE_ROOTBOUNDS_H__
 
-#ifdef CORE_DEBUG_ROOTBOUND
-  #include <iostream>
-#endif
+#include <iostream>
 
-#ifdef CORE_BEGIN_NAMESPACE
 CORE_BEGIN_NAMESPACE
-#endif
 
 /// Dummy Root Bound (minimal root bound class)
 template <int bound = 1000>
@@ -135,8 +131,6 @@ public:
   { m_rootBd1.div(f, s), m_rootBd2.div(f, s); }
 };
 
-#ifdef CORE_END_NAMESPACE
 CORE_END_NAMESPACE
-#endif
 
-#endif /*__ROOTBOUNDS_H__*/
+#endif /*__CORE_ROOTBOUNDS_H__*/

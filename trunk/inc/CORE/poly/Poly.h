@@ -50,7 +50,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Poly.h,v $
- * $Revision: 1.1 $ $Date: 2006-03-02 22:57:43 $
+ * $Revision: 1.2 $ $Date: 2006-03-03 16:22:25 $
  ***************************************************************************/
 
 #ifndef CORE_POLY_H
@@ -74,8 +74,6 @@ typedef std::pair<BigFloat, BigFloat>	BFInterval;
 // NOTE: an error condition is indicated by
 // the special interval (1, 0)
 typedef std::vector<BFInterval>	BFVecInterval;
-
-const long defRelPrec = 60;
 
 // ==================================================
 // Polynomial Class

@@ -1,42 +1,5 @@
-/****************************************************************************
- * Core Library Version 1.7, August 2004
- * Copyright (c) 1995-2004 Exact Computation Project
- * All rights reserved.
- *
- * This file is part of CORE (http://cs.nyu.edu/exact/core/); you may
- * redistribute it under the terms of the Q Public License version 1.0.
- * See the file LICENSE.QPL distributed with CORE.
- *
- * Licensees holding a valid commercial license may use this file in
- * accordance with the commercial license agreement provided with the
- * software.
- *
- * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
- * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
- *
- *
- * File: Expr.h
- * Synopsis: a class of Expression in Level 3
- *
- * Written by
- *       Koji Ouchi <ouchi@simulation.nyu.edu>
- *       Chee Yap <yap@cs.nyu.edu>
- *       Igor Pechtchanski <pechtcha@cs.nyu.edu>
- *       Vijay Karamcheti <vijayk@cs.nyu.edu>
- *       Chen Li <chenli@cs.nyu.edu>
- *       Zilin Du <zilin@cs.nyu.edu>
- *       Sylvain Pion <pion@cs.nyu.edu>
- *       Vikram Sharma<sharma@cs.nyu.edu>
- *
- * WWW URL: http://cs.nyu.edu/exact/
- * Email: exact@cs.nyu.edu
- *
- * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/Promote.h,v $
- * $Revision: 1.1 $ $Date: 2006-03-02 22:57:43 $
- ***************************************************************************/
-
-#ifndef __PROMOTE_H__
-#define __PROMOTE_H__
+#ifndef __CORE_PROMOTE_H__
+#define __CORE_PROMOTE_H__
 
 #include <CORE/Config.h>
 
@@ -46,12 +9,14 @@ CORE_BEGIN_NAMESPACE
 ///   CHECKING if NT has exact division
 ///   NOTE: it is important that the compiler does not try to
 ///   prove theorems about arithmetic identities like "x*(y/x) == y"
-///   USAGE:  If you want to check if a number type NT has exact division, do for example,
+///   USAGE:  If you want to check if a number type NT has exact division, 
+///           do for example,
 ///            if (hasExactDivision< NT >::check()) ...
 ///   		We use this in Polynomial<NT> class.
 template < class NT >
 struct hasExactDivision {
-  static bool check() {		// This default function is supposed to work for NT other than BigRat or Expr
+// This default function is supposed to work for NT other than BigRat or Expr
+  static bool check() {	
      return false;
   }
 };
@@ -153,5 +118,4 @@ DEFINE_MAX_TYPE(BigRat, Expr, Expr)
 
 CORE_END_NAMESPACE
 
-#endif //__PROMOTE_H__
-
+#endif /*__CORE_PROMOTE_H__*/

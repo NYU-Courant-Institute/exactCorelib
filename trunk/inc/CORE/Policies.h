@@ -19,14 +19,12 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Policies.h,v 1.3 2006-03-02 04:56:07 exact Exp $
+ * $Id: Policies.h,v 1.4 2006-03-03 16:22:25 exact Exp $
  ***************************************************************************/
-#ifndef __POLICIES_H__
-#define __POLICIES_H__
+#ifndef __CORE_POLICIES_H__
+#define __CORE_POLICIES_H__
 
-#ifdef CORE_BEGIN_NAMESPACE
 CORE_BEGIN_NAMESPACE
-#endif
 
 // raw version (user need to set precision for result before call)
 template <typename T, typename TL = T, typename TR = T>
@@ -113,8 +111,6 @@ struct AutoArithmeticPolicy {
   { return z.mul(x, y, rnd) == 0; }
 };
 
-#ifdef CORE_END_NAMESPACE
 CORE_END_NAMESPACE
-#endif
 
-#endif /*__POLICIES_H__*/
+#endif /*__CORE_POLICIES_H__*/

@@ -19,22 +19,18 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.5 2006-03-02 22:53:27 exact Exp $
+ * $Id: Expr.h,v 1.6 2006-03-03 16:22:25 exact Exp $
  ***************************************************************************/
-#ifndef __EXPR_H__
-#define __EXPR_H__
+#ifndef __CORE_EXPR_H__
+#define __CORE_EXPR_H__
 
-#include <CORE/RootBounds.h>
-#include <CORE/Filters.h>
 #include <CORE/ExprRep.h>
 
-#ifdef CORE_BEGIN_NAMESPACE
 CORE_BEGIN_NAMESPACE
-#endif
 
 /// \class ExprT
 /// Kernel -- internal representation 
-template <typename RootBd, typename Filter, typename Kernel = BigFloat2>
+template <typename RootBd, typename Filter, typename Kernel>
 class ExprT {
 public: // public typedefs
   typedef RootBd     RootBdT;
@@ -190,6 +186,14 @@ public: // public methods
   KT& a_approx(prec_t prec)
   { return m_rep->a_approx(prec); }
   
+  /// return approximation [r, \infty] or [\infty, a]
+  FT approx(prec_t r_prec = defRelPrec, prec_t a_prec = defAbsPrec) {
+    if (a_prec == CORE_INFTY)
+      return r_approx(r_prec).get_f();
+    else // if (r_prec == CORE_INFTY)
+      return a_approx(a_prec).get_f();
+  }
+  /// return BigFloatValue
   FT BigFloatValue() 
   { return m_rep->appValue().get_f(); }
 
@@ -208,25 +212,33 @@ public: // public methods
   { return m_rep; }
 private:
   ExprRep* m_rep; ///<- internal representation
-};
+}; // end if ExprT
 
-/*
-#include <CORE/IA.hpp>
-typedef IA<BigFloat> Real;
-typedef ExprT<BfmssRootBd<Real>, Real> Expr;
-*/
+CORE_END_NAMESPACE
 
-// BFMSS root bound + BFS filter + BigFloat
+///////////////////////////////////////////////////////////////////////////
+// Definition of Expr
+///////////////////////////////////////////////////////////////////////////
+
+#include <CORE/RootBounds.h>
+#include <CORE/Filters.h>
+
+CORE_BEGIN_NAMESPACE
+
+// BFMSS root bound + BFS filter + BigFloat2
 typedef ExprT<BfmssRootBd<BigFloat2>, BfsFilter<BigFloat2>, BigFloat2> Expr;
 
-// BFMSS root bound + Dummy filter + BigFloat
-//typedef ExprT<BfmssRootBd<BigFloat>, DummyFilter, BigFloat> Expr;
+// BFMSS root bound + Dummy filter + BigFloat2
+//typedef ExprT<BfmssRootBd<BigFloat2>, DummyFilter, BigFloat2> Expr;
 
-// Dummy root bound + Dummy filter + BigFloat
-//typedef ExprT<DummyRootBd<10>, BigFloat> Expr;
+// Dummy root bound + Dummy filter + BigFloat2
+//typedef ExprT<BfmssRootBd<BigFloat2>, DummyRootBd<10>, BigFloat> Expr;
 
-#ifdef CORE_END_NAMESPACE
 CORE_END_NAMESPACE
-#endif
 
-#endif // __EXPR_H__
+///////////////////////////////////////////////////////////////////////////
+// include inline functions for ExprRep
+///////////////////////////////////////////////////////////////////////////
+#include <CORE/ExprRep.inl>
+
+#endif // __CORE_EXPR_H__

@@ -19,10 +19,10 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigRat.h,v 1.6 2006-03-02 21:12:08 exact Exp $
+ * $Id: BigRat.h,v 1.7 2006-03-03 16:22:25 exact Exp $
  ***************************************************************************/
-#ifndef __BIGRAT_H__
-#define __BIGRAT_H__
+#ifndef __CORE_BIGRAT_H__
+#define __CORE_BIGRAT_H__
 
 #include <CORE/Gmpq.h>
 #include <CORE/BigInt.h>
@@ -800,4 +800,4 @@ inline bool isDivisible(const BigRat& x, const BigRat& y)
 
 CORE_END_NAMESPACE
 
-#endif /*__BIGRAT_H__*/
+#endif /*__CORE_BIGRAT_H__*/

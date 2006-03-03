@@ -19,16 +19,14 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Filters.h,v 1.2 2006-03-01 01:04:05 exact Exp $
+ * $Id: Filters.h,v 1.3 2006-03-03 16:22:25 exact Exp $
  ***************************************************************************/
-#ifndef __FILTERS_H__
-#define __FILTERS_H__
+#ifndef __CORE_FILTERS_H__
+#define __CORE_FILTERS_H__
 
-#ifdef CORE_DEBUG_FILTER
-  #include <iostream>
-#endif
+#include <iostream>
 
-#include <CORE/BigFloat.h>
+#include <CORE/BigFloat2.h>
 #include <cmath>
 #include <cfloat>
 
@@ -41,9 +39,7 @@
   #include <ieeefp.h>
 #endif
 
-#ifdef CORE_BEGIN_NAMESPACE
 CORE_BEGIN_NAMESPACE
-#endif
 
 /// \class DummyFilter
 /// \brief a dummy filter, do nothing
@@ -76,9 +72,10 @@ inline bool setFpFilterFlag(bool f) {
   return oldf;
 }
 
-// constant
+// constants
+const int IEEE_DOUBLE_PREC = 52;
 const double DBL_INFTY = ::ldexp(DBL_MAX, 1);
-const double CORE_EPS = ::ldexp(1.0, -52);
+const double CORE_EPS = ::ldexp(1.0, -IEEE_DOUBLE_PREC);
 
 // k-th root for double (using BigFloat for now)
 inline double root(double x, unsigned long k) 
@@ -190,7 +187,8 @@ public:
       fpVal = CORE_NS::root(child.fpVal, k); 
       maxAbs = child.maxAbs / child.fpVal * fpVal;
     } else {
-      fpVal = 0.0; maxAbs = ::ldexp(CORE_NS::root(child.maxAbs, k), (52+k-1)/k);
+      fpVal = 0.0; 
+      maxAbs = ::ldexp(CORE_NS::root(child.maxAbs, k), (IEEE_DOUBLE_PREC+k-1)/k);
     }
     ind = 1 + child.ind;
   }
@@ -227,8 +225,6 @@ public:
   }
 };
 
-#ifdef CORE_END_NAMESPACE
 CORE_END_NAMESPACE
-#endif
 
-#endif /*__FILTERS_H__*/
+#endif /*__CORE_FILTERS_H__*/

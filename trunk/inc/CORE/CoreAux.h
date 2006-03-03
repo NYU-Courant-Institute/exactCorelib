@@ -19,14 +19,12 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.h,v 1.1.1.1 2006-02-09 09:18:04 exact Exp $
+ * $Id: CoreAux.h,v 1.2 2006-03-03 16:22:25 exact Exp $
  ***************************************************************************/
-#ifndef __COREAUX_H__
-#define __COREAUX_H__
+#ifndef __CORE_COREAUX_H__
+#define __CORE_COREAUX_H__
 
-#ifdef CORE_BEGIN_NAMESPACE
 CORE_BEGIN_NAMESPACE
-#endif
 
 // help inline functions for long
 inline sign_t sgn(long v)
@@ -64,8 +62,6 @@ inline long ceilLg(int a) { return ceilLg(BigInt(a)); }
 //@}
 #endif
 
-#ifdef CORE_END_NAMESPACE
 CORE_END_NAMESPACE
-#endif
 
-#endif /*__COREAUX_H__*/
+#endif /*__CORE_COREAUX_H__*/

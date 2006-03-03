@@ -19,14 +19,12 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.1.1.1 2006-02-09 09:18:04 exact Exp $
+ * $Id: CoreDefs.h,v 1.2 2006-03-03 16:22:25 exact Exp $
  ***************************************************************************/
-#ifndef __COREDEFS_H__
-#define __COREDEFS_H__
+#ifndef __CORE_COREDEFS_H__
+#define __CORE_COREDEFS_H__
 
-#ifdef CORE_BEGIN_NAMESPACE
 CORE_BEGIN_NAMESPACE
-#endif
 
 #ifndef sign_t
 typedef int sign_t;
@@ -48,8 +46,20 @@ inline unsigned long digits2bits(unsigned long digits)
 inline unsigned long bits2digits(unsigned long bits)
 { return (unsigned long)(bits*LOG10_2); }
 
-#ifdef CORE_END_NAMESPACE
-CORE_END_NAMESPACE
-#endif
+#define CORE_INFTY LONG_MAX
+#define CORE_posInfty LONG_MAX
+#define CORE_negInfty LONG_MIN
 
-#endif /*__COREDEFS_H__*/
+extern long defAbsPrec;
+extern long defRelPrec;
+
+inline void setDefaultPrecision(long r, long a)
+{ defRelPrec = r; defAbsPrec = a; }
+inline void setDefaultRelPrecision(long r)
+{ defRelPrec = r; }
+inline void setDefaultAbsPrecision(long a)
+{ defAbsPrec = a; }
+
+CORE_END_NAMESPACE
+
+#endif /*__CORE_COREDEFS_H__*/

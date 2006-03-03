@@ -1,3 +1,6 @@
+#ifndef __CORE_COREIO_H__
+#define __CORE_COREIO_H__
+
 #include <CORE/Config.h>
 #include <iostream>
 #include <iomanip>
@@ -122,4 +125,7 @@ inline void setPositionalFormat(std::ostream& os = std::cout)
 inline void setScientificFormat(std::ostream& os = std::cout)
 { set_scientific_output(os); }
 #endif
+
 CORE_END_NAMESPACE
+
+#endif /*__CORE_COREIO_H__*/

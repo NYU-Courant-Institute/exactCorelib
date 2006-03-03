@@ -19,10 +19,10 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CORE.h,v 1.5 2006-03-02 22:53:27 exact Exp $
+ * $Id: CORE.h,v 1.6 2006-03-03 16:22:25 exact Exp $
  ***************************************************************************/
-#ifndef __CORE_H__
-#define __CORE_H__
+#ifndef __CORE_CORE_H__
+#define __CORE_CORE_H__
 
 #include <CORE/Config.h>
 #include <CORE/CoreDefs.h>
@@ -34,14 +34,7 @@
 // level 2
 #include <CORE/BigFloat2.h>
 // level 3
-#include <CORE/CoreAux.h>
 #include <CORE/Expr.h>
-#include <CORE/poly/Poly.h>
-
-// some standard library
-#include <iostream>
-#include <string>
-#include <cmath>
 
 // timer
 #include <CORE/Timer.h>
@@ -62,4 +55,4 @@ typedef long machine_long;
 using namespace CORE;
 #endif
 
-#endif /*__CORE_H__*/
+#endif /*__CORE_CORE_H__*/

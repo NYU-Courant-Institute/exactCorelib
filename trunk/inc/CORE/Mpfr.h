@@ -19,10 +19,10 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Mpfr.h,v 1.6 2006-03-02 22:53:27 exact Exp $
+ * $Id: Mpfr.h,v 1.7 2006-03-03 16:22:25 exact Exp $
  ***************************************************************************/
-#ifndef __MPFR_H__
-#define __MPFR_H__
+#ifndef __CORE_MPFR_H__
+#define __CORE_MPFR_H__
 
 #include <mpfr.h>
 #include <CORE/Config.h>
@@ -162,4 +162,4 @@ public:
 
 CORE_END_NAMESPACE
 
-#endif /*__GMPQ_H__*/
+#endif /*__CORE_MPFR_H__*/

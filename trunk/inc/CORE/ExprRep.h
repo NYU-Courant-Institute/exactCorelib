@@ -19,22 +19,16 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.2 2006-02-28 18:00:15 exact Exp $
+ * $Id: ExprRep.h,v 1.3 2006-03-03 16:22:25 exact Exp $
  ***************************************************************************/
-#ifndef __EXPRREP_H__
-#define __EXPRREP_H__
+#ifndef __CORE_EXPRREP_H__
+#define __CORE_EXPRREP_H__
 
-#include <CORE/BigFloat.h>
 #include <CORE/CoreAux.h>
 #include <bitset>
+#include <iostream>
 
-#ifdef CORE_DEBUG_ROOTBOUND
-  #include <iostream>
-#endif
-
-#ifdef CORE_BEGIN_NAMESPACE
 CORE_BEGIN_NAMESPACE
-#endif
 
 #define PREC_MIN        MPFR_PREC_MIN
 #define DEF_INIT_PREC   53L
@@ -564,8 +558,6 @@ protected:
   }
 };
 
-#ifdef CORE_END_NAMESPACE
 CORE_END_NAMESPACE
-#endif
 
-#endif /*__EXPRREP_H__*/
+#endif /*__CORE_EXPRREP_H__*/

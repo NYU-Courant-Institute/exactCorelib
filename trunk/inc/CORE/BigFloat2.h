@@ -19,20 +19,15 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.3 2006-03-02 21:12:08 exact Exp $
+ * $Id: BigFloat2.h,v 1.4 2006-03-03 16:22:25 exact Exp $
  ***************************************************************************/
-#ifndef __BIGFLOAT2_H__
-#define __BIGFLOAT2_H__
+#ifndef __CORE_BIGFLOAT2_H__
+#define __CORE_BIGFLOAT2_H__
 
-#ifndef NDEBUG
-#include <iostream>
-#endif
-#include <CORE/BigFloat2.h>
+#include <CORE/BigFloat.h>
 #include <CORE/Policies.h>
 
-#ifdef CORE_BEGIN_NAMESPACE
 CORE_BEGIN_NAMESPACE
-#endif
 
 const prec_t BF_DEF_SQRT_PREC = DOUBLE_PREC;
 const prec_t BF_DEF_CBRT_PREC = DOUBLE_PREC;
@@ -811,8 +806,6 @@ inline BigFloat2 root(const BigFloat2& x, unsigned long k, prec_t prec = BF_DEF_
 //@}
 #endif
 
-#ifdef CORE_END_NAMESPACE
 CORE_END_NAMESPACE
-#endif
 
-#endif /*__BIGFLOAT2_H__*/
+#endif /*__CORE_BIGFLOAT2_H__*/

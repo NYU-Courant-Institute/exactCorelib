@@ -1,5 +1,5 @@
-#ifndef __REFCOUNTING_H__
-#define __REFCOUNTING_H__
+#ifndef __CORE_REFCOUNTING_H__
+#define __CORE_REFCOUNTING_H__
 
 /*
  *     1. This file defines two templated classes:
@@ -57,4 +57,4 @@ protected:
 
 CORE_END_NAMESPACE
 
-#endif /*__REFCOUNTING_H__*/
+#endif /*__CORE_REFCOUNTING_H__*/
