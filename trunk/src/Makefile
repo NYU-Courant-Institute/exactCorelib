@@ -22,13 +22,6 @@ all: ${CORE2_LIB}
 ${CORE2_LIB}: ${OBJS}
 	$(AR) $@ $^
 
-# show flags
-echo:
-	@echo "inc  path:" ${INCS} 
-	@echo "lib  path:" ${LIBS} 
-	@echo "cxx flags:" ${CXXFLAGS} 
-	@echo "ld  flags:" ${LDFLAGS} 
-
 #====================================================================
 # Rules
 #
@@ -39,7 +32,7 @@ echo:
 #       target, with spaces between them.
 #===================================================================
 %: %.o
-	${CXX} $(LDFLAGS) $< $(LIBS) -o $@
+	${CXX} $(LDFLAGS) $< $(GMP_MPFR_LIBS) -o $@
 
 .cpp.o:
 	${CXX} -c $(CXXFLAGS) $(INCS) $< -o $@
