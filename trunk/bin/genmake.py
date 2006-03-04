@@ -109,5 +109,7 @@ if __name__ == '__main__':
       add_target(sys.argv[2:])
     elif sys.argv[1] == 'remove':
       remove_target(sys.argv[2:])
+    else:
+      gen_empty_makefile(sys.argv[1])
   else:
-    gen_empty_makefile("..")
+    gen_empty_makefile("../..")
