@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: MpfrIO.cpp,v 1.2 2006-03-02 21:11:09 exact Exp $
+ * $Id: MpfrIO.cpp,v 1.3 2006-03-04 08:26:12 exact Exp $
  ***************************************************************************/
 #include <mpfr.h>
 #include <string>
@@ -110,7 +110,7 @@ std::string mpfr2str(
   if (ndigits == 0) { // impossible to predetermine the size of string
     str = mpfr_get_str(0, &exp, base, ndigits, mp, rnd);
   } else {
-    len = std::max(ndigits + 2, 7UL);
+    len = std::max(ndigits + 2UL, 7UL);
     tmp.alloc(len);
     str = mpfr_get_str(tmp.str, &exp, base, ndigits, mp, rnd);
   }
