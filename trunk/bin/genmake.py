@@ -51,7 +51,7 @@ def add_target(target_names, make_fname="Makefile"):
       cont_line = False
     elif line.startswith("#@end targets"):      #found the end of target rule
       for t in target_names:
-        tmp_f.write("%s: %s.o\n\t\n" % (t, t))
+        tmp_f.write("%s: %s.o\n\n" % (t, t))
       tmp_f.write(line)
     else:
       tmp_f.write(line)
