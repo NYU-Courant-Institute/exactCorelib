@@ -1,5 +1,6 @@
-# python script for generating Makefile
+#! /usr/bin/env python
 
+# python script for generating Makefile
 import os.path, sys, string
 
 empty_makefile="""# Makefile

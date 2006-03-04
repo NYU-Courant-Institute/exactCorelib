@@ -1,13 +1,22 @@
 # Makefile
 
+# set the core library directory and include Make.config
 CORE_DIR=..
-include ../Make.config
+include ${CORE_DIR}/Make.config
 
-CXXFLAGS=-O2 -Wall
+# define targets list
+TARGETS= \
+	t_bigint \
+	t_bigrat \
+	t_bigfloat \
+	t_expr \
+	t_poly \
+	kahan
 
-TARGETS=t_bigint t_bigrat t_bigfloat t_expr kahan t_poly
-
+# default target
 all: ${TARGETS}
+
+#@begin targets
 
 t_bigint: t_bigint.o
 
@@ -17,8 +26,11 @@ t_bigfloat: t_bigfloat.o
 
 t_expr: t_expr.o
 
-kahan: kahan.o
-
 t_poly: t_poly.o
 
-include ../Make.rules
+kahan: kahan.o
+
+#@end targets
+
+#include standard rules from Make.rules
+include ${CORE_DIR}/Make.rules
