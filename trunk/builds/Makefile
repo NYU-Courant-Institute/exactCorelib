@@ -6,7 +6,7 @@ SIP=sip-4.3.2
 
 PLATFORM=macx-g++
 PREFIX=$(shell dirname `pwd`)
-GMP_PREFIX=/sw
+GMP_PREFIX=${PREFIX}/gmp
 MPFR_PREFIX=${PREFIX}/mpfr
 
 #in solaris, you need set ABI=32
