@@ -1,14 +1,22 @@
 # Makefile
 
-include ../../Make.config
+# set the core library directory and include Make.config
+CORE_DIR=../..
+include ${CORE_DIR}/Make.config
 
-CORE2_DIR=../..
-INCS=-I. -I${SFW_DIR}/include -I${CORE2_DIR}/inc
-LIBS=-L${SFW_DIR}/lib -L${CORE2_DIR}/lib -lcore2++ -lgmp -lmpfr
+# define targets list
+TARGETS= \
+	t_auto_ptr \
+	t_policy \
+	t_infty \
+	t_double_prec \
+	t_mpfr_prec \
+	t_realib
 
-TARGETS=t_auto_ptr t_policy t_infty t_double_prec
-
+# default target
 all: ${TARGETS}
+
+#@begin targets
 
 t_auto_ptr: t_auto_ptr.o
 
@@ -22,20 +30,7 @@ t_mpfr_prec: t_mpfr_prec.o
 
 t_realib: t_realib.o
 
-t_int: t_int.o
+#@end targets
 
-#=================================================
-# Rules
-#=================================================
-%: %.o
-	${CXX} $(LDFLAGS) $< $(LIBS) -o $@
-
-.cpp.o:
-	${CXX} -c $(CXXFLAGS) $(INCS) $< -o $@
-
-#=================================================
-# Clean object files
-#=================================================
-clean:
-	-@test -z "*.o" || rm -f *.o
-	rm -f ${TARGETS}
+#include standard rules from Make.rules
+include ${CORE_DIR}/Make.rules
