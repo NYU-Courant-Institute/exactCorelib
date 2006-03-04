@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.6 2006-03-03 17:19:58 exact Exp $
+ * $Id: BigFloat2.h,v 1.7 2006-03-04 04:23:57 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -139,150 +139,114 @@ public:
   //@{
   /// assignment function for <tt>BigFloat2</tt>
   bool r_set(const BigFloat2& x)
-  { return _set<RawArithmeticPolicy>(x); }
+  { return _set_f<RawArithmeticPolicy>(x); }
   /// assignment function for <tt>char*</tt>
   bool r_set(const char* x, int base = 10)
-  { return _set<RawArithmeticPolicy>(x, base); }
+  { return _set_str<RawArithmeticPolicy>(x, base); }
   /// assignment function for <tt>std::string</tt>
   bool r_set(const std::string& x, int base = 10)
-  { return _set<RawArithmeticPolicy>(x.c_str(), base); }
+  { return _set_str<RawArithmeticPolicy>(x.c_str(), base); }
   /// generic assignment function for <tt>T</tt>
   template <typename T> bool r_set(const T& x)
   { return _set<RawArithmeticPolicy, T>(x); }
-  /// set value to be \f$i*2^e\f$ for <tt>char</tt>
-  bool r_set_2exp(char i, exp_t e)
-  { return _set_2exp<RawArithmeticPolicy>(long(i), e); }
-  /// set value to be \f$i*2^e\f$ for <tt>unsigned char</tt>
-  bool r_set_2exp(unsigned char i, exp_t e)
-  { return _set_2exp<RawArithmeticPolicy>((unsigned long)(i), e); }
-  /// set value to be \f$i*2^e\f$ for <tt>short</tt>
-  bool r_set_2exp(short i, exp_t e)
-  { return _set_2exp<RawArithmeticPolicy>(long(i), e); }
-  /// set value to be \f$i*2^e\f$ for <tt>unsigned short</tt>
-  bool r_set_2exp(unsigned short i, exp_t e)
-  { return _set_2exp<RawArithmeticPolicy>((unsigned long)(i), e); }
   /// set value to be \f$i*2^e\f$ for <tt>int</tt>
   bool r_set_2exp(int i, exp_t e)
-  { return _set_2exp<RawArithmeticPolicy>(long(i), e); }
+  { return _set_2exp_si<RawArithmeticPolicy>(long(i), e); }
   /// set value to be \f$i*2^e\f$ for <tt>unsigned int</tt>
   bool r_set_2exp(unsigned int i, exp_t e)
-  { return _set_2exp<RawArithmeticPolicy>((unsigned long)(i), e); }
+  { return _set_2exp_ui<RawArithmeticPolicy>((unsigned long)(i), e); }
   /// set value to be \f$i*2^e\f$ for <tt>long</tt>
   bool r_set_2exp(long i, exp_t e)
-  { return _set_2exp<RawArithmeticPolicy>(i, e); }
+  { return _set_2exp_si<RawArithmeticPolicy>(i, e); }
   /// set value to be \f$i*2^e\f$ for <tt>unsigned long</tt>
   bool r_set_2exp(unsigned long i, exp_t e)
-  { return _set_2exp<RawArithmeticPolicy>(i, e); }
+  { return _set_2exp_ui<RawArithmeticPolicy>(i, e); }
   //@}
 
   /// \name assignment functions (fixed version)
   //@{
   /// assignment function for <tt>BigFloat2</tt>
   bool set(const BigFloat2& x, prec_t prec)
-  { return _set<FixedArithmeticPolicy>(x, prec); }
+  { return _set_f<FixedArithmeticPolicy>(x, prec); }
   /// assignment function for <tt>char*</tt>
   bool set(const char* x, int base, prec_t prec)
-  { return _set<FixedArithmeticPolicy>(x, base, prec); }
+  { return _set_str<FixedArithmeticPolicy>(x, base, prec); }
   /// assignment function for <tt>std::string</tt>
   bool set(const std::string& x, int base, prec_t prec)
-  { return _set<FixedArithmeticPolicy>(x.c_str(), base, prec); }
+  { return _set_str<FixedArithmeticPolicy>(x.c_str(), base, prec); }
   /// assignment function for <tt>T</tt>
   template <typename T> bool set(const T& x, prec_t prec)
   { return _set<FixedArithmeticPolicy, T>(x, prec); }
 
-  /// set value to be \f$i*2^e\f$ for <tt>char</tt>
-  bool set_2exp(char i, exp_t e, prec_t prec)
-  { return _set_2exp<FixedArithmeticPolicy>(long(i), e, prec); }
-  /// set value to be \f$i*2^e\f$ for <tt>unsigned char</tt>
-  bool set_2exp(unsigned char i, exp_t e, prec_t prec)
-  { return _set_2exp<FixedArithmeticPolicy>((unsigned long)(i), e, prec); }
-  /// set value to be \f$i*2^e\f$ for <tt>short</tt>
-  bool set_2exp(short i, exp_t e, prec_t prec)
-  { return _set_2exp<FixedArithmeticPolicy>(long(i), e, prec); }
-  /// set value to be \f$i*2^e\f$ for <tt>unsigned short</tt>
-  bool set_2exp(unsigned short i, exp_t e, prec_t prec)
-  { return _set_2exp<FixedArithmeticPolicy>((unsigned long)(i), e, prec); }
   /// set value to be \f$i*2^e\f$ for <tt>int</tt>
   bool set_2exp(int i, exp_t e, prec_t prec)
-  { return _set_2exp<FixedArithmeticPolicy>(long(i), e, prec); }
+  { return _set_2exp_si<FixedArithmeticPolicy>(long(i), e, prec); }
   /// set value to be \f$i*2^e\f$ for <tt>unsigned int</tt>
   bool set_2exp(unsigned int i, exp_t e, prec_t prec)
-  { return _set_2exp<FixedArithmeticPolicy>((unsigned long)(i), e, prec); }
+  { return _set_2exp_ui<FixedArithmeticPolicy>((unsigned long)(i), e, prec); }
   /// set value to be \f$i*2^e\f$ for <tt>long</tt>
   bool set_2exp(long i, exp_t e, prec_t prec)
-  { return _set_2exp<FixedArithmeticPolicy>(i, e, prec); }
+  { return _set_2exp_si<FixedArithmeticPolicy>(i, e, prec); }
   /// set value to be \f$i*2^e\f$ for <tt>unsigned long</tt>
   bool set_2exp(unsigned long i, exp_t e, prec_t prec)
-  { return _set_2exp<FixedArithmeticPolicy>(i, e, prec); }
+  { return _set_2exp_ui<FixedArithmeticPolicy>(i, e, prec); }
   //@}
 
   /// \name assignment functions (auto version)
   //@{
   /// assignment function for <tt>BigFloat2</tt>
   bool set(const BigFloat2& x)
-  { return _set<AutoArithmeticPolicy>(x); }
+  { return _set_f<AutoArithmeticPolicy>(x); }
   /// assignment function for <tt>char*</tt>
   bool set(const char* x, int base = 10)
-  { return _set<AutoArithmeticPolicy>(x, base); }
+  { return _set_str<AutoArithmeticPolicy>(x, base); }
   /// assignment function for <tt>std::string</tt>
   bool set(const std::string& x, int base = 10)
-  { return _set<AutoArithmeticPolicy>(x.c_str(), base); }
+  { return _set_str<AutoArithmeticPolicy>(x.c_str(), base); }
   /// assignment function for <tt>T</tt>
   template <typename T> bool set(const T& x)
   { return _set<AutoArithmeticPolicy, T>(x); }
 
-  /// set value to be \f$i*2^e\f$ for <tt>char</tt>
-  bool set_2exp(char i, exp_t e)
-  { return _set_2exp<AutoArithmeticPolicy>(long(i), e); }
-  /// set value to be \f$i*2^e\f$ for <tt>unsigned char</tt>
-  bool set_2exp(unsigned char i, exp_t e)
-  { return _set_2exp<AutoArithmeticPolicy>((unsigned long)(i), e); }
-  /// set value to be \f$i*2^e\f$ for <tt>short</tt>
-  bool set_2exp(short i, exp_t e)
-  { return _set_2exp<AutoArithmeticPolicy>(long(i), e); }
-  /// set value to be \f$i*2^e\f$ for <tt>unsigned short</tt>
-  bool set_2exp(unsigned short i, exp_t e)
-  { return _set_2exp<AutoArithmeticPolicy>((unsigned long)(i), e); }
   /// set value to be \f$i*2^e\f$ for <tt>int</tt>
   bool set_2exp(int i, exp_t e)
-  { return _set_2exp<AutoArithmeticPolicy>(long(i), e); }
+  { return _set_2exp_si<AutoArithmeticPolicy>(long(i), e); }
   /// set value to be \f$i*2^e\f$ for <tt>unsigned int</tt>
   bool set_2exp(unsigned int i, exp_t e)
-  { return _set_2exp<AutoArithmeticPolicy>((unsigned long)(i), e); }
+  { return _set_2exp_ui<AutoArithmeticPolicy>((unsigned long)(i), e); }
   /// set value to be \f$i*2^e\f$ for <tt>long</tt>
   bool set_2exp(long i, exp_t e)
-  { return _set_2exp<AutoArithmeticPolicy>(i, e); }
+  { return _set_2exp_si<AutoArithmeticPolicy>(i, e); }
   /// set value to be \f$i*2^e\f$ for <tt>unsigned long</tt>
   bool set_2exp(unsigned long i, exp_t e)
-  { return _set_2exp<AutoArithmeticPolicy>(i, e); }
+  { return _set_2exp_ui<AutoArithmeticPolicy>(i, e); }
   //@}
 
   /// \name arithmetic functions (raw version)
   //@{
   /// negation for <tt>BigFloat2</tt>
   bool r_neg(const BigFloat2& x)
-  { return _neg<RawArithmeticPolicy>(x); }
+  { return _neg_f<RawArithmeticPolicy>(x); }
   /// negation for <tt>T</tt>
   template <typename T> bool r_neg(const T& x)
   { return _neg<RawArithmeticPolicy, T>(x); }
 
   /// square root for <tt>BigFloat2</tt>
   bool r_sqrt(const BigFloat2& x)
-  { return _sqrt<RawArithmeticPolicy>(x); }
+  { return _sqrt_f<RawArithmeticPolicy>(x); }
   /// square root for <tt>T</tt>
   template <typename T> bool r_sqrt(const T& x)
   { return _sqrt<RawArithmeticPolicy, T>(x); }
 
   /// cubic root for <tt>BigFloat2</tt>
   bool r_cbrt(const BigFloat2& x)
-  { return _cbrt<RawArithmeticPolicy>(x); }
+  { return _cbrt_f<RawArithmeticPolicy>(x); }
   // /// cubic root for <tt>T</tt>
   // template <typename T> bool r_cbrt(const T& x)
   // { return _cbrt<RawArithmeticPolicy, T>(x); }
 
   /// k-th root for <tt>BigFloat2</tt>
   bool r_root(const BigFloat2& x, unsigned long k)
-  { return _root<RawArithmeticPolicy>(x, k); }
+  { return _root_f<RawArithmeticPolicy>(x, k); }
   // /// k-th root for <tt>T</tt>
   // template <typename T> bool r_root(const T& x, unsigned long k)
   // { return _root<RawArithmeticPolicy, T>(x, k); }
@@ -301,7 +265,7 @@ public:
 
   /// addition for <tt>BigFloat2+BigFloat2</tt>
   bool r_add(const BigFloat2& x, const BigFloat2& y)
-  { return _add<RawArithmeticPolicy>(x, y); }
+  { return _add_f<RawArithmeticPolicy>(x, y); }
   /// addition for <tt>BigFloat2+T</tt>
   template <typename T> bool r_add(const BigFloat2& x, const T& y)
   { return _add<RawArithmeticPolicy, T>(x, y); }
@@ -311,7 +275,7 @@ public:
 
   /// subtraction for <tt>BigFloat2-BigFloat2</tt>
   bool r_sub(const BigFloat2& x, const BigFloat2& y)
-  { return _sub<RawArithmeticPolicy>(x, y); }
+  { return _sub_f<RawArithmeticPolicy>(x, y); }
   /// subtraction for <tt>BigFloat2-T</tt>
   template <typename T> bool r_sub(const BigFloat2& x, const T& y)
   { return _sub<RawArithmeticPolicy, T>(x, y); }
@@ -321,7 +285,7 @@ public:
 
   /// multiplication for <tt>BigFloat2*BigFloat2</tt>
   bool r_mul(const BigFloat2& x, const BigFloat2& y)
-  { return _mul<RawArithmeticPolicy>(x, y); }
+  { return _mul_f<RawArithmeticPolicy>(x, y); }
   /// multiplication for <tt>BigFloat2*T</tt>
   template <typename T> bool r_mul(const BigFloat2& x, const T& y)
   { return _mul<RawArithmeticPolicy, T>(x, y); }
@@ -331,7 +295,7 @@ public:
 
   /// division for <tt>BigFloat2/BigFloat2</tt>
   bool r_div(const BigFloat2& x, const BigFloat2& y)
-  { return _div<RawArithmeticPolicy>(x, y); }
+  { return _div_f<RawArithmeticPolicy>(x, y); }
   /// division for <tt>BigFloat2/T</tt>
   template <typename T> bool r_div(const BigFloat2& x, const T& y)
   { return _div<RawArithmeticPolicy, T>(x, y); }
@@ -344,28 +308,28 @@ public:
   //@{
   /// negation for <tt>BigFloat2</tt>
   bool neg(const BigFloat2& x, prec_t prec)
-  { return _neg<FixedArithmeticPolicy>(x, prec); }
+  { return _neg_f<FixedArithmeticPolicy>(x, prec); }
   /// negation for <tt>T</tt>
   template <typename T> bool neg(const T& x, prec_t prec)
   { return _neg<FixedArithmeticPolicy, T>(x, prec); }
 
   /// square root for <tt>BigFloat2</tt>
   bool sqrt(const BigFloat2& x, prec_t prec = BF_DEF_SQRT_PREC)
-  { return _sqrt<FixedArithmeticPolicy>(x, prec); }
+  { return _sqrt_f<FixedArithmeticPolicy>(x, prec); }
   /// square root for <tt>T</tt>
   template <typename T> bool sqrt(const T& x, prec_t prec = BF_DEF_SQRT_PREC)
   { return _sqrt<FixedArithmeticPolicy, T>(x, prec); }
 
   /// cubic root for <tt>BigFloat2</tt>
   bool cbrt(const BigFloat2& x, prec_t prec = BF_DEF_CBRT_PREC)
-  { return _cbrt<FixedArithmeticPolicy>(x, prec); }
+  { return _cbrt_f<FixedArithmeticPolicy>(x, prec); }
   // /// cubic root for <tt>T</tt>
   // template <typename T> bool cbrt(const T& x, prec_t prec = BF_DEF_CBRT_PREC)
   // { return _cbrt<FixedArithmeticPolicy, T>(x, prec); }
 
   /// k-th root for <tt>BigFloat2</tt>
   bool root(const BigFloat2& x, unsigned long k, prec_t prec = BF_DEF_ROOT_PREC)
-  { return _root<FixedArithmeticPolicy>(x, k, prec); }
+  { return _root_f<FixedArithmeticPolicy>(x, k, prec); }
   // /// k-th root for <tt>T</tt>
   // template <typename T> 
   // bool root(const T& x, unsigned long k, prec_t prec = BF_DEF_ROOT_PREC)
@@ -385,7 +349,7 @@ public:
 
   /// addition for <tt>BigFloat2+BigFloat2</tt>
   bool add(const BigFloat2& x, const BigFloat2& y, prec_t prec)
-  { return _add<FixedArithmeticPolicy>(x, y, prec); }
+  { return _add_f<FixedArithmeticPolicy>(x, y, prec); }
   /// addition for <tt>BigFloat2+T</tt>
   template <typename T> bool add(const BigFloat2& x, const T& y, prec_t prec)
   { return _add<FixedArithmeticPolicy, T>(x, y, prec); }
@@ -395,7 +359,7 @@ public:
 
   /// subtraction for <tt>BigFloat2-BigFloat2</tt>
   bool sub(const BigFloat2& x, const BigFloat2& y, prec_t prec)
-  { return _sub<FixedArithmeticPolicy>(x, y, prec); }
+  { return _sub_f<FixedArithmeticPolicy>(x, y, prec); }
   /// subtraction for <tt>BigFloat2-T</tt>
   template <typename T> bool sub(const BigFloat2& x, const T& y, prec_t prec)
   { return _sub<FixedArithmeticPolicy, T>(x, y, prec); }
@@ -405,7 +369,7 @@ public:
 
   /// multiplication for <tt>BigFloat2*BigFloat2</tt>
   bool mul(const BigFloat2& x, const BigFloat2& y, prec_t prec)
-  { return _mul<FixedArithmeticPolicy>(x, y, prec); }
+  { return _mul_f<FixedArithmeticPolicy>(x, y, prec); }
   /// multiplication for <tt>BigFloat2*T</tt>
   template <typename T> bool mul(const BigFloat2& x, const T& y, prec_t prec)
   { return _mul<FixedArithmeticPolicy, T>(x, y, prec); }
@@ -415,7 +379,7 @@ public:
 
   /// division for <tt>BigFloat2/BigFloat2</tt>
   bool div(const BigFloat2& x, const BigFloat2& y, prec_t prec = BF_DEF_DIV_PREC)
-  { return _div<FixedArithmeticPolicy>(x, y, prec); }
+  { return _div_f<FixedArithmeticPolicy>(x, y, prec); }
   /// division for <tt>BigFloat2/T</tt>
   template <typename T> 
   bool div(const BigFloat2& x, const T& y, prec_t prec = BF_DEF_DIV_PREC)
@@ -431,7 +395,7 @@ public:
   //@{
   /// negation for <tt>BigFloat2</tt>
   bool neg(const BigFloat2& x)
-  { return _neg<AutoArithmeticPolicy>(x); }
+  { return _neg_f<AutoArithmeticPolicy>(x); }
   /// negation for <tt>T</tt>
   template <typename T> bool neg(const T& x)
   { return _neg<AutoArithmeticPolicy, T>(x); }
@@ -450,7 +414,7 @@ public:
 
   /// addition for <tt>BigFloat2+BigFloat2</tt>
   bool add(const BigFloat2& x, const BigFloat2& y)
-  { return _add<AutoArithmeticPolicy>(x, y); }
+  { return _add_f<AutoArithmeticPolicy>(x, y); }
   /// addition for <tt>BigFloat2+T</tt>
   template <typename T> bool add(const BigFloat2& x, const T& y)
   { return _add<AutoArithmeticPolicy, T>(x, y); }
@@ -460,7 +424,7 @@ public:
 
   /// subtraction for <tt>BigFloat2-BigFloat2</tt>
   bool sub(const BigFloat2& x, const BigFloat2& y)
-  { return _sub<AutoArithmeticPolicy>(x, y); }
+  { return _sub_f<AutoArithmeticPolicy>(x, y); }
   /// subtraction for <tt>BigFloat2-T</tt>
   template <typename T> bool sub(const BigFloat2& x, const T& y)
   { return _sub<AutoArithmeticPolicy, T>(x, y); }
@@ -470,7 +434,7 @@ public:
 
   /// multiplication for <tt>BigFloat2*BigFloat2</tt>
   bool mul(const BigFloat2& x, const BigFloat2& y)
-  { return _mul<AutoArithmeticPolicy>(x, y); }
+  { return _mul_f<AutoArithmeticPolicy>(x, y); }
   /// multiplication for <tt>BigFloat2*T</tt>
   template <typename T> bool mul(const BigFloat2& x, const T& y)
   { return _mul<AutoArithmeticPolicy, T>(x, y); }
@@ -664,43 +628,43 @@ public: // C++ style operators
 private:
   // assignment
   template <template <typename, typename, typename> class Policy>
-  bool _set(const BigFloat2& x, prec_t prec = 0);
+  bool _set_f(const BigFloat2& x, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy>
-  bool _set(const char* x, int base, prec_t prec = 0);
+  bool _set_str(const char* x, int base, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>
   bool _set(const T& x, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy>
-  bool _set_2exp(long, exp_t e, prec_t prec = 0);
+  bool _set_2exp_si(long, exp_t e, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy>
-  bool _set_2exp(unsigned long, exp_t e, prec_t prec = 0);
+  bool _set_2exp_ui(unsigned long, exp_t e, prec_t prec = 0);
 
   // negation
   template <template <typename, typename, typename> class Policy>
-  bool _neg(const BigFloat2& x, prec_t prec = 0);
+  bool _neg_f(const BigFloat2& x, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>
   bool _neg(const T& x, prec_t prec = 0);
   
   // square root
   template <template <typename, typename, typename> class Policy>
-  bool _sqrt(const BigFloat2& x, prec_t prec = 0);
+  bool _sqrt_f(const BigFloat2& x, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>
   bool _sqrt(const T& x, prec_t prec = 0);
   
   // cubic root
   template <template <typename, typename, typename> class Policy>
-  bool _cbrt(const BigFloat2& x, prec_t prec = 0);
+  bool _cbrt_f(const BigFloat2& x, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>
   bool _cbrt(const T& x, prec_t prec = 0);
   
   // k-th root
   template <template <typename, typename, typename> class Policy>
-  bool _root(const BigFloat2& x, unsigned long k, prec_t prec = 0);
+  bool _root_f(const BigFloat2& x, unsigned long k, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>
   bool _root(const T& x, unsigned long k, prec_t prec = 0);
   
   // addition
   template <template <typename, typename, typename> class Policy>
-  bool _add(const BigFloat2& x, const BigFloat2& y, prec_t prec = 0);
+  bool _add_f(const BigFloat2& x, const BigFloat2& y, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>
   bool _add(const BigFloat2& x, const T& y, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>
@@ -708,7 +672,7 @@ private:
 
   // subtraction 
   template <template <typename, typename, typename> class Policy>
-  bool _sub(const BigFloat2& x, const BigFloat2& y, prec_t prec = 0);
+  bool _sub_f(const BigFloat2& x, const BigFloat2& y, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>
   bool _sub(const BigFloat2& x, const T& y, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>
@@ -716,7 +680,7 @@ private:
 
   // multiplication
   template <template <typename, typename, typename> class Policy>
-  bool _mul(const BigFloat2& x, const BigFloat2& y, prec_t prec = 0);
+  bool _mul_f(const BigFloat2& x, const BigFloat2& y, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>
   bool _mul(const BigFloat2& x, const T& y, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>
@@ -724,7 +688,7 @@ private:
 
   // division
   template <template <typename, typename, typename> class Policy>
-  bool _div(const BigFloat2& x, const BigFloat2& y, prec_t prec = 0);
+  bool _div_f(const BigFloat2& x, const BigFloat2& y, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>
   bool _div(const BigFloat2& x, const T& y, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>

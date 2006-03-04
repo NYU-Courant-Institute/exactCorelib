@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.inl,v 1.3 2006-03-03 17:19:58 exact Exp $
+ * $Id: BigFloat2.inl,v 1.4 2006-03-04 04:23:57 exact Exp $
  ***************************************************************************/
 #define BF_RNDD GMP_RNDD
 #define BF_RNDU GMP_RNDU
@@ -27,7 +27,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// assignment -- set(BigFloat2)
 template <template <typename, typename, typename> class Policy>
-inline bool BigFloat2::_set(const BigFloat2& x, prec_t prec) {
+inline bool BigFloat2::_set_f(const BigFloat2& x, prec_t prec) {
   if (x.is_exact())
     return this->_set<Policy, FT>(x.m_l, prec);
   else {
@@ -39,7 +39,7 @@ inline bool BigFloat2::_set(const BigFloat2& x, prec_t prec) {
 }
 /// assignment -- set(const char*, int base)
 template <template <typename, typename, typename> class Policy>
-inline bool BigFloat2::_set(const char* x, int base, prec_t prec) {
+inline bool BigFloat2::_set_str(const char* x, int base, prec_t prec) {
   // since MPFR set_str() function cannot tell the exactness of result,
   // we need compare the two results after conversion
   Policy<FT, FT, FT>::set(m_l, x, base, prec, BF_RNDD);
@@ -56,14 +56,14 @@ inline bool BigFloat2::_set(const T& x, prec_t prec) {
 }
 /// assignment -- set_2exp(long)
 template <template <typename, typename, typename> class Policy>
-inline bool BigFloat2::_set_2exp(long x, exp_t e, prec_t prec) {
+inline bool BigFloat2::_set_2exp_si(long x, exp_t e, prec_t prec) {
   set_exact(Policy<FT, FT, FT>::set_2exp(m_l, x, e, prec, BF_RNDD));
   if (!is_exact()) Policy<FT, FT, FT>::set_2exp(m_l, x, e, prec, BF_RNDU);
   return is_exact();
 }
 /// assignment -- set_2exp(long)
 template <template <typename, typename, typename> class Policy>
-inline bool BigFloat2::_set_2exp(unsigned long x, exp_t e, prec_t prec) {
+inline bool BigFloat2::_set_2exp_ui(unsigned long x, exp_t e, prec_t prec) {
   set_exact(Policy<FT, FT, FT>::set_2exp(m_l, x, e, prec, BF_RNDD));
   if (!is_exact()) Policy<FT, FT, FT>::set_2exp(m_l, x, e, prec, BF_RNDU);
   return is_exact();
@@ -72,7 +72,7 @@ inline bool BigFloat2::_set_2exp(unsigned long x, exp_t e, prec_t prec) {
 ////////////////////////////////////////////////////////////////////////////////
 /// negation -- neg(BigFloat2)
 template <template <typename, typename, typename> class Policy>
-inline bool BigFloat2::_neg(const BigFloat2& x, prec_t prec) {
+inline bool BigFloat2::_neg_f(const BigFloat2& x, prec_t prec) {
   if (x.is_exact())
     return this->_neg<Policy, FT>(x.m_l, prec);
   else {
@@ -93,7 +93,7 @@ inline bool BigFloat2::_neg(const T& x, prec_t prec) {
 ////////////////////////////////////////////////////////////////////////////////
 /// square root -- sqrt(BigFloat2)
 template <template <typename, typename, typename> class Policy>
-inline bool BigFloat2::_sqrt(const BigFloat2& x, prec_t prec) {
+inline bool BigFloat2::_sqrt_f(const BigFloat2& x, prec_t prec) {
   if (x.is_exact())
     return this->_sqrt<Policy, FT>(x.m_l, prec);
   else {
@@ -114,7 +114,7 @@ inline bool BigFloat2::_sqrt(const T& x, prec_t prec) {
 ////////////////////////////////////////////////////////////////////////////////
 /// cubic root -- cbrt(BigFloat2)
 template <template <typename, typename, typename> class Policy>
-inline bool BigFloat2::_cbrt(const BigFloat2& x, prec_t prec) {
+inline bool BigFloat2::_cbrt_f(const BigFloat2& x, prec_t prec) {
   if (x.is_exact())
     return this->_cbrt<Policy, FT>(x.m_l, prec);
   else {
@@ -135,7 +135,7 @@ inline bool BigFloat2::_cbrt(const T& x, prec_t prec) {
 ////////////////////////////////////////////////////////////////////////////////
 /// k-th root -- root(BigFloat2)
 template <template <typename, typename, typename> class Policy>
-inline bool BigFloat2::_root(const BigFloat2& x, unsigned long k, prec_t prec) {
+inline bool BigFloat2::_root_f(const BigFloat2& x, unsigned long k, prec_t prec) {
   if (x.is_exact())
     return this->_root<Policy, FT>(x.m_l, k, prec);
   else {
@@ -156,7 +156,7 @@ inline bool BigFloat2::_root(const T& x, unsigned long k, prec_t prec) {
 ////////////////////////////////////////////////////////////////////////////////
 /// addition -- (BigFloat2 + BigFloat2)
 template <template <typename, typename, typename> class Policy>
-inline bool BigFloat2::_add(const BigFloat2& x, const BigFloat2& y, prec_t prec) {
+inline bool BigFloat2::_add_f(const BigFloat2& x, const BigFloat2& y, prec_t prec) {
   if (x.is_exact())
     return this->_add<Policy, FT>(x.m_l, y, prec);
   else if (y.is_exact())
@@ -192,7 +192,7 @@ inline bool BigFloat2::_add(const T& x, const BigFloat2& y, prec_t prec) {
 ////////////////////////////////////////////////////////////////////////////////
 /// subtraction -- (BigFloat2 - BigFloat2)
 template <template <typename, typename, typename> class Policy>
-inline bool BigFloat2::_sub(const BigFloat2& x, const BigFloat2& y, prec_t prec) {
+inline bool BigFloat2::_sub_f(const BigFloat2& x, const BigFloat2& y, prec_t prec) {
   if (x.is_exact())
     return this->_sub<Policy, FT>(x.m_l, y, prec);
   else if (y.is_exact())
@@ -228,7 +228,7 @@ inline bool BigFloat2::_sub(const T& x, const BigFloat2& y, prec_t prec) {
 ////////////////////////////////////////////////////////////////////////////////
 /// multiplication -- (BigFloat2 * BigFloat2)
 template <template <typename, typename, typename> class Policy>
-inline bool BigFloat2::_mul(const BigFloat2& x, const BigFloat2& y, prec_t prec) {
+inline bool BigFloat2::_mul_f(const BigFloat2& x, const BigFloat2& y, prec_t prec) {
   if (x.is_exact())
     return this->_mul<Policy, FT>(x.m_l, y, prec);
   else if (y.is_exact())
@@ -312,7 +312,7 @@ inline bool BigFloat2::_mul(const T& x, const BigFloat2& y, prec_t prec) {
 ////////////////////////////////////////////////////////////////////////////////
 /// division -- (BigFloat2 / BigFloat2)
 template <template <typename, typename, typename> class Policy>
-inline bool BigFloat2::_div(const BigFloat2& x, const BigFloat2& y, prec_t prec) {
+inline bool BigFloat2::_div_f(const BigFloat2& x, const BigFloat2& y, prec_t prec) {
   if (x.is_exact())
     return this->_div<Policy, FT>(x.m_l, y, prec);
   else if (y.is_exact())
