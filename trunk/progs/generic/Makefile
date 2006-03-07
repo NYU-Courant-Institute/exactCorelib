@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.1 2006-03-07 04:51:24 exact Exp $
+# Core Library, $Id: Makefile,v 1.2 2006-03-07 05:01:26 exact Exp $
 
 #=================================================
 # If you set VAR below, it would override the default values
@@ -34,6 +34,13 @@ testgmp:
 	-@test -z "gmptest${EXETYPE}" || rm -f gmptest${EXETYPE}
 	$(CXX) $(CORE_INC) gmptest.cpp -L../../gmp/lib -lgmp -o gmptest
 	./gmptest
+
+testmpfr:
+	-@test -z "mpfrtest.o" || rm -f mpfrtest.o
+	-@test -z "mpfrtest${EXETYPE}" || rm -f mpfrtest${EXETYPE}
+	$(CXX) $(CORE_INC) mpfrtest.cpp -L../../mpfr/lib -lmpfr \
+		-L../../gmp/lib -lgmp -o mpfrtest
+	./mpfrtest
 
 sample: sample.o
 
