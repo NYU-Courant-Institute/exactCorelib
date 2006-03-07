@@ -1,4 +1,4 @@
-# Makefile for preparing softwares under Mac OSX
+# Makefile for preparing softwares 
 
 GMP=gmp-4.1.4
 MPFR=mpfr-2.2.0
@@ -15,28 +15,59 @@ ABI=
 
 all:
 
-gmp: ${GMP}.tar.gz
+gmp: config-gmp build-gmp install-gmp
+
+mpfr: config-mpfr build-mpfr install-mpfr
+
+# config, build and install gmp
+config-gmp: ${GMP}
 	cd ${GMP}; ./configure CC=gcc ${ABI} --prefix=${GMP_PREFIX}
 
-mpfr: ${MPFR}.tar.gz
+build-gmp:
+	cd ${GMP}; ${MAKE}
+
+install-gmp:
+	cd ${GMP}; ${MAKE} install
+
+# config, build and install mpfr
+config-mpfr: ${MPFR}.tar.gz
 	cd ${MPFR}; ./configure CC=gcc --prefix=${MPFR_PREFIX} \
 	    --with-gmp-include=${GMP_PREFIX}/include \
 	    --with-gmp-lib=${GMP_PREFIX}/lib
+build-mpfr:
+	cd ${MPFR}; ${MAKE}
 
-sip: ${SIP}.tar.gz
+install-mpfr:
+	cd ${MPFR}; ${MAKE} install
+
+# config, build and install sip
+config-sip: ${SIP}
 	cd ${SIP}; python configure.py -x -p ${PLATFORM} \
 	    -b ${PREFIX}/bin -d ${PREFIX}/lib \
 	    -e ${PREFIX}/inc -v ${PREFIX}/sip
 
+build-sip:
+	cd ${SIP}; ${MAKE}
+
+install-sip:
+	cd ${SIP}; ${MAKE} install
+
+
+${GMP}: ${GMP}.tar.gz
+	gunzip -cd ${GMP}.tar.gz | tar xvf -
+	
 ${GMP}.tar.gz: 
 	wget ftp://ftp.gnu.org/gnu/gmp/${GMP}.tar.gz
-	gunzip -cd ${GMP}.tar.gz | tar xvf -
 
+${MPFR}: ${MPFR}.tar.gz
+	gunzip -cd ${MPFR}.tar.gz | tar xvf -
+	
 ${MPFR}.tar.gz: 
 	wget http://www.mpfr.org/mpfr-current/${MPFR}.tar.gz
-	gunzip -cd ${MPFR}.tar.gz | tar xvf -
 
-${SIP}.tar.gz: 
-	wget http://www.riverbankcomputing.com/Downloads/sip4/${MPFR}.tar.gz
+${SIP}: ${SIP}.tar.gz
 	gunzip -cd ${SIP}.tar.gz | tar xvf -
+	
+${SIP}.tar.gz: 
+	wget http://www.riverbankcomputing.com/Downloads/sip4/${SIP}.tar.gz
 
