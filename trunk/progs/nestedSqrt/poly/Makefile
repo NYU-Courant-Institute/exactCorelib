@@ -1,0 +1,280 @@
+# Makefile for Poly 
+#
+# (template Makefile for simple targets)
+#
+# Core Library, $Id: Makefile,v 1.1 2006-03-07 04:54:38 exact Exp $
+
+#=================================================
+# VARIABLES
+#=================================================
+#CHOOSE THE LINKAGE 
+LINKAGE=static
+LINKAGE=shared
+
+#CHOOSE THE VARIANT Core Library you need
+VAR=GCC31
+VAR=Debug
+VAR=
+
+include ../../Make.config
+
+CORE2_DIR=../..
+INCS=-I${SFW_DIR}/include -I${CORE2_DIR}/inc
+LIBS=-L${SFW_DIR}/lib -L${CORE2_DIR}/lib -lcore2++ -lgmp -lmpfr
+CXXFLAGS=-O2 -Wall -DNDEBUG
+
+CORE_INC=${INCS}
+CORE_LIB=${LIBS}
+#=================================================
+# TARGET FILES
+#=================================================
+
+DEPEND=
+
+n=1
+
+# if default is NT is not assigned, default is NT=BigInt
+# NT=
+# NT=BigFloat
+# NT=Expr
+# NT=int
+# NT=BigRat
+
+p=tPoly
+p=tt
+p=solve
+p=tNewton
+p=tSturm${n}
+p=tSturm
+p=pisot
+p=tRootOf
+p=tPseudo
+p=tGCD
+p=readpoly
+
+TARGETS= tSturm tSturmBF 
+
+MORE_TARGETS = tNewton tPolyALL tSturmRat tSturmExp tSturmInt \
+    tWilk20 tWilk20deriv tKameny4 tGCD tRootOf wein
+
+OTHER_TARGETS = solve pisot parsepoly
+
+#=================================================
+# TARGETS
+#=================================================
+
+default: $(TARGETS)
+
+test:  $(TARGETS)
+	./tSturm
+	./tSturmBF
+
+moretest: $(MORE_TARGETS)
+	./tPoly
+	./tPolyInt
+	./tPolyRat
+	./tPolyExp
+	./tPolyBF
+	./tSturmExp
+	./tSturmRat
+	./tSturmInt
+	./tWilk20
+	./tWilk20deriv
+	./tKameny4
+	./tGCD
+	./tRootOf
+	./tNewton 123
+#	./tNewton 12345678901234
+	./wein
+
+othertest: $(OTHER_TARGETS)
+	./pisot
+	./solve
+
+p: $(p).o $(DEPEND)
+	${CXX} $(LDFLAGS)  $< $(CORE_LIB) -o ${p}
+
+all: $(TARGETS) $(MORE_TARGETS) 
+
+testall: test moretest
+
+testmore: tNewton tSturm
+	tNewton 4
+	tNewton 8
+	tNewton 123456
+	tSturm 200 moreTest
+	tSturmInt
+#	tSturmLon
+
+testPoly:
+	./tPoly
+	./tPolyInt
+	./tPolyRat
+	./tPolyExp
+	./tPolyBF
+
+testNewton:
+	./tNewton
+	./tNewtonBF
+
+testSturm:
+	./tSturm
+	./tSturmBF
+	./tSturmExp
+
+time:  tPoly tNewton tSturm
+	time tPoly
+	time tNewton
+	time tSturm
+
+# Compiling Polynomial class with various number types (int, BigInt, Exp)
+tPolyALL: tPoly tPolyRat tPolyInt tPolyExp tPolyBF
+
+tPoly: tPoly.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC)    tPoly.cpp -o tPoly.o 
+	${CXX} $(LDFLAGS) tPoly.o $(CORE_LIB) -o tPoly
+
+tPolyRat: tPoly.cpp 
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_RAT tPoly.cpp -o tPolyRat.o
+	${CXX} $(LDFLAGS) tPolyRat.o $(CORE_LIB) -o tPolyRat
+
+tPolyBF: tPoly.cpp 
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_BF tPoly.cpp -o tPolyBF.o
+	${CXX} $(LDFLAGS) tPolyBF.o $(CORE_LIB) -o tPolyBF
+
+tPolyInt: tPoly.cpp 
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_INT tPoly.cpp -o tPolyInt.o
+	${CXX} $(LDFLAGS) tPolyInt.o $(CORE_LIB) -o tPolyInt
+
+tPolyExp: tPoly.cpp 
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_EXP tPoly.cpp -o tPolyExp.o
+	${CXX} $(LDFLAGS) tPolyExp.o $(CORE_LIB) -o tPolyExp
+
+exp:	tPoly.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_EXP tPoly.cpp -o tPolyExp.o
+	${CXX} $(LDFLAGS) tPolyExp.o $(CORE_LIB) -o tPolyExp
+
+# testing Newton iteration with various number types (int, BigInt, Exp)
+tNewtonALL: tNewton tNewtonBF 
+
+tNewton: tNewton.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_BINT tNewton.cpp -o tNewton.o
+	${CXX} $(LDFLAGS) tNewton.o $(CORE_LIB) -o tNewton
+
+tNewtonBF: tNewton.cpp 
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_BF tNewton.cpp -o tNewtonBF.o
+	${CXX} $(LDFLAGS) tNewtonBF.o $(CORE_LIB) -o tNewtonBF
+
+tGCD: tGCD.o
+
+tRootOf: tRootOf.o
+
+tWilk20: tWilk20.o
+
+tWilk20deriv: tWilk20deriv.o
+
+wein: wein.o
+
+# Compile tSturm with NT=BigInt (default), or NT=BigFloat, NT=Expr,
+#                NT=BigRat, NT=int, or NT=long:
+# tSturmALL: tSturm tSturmBF tSturmExp tSturmInt tSturmRat tSturmLon
+tSturmALL: tSturm tSturmBF tSturmExp tSturmInt tSturmRat 
+
+tSturm: tSturm.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC)            tSturm.cpp -o tSturm.o
+	${CXX} $(LDFLAGS) tSturm.o $(CORE_LIB) -o tSturm
+
+tSturmBF: tSturm.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_BF tSturm.cpp -o tSturmBF.o
+	${CXX} $(LDFLAGS) tSturmBF.o $(CORE_LIB) -o tSturmBF
+
+tSturmExp: tSturm.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_EXP tSturm.cpp -o tSturmExp.o
+	${CXX} $(LDFLAGS) tSturmExp.o $(CORE_LIB) -o tSturmExp
+
+tSturmInt: tSturm.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_INT tSturm.cpp -o tSturmInt.o
+	${CXX} $(LDFLAGS) tSturmInt.o $(CORE_LIB) -o tSturmInt
+
+tSturmLon: tSturm.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_LONG tSturm.cpp -o tSturmLon.o
+	${CXX} $(LDFLAGS) tSturmLon.o $(CORE_LIB) -o tSturmLon
+
+tSturmRat: tSturm.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_RAT tSturm.cpp -o tSturmRat.o
+	${CXX} $(LDFLAGS) tSturmRat.o $(CORE_LIB) -o tSturmRat
+
+timeNewton: timeNewton.o
+
+solve: solve.o
+
+pisot: pisot.o
+
+tKameny4: tKameny4.o
+
+tPseudo: tPseudo.o
+
+parsepoly: parsepoly.o
+
+t:	t.o
+
+wein:	wein.o
+
+tt:	tt.cpp 
+	${CXX} -c $(CXXFLAGS) $(CORE_INC)            tt.cpp -o tt.o
+	${CXX} $(LDFLAGS) tt.o $(CORE_LIB) -o tt
+
+tt1:	tt1.o
+
+tt2:	tt2.o
+
+tt3:	tt3.o
+
+#=================================================
+# Rules
+#=================================================
+%: %.o $(DEPEND)
+	${CXX} $(LDFLAGS) $< $(CORE_LIB) -o $@
+
+.cpp.o:
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) $< -o $@
+
+#=================================================
+# Clean object files
+#=================================================
+clean:
+	-@test -z "*.o" || rm -f *.o
+
+#=================================================
+# Remove executable files
+#=================================================
+ALL=$(TARGETS) $(MORE_TARGETS)
+EXEPROGS=$(ALL:=$(EXETYPE))
+
+veryclean: clean
+	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
+	-@rm -f tSturm$(EXETYPE) tSturmExp$(EXETYPE) tSturmBF$(EXETYPE) \
+		tSturmInt$(EXETYPE) tSturmLon$(EXETYPE)
+	-@rm -f tNewton$(EXETYPE) tNewtonBF$(EXETYPE) 
+	-@rm -f tPoly$(EXETYPE) tPolyExp$(EXETYPE) \
+	          tPolyInt$(EXETYPE) tPolyRat$(EXETYPE) tPolyBF$(EXETYPE)
+	-@rm -f tt$(EXETYPE) tt1$(EXETYPE) tt2$(EXETYPE)
+
+#=================================================
+# Housekeeping
+#=================================================
+
+tar:
+	-@tar cvf poly.tar \
+		Poly.h Poly.tcc \
+		tPoly.cpp tt.cpp \
+		Newton.h tNewton.cpp \
+		Sturm.h tSturm.cpp\
+	        solve.cpp \
+	        tRoots.cpp \
+		Makefile README
+
+save:
+	-@ci -l -m"make save" *.cpp *.tcc *.h Makefile README Notes
+
+
