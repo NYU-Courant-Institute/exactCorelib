@@ -1,5 +1,5 @@
 # Makefile for Core Library
-# $Id: Makefile,v 1.2 2006-03-07 04:37:54 exact Exp $
+# $Id: Makefile,v 1.3 2006-03-07 06:09:08 exact Exp $
 
 #################################################################
 #
@@ -89,7 +89,7 @@ fifth build-mpfr:
 	@echo ""
 
 # Sixth Step: install mpfr libraries and include files
-six install-mpfr:
+sixth install-mpfr:
 	@echo "Install MPFR Library..."
 	-${MAKE} -C builds install-mpfr 2>&1 \
 			| tee ${CORE_PATH}/tmp/DIAG_INSTALL_MPFR

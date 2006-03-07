@@ -30,7 +30,7 @@ install-gmp:
 	cd ${GMP}; ${MAKE} install
 
 # config, build and install mpfr
-config-mpfr: ${MPFR}.tar.gz
+config-mpfr: ${MPFR}
 	cd ${MPFR}; ./configure CC=gcc --prefix=${MPFR_PREFIX} \
 	    --with-gmp-include=${GMP_PREFIX}/include \
 	    --with-gmp-lib=${GMP_PREFIX}/lib
