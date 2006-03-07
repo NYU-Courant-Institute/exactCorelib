@@ -6,8 +6,7 @@ import os.path, sys, string
 empty_makefile="""# Makefile
 
 # set the core library directory and include Make.config
-CORE_DIR=%s
-include ${CORE_DIR}/Make.config
+include %s/Make.options
 
 # define targets list
 TARGETS=
@@ -20,7 +19,7 @@ all: ${TARGETS}
 #@end targets
 
 #include standard rules from Make.rules
-include ${CORE_DIR}/Make.rules
+include %s/Make.rules
 """
 
 # generate a makefile from template
@@ -29,7 +28,7 @@ def gen_empty_makefile(core_dir, make_fname="Makefile"):
     ans=raw_input("%s exists! Do you want to overwrite it? (y/n)" % make_fname)
     if ans != 'y' and ans != 'Y': return
   f = open(make_fname, 'w')
-  f.write(empty_makefile % core_dir) 
+  f.write(empty_makefile % (core_dir, core_dir)) 
 
 # add a target into makefile
 def add_target(target_names, make_fname="Makefile"):
@@ -112,4 +111,4 @@ if __name__ == '__main__':
     else:
       gen_empty_makefile(sys.argv[1])
   else:
-    gen_empty_makefile("../..")
+    gen_empty_makefile("..")

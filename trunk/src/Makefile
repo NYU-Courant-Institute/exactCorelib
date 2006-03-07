@@ -1,48 +1,73 @@
-# Makefile
+# file: Makefile (for src)
+#$Id: Makefile,v 1.4 2006-03-07 04:38:41 exact Exp $
 
-CORE_DIR=..
-include ../Make.config
+# =============================================================
+# PATHS ======================================================
+# =============================================================
 
-AR=ar rcs
-CXXFLAGS=-O2 -Wall -DNDEBUG
-LDFLAGS=-O2 -Wall
+CORE_PATH=..
 
-OBJS=MpfrIO.o CoreDefs.o
+INCLUDE=-I${CORE_PATH}/inc -I${CORE_PATH}/mpfr/include -I${CORE_PATH}/gmp/include
+
+# VAR indicates variants of the Core library
+#	E.g., if VAR=(empty) then we compile the release version.
+#	If VAR=Debug, then we compile a debugging version.
+
+EXPROBJS=MpfrIO${VAR}.o CoreDefs${VAR}.o 
 
 ifdef USE_GMPXX
   LIBS+= -lgmpxx
 else
-  OBJS+= gmpxx/isfuns.o gmpxx/ismpz.o gmpxx/ismpq.o gmpxx/ismpf.o
+  OBJS+= gmpxx/isfuns${VAR}.o gmpxx/ismpz${VAR}.o \
+	 gmpxx/ismpq${VAR}.o gmpxx/ismpf${VAR}.o
 endif
 
-CORE2_LIB=${CORE_DIR}/lib/libcore2++.a
+# =============================================================
+# FLAGS =======================================================
+# =============================================================
 
-all: ${CORE2_LIB}
+# read in the appropriate compilation settings from the
+# global Make.config.
+include ${CORE_PATH}/Make.config
 
-${CORE2_LIB}: ${OBJS}
-	$(AR) $@ $^
 
-#====================================================================
-# Rules
-#
-# $@ -- The file name of the target of the rule
-# $< -- The name of the first prerequisite 
-# $^ -- The names of all the prerequisites, with spaces between them.
-# $? -- The names of all the prerequisites that are newer than the 
-#       target, with spaces between them.
-#===================================================================
-%: %.o
-	${CXX} $(LDFLAGS) $< $(GMP_MPFR_LIBS) -o $@
+# =============================================================
+# TARGETS =====================================================
+# =============================================================
 
-.cpp.o:
-	${CXX} -c $(CXXFLAGS) $(INCS) $< -o $@
+# The following library will be built:
+CORE_LIB=$(CORE_PATH)/lib/libcore2++${VAR}.a
+CORE_SHARED_LIB=$(CORE_PATH)/lib/libcore2++${VAR}.so
 
-.cc.o:
-	${CXX} -c $(CXXFLAGS) $(INCS) $< -o $@
+TARGET=$(CORE_LIB)
 
-#=================================================
-# Clean object files
-#=================================================
+ifeq (${LINKAGE}, shared)
+  TARGET+=$(CORE_SHARED_LIB)
+endif
+
+# =============================================================
+# RULES  ======================================================
+# =============================================================
+
+all:	${TARGET}
+
+${CORE_LIB}:	$(EXPROBJS)
+	$(AR) $@ $?
+
+${CORE_SHARED_LIB}:	$(EXPROBJS)
+	$(CXX) $(CORE_LDFLAGS) -o $@ $^
+
+%${VAR}.o:	%.cpp
+	${CXX} $(CORE_CXXFLAGS) $(INCLUDE) -c $< -o $@
+
+# =============================================================
+# HOUSE KEEPING  ==============================================
+# =============================================================
+
 clean:
-	-@test -z "*.o" || rm -f ${OBJS}
+	-@test -z "*${VAR}.o" || rm -rf *${VAR}.o
+
+veryclean: clean
+	-@test -z "${CORE_LIB}" || rm -rf "${CORE_LIB}"
+	-@test -z "${CORE_SHARED_LIB}" || rm -rf "${CORE_SHARED_LIB}"
 
