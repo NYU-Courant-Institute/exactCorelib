@@ -1,0 +1,69 @@
+===================== SOFTWARE RELEASE ANNOUNCEMENT ==========================
+
+Nov 12, 2004:
+Core Library Version 2.0 is now available for free download at
+
+                 http://cs.nyu.edu/exact/core/
+
+The Core Library (CORE) is a collection of C/C++ classes to support 
+computation with real algebraic numbers (+,-,x,/,sqrt and rootOf), under a
+variety of precision requirements.
+
+Numerical nonrobustness is a widely acknowledged problem.  It has proven
+particularly intractable in the context of geometric algorithms where
+numerical data and combinatorial data are intermixed in a strongly constrained
+manner.  Recent research in computational geometry has
+demonstrated a variety of techniques based on the principles of
+Exact Geometric Computation (EGC) that can address such problems.
+A basic goal of our library is to make such techniques easily accessible to 
+the wider community of programmers and researchers.
+
+Basic CORE Features:
+   -- ease of use:
+        Any C/C++ programmer can write numerical or geometric
+        code that are fully robust just by calling our Library.
+   -- ease of migration:
+        Many existing C/C++ programs can be converted into robust CORE
+        programs with minimal effort.
+   -- natural and novel numerical accuracy model:
+        Users can choose and get the numerical accuracy that best fit
+        their applications. 
+   -- state of art technology:
+        The precision-driven approach to EGC, best known root bounds,
+        filter technology, etc, will be incorporated into the library
+        as the field progresses.  In this way, the user's application program
+        will automatically be upgraded (at the cost of re-compilation).
+   -- small system:
+        It can serve as the "robust core" of your own applications.
+        The tarred gzipped file is 0.8MB (including source, extensions, demos)
+        when gmp and documentation is not included.  
+   -- well-tested on Sun Sparc, Linux, cygwin and Windows platforms.
+
+What is new with CORE 2.0 ?
+
+.....
+
+We welcome your comments and input.
+
+-- Chee Yap (yap@cs.nyu.edu)
+   Zilin Du (zilin@cs.nyu.edu)
+   Vikram Sharma (sharma@cs.nyu.edu)
+   Sylvain Pion (Sylvain.Pion@sophia.inria.fr)
+
+                         |============================================= 
+                         | Exact Computation Project
+                         | Department of Computer Science
+                         | Courant Institute of Mathematical Sciences
+                         | New York University
+                         | 251 Mercer Street
+                         | New York, NY 10012, USA
+                         | 
+                         | For further information:
+                         |    http://cs.nyu.edu/exact/
+                         |    mailto://exact@cs.nyu.edu.
+                         | 
+                         | Supported by NSF/ITR Grant CCR-0082056 and
+                         | NSF Grant CCF-0430836.
+                         |============================================= 
+
+===================== SOFTWARE RELEASE ANNOUNCEMENT ==========================
