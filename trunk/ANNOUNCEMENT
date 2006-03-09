@@ -1,13 +1,18 @@
 ===================== SOFTWARE RELEASE ANNOUNCEMENT ==========================
 
-Nov 12, 2004:
+May 1, 2006:
 Core Library Version 2.0 is now available for free download at
 
                  http://cs.nyu.edu/exact/core/
 
 The Core Library (CORE) is a collection of C/C++ classes to support 
-computation with real algebraic numbers (+,-,x,/,sqrt and rootOf), under a
-variety of precision requirements.
+computation with real numbers with the following set of operations
+	+, -, x, /, radicals, rootOf, hypergeometric functions
+under a variety of precision requirements.  When the real number
+is algebraic, CORE guarantees any desired relative precision
+(this implies error-free comparisons).  For non-algebraic real numbers,
+CORE guarantees any desired absolute precision.  Hypergeometric
+functions include the usual elementary functions such as sine, cosine, log, exp.
 
 Numerical nonrobustness is a widely acknowledged problem.  It has proven
 particularly intractable in the context of geometric algorithms where
@@ -30,18 +35,38 @@ Basic CORE Features:
         their applications. 
    -- state of art technology:
         The precision-driven approach to EGC, best known root bounds,
-        filter technology, etc, will be incorporated into the library
-        as the field progresses.  In this way, the user's application program
-        will automatically be upgraded (at the cost of re-compilation).
+        filter technology, etc, are incorporated into the library
+        as the field progresses.  Thus, users' application programs
+        are automatically be upgraded (at the cost of re-compilation).
    -- small system:
         It can serve as the "robust core" of your own applications.
-        The tarred gzipped file is 0.8MB (including source, extensions, demos)
+        The tarred gzipped file is under 1MB (including source, extensions, demos)
         when gmp and documentation is not included.  
    -- well-tested on Sun Sparc, Linux, cygwin and Windows platforms.
+   -- interpreted Python-based version called Incore, for rapid
+   	prototyping and experimentation
 
 What is new with CORE 2.0 ?
 
-.....
+   Core 2.0 is a completely redesigned version of the Core Library
+	-- modularized design of Expr class, based on three template
+		classes (Filter class, Root bound class, Kernel class)
+   	-- incorporation of hypergeometric functions into Expr
+	-- new BigFloat and BigFloat2 engine, based on gmp/mpfr
+	-- facility for users to design new Expr nodes
+	-- preserve the simple interface of the original Core Number API
+	-- improved algorithms for Precision-Driven evaluation of expressions
+
+  Other improvements:
+  	-- new engine for isolating and approximating real roots
+		(Descartes method is used over Sturm method,
+		improved Newton algorithms)
+	
+  Improved efficiency in speed and space
+  	-- for moderate size numerical operations, we typically
+		see a 3-10 fold increase in speed 
+		(CHECK!!!)
+	-- transcendental operations ...
 
 We welcome your comments and input.
 
@@ -49,6 +74,7 @@ We welcome your comments and input.
    Zilin Du (zilin@cs.nyu.edu)
    Vikram Sharma (sharma@cs.nyu.edu)
    Sylvain Pion (Sylvain.Pion@sophia.inria.fr)
+   Herve Bronnimann (hbr@poly.edu)
 
                          |============================================= 
                          | Exact Computation Project
