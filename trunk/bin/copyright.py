@@ -76,31 +76,31 @@ def add_header(path, filename, description):
          
 def handle_header_files(path):
     filelist = { 
-                 "CORE.h" : "The main inclusion file for the Core Library",
-                 "Config.h" : "Configuration Macros",
-                 "CoreAux.h" : "Auxilliary functions for the Core Library",
-                 "CoreDefs.h" : "Global parameters for the Core Library",
-                 "Gmpz.h" : "C++ wrapper class for mpz in GMP",
-                 "BigInt.h" : "Big Integer number class based on mpz in GMP",
-                 "Gmpq.h" : "C++ wrapper class for mpq in GMP",
-                 "BigRat.h" : "Big Rational number class based on mpq in GMP",
-                 "Mpfr.h" : "C++ wrapper class for mpfr in MPFR",
-                 "BigFloat.h" : "Big Floating-point number class based on mpfr in MPFR",
-                 "BigFloat.inl" : "Inline functions for BigFloat",
-                 "BigFloat2.h" : "Big Floating-point number class providing arbitrary precision",
-                 "BigFloat2.inl" : "Inline functions for BigFloat2",
-                 "Policies.h" : "Computation policies for BigFloat2",
-                 "ExprRep.h" : "Internal Representation for Expr",
-                 "ExprRep.inl" : "Inline functions for ExprRep",
-                 "Expr.h" : "EGC number class providing guarranteed precision",
-                 "Filters.h" : "Floating-point filters",
-                 "RootBounds.h" : "Constructive root bounds",
-                 "Timer.h" : "A C++ class providing timing",
-                 "Promote.h" : "Templates providing type promotion",
-                 #"PolyBase.h" : "Polynomial Base Class"
-                 #"Poly.h" : "Template Polynomial Class"
-                 #"PolyFun.h" : "Template Polynomial Functions"
-               }
+      "CORE.h" : "The main inclusion file for the Core Library",
+      "Config.h" : "Configuration Macros",
+      "CoreAux.h" : "Auxilliary functions for the Core Library",
+      "CoreDefs.h" : "Global parameters for the Core Library",
+      "Gmpz.h" : "C++ wrapper class for mpz in GMP",
+      "BigInt.h" : "Big Integer number class based on mpz in GMP",
+      "Gmpq.h" : "C++ wrapper class for mpq in GMP",
+      "BigRat.h" : "Big Rational number class based on mpq in GMP",
+      "Mpfr.h" : "C++ wrapper class for mpfr in MPFR",
+      "BigFloat.h" : "Big Floating-point number class based on mpfr in MPFR",
+      "BigFloat.inl" : "Inline functions for BigFloat",
+      "BigFloat2.h" : "Big Floating-point number class providing arbitrary precision",
+      "BigFloat2.inl" : "Inline functions for BigFloat2",
+      "Policies.h" : "Computation policies for BigFloat2",
+      "ExprRep.h" : "Internal Representation for Expr",
+      "ExprRep.inl" : "Inline functions for ExprRep",
+      "Expr.h" : "EGC number class providing guarranteed precision",
+      "Filters.h" : "Floating-point filters",
+      "RootBounds.h" : "Constructive root bounds",
+      "Timer.h" : "A C++ class providing timing",
+      "Promote.h" : "Templates providing type promotion",
+      #"PolyBase.h" : "Polynomial Base Class"
+      #"Poly.h" : "Template Polynomial Class"
+      #"PolyFun.h" : "Template Polynomial Functions"
+    }
     for key in filelist.keys():
         add_header(path+"inc/CORE/", key, filelist[key])
 
