@@ -1,5 +1,5 @@
 # file: Makefile (for src)
-#$Id: Makefile,v 1.4 2006-03-07 04:38:41 exact Exp $
+#$Id: Makefile,v 1.5 2006-03-22 21:28:15 exact Exp $
 
 # =============================================================
 # PATHS ======================================================
@@ -18,7 +18,7 @@ EXPROBJS=MpfrIO${VAR}.o CoreDefs${VAR}.o
 ifdef USE_GMPXX
   LIBS+= -lgmpxx
 else
-  OBJS+= gmpxx/isfuns${VAR}.o gmpxx/ismpz${VAR}.o \
+  EXPROBJS+= gmpxx/isfuns${VAR}.o gmpxx/ismpz${VAR}.o \
 	 gmpxx/ismpq${VAR}.o gmpxx/ismpf${VAR}.o
 endif
 
@@ -52,12 +52,15 @@ endif
 all:	${TARGET}
 
 ${CORE_LIB}:	$(EXPROBJS)
-	$(AR) $@ $?
+	$(AR) $@ $^
 
 ${CORE_SHARED_LIB}:	$(EXPROBJS)
 	$(CXX) $(CORE_LDFLAGS) -o $@ $^
 
 %${VAR}.o:	%.cpp
+	${CXX} $(CORE_CXXFLAGS) $(INCLUDE) -c $< -o $@
+
+%${VAR}.o:	%.cc
 	${CXX} $(CORE_CXXFLAGS) $(INCLUDE) -c $< -o $@
 
 # =============================================================
