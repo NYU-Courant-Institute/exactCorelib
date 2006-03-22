@@ -19,13 +19,14 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Timer.h,v 1.5 2006-03-04 05:08:48 exact Exp $
+ * $Id: Timer.h,v 1.6 2006-03-22 21:31:04 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_TIMER_H__
 #define __CORE_TIMER_H__
 
 #include <CORE/Config.h>
 #include <ctime>
+#include <sys/resource.h>
 
 CORE_BEGIN_NAMESPACE
 
@@ -56,7 +57,7 @@ public:
   void start() { startClock = cputime(); }
   /// stop timer
   void stop() { clocks = cputime() - startClock; }
-  /// return in mseconds
+  /// return in microseconds
   long get_mseconds() { return clocks; }
   /// return in seconds
   float get_seconds() { return (float)clocks/1000; }
