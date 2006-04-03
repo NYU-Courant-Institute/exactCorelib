@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.10 2006-04-03 19:55:36 exact Exp $
+ * $Id: Expr.h,v 1.11 2006-04-03 20:39:39 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -77,6 +77,10 @@ public:
   ExprT(const QT& q) 
   { FT f; (f.set(q)==0)?(m_rep=new ConstFTRep(f)):(m_rep=new ConstQTRep(q)); }
   ExprT(const KT& k) : m_rep(new ConstFTRep(k.get_f())) {}
+  ExprT(const char* s, prec_t prec = get_def_input_digits()) 
+  { construct_from_string(s, prec); }
+  ExprT(const std::string& s, prec_t prec = get_def_input_digits()) 
+  { construct_from_string(s.c_str(), prec); }
 public:
   ExprT(ExprRep* r) : m_rep(r) {}
   ExprT(const ExprT& r) : m_rep(r.m_rep) { m_rep->inc_ref(); }
@@ -213,6 +217,14 @@ public: // public methods
   /// return internal rep
   ExprRep* rep() const
   { return m_rep; }
+
+private:
+  void construct_from_string(const char* str, prec_t prec) {
+    if (strchr(str, '/') != 0 || is_infty(prec))
+      m_rep = new ConstQTRep(QT(str));
+    else
+      m_rep = new ConstFTRep(FT(str, prec));
+  }
 private:
   ExprRep* m_rep; ///<- internal representation
 }; // end if ExprT

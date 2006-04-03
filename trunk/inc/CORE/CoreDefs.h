@@ -19,10 +19,11 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.4 2006-03-03 17:19:58 exact Exp $
+ * $Id: CoreDefs.h,v 1.5 2006-04-03 20:39:39 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
+#include <climits>
 
 CORE_BEGIN_NAMESPACE
 
@@ -52,6 +53,8 @@ inline unsigned long bits2digits(unsigned long bits)
 
 extern long defAbsPrec;
 extern long defRelPrec;
+extern long defInputDigits;
+extern long defOutputDigits;
 
 inline void setDefaultPrecision(long r, long a)
 { defRelPrec = r; defAbsPrec = a; }
@@ -59,6 +62,16 @@ inline void setDefaultRelPrecision(long r)
 { defRelPrec = r; }
 inline void setDefaultAbsPrecision(long a)
 { defAbsPrec = a; }
+
+inline long getDefaultInputDigits()
+{ return defInputDigits; }
+inline void setDefaultInputDigits(long digits)
+{ defInputDigits = digits; }
+
+inline long get_def_input_digits()
+{ return defInputDigits; }
+inline bool is_infty(long l)
+{ return l == CORE_INFTY; }
 
 CORE_END_NAMESPACE
 

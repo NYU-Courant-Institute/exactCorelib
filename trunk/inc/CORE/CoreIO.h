@@ -2,6 +2,7 @@
 #define __CORE_COREIO_H__
 
 #include <CORE/Config.h>
+#include <CORE/CoreAux.h>
 #include <iostream>
 #include <iomanip>
 
@@ -124,6 +125,10 @@ inline void setPositionalFormat(std::ostream& os = std::cout)
 { set_fixed_output(os); }
 inline void setScientificFormat(std::ostream& os = std::cout)
 { set_scientific_output(os); }
+inline void setDefaultOutputDigits(long p, std::ostream& o = std::cout)
+{ set_output_precision(digits2bits(p), o); }
+inline long getDefaultOutputDigits()
+{ return bits2digits(get_output_precision()); }
 #endif
 
 CORE_END_NAMESPACE

@@ -19,10 +19,13 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.h,v 1.5 2006-04-03 18:55:31 exact Exp $
+ * $Id: CoreAux.h,v 1.6 2006-04-03 20:39:39 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREAUX_H__
 #define __CORE_COREAUX_H__
+
+#include <cmath>
+#include <iostream>
 
 CORE_BEGIN_NAMESPACE
 

@@ -3,7 +3,7 @@
   purpose:
 	a simple sample CORE program
   CORE Library 
-  $Id: sample.cpp,v 1.1 2006-03-07 04:51:24 exact Exp $
+  $Id: sample.cpp,v 1.2 2006-04-03 20:39:39 exact Exp $
 ************************************************************/
  
 #ifndef CORE_LEVEL
@@ -17,15 +17,16 @@ int main(int argc, char* argv[]) {
 
   double x = 1.44;	// Inexact input; C++ literal input precision
 
-  defInputDigits = 20;  // This should be better than C++ precision
+  setDefaultInputDigits(20);  // This should be better than C++ precision
   double y = "1.44";	// Use of string constructor 
 
-  defInputDigits = CORE_INFTY; // force exact input 
+  setDefaultInputDigits(CORE_INFTY); // force exact input 
   double z = "1.44";	// z is represented as a rational number
   
-  int p = setDefaultOutputDigits(); // p = defOutputDigits
+  int p = getDefaultOutputDigits(); // p = defOutputDigits
   std::cout << "    C++'s Default Printout Digits is " << p << std::endl;
-  std::cout << "    CORE Default Printout Digits is " << defOutputDigits << std::endl;
+  std::cout << "    CORE Default Printout Digits is " << getDefaultOutputDigits() 
+	<< std::endl;
 
   std::cout << "    x = 1.44;  // standard C++ literal input" << std::endl;
   std::cout << "Printout of x: " << x << std::endl;
