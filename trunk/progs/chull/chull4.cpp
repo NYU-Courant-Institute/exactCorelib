@@ -224,6 +224,7 @@ tVertex	MakeNullVertex( void )
    return v;
 }
 
+
 /*---------------------------------------------------------------------
 ReadVertices: Reads in the vertices, and links them into a circular
 list with MakeNullVertex.  There is no need for the # of vertices to be
@@ -248,8 +249,8 @@ void	ReadVertices( void )
       v->v[Y] = y;
       v->v[Z] = z;
       v->vNum = vNum++;
-      if ( ( core_abs(x) > SAFE ) || ( core_abs(y) > SAFE ) 
-           || ( core_abs(z) > SAFE ) ) {
+      if ( ( std::abs(x) > SAFE ) || ( std::abs(y) > SAFE ) 
+           || ( std::abs(z) > SAFE ) ) {
          std::cout << "Coordinate of vertex below might be too large:\
 		 run with -c flag\n" ;
          PrintPoint(v);
