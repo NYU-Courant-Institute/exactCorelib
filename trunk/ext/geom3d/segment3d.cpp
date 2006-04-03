@@ -15,7 +15,7 @@
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *
- * $Id: segment3d.cpp,v 1.1 2006-04-03 18:55:31 exact Exp $
+ * $Id: segment3d.cpp,v 1.2 2006-04-03 19:38:35 exact Exp $
  *****************************************************************/
 
 #include <CORE/geom3d/plane3d.h>
@@ -231,7 +231,7 @@ GeomObj* Segment3d::intersection( const Segment3d& s ) const {
  
  // return bisector plane
 Plane3d Segment3d::bisect_plane() const { 
-  Point3d midPt = p0+(p1-p0)*0.5;
+  Point3d midPt = p0+(p1-p0)*double(0.5);
   Vector  normal = p1-p0;
   return Plane3d( midPt, normal ); 
 }

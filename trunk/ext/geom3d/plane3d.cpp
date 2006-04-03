@@ -15,7 +15,7 @@
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *
- * $Id: plane3d.cpp,v 1.1 2006-04-03 18:55:31 exact Exp $
+ * $Id: plane3d.cpp,v 1.2 2006-04-03 19:38:35 exact Exp $
  *****************************************************************/
 
 #include <CORE/geom3d/segment3d.h>
@@ -139,7 +139,7 @@ double Plane3d::distance( const Line3d& l ) const {
 double Plane3d::distance( const Segment3d& s ) const {
   if( intersects( s ) ) return 0.0;
   else   // minimum distance must be at end points
-    return core_min( distance( s.startPt() ), distance( s.stopPt() ) );
+    return std::min( distance( s.startPt() ), distance( s.stopPt() ) );
 }
 
  // test if the line is paralell to the plane
