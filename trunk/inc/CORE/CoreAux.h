@@ -19,12 +19,25 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.h,v 1.4 2006-03-03 17:19:58 exact Exp $
+ * $Id: CoreAux.h,v 1.5 2006-04-03 18:55:31 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREAUX_H__
 #define __CORE_COREAUX_H__
 
 CORE_BEGIN_NAMESPACE
+
+/// Writes out an error or warning message in the local file CORE_DIAGFILE
+/** If last argument (err) is TRUE, then this is considered an error
+ *  (not just warning).  In this case, the message is also printed in
+ *  std::cerr, using std::perror().
+ *  */
+void core_error(std::string msg, std::string file, int lineno, bool err);
+
+/// This is for debugging messages
+inline void core_debug(std::string msg){
+  std::cout << __FILE__ << "::" << __LINE__ << ": " << msg
+            << std::endl;
+}
 
 // help inline functions for long
 inline sign_t sgn(long v)
