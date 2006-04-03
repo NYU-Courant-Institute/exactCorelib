@@ -1,5 +1,5 @@
 # file: Makefile (for src)
-#$Id: Makefile,v 1.5 2006-03-22 21:28:15 exact Exp $
+#$Id: Makefile,v 1.6 2006-04-03 19:56:03 exact Exp $
 
 # =============================================================
 # PATHS ======================================================
@@ -13,7 +13,7 @@ INCLUDE=-I${CORE_PATH}/inc -I${CORE_PATH}/mpfr/include -I${CORE_PATH}/gmp/includ
 #	E.g., if VAR=(empty) then we compile the release version.
 #	If VAR=Debug, then we compile a debugging version.
 
-EXPROBJS=MpfrIO${VAR}.o CoreDefs${VAR}.o 
+EXPROBJS=MpfrIO${VAR}.o CoreDefs${VAR}.o CoreAux${VAR}.o
 
 ifdef USE_GMPXX
   LIBS+= -lgmpxx
