@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.9 2006-03-03 17:19:58 exact Exp $
+ * $Id: Expr.h,v 1.10 2006-04-03 19:55:36 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -197,15 +197,18 @@ public: // public methods
   FT BigFloatValue() 
   { return m_rep->appValue().get_f(); }
 
-  /// return sign
-  sign_t sign() 
-  { return m_rep->get_sign(); }
-  /// return upper bound of MSB
-  msb_t uMSB() 
-  { return m_rep->get_uMSB(); }
-  /// return lower bound of MSB
-  msb_t lMSB() 
-  { return m_rep->get_lMSB(); }
+  /// return sign (dirty cast)
+  sign_t sign() const
+  { return const_cast<ExprT*>(this)->m_rep->get_sign(); }
+  /// return upper bound of MSB (dirty cast)
+  msb_t uMSB() const
+  { return const_cast<ExprT*>(this)->m_rep->get_uMSB(); }
+  /// return lower bound of MSB (dirty cast)
+  msb_t lMSB() const
+  { return const_cast<ExprT*>(this)->m_rep->get_lMSB(); }
+  /// absolute value
+  ExprT abs() const 
+  { return sign() >= 0 ? +(*this) : -(*this); }
 
   /// return internal rep
   ExprRep* rep() const
@@ -236,6 +239,15 @@ typedef ExprT<BfmssRootBd<BigFloat2>, BfsFilter<BigFloat2>, BigFloat2> Expr;
 
 // include inline functions for ExprRep
 #include <CORE/ExprRep.inl>
+
+/// absolute value
+inline Expr abs(const Expr& x) {
+  return x.abs();
+}
+/// absolute value (same as abs)
+inline Expr fabs(const Expr& x) {
+  return abs(x);
+}
 
 CORE_END_NAMESPACE
 

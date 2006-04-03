@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Filters.h,v 1.5 2006-03-03 17:19:58 exact Exp $
+ * $Id: Filters.h,v 1.6 2006-04-03 19:55:36 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_FILTERS_H__
 #define __CORE_FILTERS_H__
@@ -103,13 +103,13 @@ public:
   { std::cerr<<"[fpVal,maxAbs,ind]="<<fpVal<<","<<maxAbs<<","<<ind<<std::endl; }
 #endif
   bool is_ok() const 
-  { return (fpFilterFlag&&finite(fpVal)&&(fabs(fpVal)>=maxAbs*ind*CORE_EPS)); }
+  { return (fpFilterFlag&&finite(fpVal)&&(::fabs(fpVal)>=maxAbs*ind*CORE_EPS)); }
   int sign() const 
   { return (fpVal == 0.0) ? 0 : (fpVal > 0.0 ? 1: -1); }
   long lMSB() const 
-  { return long(ilogb(fabs(fpVal) - maxAbs*ind*CORE_EPS)); }
+  { return long(ilogb(::fabs(fpVal) - maxAbs*ind*CORE_EPS)); }
   long uMSB() const 
-  { return long(ilogb(fabs(fpVal) + maxAbs*ind*CORE_EPS)+1); }
+  { return long(ilogb(::fabs(fpVal) + maxAbs*ind*CORE_EPS)+1); }
   double get_value() const 
   { return fpVal; }
   int get_r_prec() const
@@ -137,21 +137,21 @@ public:
     ind = (sizeof(unsigned long) > 4 && ceillg(value) >= 53) ? 1 : 0;
   }
   void set(double value)
-  { fpVal = value; maxAbs = fabs(value); ind = 0; }
+  { fpVal = value; maxAbs = ::fabs(value); ind = 0; }
   void set(const ZT& value) { 
-    fpVal = value.get_d(); maxAbs = fabs(fpVal); 
+    fpVal = value.get_d(); maxAbs = ::fabs(fpVal); 
     ind = value.uMSB() >= 53 ? 1 : 0; 
   }
   void set(const QT& value) { 
-    fpVal = value.get_d(); maxAbs = fabs(fpVal); 
+    fpVal = value.get_d(); maxAbs = ::fabs(fpVal); 
     ind = 1; //value.uMSB() >= 53 ? 1 : 0; // ??? denonimator has to be power of 2
   }
   void set(const FT& value) {
-    fpVal = value.get_d(); maxAbs = fabs(fpVal); 
+    fpVal = value.get_d(); maxAbs = ::fabs(fpVal); 
     ind = value.get_prec() >= 53 ? 1 : 0;
   }
   void set(const Kernel& value) {
-    fpVal = value.get_d(); maxAbs = fabs(fpVal); 
+    fpVal = value.get_d(); maxAbs = ::fabs(fpVal); 
     ind = value.get_prec() >= 53 ? 1 : 0;
   }
 
@@ -211,10 +211,10 @@ public:
 
   // division
   void div(const thisClass& f, const thisClass& s) {
-    double xxx = fabs(s.fpVal) / s.maxAbs - (s.ind+1)*CORE_EPS;
+    double xxx = ::fabs(s.fpVal) / s.maxAbs - (s.ind+1)*CORE_EPS;
     if (xxx > 0) {
       fpVal = f.fpVal / s.fpVal;
-      maxAbs = (fabs(f.fpVal)/fabs(s.fpVal)+f.maxAbs/s.maxAbs)/xxx+DBL_MIN;
+      maxAbs = (::fabs(f.fpVal)/::fabs(s.fpVal)+f.maxAbs/s.maxAbs)/xxx+DBL_MIN;
       ind = 1 + (f.ind > s.ind+1 ? f.ind : s.ind+1);
     } else {
       fpVal = DBL_INFTY;
