@@ -14,7 +14,7 @@
 *        
 *  Copyright (c) 1998-2006 by Exact Computation Project, NYU
 *
-*  $Id: README,v 1.2 2006-03-08 16:10:28 exact Exp $
+*  $Id: README,v 1.3 2006-04-04 13:41:33 exact Exp $
 *************************************************************
 
 README FILE: TABLE OF CONTENTS
@@ -96,12 +96,12 @@ README FILE: TABLE OF CONTENTS
    These include a linear algebra COREX and a geometry
    COREX.  They are still rudimentary.
    
-   The Core Library is relatively small.  The "base distribution"
-   of Version 1.7, which includes source code and examples, is less
-   than 800 KB.  The "full distribution" which includes the base distribution,
-   documentation and gmp, is over 3.5MB.  The library has been tested
-   on solaris, linux, cygwin and Windows.  It is
-   also fully compatible with CGAL.
+   The Core Library is relatively small.  For convenience, we offer
+   three distributions: "base distribution" has the basics, including
+   source code and examples.  The "full distribution" is the 
+   base distribution plus documentation, gmp and mpfr.
+   The library has been tested on solaris, linux, cygwin and Windows. 
+   It is also fully compatible with CGAL, and distributed with CGAL.
 
    NOTE ON TERMINOLOGY.
    "Core" is not an abbreviation; we chose this name to suggest its
@@ -118,10 +118,11 @@ README FILE: TABLE OF CONTENTS
 
        README        This file
        ANNOUNCEMENT  Release announcement
-       LICENSE.QPL   The Q Public License 
-       FAQs          Frequently asked questions
+       AUTHORS       Authors of Core Library
        Makefile      Makefile for the whole library
-       Make.config   Compilation flags for CORE programs
+       Make.config   Compiler flags (this file is included by other Makefiles)
+       FAQs          Frequently asked questions
+       LICENSE.QPL   The Q Public License 
 
        ext/          CORE eXtensions (linear algebra, geometry, etc)
        inc/          The header files.
@@ -154,8 +155,8 @@ README FILE: TABLE OF CONTENTS
         For Windows: you could replace g++ with Visual C++.
         However we highly recommend "Cygwin" from Red Hat.  This is a free
         and easy-to-install Unix-like environment that sits on top of all 
-        versions of Windows.   It comes with g++, make, tar, gzip that are
-        needed to install the Core Library.  The big bonus of Cygwin are 
+        versions of Windows.   All the needed tools (g++, m4, make, tar, gzip,
+	etc) are available (you need to choose them).  Advantages of Cygwin are:
         (I) There is no need for dual booting;
         (II) There is no need to partition your disc;
         (III) You can share files between Windows and Cygwin; 
@@ -166,8 +167,8 @@ README FILE: TABLE OF CONTENTS
 
                 http://www.cygwin.com.  
 
-   3.1) DOWNLOAD. First download the file core_vX.Y.Z_full.tgz 
-        (for version X.Y.Z).  The current distribution is X.Y=1.7.0.  
+   3.1) DOWNLOAD. First download the file core-X.Y.Z_full.tgz 
+        (for version X.Y.Z).  The current distribution is X.Y.Z=2.0.0.  
         The website for download is
 
                 http://cs.nyu.edu/exact/core.
@@ -175,39 +176,40 @@ README FILE: TABLE OF CONTENTS
         There are three distributions, a "base distribution", a "standard
 	distribution" and a "full distribution".  The standard distribution
 	includes the base distribution and documentation.  The full 
-	distribution includes the standard distribution, plus gmp.  
+	distribution includes the standard distribution, plus gmp and mpfr.
 
-        The main steps here describes on installation from a full distribution 
+        The main steps here describes an installation from a full distribution 
         in a unix-like environment: it is the simplest to install.
 	But see 3.9) below for *variant* installations: these include
 	installing only the base distribution, using dynamic libraries,
 	Windows platform, re-installing the Core Library, building Debugging
 	Versions of Core Library, etc.
 
-        The overall installation time is 20-40 minutes on a typical
+        The overall installation time is 25-40 minutes on a typical
         machine.  If you already have gmp, the time is halved (on Pentium III
-        800 MHz, 256 MB RAM, it takes 10 minutes).
+        800 MHz, 256 MB RAM, it takes 15 minutes).
 
    3.2) UNPACK. In your computer, go to the directory where you wish to
-        install the Core Library.  If this location is the value of
+        install the Core Library.  You don't have to be a superuser.
+        If this location is the value of
         the environment variable CORE_INSTALL (in unix), you would do:
 
             % cd $(CORE_INSTALL)
 
         (% denotes the unix prompt in these instructions)
-        Move the file core_vX.Y_full.tgz there.  Now unzip and untar the
+        Move the file core-X.Y.Z_full.tgz there.  Now unzip and untar the
         file by typing:
 
-            % gzip -cd core_vX.Y.Z_full.tgz | tar xvf -
+            % gzip -cd core-X.Y.Z_full.tgz | tar xvf -
 
-        This creates a directory called core_vX.Y.Z.  All the files and 
+        This creates a directory called core-X.Y.Z.  All the files and 
         directories mentioned in 2) above, including this README file,
         should now be in this directory.
 
         In the following, the variable CORE_PATH denotes the full path
         name of this newly created directory.  Hence, $(CORE_PATH) is really
 
-                $(CORE_INSTALL)/core_vX.Y.Z
+                $(CORE_INSTALL)/core-X.Y.Z
    
    3.3) There are three stages of installation:
                 STAGE 1 -- gmp- and mpfr-related installation
@@ -396,9 +398,9 @@ README FILE: TABLE OF CONTENTS
         (1) INSTALLING BASE DISTRIBUTION:
         This assumes you already have an installed gmp.
 
-          -- Download the file core_vX.Y.tgz (for version X.Y) from our
+          -- Download the file core-X.Y.Z.tgz (for version X.Y.Z) from our
              website, http://cs.nyu.edu/exact/core.   This version has no
-             gmp and no documentation.
+             gmp, mpfr and no documentation.
           -- Do the UNPACK STEP (Step 3.2) above.  This creates the files
              under ${CORE_PATH} as described above.
 
@@ -429,7 +431,7 @@ README FILE: TABLE OF CONTENTS
         is same as on Unix platform as described above. 
         But if you use Visual C++ instead, then follow these steps.
 
-          -- Download the file core_vX.Y_full.tgz (for version X.Y) from our
+          -- Download the file core-X.Y.Z_full.tgz (for version X.Y.Z) from our
              website. (We recommend the Full Distribution since it contains
              gmp already and you cannot easily link to preinstalled gmp)
           -- Unpack it into some directory ${CORE_PATH}. 

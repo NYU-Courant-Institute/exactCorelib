@@ -8,14 +8,15 @@ Thomas Dube	Author/Designer of Real/Expr and BigFloat (1993)
 Koji Ouchi	Reimplementation of Real/Expr and BigFloat (1997)
 Chen Li		Author of Core Library 1 (1999), Root Bounds (2000)
 Vijay Karamcheti Author of Core Library 1 (1999), 
-Igor Pechtchanski Author of Core Library 1 (1999), Linear Algebra Package (2000),
+Igor Pechtchanski Author of Core Library 1 (1999),
+		Linear Algebra Package (2000),
 		Author of Geometry Package (2000)
 Yaping Yuan	Author of 2D Geometry Package (2000)
 Shubin Zhao	Author of 3D Geometry Package (2001)
 Zilin Du	Author of File I/O (2001), Filters (2002),
 		Hypergeometric package (2002), algebraic numbers (2003),
 		Designer/Author of Incore (2004),
-		Principal Author of Core Library 2 (2006)
+		Designer/Author of Core Library 2 (2006)
 Jose Moreira	Author of Original Hypergeometric Package (2001)
 Maria Eleftheriou Author of Original Hypergeometric Package (2001)
 Sylvain Pion	Author of Filters (2002), CGAL Interface (2002),
