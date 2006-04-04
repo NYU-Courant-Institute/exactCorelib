@@ -13,7 +13,7 @@
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *
- * $Id: geombase.h,v 1.1 2006-04-03 18:55:31 exact Exp $
+ * $Id: geombase.h,v 1.2 2006-04-04 04:57:48 exact Exp $
  *****************************************************************/
 
 #ifndef CORE_GEOMETRY_H
@@ -27,11 +27,15 @@ class GeomObj {
 
 public:
 
+  virtual ~GeomObj() {}
+
   // Exceptions
 
   class Exception {
-  	public:
-  	  virtual void print_message( char* msg ) { std::cerr << msg <<std::endl; }
+    public : 
+      virtual ~Exception() {}
+      virtual void print_message( char* msg ) { std::cerr << msg <<std::endl; }
+
   };
 
   class NoIntersection : public Exception { };
