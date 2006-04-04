@@ -1,5 +1,5 @@
 # Makefile for Core Library
-# $Id: Makefile,v 1.3 2006-03-07 06:09:08 exact Exp $
+# $Id: Makefile,v 1.4 2006-04-04 22:30:04 exact Exp $
 
 #################################################################
 #
@@ -50,7 +50,7 @@ all:  first second third testgmp fourth fifth sixth testmpfr \
 
 # First Step: configure for gmp
 first config-gmp:
-	@echo "Configure for GMP..."
+	@echo "First: Configure for GMP..."
 	-${MAKE} -C builds config-gmp 2>&1 \
 			| tee ${CORE_PATH}/tmp/DIAG_CONFIG_GMP 
 	@echo "See file tmp/DIAG_CONFIG_GMP for screen output"
@@ -58,7 +58,7 @@ first config-gmp:
 
 # Second Step: build gmp libraries
 second build-gmp:
-	@echo "Build GMP Library..."
+	@echo "Second: Build GMP Library..."
 	-${MAKE} -C builds build-gmp 2>&1 \
 			| tee ${CORE_PATH}/tmp/DIAG_BUILD_GMP
 	@echo "See file tmp/DIAG_BUILD_GMP for screen output"
@@ -66,7 +66,7 @@ second build-gmp:
 
 # Third Step: install gmp libraries and include files
 third install-gmp:
-	@echo "Install GMP Library..."
+	@echo "Third: Install GMP Library..."
 	-${MAKE} -C builds install-gmp 2>&1 \
 			| tee ${CORE_PATH}/tmp/DIAG_INSTALL_GMP
 	@echo "See file tmp/DIAG_INSTALL_GMP for screen output"
@@ -96,7 +96,7 @@ sixth install-mpfr:
 	@echo "See file tmp/DIAG_INSTALL_MPFR for screen output"
 	@echo ""
 
-# Fourth Step: build Core Library, Extensions and Sample Programs
+# Seventh Step: build Core Library, Extensions and Sample Programs
 seventh: core
 
 #################################################################

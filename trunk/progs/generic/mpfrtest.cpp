@@ -19,6 +19,7 @@ int main (int argc, char **argv)
   mpfr_init2(b, 32);
   mpfr_init2(p, 32);
 
+  // test 1
   mpfr_set_str(a, "12345", 10, GMP_RNDN);
   mpfr_set_str(b, "67890", 10, GMP_RNDN);
 
@@ -31,8 +32,22 @@ int main (int argc, char **argv)
   mpfr_out_str( stdout, 10, 0, p, GMP_RNDN);
   fputc ('\n', stdout);
 
+  // test 2 (pi)
+  mpfr_set_str(a, "355", 10, GMP_RNDN);
+  mpfr_set_str(b, "113", 10, GMP_RNDN);
+
+  mpfr_div (p, a, b, GMP_RNDN);
+
+  mpfr_out_str( stdout, 10, 0, a, GMP_RNDN);
+  fputs (" / ", stdout);
+  mpfr_out_str( stdout, 10, 0, b, GMP_RNDN);
+  fputs (" = ", stdout);
+  mpfr_out_str( stdout, 10, 0, p, GMP_RNDN);
+  fputc ('\n', stdout);
+
   fputs (">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n", stdout);
-  fputs (">>>    If the answer on your screen is 8.3810205000e8, ", stdout);
+  fputs (">>>    If the first answer on your screen is 8.3810205000e8, ", stdout);
+  fputs (">>>    and the second answer on your screen is 3.1415929208 ", stdout);
   fputs ("\n>>>    you have passed the mpfr test\n", stdout);
   fputs (">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n", stdout);
 
