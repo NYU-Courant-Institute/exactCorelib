@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.5 2006-03-03 17:19:58 exact Exp $
+ * $Id: BigFloat.inl,v 1.6 2006-04-05 16:25:17 exact Exp $
  ***************************************************************************/
 
 /// \addtogroup BigFloatArithmeticOperators
@@ -500,9 +500,9 @@ inline std::istream& operator>>(std::istream& is, BigFloat& x)
 { return is >> x.mp(); }
 /// ostream operator for <tt>BigFloat</tt>
 inline std::ostream& operator<<(std::ostream& os, const BigFloat& x) {
-  return os << mpfr2str(x.mp(), get_output_precision(), get_output_base(),
-         get_output_fmt(), get_output_rounding_mode(), get_output_showpoint(),
-         get_output_showpos(), get_output_uppercase());
+  return os << mpfr2str(x.mp(), get_output_precision(os), get_output_base(os),
+    get_output_fmt(os), get_output_rounding_mode(), get_output_showpoint(os),
+    get_output_showpos(os), get_output_uppercase(os));
 }
 //@}
 

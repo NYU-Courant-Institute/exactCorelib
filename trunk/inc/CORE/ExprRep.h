@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.5 2006-03-03 17:19:58 exact Exp $
+ * $Id: ExprRep.h,v 1.6 2006-04-05 16:25:17 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -185,10 +185,12 @@ protected:
   const RootBd& rootBd() const { return m_nodeinfo->m_rootBd; }
   RootBd& rootBd() { return m_nodeinfo->m_rootBd; }
 
-  const Kernel& appValue() const { return m_nodeinfo->m_appValue; }
-  Kernel& appValue() { return m_nodeinfo->m_appValue; }
 
   void new_nodeinfo() { m_nodeinfo = new NodeInfo(); }
+public:
+  Kernel& appValue() { return m_nodeinfo->m_appValue; }
+  const Kernel& appValue() const { return m_nodeinfo->m_appValue; }
+	
 public:
   /// node information
   struct NodeInfo {

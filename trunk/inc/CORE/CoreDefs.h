@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.5 2006-04-03 20:39:39 exact Exp $
+ * $Id: CoreDefs.h,v 1.6 2006-04-05 16:25:17 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
@@ -39,7 +39,7 @@ typedef long msb_t;
 #define MSB_MAX LONG_MAX
   
 #define LOG2_10 3.3219280948873626 /* upper approximation of log(10)/log(2) */
-#define LOG10_2 0.30102999566398120 /* upper approximation of log2/log10 */
+#define LOG10_2 0.30102999566398120 /* upper approximation of log(2)/log(10) */
   
 inline unsigned long digits2bits(unsigned long digits)
 { return (unsigned long)(digits*LOG2_10); }

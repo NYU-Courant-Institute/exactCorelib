@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.11 2006-04-03 20:39:39 exact Exp $
+ * $Id: Expr.h,v 1.12 2006-04-05 16:25:17 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -197,8 +197,26 @@ public: // public methods
     else // if (r_prec == CORE_INFTY)
       return a_approx(a_prec).get_f();
   }
+  /// return integer value 
+  int intValue() const
+  { return (int)m_rep->appValue().get_d(); }
+  /// return long value 
+  long longValue() const
+  { return (long)m_rep->appValue().get_d(); }
+  /// return float value 
+  float floatValue() const
+  { return (float)m_rep->appValue().get_d(); }
+  /// return double value 
+  double doubleValue() const
+  { return m_rep->appValue().get_d(); }
+  /// return BigInt value 
+  BigInt BigIntValue() const
+  { return m_rep->appValue().get_z(); }
+  /// return BigRat value 
+  BigRat BigRatValue() const
+  { return m_rep->appValue().get_q(); }
   /// return BigFloatValue
-  FT BigFloatValue() 
+  FT BigFloatValue() const
   { return m_rep->appValue().get_f(); }
 
   /// return sign (dirty cast)
@@ -220,8 +238,10 @@ public: // public methods
 
 private:
   void construct_from_string(const char* str, prec_t prec) {
-    if (strchr(str, '/') != 0 || is_infty(prec))
+    if (strchr(str, '/') != 0)
       m_rep = new ConstQTRep(QT(str));
+    else if (is_infty(prec))
+      m_rep = new ConstFTRep(FT(str));
     else
       m_rep = new ConstFTRep(FT(str, prec));
   }

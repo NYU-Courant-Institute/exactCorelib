@@ -2,6 +2,7 @@
 #define __CORE_COREIO_H__
 
 #include <CORE/Config.h>
+#include <CORE/CoreDefs.h>
 #include <CORE/CoreAux.h>
 #include <iostream>
 #include <iomanip>

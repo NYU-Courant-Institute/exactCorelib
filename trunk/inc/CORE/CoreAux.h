@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.h,v 1.6 2006-04-03 20:39:39 exact Exp $
+ * $Id: CoreAux.h,v 1.7 2006-04-05 16:25:17 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREAUX_H__
 #define __CORE_COREAUX_H__
@@ -45,18 +45,14 @@ inline void core_debug(std::string msg){
 // help inline functions for long
 inline sign_t sgn(long v)
 { return v==0 ? 0 : (v>0 ? 1 : -1); }
-inline msb_t ceillg(long v)
-{ return BigInt(v).ceillg(); }
-inline msb_t floorlg(long v)
-{ return BigInt(v).floorlg(); }
+msb_t ceillg(long v);
+msb_t floorlg(long v);
 
 // help inline functions for unsigned long
 inline sign_t sgn(unsigned long v)
 { return v==0 ? 0 : 1; }
-inline msb_t ceillg(unsigned long v)
-{ return BigInt(v).ceillg(); }
-inline msb_t floorlg(unsigned long v)
-{ return BigInt(v).floorlg(); }
+msb_t ceillg(unsigned long v);
+msb_t floorlg(unsigned long v);
 
 // help inline functions for double
 inline sign_t sgn(double v)
