@@ -1,5 +1,5 @@
 # file: Makefile (for src)
-#$Id: Makefile,v 1.6 2006-04-03 19:56:03 exact Exp $
+#$Id: Makefile,v 1.7 2006-04-05 16:37:07 exact Exp $
 
 # =============================================================
 # PATHS ======================================================
@@ -36,8 +36,8 @@ include ${CORE_PATH}/Make.config
 # =============================================================
 
 # The following library will be built:
-CORE_LIB=$(CORE_PATH)/lib/libcore2++${VAR}.a
-CORE_SHARED_LIB=$(CORE_PATH)/lib/libcore2++${VAR}.so
+CORE_LIB=$(CORE_PATH)/lib/libcore++${VAR}.a
+CORE_SHARED_LIB=$(CORE_PATH)/lib/libcore++${VAR}.so
 
 TARGET=$(CORE_LIB)
 

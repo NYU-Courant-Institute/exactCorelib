@@ -2,7 +2,7 @@
 
 # set the core library directory and include Make.config
 CORE_DIR=..
-include ${CORE_DIR}/Make.config
+include ${CORE_DIR}/Make.options
 
 # define targets list
 TARGETS= \
