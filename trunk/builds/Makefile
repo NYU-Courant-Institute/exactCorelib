@@ -9,9 +9,12 @@ PREFIX=$(shell dirname `pwd`)
 GMP_PREFIX=${PREFIX}/gmp
 MPFR_PREFIX=${PREFIX}/mpfr
 
-#in solaris, you need set ABI=32
-ABI="ABI=32"
-ABI=
+# GMP's configure program will try to build 64-bits library on Sun platform, 
+# 	so we have to force it to build 32-bits library.
+OS=$(shell uname)
+ifeq ($(OS), SunOS)
+  GMP_ABI="ABI=32"
+endif
 
 all:
 
@@ -21,7 +24,7 @@ mpfr: config-mpfr build-mpfr install-mpfr
 
 # config, build and install gmp
 config-gmp: ${GMP}
-	cd ${GMP}; ./configure CC=gcc ${ABI} --prefix=${GMP_PREFIX}
+	cd ${GMP}; ./configure CC=gcc ${GMP_ABI} --prefix=${GMP_PREFIX}
 
 build-gmp:
 	cd ${GMP}; ${MAKE}
