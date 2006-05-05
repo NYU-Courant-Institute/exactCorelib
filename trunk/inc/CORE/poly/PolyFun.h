@@ -136,6 +136,9 @@ BigFloat evalExactSign(Polynomial<NT> &p, const BigFloat& val,
 /// Bounds
 //{@
 
+//NOTE: In most of the bounds below we assume that there is a constructor
+//of the form BigFloat2(NT) for all NT's.
+
 /// Cauchy Upper Bound on Roots.
 // -- ASSERTION: NT is an integer type
 template < class NT >
@@ -167,12 +170,13 @@ BigInt CauchyBound(Polynomial<NT> &p) {
     lhs = 0;
     for (int i=deg-1; i>=0; i--) {
       lhs *= B;
-      lhs += abs(p.coeff()[i]);
+      lhs += BigFloat2(abs(p.coeff()[i])).getLeft();//Need a lower bound on 
+                                                    //the absolute value
     }
     //lhs /= abs(p.coeff()[deg]);
     //lhs.makeFloorExact();
     /* compute B^{deg} */
-    if (rhs * abs(p.coeff()[deg]) <= lhs) {
+    if (rhs * BigFloat2(abs(p.coeff()[deg])).getRight() <= lhs) {
       B <<= 1;
       rhs *= (BigInt(1)<<deg);
     } else
@@ -180,6 +184,7 @@ BigInt CauchyBound(Polynomial<NT> &p) {
   }
   return B;
 }
+
 
 
 ///Another iterative bound which is at least as good as the above bound
@@ -195,10 +200,10 @@ BigInt UpperBound(Polynomial<NT> &p) {
     lhsPos = lhsNeg = 0;
     for (int i=deg-1; i>=0; i--) {
       if (p.coeff()[i]>0) {
-      	lhsPos = lhsPos * B + p.coeff()[i];
+      	lhsPos = lhsPos * B + BigFloat2(p.coeff()[i]).getLeft();
       	lhsNeg = lhsNeg * B;
       } else {
-      	lhsNeg = lhsNeg * B - p.coeff()[i];
+      	lhsNeg = lhsNeg * B - BigFloat2(p.coeff()[i]).getLeft();
       	lhsPos = lhsPos * B;
       } 
     }
@@ -208,9 +213,11 @@ BigInt UpperBound(Polynomial<NT> &p) {
     lhsPos.makeCeilExact();
     lhsNeg.makeCeilExact();*/
     //We can avoid the above steps by multiplying rhs by the leading coefficient
-    //and then compare the result.
+    //and then compare the result. Though we have to take get a BigFloat2 
+    //approximation that is an upper bound on the leading coefficient.
+    //
     /* compute B^{deg} */
-    if (rhs * abs(p.coeff()[deg]) <= max(lhsPos,lhsNeg)) {
+    if (rhs * BigFloat2(abs(p.coeff()[deg])).getRight() <= max(lhsPos,lhsNeg)) {
       B <<= 1;
       rhs *= (BigInt(1)<<deg);
     } else
@@ -230,10 +237,8 @@ BigFloat CauchyLowerBound(Polynomial<NT> &p) {
   for (int i = 1; i <= deg; ++i) {
     mx = core_max(mx, abs(p.coeff()[i]));
   }
-  Expr e = Expr(abs(p.coeff()[0]))/ Expr(abs(p.coeff()[0]) + mx);
-  e.approx(2, CORE_INFTY);
-  // get an relative approximate value with error < 1/4
-  return (e.BigFloatValue().div2());
+  BigFloat2 e = BigFloat2(abs(p.coeff()[0]))/ BigFloat2(abs(p.coeff()[0]) + mx);
+  return (e.getLeft().div2());
 }
 
 // Separation bound for polynomials that may have multiple roots.
@@ -250,7 +255,7 @@ BigFloat sepBound(Polynomial<NT> &p) {
   CORE::power(d, BigInt(deg), ((deg)+4)/2);
   e = CORE::power(p.height()+1, deg);
   e.makeCeilExact(); // see NOTE below
-  return BigFloat((BigFloat2(1)/(e*2*d)).makeFloorExact());
+  return (BigFloat2(1)/(e*2*d)).getLeft();
         // BUG fix: ``return 1/e*2*d'' was wrong
         // NOTE: the relative error in this division (1/(e*2*d))
         //   is defBFdivRelPrec (a global variable), but
@@ -280,18 +285,6 @@ BigFloat2 height(Polynomial<NT> &p) {
   return BigFloat2(ht);
 }
 
-//A height function especial to NT=Expr since there is no
-//constructor of the form BigFloat2(Expr)
-BigFloat2 height(Polynomial<Expr> &p) {
-  if (zeroP(p))
-    return BigFloat2(0);
-  int deg = p.getTrueDegree();
-  Expr ht = 0;
-  for (int i = 0; i< deg; i++)
-    if (ht < abs(p.coeff()[i]))
-      ht = abs(p.coeff()[i]);
-  return ht.BigFloat2Value();
-}
 
 /// length function
 /// @return a BigFloat with error
@@ -305,6 +298,7 @@ BigFloat2 length(Polynomial<NT> &p) {
     length += abs(p.coeff()[i]*p.coeff()[i]);
   return sqrt(BigFloat2(length));
 }
+
 
 //@}
 
