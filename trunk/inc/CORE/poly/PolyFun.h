@@ -280,6 +280,19 @@ BigFloat2 height(Polynomial<NT> &p) {
   return BigFloat2(ht);
 }
 
+//A height function especial to NT=Expr since there is no
+//constructor of the form BigFloat2(Expr)
+BigFloat2 height(Polynomial<Expr> &p) {
+  if (zeroP(p))
+    return BigFloat2(0);
+  int deg = p.getTrueDegree();
+  Expr ht = 0;
+  for (int i = 0; i< deg; i++)
+    if (ht < abs(p.coeff()[i]))
+      ht = abs(p.coeff()[i]);
+  return ht.BigFloat2Value();
+}
+
 /// length function
 /// @return a BigFloat with error
 template < class NT >
