@@ -151,7 +151,7 @@ BigFloat CauchyUpperBound(Polynomial<NT> &p) {
   e /= Expr(abs(p.coeff()[deg]));
   e.approx(CORE_INFTY, 2);
   // get an absolute approximate value with error < 1/4
-  return (e.BigFloatValue().makeExact() + 2);
+  return (e.BigFloatValue() + 2);
 }
 
 
@@ -169,10 +169,10 @@ BigInt CauchyBound(Polynomial<NT> &p) {
       lhs *= B;
       lhs += abs(p.coeff()[i]);
     }
-    lhs /= abs(p.coeff()[deg]);
-    lhs.makeFloorExact();
+    //lhs /= abs(p.coeff()[deg]);
+    //lhs.makeFloorExact();
     /* compute B^{deg} */
-    if (rhs <= lhs) {
+    if (rhs * abs(p.coeff()[deg]) <= lhs) {
       B <<= 1;
       rhs *= (BigInt(1)<<deg);
     } else
@@ -202,13 +202,15 @@ BigInt UpperBound(Polynomial<NT> &p) {
       	lhsPos = lhsPos * B;
       } 
     }
-    lhsNeg /= abs(p.coeff()[deg]);
+
+    /*lhsNeg /= abs(p.coeff()[deg]);
     lhsPos /= abs(p.coeff()[deg]);
     lhsPos.makeCeilExact();
-    lhsNeg.makeCeilExact();
-
+    lhsNeg.makeCeilExact();*/
+    //We can avoid the above steps by multiplying rhs by the leading coefficient
+    //and then compare the result.
     /* compute B^{deg} */
-    if (rhs <= max(lhsPos,lhsNeg)) {
+    if (rhs * abs(p.coeff()[deg]) <= max(lhsPos,lhsNeg)) {
       B <<= 1;
       rhs *= (BigInt(1)<<deg);
     } else
@@ -231,7 +233,7 @@ BigFloat CauchyLowerBound(Polynomial<NT> &p) {
   Expr e = Expr(abs(p.coeff()[0]))/ Expr(abs(p.coeff()[0]) + mx);
   e.approx(2, CORE_INFTY);
   // get an relative approximate value with error < 1/4
-  return (e.BigFloatValue().makeExact().div2());
+  return (e.BigFloatValue().div2());
 }
 
 // Separation bound for polynomials that may have multiple roots.
@@ -242,13 +244,13 @@ BigFloat CauchyLowerBound(Polynomial<NT> &p) {
 template < class NT >
 BigFloat sepBound(Polynomial<NT> &p) {
   BigInt d;
-  BigFloat e;
+  BigFloat2 e;
   int deg = p.getTrueDegree();
 
   CORE::power(d, BigInt(deg), ((deg)+4)/2);
   e = CORE::power(p.height()+1, deg);
   e.makeCeilExact(); // see NOTE below
-  return (1/(e*2*d)).makeFloorExact();
+  return BigFloat((BigFloat2(1)/(e*2*d)).makeFloorExact());
         // BUG fix: ``return 1/e*2*d'' was wrong
         // NOTE: the relative error in this division (1/(e*2*d))
         //   is defBFdivRelPrec (a global variable), but
@@ -267,7 +269,7 @@ BigFloat sepBound(Polynomial<NT> &p) {
 /// height function
 /// @return a BigFloat with error
 template < class NT >
-BigFloat height(Polynomial<NT> &p) {
+BigFloat2 height(Polynomial<NT> &p) {
   if (zeroP(p))
     return BigFloat(0);
   int deg = p.getTrueDegree();
@@ -275,20 +277,20 @@ BigFloat height(Polynomial<NT> &p) {
   for (int i = 0; i< deg; i++)
     if (ht < abs(p.coeff()[i]))
       ht = abs(p.coeff()[i]);
-  return BigFloat(ht);
+  return BigFloat2(ht);
 }
 
 /// length function
 /// @return a BigFloat with error
 template < class NT >
-BigFloat length(Polynomial<NT> &p) {
+BigFloat2 length(Polynomial<NT> &p) {
   if (zeroP(p))
     return BigFloat(0);
   int deg = p.getTrueDegree();
   NT length = 0;
   for (int i = 0; i< deg; i++)
     length += abs(p.coeff()[i]*p.coeff()[i]);
-  return sqrt(BigFloat(length));
+  return sqrt(BigFloat2(length));
 }
 
 //@}
