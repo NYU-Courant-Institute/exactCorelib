@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.12 2006-04-05 16:25:17 exact Exp $
+ * $Id: Expr.h,v 1.13 2006-05-05 21:06:22 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -268,9 +268,6 @@ typedef ExprT<BfmssRootBd<BigFloat2>, BfsFilter<BigFloat2>, BigFloat2> Expr;
 
 // Dummy root bound + Dummy filter + BigFloat2
 //typedef ExprT<BfmssRootBd<BigFloat2>, DummyRootBd<10>, BigFloat> Expr;
-
-// include inline functions for ExprRep
-#include <CORE/ExprRep.inl>
 
 /// absolute value
 inline Expr abs(const Expr& x) {

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.7 2006-03-04 04:23:57 exact Exp $
+ * $Id: BigFloat2.h,v 1.8 2006-05-05 21:06:22 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -507,9 +507,28 @@ public:
       diam.set_prec(get_prec()); return diam.sub(m_r, m_l); 
     }
   }
+  void makeCeilExact() { 
+    if (is_exact()) return;  
+    m_l = m_r; m_r = 0; m_exact = true;
+  }
+  void makeFloorExact() { 
+    if (is_exact()) return;  
+    m_r = 0; m_exact = true;
+  }
+  void makeExact() { 
+    set_exact();
+  }
+  void centerize() {
+    if (is_exact()) return;  
+    m_l.add(m_l, m_r);
+    m_l.div2_exp(1);
+    m_r = 0; m_exact = true;
+  }
   /// check whether contains zero
   bool has_zero() const
   { return is_exact() ? (m_l.sgn()==0) : (m_l.sgn()<=0 && m_r.sgn()>=0); } 
+  bool isZeroIn() const
+  { return has_zero(); }
   /// return sign
   int sgn() const {
     if (is_exact()) {

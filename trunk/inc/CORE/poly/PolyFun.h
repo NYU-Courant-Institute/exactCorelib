@@ -1,11 +1,13 @@
 #ifndef __CORE_POLYFUN_H__
 #define __CORE_POLYFUN_H__
 
-#include <CORE/poly/Poly.h>
-#include "CORE/BigFloat.h"
-#include "CORE/Expr.h"
+//#include <CORE/poly/Poly.h>
+//#include <CORE/BigFloat.h>
+//#include <CORE/Expr.h>
+#include <CORE/Promote.h>
 
 CORE_BEGIN_NAMESPACE
+typedef long extLong;
 
 ///Various forms of evaluation. Some specific to the type of the point of evaluation.
 //{@
@@ -20,9 +22,8 @@ CORE_BEGIN_NAMESPACE
 /// E.g., If NT is BigRat, and T is Expr then Max(NT,T)=Expr. 
 /// 	
 /// REMARK: If NT is BigFloat, it is assumed that the BigFloat is error-free.  
-template <class NT>
-template <class T>
-MAX_TYPE(NT, T) eval(Polynomial<NT> &p,const T& f) const {	// evaluation
+template <typename NT, typename T>
+MAX_TYPE(NT, T) eval(Polynomial<NT> &p,const T& f) {	// evaluation
   typedef MAX_TYPE(NT, T) ResultT;
   int deg = p.getTrueDegree();
   if (deg == -1)
@@ -50,18 +51,18 @@ MAX_TYPE(NT, T) eval(Polynomial<NT> &p,const T& f) const {	// evaluation
 // 	ASSERT: NT = BigRat or Expr
 //
 template <class NT>
-BigFloat evalApprox(Polynomial <NT> &p, const BigFloat& f, 
-	const extLong& r, const extLong& a) const {	// evaluation
+BigFloat2 evalApprox(Polynomial <NT> &p, const BigFloat& f, 
+	const extLong& r, const extLong& a) {	// evaluation
   int deg = p.getTrueDegree();
   
   if (deg == -1)
-    return BigFloat(0);
+    return BigFloat2(0);
   if (deg == 0)
-    return BigFloat(p.coeff()[0], r, a);
+    return BigFloat(p.coeff()[0], r);
 
-  BigFloat val(0), c;
+  BigFloat2 val(0), c;
   for (int i=deg; i>=0; i--) {
-    c = BigFloat(p.coeff()[i], r, a);	
+    c = BigFloat2(p.coeff()[i], r);	
     val *= f; 
     val += c;
   }
@@ -70,11 +71,10 @@ BigFloat evalApprox(Polynomial <NT> &p, const BigFloat& f,
 
 // This BigInt version of evalApprox should never be called...
 template <>
-CORE_INLINE
-BigFloat evalApprox( Polynomial<BigInt> &p, const BigFloat& f,
-	const extLong& r, const extLong& a) const {	// evaluation
+BigFloat2 evalApprox( Polynomial<BigInt> &p, const BigFloat& f,
+	const extLong& r, const extLong& a) {	// evaluation
   assert(0);
-  return BigFloat(0);
+  return BigFloat2(0);
 }
 
 
@@ -107,19 +107,18 @@ BigFloat evalApprox( Polynomial<BigInt> &p, const BigFloat& f,
  ***************************************************/
 template <class NT>
 BigFloat evalExactSign(Polynomial<NT> &p, const BigFloat& val,
-	 const extLong& oldMSB) const {
-    assert(val.isExact());
+	 const extLong& oldMSB) {
     if (p.getTrueDegree() == -1)
       return BigFloat(0);
   
     extLong r;
-    r = 1 + BigFloat(p.height()).uMSB() + clLg(long(p.getTrueDegree()+1));
+    r = 1 + BigFloat(p.height()).uMSB() + ceilLg(long(p.getTrueDegree()+1));
     if (val > 1)
       r += p.getTrueDegree() * val.uMSB();
-    r += core_max(extLong(0), -oldMSB);
+    r += std::max(extLong(0), -oldMSB);
   
     if (hasExactDivision<NT>::check()) { // currently, only to detect NT=Expr and NT=BigRat
-        BigFloat rVal = p.evalApprox(val, r);
+        BigFloat2 rVal = p.evalApprox(val, r);
         if (rVal.isZeroIn()) {
 	  Expr eVal = p.eval(Expr(val));	// eval gives exact value
 	  eVal.approx(54,CORE_INFTY);  // if value is 0, we get exact 0
@@ -140,7 +139,7 @@ BigFloat evalExactSign(Polynomial<NT> &p, const BigFloat& val,
 /// Cauchy Upper Bound on Roots.
 // -- ASSERTION: NT is an integer type
 template < class NT >
-BigFloat CauchyUpperBound(Polynomial<NT> &p) const {
+BigFloat CauchyUpperBound(Polynomial<NT> &p) {
   if (zeroP(p))
     return BigFloat(0);
   NT mx = 0;
@@ -159,7 +158,7 @@ BigFloat CauchyUpperBound(Polynomial<NT> &p) const {
 /// An iterative version of computing Cauchy Bound from Erich Kaltofen.
 // See the writeup under collab/sep/.
 template < class NT >
-BigInt CauchyBound(Polynomial<NT> &p) const {
+BigInt CauchyBound(Polynomial<NT> &p) {
   int deg = p.getTrueDegree();
   BigInt B(1);
   BigFloat lhs(0), rhs(1);
@@ -186,7 +185,7 @@ BigInt CauchyBound(Polynomial<NT> &p) const {
 ///Another iterative bound which is at least as good as the above bound
 ///by Erich Kaltofen.
 template < class NT >
-BigInt UpperBound(Polynomial<NT> &p) const {
+BigInt UpperBound(Polynomial<NT> &p) {
   int deg = p.getTrueDegree();
 
   BigInt B(1);
@@ -221,7 +220,7 @@ BigInt UpperBound(Polynomial<NT> &p) const {
 // Cauchy Lower Bound on Roots
 // -- ASSERTION: NT is an integer type
 template < class NT >
-BigFloat CauchyLowerBound(Polynomial<NT> &p) const {
+BigFloat CauchyLowerBound(Polynomial<NT> &p) {
   if ((zeroP(p)) || p.coeff()[0] == 0)
     return BigFloat(0);
   NT mx = 0;
@@ -241,7 +240,7 @@ BigFloat CauchyLowerBound(Polynomial<NT> &p) const {
 //    ASSERT(the return value is an exact BigFloat and a Lower Bound)
 //
 template < class NT >
-BigFloat sepBound(Polynomial<NT> &p) const {
+BigFloat sepBound(Polynomial<NT> &p) {
   BigInt d;
   BigFloat e;
   int deg = p.getTrueDegree();
@@ -268,7 +267,7 @@ BigFloat sepBound(Polynomial<NT> &p) const {
 /// height function
 /// @return a BigFloat with error
 template < class NT >
-BigFloat height(Polynomial<NT> &p) const {
+BigFloat height(Polynomial<NT> &p) {
   if (zeroP(p))
     return BigFloat(0);
   int deg = p.getTrueDegree();
@@ -282,7 +281,7 @@ BigFloat height(Polynomial<NT> &p) const {
 /// length function
 /// @return a BigFloat with error
 template < class NT >
-BigFloat length(Polynomial<NT> &p) const {
+BigFloat length(Polynomial<NT> &p) {
   if (zeroP(p))
     return BigFloat(0);
   int deg = p.getTrueDegree();

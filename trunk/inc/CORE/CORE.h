@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CORE.h,v 1.8 2006-03-03 17:19:58 exact Exp $
+ * $Id: CORE.h,v 1.9 2006-05-05 21:06:22 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_CORE_H__
 #define __CORE_CORE_H__
@@ -35,6 +35,9 @@
 #include <CORE/BigFloat2.h>
 // level 3
 #include <CORE/Expr.h>
+
+// include inline functions for ExprRep
+#include <CORE/ExprRep.inl>
 
 // timer
 #include <CORE/Timer.h>

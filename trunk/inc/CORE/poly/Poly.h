@@ -80,7 +80,7 @@ class Polynomial : public
   }
 
   ///checks whether a character is an integer.
-  bool Polynomial<NT>::isint(char c){
+  bool isint(char c){
     if(c == '0' || c == '1' || c == '2' || c == '3' || c == '4' ||
        c == '5' || c == '6' || c == '7' || c == '8' || c == '9')
       return true;
@@ -126,7 +126,7 @@ class Polynomial : public
 
 
 
-  int getbasicterm(string & s, Polynomial<NT> & P){
+  int getbasicterm(std::string & s, Polynomial<NT> & P){
     const char * cstr = s.c_str();
     unsigned int len = s.length();
     int i=0;
@@ -139,7 +139,7 @@ class Polynomial : public
     }else if(cstr[i] =='('){
       int oldi = i;
       i = matchparen(cstr, i);
-      string t = s.substr(oldi+1, i -oldi -1);
+      std::string t = s.substr(oldi+1, i -oldi -1);
       P = getpoly(t);
     }else{
       std::cout <<"ERROR IN PARSING BASIC TERM" << std::endl;
@@ -154,7 +154,7 @@ class Polynomial : public
   }
 
 
-  int getterm(string & s, Polynomial<NT> & P){
+  int getterm(std::string & s, Polynomial<NT> & P){
     unsigned int len = s.length();
     if(len == 0){// Zero Polynomial
       P=Polynomial<NT>();
@@ -162,7 +162,7 @@ class Polynomial : public
     }
     unsigned int ind, oind;
     const char* cstr =s.c_str();
-    string t;
+    std::string t;
     //P will be used to accumulate the product of basic terms.
     ind = getbasicterm(s, P);
     while(ind != len-1 && cstr[ind + 1]!='+' && cstr[ind + 1]!='-' ){
@@ -186,10 +186,10 @@ class Polynomial : public
   }
 
 
-  Polynomial<NT> getpoly(string & s){
+  Polynomial<NT> getpoly(std::string & s){
     //Remove white spaces from the string
     unsigned int cnt=s.find(' ',0);
-    while(cnt != string::npos){
+    while(cnt != std::string::npos){
       s.erase(cnt, 1);
       cnt = s.find(' ', cnt);
     }
@@ -203,9 +203,9 @@ class Polynomial : public
     //Suppose s is of the form s1 = s2. Then we assign s to
     //s1 + (-1)(s2) and reset len
     unsigned int loc;
-    if((loc=s.find('=',0)) != string::npos){
+    if((loc=s.find('=',0)) != std::string::npos){
       s.replace(loc,1,1,'+');
-      string s3 = "(-1)(";
+      std::string s3 = "(-1)(";
       s.insert(loc+1, s3);
       len = s.length();
       s.insert(len, 1, ')');
@@ -213,7 +213,7 @@ class Polynomial : public
     len = s.length();
 
     const char *cstr = s.c_str();
-    string t;
+    std::string t;
     Polynomial<NT> P;
     // P will be the polynomial in which we accumulate the
     //sum and difference of the different terms.
@@ -242,11 +242,11 @@ class Polynomial : public
     return (P);
   }
 
-  void constructFromString(string & s, char myX) {
+  void constructFromString(std::string & s, char myX) {
     if(myX != 'x' || myX != 'X'){
       //Replace myX with 'x'.
       unsigned int loc = s.find(myX, 0);
-      while(loc != string::npos){
+      while(loc != std::string::npos){
 	s.replace(loc,1,1,'x');
 	loc = s.find(myX, loc+1);
       }
@@ -352,7 +352,7 @@ public:
       c[i] = coeff()[i];
     this->set(d, c);
     return d;
-}
+  }
 
   /// \name assignment and compound assignment operators (Polynomial arithmetic)
   //@{
@@ -412,7 +412,7 @@ public:
   this->set(d,c);
   
   return *this;
-}//mulXpower
+  }//mulXpower
 
 
 /// REDUCE STEP (helper for PSEUDO-REMAINDER function)
@@ -569,7 +569,6 @@ Polynomial<NT> pseudoRemainder (
 
 /// Returns the negative of the pseudo-remainder
 /// 	(self-modification)
-template <class NT>
 Polynomial<NT> & negPseudoRemainder (
   const Polynomial<NT>& B) {
 	NT temp;	// dummy argument to be discarded
@@ -589,8 +588,8 @@ Polynomial<NT> & operator-() {	// unary minus
 //Used in construction from strings.
 Polynomial<NT> & power(unsigned int n) {	// self-power
   if (n == 0) {
-    c = new NT[1];
-    coeff()[0] = 1;
+    NT* c = new NT[1];
+    c[0] = 1;
     this->set(0, c);
   } else {
     Polynomial<NT> p = *this;
@@ -606,7 +605,7 @@ Polynomial<NT> & differentiate() {	// self-differentiation
   int deg = degree();
   if (deg >= 0) {
     NT * c = new NT[deg];
-    for (int i=1; i<=deg i++)
+    for (int i=1; i<=deg; i++)
       c[i-1] = coeff()[i] * i;
     deg--;
     this->set(deg,c);

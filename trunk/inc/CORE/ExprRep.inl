@@ -19,6 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.inl,v 1.1 2006-03-03 21:17:45 exact Exp $
+ * $Id: ExprRep.inl,v 1.2 2006-05-05 21:06:22 exact Exp $
  ***************************************************************************/
 
+#include <CORE/poly/PolyFun.h>

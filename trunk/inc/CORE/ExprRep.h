@@ -19,12 +19,13 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.6 2006-04-05 16:25:17 exact Exp $
+ * $Id: ExprRep.h,v 1.7 2006-05-05 21:06:22 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
 
 #include <CORE/CoreAux.h>
+#include <CORE/poly/Poly.h>
 #include <bitset>
 #include <iostream>
 
