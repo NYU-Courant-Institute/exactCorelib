@@ -604,10 +604,12 @@ Polynomial<NT> & power(unsigned int n) {	// self-power
     NT* c = new NT[1];
     c[0] = 1;
     this->set(0, c);
+    delete[] c;
   } else {
     Polynomial<NT> p = *this;
-    for (unsigned int i=1; i<n; i++)
+    for (unsigned int i=1; i<n; i++) {
       *this *= p;		// Would a binary power algorithm be better?
+    }
   }
   return *this;
 }
@@ -815,8 +817,9 @@ inline
 Polynomial<NT> operator*(const Polynomial<NT>& x, const Polynomial<NT>& y) {
   int d = x.getDegree() + y.getDegree();
   NT* c = new NT[d+1];
+
   for (int i=0; i<=x.getDegree(); ++i)
-    for (int j=0; j<y.getDegree(); ++j)
+    for (int j=0; j<=y.getDegree(); ++j)
       c[i+j] += x.coeff()[i] * y.coeff()[j];
   Polynomial<NT> result(d, c);
   delete[] c;
