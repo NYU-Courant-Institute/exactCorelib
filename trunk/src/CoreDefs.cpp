@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.cpp,v 1.5 2006-04-03 20:39:39 exact Exp $
+ * $Id: CoreDefs.cpp,v 1.6 2006-05-06 21:39:31 exact Exp $
  ***************************************************************************/
 #include <CORE/Config.h>
 #include <CORE/BigFloat.h>
@@ -37,5 +37,8 @@ int def_output_base = 0;
 long defAbsPrec = LONG_MAX;
 long defRelPrec = 52;
 long defInputDigits = LONG_MAX;
+
+long defBFdivRelPrec = 54;
+long defBFradicalRelPrec = 54;
 
 CORE_END_NAMESPACE

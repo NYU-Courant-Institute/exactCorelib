@@ -21,7 +21,7 @@
  Date:   May 28, 2002. (Revised Mar 24, 2004)
  
  Since Core Library v1.4.1
- $Id: tPoly.cpp,v 1.2 2006-05-06 14:52:48 exact Exp $
+ $Id: tPoly.cpp,v 1.3 2006-05-06 21:40:14 exact Exp $
  ************************************** */ 
 
 #define CORE_LEVEL 4
@@ -111,6 +111,7 @@ cout << "================================================\n";
   NT c[] = {1, 2, 3, 4, 5};
   Poly P4(4, c);
   cout << "P4 :\n>   " << P4 << endl;
+
 
   Poly Q(P4);
   cout << "Q, copy of P4 :\n>   " << Q << endl;

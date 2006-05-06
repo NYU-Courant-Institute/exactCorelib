@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.10 2006-05-06 19:53:19 exact Exp $
+ * $Id: BigFloat.h,v 1.11 2006-05-06 21:38:58 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -929,6 +929,10 @@ public:
   }
   //@}
   
+  /// return 2^{e}
+  static BigFloat exp2(int e)
+  { return BigFloat(1, e, 2); }
+
   /// \name helper functions
   //@{
   bool is_nan() const
@@ -1063,18 +1067,18 @@ public:
   static prec_t add_prec(const BigFloat& x, prec_t prec) {
     exp_t diff = x.get_exp() - x.get_prec();
     if (diff >= 0)
-      return 1+std::max(x.get_prec() + diff, prec);
+      return std::max(2UL, 1+std::max(x.get_prec() + diff, prec));
     else
-      return 1+std::max(x.get_prec(), prec - diff);
+      return std::max(2UL, 1+std::max(x.get_prec(), prec - diff));
   }
   // count how many precision needed for exact addition/subtraction
   // of two bigfloats, see lemma in Zilin's thesis
   static prec_t add_prec(const BigFloat& x, const BigFloat& y) {
     exp_t diff = x.get_exp() - x.get_prec() - y.get_exp() + y.get_prec();
     if (diff >= 0)
-      return 1+std::max(x.get_prec() + diff, y.get_prec());
+      return std::max(2UL, 1+std::max(x.get_prec() + diff, y.get_prec()));
     else
-      return 1+std::max(x.get_prec(), y.get_prec() - diff);
+      return std::max(2UL, 1+std::max(x.get_prec(), y.get_prec() - diff));
   }
   // count how many precision needed for exact multiplication
   // between one bigfloat and one integer

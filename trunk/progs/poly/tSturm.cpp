@@ -31,7 +31,7 @@
    Date:    July 20, 2002
 
    Since Core Library  v1.4
-   $Id: tSturm.cpp,v 1.1 2006-03-07 04:51:25 exact Exp $
+   $Id: tSturm.cpp,v 1.2 2006-05-06 21:40:14 exact Exp $
  ************************************** */
 
 #  define CORE_LEVEL 4
@@ -125,7 +125,7 @@ cout << "testingSturm: seq[" << i << "] = ";  seq[i].mapleDump();
 int main(int argc, char** argv){
   
     // SET INTERNAL PRECISION
-    setDefaultRelPrecision(CORE_posInfty); // This puts defAbsPrec in control
+    //setDefaultRelPrecision(CORE_posInfty); // This puts defAbsPrec in control
     int prec = 60;			// Do Sturm refinement till delta
 					// is at most 2^{-prec}
     if (argc >= 2)
@@ -168,11 +168,12 @@ int main(int argc, char** argv){
     // Show Polynomial:
     cout << "Polynomial is ";  P.mapleDump();
     // Show its root bound:
-    cout << " Separation bound = " << P.sepBound() << endl;
+    cout << " Separation bound = " << sepBound(P) << endl;
     // Test One Root we know:
     Expr root = sqrt(1+sqrt(5-3*sqrt(1+sqrt(Expr(2)))));
     cout << " sqrt(1 + sqrt(5 - 3*sqrt(1 + sqrt(2)))) = " << root << endl;
-    if (P.eval(root) == 0)
+    std::cout << "eval(P, root)=" << eval(P, root) << endl;
+    if (eval(P, root) == 0)
       cout << "The preceding is a root (CORRECT!)" << endl;
     else
       cout << "The preceding is not a root (ERROR!)" << endl;
