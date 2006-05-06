@@ -1,7 +1,7 @@
 #ifndef __CORE_POLY_H__
 #define __CORE_POLY_H__
 
-#include <Core/poly/PolyBase.h>
+#include <CORE/poly/PolyBase.h>
 #include <string>
 #include <iostream>
 
@@ -40,13 +40,13 @@ class Polynomial : public
 #ifndef CORE_DISABLE_REFCOUNTING 
   PolyBase<NT> 
 #else
-  RcPolyBase<NT> 
+  RcPolyBase<NT> 		// reference count version
 #endif
 {
 #ifndef CORE_DISABLE_REFCOUNTING 
   typedef PolyBase<NT> base_cls;
 #else
-  typedef RcPolyBase<NT> base_cls;
+  typedef RcPolyBase<NT> base_cls; // reference count version
 #endif
  private:
 
