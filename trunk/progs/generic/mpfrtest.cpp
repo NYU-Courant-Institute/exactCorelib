@@ -46,8 +46,10 @@ int main (int argc, char **argv)
   fputc ('\n', stdout);
 
   fputs (">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n", stdout);
-  fputs (">>>    If the first answer on your screen is 8.3810205000e8, ", stdout);
-  fputs (">>>    and the second answer on your screen is 3.1415929208 ", stdout);
+  fputs (">>>    If the first answer on your screen is 8.3810205000e8\n",
+		  	stdout);
+  fputs (">>>    and the second answer on your screen is 3.1415929208\n",
+		  	stdout);
   fputs ("\n>>>    you have passed the mpfr test\n", stdout);
   fputs (">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n", stdout);
 
