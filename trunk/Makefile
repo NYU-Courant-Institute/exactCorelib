@@ -1,5 +1,5 @@
 # Makefile for Core Library
-# $Id: Makefile,v 1.4 2006-04-04 22:30:04 exact Exp $
+# $Id: Makefile,v 1.5 2006-05-06 14:10:58 exact Exp $
 
 #################################################################
 #
@@ -39,10 +39,18 @@ default: core
 #################################################################
 #	Make everything in one step
 #################################################################
-# This makes both the gmp and core library
+# This makes gmp, mpfr and core library, then test and time them
 
-all:  first second third testgmp fourth fifth sixth testmpfr \
-	seventh eighth ninth tenth
+all:  gmp mpfr core \
+	test time 
+
+gmp:	first second third testgmp
+
+mpfr:	fourth fifth sixth testmpfr
+
+core:	corelib corex demo
+
+alltests:	test time moretest
 
 #################################################################
 #	Core Library Installation Steps
