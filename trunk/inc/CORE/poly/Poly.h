@@ -1075,34 +1075,18 @@ Polynomial<NT> differentiate(const Polynomial<NT> & p, int n) {//multi-different
   return q;
 }
 
-// equality comparison
-// TODO: need optimize
+/// comparison (equality of two polynomials) 
 template <class NT>
 inline 
 bool operator==(const Polynomial<NT>& p, const Polynomial<NT>& q) {	// ==
-  int d, D;
-  Polynomial<NT> P(p);
-  P.contract();
-  Polynomial<NT> Q(q);
-  Q.contract();
-  
-  if (P.getDegree() < Q.getDegree()) {
-    d = P.getDegree();
-    D = Q.getDegree();
-    for (int i = d+1; i<=D; i++)
-      if (Q.coeff()[i] != 0)
-        return false;	// return false
-  } else {
-    D = P.getDegree();
-    d = Q.getDegree();
-    for (int i = d+1; i<=D; i++)
-      if (P.coeff()[i] != 0)
-        return false;	// return false
-  }
+  int d = p.getTrueDegree();
+  if (d != q.getTrueDegree()) return false;	// not equal degree
+  if (d == -1) return true;			// zero polynomial
+  // ASSERT(d >= 0)
   for (int i = 0; i <= d; i++)
-    if (P.coeff()[i] != Q.coeff()[i])
-      return false;	// return false
-  return true; 	// return true
+    if (p.coeff()[i] != q.coeff()[i])
+      return false;	// unequal 
+  return true; 		// equal
 }
 
 /// non-equality comparison
