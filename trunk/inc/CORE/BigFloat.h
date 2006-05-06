@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.11 2006-05-06 21:38:58 exact Exp $
+ * $Id: BigFloat.h,v 1.12 2006-05-06 23:30:05 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -172,10 +172,10 @@ public:
   /// return current precision (bit length of mantissa)
   prec_t get_prec() const
   { return mpfr_get_prec(mp()); }
-  /// set current precision (bit length of mantissa)
+  /// set current precision (bit length of mantissa). Previous value lost.
   void set_prec(prec_t prec)
   { mpfr_set_prec(mp(), prec); }
-  /// round precision
+  /// round the current precision to prec, using specified rounding mode.
   void prec_round(prec_t prec, rnd_t rnd = MPFR_RND)
   { mpfr_prec_round(mp(), prec, rnd); }
   //@}
