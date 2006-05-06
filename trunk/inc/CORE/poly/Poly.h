@@ -300,9 +300,16 @@ public:
   /// return the true degree
   int getTrueDegree() const {
     int i = getDegree();
-    while (i>=0 && sign(coeff()[i]) != 0) --i;
+    while (i>=0 && sign(coeff()[i]) == 0) --i;
     return i;
   }
+
+  /// return the coeff
+  const NT* getCoeffs() const
+  { return coeff(); }
+  /// return the coeff
+  NT* getCoeffs() 
+  { return coeff(); }
 
   /// return the i-th coeff
   const NT& getCoeff(int i) const
@@ -378,6 +385,12 @@ public:
   /// compound assignment operator <tt>*=</tt>
   Polynomial& operator*=(const Polynomial& rhs);
   
+  static  int COEFF_PER_LINE;           // pretty print parameters
+  static const char * INDENT_SPACE;             // pretty print parameters
+
+  static const Polynomial<NT> & polyZero();
+  static const Polynomial<NT> & polyUnity();
+
   ///Multiply by a scalar
   Polynomial<NT> & mulScalar( const NT & c) {
     for (int i = 0; i<=degree() ; i++)
@@ -784,15 +797,15 @@ void filedump(std::ostream & os,
 
 /// dump(message, ofstream, commentString) -- dump to file
 void dump(std::ofstream & ofs,
-		std::string msg,
-		std::string commentString,
-                std::string commentString2) const {
+		std::string msg = "",
+		std::string commentString = "# ",
+                std::string commentString2 = "# ") const {
   filedump(ofs, msg, commentString, commentString2);
 }
 
 /// dump(message) 	-- to std output
-void dump(std::string msg, std::string com,
-		std::string com2) const {
+void dump(std::string msg = "", std::string com = "# ",
+		std::string com2 = "# ") const {
   filedump(std::cout, msg, com, com2);
 }
 
@@ -849,13 +862,39 @@ Polynomial<NT> operator*(const Polynomial<NT>& x, const Polynomial<NT>& y) {
   NT* c = new NT[d+1];
   for (int i=0; i<=x.getDegree(); ++i)
     for (int j=0; j<y.getDegree(); ++j)
-      c[i+j] += x.coeff()[i] * y.coeff()[i];
-  return Polynomial<NT>(d, c);
+      c[i+j] += x.coeff()[i] * y.coeff()[j];
+  Polynomial<NT> result(d, c);
+  delete[] c;
+  return result;
 }
 template <typename NT>
 inline
 Polynomial<NT>& Polynomial<NT>::operator*=(const Polynomial<NT>& rhs) {
   *this = *this * rhs; return *this;
+}
+
+template < class NT >
+inline Polynomial<NT> power(const Polynomial<NT>& p, int n) { // power
+  return Polynomial<NT>(p).power(n);
+}
+
+template <class NT>
+int Polynomial<NT>::COEFF_PER_LINE  = 4;           // pretty print parameters
+template <class NT>
+const char* Polynomial<NT>::INDENT_SPACE ="   ";  // pretty print parameters
+
+
+template < class NT >
+inline const Polynomial<NT> & Polynomial<NT>::polyZero() {
+  static Polynomial<NT> zeroP;
+  return zeroP;
+}
+
+template < class NT >
+inline const Polynomial<NT> & Polynomial<NT>::polyUnity() {
+  static NT c[] = {1};
+  static Polynomial<NT> unityP(0, c);
+  return unityP;
 }
 
 // inline functions
@@ -878,6 +917,20 @@ std::ostream& operator<<(std::ostream& o, const Polynomial<NT>& p) {
   }
   o << ")" << std::endl;
   return o;
+}
+
+template < class NT >
+std::istream& operator>>(std::istream& is, Polynomial<NT>& p) {
+  // read degree and coeff
+  int degree;
+  is >> degree;
+  NT* coeff = new NT[degree+1];
+  for (int i=0; i<= degree; i++)
+    is >> coeff[i];
+  // set coefficients for poly
+  p.set(degree, coeff);
+  delete coeff;
+  return is;
 }
 
 // For internal use only:
@@ -1047,6 +1100,7 @@ Polynomial<NT> differentiate(const Polynomial<NT> & p, int n) {//multi-different
 }
 
 // equality comparison
+// TODO: need optimize
 template <class NT>
 inline 
 bool operator==(const Polynomial<NT>& p, const Polynomial<NT>& q) {	// ==
@@ -1055,6 +1109,7 @@ bool operator==(const Polynomial<NT>& p, const Polynomial<NT>& q) {	// ==
   P.contract();
   Polynomial<NT> Q(q);
   Q.contract();
+  
   if (P.getDegree() < Q.getDegree()) {
     d = P.getDegree();
     D = Q.getDegree();

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.8 2006-05-05 21:06:22 exact Exp $
+ * $Id: BigFloat2.h,v 1.9 2006-05-06 14:52:48 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -62,6 +62,9 @@ public:
   {}
   /// copy constructor
   BigFloat2(const BigFloat2& r) : m_l(r.m_l), m_r(r.m_r), m_exact(r.m_exact)
+  {}
+  /// constructor from two BigFloat
+  BigFloat2(const BigFloat& l, const BigFloat& r) : m_l(l),m_r(r),m_exact(false)
   {}
   /// generic constructor for <tt>T</TT>
   template <typename T> BigFloat2(const T& v) : m_l(v), m_exact(true)
@@ -516,12 +519,21 @@ public:
     m_r = 0; m_exact = true;
   }
   void makeExact() { 
-    set_exact();
+    set_exact(true);
+  }
+  BigFloat getLeft() const {
+    return m_l;
+  }
+  BigFloat getRight() const {
+    if (is_exact())
+      return m_l;
+    else
+      return m_r;
   }
   void centerize() {
     if (is_exact()) return;  
     m_l.add(m_l, m_r);
-    m_l.div2_exp(1);
+    m_l.div_2exp(m_l, 1);
     m_r = 0; m_exact = true;
   }
   /// check whether contains zero

@@ -21,7 +21,7 @@
  Date:   May 28, 2002. (Revised Mar 24, 2004)
  
  Since Core Library v1.4.1
- $Id: tPoly.cpp,v 1.1 2006-03-07 04:51:25 exact Exp $
+ $Id: tPoly.cpp,v 1.2 2006-05-06 14:52:48 exact Exp $
  ************************************** */ 
 
 #define CORE_LEVEL 4
@@ -147,9 +147,12 @@ cout << "================================================\n";
   else cout << "Nothing to reduce in Q :\n> n = " << n
 	<< " (CORRECT! n = -2) " << endl;
 
+  cout << ">  Original P4 :\n>  " << P4 ;
+  cout << ">  Original Q :\n>  " << Q ;
   Q.reverse();
   cout << ">  Reversed  Q :\n>  " << Q ;
   Q.reverse();		// we want them to be equal, so Q needs to
+  cout << ">  2nd Reversed  Q :\n>  " << Q ;
 			// be reversed again (it was reversed once above)
   if (Q == P4)   cout << "CORRECT! reverse(reverse)=ident" << endl;
   else		 cout << "ERROR! reverse(reverse) != ident" << endl;
@@ -265,12 +268,12 @@ cout << "================================================\n";
 cout << "EVALUATION \n";
 cout << "================================================\n";
 
-  cout << "Evaluation, of P5 :\n>   P5(BigFloat(0)) = " << P5.eval(BigFloat(0));
-  cout << ">   P5(Expr(1)) = " << P5.eval(Expr(1)) << endl; 
-  cout << ">   P5(Expr(2)) = " << P5.eval(Expr(2)) << endl; 
-  Expr a=P5.eval(Expr("1.2"));
+  cout << "Evaluation, of P5 :\n>   P5(BigFloat(0)) = " << eval(P5, BigFloat(0));
+  cout << ">   P5(Expr(1)) = " << eval(P5, Expr(1)) << endl; 
+  cout << ">   P5(Expr(2)) = " << eval(P5, Expr(2)) << endl; 
+  Expr a=eval(P5, Expr("1.2"));
   cout << ">   P5(Expr(\"1.2\")) = " << a << endl; 
-  Expr b=P5.eval(Expr(1.2));
+  Expr b=eval(P5, Expr(1.2));
   cout << ">   P5(Expr(1.2)) = " << b << endl; 
   cout << ">   Is P5(Expr(\"1.2\")) == P5(Expr(1.2)) ? " ;
   if (a == b) cout << " Yes (ERROR!)" << endl;
@@ -325,10 +328,10 @@ cout << "================================================\n";
 cout << "COEFFICIENT MANIPULATION \n";
 cout << "================================================\n";
   cout << "\nGet coefficient array of P4" << endl;
-  NT ** cp = P4.getCoeffs();
+  const NT * cp = P4.getCoeffs();
   int deg = P4.getDegree();
   for (int i=0; i<=deg; i++)
-	cout << "    " << i << "-th Coefficient = " << (*cp)[i] << endl;
+	cout << "    " << i << "-th Coefficient = " << cp[i] << endl;
 	
   cout << "Get each coefficients of P4" << endl;
   for (int i=0; i<=5; i++) {

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.13 2006-05-05 21:06:22 exact Exp $
+ * $Id: Expr.h,v 1.14 2006-05-06 14:52:48 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -218,6 +218,10 @@ public: // public methods
   /// return BigFloatValue
   FT BigFloatValue() const
   { return m_rep->appValue().get_f(); }
+  /// return BigFloat2Value
+  KT BigFloat2Value() const { 
+    return m_rep->appValue();
+  }
 
   /// return sign (dirty cast)
   sign_t sign() const

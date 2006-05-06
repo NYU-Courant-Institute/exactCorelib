@@ -126,7 +126,7 @@ BigFloat evalExactSign(Polynomial<NT> &p, const BigFloat& val,
 	} else 
           return rVal;
     } else
-	return BigFloat(eval(val));
+	return BigFloat(eval(p, val));
 
    return 0;
   }//evalExactSign
@@ -217,7 +217,7 @@ BigInt UpperBound(Polynomial<NT> &p) {
     //approximation that is an upper bound on the leading coefficient.
     //
     /* compute B^{deg} */
-    if (rhs * BigFloat2(abs(p.coeff()[deg])).getRight() <= max(lhsPos,lhsNeg)) {
+    if (rhs * BigFloat2(abs(p.coeff()[deg])).getRight() <= std::max(lhsPos,lhsNeg)) {
       B <<= 1;
       rhs *= (BigInt(1)<<deg);
     } else
