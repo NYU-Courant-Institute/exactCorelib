@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.6 2006-04-05 16:25:17 exact Exp $
+ * $Id: BigFloat.inl,v 1.7 2006-05-06 19:53:19 exact Exp $
  ***************************************************************************/
 
 /// \addtogroup BigFloatArithmeticOperators
@@ -509,14 +509,101 @@ inline std::ostream& operator<<(std::ostream& os, const BigFloat& x) {
 /// \addtogroup BigFloatGlobalFunctions
 //@{
 /// square root
-inline BigFloat sqrt(const BigFloat& x, prec_t prec = MPFR_DEF_SQRT_PREC)
+inline BigFloat sqrt(const BigFloat& x, prec_t prec = getDefaultBFradicalPrec())
 { BigFloat r(0, prec); r.sqrt(x); return r; }
 /// cubic root
-inline BigFloat cbrt(const BigFloat& x, prec_t prec = MPFR_DEF_CBRT_PREC)
+inline BigFloat cbrt(const BigFloat& x, prec_t prec = getDefaultBFradicalPrec())
 { BigFloat r(0, prec); r.cbrt(x); return r; }
 /// k-th root
-inline BigFloat root(const BigFloat& x, unsigned long k, prec_t prec = MPFR_DEF_ROOT_PREC)
+inline BigFloat root(const BigFloat& x, unsigned long k, prec_t prec = getDefaultBFradicalPrec())
 { BigFloat r(0, prec); r.root(x, k); return r; }
+
+/// minStar(m,n) returns the min-star of m and n
+inline long minStar(long m, long n) {
+  if (m*n <= 0) return 0;
+  if (m>0)
+    return std::min(m, n);
+  else
+    return std::max(m, n);
+}
+
+/// isDivisible(a,b) = "is a divisible by b"
+/**     Assuming that a and  b are in coanonized forms.
+        Defined to be true if mantissa(b) | mantissa(a) && 
+        exp(b) = min*(exp(b), exp(a)).
+ *      This concepts assume a and b are exact BigFloats.
+ */
+inline bool isDivisible(const BigFloat& a, const BigFloat& b) {
+  // assert: a and b are exact BigFloats.
+  BigInt m_a, m_b;
+  exp_t e_a = a.get_z_exp(m_a);
+  exp_t e_b = b.get_z_exp(m_b);
+  if (sign(m_a) == 0) return true;
+  if (sign(m_b) == 0) return false;
+
+  unsigned long bin_a = getBinExpo(m_a);
+  unsigned long bin_b = getBinExpo(m_b);
+  
+  m_a >>= bin_a;
+  m_b >>= bin_b;
+  e_a += bin_a;
+  e_b += bin_b;
+
+  long dx = minStar(e_a, e_b);
+  return isDivisible(m_a, m_b) && (dx == e_b); 
+}
+
+inline bool isDivisible(double x, double y) {
+  //Are these exact?
+  return isDivisible(BigFloat(x), BigFloat(y));
+}
+
+/// div_exact(x,y) returns the BigFloat quotient of x divided by y
+/**     This is defined only if isDivisible(x,y).
+ */
+// Chee (8/1/2004)   The definition of div_exact(x,y) 
+//   ensure that Polynomials<NT> works with NT=BigFloat and NT=double:
+inline BigFloat div_exact(const BigFloat& x, const BigFloat& y) {
+  BigFloat z;
+  assert (isDivisible(x,y));
+  z.div(x, y);
+  return z;
+}
+
+inline BigFloat div_exact(double x, double y) {
+  return div_exact(BigFloat(x), BigFloat(y));
+}
+
+// Remark: there is another notion of "exact division" for BigFloats,
+//      and that is to make the division return an "exact" BigFloat
+//      i.e., err()=0.  
+
+/// gcd(a,b) =  BigFloat(gcd(a.mantissa,b.matissa), min(a.exp(), b.exp()) )
+inline BigFloat gcd(const BigFloat& a, const BigFloat& b) {
+  BigInt m_a, m_b;
+  exp_t e_a = a.get_z_exp(m_a);
+  exp_t e_b = b.get_z_exp(m_b);
+  if (sign(m_a) == 0) return core_abs(b);
+  if (sign(m_b) == 0) return core_abs(a);
+
+  unsigned long bin_a = getBinExpo(m_a);
+  unsigned long bin_b = getBinExpo(m_b);
+
+  m_a >>= bin_a;
+  m_b >>= bin_b;
+  e_a += bin_a;
+  e_b += bin_b;
+
+  BigInt r = gcd(m_a, m_b);
+  long dx = minStar(e_a, e_b);
+
+  // return x*2^{dx}
+  BigFloat x(r);
+  x.mul_2exp(x, dx);
+
+  return x;
+}
+
 //@}
 
 #ifndef CORE_DISABLE_OLDNAMES 
@@ -531,8 +618,8 @@ inline BigFloat abs(const BigFloat& a) { BigFloat r; r.abs(a); return r; }
 /// neg
 inline BigFloat neg(const BigFloat& a) { BigFloat r; r.neg(a); return r; }
 /// pow 
-//inline BigFloat pow(const BigFloat& a, unsigned long p) 
-//{ BigFloat r; r.pow(a, p); return r; }
+inline BigFloat power(const BigFloat& a, unsigned long p) 
+{ BigFloat r; r.pow(a, p, a.get_prec()*p); return r; }
 //@}
 #endif
 

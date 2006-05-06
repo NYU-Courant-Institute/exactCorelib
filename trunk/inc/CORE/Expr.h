@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.14 2006-05-06 14:52:48 exact Exp $
+ * $Id: Expr.h,v 1.15 2006-05-06 19:53:19 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -280,6 +280,13 @@ inline Expr abs(const Expr& x) {
 /// absolute value (same as abs)
 inline Expr fabs(const Expr& x) {
   return abs(x);
+}
+
+/// convert Expr to BigFloat2
+inline BigFloat2 ToBigFloat2(const Expr& e, prec_t r = defRelPrec) {
+  Expr* p = const_cast<Expr*>(&e);
+  p->r_approx(r); 
+  return e.BigFloat2Value(); 
 }
 
 CORE_END_NAMESPACE

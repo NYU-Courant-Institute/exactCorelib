@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.6 2006-04-05 16:25:17 exact Exp $
+ * $Id: CoreDefs.h,v 1.7 2006-05-06 19:53:19 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
@@ -55,6 +55,8 @@ extern long defAbsPrec;
 extern long defRelPrec;
 extern long defInputDigits;
 extern long defOutputDigits;
+extern long defBFdivRelPrec;
+extern long defBFradicalRelPrec;
 
 inline void setDefaultPrecision(long r, long a)
 { defRelPrec = r; defAbsPrec = a; }
@@ -72,6 +74,16 @@ inline long get_def_input_digits()
 { return defInputDigits; }
 inline bool is_infty(long l)
 { return l == CORE_INFTY; }
+
+inline long getDefaultBFdivPrec()
+{ return defBFdivRelPrec; }
+inline void setDefaultBFdivPrec(long p)
+{ defBFdivRelPrec= p; }
+
+inline long getDefaultBFradicalPrec()
+{ return defBFradicalRelPrec; }
+inline void setDefaultBFradicalPrec(long p)
+{ defBFradicalRelPrec= p; }
 
 CORE_END_NAMESPACE
 

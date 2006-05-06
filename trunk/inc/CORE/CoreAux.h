@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.h,v 1.7 2006-04-05 16:25:17 exact Exp $
+ * $Id: CoreAux.h,v 1.8 2006-05-06 19:53:19 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREAUX_H__
 #define __CORE_COREAUX_H__
@@ -61,6 +61,12 @@ inline msb_t ceillg(double v)
 { return ilogb(v)+1; }
 inline msb_t floorlg(double v)
 { return ilogb(v); }
+
+/// template function returns the absolute value
+template <class T>
+inline const T core_abs(const T& a) {
+  return ((a < T(0)) ? -a : a);
+}
 
 #ifdef CORE_OLDNAMES 
 /// \addtogroup GlobalBackCompatiableFunctions

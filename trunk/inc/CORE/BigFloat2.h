@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.9 2006-05-06 14:52:48 exact Exp $
+ * $Id: BigFloat2.h,v 1.10 2006-05-06 19:53:19 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -28,11 +28,6 @@
 #include <CORE/Policies.h>
 
 CORE_BEGIN_NAMESPACE
-
-const prec_t BF_DEF_SQRT_PREC = DOUBLE_PREC;
-const prec_t BF_DEF_CBRT_PREC = DOUBLE_PREC;
-const prec_t BF_DEF_ROOT_PREC = DOUBLE_PREC;
-const prec_t BF_DEF_DIV_PREC = DOUBLE_PREC;
 
 // BUG:
 // 
@@ -317,25 +312,25 @@ public:
   { return _neg<FixedArithmeticPolicy, T>(x, prec); }
 
   /// square root for <tt>BigFloat2</tt>
-  bool sqrt(const BigFloat2& x, prec_t prec = BF_DEF_SQRT_PREC)
+  bool sqrt(const BigFloat2& x, prec_t prec = getDefaultBFradicalPrec())
   { return _sqrt_f<FixedArithmeticPolicy>(x, prec); }
   /// square root for <tt>T</tt>
-  template <typename T> bool sqrt(const T& x, prec_t prec = BF_DEF_SQRT_PREC)
+  template <typename T> bool sqrt(const T& x, prec_t prec = getDefaultBFradicalPrec())
   { return _sqrt<FixedArithmeticPolicy, T>(x, prec); }
 
   /// cubic root for <tt>BigFloat2</tt>
-  bool cbrt(const BigFloat2& x, prec_t prec = BF_DEF_CBRT_PREC)
+  bool cbrt(const BigFloat2& x, prec_t prec = getDefaultBFradicalPrec())
   { return _cbrt_f<FixedArithmeticPolicy>(x, prec); }
   // /// cubic root for <tt>T</tt>
-  // template <typename T> bool cbrt(const T& x, prec_t prec = BF_DEF_CBRT_PREC)
+  // template <typename T> bool cbrt(const T& x, prec_t prec = getDefaultBFradicalPrec())
   // { return _cbrt<FixedArithmeticPolicy, T>(x, prec); }
 
   /// k-th root for <tt>BigFloat2</tt>
-  bool root(const BigFloat2& x, unsigned long k, prec_t prec = BF_DEF_ROOT_PREC)
+  bool root(const BigFloat2& x, unsigned long k, prec_t prec = getDefaultBFradicalPrec())
   { return _root_f<FixedArithmeticPolicy>(x, k, prec); }
   // /// k-th root for <tt>T</tt>
   // template <typename T> 
-  // bool root(const T& x, unsigned long k, prec_t prec = BF_DEF_ROOT_PREC)
+  // bool root(const T& x, unsigned long k, prec_t prec = getDefaultBFradicalPrec())
   // { return _root<FixedArithmeticPolicy, T>(x, k, prec); }
 
   /// addition/subtraction for <tt>BigFloat2</tt>
@@ -381,15 +376,15 @@ public:
   { return _mul<FixedArithmeticPolicy, T>(x, y, prec); }
 
   /// division for <tt>BigFloat2/BigFloat2</tt>
-  bool div(const BigFloat2& x, const BigFloat2& y, prec_t prec = BF_DEF_DIV_PREC)
+  bool div(const BigFloat2& x, const BigFloat2& y, prec_t prec = getDefaultBFdivPrec())
   { return _div_f<FixedArithmeticPolicy>(x, y, prec); }
   /// division for <tt>BigFloat2/T</tt>
   template <typename T> 
-  bool div(const BigFloat2& x, const T& y, prec_t prec = BF_DEF_DIV_PREC)
+  bool div(const BigFloat2& x, const T& y, prec_t prec = getDefaultBFdivPrec())
   { return _div<FixedArithmeticPolicy, T>(x, y, prec); }
   /// division for <tt>T/BigFloat2</tt>
   template <typename T> 
-  bool div(const T& x, const BigFloat2& y, prec_t prec = BF_DEF_DIV_PREC)
+  bool div(const T& x, const BigFloat2& y, prec_t prec = getDefaultBFdivPrec())
   { return _div<FixedArithmeticPolicy, T>(x, y, prec); }
   //@}
 
@@ -758,13 +753,13 @@ template <typename T> inline BigFloat2 operator*(const BigFloat2& x, const T& y)
 template <typename T> inline BigFloat2 operator*(const T& x, const BigFloat2& y)
 { BigFloat2 r; r.mul(x, y); return r; }
 
-/// BigFloat2 / BigFloat2 (w/ default precision BF_DEF_DIV_PREC)
+/// BigFloat2 / BigFloat2 (w/ default precision getDefaultBFdivPrec())
 inline BigFloat2 operator/(const BigFloat2& x, const BigFloat2& y)
 { BigFloat2 r; r.div(x, y); return r; }
-/// BigFloat2 / T (w/ default precision BF_DEF_DIV_PREC)
+/// BigFloat2 / T (w/ default precision getDefaultBFdivPrec())
 template <typename T> inline BigFloat2 operator/(const BigFloat2& x, const T& y)
 { BigFloat2 r; r.div(x, y); return r; }
-/// T / BigFloat2 (w/ default precision BF_DEF_DIV_PREC)
+/// T / BigFloat2 (w/ default precision getDefaultBFdivPrec())
 template <typename T> inline BigFloat2 operator/(const T& x, const BigFloat2& y)
 { BigFloat2 r; r.div(x, y); return r; }
 //@}
@@ -782,18 +777,26 @@ inline std::ostream& operator<<(std::ostream& os, const BigFloat2& x)
 /// \addtogroup BigFloat2GlobalFunctions
 //@{
 /// square root
-inline BigFloat2 sqrt(const BigFloat2& x, prec_t prec = BF_DEF_SQRT_PREC)
+inline BigFloat2 sqrt(const BigFloat2& x, prec_t prec = getDefaultBFradicalPrec())
 { BigFloat2 r; r.sqrt(x, prec); return r; }
 /// cubic root
-inline BigFloat2 cbrt(const BigFloat2& x, prec_t prec = BF_DEF_CBRT_PREC)
+inline BigFloat2 cbrt(const BigFloat2& x, prec_t prec = getDefaultBFradicalPrec())
 { BigFloat2 r; r.cbrt(x, prec); return r; }
 /// k-th root
-inline BigFloat2 root(const BigFloat2& x, unsigned long k, prec_t prec = BF_DEF_ROOT_PREC)
+inline BigFloat2 root(const BigFloat2& x, unsigned long k, prec_t prec = getDefaultBFradicalPrec())
 { BigFloat2 r; r.root(x, k, prec); return r; }
 //@}
 
 // include inline functions (private)
 #include <CORE/BigFloat2.inl>
+
+// convert any type to BigFloat
+template <typename T>
+inline BigFloat2 ToBigFloat2(const T& x, prec_t r = defRelPrec) 
+{ return BigFloat2(x, r); }
+
+int sign(const BigFloat2& x) 
+{ return x.sgn(); }
 
 #ifdef CORE_OLDNAMES 
 /// \addtogroup BigFloat2BackCompatiableFunctions

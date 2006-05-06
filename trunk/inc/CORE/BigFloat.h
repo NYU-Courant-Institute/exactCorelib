@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.9 2006-03-03 17:19:58 exact Exp $
+ * $Id: BigFloat.h,v 1.10 2006-05-06 19:53:19 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -70,11 +70,6 @@ const size_t INT_PREC = sizeof(int)*8;
 const size_t SINGLE_PREC = 24;
 const size_t DOUBLE_PREC = 53;
  
-const prec_t MPFR_DEF_SQRT_PREC = DOUBLE_PREC;
-const prec_t MPFR_DEF_CBRT_PREC = DOUBLE_PREC;
-const prec_t MPFR_DEF_ROOT_PREC = DOUBLE_PREC;
-const prec_t MPFR_DEF_DIV_PREC = DOUBLE_PREC;
-
 #ifndef CORE_DISABLE_REFCOUNTING
   typedef RcMpfr BigFloatBase;
 #else
@@ -593,7 +588,7 @@ public:
   //@{
   /// division for <tt>BigFloat/BigFloat</tt> (fixed version)
   int div(const BigFloat& x, const BigFloat& y, 
-          prec_t prec = MPFR_DEF_DIV_PREC, rnd_t rnd = MPFR_RND) {
+          prec_t prec = getDefaultBFdivPrec(), rnd_t rnd = MPFR_RND) {
     if (&x == this || &y == this) { // if one of inputs are output
        BigFloat result(0, prec);
        int r = result.r_div(x, y, rnd);
@@ -605,7 +600,7 @@ public:
   /// division for <tt>BigFloat/T</tt> (fixed version)
   template <typename T> 
   int div(const BigFloat& x, const T& y, 
-          prec_t prec = MPFR_DEF_DIV_PREC, rnd_t rnd = MPFR_RND) {
+          prec_t prec = getDefaultBFdivPrec(), rnd_t rnd = MPFR_RND) {
     if (&x == this) { // if x is same as output 
        BigFloat result(0, prec);
        int r = result.r_div(x, y, rnd);
@@ -617,7 +612,7 @@ public:
   /// division for <tt>T/BigFloat</tt> (fixed version)
   template <typename T>
   int div(const T& x, const BigFloat& y, 
-          prec_t prec = MPFR_DEF_DIV_PREC, rnd_t rnd = MPFR_RND) {
+          prec_t prec = getDefaultBFdivPrec(), rnd_t rnd = MPFR_RND) {
     if (&y == this) { // if y is same as output
        BigFloat result(0, prec);
        int r = result.r_div(x, y, rnd);
@@ -654,7 +649,7 @@ public:
   //@{
   /// square root function for <tt>BigFloat</tt> (fixed version)
   int sqrt(const BigFloat& x, 
-           prec_t prec = MPFR_DEF_SQRT_PREC, rnd_t rnd = MPFR_RND) {
+           prec_t prec = getDefaultBFradicalPrec(), rnd_t rnd = MPFR_RND) {
     if (&x == this) { // if x is same as ouput
       BigFloat result(0, prec);
       int r = result.r_sqrt(x, rnd);
@@ -665,7 +660,7 @@ public:
   }
   /// square root function for <tt>T</tt> (fixed version)
   template <typename T> 
-  int sqrt(const T& x, prec_t prec = MPFR_DEF_SQRT_PREC, rnd_t rnd = MPFR_RND)
+  int sqrt(const T& x, prec_t prec = getDefaultBFradicalPrec(), rnd_t rnd = MPFR_RND)
   { set_prec(prec); return r_sqrt(x, rnd); }
   //@}
 
@@ -767,7 +762,7 @@ public:
   }
   /// cubic root (fixed version)
   int cbrt(const BigFloat& x, 
-           prec_t prec = MPFR_DEF_CBRT_PREC, rnd_t rnd = MPFR_RND) {
+           prec_t prec = getDefaultBFradicalPrec(), rnd_t rnd = MPFR_RND) {
     if (&x == this) { // if y is same as output
        BigFloat result(0, prec);
        int r = result.r_cbrt(x, rnd);
@@ -778,7 +773,7 @@ public:
   }
   /// kth root (fixed version)
   int root(const BigFloat& x, unsigned long k,
-           prec_t prec = MPFR_DEF_ROOT_PREC, rnd_t rnd=MPFR_RND) {
+           prec_t prec = getDefaultBFradicalPrec(), rnd_t rnd=MPFR_RND) {
     if (&x == this) { // if y is same as output
        BigFloat result(0, prec);
        int r = result.r_root(x, k, rnd);
@@ -845,6 +840,9 @@ public:
   /// right shift for <tt>unsigned long</tt>
   int div_2exp(const BigFloat& x, unsigned long y, rnd_t rnd = MPFR_RND)
   { return mpfr_div_2ui(mp(), x.mp(), y, rnd); }
+  /// divide by 2
+  int div2(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  { return div_2exp(x, 1, rnd); }
   //@}
 
   /// \name comparison functions
