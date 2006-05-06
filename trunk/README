@@ -14,7 +14,7 @@
 *        
 *  Copyright (c) 1998-2006 by Exact Computation Project, NYU
 *
-*  $Id: README,v 1.4 2006-04-04 22:30:04 exact Exp $
+*  $Id: README,v 1.5 2006-05-06 19:03:11 exact Exp $
 *************************************************************
 
 README FILE: TABLE OF CONTENTS
@@ -189,7 +189,7 @@ README FILE: TABLE OF CONTENTS
 
         The main steps here describes an installation from a full distribution 
         in a unix-like environment: it is the simplest to install.
-	But see 3.9) below for *variant* installations: these include
+	But see 3.10) below for *variant* installations: these include
 	installing only the base distribution, using dynamic libraries,
 	Windows platform, re-installing the Core Library, building Debugging
 	Versions of Core Library, etc.
@@ -221,9 +221,10 @@ README FILE: TABLE OF CONTENTS
                 $(CORE_INSTALL)/core-X.Y.Z
    
    3.3) There are three stages of installation:
-                STAGE 1 -- gmp- and mpfr-related installation
-                STAGE 2 -- create the core library, extensions, samples
-                STAGE 3 -- run tests and timings
+                STAGE 1 -- gmp installation
+                STAGE 2 -- mpfr installation
+                STAGE 3 -- create the core library, extensions, samples
+                STAGE 4 -- run tests and timings
         The screen output from the individual steps in these stages
         are stored in the files ${CORE_PATH}/tmp/DIAG_* for your diagnostics.
 
@@ -242,7 +243,7 @@ README FILE: TABLE OF CONTENTS
             % make opt[ions] -- this will show the various global settings
                              -- e.g. PLATFORM=gnu, LINKAGE=static, VAR=, etc.
 
-   3.4) STAGE 1: INSTALLING GMP and MPFR
+   3.4) STAGE 1: INSTALLING GMP 
 
         PRELIMINARY STEP:   For most Unix-like OS (e.g., Solaris, Linux),
         gmp will automatically build BOTH a static and a dynamic library.  
@@ -273,9 +274,9 @@ README FILE: TABLE OF CONTENTS
                 % cd ${CORE_PATH} 
                 % make testgmp
 
-        This test simply computes 12345 * 67890.  If the answer
-        838102050 is shown, you have passed this test and 
-        you may go to STAGE 2.
+        This test simply computes 12345 * 67890 = 838102050,
+	and 111111111 * 111111111 = 12,345,678,987,654,321.
+        If you pass the test, you may go to STAGE 2.
 
         b) If you have compiled and installed GMP in some 
         directory which cannot be found by your compiler, then make a 
@@ -313,6 +314,22 @@ README FILE: TABLE OF CONTENTS
                                 in the file ${CORE_PATH}/tmp/DIAG_INSTALL_GMP
             % make testgmp   -- you must pass this test to continue.
                                 output in file ${CORE_PATH}/tmp/DIAG_TEST_GMP
+
+        IMPORTANT: Our top level make file is written for GNU's gmake.
+        The remaining make files in subdirectories should work with other
+        make programs.  The first three steps takes 15-25 minutes.
+
+   3.5) STAGE 2: INSTALLING MPFR
+
+	If you have already installed MPFR, you can verify this by
+
+                % cd ${CORE_PATH} 
+                % make testmpfr
+
+ 	If your screen shows the answer 8.3810205000e8 and 3.1415929208,
+        you have passed the test and may go to STAGE 3.
+	Otherwise, you proceed as follows:
+
             % make fourth    -- configures mpfr (same as "make config-mpfr")
                              -- screen output is placed in the file
 				${CORE_PATH}/tmp/DIAG_CONFIG_MPFR
@@ -325,12 +342,13 @@ README FILE: TABLE OF CONTENTS
             % make testmpfr  -- you must pass this test to continue.
                                 Output in file ${CORE_PATH}/tmp/DIAG_TEST_MPFR
 
-        IMPORTANT: Our top level make file is written for GNU's gmake.
-        The remaining make files in subdirectories should work with other
-        make programs.  The first three steps takes 15-25 minutes.
-        Time for fourth and fifth steps are 1.5 and 10 minutes, resp.
 
-   3.5) STAGE 2: BUILD CORE LIBRARY.
+   3.6) STAGE 3: BUILD CORE LIBRARY.
+	
+	Now that you have gmp and mpfr, you are ready to install CORE.
+        IMPORTANT: the compilation settings for STAGE 3 are found in
+        ${CORE_PATH}/Make.config.  This is described in Step 3.3) above
+	and also Step 3.10) below.
 
             % cd ${CORE_PATH}
             % make seventh    -- this is equivalent to a plain "make", or
@@ -347,14 +365,11 @@ README FILE: TABLE OF CONTENTS
         ${CORE_PATH}/src.  If you only want to make "libcore++.a", type
         "make" while in ${CORE_PATH}/src.
 
-        IMPORTANT: the compilation settings for STAGE 2 are found in
-        ${CORE_PATH}/Make.config. See the Make.config file and also 
-        step 3.9) below.
 
-   3.6) STAGE 3: TESTING AND TIMING.
+   3.7) STAGE 4: TESTING AND TIMING.
         If you had chosen LINKAGE to be "shared" above, then make sure
         that your LD_LIBRARY_PATH contains the directory ${CORE_PATH}/lib
-        (see 3.9(4) below).
+        (see 3.10(4) below).
 
             % cd ${CORE_PATH}
             % make eighth     -- equivalent to "make test".  Screen output is
@@ -374,7 +389,7 @@ README FILE: TABLE OF CONTENTS
                                -- screen output is placed in 
                                   the file ${CORE_PATH}/tmp/DIAG_TIME
 
-   3.7) USING CORE LIBRARY.
+   3.8) USING CORE LIBRARY.
         Assume that you have a stand alone C++ program "foo.cpp".
         In the ideal case, you only have to insert the preamble:
 
@@ -394,7 +409,7 @@ README FILE: TABLE OF CONTENTS
         For more information, please go to ${CORE_PATH}/progs/generic for
         samples, and also read the tutorial in ${CORE_PATH}/doc.
 
-   3.8) PLATFORMS.
+   3.9) PLATFORMS.
         Version 2.0 has been tested on
 
         sun solaris 5.8         --  g++-2.95.3, g++-3.2, g++-3.3, g++-3.4
@@ -411,10 +426,10 @@ README FILE: TABLE OF CONTENTS
         platform as an easy-to-use environment.  Cygwin and Windows
         can freely access each other's files (a big bonus).
 
-   3.9) VARIANT INSTALLATIONS
+   3.10) VARIANT INSTALLATIONS
 
         (1) INSTALLING BASE DISTRIBUTION:
-        This assumes you already have an installed gmp.
+        This assumes you already have an installed gmp and mpfr.
 
           -- Download the file core-X.Y.Z.tgz (for version X.Y.Z) from our
              website, http://cs.nyu.edu/exact/core.   This version has no
@@ -427,9 +442,10 @@ README FILE: TABLE OF CONTENTS
 
                 % cd ${CORE_PATH}
                 % make testgmp
+                % make testmpfr
 
-        If this compiles a test program and prints an encouraging message,
-        you may continue from STAGE 2 (Step 3.5) above.
+        If these tests print encouraging messages,
+        you may continue from STAGE 3 (Step 3.6) above.
         Otherwise assume that your gmp is installed at $(MY_GMP_DIR).  For 
         instance, if you have installed a full version of Core 
         Library at $(MY_CORELIB) then $(MY_GMP_DIR)=$(MY_CORELIB)/gmp.
@@ -441,7 +457,7 @@ README FILE: TABLE OF CONTENTS
                 % make testgmp
 
         This should compiles and prints an encouraging message. 
-        Continue from STAGE 2 (Step 3.5) above.
+        Continue from STAGE 3 (Step 3.6) above.
 
         
         (2) INSTALLATION FOR WINDOWS PLATFORM
@@ -494,8 +510,8 @@ README FILE: TABLE OF CONTENTS
         If you want to create your own Visual C++ project file, do the
         following steps:
  
-          -- add "${CORE_PATH}\inc", "${CORE_PATH}\win32\gmp" into "Include Path".
-          -- add "${CORE_PATH}\win32\lib" into "Lib Path".
+          -- add "${CORE_PATH}\inc", "${CORE_PATH}\win32\gmp" to "Include Path".
+          -- add "${CORE_PATH}\win32\lib" in "Lib Path".
           -- Enable "Run-Time Type Information" in your project settings. 
 
         (4) SHARED OR STATIC LIBRARY LINKAGE:
@@ -543,14 +559,14 @@ README FILE: TABLE OF CONTENTS
         Here are two useful variants, Debug variant and NoOpt variant:
 
         (a) VAR=Debug: you need this variant to run the GNU debugger, gdb.
-           If you set VAR=Debug in Make.config, and then re-do STAGE 2 above
-           (STAGE 1 does not have to be re-done), you will create the debugging
-           variant of the library, namely "libcore++Debug.a".    The other stages
+           If you set VAR=Debug in Make.config, and then re-do STAGE 3 above
+           (STAGES 1 and 2 are still fine), you will create the debugging
+           variant of the library, namely "libcore++Debug.a".  The other stages
            will similarly create the Debug variants, e.g., Debug versions
            Core Extension libraries, sample programs, etc.
         (b) VAR=NoOpt: this version turns off all compiler optimizations.
-           Try this if you find mysterious bugs, and want to rule out the
-           possibility that they are caused by aggressive compiler optimizations.
+           Try this if you find mysterious bugs, and want to rule out possible
+           errors caused by aggressive compiler optimizations.
 
         PLATFORM is used to define various variables that are platform-
         and compiler-specific.  It defaults to "gnu".  
@@ -571,18 +587,49 @@ README FILE: TABLE OF CONTENTS
   3.11) HOUSEKEEPING AND UNINSTALL
 
         To uninstall the library, simple delete all the files under
-        ${CORE_PATH} (i.e., we do not put files anywhere).
+        ${CORE_PATH} (i.e., we do not put files anywhere).  If gmp and
+        mpfr are installed under ${CORE_PATH} you may want to move them first.
         
         In every directory, we have a Makefile with two targets called
         "clean" and "veryclean".  If you want to save space, you can type
         "make clean" in any directory to remove temporary files.
-        E.g., *.o files.  If you type "make veryclean", this will,
-        in addition, remove more files (in particular, all executable files).
+        E.g., *.o files.  If you type "make veryclean", this will
+        remove more files (in particular, all executable files).
         NOTE: both targets are recursively propagated into subdirectories.
-
 
 *************************************************************
 4) NEWS, PLANS AND BUGS
+   NEW in Version 2.0:
+   -- Complete redesign of Core Library, based on Zilin's PhD thesis.
+      However, the original simple interfaces are retained.
+   -- Expr class is now templated to receive three parameter classes:
+      Filter Class, RootBound Class and BigFloat Class.  
+   -- Complete redesign of BigFloat (a new class called BigFloat2, for
+      interval arithmetic, is split off the original BigFloat).
+      The new BigFloat classes are based on MPFR, which in turn is
+      based on GMP.
+   -- Complete redesign of the basic Expr evaluation algorithms to improve
+      efficiency, avoiding redundant computations.
+   -- Introduction of transcendental functions into Expr.
+      All the elementary functions are available in Expr,
+      with CutOff Bounds are used in lieu of root bounds.
+   -- Redesigned hypergeometric function classes.
+   -- New facilities for user-defined nodes in Expr.
+   -- Use of Descartes method for real root isolation,
+      in place of Sturm.  This gives general speedup improvements.
+   -- Improved InCore, the interactive python version of CORE.
+   -- Bug Fixes
+          * Newton iteration fixed to really have quadratic convergence
+            (previous implementation only has linear convergence)
+          * Bug fix in Sturm root counting functions (off by one)
+   -- Miscellaneous:
+          * Versioning of Core Library is now Core-X.Y.Z (starting with
+            X.Y.Z = 2.0.0).  Previously it was "Core_v1.7.0").
+          * Upgraded Core Library to be compatible with the latest gmp 4.1.4.
+   -- Acknowledgements:  Thanks for feedback and bug reports from
+            Daniel Russell, Ron Wein, Andreas Fabri, Sylvain Pion.
+            
+=============================
    NEW in Version 1.7:
    -- Introduction of plane algebraic curves and bi-variate polynomials 
          The main capability is to plot curves and do basic
@@ -780,6 +827,11 @@ README FILE: TABLE OF CONTENTS
    Version 1.7 (Nov 2004) introduced algebraic curves and bivariate 
        polynomials.  An interactive version of Core Library called "InCore"
        is available.  Beginning graphic capability for display of curves.
+   Version 2.0 (Jun 2006) complete redesign of Core Library (templated
+	Expr class taking parameters for Filter class, Rootbound class
+        and BigFloat class), incorporation of transcendental functions into
+        Expr, Redesigned BigFloat (split off another class called BigFloat2),
+        general speed improvement 2-10 times.
 
 *************************************************************
 6)  LICENSE INFORMATION
