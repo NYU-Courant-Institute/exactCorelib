@@ -634,55 +634,10 @@ Polynomial<NT> & differentiate(int n) {
   return *this;
 } // multi-differentiate
 
-///Content of a polynomial P.
-///      -- content(P) is just the gcd of all the coefficients
-//      -- REMARK: by definition, content(P) is non-negative
-//                 We rely on the fact that NT::gcd always
-//                 return a non-negative value!!!
-NT content(const Polynomial<NT>& p) {
-  if(zeroP(p))
-    return 0;
-  int d = p.getTrueDegree();
-  if(d == 0){
-    if(p.coeff()[0] > 0)
-      return p.coeff()[0];
-    else
-      return -p.coeff()[0];
-  }
+  // Reductions of polynomials (NT must have gcd function)
+  Polynomial sqFreePart(); // Square free part of P is P/gcd(P,P'). Return gcd
+  Polynomial & primPart();   // Primitive Part of *this (which is changed)
 
-  NT content = p.coeff()[d];
-  for (int i=d-1; i>=0; i--) {
-    content = gcd(content, p.coeff()[i]);
-    if(content == 1) break;   // remark: gcd is non-negative, by definition
-  }
-  //if (p.coeff()[0] < 0) return -content;(BUG!)
-  return content;
-}//content
-
-/// Primitive Part-- primPart(P) is just P/content(P)
-//  (*this) is transformed to primPart and returned
-//	-- Should we return content(P) instead? [SHOULD IMPLEMENT THIS]
-// IMPORTANT: we require that content(P)>0, hence
-// 	the coefficients of primPart(P) does 
-// 	not change sign; this is vital for use in Sturm sequences
-Polynomial<NT> & primPart() {
-  // ASSERT: GCD must be provided by NT
-  int d = getTrueDegree();
-  assert (d >= 0);
-  if (d == 0) {
-    if (coeff()[0] > 0) coeff()[0] = 1;
-    else coeff()[0] = -1;
-    return *this;
-  }
-
-  NT g = *this.content();
-  if (g == 1 && coeff()[d] > 0)
-     return (*this);  
-  for (int i=0; i<=d; i++) {
-    coeff()[i] =  div_exact(coeff()[i], g);
-  }
-  return *this;
-}// primPart
 
   //@}
 
@@ -1012,31 +967,30 @@ inline NT content(const Polynomial<NT>& p) {
   return content;
 }//content
 
-/// Primitive Part:  primPart(P) is just P/content(P)
-//(*this) is transformed to primPart and returned
-//	-- Should we return content(P) instead? [SHOULD IMPLEMENT THIS]
+/// Primitive Part-- primPart(P) is just P/content(P)
+//  (*this) is transformed to primPart and returned
+//      -- Should we return content(P) instead? [SHOULD IMPLEMENT THIS]
 // IMPORTANT: we require that content(P)>0, hence
-// 	the coefficients of primPart(P) does 
-// 	not change sign; this is vital for use in Sturm sequences
+//      the coefficients of primPart(P) does 
+//      not change sign; this is vital for use in Sturm sequences
 template <class NT>
-inline Polynomial<NT>  primPart(Polynomial<NT> &p) {
+Polynomial<NT> & Polynomial<NT>::primPart() {
   // ASSERT: GCD must be provided by NT
-  int d = p.getTrueDegree();
+  int d = getTrueDegree();
   assert (d >= 0);
-  Polynomial<NT> q(d);
   if (d == 0) {
-    if (p.coeff()[0] > 0) q.coeff()[0] = 1;
-    else q.coeff()[0] = -1;
-    return q;
+    if (coeff()[0] > 0) coeff()[0] = 1;
+    else coeff()[0] = -1;
+    return *this;
   }
 
-  NT g = content(p);
-  if (g == 1 && p.coeff()[d] > 0)
-     return p;  
+  NT g = content(*this);
+  if (g == 1 && coeff()[d] > 0)
+     return (*this);
   for (int i=0; i<=d; i++) {
-    q.coeff()[i] =  div_exact(p.coeff()[i], g);
+    coeff()[i] =  div_exact(coeff()[i], g);
   }
-  return q;
+  return *this;
 }// primPart
 
 ///GCD of two polynomials.
@@ -1056,7 +1010,7 @@ inline Polynomial<NT> gcd(const Polynomial<NT>& p, const Polynomial<NT>& q) {
     if(zeroP(p))
        return p;
     else{
-       if(p.getCoeffi(p.getTrueDegree()) < 0){
+       if(p.getCoeff(p.getTrueDegree()) < 0){
          return Polynomial<NT>(p).negate();
        }else
          return p;	// If q<>0, then we know p<>0
@@ -1075,6 +1029,28 @@ inline Polynomial<NT> gcd(const Polynomial<NT>& p, const Polynomial<NT>& q) {
   temp0.pseudoRemainder(temp1);
   return (gcd(temp1, temp0).mulScalar(cont));
 }//gcd
+
+// sqFreePart()
+//      -- this is a self-modifying operator!
+//      -- Let P =(*this) and Q=square-free part of P.
+//      -- (*this) is transformed into P, and gcd(P,P') is returned
+// NOTE: The square-free part of P is defined to be P/gcd(P, P')
+template <class NT>
+Polynomial<NT>  Polynomial<NT>::sqFreePart() {
+  
+  int d = getTrueDegree();
+  if(d <= 1) // linear polynomials and constants are square-free
+    return *this;
+  Polynomial<NT> temp(*this);
+  Polynomial<NT> R = gcd(*this, temp.differentiate()); // R = gcd(P, P')
+  // If P and P' have a constant gcd, then P is squarefree
+  if(R.getTrueDegree() == 0)
+    return (Polynomial<NT>(0)); // returns the unit polynomial as gcd
+  
+  (*this)=pseudoRemainder(R); // (*this) is transformed to P/R, the sqfree part
+  //Note: This is up to multiplication by units
+  return (R); // return the gcd
+}//sqFreePart()
 
 //@}
 

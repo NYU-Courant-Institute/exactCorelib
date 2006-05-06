@@ -52,7 +52,7 @@ MAX_TYPE(NT, T) eval(Polynomial<NT> &p,const T& f) {	// evaluation
 //
 template <class NT>
 BigFloat2 evalApprox(Polynomial <NT> &p, const BigFloat& f, 
-	const extLong& r, const extLong& a) {	// evaluation
+	const extLong& r=defRelPrec, const extLong& a=defAbsPrec) {// evaluation
   int deg = p.getTrueDegree();
   
   if (deg == -1)
@@ -62,7 +62,7 @@ BigFloat2 evalApprox(Polynomial <NT> &p, const BigFloat& f,
 
   BigFloat2 val(0), c;
   for (int i=deg; i>=0; i--) {
-    c = BigFloat2(p.coeff()[i], r);	
+    c = ToBigFloat2(p.coeff()[i], r);	
     val *= f; 
     val += c;
   }
@@ -72,7 +72,7 @@ BigFloat2 evalApprox(Polynomial <NT> &p, const BigFloat& f,
 // This BigInt version of evalApprox should never be called...
 template <>
 BigFloat2 evalApprox( Polynomial<BigInt> &p, const BigFloat& f,
-	const extLong& r, const extLong& a) {	// evaluation
+	const extLong& r, const extLong& a) {// evaluation
   assert(0);
   return BigFloat2(0);
 }
@@ -106,27 +106,27 @@ BigFloat2 evalApprox( Polynomial<BigInt> &p, const BigFloat& f,
 
  ***************************************************/
 template <class NT>
-BigFloat evalExactSign(Polynomial<NT> &p, const BigFloat& val,
-	 const extLong& oldMSB) {
+BigFloat2 evalExactSign(Polynomial<NT> &p, const BigFloat& val,
+	 const extLong& oldMSB = 54) {
     if (p.getTrueDegree() == -1)
-      return BigFloat(0);
+      return BigFloat2(0);
   
     extLong r;
-    r = 1 + BigFloat(p.height()).uMSB() + ceilLg(long(p.getTrueDegree()+1));
+    r = 1 + height(p).uMSB() + ceilLg(long(p.getTrueDegree()+1));
     if (val > 1)
       r += p.getTrueDegree() * val.uMSB();
     r += std::max(extLong(0), -oldMSB);
   
     if (hasExactDivision<NT>::check()) { // currently, only to detect NT=Expr and NT=BigRat
-        BigFloat2 rVal = p.evalApprox(val, r);
+        BigFloat2 rVal = evalApprox(p, val, r);
         if (rVal.isZeroIn()) {
-	  Expr eVal = p.eval(Expr(val));	// eval gives exact value
+	  Expr eVal = eval(p, Expr(val));	// eval gives exact value
 	  eVal.approx(54,CORE_INFTY);  // if value is 0, we get exact 0
-	  return eVal.BigFloatValue();
+	  return eVal.BigFloat2Value();
 	} else 
           return rVal;
     } else
-	return BigFloat(eval(p, val));
+	return ToBigFloat2(eval(p, val));
 
    return 0;
   }//evalExactSign
@@ -148,7 +148,7 @@ BigFloat CauchyUpperBound(Polynomial<NT> &p) {
   NT mx = 0;
   int deg = p.getTrueDegree();
   for (int i = 0; i < deg; ++i) {
-    mx = core_max(mx, abs(p.coeff()[i]));
+    mx = std::max(mx, abs(p.coeff()[i]));
   }
   Expr e = mx;
   e /= Expr(abs(p.coeff()[deg]));
@@ -170,13 +170,13 @@ BigInt CauchyBound(Polynomial<NT> &p) {
     lhs = 0;
     for (int i=deg-1; i>=0; i--) {
       lhs *= B;
-      lhs += BigFloat2(abs(p.coeff()[i])).getLeft();//Need a lower bound on 
+      lhs += ToBigFloat2(abs(p.coeff()[i])).getLeft();//Need a lower bound on 
                                                     //the absolute value
     }
     //lhs /= abs(p.coeff()[deg]);
     //lhs.makeFloorExact();
     /* compute B^{deg} */
-    if (rhs * BigFloat2(abs(p.coeff()[deg])).getRight() <= lhs) {
+    if (rhs * ToBigFloat2(abs(p.coeff()[deg])).getRight() <= lhs) {
       B <<= 1;
       rhs *= (BigInt(1)<<deg);
     } else
@@ -200,10 +200,10 @@ BigInt UpperBound(Polynomial<NT> &p) {
     lhsPos = lhsNeg = 0;
     for (int i=deg-1; i>=0; i--) {
       if (p.coeff()[i]>0) {
-      	lhsPos = lhsPos * B + BigFloat2(p.coeff()[i]).getLeft();
+      	lhsPos = lhsPos * B + ToBigFloat2(p.coeff()[i]).getLeft();
       	lhsNeg = lhsNeg * B;
       } else {
-      	lhsNeg = lhsNeg * B - BigFloat2(p.coeff()[i]).getLeft();
+      	lhsNeg = lhsNeg * B - ToBigFloat2(p.coeff()[i]).getLeft();
       	lhsPos = lhsPos * B;
       } 
     }
@@ -217,7 +217,7 @@ BigInt UpperBound(Polynomial<NT> &p) {
     //approximation that is an upper bound on the leading coefficient.
     //
     /* compute B^{deg} */
-    if (rhs * BigFloat2(abs(p.coeff()[deg])).getRight() <= std::max(lhsPos,lhsNeg)) {
+    if (rhs * ToBigFloat2(abs(p.coeff()[deg])).getRight() <= std::max(lhsPos,lhsNeg)) {
       B <<= 1;
       rhs *= (BigInt(1)<<deg);
     } else
@@ -237,7 +237,7 @@ BigFloat CauchyLowerBound(Polynomial<NT> &p) {
   for (int i = 1; i <= deg; ++i) {
     mx = core_max(mx, abs(p.coeff()[i]));
   }
-  BigFloat2 e = BigFloat2(abs(p.coeff()[0]))/ BigFloat2(abs(p.coeff()[0]) + mx);
+  BigFloat2 e = ToBigFloat2(abs(p.coeff()[0]))/ ToBigFloat2(abs(p.coeff()[0]) + mx);
   return (e.getLeft().div2());
 }
 
@@ -249,12 +249,11 @@ BigFloat CauchyLowerBound(Polynomial<NT> &p) {
 template < class NT >
 BigFloat sepBound(Polynomial<NT> &p) {
   BigInt d;
-  BigFloat2 e;
+  BigFloat e;
   int deg = p.getTrueDegree();
 
   CORE::power(d, BigInt(deg), ((deg)+4)/2);
-  e = CORE::power(p.height()+1, deg);
-  e.makeCeilExact(); // see NOTE below
+  e = CORE::power(height(p).getRight()+1, deg);
   return (BigFloat2(1)/(e*2*d)).getLeft();
         // BUG fix: ``return 1/e*2*d'' was wrong
         // NOTE: the relative error in this division (1/(e*2*d))
@@ -274,7 +273,7 @@ BigFloat sepBound(Polynomial<NT> &p) {
 /// height function
 /// @return a BigFloat with error
 template < class NT >
-BigFloat2 height(Polynomial<NT> &p) {
+BigFloat2 height(const Polynomial<NT> &p) {
   if (zeroP(p))
     return BigFloat(0);
   int deg = p.getTrueDegree();
@@ -282,7 +281,7 @@ BigFloat2 height(Polynomial<NT> &p) {
   for (int i = 0; i< deg; i++)
     if (ht < abs(p.coeff()[i]))
       ht = abs(p.coeff()[i]);
-  return BigFloat2(ht);
+  return ToBigFloat2(ht);
 }
 
 
@@ -296,7 +295,7 @@ BigFloat2 length(Polynomial<NT> &p) {
   NT length = 0;
   for (int i = 0; i< deg; i++)
     length += abs(p.coeff()[i]*p.coeff()[i]);
-  return sqrt(BigFloat2(length));
+  return sqrt(ToBigFloat2(length));
 }
 
 
