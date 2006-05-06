@@ -51,7 +51,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Sturm.h,v $
- * $Revision: 1.2 $ $Date: 2006-05-06 19:53:09 $
+ * $Revision: 1.3 $ $Date: 2006-05-06 21:38:31 $
  ***************************************************************************/
 
 
@@ -507,8 +507,7 @@ public:
     BigFloat width = I.second - I.first;
     if (width <= 0) return I;  // Nothing to do if the
                                //   interval I is exact or inconsistent
-    //BigFloat eps = BigFloat::exp2(-aprec);   //  eps = 2^{-aprec}
-    BigFloat eps(1, -aprec);   //  eps = 2^{-aprec}
+    BigFloat eps = BigFloat::exp2(-aprec);   //  eps = 2^{-aprec}
     extLong n =  width.uMSB() + (extLong)aprec;
 
 
@@ -1089,7 +1088,7 @@ public:
 #ifdef CORE_DEBUG_NEWTON
     if (evalExactSign(seq[0],J.first) * evalExactSign(seq[0],J.second) > 0)
       std::cout <<" ERROR! Root is not in the Interval " << std::endl;
-    if(J.second - J.first >  BigFloat(1).exp2(-aprec))
+    if(J.second - J.first >  BigFloat::exp2(-aprec))
       std::cout << "ERROR! Newton Refine failed to achieve the desired precision" << std::endl;
 #endif
 

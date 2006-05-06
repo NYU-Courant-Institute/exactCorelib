@@ -278,7 +278,7 @@ BigFloat2 height(const Polynomial<NT> &p) {
     return BigFloat(0);
   int deg = p.getTrueDegree();
   NT ht = 0;
-  for (int i = 0; i< deg; i++)
+  for (int i = 0; i<= deg; i++)
     if (ht < abs(p.coeff()[i]))
       ht = abs(p.coeff()[i]);
   return ToBigFloat2(ht);
