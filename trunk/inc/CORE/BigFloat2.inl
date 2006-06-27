@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.inl,v 1.4 2006-03-04 04:23:57 exact Exp $
+ * $Id: BigFloat2.inl,v 1.5 2006-06-27 15:16:40 exact Exp $
  ***************************************************************************/
 #define BF_RNDD GMP_RNDD
 #define BF_RNDU GMP_RNDU
@@ -183,7 +183,7 @@ template <template <typename, typename, typename> class Policy, typename T>
 inline bool BigFloat2::_add(const T& x, const BigFloat2& y, prec_t prec) {
   set_exact(Policy<FT, T, FT>::add(m_l, x, y.m_l, prec, BF_RNDD));
   if (!is_exact() || !y.is_exact()) {
-    Policy<FT, T, FT>::add(m_r, x, y.m_r, prec, BF_RNDU);
+    Policy<FT, T, FT>::add(m_r, x, y.getRight(), prec, BF_RNDU);
     set_exact(false);
   } 
   return is_exact();
@@ -209,7 +209,7 @@ template <template <typename, typename, typename> class Policy, typename T>
 inline bool BigFloat2::_sub(const BigFloat2& x, const T& y, prec_t prec) {
   set_exact(Policy<FT, FT, T>::sub(m_l, x.m_l, y, prec, BF_RNDD));
   if (!is_exact() || !x.is_exact()) {
-    Policy<FT, FT, T>::sub(m_r, x.m_r, y, prec, BF_RNDU);
+    Policy<FT, FT, T>::sub(m_r, x.getRight(), y, prec, BF_RNDU);
     set_exact(false);
   }
   return is_exact();
@@ -219,7 +219,7 @@ template <template <typename, typename, typename> class Policy, typename T>
 inline bool BigFloat2::_sub(const T& x, const BigFloat2& y, prec_t prec) {
   set_exact(Policy<FT, T, FT>::sub(m_l, x, y.m_l, prec, BF_RNDD));
   if (!is_exact() || !y.is_exact()) {
-    Policy<FT, T, FT>::sub(m_r, x, y.m_r, prec, BF_RNDU);
+    Policy<FT, T, FT>::sub(m_r, x, y.getRight(), prec, BF_RNDU);
     set_exact(false);
   } 
   return is_exact();
