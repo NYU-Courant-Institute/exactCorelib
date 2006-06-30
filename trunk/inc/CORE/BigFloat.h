@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.12 2006-05-06 23:30:05 exact Exp $
+ * $Id: BigFloat.h,v 1.13 2006-06-30 08:40:29 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -842,7 +842,7 @@ public:
   { return mpfr_div_2ui(mp(), x.mp(), y, rnd); }
   /// divide by 2
   int div2(const BigFloat& x, rnd_t rnd = MPFR_RND)
-  { return div_2exp(x, 1, rnd); }
+  { set_prec(x.get_prec() + 1); return div_2exp(x, 1, rnd); }
   //@}
 
   /// \name comparison functions
