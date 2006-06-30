@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.10 2006-05-06 19:53:19 exact Exp $
+ * $Id: BigFloat2.h,v 1.11 2006-06-30 08:41:24 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -480,10 +480,12 @@ public:
     else {
       // get validate bits
       long bits = abs_diam().get_exp();
-      if (bits < 0) bits = -bits;
+      //if (bits < 0) bits = -bits;
       // round up to validate bits
       FT result(m_l);
-      result.prec_round(bits);
+      long valprec = m_l.get_exp() - bits;
+      if (valprec < 2) valprec = 2;
+      result.prec_round(valprec);
       return result;
     }
   }
