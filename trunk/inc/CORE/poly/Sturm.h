@@ -51,7 +51,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Sturm.h,v $
- * $Revision: 1.3 $ $Date: 2006-05-06 21:38:31 $
+ * $Revision: 1.4 $ $Date: 2006-06-30 08:47:11 $
  ***************************************************************************/
 
 
@@ -651,7 +651,7 @@ public:
       }
       del = (f/ff).getLeft(); // But the accuracy of "f/ff" must be controllable
 		    // by the caller...
-      err = BigFloat(del, -getDefaultBFdivPrec());
+      err = BigFloat(del,getDefaultBFdivPrec());
       //err = del.err();
       //del.makeExact(); // makeExact() is necessary
       val -= del;
