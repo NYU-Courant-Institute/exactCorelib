@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.8 2006-07-04 09:56:33 exact Exp $
+ * $Id: BigFloat.inl,v 1.9 2006-07-04 16:14:32 exact Exp $
  ***************************************************************************/
 
 /// \addtogroup BigFloatArithmeticOperators
@@ -531,7 +531,7 @@ inline long minStar(long m, long n) {
 /**     Assuming that a and  b are in coanonized forms.
         Defined to be true if mantissa(b) | mantissa(a) && 
         exp(b) = min*(exp(b), exp(a)).
- *      This concepts assume a and b are exact BigFloats.
+ *      This concepts assume a and b are exact BigFloat.
  */
 inline bool isDivisible(const BigFloat& a, const BigFloat& b) {
   // assert: a and b are exact BigFloats.
@@ -564,12 +564,29 @@ inline bool isDivisible(double x, double y) {
 // Chee (8/1/2004)   The definition of div_exact(x,y) 
 //   ensure that Polynomials<NT> works with NT=BigFloat and NT=double:
 // Jihun (7/3/2006)  This is not exactly working when NT=BigFloat
-//   z needs more precision than default in some cases
-//   We need to specify right precision than default.
+//   z needs more precision than default in some cases.
+//   We need to specify right precision.
 inline BigFloat div_exact(const BigFloat& x, const BigFloat& y) {
   BigFloat z;
+
   assert (isDivisible(x,y));
-  z.div(x,y,x.get_prec() + y.get_prec());
+ 
+  BigInt m_a, m_b;
+  x.get_z_exp(m_a);
+  y.get_z_exp(m_b);
+
+  unsigned long bin_a = getBinExpo(m_a);
+  unsigned long bin_b = getBinExpo(m_b);
+
+  if (bin_a > x.get_prec()) bin_a = x.get_prec();
+  if (bin_b > y.get_prec()) bin_b = y.get_prec(); 
+
+  long valprec = (x.get_prec()-bin_a)-(y.get_prec()-bin_b)+1;
+
+  if (valprec < 0) valprec = -valprec;
+  if (valprec < 2) valprec = 2;
+  
+  z.div(x,y,valprec);
   return z;
 }
 
