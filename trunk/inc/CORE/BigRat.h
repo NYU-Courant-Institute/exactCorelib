@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigRat.h,v 1.9 2006-03-03 17:19:58 exact Exp $
+ * $Id: BigRat.h,v 1.10 2006-07-04 09:54:47 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGRAT_H__
 #define __CORE_BIGRAT_H__
@@ -395,120 +395,120 @@ inline BigRat operator-(const BigRat& x, const BigRat& y)
 { BigRat r; r.sub(x, y); return r; }
 /// BigRat - int
 inline BigRat operator-(const BigRat& x, int y)
-{ return x + BigRat(y); }
+{ return x - BigRat(y); }
 /// int - BigRat
 inline BigRat operator-(int x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) - y; }
 /// BigRat - unsigned int
 inline BigRat operator-(const BigRat& x, unsigned int y)
-{ return x + BigRat(y); }
+{ return x - BigRat(y); }
 /// unsigned int - BigRat
 inline BigRat operator-(unsigned int x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) - y; }
 /// BigRat - long
 inline BigRat operator-(const BigRat& x, long y)
-{ return x + BigRat(y); }
+{ return x - BigRat(y); }
 /// long - BigRat
 inline BigRat operator-(long x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) - y; }
 /// BigRat - unsigned long
 inline BigRat operator-(const BigRat& x, unsigned long y)
-{ return x + BigRat(y); }
+{ return x - BigRat(y); }
 /// unsigned long - BigRat
 inline BigRat operator-(unsigned long x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) - y; }
 /// BigRat - double
 inline BigRat operator-(const BigRat& x, double y)
-{ return x + BigRat(y); }
+{ return x - BigRat(y); }
 /// double - BigRat
 inline BigRat operator-(double x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) - y; }
 /// BigRat - BigInt
 inline BigRat operator-(const BigRat& x, const BigInt& y)
-{ return x + BigRat(y); }
+{ return x - BigRat(y); }
 /// BigInt - BigRat
 inline BigRat operator-(const BigInt& x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) - y; }
 
 /// BigRat * BigRat
 inline BigRat operator*(const BigRat& x, const BigRat& y)
 { BigRat r; r.mul(x, y); return r; }
 /// BigRat * int
 inline BigRat operator*(const BigRat& x, int y)
-{ return x + BigRat(y); }
+{ return x * BigRat(y); }
 /// int * BigRat
 inline BigRat operator*(int x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) * y; }
 /// BigRat * unsigned int
 inline BigRat operator*(const BigRat& x, unsigned int y)
-{ return x + BigRat(y); }
+{ return x * BigRat(y); }
 /// unsigned int * BigRat
 inline BigRat operator*(unsigned int x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) * y; }
 /// BigRat * long
 inline BigRat operator*(const BigRat& x, long y)
-{ return x + BigRat(y); }
+{ return x * BigRat(y); }
 /// long * BigRat
 inline BigRat operator*(long x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) * y; }
 /// BigRat * unsigned long
 inline BigRat operator*(const BigRat& x, unsigned long y)
-{ return x + BigRat(y); }
+{ return x * BigRat(y); }
 /// unsigned long * BigRat
 inline BigRat operator*(unsigned long x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) * y; }
 /// BigRat * double
 inline BigRat operator*(const BigRat& x, double y)
-{ return x + BigRat(y); }
+{ return x * BigRat(y); }
 /// double * BigRat
 inline BigRat operator*(double x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) * y; }
 /// BigRat * BigInt
 inline BigRat operator*(const BigRat& x, const BigInt& y)
-{ return x + BigRat(y); }
+{ return x * BigRat(y); }
 /// BigInt * BigRat
 inline BigRat operator*(const BigInt& x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) * y; }
 
 /// BigRat / BigRat
 inline BigRat operator/(const BigRat& x, const BigRat& y)
 { BigRat r; r.div(x, y); return r; }
 /// BigRat / int
 inline BigRat operator/(const BigRat& x, int y)
-{ return x + BigRat(y); }
+{ return x / BigRat(y); }
 /// int / BigRat
 inline BigRat operator/(int x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) / y; }
 /// BigRat / unsigned int
 inline BigRat operator/(const BigRat& x, unsigned int y)
-{ return x + BigRat(y); }
+{ return x / BigRat(y); }
 /// unsigned int / BigRat
 inline BigRat operator/(unsigned int x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) / y; }
 /// BigRat / long
 inline BigRat operator/(const BigRat& x, long y)
-{ return x + BigRat(y); }
+{ return x / BigRat(y); }
 /// long / BigRat
 inline BigRat operator/(long x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) / y; }
 /// BigRat / unsigned long
 inline BigRat operator/(const BigRat& x, unsigned long y)
-{ return x + BigRat(y); }
+{ return x / BigRat(y); }
 /// unsigned long / BigRat
 inline BigRat operator/(unsigned long x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) / y; }
 /// BigRat / double
 inline BigRat operator/(const BigRat& x, double y)
-{ return x + BigRat(y); }
+{ return x / BigRat(y); }
 /// double / BigRat
 inline BigRat operator/(double x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) / y; }
 /// BigRat / BigInt
 inline BigRat operator/(const BigRat& x, const BigInt& y)
-{ return x + BigRat(y); }
+{ return x / BigRat(y); }
 /// BigInt / BigRat
 inline BigRat operator/(const BigInt& x, const BigRat& y)
-{ return BigRat(x) + y; }
+{ return BigRat(x) / y; }
 //@}
 
 /// BigRat << int
