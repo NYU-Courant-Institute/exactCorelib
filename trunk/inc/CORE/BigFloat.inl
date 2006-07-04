@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.7 2006-05-06 19:53:19 exact Exp $
+ * $Id: BigFloat.inl,v 1.8 2006-07-04 09:56:33 exact Exp $
  ***************************************************************************/
 
 /// \addtogroup BigFloatArithmeticOperators
@@ -563,10 +563,13 @@ inline bool isDivisible(double x, double y) {
  */
 // Chee (8/1/2004)   The definition of div_exact(x,y) 
 //   ensure that Polynomials<NT> works with NT=BigFloat and NT=double:
+// Jihun (7/3/2006)  This is not exactly working when NT=BigFloat
+//   z needs more precision than default in some cases
+//   We need to specify right precision than default.
 inline BigFloat div_exact(const BigFloat& x, const BigFloat& y) {
   BigFloat z;
   assert (isDivisible(x,y));
-  z.div(x, y);
+  z.div(x,y,x.get_prec() + y.get_prec());
   return z;
 }
 
@@ -600,7 +603,6 @@ inline BigFloat gcd(const BigFloat& a, const BigFloat& b) {
   // return x*2^{dx}
   BigFloat x(r);
   x.mul_2exp(x, dx);
-
   return x;
 }
 
