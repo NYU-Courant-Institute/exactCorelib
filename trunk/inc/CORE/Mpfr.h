@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Mpfr.h,v 1.9 2006-03-03 17:19:58 exact Exp $
+ * $Id: Mpfr.h,v 1.10 2006-07-05 00:25:22 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_MPFR_H__
 #define __CORE_MPFR_H__
@@ -31,7 +31,8 @@
   #include <CORE/RefCounting.h>
 #endif
 
-// typedefs
+// typedefs:
+// 	exponent type (exp_t), precision type (prec_t), rounding type (rnd_t)
 typedef mp_rnd_t rnd_t;
 typedef mp_exp_t exp_t;
 typedef mp_prec_t prec_t;

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.9 2006-07-04 16:14:32 exact Exp $
+ * $Id: BigFloat.inl,v 1.10 2006-07-05 00:25:22 exact Exp $
  ***************************************************************************/
 
 /// \addtogroup BigFloatArithmeticOperators
@@ -528,7 +528,7 @@ inline long minStar(long m, long n) {
 }
 
 /// isDivisible(a,b) = "is a divisible by b"
-/**     Assuming that a and  b are in coanonized forms.
+/**     Assuming that a and  b are in canonized forms.
         Defined to be true if mantissa(b) | mantissa(a) && 
         exp(b) = min*(exp(b), exp(a)).
  *      This concepts assume a and b are exact BigFloat.
@@ -562,26 +562,25 @@ inline bool isDivisible(double x, double y) {
 /**     This is defined only if isDivisible(x,y).
  */
 // Chee (8/1/2004)   The definition of div_exact(x,y) 
-//   ensure that Polynomials<NT> works with NT=BigFloat and NT=double:
-// Jihun (7/3/2006)  This is not exactly working when NT=BigFloat
-//   z needs more precision than default in some cases.
-//   We need to specify right precision.
+//   ensures that Polynomials<NT> works with NT=BigFloat and NT=double:
+// Jihun (7/3/2006)  This was not exactly working when NT=BigFloat
+//   z needs more precision than default.  Problem fixed.
 inline BigFloat div_exact(const BigFloat& x, const BigFloat& y) {
   BigFloat z;
 
   assert (isDivisible(x,y));
  
-  BigInt m_a, m_b;
-  x.get_z_exp(m_a);
-  y.get_z_exp(m_b);
+  BigInt m_x, m_y;
+  x.get_z_exp(m_x);
+  y.get_z_exp(m_y);
 
-  unsigned long bin_a = getBinExpo(m_a);
-  unsigned long bin_b = getBinExpo(m_b);
+  unsigned long bin_x = getBinExpo(m_x);
+  unsigned long bin_y = getBinExpo(m_y);
 
-  if (bin_a > x.get_prec()) bin_a = x.get_prec();
-  if (bin_b > y.get_prec()) bin_b = y.get_prec(); 
+  if (bin_x > x.get_prec()) bin_x = x.get_prec();
+  if (bin_y > y.get_prec()) bin_y = y.get_prec(); 
 
-  long valprec = (x.get_prec()-bin_a)-(y.get_prec()-bin_b)+1;
+  long valprec = (x.get_prec()-bin_x)-(y.get_prec()-bin_y)+1;
 
   if (valprec < 0) valprec = -valprec;
   if (valprec < 2) valprec = 2;
