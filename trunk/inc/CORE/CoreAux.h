@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.h,v 1.8 2006-05-06 19:53:19 exact Exp $
+ * $Id: CoreAux.h,v 1.9 2006-07-10 13:46:55 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREAUX_H__
 #define __CORE_COREAUX_H__
@@ -68,7 +68,15 @@ inline const T core_abs(const T& a) {
   return ((a < T(0)) ? -a : a);
 }
 
-#ifdef CORE_OLDNAMES 
+template <class T>
+inline  void core_swap(T& a, T& b) {
+  T tmp;
+  tmp = a;
+  a = b;
+  b = tmp;
+}
+
+//#ifdef CORE_OLDNAMES 
 /// \addtogroup GlobalBackCompatiableFunctions
 //@{
 inline bool isDivisible(int x, int y) { return x % y == 0; }
@@ -77,8 +85,44 @@ inline int div_exact(int x, int y) { return x/y; }
 inline long div_exact(long x, long y) { return x/y; }
 inline long ceilLg(long a) { return ceilLg(BigInt(a)); }
 inline long ceilLg(int a) { return ceilLg(BigInt(a)); }
+inline long sign(long a) { return a==0 ? 0 : a > 0 ? 1 : -1; }
+inline int sign(int a) { return a==0 ? 0 : a > 0 ? 1 : -1; }
+inline long abs(long x) { return (x>=0) ? x : (-x); }
+inline int abs(int x) { return (x>=0) ? x : (-x); }
+long gcd(long m, long n) {
+  if (m == 0)
+    return core_abs(n);
+  if (n == 0)
+    return core_abs(m);
+  long p = core_abs(m);
+  long q = core_abs(n);
+  if (p<q)
+    core_swap(p, q);
+  while (q>0) {
+    long r = p % q;
+    p = q;
+    q = r;
+  }
+  return p;
+}
+int gcd(int m, int n) {
+  if (m == 0)
+    return core_abs(n);
+  if (n == 0)
+    return core_abs(m);
+  int p = core_abs(m);
+  int q = core_abs(n);
+  if (p<q)
+    core_swap(p, q);
+  while (q>0) {
+    int r = p % q;
+    p = q;
+    q = r;
+  }
+  return p;
+}
 //@}
-#endif
+//#endif
 
 CORE_END_NAMESPACE
 
