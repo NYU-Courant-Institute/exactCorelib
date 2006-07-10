@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.15 2006-05-06 19:53:19 exact Exp $
+ * $Id: Expr.h,v 1.16 2006-07-10 18:42:06 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -282,6 +282,10 @@ inline Expr fabs(const Expr& x) {
   return abs(x);
 }
 
+inline sign_t sign(const Expr& x) {
+  return x.sign();
+}
+
 /// convert Expr to BigFloat2
 inline BigFloat2 ToBigFloat2(const Expr& e, prec_t r = defRelPrec) {
   Expr* p = const_cast<Expr*>(&e);
@@ -289,6 +293,25 @@ inline BigFloat2 ToBigFloat2(const Expr& e, prec_t r = defRelPrec) {
   return e.BigFloat2Value(); 
 }
 
-CORE_END_NAMESPACE
+inline BigInt ToBigInt(const Expr& e, prec_t r = defRelPrec) {
+  Expr* p = const_cast<Expr*>(&e);
+  p->r_approx(r);
+  return e.BigIntValue();
+}
 
+inline bool isDivisible(const Expr& x, const Expr& y) {
+  Expr e = x/y;
+  Expr r = e - ToBigInt(e);
+
+  return r == 0;
+}
+
+inline Expr gcd(const Expr& x, const Expr& y) {
+  return 1;
+}
+
+inline Expr div_exact(const Expr& x, const Expr& y) {
+  return ToBigInt(x/y);
+}
+CORE_END_NAMESPACE
 #endif // __CORE_EXPR_H__
