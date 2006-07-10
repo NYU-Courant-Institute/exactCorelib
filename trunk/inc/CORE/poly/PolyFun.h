@@ -58,7 +58,8 @@ BigFloat2 evalApprox(Polynomial <NT> &p, const BigFloat& f,
   if (deg == -1)
     return BigFloat2(0);
   if (deg == 0)
-    return BigFloat(p.coeff()[0], r);
+    return ToBigFloat2(p.coeff()[0], r);
+    
 
   BigFloat2 val(0), c;
   for (int i=deg; i>=0; i--) {
