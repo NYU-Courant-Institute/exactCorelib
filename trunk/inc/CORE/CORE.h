@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CORE.h,v 1.9 2006-05-05 21:06:22 exact Exp $
+ * $Id: CORE.h,v 1.10 2006-07-17 06:55:02 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_CORE_H__
 #define __CORE_CORE_H__
@@ -52,6 +52,8 @@ typedef long machine_long;
 #if CORE_LEVEL == 3
   #undef double
   #define double Expr
+  #undef long
+  #define long Expr
 #endif
 
 #ifndef CORE_NO_AUTOMATIC_NAMESPACE
