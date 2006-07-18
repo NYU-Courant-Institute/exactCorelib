@@ -330,10 +330,25 @@ int numberOfRootsBelow(Polynomial<T> &P, BigFloat a){
 //and return the i'th interval from the beginning
 //or the end depending upon the sign of i; this can be
 //done since the list of intervals is already sorted.
+// We also guarantee that the interval returned does not
+// contain a zero within it, unless the desired root is itself zero.
+
 template <typename T>
 BFInterval isolateRoot(Polynomial<T> &P, int i, BigFloat x, BigFloat y){
   BFVecInterval v;
-  isolateRoots(P, BFInterval(x,y), v);
+
+  // We isolate the positive and negative roots separately, thus ensuring
+  // that zero is not contained within an interval.
+  if(sign(x) == sign(y))
+    isolateRoots(P, BFInterval(x,y), v);
+  else{
+    isolateRoots(P, BFInterval(x, 0), v);
+    if(P.coeff()[0] == NT(0)) // zero is a root of P
+      v.erase(v.end() -1, v.end()); // erase the entry corresponding to zero in
+                                    // v since the next call we add it again
+    isolateRoots(P, BFInterval(0, y), v);
+  }
+
   
   int n= v.size(); //the precise number of real roots in I
   if (i < 0) {//then we want the n-i+1 root
@@ -345,16 +360,10 @@ BFInterval isolateRoot(Polynomial<T> &P, int i, BigFloat x, BigFloat y){
     return BFInterval(1,0);  // ERROR CONDITION INDICATED
 
   //Now 0< i <= n
-  if (n == 1) {
-    if ((x>0) || (y<0)) return BFInterval(x, y);
-    if (P.coeff()[0] == NT(0)) return BFInterval(0,0);
-    if(abs(x) > abs(y)){//A slight opitmization to reduce the size of shifts
-      if (numberOfRoots(P, 0, y)==0) return BFInterval(x,0);
-      return BFInterval(0,y);
-    }else{
-      if (numberOfRoots(P, x, 0)==0) return BFInterval(0, y);
-      return BFInterval(x,0);
-    }
+  if (n == 1) {// Thus there is only one root in (x,y). Moreover, the way
+               // we isolated the root we are sure that the interval in v
+               // does not contain any zero. 
+    return *(v.begin());
   }
 
   //Otherwise traverse v and return the i'th interval
