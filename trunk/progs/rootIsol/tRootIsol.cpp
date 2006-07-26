@@ -8,17 +8,24 @@ typedef Polynomial<NT> PolyNT;
 
 int main(int argc, char* argv[]) {
   VecString v;
-  readString(argv[1], v); //Reads in a file of polynomials
+  if(argc > 1)
+    readString(argv[1], v); //Reads in a file of polynomials
+  else
+    readString("../data/polynomials/deg20", v);
+  //Other options are:
+  //../data/polynomials/deg10[20,40,80,100,100_slow,squarefree,nonsqrfree]
+
   PolyNT P, Q;
   Sturm<NT> S;
   BFVecInterval v1, v2;
   int m,n;
   Timer t1, t2;
-  for (VecString::const_iterator it = v.begin();
+  /*for (VecString::const_iterator it = v.begin();
 	 it != v.end(); ++it) {
     read_poly((*it).c_str(), P);
     cout << "Polynomial is " << *it << endl;
-
+    P.dump();
+    
     S = Sturm<NT>(P);
     t1.start();
     S.isolateRoots(v1);
@@ -36,10 +43,17 @@ int main(int argc, char* argv[]) {
       cout <<"ERROR!!! Root Isolation wrong."<< endl;
     cout << endl;
   }
+  */
 
-
-  
-  
+  //This loop only tests Descartes method and gives average timing
+  BigInt B; 
+  for (VecString::const_iterator it = v.begin();
+	 it != v.end(); ++it) {
+    read_poly((*it).c_str(), P);
+    cout << "Polynomial is " << *it << endl;
+    B = CauchyBound(P);
+    testDescartes2(P, BFInterval(-B, B), 100);
+  }  
   return 0;
 }
 

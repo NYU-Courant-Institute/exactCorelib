@@ -343,7 +343,7 @@ BFInterval isolateRoot(Polynomial<T> &P, int i, BigFloat x, BigFloat y){
     isolateRoots(P, BFInterval(x,y), v);
   else{
     isolateRoots(P, BFInterval(x, 0), v);
-    if(P.coeff()[0] == NT(0)) // zero is a root of P
+    if(P.coeff()[0] == T(0)) // zero is a root of P
       v.erase(v.end() -1, v.end()); // erase the entry corresponding to zero in
                                     // v since the next call we add it again
     isolateRoots(P, BFInterval(0, y), v);
@@ -397,7 +397,7 @@ BFInterval firstRootBelow(Polynomial<T> P, const BigFloat &e){
 
 //Given the count n of the number of roots, this function isolates
 //the roots of P and checks if they are equal to n.
-//CORE_INLINE This causes compiler problems.
+//CORE_INLINE << This causes compiler problems.
 void testDescartes(Poly& P, int n = -1) {
 
   BFVecInterval v;
@@ -415,7 +415,7 @@ void testDescartes(Poly& P, int n = -1) {
   }
 }// testDescartes
 
-//CORE_INLINE This causes compiler problems
+//CORE_INLINE << This causes compiler problems
 void testDescartes2(Poly& P, BFInterval I, int n) {
   
   BFVecInterval v;

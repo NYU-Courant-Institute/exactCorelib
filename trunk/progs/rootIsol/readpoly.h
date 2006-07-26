@@ -5,7 +5,7 @@
 #include <fstream>
 #include<vector>
 
-const double LOG2_10 = log(10.0) / log(2.0);
+//const double LOG2_10 = log(10.0) / log(2.0);
 
 /***********************************************************
 *       SUBROUTINE READ_POLY                               *
@@ -61,7 +61,7 @@ void read_poly(FILE *instr, CORE::Polynomial<T>& p)
   long prec_in = -1;
   if (prec_in == -1) {
     fscanf(instr, "%ld", &(prec_in));
-    prec_in = (long) (prec_in * LOG2_10);
+    prec_in = (long) (prec_in * log(10.00)/log(2.0));// LOG2_10);
   } else {		/* override input precision */
     fscanf(instr, "%*d");
     prec_in = prec_in; /* load default */
@@ -110,7 +110,7 @@ void read_poly(FILE *instr, CORE::Polynomial<T>& p)
 
       case 'i':		/* Real - Integer Coefs */
 	BigInt temp;
-	if (!mpz_inp_str(temp.get_mp(), instr, 10))
+	if (!mpz_inp_str(temp.mp(), instr, 10))
 	  std::cerr << "Error while reading coefficient" << std::endl;
 	coeffs[indx]=T(temp);
 	//std::cout << "coeff=" << coeffs[indx] << std::endl;
