@@ -50,9 +50,9 @@ int main(int argc, char* argv[]) {
   for (VecString::const_iterator it = v.begin();
 	 it != v.end(); ++it) {
     read_poly((*it).c_str(), P);
-    cout << "Polynomial is " << *it << endl;
+    cout << *it << " ";
     B = CauchyBound(P);
-    testDescartes2(P, BFInterval(-B, B), 100);
+    testDescartes2(P, BFInterval(-B, B), 10);
   }  
   return 0;
 }

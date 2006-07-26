@@ -136,7 +136,7 @@ void isolateRoots(Polynomial<T> P, const BFInterval I, int deg,
   else if(num == 1)
     v.push_back(I);
   else{
-    BigFloat m = div2(I.second + I.first);
+    BigFloat m = I.second + I.first/2;
     T* temp1 = new T[deg +1];
     T* temp2 = new T[deg +1];
 
@@ -288,7 +288,7 @@ int numberOfRootsAbove(Polynomial<T> &P, BigFloat a){
 
   //Check if a is a root
   if(eval(P, a) == 0)
-    a += div2(sepBound(P));
+    a += sepBound(P)/BigFloat(2);
 
   if(a >= B)
     return 0;
@@ -308,7 +308,7 @@ int numberOfRootsBelow(Polynomial<T> &P, BigFloat a){
   BigInt B = CauchyBound(P);
   //Check if a is a root
   if(eval(P, a) == 0)
-    a -= div2(sepBound(P));
+    a -= sepBound(P)/BigFloat(2);
 
   if(a <= -B)
     return 0;
@@ -424,8 +424,8 @@ void testDescartes2(Poly& P, BFInterval I, int n) {
     isolateRoots(P, I, v);
   
   t1.stop();
-  std::cout<<"Root isolation using Descartes over " << n << " iterations takes time " 
-	   <<t1.getSeconds()<<std::endl;
-  std::cout << "Average time is " << t1.getSeconds()/n << std::endl;
+  //  std::cout<<"Root isolation using Descartes over " << n << " iterations takes time " 
+  //	   <<t1.getSeconds()<<std::endl;
+  std::cout << t1.getSeconds()/n << std::endl;
   
 }
