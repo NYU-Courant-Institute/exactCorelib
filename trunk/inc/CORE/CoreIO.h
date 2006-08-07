@@ -127,9 +127,9 @@ inline void setPositionalFormat(std::ostream& os = std::cout)
 inline void setScientificFormat(std::ostream& os = std::cout)
 { set_scientific_output(os); }
 inline void setDefaultOutputDigits(long p, std::ostream& o = std::cout)
-{ set_output_precision(digits2bits(p), o); }
+{ set_output_precision(p, o); }
 inline long getDefaultOutputDigits()
-{ return bits2digits(get_output_precision()); }
+{ return get_output_precision(); }
 #endif
 
 CORE_END_NAMESPACE
