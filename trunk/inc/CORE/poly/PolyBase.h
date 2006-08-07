@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: PolyBase.h,v 1.1 2006-03-03 21:16:43 exact Exp $
+ * $Id: PolyBase.h,v 1.2 2006-08-07 14:13:49 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_POLYBASE_H__
 #define __CORE_POLYBASE_H__
@@ -80,8 +80,14 @@ public:
       for (int i=0; i<=_deg; ++i) _coeff[i] = coef[i];
     }
   }
+  PolyBase(int n, const char* s[]) : _deg(n), _coeff(0) {
+    if (_deg >= 0) {
+      _coeff = new NT[_deg+1];
+      for (int i=0; i<=_deg; ++i) _coeff[i] = s[i];
+    }
+  }
   /// constructor from <tt>char*</tt> (no implicit conversion)
-  PolyBase(const char* s, char c);
+  PolyBase(const char* s, char c) { std::cout << "error";}
 
   /// assignment operator for <tt>PolyBase</tt>
   PolyBase& operator=(const PolyBase& rhs) {
