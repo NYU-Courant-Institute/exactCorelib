@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.cpp,v 1.2 2006-04-05 16:25:17 exact Exp $
+ * $Id: CoreAux.cpp,v 1.3 2006-08-07 14:18:29 exact Exp $
  ***************************************************************************/
 #include <CORE/Config.h>
 #include <CORE/CoreDefs.h>
@@ -29,15 +29,27 @@
 
 CORE_BEGIN_NAMESPACE
 
+msb_t ceillg(size_t v)
+{ return BigInt(v).ceillg(); }
+unsigned long gcd(unsigned long x, unsigned long y)
+{ return gcd(BigInt(x), BigInt(y)).get_ui(); }
+
 msb_t ceillg(long v)
 { return BigInt(v).ceillg(); }
 msb_t floorlg(long v)
 { return BigInt(v).floorlg(); }
 
+long gcd(long x, long y)
+{ return gcd(BigInt(x), BigInt(y)).get_si(); }
+
 msb_t ceillg(unsigned long v)
 { return BigInt(v).ceillg(); }
 msb_t floorlg(unsigned long v)
 { return BigInt(v).floorlg(); }
+
+int gcd(int x, int y)
+{ return gcd(BigInt(x), BigInt(y)).get_si(); }
+
 
 /// CORE_DIAGFILE is file name for core_error(..) output.
 char* CORE_DIAGFILE = "Core_Diagnostics";  // global file name
