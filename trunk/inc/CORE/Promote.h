@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Promote.h,v 1.4 2006-03-03 17:19:58 exact Exp $
+ * $Id: Promote.h,v 1.5 2006-08-07 14:01:42 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_PROMOTE_H__
 #define __CORE_PROMOTE_H__
@@ -51,7 +51,7 @@ template<> struct hasExactDivision<Expr> {
 };
 template<> struct hasExactDivision<BigRat> {
   static bool check() {
-     return true;
+     return false;
   }
 };
 
