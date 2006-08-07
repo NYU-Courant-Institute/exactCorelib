@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.11 2006-06-30 08:41:24 exact Exp $
+ * $Id: BigFloat2.h,v 1.12 2006-08-07 13:46:14 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -450,13 +450,20 @@ public:
   }
   /// return the string representation
   std::string get_str(size_t digits = 0, int base = 10) const {
-    if (is_exact()) 
+	if (is_exact()) {
       return m_l.get_str(digits, base);
-    else {
-      long bits = abs_diam().get_exp();
-      if (bits < 0) bits = -bits;
-      size_t valid_digits = (size_t)(bits*log(2.0)/log(double(base)));
+	} else {
+     long bits = abs_diam().get_exp();
+      // round up to validate bits
+      long valprec = m_l.get_exp() - bits;
+	  if (valprec <= 0) {
+		  valprec = bits;
+	  }
+      if (valprec < 2) valprec = 2;
+
+	  size_t valid_digits = (size_t)(valprec*log(2.0)/log(double(base)));
       if (digits > 0U && digits < valid_digits) valid_digits = digits;
+	  if (valid_digits < 2) valid_digits = 2;
       return m_l.get_str(valid_digits, base);
     }
   }
@@ -465,13 +472,7 @@ public:
   { return m_l.get_z(); }
   /// return <tt>BigRat</tt> value
   QT get_q() const {
-    ZT num, den(1); 
-    exp_t e = m_l.get_z_exp(num); 
-    if (e > 0)
-      num.mul_2exp(num, e);
-    else if (e < 0)
-      den.mul_2exp(num, -e);
-    return QT(num, den);
+    return m_l.get_q();
   }
   /// return <tt>BigFloat</tt> value
   FT get_f() const {
@@ -480,11 +481,18 @@ public:
     else {
       // get validate bits
       long bits = abs_diam().get_exp();
-      //if (bits < 0) bits = -bits;
       // round up to validate bits
       FT result(m_l);
+
       long valprec = m_l.get_exp() - bits;
+      // in case of m_r.get_exp() > m_l.get_exp(), ex m_r = 0.1 * 2^-426, m_l = 0.1 * 2^-423, bits = -423
+      // I dont know how to deal with this.
+      if (valprec <= 0) {
+        valprec = bits;
+        if (valprec < 0) valprec -= valprec;
+      }
       if (valprec < 2) valprec = 2;
+
       result.prec_round(valprec);
       return result;
     }
@@ -538,6 +546,8 @@ public:
   { return is_exact() ? (m_l.sgn()==0) : (m_l.sgn()<=0 && m_r.sgn()>=0); } 
   bool isZeroIn() const
   { return has_zero(); }
+  bool has_sign() const
+  { return !has_zero(); }
   /// return sign
   int sgn() const {
     if (is_exact()) {
@@ -549,6 +559,7 @@ public:
     } else {
 #ifndef NDEBUG
       std::cerr << "BigFloat2 Warning: cannot get correct sign!" << std::endl;
+      std::cerr << "m_l:m_r=" << m_l << ":" << m_r << std::endl;
 #endif
       return 0;
     }
@@ -797,7 +808,7 @@ template <typename T>
 inline BigFloat2 ToBigFloat2(const T& x, prec_t r = defRelPrec) 
 { return BigFloat2(x, r); }
 
-int sign(const BigFloat2& x) 
+inline int sign(const BigFloat2& x) 
 { return x.sgn(); }
 
 #ifdef CORE_OLDNAMES 
