@@ -51,7 +51,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Sturm.h,v $
- * $Revision: 1.4 $ $Date: 2006-06-30 08:47:11 $
+ * $Revision: 1.5 $ $Date: 2006-08-07 14:16:32 $
  ***************************************************************************/
 
 
@@ -66,6 +66,7 @@
 
 CORE_BEGIN_NAMESPACE
 
+typedef long extLong;
 typedef std::pair<BigFloat, BigFloat>   BFInterval;
 // NOTE: an error condition is indicated by
 // the special interval (1, 0)
@@ -286,14 +287,16 @@ public:
     if (x == y) return ((signx == 0) ? 1 : 0);
     int signy = sign(evalExactSign(seq[0],y));
     // easy case: THIS SHOULD BE THE OVERWHELMING MAJORITY
-
+/*
     if (signx != 0 && signy != 0)
       return (signVariations(x, signx) - signVariations(y, signy));
+
     // harder case: THIS SHOULD BE VERY INFREQUENT
     BigFloat sep;
     sep.div2(sepBound(seq[0]));
     BigFloat newx, newy;
-    if (signx == 0)
+
+   if (signx == 0)
       newx = x - sep;
     else
       newx = x;
@@ -303,6 +306,17 @@ public:
       newy = y;
     return (signVariations(newx, sign(evalExactSign(seq[0],newx)))
             - signVariations(newy, sign(evalExactSign(seq[0],newy))) );
+*/
+    if (signx != 0 && signy != 0)
+      return (signVariations(x, signx) - signVariations(y, signy));
+    else if (signx == 0 && signy == 0)
+      return 2 + (signVariations(x, sign(evalExactSign(seq[1],x))) - signVariations(y, -sign(evalExactSign(seq[1],y))));
+    else if (signx == 0)
+      return 1 + (signVariations(x, sign(evalExactSign(seq[1],x))) - signVariations(y, signy));
+    else if (signy == 0)
+      return 1 + (signVariations(x, signx) - signVariations(y, -sign(evalExactSign(seq[1],y))));
+    else
+      return (signVariations(x, signx) - signVariations(y, signy));
   }//numberOfRoots
 
   // numberOfRoots():
@@ -628,7 +642,7 @@ public:
       //ff is guaranteed to have the correct sign as the exact evaluation.
       ////////////////////////////////////////////////////
 
-      if (ff == 0) {
+      if (ff.sgn() == 0) {
         NEWTON_DIV_BY_ZERO = true;
         del = 0;
         core_error("Zero divisor in Newton Iteration",
@@ -643,7 +657,7 @@ public:
       fuMSB = f.uMSB();
       ////////////////////////////////////////////////////
 
-      if (f == 0) {
+      if (f.sgn() == 0) {
         NEWTON_DIV_BY_ZERO = false;
         del = 0;    // Indicates that we have reached the exact root
 		    //    This is because eval(val) is exact!!!
@@ -1064,9 +1078,9 @@ public:
 
       if(xSign == leftSign){//Root is greater than x
 	J.first = x;
-	J.second = x + del;  // justified by Lemma 2 above
+	J.second = x + abs(del);  // justified by Lemma 2 above
       }else if(xSign == rightSign){//Root is less than x
-	J.first = x - del;   // justified by Lemma 2 above
+	J.first = x - abs(del);   // justified by Lemma 2 above
 	J.second = x ;
       }else{//x is the root
 	J.first = J.second = x;
@@ -1074,16 +1088,17 @@ public:
     }
 
 
+
 #ifdef CORE_DEBUG
     std::cout << " Returning from Newton Refine: J.first = " << J.first
 	      << " J.second = " << J.second << " aprec = " << aprec
 	      << " Sign at the interval endpoints = " 
 	      << sign(evalExactSign(seq[0],J.first))
-	      << " : " << sign(evalExactSign(seq[0],J.second)) << " Err at starting = " 
+	      << " : " << sign(evalExactSign(seq[0],J.second)) << " Err at starting = "
 	      << J.first.err() << " Err at end = " << J.second.err() << std::endl;
 #endif
 
-    assert( (evalExactSign(seq[0],J.first) * evalExactSign(seq[0],J.second) <= 0) );
+   assert( (evalExactSign(seq[0],J.first) * evalExactSign(seq[0],J.second) <= 0) );
 
 #ifdef CORE_DEBUG_NEWTON
     if (evalExactSign(seq[0],J.first) * evalExactSign(seq[0],J.second) > 0)
