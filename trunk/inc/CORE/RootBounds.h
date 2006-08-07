@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: RootBounds.h,v 1.4 2006-03-03 17:19:58 exact Exp $
+ * $Id: RootBounds.h,v 1.5 2006-08-07 14:03:32 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_ROOTBOUNDS_H__
 #define __CORE_ROOTBOUNDS_H__
@@ -49,6 +49,8 @@ public:
 /// BFMSS Root Bound
 template <typename Kernel = BigFloat>
 class BfmssRootBd {
+  unsigned long self_d_e;
+  unsigned int m_ref;
   unsigned long d_e;
   unsigned long u_e;
   unsigned long l_e;
@@ -57,25 +59,36 @@ class BfmssRootBd {
   typedef typename Kernel::QT QT;
   typedef typename Kernel::FT FT;
 public:
+  BfmssRootBd() : self_d_e(1), m_ref(1) {}
 #ifdef CORE_DEBUG_ROOTBOUND
   void dump() const 
-  { std::cerr<<"[d_e,u_e,l_e="<<d_e<<","<<u_e<<","<<l_e<<std::endl; }
+  { std::cerr<<"[d_e,u_e,l_e,bound]="<<d_e<<","<<u_e<<","<<l_e<<","<< get_bound() <<std::endl; }
 #endif
+  unsigned long get_self_degree()
+  { return self_d_e; }
+  void init_ref()
+  { m_ref=0; }
+  void inc_ref()
+  { ++m_ref; }
+  bool is_used()
+  { return m_ref > 1; }
   bool is_constructive() const
   { return true; }
   /// BFMSS root bound could be zero, so set it to be 1 in that case
+  unsigned long get_bound(unsigned long deg) const
+  { return std::max(l_e + (deg - 1) * u_e, 1UL); }
   unsigned long get_bound() const
   { return std::max(l_e + (d_e - 1) * u_e, 1UL); }
   void set(long value)
-  { u_e = ceillg(value); l_e = 0; d_e = 1; }
+  { u_e = ceillg(abs(value)); l_e = 0; d_e = 1; }
   void set(unsigned long value)
   { u_e = ceillg(value); l_e = 0; d_e = 1; }
   void set(double value)
   { set(FT(value)); }
   void set(const ZT& value)
-  { u_e = value.ceillg(); l_e = 0; d_e = 1; }
+  { u_e = abs(value).ceillg(); l_e = 0; d_e = 1; }
   void set(const QT& value)
-  { u_e = value.num().ceillg(); l_e = value.den().ceillg(); d_e = 1; }
+  { u_e = abs(value).num().ceillg(); l_e = abs(value).den().ceillg(); d_e = 1; }
   void set(const FT& value) {
     ZT x; exp_t e = value.get_z_exp(x);
     if (e >= 0) { // convert to integer
@@ -84,24 +97,43 @@ public:
       QT q; q.div_2exp(x, -e); set(q);
     }
   }
+  void set(const Kernel& value) {
+    if (value.sgn() >= 0)
+      set(value.getLeft());
+    else
+      set(value.getRight());
+  }
   void neg(const thisClass& child)
   { u_e = child.u_e; l_e = child.l_e; d_e = child.d_e; }
-  void root(const thisClass& child, unsigned long k) {
+  void root(thisClass& child, unsigned long k) {
     if (child.u_e >= child.l_e) {
-      u_e = (child.u_e + (k-1)*child.l_e + (k-1)) / k; l_e = child.l_e;
+      u_e = (child.u_e + (k-1)*child.l_e + (k-1)) / k;
+      l_e = child.l_e;
     } else {
-      u_e = child.u_e; l_e = ((k-1)*child.u_e + child.l_e + (k-1)) / k;
+      u_e = child.u_e;
+      l_e = ((k-1)*child.u_e + child.l_e + (k-1)) / k;
     }
     d_e = k * child.d_e;
+    self_d_e = k;
   }
-  void addsub(const thisClass& f, const thisClass& s) {
+  void addsub(thisClass& f, thisClass& s) {
     u_e = std::max(f.u_e + s.l_e, f.l_e + s.u_e) + 1; 
-    l_e = f.l_e + s.l_e; d_e = f.d_e * s.d_e;
+    l_e = f.l_e + s.l_e;
+    if (&f==&s) d_e = f.d_e;
+    else d_e = f.d_e * s.d_e;
   }
-  void mul(const thisClass& f, const thisClass& s)
-  { u_e = f.u_e + s.u_e; l_e = f.l_e + s.l_e; d_e = f.d_e * s.d_e; }
-  void div(const thisClass& f, const thisClass& s)
-  { u_e = f.u_e + s.l_e; l_e = f.l_e + s.u_e; d_e = f.d_e * s.d_e; }
+  void mul(thisClass& f,thisClass& s) {
+    u_e = f.u_e + s.u_e;
+    l_e = f.l_e + s.l_e;
+    if (&f==&s) d_e = f.d_e;
+    else d_e = f.d_e * s.d_e;
+  }
+  void div(thisClass& f, thisClass& s) { 
+    u_e = f.u_e + s.l_e;
+    l_e = f.l_e + s.u_e;
+    if (&f==&s) d_e = f.d_e;
+    else d_e = f.d_e * s.d_e;
+  }
 };
 
 /// Minimum Root Bound (root bound class which taking minimum of two root bounds)
