@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.h,v 1.9 2006-07-10 13:46:55 exact Exp $
+ * $Id: CoreAux.h,v 1.10 2006-08-07 13:50:03 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREAUX_H__
 #define __CORE_COREAUX_H__
@@ -42,15 +42,55 @@ inline void core_debug(std::string msg){
             << std::endl;
 }
 
+// help inline functions for size_t
+msb_t ceillg(size_t v);
+
 // help inline functions for long
 inline sign_t sgn(long v)
 { return v==0 ? 0 : (v>0 ? 1 : -1); }
+inline bool isDivisible(long x, long y)
+{ return x % y == 0; }
+inline long sign(long a)
+{ return a==0 ? 0 : a > 0 ? 1 : -1; }
+inline long abs(long x)
+{ return (x>=0) ? x : (-x); }
+inline long div_exact(long x, long y)
+{ return x/y; }
 msb_t ceillg(long v);
 msb_t floorlg(long v);
+inline msb_t ceilLg(long v)
+{ return ceillg(v); }
+inline msb_t floorLg(long v)
+{ return floorlg(v); }
+long gcd(long x, long y);
+
+// help inline functions for int
+inline sign_t sgn(int v)
+{ return v==0 ? 0 : (v>0 ? 1 : -1); }
+inline bool isDivisible(int x, int y)
+{ return x % y == 0; }
+inline int sign(int v)
+{ return v==0 ? 0 : (v>0 ? 1 : -1); }
+inline int abs(int x)
+{ return (x>=0) ? x : (-x); }
+inline int div_exact(int x, int y)
+{ return x/y; }
+inline msb_t ceillg(int v)
+{ return ceillg(long(v)); }
+inline msb_t floorlg(int v)
+{ return floorlg(long(v)); }
+inline msb_t ceilLg(int v)
+{ return ceillg(v); }
+inline msb_t floorLg(int v)
+{ return floorlg(v); }
+int gcd(int x, int y);
+inline int max(int x, int y)
+{ return x>=y ? x : y; }
 
 // help inline functions for unsigned long
 inline sign_t sgn(unsigned long v)
 { return v==0 ? 0 : 1; }
+unsigned long gcd(unsigned long x, unsigned long y);
 msb_t ceillg(unsigned long v);
 msb_t floorlg(unsigned long v);
 
@@ -69,6 +109,11 @@ inline const T core_abs(const T& a) {
 }
 
 template <class T>
+inline const T core_max(const T& a, const T& b) {
+  return ((a < b) ? b : a);
+}
+
+template <class T>
 inline  void core_swap(T& a, T& b) {
   T tmp;
   tmp = a;
@@ -76,53 +121,13 @@ inline  void core_swap(T& a, T& b) {
   b = tmp;
 }
 
-//#ifdef CORE_OLDNAMES 
+#ifdef CORE_OLDNAMES 
 /// \addtogroup GlobalBackCompatiableFunctions
 //@{
-inline bool isDivisible(int x, int y) { return x % y == 0; }
-inline bool isDivisible(long x, long y) { return x % y == 0; }
-inline int div_exact(int x, int y) { return x/y; }
-inline long div_exact(long x, long y) { return x/y; }
 inline long ceilLg(long a) { return ceilLg(BigInt(a)); }
 inline long ceilLg(int a) { return ceilLg(BigInt(a)); }
-inline long sign(long a) { return a==0 ? 0 : a > 0 ? 1 : -1; }
-inline int sign(int a) { return a==0 ? 0 : a > 0 ? 1 : -1; }
-inline long abs(long x) { return (x>=0) ? x : (-x); }
-inline int abs(int x) { return (x>=0) ? x : (-x); }
-long gcd(long m, long n) {
-  if (m == 0)
-    return core_abs(n);
-  if (n == 0)
-    return core_abs(m);
-  long p = core_abs(m);
-  long q = core_abs(n);
-  if (p<q)
-    core_swap(p, q);
-  while (q>0) {
-    long r = p % q;
-    p = q;
-    q = r;
-  }
-  return p;
-}
-int gcd(int m, int n) {
-  if (m == 0)
-    return core_abs(n);
-  if (n == 0)
-    return core_abs(m);
-  int p = core_abs(m);
-  int q = core_abs(n);
-  if (p<q)
-    core_swap(p, q);
-  while (q>0) {
-    int r = p % q;
-    p = q;
-    q = r;
-  }
-  return p;
-}
 //@}
-//#endif
+#endif
 
 CORE_END_NAMESPACE
 
