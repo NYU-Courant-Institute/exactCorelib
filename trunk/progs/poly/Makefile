@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.1 2006-03-07 04:51:25 exact Exp $
+# Core Library, $Id: Makefile,v 1.2 2006-08-07 14:22:13 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -48,7 +48,7 @@ p=readpoly
 
 TARGETS= tSturm tSturmBF 
 
-MORE_TARGETS = tNewton tPolyALL tSturmRat tSturmExp tSturmInt \
+MORE_TARGETS = tNewton tPolyALL tSturmLon tSturmRat tSturmExp tSturmInt \
     tWilk20 tWilk20deriv tKameny4 tGCD tRootOf wein
 
 OTHER_TARGETS = solve pisot parsepoly
@@ -66,20 +66,22 @@ test:  $(TARGETS)
 moretest: $(MORE_TARGETS)
 	./tPoly
 	./tPolyInt
+	./tPolyLon
 	./tPolyRat
 	./tPolyExp
 	./tPolyBF
 	./tSturmExp
 	./tSturmRat
 	./tSturmInt
+	./tSturmLon
 	./tWilk20
 	./tWilk20deriv
 	./tKameny4
 	./tGCD
 	./tRootOf
-	./tNewton 123
-#	./tNewton 12345678901234
 	./wein
+	./tNewton 123
+	./tNewton 12345678901234
 
 othertest: $(OTHER_TARGETS)
 	./pisot
@@ -103,6 +105,7 @@ testmore: tNewton tSturm
 testPoly:
 	./tPoly
 	./tPolyInt
+	./tPolyLon
 	./tPolyRat
 	./tPolyExp
 	./tPolyBF
@@ -122,7 +125,7 @@ time:  tPoly tNewton tSturm
 	time tSturm
 
 # Compiling Polynomial class with various number types (int, BigInt, Exp)
-tPolyALL: tPoly tPolyRat tPolyInt tPolyExp tPolyBF
+tPolyALL: tPoly tPolyRat tPolyInt tPolyExp tPolyBF tPolyLon
 
 tPoly: tPoly.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC)    tPoly.cpp -o tPoly.o 
@@ -139,6 +142,10 @@ tPolyBF: tPoly.cpp
 tPolyInt: tPoly.cpp 
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_INT tPoly.cpp -o tPolyInt.o
 	${CXX} $(LDFLAGS) tPolyInt.o $(CORE_LIB) -o tPolyInt
+
+tPolyLon: tPoly.cpp 
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_LON tPoly.cpp -o tPolyLon.o
+	${CXX} $(LDFLAGS) tPolyLon.o $(CORE_LIB) -o tPolyLon
 
 tPolyExp: tPoly.cpp 
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_EXP tPoly.cpp -o tPolyExp.o
@@ -172,7 +179,7 @@ wein: wein.o
 # Compile tSturm with NT=BigInt (default), or NT=BigFloat, NT=Expr,
 #                NT=BigRat, NT=int, or NT=long:
 # tSturmALL: tSturm tSturmBF tSturmExp tSturmInt tSturmRat tSturmLon
-tSturmALL: tSturm tSturmBF tSturmExp tSturmInt tSturmRat 
+tSturmALL: tSturm tSturmBF tSturmExp tSturmInt tSturmRat tSturmLon
 
 tSturm: tSturm.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC)            tSturm.cpp -o tSturm.o
@@ -251,7 +258,7 @@ veryclean: clean
 		tSturmInt$(EXETYPE) tSturmLon$(EXETYPE)
 	-@rm -f tNewton$(EXETYPE) tNewtonBF$(EXETYPE) 
 	-@rm -f tPoly$(EXETYPE) tPolyExp$(EXETYPE) \
-	          tPolyInt$(EXETYPE) tPolyRat$(EXETYPE) tPolyBF$(EXETYPE)
+	          tPolyInt$(EXETYPE) tPolyRat$(EXETYPE) tPolyBF$(EXETYPE) tPolyLon$(EXETYPE)
 	-@rm -f tt$(EXETYPE) tt1$(EXETYPE) tt2$(EXETYPE)
 
 #=================================================
