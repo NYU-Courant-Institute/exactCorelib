@@ -5,6 +5,7 @@
 //#include <CORE/BigFloat.h>
 //#include <CORE/Expr.h>
 #include <CORE/Promote.h>
+#include <CORE/CoreAux.h>
 
 CORE_BEGIN_NAMESPACE
 typedef long extLong;
@@ -28,11 +29,12 @@ MAX_TYPE(NT, T) eval(Polynomial<NT> &p,const T& f) {	// evaluation
   int deg = p.getTrueDegree();
   if (deg == -1)
     return ResultT(0);
-  if (deg == 0)
+  if (deg == 0 || f == 0)
     return ResultT(p.coeff()[0]);
   ResultT val(0);
+  ResultT ff(f);
   for (int i=deg; i>=0; i--) {
-    val *= ResultT(f);
+    val *= ff;
     val += ResultT(p.coeff()[i]);	
   }
   return val;
@@ -57,21 +59,21 @@ BigFloat2 evalApprox(Polynomial <NT> &p, const BigFloat& f,
   
   if (deg == -1)
     return BigFloat2(0);
-  if (deg == 0)
+  if (deg == 0 || f == 0)
     return ToBigFloat2(p.coeff()[0], r);
     
 
-  BigFloat2 val(0), c;
+  BigFloat2 val(0), c, ff(f);
   for (int i=deg; i>=0; i--) {
     c = ToBigFloat2(p.coeff()[i], r);	
-    val *= f; 
+    val *= ff; 
     val += c;
   }
   return val;
 }//evalApprox
 
 // This BigInt version of evalApprox should never be called...
-template <>
+inline 
 BigFloat2 evalApprox( Polynomial<BigInt> &p, const BigFloat& f,
 	const extLong& r, const extLong& a) {// evaluation
   assert(0);
@@ -109,27 +111,29 @@ BigFloat2 evalApprox( Polynomial<BigInt> &p, const BigFloat& f,
 template <class NT>
 BigFloat2 evalExactSign(Polynomial<NT> &p, const BigFloat& val,
 	 const extLong& oldMSB = 54) {
-    if (p.getTrueDegree() == -1)
-      return BigFloat2(0);
+  if (p.getTrueDegree() == -1)
+    return BigFloat2(0);
   
+  if (hasExactDivision<NT>::check()) { // currently, only to detect NT=Expr and NT=BigRat
     extLong r;
     r = 1 + height(p).uMSB() + ceilLg(long(p.getTrueDegree()+1));
     if (val > 1)
       r += p.getTrueDegree() * val.uMSB();
     r += std::max(extLong(0), oldMSB);
-    if (hasExactDivision<NT>::check()) { // currently, only to detect NT=Expr and NT=BigRat
-        BigFloat2 rVal = evalApprox(p, val, r);
-        if (rVal.isZeroIn()) {
-	  Expr eVal = eval(p, Expr(val));	// eval gives exact value
-	  eVal.approx(54,CORE_INFTY);  // if value is 0, we get exact 0
-	  return eVal.BigFloat2Value();
-	} else 
-          return rVal;
-    } else
-	return ToBigFloat2(eval(p, val));
 
-   return 0;
-  }//evalExactSign
+    BigFloat2 rVal = evalApprox(p, val, r);
+    if (rVal.isZeroIn()) {
+      Expr eVal = eval(p, Expr(val));	// eval gives exact value
+      eVal.approx(54,CORE_INFTY);  // if value is 0, we get exact 0
+      return eVal.BigFloat2Value();
+    } else 
+      return rVal;
+  } else
+    return ToBigFloat2(eval(p, val));
+  
+  assert(0);
+  return 0;
+}//evalExactSign
   
 //@}
 
@@ -238,7 +242,7 @@ BigFloat CauchyLowerBound(Polynomial<NT> &p) {
     mx = core_max(mx, abs(p.coeff()[i]));
   }
   BigFloat2 e = ToBigFloat2(abs(p.coeff()[0]))/ ToBigFloat2(abs(p.coeff()[0]) + mx);
-  return (e.getLeft().div2());
+  return (div2(e.getLeft()));
 }
 
 // Separation bound for polynomials that may have multiple roots.
