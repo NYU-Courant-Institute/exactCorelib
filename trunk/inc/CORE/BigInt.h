@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigInt.h,v 1.8 2006-03-03 17:19:58 exact Exp $
+ * $Id: BigInt.h,v 1.9 2006-08-07 13:48:39 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGINT_H__
 #define __CORE_BIGINT_H__
@@ -1162,6 +1162,7 @@ inline BigInt randomize(const BigInt& a)
 inline int cmp(const BigInt& x, const BigInt& y) { return x.cmp(y); }
 /// sign 
 inline int sign(const BigInt& a) { return a.sgn(); }
+inline int sgn(const BigInt& a) { return a.sgn(); }
 /// abs
 inline BigInt abs(const BigInt& a) { BigInt r; r.abs(a); return r; }
 /// neg
@@ -1214,11 +1215,13 @@ inline int bitLength(const BigInt& a)
  *  This makes sense for integer a.
  */
 inline long floorLg(const BigInt& a) { return a.floorlg(); }
+inline long floorlg(const BigInt& a) { return a.floorlg(); }
 /// ceilLg -- ceiling of log_2(a) where a=BigInt, int or long
 /** Convention: a=0, ceilLg(a) returns -1. (!!changed: return 0 now)
  *  This makes sense for integer a.
  */
 inline long ceilLg(const BigInt& a) { return a.ceillg(); }
+inline long ceillg(const BigInt& a) { return a.ceillg(); }
 //@}
 #endif
 
