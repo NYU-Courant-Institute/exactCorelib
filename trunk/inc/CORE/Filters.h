@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Filters.h,v 1.6 2006-04-03 19:55:36 exact Exp $
+ * $Id: Filters.h,v 1.7 2006-08-07 13:59:44 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_FILTERS_H__
 #define __CORE_FILTERS_H__
@@ -90,6 +90,12 @@ class BfsFilter {
   double fpVal;         // approximate double value for some "real value"
   double maxAbs;        // if (|fpVal| > maxAbs * ind * 2^{-52}) then
   int ind;              // sign of value is sign(fpVal).  Else, don't know.
+  bool _isok;
+  int _sign;
+  long _uMSB;
+  long _lMSB;
+  prec_t _r_prec;
+  prec_t _a_prec;
   // REFERENCE: Burnikel, Funke, Schirra (BFS) filter
   // Chee: in isOK(), you used the test "|fpVal| >= maxAbs * ind * 2^{-52}" 
   // which seems to be correct (i.e., not |fpVal| > maxAbs * ind * 2^{-52})
@@ -97,29 +103,42 @@ class BfsFilter {
   typedef typename Kernel::ZT ZT;
   typedef typename Kernel::QT QT;
   typedef typename Kernel::FT FT;
+private:
+  void compute_cache () {
+    double Val = maxAbs*ind*CORE_EPS;
+    _isok = finite(fpVal)&&(::fabs(fpVal)>=Val);
+    if (!_isok) return;
+    _sign = (fpVal == 0.0) ? 0 : (fpVal > 0.0 ? 1: -1);
+    _lMSB = (sign() == 0) ? MSB_MIN : long(ilogb(::fabs(fpVal) - Val));
+    _uMSB = (sign() == 0) ? 0 : long(ilogb(::fabs(fpVal) + Val)+1);
+    //_a_prec = std::min(std::max(msb_t(-floorlg(Val)),msb_t(2)), 1024);
+    //_r_prec = std::min(std::max(long(get_a_prec()) + uMSB(), msb_t(2)), msb_t(IEEE_DOUBLE_PREC));
+  }
 public:
+  BfsFilter()
+  { _isok = false; }
 #ifdef CORE_DEBUG_FILTER
   void dump() const 
   { std::cerr<<"[fpVal,maxAbs,ind]="<<fpVal<<","<<maxAbs<<","<<ind<<std::endl; }
 #endif
   bool is_ok() const 
-  { return (fpFilterFlag&&finite(fpVal)&&(::fabs(fpVal)>=maxAbs*ind*CORE_EPS)); }
+  { return fpFilterFlag&&_isok; }
   int sign() const 
-  { return (fpVal == 0.0) ? 0 : (fpVal > 0.0 ? 1: -1); }
+  { assert(_isok); return _sign; }
   long lMSB() const 
-  { return long(ilogb(::fabs(fpVal) - maxAbs*ind*CORE_EPS)); }
+  { assert(_isok); return _lMSB; }
   long uMSB() const 
-  { return long(ilogb(::fabs(fpVal) + maxAbs*ind*CORE_EPS)+1); }
+  { assert(_isok); return _uMSB; }
   double get_value() const 
-  { return fpVal; }
-  int get_r_prec() const
-  { return 53; }
-  int get_a_prec() const
-  { return 53; }
+  { assert(_isok); return fpVal; }
+  prec_t get_r_prec() const
+  { assert(_isok); return _r_prec; }
+  prec_t get_a_prec() const
+  { assert(_isok); return _a_prec; }
   double r_approx(int prec) const
-  { return fpVal; }
+  { assert(_isok); return fpVal; }
   double a_approx(int prec) const
-  { return fpVal; }
+  { assert(_isok); return fpVal; }
 
   /// from "Exact Geometric Predicates using Cascaded Computation" P176
   ///
@@ -131,33 +150,43 @@ public:
   void set(long value) { 
     fpVal = value; maxAbs = value > 0 ? value : (-value); 
     ind = (sizeof(long) > 4 && ceillg(value) >= 53) ? 1 : 0;
+    compute_cache();
   }
   void set(unsigned long value) {
     fpVal = value; maxAbs = value; 
     ind = (sizeof(unsigned long) > 4 && ceillg(value) >= 53) ? 1 : 0;
+    compute_cache();
   }
-  void set(double value)
-  { fpVal = value; maxAbs = ::fabs(value); ind = 0; }
+  void set(double value) {
+    fpVal = value; maxAbs = ::fabs(value); ind = 0;
+    compute_cache();
+  }
   void set(const ZT& value) { 
     fpVal = value.get_d(); maxAbs = ::fabs(fpVal); 
     ind = value.uMSB() >= 53 ? 1 : 0; 
+    compute_cache();
   }
   void set(const QT& value) { 
     fpVal = value.get_d(); maxAbs = ::fabs(fpVal); 
     ind = 1; //value.uMSB() >= 53 ? 1 : 0; // ??? denonimator has to be power of 2
+    compute_cache();
   }
   void set(const FT& value) {
     fpVal = value.get_d(); maxAbs = ::fabs(fpVal); 
     ind = value.get_prec() >= 53 ? 1 : 0;
+    compute_cache();
   }
   void set(const Kernel& value) {
     fpVal = value.get_d(); maxAbs = ::fabs(fpVal); 
     ind = value.get_prec() >= 53 ? 1 : 0;
+    compute_cache();
   }
 
   // negation
-  void neg(const thisClass& child)
-  { fpVal = -child.fpVal; maxAbs = child.maxAbs; ind = child.ind; }
+  void neg(const thisClass& child) {
+    fpVal = -child.fpVal; maxAbs = child.maxAbs; ind = child.ind;
+    compute_cache();
+  }
 
   // square root
   void sqrt(const thisClass& child) {
@@ -167,7 +196,7 @@ public:
       fpVal = 0.0; maxAbs = ::ldexp(::sqrt(child.maxAbs), 26);
     }
     ind = 1 + child.ind;
-//    std::cerr << "sqrt: "; dump();
+    compute_cache();
   }
 
   // cubic root
@@ -178,6 +207,7 @@ public:
       fpVal = 0.0; maxAbs = ::ldexp(::cbrt(child.maxAbs), 18);
     }
     ind = 1 + child.ind;
+    compute_cache();
   }
 
   // k-th root
@@ -191,6 +221,7 @@ public:
       maxAbs = ::ldexp(CORE_NS::root(child.maxAbs, k), (IEEE_DOUBLE_PREC+k-1)/k);
     }
     ind = 1 + child.ind;
+    compute_cache();
   }
 
   // addition/subtraction
@@ -198,7 +229,7 @@ public:
     fpVal = is_add ? f.fpVal + s.fpVal : f.fpVal - s.fpVal;
     maxAbs = f.maxAbs + s.maxAbs;
     ind = 1 + (f.ind > s.ind ? f.ind : s.ind);
-//    std::cerr << (is_add? "add: ": "sub: "); dump();
+    compute_cache();
   }
 
   // multiplication
@@ -206,7 +237,7 @@ public:
     fpVal = f.fpVal * s.fpVal;
     maxAbs = f.maxAbs * s.maxAbs + DBL_MIN;
     ind = 1 + f.ind + s.ind; 
-//    std::cerr << "mul: "; dump();
+    compute_cache();
   }
 
   // division
@@ -221,7 +252,7 @@ public:
       maxAbs = 0.0;
       ind = 0;
     }
-//    std::cerr << "div: "; dump();
+    compute_cache();
   }
 };
 
