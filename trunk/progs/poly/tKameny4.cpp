@@ -15,7 +15,7 @@
    Date:    July 20, 2002
 
    Since Core Library  v1.4
-   $Id: tKameny4.cpp,v 1.1 2006-03-07 04:51:25 exact Exp $
+   $Id: tKameny4.cpp,v 1.2 2006-08-07 14:25:32 exact Exp $
  ************************************** */
 
 #ifndef CORE_LEVEL
@@ -51,7 +51,6 @@ typedef Sturm<NT> SturmNT;
 int main(int argc, char** argv){
   
     // SET INTERNAL PRECISION
-    setDefaultRelPrecision(CORE_posInfty); // This puts defAbsPrec in control
     int prec = 300;			// Do Sturm refinement till delta
 					// is at most 2^{-prec}
     if (argc >= 2)

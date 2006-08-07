@@ -67,8 +67,8 @@ bool checkGcd(Polynomial<NT>& p, Polynomial<NT>& q, Polynomial<NT>& g){
 
 void checkBounds(Polynomial<NT>& p){
   for (int i=0; i<1000; i++){  /// WHAT IS THIS FOR?  
-	p.CauchyUpperBound();
-	p.CauchyLowerBound();
+	CauchyUpperBound(p);
+	CauchyLowerBound(p);
   }
 }
 
