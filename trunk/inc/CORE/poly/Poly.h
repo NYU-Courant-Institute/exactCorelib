@@ -10,233 +10,233 @@ CORE_BEGIN_NAMESPACE
 /// \class Polynomial Poly.h
 /// \brief A template polynomial class
 /**
- *      REPRESENTATION:
- *      --Each polynomial has a nominal "degree" (this
- *              is an upper bound on the true degree, which
- *              is determined by the first non-zero coefficient).
- *      --coefficients are parametrized by some number type "NT".
- *      --coefficients are stored in the "coeff" array of
- *              length "degree + 1".  
- *              CONVENTION: coeff[i] is the coefficient of X^i.  So, a
- *                          coefficient list begins with the constant term.
- *      --IMPORTANT CONVENTION:
- *              the zero polynomial has degree -1
- *              while nonzero constant polynomials have degree 0.
- * 
- *      FUNCTIONALITY:
- *      --Polynomial Ring Operations (+,-,*)
- *      --Power
- *      --Evaluation
- *      --Differentiation
- *      --Remainder, Quotient 
- *      --GCD
- *      --Resultant, Discriminant (planned)
- *      --Polynomial Composition (planned)
- *      --file I/O (planned)
- */
+*      REPRESENTATION:
+*      --Each polynomial has a nominal "degree" (this
+*              is an upper bound on the true degree, which
+*              is determined by the first non-zero coefficient).
+*      --coefficients are parametrized by some number type "NT".
+*      --coefficients are stored in the "coeff" array of
+*              length "degree + 1".  
+*              CONVENTION: coeff[i] is the coefficient of X^i.  So, a
+*                          coefficient list begins with the constant term.
+*      --IMPORTANT CONVENTION:
+*              the zero polynomial has degree -1
+*              while nonzero constant polynomials have degree 0.
+* 
+*      FUNCTIONALITY:
+*      --Polynomial Ring Operations (+,-,*)
+*      --Power
+*      --Evaluation
+*      --Differentiation
+*      --Remainder, Quotient 
+*      --GCD
+*      --Resultant, Discriminant (planned)
+*      --Polynomial Composition (planned)
+*      --file I/O (planned)
+*/
 
 template <typename NT>
 class Polynomial : public 
 #ifndef CORE_DISABLE_REFCOUNTING 
-  PolyBase<NT> 
+PolyBase<NT> 
 #else
-  RcPolyBase<NT> 		// reference count version
+RcPolyBase<NT> 		// reference count version
 #endif
 {
 #ifndef CORE_DISABLE_REFCOUNTING 
-  typedef PolyBase<NT> base_cls;
+typedef PolyBase<NT> base_cls;
 #else
-  typedef RcPolyBase<NT> base_cls; // reference count version
+typedef RcPolyBase<NT> base_cls; // reference count version
 #endif
- private:
+private:
 
-  /// METHODS USED BY STRING CONSTRUCTOR
-  //{@
+/// METHODS USED BY STRING CONSTRUCTOR
+//{@
 
-  //Sets the input Polynomial to X^n
+//Sets the input Polynomial to X^n
 
-  void constructX(int n, Polynomial<NT>& P){
-    Polynomial<NT> q(n);//Nominal degree n
-    q.setCoeff(n,NT(1));
-    if (n>0) q.setCoeff(0,NT(0));
-    P = q;
-  }
+void constructX(int n, Polynomial<NT>& P){
+Polynomial<NT> q(n);//Nominal degree n
+q.setCoeff(n,NT(1));
+if (n>0) q.setCoeff(0,NT(0));
+P = q;
+}
 
-  ///Returns in P the coefficient starting from start
-  int getnumber(const char* c, int start, unsigned int len,
-			  Polynomial<NT> & P){
-    int j=0;
-    char *temp = new char[len];
-    while(isint(c[j+start])){
-      temp[j]=c[j+start];j++;
-    }
-    temp[j] = '\0';
-    NT cf = NT(temp);
-    Polynomial<NT> q(0);
-    q.setCoeff(0, cf);
-    P = q;
-    delete[] temp;
-    return (j-1+start);//Exactly the length of the number
-  }
+///Returns in P the coefficient starting from start
+int getnumber(const char* c, int start, unsigned int len,
+		  Polynomial<NT> & P){
+int j=0;
+char *temp = new char[len];
+while(isint(c[j+start])){
+temp[j]=c[j+start];j++;
+}
+temp[j] = '\0';
+NT cf = NT(temp);
+Polynomial<NT> q(0);
+q.setCoeff(0, cf);
+P = q;
+delete[] temp;
+return (j-1+start);//Exactly the length of the number
+}
 
-  ///checks whether a character is an integer.
-  bool isint(char c){
-    if(c == '0' || c == '1' || c == '2' || c == '3' || c == '4' ||
-       c == '5' || c == '6' || c == '7' || c == '8' || c == '9')
-      return true;
-    else
-      return false;
-  }
-
-
-  ///Returns as integer the number starting from start in c
-
-  int getint(const char* c, int start, unsigned int len,
-	     int & n){
-    int j=0;
-    char *temp = new char[len];
-    while(isint(c[j+start])){
-      temp[j]=c[j+start];j++;
-    }
-    temp[j] = '\n';
-    n = atoi(temp);
-    delete[] temp;
-    return (j-1+start);//Exactly the length of the number
-  }
-
-  ///Given a string starting with an open parentheses returns the place
-  /// which marks the end of the corresponding closing parentheses.
-  //Strings of the form (A).
-  int matchparen(const char* cstr, int start){
-    int count = 0;
-    int j=start;
-    
-    do{
-      if(cstr[j] == '('){
-	count++;
-      }
-      if(cstr[j] == ')'){
-	count--;
-      }
-      j++;      
-    }while(count != 0 );//j is one more than the matching ')'
-    
-    return j-1;
-  }
+///checks whether a character is an integer.
+bool isint(char c){
+if(c == '0' || c == '1' || c == '2' || c == '3' || c == '4' ||
+c == '5' || c == '6' || c == '7' || c == '8' || c == '9')
+return true;
+else
+return false;
+}
 
 
+///Returns as integer the number starting from start in c
 
-  int getbasicterm(std::string & s, Polynomial<NT> & P){
-    const char * cstr = s.c_str();
-    unsigned int len = s.length();
-    int i=0;
-    //Polynomial<NT> * temp = new Polynomial<NT>();
-    
-    if(isint(cstr[i])){
-      i = getnumber(cstr, i, len, P);
-    }else if(cstr[i] == 'x'||cstr[i] == 'X'){
-      constructX(1, P);
-    }else if(cstr[i] =='('){
-      int oldi = i;
-      i = matchparen(cstr, i);
-      std::string t = s.substr(oldi+1, i -oldi -1);
-      P = getpoly(t);
-    }else{
-      std::cout <<"ERROR IN PARSING BASIC TERM" << std::endl;
-    }
-    //i+1 points to the beginning of next syntactic object in the string.
-    if(cstr[i+1] == '^'){
-      int n;
-      i = getint(cstr, i+2, len, n);
-      P.power(n);
-    }
-    return i;
-  }
+int getint(const char* c, int start, unsigned int len,
+     int & n){
+int j=0;
+char *temp = new char[len];
+while(isint(c[j+start])){
+temp[j]=c[j+start];j++;
+}
+temp[j] = '\n';
+n = atoi(temp);
+delete[] temp;
+return (j-1+start);//Exactly the length of the number
+}
 
+///Given a string starting with an open parentheses returns the place
+/// which marks the end of the corresponding closing parentheses.
+//Strings of the form (A).
+int matchparen(const char* cstr, int start){
+int count = 0;
+int j=start;
 
-  int getterm(std::string & s, Polynomial<NT> & P){
-    unsigned int len = s.length();
-    if(len == 0){// Zero Polynomial
-      P=Polynomial<NT>();
-      return 0;
-    }
-    unsigned int ind, oind;
-    const char* cstr =s.c_str();
-    std::string t;
-    //P will be used to accumulate the product of basic terms.
-    ind = getbasicterm(s, P);
-    while(ind != len-1 && cstr[ind + 1]!='+' && cstr[ind + 1]!='-' ){
-      //Recursively get the basic terms till we reach the end or see
-      // a '+' or '-' sign.
-      if(cstr[ind + 1] == '*'){
-	t = s.substr(ind + 2, len - ind -2);
-	oind = ind + 2;
-      }else{
-	t = s.substr(ind + 1, len -ind -1);
-	oind = ind + 1;
-      }
-      
-      Polynomial<NT> R;
-      ind = oind + getbasicterm(t, R);//Because the second term is the offset in
-      //t
-      P *= R;
-    }
-    
-    return ind;
-  }
+do{
+if(cstr[j] == '('){
+count++;
+}
+if(cstr[j] == ')'){
+count--;
+}
+j++;      
+}while(count != 0 );//j is one more than the matching ')'
+
+return j-1;
+}
 
 
-  Polynomial<NT> getpoly(std::string & s){
-    //Remove white spaces from the string
-    unsigned int cnt=s.find(' ',0);
-    while(cnt != std::string::npos){
-      s.erase(cnt, 1);
-      cnt = s.find(' ', cnt);
-    }
 
-    unsigned int len = s.length();
-    if(len <= 0){//Zero Polynomial
-      return Polynomial<NT>();
-    }
+int getbasicterm(std::string & s, Polynomial<NT> & P){
+const char * cstr = s.c_str();
+unsigned int len = s.length();
+int i=0;
+//Polynomial<NT> * temp = new Polynomial<NT>();
 
-    //To handle the case when there is one '=' sign
-    //Suppose s is of the form s1 = s2. Then we assign s to
-    //s1 + (-1)(s2) and reset len
-    unsigned int loc;
-    if((loc=s.find('=',0)) != std::string::npos){
-      s.replace(loc,1,1,'+');
-      std::string s3 = "(-1)(";
-      s.insert(loc+1, s3);
-      len = s.length();
-      s.insert(len, 1, ')');
-    }
-    len = s.length();
+if(isint(cstr[i])){
+i = getnumber(cstr, i, len, P);
+}else if(cstr[i] == 'x'||cstr[i] == 'X'){
+constructX(1, P);
+}else if(cstr[i] =='('){
+int oldi = i;
+i = matchparen(cstr, i);
+std::string t = s.substr(oldi+1, i -oldi -1);
+P = getpoly(t);
+}else{
+std::cout <<"ERROR IN PARSING BASIC TERM" << std::endl;
+}
+//i+1 points to the beginning of next syntactic object in the string.
+if(cstr[i+1] == '^'){
+int n;
+i = getint(cstr, i+2, len, n);
+P.power(n);
+}
+return i;
+}
 
-    const char *cstr = s.c_str();
-    std::string t;
-    Polynomial<NT> P;
-    // P will be the polynomial in which we accumulate the
-    //sum and difference of the different terms.
-    unsigned int ind;
-    if(cstr[0] == '-'){
-      t = s.substr(1, len);
-      ind = getterm(t,P) + 1;
-      P.negate();
-    }else{
-      ind = getterm(s, P);
-    }
-    unsigned int oind =0;//the string between oind and ind is a term
-    while(ind != len -1){
-      Polynomial<NT> R;
-      t = s.substr(ind + 2, len -ind -2);
-      oind = ind;
-      ind = oind + 2 + getterm(t, R);
-      if(cstr[oind + 1] == '+')
-		P += R;
-      else if(cstr[oind + 1] == '-')
-		P -= R;
-      else
-	std::cout << "ERROR IN PARSING POLY! " << std::endl;
+
+int getterm(std::string & s, Polynomial<NT> & P){
+unsigned int len = s.length();
+if(len == 0){// Zero Polynomial
+P=Polynomial<NT>();
+return 0;
+}
+unsigned int ind, oind;
+const char* cstr =s.c_str();
+std::string t;
+//P will be used to accumulate the product of basic terms.
+ind = getbasicterm(s, P);
+while(ind != len-1 && cstr[ind + 1]!='+' && cstr[ind + 1]!='-' ){
+//Recursively get the basic terms till we reach the end or see
+// a '+' or '-' sign.
+if(cstr[ind + 1] == '*'){
+t = s.substr(ind + 2, len - ind -2);
+oind = ind + 2;
+}else{
+t = s.substr(ind + 1, len -ind -1);
+oind = ind + 1;
+}
+
+Polynomial<NT> R;
+ind = oind + getbasicterm(t, R);//Because the second term is the offset in
+//t
+P *= R;
+}
+
+return ind;
+}
+
+
+Polynomial<NT> getpoly(std::string & s){
+//Remove white spaces from the string
+unsigned int cnt=s.find(' ',0);
+while(cnt != std::string::npos){
+s.erase(cnt, 1);
+cnt = s.find(' ', cnt);
+}
+
+unsigned int len = s.length();
+if(len <= 0){//Zero Polynomial
+return Polynomial<NT>();
+}
+
+//To handle the case when there is one '=' sign
+//Suppose s is of the form s1 = s2. Then we assign s to
+//s1 + (-1)(s2) and reset len
+unsigned int loc;
+if((loc=s.find('=',0)) != std::string::npos){
+s.replace(loc,1,1,'+');
+std::string s3 = "(-1)(";
+s.insert(loc+1, s3);
+len = s.length();
+s.insert(len, 1, ')');
+}
+len = s.length();
+
+const char *cstr = s.c_str();
+std::string t;
+Polynomial<NT> P;
+// P will be the polynomial in which we accumulate the
+//sum and difference of the different terms.
+unsigned int ind;
+if(cstr[0] == '-'){
+t = s.substr(1, len);
+ind = getterm(t,P) + 1;
+P.negate();
+}else{
+ind = getterm(s, P);
+}
+unsigned int oind =0;//the string between oind and ind is a term
+while(ind != len -1){
+Polynomial<NT> R;
+t = s.substr(ind + 2, len -ind -2);
+oind = ind;
+ind = oind + 2 + getterm(t, R);
+if(cstr[oind + 1] == '+')
+	P += R;
+else if(cstr[oind + 1] == '-')
+	P -= R;
+else
+std::cout << "ERROR IN PARSING POLY! " << std::endl;
     }
 
     return (P);
@@ -269,8 +269,8 @@ public:
   /// constructor with coeff array
   Polynomial(int n, NT* coef) : base_cls(n, coef) {}
   /// constructor with coeff vector
-  Polynomial(const VecNT & coef) : base_cls(coef) {}
-  Polynomial(int n, const char* s[]);
+  Polynomial(const VecNT & coef) : base_cls(coef.size(), coef) {}
+  Polynomial(int n, const char* s[]) : base_cls(n, s) {}
   /// constructor from char*.
   ///The BNF syntax is the following:-
   ///    [poly] -> [term]| [term] '+/-' [poly] |
@@ -282,9 +282,15 @@ public:
   ///  [number] is assumed to be a BigInt; in the future, we probably
   ///  want to generalize this to BigFloat, etc.
   ///
-  Polynomial(const char* s, char myX='x') : base_cls(s, myX) {}
+  Polynomial(const char* s, char myX='x') {
+    std::string ss(s);
+	constructFromString(ss, myX);
+  }
   /// constructor from std::string
-  Polynomial(const std::string& s, char myX='x') : base_cls(s.c_str(), myX) {}
+  Polynomial(const std::string& s, char myX='x') {
+    std::string ss(s);
+	constructFromString(ss, myX);
+  }
   //@}
 
   /// \name help functions
@@ -817,6 +823,8 @@ inline
 Polynomial<NT> operator*(const Polynomial<NT>& x, const Polynomial<NT>& y) {
   int d = x.getDegree() + y.getDegree();
   NT* c = new NT[d+1];
+  for(int i=0; i<d+1; ++i)
+    c[i] = NT(0);
 
   for (int i=0; i<=x.getDegree(); ++i)
     for (int j=0; j<=y.getDegree(); ++j)
