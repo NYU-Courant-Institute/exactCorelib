@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.16 2006-07-10 18:42:06 exact Exp $
+ * $Id: Expr.h,v 1.17 2006-08-07 13:54:17 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -59,6 +59,8 @@ private: // private typedefs
   typedef AddSubRepT<RootBd, Filter, Kernel, false> SubRep;
   typedef MulRepT<RootBd, Filter, Kernel> MulRep;
   typedef DivRepT<RootBd, Filter, Kernel> DivRep;
+  typedef SumOpRepT<RootBd, Filter, Kernel> SumRep;
+  typedef MulSumOpRepT<RootBd, Filter, Kernel> MulSumRep;
 
 public:
   ExprT() : m_rep(new ConstLongRep(0L)) {}
@@ -77,10 +79,10 @@ public:
   ExprT(const QT& q) 
   { FT f; (f.set(q)==0)?(m_rep=new ConstFTRep(f)):(m_rep=new ConstQTRep(q)); }
   ExprT(const KT& k) : m_rep(new ConstFTRep(k.get_f())) {}
-  ExprT(const char* s, prec_t prec = get_def_input_digits()) 
-  { construct_from_string(s, prec); }
-  ExprT(const std::string& s, prec_t prec = get_def_input_digits()) 
-  { construct_from_string(s.c_str(), prec); }
+  ExprT(const char* s, int base = 10, prec_t prec = getDefaultInputDigits()) 
+  { construct_from_string(s, base, prec); }
+  ExprT(const std::string& s, int base = 10, prec_t prec =getDefaultInputDigits()) 
+  { construct_from_string(s.c_str(), base, prec); }
 public:
   ExprT(ExprRep* r) : m_rep(r) {}
   ExprT(const ExprT& r) : m_rep(r.m_rep) { m_rep->inc_ref(); }
@@ -114,15 +116,16 @@ public:
   { ExprT r(*this); --(*this); return r; }
 
   /// addition
-  friend ExprT operator+(const ExprT& e1, const ExprT& e2)
+  friend ExprT operator+(const ExprT& e1, const ExprT& e2) 
   { return ExprT(new AddRep(e1.rep(), e2.rep())); }
   template <typename T>
   friend ExprT operator+(const ExprT& e1, const T& v)
   { return ExprT(new AddRep(e1.rep(), ExprT(v).rep())); }
   template <typename T>
-  friend ExprT operator+(const T& v, const ExprT& e2)
+  friend ExprT operator+(const T& v, const ExprT& e2) 
   { return ExprT(new AddRep(ExprT(v).rep(), e2.rep())); }
-  /// subtraction
+  
+/// subtraction
   friend ExprT operator-(const ExprT& e1, const ExprT& e2)
   { return ExprT(new SubRep(e1.rep(), e2.rep())); }
   template <typename T>
@@ -158,7 +161,48 @@ public:
   /// kth-root
   friend ExprT root(const ExprT& e, unsigned long k)
   { return ExprT(new RootRep(e.rep(), k)); }
-  
+  template<class NT>
+  friend ExprT radical(const NT& n, unsigned long k) {
+    assert(n>=0 && k>=1);
+    if (n==0 || n == 1 || k ==1) return n;
+    Polynomial<NT> Q(k);
+    Q.setCoeff(0, -n);
+    Q.setCoeff(k, 1);
+    //return rootOf(Q);
+    return root(ExprT(n),k); //Jihun:this version is very slow.root bound becomes extremely large
+  }
+
+  /// helper function for constructing Polynomial node (n-th node)
+  template <class NT>
+  friend ExprT rootOf(const Polynomial<NT>& p, int n = 0) {
+    return ExprT(new ConstPolyRepT<RootBd, Filter, Kernel, NT>(p, n));
+  }
+  /// helper function for constructing Polynomial node witb BFInterval
+  template <class NT>
+  friend ExprT rootOf(const Polynomial<NT>& p, const BFInterval& I) {
+    return ExprT(new ConstPolyRepT<RootBd, Filter, Kernel, NT>(p, I));
+  }
+  /// helper function for constructing Polynomial node with pair of BigFloats
+  template <class NT, class T>
+  friend ExprT rootOf(const Polynomial<NT>& p, const T& x, const T& y) {
+    return ExprT(new ConstPolyRepT<RootBd, Filter, Kernel, NT>(p, BFInterval(x, y)));
+  }
+
+  friend ExprT power(const ExprT& e, unsigned long k) {
+    if (k==0)  return 1;
+    else if (k==1) return e;
+    else {
+      std::vector<ExprRep*> c;
+      MulSumRep* newRep = new MulSumRep(c);
+      for (unsigned int i=0; i<k; i++)
+        newRep->insert (e.rep());
+      return ExprT(newRep);
+    }
+  }
+  friend ExprT pow(const ExprT& e, unsigned long k) {
+    return power(e,k);
+  }
+
   /// compare function
   int cmp(const ExprT& e) const
   { return m_rep == e.m_rep ? 0 : SubRep(m_rep, e.m_rep).get_sign(); }
@@ -180,8 +224,12 @@ public:
   { FT val; is >> val; if (is) x = val; return is; }
   friend std::ostream& operator<<(std::ostream& os, const ExprT& x) {
     ExprT* p = const_cast<ExprT*>(&x);
-    if (p->sign()) os << (p->r_approx(60)).get_f(); else os << "0"; return os;
+    if (p->sign()) os << p->r_approx(defRelPrec); else os << "0"; return os;
   }
+  std::string toString() {
+    ExprT* p = const_cast<ExprT*>(this);
+    if (p->sign()) return p->r_approx(defRelPrec).get_str(); else return "0";
+  } 
 public: // public methods
   /// return relative approximation
   KT& r_approx(prec_t prec)
@@ -198,8 +246,11 @@ public: // public methods
       return a_approx(a_prec).get_f();
   }
   /// return integer value 
-  int intValue() const
-  { return (int)m_rep->appValue().get_d(); }
+  int intValue() const {
+    ExprT* p = const_cast<ExprT*>(this);
+    p->a_approx(2);
+    return (int)m_rep->appValue().get_d();
+  }
   /// return long value 
   long longValue() const
   { return (long)m_rep->appValue().get_d(); }
@@ -207,8 +258,11 @@ public: // public methods
   float floatValue() const
   { return (float)m_rep->appValue().get_d(); }
   /// return double value 
-  double doubleValue() const
-  { return m_rep->appValue().get_d(); }
+  double doubleValue() const {
+    ExprT* p = const_cast<ExprT*>(this);
+    p->r_approx(52);
+    return m_rep->appValue().get_d();
+  }
   /// return BigInt value 
   BigInt BigIntValue() const
   { return m_rep->appValue().get_z(); }
@@ -219,9 +273,8 @@ public: // public methods
   FT BigFloatValue() const
   { return m_rep->appValue().get_f(); }
   /// return BigFloat2Value
-  KT BigFloat2Value() const { 
-    return m_rep->appValue();
-  }
+  KT BigFloat2Value() const
+  { return m_rep->appValue(); }
 
   /// return sign (dirty cast)
   sign_t sign() const
@@ -239,16 +292,29 @@ public: // public methods
   /// return internal rep
   ExprRep* rep() const
   { return m_rep; }
-
+  
 private:
-  void construct_from_string(const char* str, prec_t prec) {
+  void construct_from_string(const char* str, int base, prec_t prec) {
     if (strchr(str, '/') != 0)
       m_rep = new ConstQTRep(QT(str));
+    else if (strchr(str, '.') != 0 && is_infty(prec))
+      m_rep = new ConstQTRep(QT(construct_rat(str).c_str()));
     else if (is_infty(prec))
       m_rep = new ConstFTRep(FT(str));
     else
-      m_rep = new ConstFTRep(FT(str, prec));
+      m_rep = new ConstFTRep(FT(str, base, prec));
   }
+
+  const std::string construct_rat (const char* str) {
+    std::string num(str), den(str);
+    std::string::size_type dot_pos = num.find_first_of ('.');
+    num.erase (dot_pos,1);
+    den.replace (dot_pos+1, den.size()-dot_pos-1, den.size()-dot_pos-1, '0');
+    den.erase (0, dot_pos+1);
+    den.insert (0, 1, '1');
+
+    return num + std::string("/") + den;
+  }   
 private:
   ExprRep* m_rep; ///<- internal representation
 }; // end if ExprT
@@ -286,24 +352,46 @@ inline sign_t sign(const Expr& x) {
   return x.sign();
 }
 
-/// convert Expr to BigFloat2
-inline BigFloat2 ToBigFloat2(const Expr& e, prec_t r = defRelPrec) {
+inline double Todouble(const Expr& e, prec_t r = defRelPrec, prec_t a=defAbsPrec) {
   Expr* p = const_cast<Expr*>(&e);
-  p->r_approx(r); 
-  return e.BigFloat2Value(); 
+  if (p->sign()) {
+    p->approx(r,a);
+    return e.doubleValue();
+  } else
+    return 0;
 }
 
-inline BigInt ToBigInt(const Expr& e, prec_t r = defRelPrec) {
+/// convert Expr to BigFloat2
+inline BigFloat2 ToBigFloat2(const Expr& e, prec_t r = defRelPrec, prec_t a=defAbsPrec) {
   Expr* p = const_cast<Expr*>(&e);
-  p->r_approx(r);
-  return e.BigIntValue();
+  if (p->sign()) {
+    p->r_approx(r);
+    return e.BigFloat2Value();
+  } else
+    return BigFloat2(0);
+}
+
+inline BigInt ToBigInt(const Expr& e, prec_t r = defRelPrec, prec_t a=defAbsPrec) {
+  Expr* p = const_cast<Expr*>(&e);
+  if (p->sign()) {
+    p->approx(r,a);
+    return e.BigIntValue();
+  } else
+    return 0;
+}
+
+inline BigRat ToBigRat(const Expr& e, prec_t r = defRelPrec, prec_t a=defAbsPrec) {
+  Expr* p = const_cast<Expr*>(&e);
+  if (p->sign()) {
+    p->approx(r,a);
+    return e.BigRatValue();
+  } else
+    return 0;
 }
 
 inline bool isDivisible(const Expr& x, const Expr& y) {
   Expr e = x/y;
-  Expr r = e - ToBigInt(e);
-
-  return r == 0;
+  return ((e - ToBigInt(e, CORE_INFTY, 2)) == 0);
 }
 
 inline Expr gcd(const Expr& x, const Expr& y) {
@@ -311,7 +399,33 @@ inline Expr gcd(const Expr& x, const Expr& y) {
 }
 
 inline Expr div_exact(const Expr& x, const Expr& y) {
-  return ToBigInt(x/y);
+  return (x/y).approx(CORE_INFTY, 2);
+}
+
+inline BigInt floor(const Expr& x) {
+  BigInt r = ToBigInt(x, CORE_INFTY, 2);
+  if (x - r >= 0)
+    return r;
+  else
+    return --r;
+}
+
+inline BigInt ceil(const Expr& x) {
+  return -floor(-x);
+}
+
+inline long floorLg(const Expr& x) {
+  if (x < 1)
+    return -ceilLg(ceil(1/x));
+  else
+    return floorLg(floor(x));
+}
+
+inline long ceilLg(const Expr& x) {
+  if (x < 1)
+    return -floorLg(floor(1/x));
+  else
+    return ceilLg(ceil(x));
 }
 CORE_END_NAMESPACE
 #endif // __CORE_EXPR_H__
