@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigRat.h,v 1.10 2006-07-04 09:54:47 exact Exp $
+ * $Id: BigRat.h,v 1.11 2006-08-07 14:10:40 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGRAT_H__
 #define __CORE_BIGRAT_H__
@@ -761,6 +761,7 @@ inline std::ostream& operator<<(std::ostream& os, const BigRat& x)
 inline int cmp(const BigRat& x, const BigRat& y) { return x.cmp(y); }
 /// sign
 inline int sign(const BigRat& a) { return a.sgn(); }
+inline int sgn(const BigRat& a) { return a.sgn(); }
 /// abs
 inline BigRat abs(const BigRat& a) { BigRat r; r.abs(a); return r; }
 /// neg
@@ -795,6 +796,12 @@ inline bool isInteger(const BigRat& x) { return x.den() == 1; }
 /// is divisible ?
 inline bool isDivisible(const BigRat& x, const BigRat& y) 
 { BigRat r; r.div(x, y); return isInteger(r); }
+/// floorlg
+inline long floorLg(const BigRat& a) { return a.lMSB(); }
+inline long floorlg(const BigRat& a) { return a.lMSB(); }
+/// ceillg
+inline long ceilLg(const BigRat& a) { return a.uMSB(); }
+inline long ceillg(const BigRat& a) { return a.uMSB(); }
 //@}
 #endif
 
