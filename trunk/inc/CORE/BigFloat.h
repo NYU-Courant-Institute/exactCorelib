@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.14 2006-07-04 17:01:13 exact Exp $
+ * $Id: BigFloat.h,v 1.15 2006-08-07 13:41:58 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -176,8 +176,8 @@ public:
   void set_prec(prec_t prec)
   { mpfr_set_prec(mp(), prec); }
   /// round the current precision to prec, using specified rounding mode.
-  void prec_round(prec_t prec, rnd_t rnd = MPFR_RND)
-  { mpfr_prec_round(mp(), prec, rnd); }
+  int prec_round(prec_t prec, rnd_t rnd = MPFR_RND)
+  { return mpfr_prec_round(mp(), prec, rnd); }
   //@}
 
   /// \name exponent accessors
@@ -306,10 +306,22 @@ public:
   //@{
   /// addition for <tt>BigFloat+BigFloat</tt> (fixed version)
   int add(const BigFloat& x, const BigFloat& y,prec_t prec,rnd_t rnd=MPFR_RND){
+    assert(prec>=2);
     if (&x == this || &y == this) { // if one of inputs are output
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_add(x,y,rnd);
+       } else if (prec < get_prec()) {
+         r_add(x,y,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_add(x,y,rnd);
+       }
+/*
        BigFloat result(0, prec);
        int r = result.r_add(x, y, rnd);
        swap(result); return r;
+*/
      } else {
        set_prec(prec); return r_add(x, y, rnd); 
      }
@@ -317,11 +329,24 @@ public:
   /// addition for <tt>BigFloat+T</tt> (fixed version)
   template <typename T> 
   int add(const BigFloat& x, const T& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
     if (&x == this) { // if x is same as output
+//*
+      if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_add(x,y,rnd);
+       } else if (prec < get_prec()) {
+         r_add(x,y,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_add(x,y,rnd);
+       }
+/*/
        BigFloat result(0, prec);
        int r = result.r_add(x, y, rnd);
        swap(result); return r;
-     } else {
+//*/
+	} else {
        set_prec(prec); return r_add(x, y, rnd); 
      }
   }
@@ -403,33 +428,68 @@ public:
   //@{
   /// subtraction for <tt>BigFloat-BigFloat</tt> (fixed version)
   int sub(const BigFloat& x, const BigFloat& y,prec_t prec,rnd_t rnd=MPFR_RND){
+    assert(prec>=2);
     if (&x == this || &y == this) { // if one of inputs are output
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_sub(x,y,rnd);
+       } else if (prec < get_prec()) {
+         r_sub(x,y,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_sub(x,y,rnd);
+       }
+/*
        BigFloat result(0, prec);
        int r = result.r_sub(x, y, rnd);
        swap(result); return r;
-     } else {
-       set_prec(prec); return r_sub(x, y, rnd);
+*/     } else {
+       set_prec(prec); 
+       int r= r_sub(x, y, rnd);
+       return r;
      }
   }
   /// subtraction for <tt>BigFloat-T</tt> (fixed version)
   template <typename T> 
   int sub(const BigFloat& x, const T& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
     if (&x == this) { // if x is same as output
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_sub(x,y,rnd);
+       } else if (prec < get_prec()) {
+         r_sub(x,y,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_sub(x,y,rnd);
+       }
+/*
        BigFloat result(0, prec);
        int r = result.r_sub(x, y, rnd); 
        swap(result); return r;
-     } else {
+*/     } else {
        set_prec(prec); return r_sub(x, y, rnd);  
      }
   }
   /// subtraction for <tt>T-BigFloat</tt> (fixed version)
   template <typename T> 
   int sub(const T& x, const BigFloat& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
     if (&y == this) { // if y is same as output
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_sub(x,y,rnd);
+       } else if (prec < get_prec()) {
+         r_sub(x,y,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_sub(x,y,rnd);
+       }
+/*
        BigFloat result(0, prec);
        int r = result.r_sub(x, y, rnd); 
        swap(result); return r;
-     } else {
+*/     } else {
        set_prec(prec); return r_sub(x, y, rnd);  
      }
   }
@@ -491,22 +551,44 @@ public:
   //@{
   /// multiplication for <tt>BigFloat*BigFloat</tt> (fixed version)
   int mul(const BigFloat& x, const BigFloat& y,prec_t prec,rnd_t rnd=MPFR_RND){
+    assert(prec>=2);
     if (&x == this || &y == this) { // if one of inputs are output
-       BigFloat result(0, prec);
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_mul(x,y,rnd);
+       } else if (prec < get_prec()) {
+         r_mul(x,y,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_mul(x,y,rnd);
+       }
+/*       BigFloat result(0, prec);
        int r = result.r_mul(x, y, rnd);
        swap(result); return r;
-     } else {
+*/     } else {
        set_prec(prec); return r_mul(x, y, rnd);
      }
   }
   /// multiplication for <tt>BigFloat*T</tt> (fixed version)
   template <typename T>
   int mul(const BigFloat& x, const T& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
     if (&x == this) { // if x is same as output
-       BigFloat result(0, prec);
-       int r = result.r_mul(x, y, rnd);
-       swap(result); return r;
-     } else {
+//*
+      if (prec > get_prec()) {
+        prec_round (prec, rnd);
+        return r_mul(x,y,rnd);
+      } else if (prec < get_prec()) {
+        r_mul(x,y,rnd);
+        return prec_round (prec, rnd);
+      } else {
+        return r_mul(x,y,rnd);
+      }
+/*/   BigFloat result(0, prec);
+      int r = result.r_mul(x, y, rnd);
+      swap(result); return r;
+//*/
+	 } else {
        set_prec(prec); return r_mul(x, y, rnd);
      }
   }
@@ -589,11 +671,21 @@ public:
   /// division for <tt>BigFloat/BigFloat</tt> (fixed version)
   int div(const BigFloat& x, const BigFloat& y, 
           prec_t prec = getDefaultBFdivPrec(), rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
     if (&x == this || &y == this) { // if one of inputs are output
-       BigFloat result(0, prec);
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_div(x,y,rnd);
+       } else if (prec < get_prec()) {
+         r_div(x,y,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_div(x,y,rnd);
+       }
+/*       BigFloat result(0, prec);
        int r = result.r_div(x, y, rnd);
        swap(result); return r; 
-     } else {
+*/     } else {
        set_prec(prec); return r_div(x, y, rnd);
      } 
   }  
@@ -601,11 +693,21 @@ public:
   template <typename T> 
   int div(const BigFloat& x, const T& y, 
           prec_t prec = getDefaultBFdivPrec(), rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
     if (&x == this) { // if x is same as output 
-       BigFloat result(0, prec);
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_div(x,y,rnd);
+       } else if (prec < get_prec()) {
+         r_div(x,y,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_div(x,y,rnd);
+       }
+/*       BigFloat result(0, prec);
        int r = result.r_div(x, y, rnd);
        swap(result); return r; 
-     } else {
+*/     } else {
        set_prec(prec); return r_div(x, y, rnd);
      } 
   }  
@@ -613,11 +715,21 @@ public:
   template <typename T>
   int div(const T& x, const BigFloat& y, 
           prec_t prec = getDefaultBFdivPrec(), rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
     if (&y == this) { // if y is same as output
-       BigFloat result(0, prec);
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_div(x,y,rnd);
+       } else if (prec < get_prec()) {
+         r_div(x,y,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_div(x,y,rnd);
+       }
+/*       BigFloat result(0, prec);
        int r = result.r_div(x, y, rnd);
        swap(result); return r;
-     } else {
+*/     } else {
        set_prec(prec); return r_div(x, y, rnd);
      }
   }
@@ -650,11 +762,21 @@ public:
   /// square root function for <tt>BigFloat</tt> (fixed version)
   int sqrt(const BigFloat& x, 
            prec_t prec = getDefaultBFradicalPrec(), rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
     if (&x == this) { // if x is same as ouput
-      BigFloat result(0, prec);
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_sqrt(x,rnd);
+       } else if (prec < get_prec()) {
+         r_sqrt(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_sqrt(x,rnd);
+       }
+/*       BigFloat result(0, prec);
       int r = result.r_sqrt(x, rnd);
       swap(result); return r;
-    } else {
+*/    } else {
       set_prec(prec); return r_sqrt(x, rnd);
     }
   }
@@ -697,33 +819,63 @@ public:
   //@{
   /// power function for <tt>BigFloat^BigFloat</tt> (fixed version)
   int pow(const BigFloat& x, const BigFloat& y,prec_t prec,rnd_t rnd=MPFR_RND){
+    assert(prec>=2);
     if (&x == this || &y == this) { // if one of inputs are output
-       BigFloat result(0, prec);
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_pow(x,y,rnd);
+       } else if (prec < get_prec()) {
+         r_pow(x,y,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_pow(x,y,rnd);
+       }
+/*       BigFloat result(0, prec);
        int r = result.r_pow(x, y, rnd);
        swap(result); return r;
-     } else {
+*/     } else {
        set_prec(prec); return r_pow(x, y, rnd);
      }
   }
   /// power function for <tt>BigFloat^T</tt> (fixed version)
   template <typename T>
   int pow(const BigFloat& x, const T& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
     if (&x == this) { // if x is same as output 
-       BigFloat result(0, prec);
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_pow(x,y,rnd);
+       } else if (prec < get_prec()) {
+         r_pow(x,y,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_pow(x,y,rnd);
+       }
+/*       BigFloat result(0, prec);
        int r = result.r_pow(x, y, rnd);
        swap(result); return r;
-     } else {
+*/     } else {
        set_prec(prec); return r_pow(x, y, rnd);
      }
   }
   /// power function for <tt>T^BigFloat</tt> (fixed version)
   template <typename T>
   int pow(const T& x, const BigFloat& y, prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
     if (&y == this) { // if y is same as output
-       BigFloat result(0, prec);
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_pow(x,y,rnd);
+       } else if (prec < get_prec()) {
+         r_pow(x,y,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_pow(x,y,rnd);
+       }
+/*       BigFloat result(0, prec);
        int r = result.r_pow(x, y, rnd);
        swap(result); return r;
-     } else {
+*/     } else {
        set_prec(prec); return r_pow(x, y, rnd);
      }
   }
@@ -752,53 +904,103 @@ public:
   //@{
   /// square (fixed version)
   int sqr(const BigFloat& x, prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
     if (&x == this) { // if y is same as output
-       BigFloat result(0, prec);
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_sqr(x,rnd);
+       } else if (prec < get_prec()) {
+         r_sqr(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_sqr(x,rnd);
+       }
+/*       BigFloat result(0, prec);
        int r = result.r_sqr(x, rnd);
        swap(result); return r;
-     } else {
+*/     } else {
        set_prec(prec); return r_sqr(x, rnd);
      }
   }
   /// cubic root (fixed version)
   int cbrt(const BigFloat& x, 
            prec_t prec = getDefaultBFradicalPrec(), rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
     if (&x == this) { // if y is same as output
-       BigFloat result(0, prec);
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_cbrt(x,rnd);
+       } else if (prec < get_prec()) {
+         r_cbrt(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_cbrt(x,rnd);
+       }
+/*       BigFloat result(0, prec);
        int r = result.r_cbrt(x, rnd);
        swap(result); return r;
-     } else {
+*/     } else {
        set_prec(prec); return r_cbrt(x, rnd);
      }
   }
   /// kth root (fixed version)
   int root(const BigFloat& x, unsigned long k,
            prec_t prec = getDefaultBFradicalPrec(), rnd_t rnd=MPFR_RND) {
+    assert(prec>=2);
     if (&x == this) { // if y is same as output
-       BigFloat result(0, prec);
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_root(x,rnd);
+       } else if (prec < get_prec()) {
+         r_root(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_root(x,rnd);
+       }
+/*       BigFloat result(0, prec);
        int r = result.r_root(x, k, rnd);
        swap(result); return r;
-     } else {
+*/     } else {
        set_prec(prec); return r_root(x, k, rnd);
      }
   }
   /// negation (fixed version)
   int neg(const BigFloat& x, prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
     if (&x == this) { // if y is same as output
-       BigFloat result(0, prec);
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_neg(x,rnd);
+       } else if (prec < get_prec()) {
+         r_neg(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_neg(x,rnd);
+       }
+/*       BigFloat result(0, prec);
        int r = result.neg(x, rnd);
        swap(result); return r;
-     } else {
+*/     } else {
        set_prec(prec); return r_neg(x, rnd);
      }
   }
   /// absolute value (fixed version)
   int abs(const BigFloat& x, prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
     if (&x == this) { // if y is same as output
-       BigFloat result(0, prec);
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_abs(x,rnd);
+       } else if (prec < get_prec()) {
+         r_abs(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_abs(x,rnd);
+       }
+/*       BigFloat result(0, prec);
        int r = result.r_abs(x, rnd);
        swap(result); return r;
-     } else {
+*/     } else {
        set_prec(prec); return r_abs(x, rnd);
      }
   }
@@ -842,7 +1044,7 @@ public:
   { return mpfr_div_2ui(mp(), x.mp(), y, rnd); }
   /// divide by 2
   int div2(const BigFloat& x, rnd_t rnd = MPFR_RND)
-  { set_prec(x.get_prec() + 1); return div_2exp(x, 1, rnd); }
+  { set_prec(x.get_prec()); return div_2exp(x,1,rnd); }
   //@}
 
   /// \name comparison functions
@@ -910,6 +1112,7 @@ public:
   { return mpfr_get_z_exp(z.mp(), mp()); }
   /// return BigRat value
   BigRat get_q() const {
+    if (this->sgn() == 0) return 0;
     BigInt x; exp_t e = get_z_exp(x);
     if (e >= 0) { // convert to integer
       x.mul_2exp(x, e); return BigRat(x);
@@ -919,16 +1122,17 @@ public:
   }
   /// return the string representation in scienfic format
   std::string get_str(size_t n=0,int b=10, rnd_t rnd=MPFR_RND) const {
-    return mpfr2str(mp(), n, b, 2, rnd, get_output_showpoint(),
+    return mpfr2str(mp(), n, b, get_output_fmt(), rnd, get_output_showpoint(),
                   get_output_showpos(), get_output_uppercase());
   }
-  /// return the string representation in fixed format
+  // jihun : we dont need this version of get_str anymore
+/*  /// return the string representation in fixed format
   std::string get_fixed_str(size_t n=0, int b=10, rnd_t rnd=MPFR_RND) const {
     return mpfr2str(mp(), n, b, 1, rnd, get_output_showpoint(),
                   get_output_showpos(), get_output_uppercase());
   }
   //@}
-  
+*/  
   /// return 2^{e}
   static BigFloat exp2(int e)
   { return BigFloat(1, e, 2); }
@@ -992,10 +1196,12 @@ public:
   { return mpfr_sgn(mp()); }
   /// return upper bound of MSB
   long uMSB() const
-  { BigInt x; exp_t e = get_z_exp(x); return x.ceillg() + e; }
+  { if (sgn () == 0) return 0;
+    BigInt x; exp_t e = get_z_exp(x); return x.ceillg() + e; }
   /// return lower bound of MSB
   long lMSB() const
-  { BigInt x; exp_t e = get_z_exp(x); return x.floorlg() + e; }
+  { if (sgn () == 0) return MSB_MIN;
+    BigInt x; exp_t e = get_z_exp(x); return x.floorlg() + e; }
   /// remove trailing zeros
   void remove_trailing_zeros()
   { mpfr_remove_trailing_zeros(mp()); }
@@ -1272,6 +1478,7 @@ public: // C++ operators
   //@}
 
 public:
+  operator BigRat() const { return get_q(); }
 #ifndef CORE_DISABLE_OLDNAMES
   /// \name back-compatiable functions
   //@{ 
@@ -1291,10 +1498,8 @@ public:
   BigInt BigIntValue() const { return get_z(); }
   /// BigRatValue
   BigRat BigRatValue() const { return get_q(); }
-  operator BigRat() const { return get_q(); }
   //@}
 #endif
-
 };
 
 #include <CORE/BigFloat.inl>
