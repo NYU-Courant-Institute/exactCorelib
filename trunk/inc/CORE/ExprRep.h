@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.8 2006-08-07 13:57:51 exact Exp $
+ * $Id: ExprRep.h,v 1.9 2006-08-07 15:18:54 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -104,7 +104,8 @@ protected:
 	virtual void fun_name() {
 
 #define BEGIN_DEFINE_RULE_INSERT                              \
-	void insert(ExprRep* c) {
+public:                                                       \
+	void insert(ExprRep* c) {                             
 
 #define BEGIN_DEFINE_RULE_FILTER                              \
 	void compute_filter() {
