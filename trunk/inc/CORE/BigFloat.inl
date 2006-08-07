@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.10 2006-07-05 00:25:22 exact Exp $
+ * $Id: BigFloat.inl,v 1.11 2006-08-07 14:08:28 exact Exp $
  ***************************************************************************/
 
 /// \addtogroup BigFloatArithmeticOperators
@@ -631,6 +631,7 @@ inline BigFloat gcd(const BigFloat& a, const BigFloat& b) {
 inline int cmp(const BigFloat& x, const BigFloat& y) { return x.cmp(y); }
 /// sign 
 inline int sign(const BigFloat& a) { return a.sgn(); }
+inline int sgn(const BigFloat& a) { return a.sgn(); }
 /// abs
 inline BigFloat abs(const BigFloat& a) { BigFloat r; r.abs(a); return r; }
 /// neg
@@ -638,6 +639,12 @@ inline BigFloat neg(const BigFloat& a) { BigFloat r; r.neg(a); return r; }
 /// pow 
 inline BigFloat power(const BigFloat& a, unsigned long p) 
 { BigFloat r; r.pow(a, p, a.get_prec()*p); return r; }
+/// floorlg
+inline long floorLg(const BigFloat& a) { return a.lMSB(); }
+inline long floorlg(const BigFloat& a) { return a.lMSB(); }
+/// ceillg
+inline long ceilLg(const BigFloat& a) { return a.uMSB(); }
+inline long ceillg(const BigFloat& a) { return a.uMSB(); }
 //@}
 #endif
 
