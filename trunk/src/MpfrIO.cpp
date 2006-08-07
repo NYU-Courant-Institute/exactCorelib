@@ -19,11 +19,10 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: MpfrIO.cpp,v 1.3 2006-03-04 08:26:12 exact Exp $
+ * $Id: MpfrIO.cpp,v 1.4 2006-08-07 14:19:35 exact Exp $
  ***************************************************************************/
 #include <mpfr.h>
 #include <string>
-
 /* Define BITS_PER_MP_LIMB
    Can't use sizeof(mp_limb_t) since it should be a preprocessor constant */
 #if defined(GMP_NUMB_BITS) /* GMP 4.1.2 or above */
@@ -141,8 +140,8 @@ std::string mpfr2str(
 
     result.assign(str, len);
     if (exp > 0) {  
-      if ((unsigned long)exp > len) // integer need padding 0
-        result.append(exp - len, '0');
+      if ((unsigned long)exp > len-first) // integer need padding 0
+        result.append(exp - len+first, '0');
       else if ((unsigned long)exp < len) // float point value
         result.insert(first + exp, ".");
     } else if (exp < 0) {
