@@ -63,13 +63,14 @@
 
    Author: Chee Yap and Chen Li (June 2000)
    Since CORE Library Version 1.2
-   	$Id: pi.cpp,v 1.1 2006-03-07 04:51:25 exact Exp $
+   	$Id: pi.cpp,v 1.2 2006-08-09 14:50:28 exact Exp $
  *************************************************************** */
 
 // This program MUST be run at CORE_LEVEL 3:
 #define CORE_LEVEL 3
 
 #include <fstream>
+#include <sstream>
 #include "CORE.h"
 
 using namespace std;
@@ -169,11 +170,12 @@ int main( int argc, char *argv[] ) {
     prec = 1;
   }
   if (DOvalidate == 1) {
-    prec = core_min(eps, 830);	// 830 bits = 250 digits.
+    prec = std::min(eps, 830);	// 830 bits = 250 digits.
+
     from.open("inputs/PI250", ios::in); // read 250 digits of Pi from file
   }
   if (DOvalidate == 2) {
-    prec = core_min(eps, 6644);	// 6644 bits = 2000 digits
+    prec = std::min(eps, 6644);	// 6644 bits = 2000 digits
     from.open("inputs/PI2000", ios::in);// read 2000 digits of Pi from file
   }
 
@@ -200,9 +202,9 @@ int main( int argc, char *argv[] ) {
     // Need to take the min of outputPrec and the number of digits in bigPi
     int minPrec = 0;
     if (DOvalidate == 1)
-	minPrec = core_min(outputPrec, 250);
+	minPrec = std::min(outputPrec, 250);
     if (DOvalidate == 2) 
-	minPrec = core_min(outputPrec, 2000);
+	minPrec = std::min(outputPrec, 2000);
 
     if ( fabs(double(piStr.c_str()) - bigPi) <= (1/pow(double(10), minPrec-4)))
       cout << " >> CORRECT! Output value of Pi verified to "<< minPrec 
@@ -238,7 +240,7 @@ int main( int argc, char *argv[] ) {
   AUTOMATIC CHECK that the internal value of computed sqrt(Pi) is correct
   up to the first 100 digits.
   *************************************************************************** */
-  prec = core_min(eps-1, 332);	// 332 bits == 100 digits
+  prec = std::min(eps-1, 332);	// 332 bits == 100 digits
   double d3 = fabs(sPi - SQRTPI);
   double tmp = 1 / pow(double(10), (int) (prec * log(2.0)/log(10.0)) );
   if ( d3 <= tmp )
