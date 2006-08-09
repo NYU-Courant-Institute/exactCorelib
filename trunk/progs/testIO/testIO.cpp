@@ -13,7 +13,7 @@
    Author: Chee Yap (yap@cs.nyu.edu)
 
    Since Core Library 1.4
-   $Id: testIO.cpp,v 1.1 2006-03-07 04:51:26 exact Exp $
+   $Id: testIO.cpp,v 1.2 2006-08-09 09:55:39 exact Exp $
  ************************************************ */  
 
 #ifndef CORE_LEVEL
@@ -155,7 +155,7 @@ int main( int argc, char *argv[] ) {
   std::cout << std::endl;
 
 #if CORE_LEVEL == 3
-
+/*
   // test Reals
   std::cout << "test reals" << std::endl;
   BigRat R(1, 3);
@@ -169,7 +169,7 @@ int main( int argc, char *argv[] ) {
   std::cout << "BigRat Real Q(1/3): " << Q << std::endl;
   std::cout << "Real R1(\"1/3\"): " << R1 << std::endl;
   std::cout << "BigFloat Real X(1/3): " << X << std::endl;
-
+*/
   // test square root
   std::cout.precision(10);
   setDefaultPrecision(35, CORE_posInfty); // bug?
