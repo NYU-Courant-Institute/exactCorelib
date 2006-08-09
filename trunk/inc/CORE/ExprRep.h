@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.9 2006-08-07 15:18:54 exact Exp $
+ * $Id: ExprRep.h,v 1.10 2006-08-09 09:38:58 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -125,7 +125,7 @@ public:                                                       \
 	virtual bool compute_a_approx(prec_t prec) {
 
 #define BEGIN_DEFINE_RULE_ROOTBD                              \
-	virtual void compute_rootbd() {
+	virtual void compute_rootbd(id_rootbd_t id) {
 
 #define END_DEFINE_RULE }
 
@@ -149,6 +149,7 @@ public:                                                       \
 template <typename RootBd, typename Filter, typename Kernel>
 class ExprRepT {
   typedef ExprRepT<RootBd, Filter, Kernel> thisClass;
+  typedef RootBd* id_rootbd_t;
 protected:
   ExprRepT() : m_nodeinfo(0), m_ref_counter(1)
   {} 
@@ -231,12 +232,14 @@ public: // public methods
     return lMSB(); 
   }
   /// return root bound
-  RootBd& get_rootBd() { 
+  RootBd& get_rootBd(const id_rootbd_t id=0) { 
     if (!m_nodeinfo) 
       init_nodeinfo();
 
-    if (!flags().test(fRootBd)) {
-      compute_rootBd();
+    rootBd().set_id(id == 0 ? rootBd().get_id():id);
+
+    if (!rootBd().is_exact() || !flags().test(fRootBd)) {
+      compute_rootBd(id);
       flags().set(fRootBd);
     }
     
@@ -274,43 +277,13 @@ public: // public methods
   bool is_approx_needed(prec_t prec)
   { return !flags().test(fInit) || (!is_exact() && get_prec() < prec); }
 
-  void init_rootBd() {
-    rootBd().init_ref();
-    for(size_t i=0; i<get_children_size(); ++i)
-      get_child(i)->init_rootBd();
-  }
-
-  unsigned long compute_degree() {
-    unsigned long r(1);
-
-    for(size_t i=0; i<get_children_size(); ++i)
-      r *= get_child(i)->compute_degree();
-   
-    rootBd().inc_ref();
-    r *= (rootBd().is_used() ? 1 : rootBd().get_self_degree());
-    
-    return r;
-  }
-
-  unsigned long get_degree() {
-    init_rootBd();
-    return compute_degree();
-  }
   /// check whether appValue() is exact
   bool is_exact() const
   { return flags().test(fExact); }
 
   void refine() {
-    if (rootBd().is_constructive()) compute_rootBd();
-    prec_t rootbd = rootBd().get_bound();
+    prec_t rootbd = get_rootBd().get_bound();
     
-    if (rootbd >= DEF_INIT_PREC * 10) {
-      unsigned long degree = get_degree();
-      prec_t new_rootbd = rootBd().get_bound(degree);
-
-      rootbd = new_rootbd;
-    }
-
     for (prec_t prec=std::min(rootbd, DEF_INIT_PREC); prec<=rootbd; prec<<=1) {
       a_approx(prec);
       if (!appValue().has_zero()) {
@@ -365,7 +338,7 @@ protected: // overridable methods
   virtual bool compute_lMSB()
   { assert(0); return false;}
   /// compute rootBd
-  virtual void compute_rootBd()
+  virtual void compute_rootBd(const id_rootbd_t id)
   {assert(0);}
   /// compute relative approximation (default)
   /// return true if the approximation can be represented exactly by MPFR) 
@@ -476,6 +449,7 @@ private:
 template <typename RootBd, typename Filter, typename Kernel, typename T>
 class ConstRepT : public ExprRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  typedef RootBd* id_rootbd_t;
   using ExprRep::filter;
   using ExprRep::sign;
   using ExprRep::uMSB;
@@ -507,7 +481,7 @@ protected:
   { uMSB() = ceillg(value); return true; }
   virtual bool compute_lMSB()
   { lMSB() = floorlg(value); return true; }
-  virtual void compute_rootBd()
+  virtual void compute_rootBd(const id_rootbd_t id)
   { rootBd().set(value); }
   virtual bool compute_r_approx(prec_t prec)
   { return appValue().set(value, prec); }
@@ -532,6 +506,7 @@ private:
 template <typename RootBd, typename Filter, typename Kernel,typename NT>
 class ConstPolyRepT : public ExprRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  typedef RootBd* id_rootbd_t;
   using ExprRep::filter;
   using ExprRep::sign;
   using ExprRep::uMSB;
@@ -586,7 +561,7 @@ protected:
   { uMSB() = value.uMSB(); return true; }
   virtual bool compute_lMSB()
   { lMSB() = value.lMSB(); return true; }
-  virtual void compute_rootBd()
+  virtual void compute_rootBd(const id_rootbd_t id)
   { rootBd().set(value); }
   virtual bool compute_a_approx(prec_t prec) {
     I = ss.newtonRefine(I, prec+1);
@@ -625,6 +600,7 @@ template <typename RootBd, typename Filter, typename Kernel>
 class NegRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
   typedef UnaryOpRepT<RootBd, Filter, Kernel> UnaryOpRep;
+  typedef RootBd* id_rootbd_t;
   using UnaryOpRep::child;
   using UnaryOpRep::check_exact;
   using ExprRep::filter;
@@ -647,8 +623,8 @@ protected:
   { uMSB() = child->get_uMSB(); return true;}
   virtual bool compute_lMSB() 
   { lMSB() = child->get_lMSB(); return true;}
-  virtual void compute_rootBd()
-  { rootBd().neg(child->get_rootBd()); }
+  virtual void compute_rootBd(const id_rootbd_t id)
+  { rootBd().neg(child->get_rootBd(id)); }
   virtual bool compute_r_approx(prec_t prec) {
     return check_exact(appValue().neg(child->r_approx(prec), prec));
   } 
@@ -663,6 +639,7 @@ template <typename RootBd, typename Filter, typename Kernel>
 class SqrtRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
   typedef UnaryOpRepT<RootBd, Filter, Kernel> UnaryOpRep;
+  typedef RootBd* id_rootbd_t;
   using UnaryOpRep::child;
   using UnaryOpRep::check_exact;
   using ExprRep::filter;
@@ -684,8 +661,8 @@ protected:
   { uMSB() = (child->get_uMSB()+1) >> 1; return true;}
   virtual bool compute_lMSB() 
   { lMSB() = child->get_lMSB() >> 1; return true;}
-  virtual void compute_rootBd()
-  { rootBd().root(child->get_rootBd(), 2); }
+  virtual void compute_rootBd(const id_rootbd_t id)
+  { rootBd().root(child->get_rootBd(id), 2); }
   virtual bool compute_r_approx(prec_t prec) {
     return check_exact(appValue().sqrt(child->r_approx(prec*2), prec));
   }
@@ -697,6 +674,7 @@ template <typename RootBd, typename Filter, typename Kernel>
 class CbrtRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
   typedef UnaryOpRepT<RootBd, Filter, Kernel> UnaryOpRep;
+  typedef RootBd* id_rootbd_t;
   using UnaryOpRep::child;
   using UnaryOpRep::check_exact;
   using ExprRep::filter;
@@ -718,8 +696,8 @@ protected:
   { uMSB() = (child->get_uMSB()+2)/3; return true;}
   virtual bool compute_lMSB() 
   { lMSB() = child->get_lMSB()/3; return true;}
-  virtual void compute_rootBd()
-  { rootBd().root(child->get_rootBd(), 3); }
+  virtual void compute_rootBd(const id_rootbd_t id)
+  { rootBd().root(child->get_rootBd(id), 3); }
   virtual bool compute_r_approx(prec_t prec) {
     return check_exact(appValue().cbrt(child->r_approx(prec*3), prec));
   }
@@ -731,6 +709,7 @@ template <typename RootBd, typename Filter, typename Kernel>
 class RootRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
   typedef UnaryOpRepT<RootBd, Filter, Kernel> UnaryOpRep;
+  typedef RootBd* id_rootbd_t;
   using UnaryOpRep::child;
   using UnaryOpRep::check_exact;
   using ExprRep::filter;
@@ -752,8 +731,8 @@ protected:
   { uMSB() = (child->get_uMSB()+m_k-1)/m_k; return true;}
   virtual bool compute_lMSB() 
   { lMSB() = child->get_lMSB()/m_k; return true;}
-  virtual void compute_rootBd()
-  { rootBd().root(child->get_rootBd(), m_k); }
+  virtual void compute_rootBd(const id_rootbd_t id)
+  { rootBd().root(child->get_rootBd(id), m_k); }
   virtual bool compute_r_approx(prec_t prec) {
     return check_exact(appValue().root(child->r_approx(prec*m_k), m_k, prec));
   }
@@ -789,6 +768,7 @@ template <typename RootBd, typename Filter, typename Kernel, bool is_add>
 class AddSubRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
   typedef BinaryOpRepT<RootBd, Filter, Kernel> BinaryOpRep;
+  typedef RootBd* id_rootbd_t;
   using BinaryOpRep::first; 
   using BinaryOpRep::second; 
   using ExprRep::filter;
@@ -868,8 +848,8 @@ protected:
     }
     return true;
   }
-  virtual void compute_rootBd()
-  {rootBd().addsub(first->get_rootBd(),second->get_rootBd());}
+  virtual void compute_rootBd(const id_rootbd_t id)
+  {rootBd().addsub(first->get_rootBd(id),second->get_rootBd(id));}
   virtual bool compute_a_approx(prec_t prec) {
     return this->check_exact(appValue().addsub(first->a_approx(prec+2), second->a_approx(prec+2), abs2rel(prec+1), is_add)); 
   }
@@ -881,6 +861,7 @@ template <typename RootBd, typename Filter, typename Kernel>
 class MulRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
   typedef BinaryOpRepT<RootBd, Filter, Kernel> BinaryOpRep;
+  typedef RootBd* id_rootbd_t;
   using BinaryOpRep::first; 
   using BinaryOpRep::second; 
   using ExprRep::filter;
@@ -901,8 +882,8 @@ protected:
   { uMSB() = first->get_uMSB() + second->get_uMSB(); return true;}
   virtual bool compute_lMSB() 
   { lMSB() = first->get_lMSB() + second->get_lMSB(); return true;}
-  virtual void compute_rootBd()
-  { rootBd().mul(first->get_rootBd(), second->get_rootBd()); }
+  virtual void compute_rootBd(const id_rootbd_t id)
+  { rootBd().mul(first->get_rootBd(id), second->get_rootBd(id)); }
   virtual bool compute_r_approx(prec_t prec) {
    return check_exact(appValue().mul(first->r_approx(prec+2), second->r_approx(prec+2), prec+1));
   }
@@ -914,6 +895,7 @@ template <typename RootBd, typename Filter, typename Kernel>
 class DivRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
   typedef BinaryOpRepT<RootBd, Filter, Kernel> BinaryOpRep;
+  typedef RootBd* id_rootbd_t;
   using BinaryOpRep::first; 
   using BinaryOpRep::second; 
   using ExprRep::filter;
@@ -934,8 +916,8 @@ protected:
   { uMSB() = first->get_uMSB() - second->get_lMSB(); return true;}
   virtual bool compute_lMSB() 
   { lMSB() = first->get_lMSB() - second->get_uMSB(); return true;}
-  virtual void compute_rootBd()
-  { rootBd().div(first->get_rootBd(), second->get_rootBd()); }
+  virtual void compute_rootBd(const id_rootbd_t id)
+  { rootBd().div(first->get_rootBd(id), second->get_rootBd(id)); }
   virtual bool compute_r_approx(prec_t prec) {
     return check_exact(appValue().div(first->r_approx(prec+2), second->r_approx(prec+2), prec+1));
   }
@@ -975,6 +957,7 @@ class SumOpRepT : public KnaryOpRepT<RootBd, Filter, Kernel> {
   typedef SumOpRepT<RootBd, Filter, Kernel> SumOpRep;
   typedef AddSubRepT<RootBd, Filter, Kernel, true> AddOpRep;
   typedef KnaryOpRepT<RootBd, Filter, Kernel> KnaryOpRep;
+  typedef RootBd* id_rootbd_t;
   using KnaryOpRep::children;
   using ExprRep::filter;
   using ExprRep::rootBd;
@@ -1020,10 +1003,10 @@ protected:
   virtual bool compute_lMSB() {
     return false;
   }
-  virtual void compute_rootBd() {
-    rootBd().addsub(children[0]->get_rootBd(), children[1]->get_rootBd());
+  virtual void compute_rootBd(const id_rootbd_t id) {
+    rootBd().addsub(children[0]->get_rootBd(id), children[1]->get_rootBd(id));
     for (size_t i = 2; i < children.size(); i++) {
-      rootBd().addsub(rootBd(), children[i]->get_rootBd());
+      rootBd().addsub(rootBd(), children[i]->get_rootBd(id));
     }
   }
   virtual bool compute_a_approx(prec_t prec) {
@@ -1054,6 +1037,7 @@ template <typename RootBd, typename Filter, typename Kernel>
 class MulSumOpRepT : public KnaryOpRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
   typedef KnaryOpRepT<RootBd, Filter, Kernel> KnaryOpRep;
+  typedef RootBd* id_rootbd_t;
   using KnaryOpRep::children;
   using ExprRep::filter;
   using ExprRep::sign;
@@ -1103,10 +1087,10 @@ protected:
     lMSB() = tmplMSB;
     return true;
   }
-  virtual void compute_rootBd() {
-    rootBd().mul(children[0]->get_rootBd(), children[1]->get_rootBd());
+  virtual void compute_rootBd(const id_rootbd_t id) {
+    rootBd().mul(children[0]->get_rootBd(id), children[1]->get_rootBd(id));
     for (size_t i=2; i<children.size(); i++) {
-      rootBd().mul(rootBd(), children[i]->get_rootBd());
+      rootBd().mul(rootBd(), children[i]->get_rootBd(id));
     }
   }
   virtual bool compute_r_approx(prec_t prec) {
