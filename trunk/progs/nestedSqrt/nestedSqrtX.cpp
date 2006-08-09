@@ -29,7 +29,7 @@
 		x = 2.25 is the default
 
  Since CORE Library Version 1.5
- $Id: nestedSqrtX.cpp,v 1.1 2006-03-07 04:51:25 exact Exp $
+ $Id: nestedSqrtX.cpp,v 1.2 2006-08-09 10:08:47 exact Exp $
 ****************************************************************/
 
 #ifndef CORE_LEVEL
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 	  std::cout << "   E1 = SQRT(E + 1, " << k << ") - x \n";
 	  std::cout << "      = " << E1 << std::endl;
 	  std::cout << "        (N.B. E1 should be very small positive number)\n";
-	  std::cout << "        ( lg(E1) ~ " <<E1.Rep()->uMSB()<< ")"<< std::endl;
+	  std::cout << "        ( lg(E1) ~ " <<E1.rep()->get_uMSB()<< ")"<< std::endl;
 	} else 
 	  std::cerr  << "   ERROR!! E1 is not positive " << std::endl;
 
