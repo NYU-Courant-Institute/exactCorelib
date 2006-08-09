@@ -51,7 +51,7 @@
    Date:   Sept 28, 2003.  Revised, Mar 19, 2004.
 
    Since Core Library Version 1.6
-   $Id: testSqrt.cpp,v 1.1 2006-03-07 04:51:26 exact Exp $
+   $Id: testSqrt.cpp,v 1.2 2006-08-09 09:57:45 exact Exp $
  ************************************************ */  
 
 //# define CORE_DEBUG
@@ -60,7 +60,7 @@
 # define CORE_LEVEL 4
 #endif
 
-#include "CORE/Expr.h"
+#include "CORE.h"
 
 using namespace std;
 using namespace CORE;
