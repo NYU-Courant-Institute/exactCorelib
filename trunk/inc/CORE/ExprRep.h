@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.10 2006-08-09 09:38:58 exact Exp $
+ * $Id: ExprRep.h,v 1.11 2006-09-14 19:37:19 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -184,7 +184,8 @@ public: // public methods
     
     flags().set(fSign);
     return sign(); 
-  }
+  }//get_sign()
+
   /// return uMSB
   msb_t get_uMSB() { 
     // if filter works
@@ -207,8 +208,13 @@ public: // public methods
     
     flags().set(fuMSB);
     return uMSB(); 
-  }
+  }// get_uMSB
+
+
   /// return lMSB
+  /** lMSB of an expression x satisfies the relation $|x|\ge 2^{lMSB}$.
+   * since MSB(x) is defined to be $\floor{\lg |x|}$
+   */
   msb_t get_lMSB() {
     // if filter works
     if (filter().is_ok())
@@ -230,7 +236,8 @@ public: // public methods
     
     flags().set(flMSB);
     return lMSB(); 
-  }
+  }// get_lMSB
+
   /// return root bound
   RootBd& get_rootBd(const id_rootbd_t id=0) { 
     if (!m_nodeinfo) 
@@ -281,6 +288,13 @@ public: // public methods
   bool is_exact() const
   { return flags().test(fExact); }
 
+  ////////////////////////////////////////////////// 
+  /// refine() is called by compute_sign and compute_lMSB
+  /// 	-- it computes the root bound and then improves the
+  ///   current approximation until the root bound.
+  //
+  // Aug 2006: Jihun pulled this refine() function out of AddSubRep.
+  ////////////////////////////////////////////////// 
   void refine() {
     prec_t rootbd = get_rootBd().get_bound();
     
@@ -299,10 +313,11 @@ public: // public methods
     rootBd().dump();
 #endif
     set_flags(0, 0, MSB_MIN);
-  }
+  }//refine
 
 protected: 
   /// convert absolute precision to relative precision
+  // Note this output is at least PREC_MIN (=2).
   prec_t abs2rel(prec_t prec)
   { return std::max(long(prec) + get_uMSB(), long(PREC_MIN)); }
   /// convert relative precision to absolute precision
@@ -340,10 +355,12 @@ protected: // overridable methods
   /// compute rootBd
   virtual void compute_rootBd(const id_rootbd_t id)
   {assert(0);}
+
   /// compute relative approximation (default)
   /// return true if the approximation can be represented exactly by MPFR) 
   virtual bool compute_r_approx(prec_t prec)
   { return compute_a_approx(rel2abs(prec)); } 
+
   /// compute absolute approximation (default)
   /// return true if the approximation can be represented exactly by MPFR) 
   virtual bool compute_a_approx(prec_t prec)
@@ -522,8 +539,7 @@ public:
     I = ss.isolateRoot(n);
     // check whether n-th root exists
     if (I.first == 1 && I.second == 0) {
-      core_error("CORE ERROR! root index out of bound", __FILE__, __LINE__, true);
-      abort();
+      core_error("root index out of bound", __FILE__, __LINE__, true);
     }
     // refine initial interval to absolte error of 2^53
     I = ss.newtonRefine(I, 54);
@@ -537,11 +553,11 @@ public:
   ConstPolyRepT(const Polynomial<NT>& p, const BFInterval& II) : ss(p), I(II) {
     BFVecInterval v;
     ss.isolateRoots(I.first, I.second, v);
-    I = v.front();
+std::cout << "size of v =" << v.size() << std::endl;
     if (v.size() != 1) {
-      core_error("CORE ERROR! root index out of bound", __FILE__, __LINE__, true);
-      abort();
+      core_error("root interval is not isolating", __FILE__, __LINE__, true);
     }
+    I = v.front();
     // refine initial interval to absolte error of 2^53
     I = ss.newtonRefine(I, 54);
     assert(I.first < I.second && I.first*I.second>=0);
@@ -649,9 +665,15 @@ class SqrtRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::appValue;
   using ExprRep::rootBd;
   using ExprRep::abs2rel;
+  using ExprRep::init_value;  
 public:
   SqrtRepT(ExprRep* c) : UnaryOpRep(c) 
-  { filter().sqrt(child->filter()); }
+  { filter().sqrt(child->filter()); 
+    if (child->get_sign()<0) 
+      core_error("sqrt of negative value", __FILE__, __LINE__, true);
+    if (child->get_sign()==0)
+      init_value(0);
+  }
   virtual ~SqrtRepT() 
   {}
 protected:
@@ -664,6 +686,8 @@ protected:
   virtual void compute_rootBd(const id_rootbd_t id)
   { rootBd().root(child->get_rootBd(id), 2); }
   virtual bool compute_r_approx(prec_t prec) {
+    // compute_r_approx is called by r_approx only --
+    // if child's sign is zero, compute_r_approx is not called	  
     return check_exact(appValue().sqrt(child->r_approx(prec*2), prec));
   }
 };
@@ -806,22 +830,54 @@ protected:
     return true;
   }
   virtual bool compute_uMSB() {
-    sign_t sf = first->get_sign();
-    sign_t ss = second->get_sign();
-    if (!is_add) ss = -ss;
-    if (sf == 0) // first operand is zero
-      uMSB() = second->get_uMSB();
-    else if (ss == 0) // second operand is zero
-      uMSB() = first->get_uMSB();
-    else {
+ // sign is too expensive and should be avoided at all cost:
+  //  sign_t sf = first->get_sign();
+  //  sign_t ss = second->get_sign();
+  //  if (!is_add) ss = -ss;
+  //  if (sf == 0) // first operand is zero
+  //    uMSB() = second->get_uMSB();
+  //  else if (ss == 0) // second operand is zero
+  //    uMSB() = first->get_uMSB();
+  //  else {
       msb_t uf = first->get_uMSB();
       msb_t us = second->get_uMSB();
-      uMSB() = std::max(uf, us);
-      if (sf == ss) uMSB() += 1;
-    }
+      uMSB() = std::max(uf, us) + 1;
+  //    if (sf == ss) uMSB() += 1;
+  //  }
     return true;
   }
   virtual bool compute_lMSB() {
+// Sep 8, 2006: Jihun/Chee
+// -- Must rewrite this to avoid sign till the
+// 	easy cases are checked (first->uMSB < second->lMSB, etc)
+// -- seems like we should not get signs here -- if we want to call refine
+    if (lf > second->get_uMSB()+1) { // note that we do need the "+1" to ensure a factor of 2 gap
+      lMSB() = lf - 1; return true;
+    } 
+    if (ls > first->get_uMSB()+1) {
+      lMSB() = ls - 1; return true;
+    }
+    sign_t sf = first->get_sign();
+    if (sf == 0) {// first operand is zero
+      lMSB() = second->get_lMSB(); return true;
+    }
+    sign_t ss = second->get_sign();
+    if (ss == 0) {// second operand is zero
+      lMSB() = first->get_lMSB(); return true;
+    }
+   msb_t lf = first->get_lMSB();
+   msb_t ls = second->get_lMSB();
+   if (sf == ss) {// same sign
+     if (lf == ls)
+       lMSB() = lf + 1;
+     else
+       lMSB() = std::max(lf, ls);
+   } else { // different sign
+       return false; // failed to compute lMSB if different sign and we cannot
+       			// decide if first->MSB is different from second-MSB
+   }
+    /*
+    // The following code is right, but inefficient. Keep for debugging:
     sign_t sf = first->get_sign();
     sign_t ss = second->get_sign();
     if (!is_add) ss = -ss;
@@ -846,14 +902,17 @@ protected:
           return false;
       }
     }
+    */
     return true;
-  }
+  } //compute_lMSB
+
   virtual void compute_rootBd(const id_rootbd_t id)
   {rootBd().addsub(first->get_rootBd(id),second->get_rootBd(id));}
   virtual bool compute_a_approx(prec_t prec) {
-    return this->check_exact(appValue().addsub(first->a_approx(prec+2), second->a_approx(prec+2), abs2rel(prec+1), is_add)); 
+    return this->check_exact(appValue().addsub(first->a_approx(prec+2),
+	  second->a_approx(prec+2), abs2rel(prec+1), is_add)); 
   }
-};
+}; //AddSubRepT
 
 /// \class MulRepT
 /// \brief multiplication node
@@ -906,7 +965,10 @@ class DivRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::appValue;
 public:
   DivRepT(ExprRep* f, ExprRep* s, bool b = false) : BinaryOpRep(f, s, b)
-  { filter().div(first->filter(), second->filter()); }
+  { filter().div(first->filter(), second->filter());
+    if (second->get_sign() == 0)
+      core_error("divide by zero", __FILE__, __LINE__, true);
+  }
   virtual ~DivRepT() 
   {}
 protected:
