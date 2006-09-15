@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.11 2006-09-14 19:37:19 exact Exp $
+ * $Id: ExprRep.h,v 1.12 2006-09-15 15:12:24 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -708,9 +708,13 @@ class CbrtRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::appValue;
   using ExprRep::rootBd;
   using ExprRep::abs2rel;
+  using ExprRep::init_value;
 public:
   CbrtRepT(ExprRep* c) : UnaryOpRep(c) 
-  { filter().cbrt(child->filter()); }
+  { filter().cbrt(child->filter());
+    if (child->get_sign()==0)
+      init_value(0);
+  }
   virtual ~CbrtRepT() 
   {}
 protected:
@@ -743,9 +747,17 @@ class RootRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::appValue;
   using ExprRep::rootBd;
   using ExprRep::abs2rel;
+  using ExprRep::init_value;
 public:
   RootRepT(ExprRep* c, unsigned long k) : UnaryOpRep(c), m_k(k) 
-  { filter().root(child->filter(), k); }
+  { if (k == 0)
+      core_error("0-th root is undefined", __FILE__, __LINE__, true);
+    if (k%2 == 0 && c->get_sign() < 0)
+      core_error("even root of negative value", __FILE__, __LINE__, true);
+    filter().root(child->filter(), k);
+    if (child->get_sign()==0)
+      init_value(0);
+  }
   virtual ~RootRepT() 
   {}
 protected:
@@ -831,26 +843,33 @@ protected:
   }
   virtual bool compute_uMSB() {
  // sign is too expensive and should be avoided at all cost:
-  //  sign_t sf = first->get_sign();
-  //  sign_t ss = second->get_sign();
-  //  if (!is_add) ss = -ss;
-  //  if (sf == 0) // first operand is zero
-  //    uMSB() = second->get_uMSB();
-  //  else if (ss == 0) // second operand is zero
-  //    uMSB() = first->get_uMSB();
-  //  else {
+  /*
+    sign_t sf = first->get_sign();
+    sign_t ss = second->get_sign();
+    if (!is_add) ss = -ss;
+    if (sf == 0) // first operand is zero
+      uMSB() = second->get_uMSB();
+    else if (ss == 0) // second operand is zero
+      uMSB() = first->get_uMSB();
+    else {
       msb_t uf = first->get_uMSB();
       msb_t us = second->get_uMSB();
       uMSB() = std::max(uf, us) + 1;
-  //    if (sf == ss) uMSB() += 1;
-  //  }
+      if (sf == ss) uMSB() += 1;
+    }
+  */
+  //*
+    msb_t uf = first->get_uMSB();
+    msb_t us = second->get_uMSB();
+    uMSB() = std::max(uf, us) + 1;
+  //*/
     return true;
   }
   virtual bool compute_lMSB() {
-// Sep 8, 2006: Jihun/Chee
-// -- Must rewrite this to avoid sign till the
-// 	easy cases are checked (first->uMSB < second->lMSB, etc)
-// -- seems like we should not get signs here -- if we want to call refine
+// Sep 8, 2006: Jihun/Chee rewrote to avoid computing signs as long as possible
+    //*
+    msb_t lf = first->get_lMSB();
+    msb_t ls = second->get_lMSB();
     if (lf > second->get_uMSB()+1) { // note that we do need the "+1" to ensure a factor of 2 gap
       lMSB() = lf - 1; return true;
     } 
@@ -865,8 +884,6 @@ protected:
     if (ss == 0) {// second operand is zero
       lMSB() = first->get_lMSB(); return true;
     }
-   msb_t lf = first->get_lMSB();
-   msb_t ls = second->get_lMSB();
    if (sf == ss) {// same sign
      if (lf == ls)
        lMSB() = lf + 1;
@@ -876,6 +893,7 @@ protected:
        return false; // failed to compute lMSB if different sign and we cannot
        			// decide if first->MSB is different from second-MSB
    }
+   //*/
     /*
     // The following code is right, but inefficient. Keep for debugging:
     sign_t sf = first->get_sign();
