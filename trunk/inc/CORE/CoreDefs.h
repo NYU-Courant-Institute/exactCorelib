@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.8 2006-08-07 13:51:04 exact Exp $
+ * $Id: CoreDefs.h,v 1.9 2006-09-22 11:56:18 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
@@ -58,6 +58,12 @@ extern long defOutputDigits;
 extern long defBFdivRelPrec;
 extern long defBFradicalRelPrec;
 
+/// This sets the global variable defRelPrec and defAbsPrec.
+//  PROBLEM IS this is "composite precision" which we don't really
+//  support in Core2.  So, one of these two must be CORE_INFTY.
+//  But in Expr.h, we see that approx() is implemented so that
+//     If defAbsPrec<CORE_INFTY, then we compute to defAbsPrec (absolute prec)
+//     Else defAbsPrec=CORE_INFTY, we compute to defRelPrec (relative prec).
 inline void setDefaultPrecision(long r, long a)
 { defRelPrec = r; defAbsPrec = a; }
 inline void setDefaultRelPrecision(long r)

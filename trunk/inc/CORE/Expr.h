@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.17 2006-08-07 13:54:17 exact Exp $
+ * $Id: Expr.h,v 1.18 2006-09-22 11:56:18 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -161,14 +161,18 @@ public:
   /// kth-root
   friend ExprT root(const ExprT& e, unsigned long k)
   { return ExprT(new RootRep(e.rep(), k)); }
+  /// radical -- alternative name for root(n,k)
   template<class NT>
   friend ExprT radical(const NT& n, unsigned long k) {
     assert(n>=0 && k>=1);
+    /*  This code is slower because root calls MPFR
+     *  while this code uses our own Newton iteration.
     if (n==0 || n == 1 || k ==1) return n;
     Polynomial<NT> Q(k);
     Q.setCoeff(0, -n);
     Q.setCoeff(k, 1);
-    //return rootOf(Q);
+    return rootOf(Q);
+    */
     return root(ExprT(n),k); //Jihun:this version is very slow.root bound becomes extremely large
   }
 
@@ -224,11 +228,11 @@ public:
   { FT val; is >> val; if (is) x = val; return is; }
   friend std::ostream& operator<<(std::ostream& os, const ExprT& x) {
     ExprT* p = const_cast<ExprT*>(&x);
-    if (p->sign()) os << p->r_approx(defRelPrec); else os << "0"; return os;
+    if (p->sign()) os << p->approx(defRelPrec,defAbsPrec); else os << "0"; return os;
   }
   std::string toString() {
     ExprT* p = const_cast<ExprT*>(this);
-    if (p->sign()) return p->r_approx(defRelPrec).get_str(); else return "0";
+    if (p->sign()) return p->approx(defRelPrec,defAbsPrec).get_str(); else return "0";
   } 
 public: // public methods
   /// return relative approximation
@@ -242,8 +246,10 @@ public: // public methods
   FT approx(prec_t r_prec = defRelPrec, prec_t a_prec = defAbsPrec) {
     if (a_prec == CORE_INFTY)
       return r_approx(r_prec).get_f();
-    else // if (r_prec == CORE_INFTY)
+    else if (r_prec == CORE_INFTY)
       return a_approx(a_prec).get_f();
+    else 
+      return a_approx( std::min(a_prec, m_rep->rel2abs(r_prec)) ).get_f();
   }
   /// return integer value 
   int intValue() const {

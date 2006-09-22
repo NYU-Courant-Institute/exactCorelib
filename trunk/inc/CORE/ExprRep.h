@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.12 2006-09-15 15:12:24 exact Exp $
+ * $Id: ExprRep.h,v 1.13 2006-09-22 11:56:18 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -125,7 +125,7 @@ public:                                                       \
 	virtual bool compute_a_approx(prec_t prec) {
 
 #define BEGIN_DEFINE_RULE_ROOTBD                              \
-	virtual void compute_rootbd(id_rootbd_t id) {
+	virtual void compute_rootbd() {
 
 #define END_DEFINE_RULE }
 
@@ -239,14 +239,12 @@ public: // public methods
   }// get_lMSB
 
   /// return root bound
-  RootBd& get_rootBd(const id_rootbd_t id=0) { 
+  RootBd& get_rootBd() { 
     if (!m_nodeinfo) 
       init_nodeinfo();
 
-    rootBd().set_id(id == 0 ? rootBd().get_id():id);
-
-    if (!rootBd().is_exact() || !flags().test(fRootBd)) {
-      compute_rootBd(id);
+    if (!flags().test(fRootBd)) {
+      compute_rootBd();
       flags().set(fRootBd);
     }
     
@@ -288,6 +286,32 @@ public: // public methods
   bool is_exact() const
   { return flags().test(fExact); }
 
+  void rootBd_init() {
+    rootBd().set_visit(false);
+    for (size_t i=0; i < get_children_size(); i++) {
+      if (get_child(i)->rootBd().get_visit())
+        get_child(i)->rootBd_init();
+    }
+  }
+
+  void compute_Deg(unsigned long& deg) {
+    if (rootBd().get_visit() == false) {
+      deg *= rootBd().get_deg();
+      rootBd().set_visit(true);
+    }
+    for (size_t i=0; i < get_children_size(); i++) {
+      get_child(i)->compute_Deg(deg);
+    }
+  }
+
+  unsigned long get_Deg() {
+    unsigned long deg = 1;
+    compute_Deg(deg);
+    rootBd_init();
+
+    return deg;
+  }  
+
   ////////////////////////////////////////////////// 
   /// refine() is called by compute_sign and compute_lMSB
   /// 	-- it computes the root bound and then improves the
@@ -296,7 +320,11 @@ public: // public methods
   // Aug 2006: Jihun pulled this refine() function out of AddSubRep.
   ////////////////////////////////////////////////// 
   void refine() {
-    prec_t rootbd = get_rootBd().get_bound();
+    prec_t rootbd = get_rootBd().get_bound(get_Deg());
+#ifdef CORE_DEBUG_ROOTBOUND
+    std::cout << "rootbd degree upperbound = " << get_Deg() << std::endl;
+    std::cout << "rootbd bit = " << rootbd << std::endl;
+#endif
     
     for (prec_t prec=std::min(rootbd, DEF_INIT_PREC); prec<=rootbd; prec<<=1) {
       a_approx(prec);
@@ -309,13 +337,13 @@ public: // public methods
       }
     }
 #ifdef CORE_DEBUG_ROOTBOUND
-    std::cerr << "root bound=" << rootBd().get_bound() << std::endl;
+    std::cerr << "root bound=" << rootBd().get_bound(get_Deg()) << std::endl;
     rootBd().dump();
 #endif
     set_flags(0, 0, MSB_MIN);
   }//refine
 
-protected: 
+public: 
   /// convert absolute precision to relative precision
   // Note this output is at least PREC_MIN (=2).
   prec_t abs2rel(prec_t prec)
@@ -324,6 +352,7 @@ protected:
   prec_t rel2abs(prec_t prec)
   { return std::max(long(prec) - get_lMSB(), long(PREC_MIN)); }
 
+protected: 
   /// set flags
   void set_flags(const sign_t& s, const msb_t& u, const msb_t& l) {
     assert(m_nodeinfo);
@@ -353,7 +382,7 @@ protected: // overridable methods
   virtual bool compute_lMSB()
   { assert(0); return false;}
   /// compute rootBd
-  virtual void compute_rootBd(const id_rootbd_t id)
+  virtual void compute_rootBd()
   {assert(0);}
 
   /// compute relative approximation (default)
@@ -498,7 +527,7 @@ protected:
   { uMSB() = ceillg(value); return true; }
   virtual bool compute_lMSB()
   { lMSB() = floorlg(value); return true; }
-  virtual void compute_rootBd(const id_rootbd_t id)
+  virtual void compute_rootBd()
   { rootBd().set(value); }
   virtual bool compute_r_approx(prec_t prec)
   { return appValue().set(value, prec); }
@@ -577,7 +606,7 @@ protected:
   { uMSB() = value.uMSB(); return true; }
   virtual bool compute_lMSB()
   { lMSB() = value.lMSB(); return true; }
-  virtual void compute_rootBd(const id_rootbd_t id)
+  virtual void compute_rootBd()
   { rootBd().set(value); }
   virtual bool compute_a_approx(prec_t prec) {
     I = ss.newtonRefine(I, prec+1);
@@ -639,8 +668,8 @@ protected:
   { uMSB() = child->get_uMSB(); return true;}
   virtual bool compute_lMSB() 
   { lMSB() = child->get_lMSB(); return true;}
-  virtual void compute_rootBd(const id_rootbd_t id)
-  { rootBd().neg(child->get_rootBd(id)); }
+  virtual void compute_rootBd()
+  { rootBd().neg(child->get_rootBd()); }
   virtual bool compute_r_approx(prec_t prec) {
     return check_exact(appValue().neg(child->r_approx(prec), prec));
   } 
@@ -683,8 +712,8 @@ protected:
   { uMSB() = (child->get_uMSB()+1) >> 1; return true;}
   virtual bool compute_lMSB() 
   { lMSB() = child->get_lMSB() >> 1; return true;}
-  virtual void compute_rootBd(const id_rootbd_t id)
-  { rootBd().root(child->get_rootBd(id), 2); }
+  virtual void compute_rootBd()
+  { rootBd().root(child->get_rootBd(), 2); }
   virtual bool compute_r_approx(prec_t prec) {
     // compute_r_approx is called by r_approx only --
     // if child's sign is zero, compute_r_approx is not called	  
@@ -724,8 +753,8 @@ protected:
   { uMSB() = (child->get_uMSB()+2)/3; return true;}
   virtual bool compute_lMSB() 
   { lMSB() = child->get_lMSB()/3; return true;}
-  virtual void compute_rootBd(const id_rootbd_t id)
-  { rootBd().root(child->get_rootBd(id), 3); }
+  virtual void compute_rootBd()
+  { rootBd().root(child->get_rootBd(), 3); }
   virtual bool compute_r_approx(prec_t prec) {
     return check_exact(appValue().cbrt(child->r_approx(prec*3), prec));
   }
@@ -767,8 +796,8 @@ protected:
   { uMSB() = (child->get_uMSB()+m_k-1)/m_k; return true;}
   virtual bool compute_lMSB() 
   { lMSB() = child->get_lMSB()/m_k; return true;}
-  virtual void compute_rootBd(const id_rootbd_t id)
-  { rootBd().root(child->get_rootBd(id), m_k); }
+  virtual void compute_rootBd()
+  { rootBd().root(child->get_rootBd(), m_k); }
   virtual bool compute_r_approx(prec_t prec) {
     return check_exact(appValue().root(child->r_approx(prec*m_k), m_k, prec));
   }
@@ -924,8 +953,8 @@ protected:
     return true;
   } //compute_lMSB
 
-  virtual void compute_rootBd(const id_rootbd_t id)
-  {rootBd().addsub(first->get_rootBd(id),second->get_rootBd(id));}
+  virtual void compute_rootBd()
+  {rootBd().addsub(first->get_rootBd(),second->get_rootBd());}
   virtual bool compute_a_approx(prec_t prec) {
     return this->check_exact(appValue().addsub(first->a_approx(prec+2),
 	  second->a_approx(prec+2), abs2rel(prec+1), is_add)); 
@@ -959,8 +988,8 @@ protected:
   { uMSB() = first->get_uMSB() + second->get_uMSB(); return true;}
   virtual bool compute_lMSB() 
   { lMSB() = first->get_lMSB() + second->get_lMSB(); return true;}
-  virtual void compute_rootBd(const id_rootbd_t id)
-  { rootBd().mul(first->get_rootBd(id), second->get_rootBd(id)); }
+  virtual void compute_rootBd()
+  { rootBd().mul(first->get_rootBd(), second->get_rootBd()); }
   virtual bool compute_r_approx(prec_t prec) {
    return check_exact(appValue().mul(first->r_approx(prec+2), second->r_approx(prec+2), prec+1));
   }
@@ -996,8 +1025,8 @@ protected:
   { uMSB() = first->get_uMSB() - second->get_lMSB(); return true;}
   virtual bool compute_lMSB() 
   { lMSB() = first->get_lMSB() - second->get_uMSB(); return true;}
-  virtual void compute_rootBd(const id_rootbd_t id)
-  { rootBd().div(first->get_rootBd(id), second->get_rootBd(id)); }
+  virtual void compute_rootBd()
+  { rootBd().div(first->get_rootBd(), second->get_rootBd()); }
   virtual bool compute_r_approx(prec_t prec) {
     return check_exact(appValue().div(first->r_approx(prec+2), second->r_approx(prec+2), prec+1));
   }
@@ -1083,10 +1112,10 @@ protected:
   virtual bool compute_lMSB() {
     return false;
   }
-  virtual void compute_rootBd(const id_rootbd_t id) {
-    rootBd().addsub(children[0]->get_rootBd(id), children[1]->get_rootBd(id));
+  virtual void compute_rootBd() {
+    rootBd().addsub(children[0]->get_rootBd(), children[1]->get_rootBd());
     for (size_t i = 2; i < children.size(); i++) {
-      rootBd().addsub(rootBd(), children[i]->get_rootBd(id));
+      rootBd().addsub(rootBd(), children[i]->get_rootBd());
     }
   }
   virtual bool compute_a_approx(prec_t prec) {
@@ -1167,10 +1196,10 @@ protected:
     lMSB() = tmplMSB;
     return true;
   }
-  virtual void compute_rootBd(const id_rootbd_t id) {
-    rootBd().mul(children[0]->get_rootBd(id), children[1]->get_rootBd(id));
+  virtual void compute_rootBd() {
+    rootBd().mul(children[0]->get_rootBd(), children[1]->get_rootBd());
     for (size_t i=2; i<children.size(); i++) {
-      rootBd().mul(rootBd(), children[i]->get_rootBd(id));
+      rootBd().mul(rootBd(), children[i]->get_rootBd());
     }
   }
   virtual bool compute_r_approx(prec_t prec) {
