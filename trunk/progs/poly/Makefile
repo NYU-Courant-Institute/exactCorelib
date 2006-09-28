@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.2 2006-08-07 14:22:13 exact Exp $
+# Core Library, $Id: Makefile,v 1.3 2006-09-28 20:55:46 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -18,6 +18,8 @@ VAR=
 
 CORE_PATH=../..
 include ${CORE_PATH}/progs/Make.options
+
+#CXXFLAGS= -DCORE_DEBUG_ROOTBOUND
 
 #=================================================
 # TARGET FILES
@@ -46,6 +48,7 @@ p=tPseudo
 p=tGCD
 p=readpoly
 
+TARGETS= tBug
 TARGETS= tSturm tSturmBF 
 
 MORE_TARGETS = tNewton tPolyALL tSturmLon tSturmRat tSturmExp tSturmInt \
@@ -182,7 +185,9 @@ wein: wein.o
 tSturmALL: tSturm tSturmBF tSturmExp tSturmInt tSturmRat tSturmLon
 
 tSturm: tSturm.cpp
-	${CXX} -c $(CXXFLAGS) $(CORE_INC)            tSturm.cpp -o tSturm.o
+	${CXX} -c $(CXXFLAGS)\
+		-DCORE_DEBUG_ROOTBOUND \
+		$(CORE_INC)            tSturm.cpp -o tSturm.o
 	${CXX} $(LDFLAGS) tSturm.o $(CORE_LIB) -o tSturm
 
 tSturmBF: tSturm.cpp
@@ -230,6 +235,8 @@ tt1:	tt1.o
 tt2:	tt2.o
 
 tt3:	tt3.o
+
+tBug:	tBug.o
 
 #=================================================
 # Rules

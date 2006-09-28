@@ -31,7 +31,7 @@
    Date:    July 20, 2002
 
    Since Core Library  v1.4
-   $Id: tSturm.cpp,v 1.2 2006-05-06 21:40:14 exact Exp $
+   $Id: tSturm.cpp,v 1.3 2006-09-28 20:55:46 exact Exp $
  ************************************** */
 
 #  define CORE_LEVEL 4
@@ -172,12 +172,20 @@ int main(int argc, char** argv){
     // Test One Root we know:
     Expr root = sqrt(1+sqrt(5-3*sqrt(1+sqrt(Expr(2)))));
     cout << " sqrt(1 + sqrt(5 - 3*sqrt(1 + sqrt(2)))) = " << root << endl;
-    std::cout << "eval(P, root)=" << eval(P, root) << endl;
+/// above is OK...
+ //std::cout << "eval(P, root)=" << eval(P, root) << endl;
+Expr tmp = eval(P, root);
+//std::cout << "OK" << std::endl;
+if (tmp == 0) cout << "tmp is zero (CORRECT!)" << endl;
+else cout << "tmp is not zero (ERROR!)" << endl;
+cout << "tmp = " << tmp << endl;
+///
+
     if (eval(P, root) == 0)
       cout << "The preceding is a root (CORRECT!)" << endl;
     else
       cout << "The preceding is not a root (ERROR!)" << endl;
-    
+/* TMP    
     // Test all roots
     testNewtonSturm(P, prec, 6);
     cout <<"=============================================================\n"
@@ -362,5 +370,6 @@ SturmNT SS13(P13);
    cout << "Number type NT = BigInt" << endl;
 #endif
     cout <<"=============================================================" << endl;
+TMP */
     return 0;
   }// main

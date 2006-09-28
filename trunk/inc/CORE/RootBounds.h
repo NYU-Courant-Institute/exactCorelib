@@ -19,12 +19,14 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: RootBounds.h,v 1.7 2006-09-22 11:56:18 exact Exp $
+ * $Id: RootBounds.h,v 1.8 2006-09-28 20:55:45 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_ROOTBOUNDS_H__
 #define __CORE_ROOTBOUNDS_H__
 
 #include <iostream>
+#include <sstream>
+#include <string>
 
 CORE_BEGIN_NAMESPACE
 
@@ -60,10 +62,14 @@ class BfmssRootBd {
   unsigned long l_e;
 public:
   BfmssRootBd() : m_visit(false), d_e(1) {}
-#ifdef CORE_DEBUG_ROOTBOUND
   void dump() const 
   { std::cout<<"[d_e,u_e,l_e]="<<d_e<<","<<u_e<<","<<l_e<<std::endl; }
-#endif
+  
+  std::string dump() { 
+    std::ostringstream oss;
+    oss <<"[d_e,u_e,l_e]="<<d_e<<","<<u_e<<","<<l_e;
+    return oss.str();
+  }
 public:
   unsigned long get_deg()
   { return d_e; }

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.13 2006-09-22 11:56:18 exact Exp $
+ * $Id: ExprRep.h,v 1.14 2006-09-28 20:55:45 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -29,12 +29,23 @@
 #include <CORE/poly/Sturm.h>
 #include <bitset>
 #include <iostream>
+#include <sstream>
 
 CORE_BEGIN_NAMESPACE
 
 #define PREC_MIN        MPFR_PREC_MIN
 #define DEF_INIT_PREC   53UL
 
+#define    LIST_MODE 0
+#define    TREE_MODE 1
+
+#define    SIMPLE_LEVEL 0
+#define    DETAIL_LEVEL 1
+
+#define    OPERATOR_ONLY 0
+#define    VALUE_ONLY 1
+#define    OPERATOR_VALUE 2
+#define    FULL_DUMP 3
 
 /// \Pre-defined macros for user own operations
 /// \Unary node
@@ -149,7 +160,8 @@ public:                                                       \
 template <typename RootBd, typename Filter, typename Kernel>
 class ExprRepT {
   typedef ExprRepT<RootBd, Filter, Kernel> thisClass;
-  typedef RootBd* id_rootbd_t;
+public:
+
 protected:
   ExprRepT() : m_nodeinfo(0), m_ref_counter(1)
   {} 
@@ -310,8 +322,61 @@ public: // public methods
     rootBd_init();
 
     return deg;
-  }  
+  } 
 
+  void dump(int level) {
+    if (level == OPERATOR_ONLY) {
+//      os << op();
+    } else if (level == VALUE_ONLY) {
+      std::cout << appValue();
+    } else if (level == OPERATOR_VALUE) {
+//      os << op() << "[val: " << appValue() << "]";
+    } else if (level == FULL_DUMP) {
+#ifdef CORE_DEBUG
+      std::cout << op();
+#endif
+      std::cout << "[val: "  << appValue() << "; "
+#ifdef CORE_DEBUG
+      << "r: " << relPrecision() << "; "
+      << "a: " << absPrecision() << "; "
+#endif
+      << "lMSB: " << get_lMSB() << "; "
+      << "uMSB: " << get_uMSB() << "; "
+      << "sign: " << get_sign() << "; "
+      << "rootBd: " << get_rootBd().dump() << "; "
+      << "]";
+    }
+    // note that str() return an array not properly terminated!
+  }
+  
+  void debugList(int level, int depthLimit) {
+    if (depthLimit <= 0)
+      return;
+    if (level == SIMPLE_LEVEL) {
+      std::cout << "("; dump(OPERATOR_VALUE);
+    } else if (level == DETAIL_LEVEL) {
+      std::cout << "("; dump(FULL_DUMP);
+    }  
+    for (size_t i = 0; i < get_children_size(); i++)
+      get_child(i)->debugList(level, depthLimit - 1);
+    std::cout << ")";
+  }
+
+  void debugTree(int level, int indent, int depthLimit) {
+    if (depthLimit <= 0)
+      return;
+    for (int i = 0; i<indent; i++ )
+      std::cout << "  ";
+    std::cout << "|_";
+    if (level == SIMPLE_LEVEL)
+      dump(OPERATOR_VALUE);
+    else if (level == DETAIL_LEVEL)
+      dump(FULL_DUMP);
+    std::cout << std::endl;
+    for (size_t i = 0; i < get_children_size(); i++)
+      get_child(i)->debugTree(level, indent + 2, depthLimit - 1);
+  }
+				      
   ////////////////////////////////////////////////// 
   /// refine() is called by compute_sign and compute_lMSB
   /// 	-- it computes the root bound and then improves the
@@ -384,6 +449,10 @@ protected: // overridable methods
   /// compute rootBd
   virtual void compute_rootBd()
   {assert(0);}
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("undefined"); }
+#endif 
 
   /// compute relative approximation (default)
   /// return true if the approximation can be represented exactly by MPFR) 
@@ -395,9 +464,9 @@ protected: // overridable methods
   virtual bool compute_a_approx(prec_t prec)
   { return compute_r_approx(abs2rel(prec)); }
 public: 
-  virtual size_t get_children_size()
+  virtual size_t get_children_size() const
   { return 0; }
-  virtual thisClass* get_child(size_t t)
+  virtual thisClass* get_child(size_t t) const
   { return 0; }
 
 protected: 
@@ -531,6 +600,10 @@ protected:
   { rootBd().set(value); }
   virtual bool compute_r_approx(prec_t prec)
   { return appValue().set(value, prec); }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Const"); }
+#endif 
 
 private:
   // generic version for BigInt, BigRat, Mpfr, BigFloat
@@ -615,6 +688,10 @@ protected:
     else value.set(BigFloat2(I.first, I.second), prec);
     return appValue().set(value);
   }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("rootOf"); }
+#endif 
 };
 
 /// \class UnaryOpRepT
@@ -627,9 +704,9 @@ public:
   { child->inc_ref(); }
   virtual ~UnaryOpRepT()
   { child->dec_ref(); }
-  virtual size_t get_children_size()
+  virtual size_t get_children_size() const
   { return 1; }
-  virtual ExprRep* get_child(size_t t)
+  virtual ExprRep* get_child(size_t t) const
   { return child; }
 
 protected:
@@ -675,6 +752,10 @@ protected:
   } 
   virtual bool compute_a_approx(prec_t prec) {
     return this->check_exact(appValue().neg(child->a_approx(prec), abs2rel(prec)));
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Neg"); }
+#endif 
   }
 };
 
@@ -719,6 +800,10 @@ protected:
     // if child's sign is zero, compute_r_approx is not called	  
     return check_exact(appValue().sqrt(child->r_approx(prec*2), prec));
   }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Sqrt"); }
+#endif 
 };
 
 /// \class CbrtRepT
@@ -758,6 +843,10 @@ protected:
   virtual bool compute_r_approx(prec_t prec) {
     return check_exact(appValue().cbrt(child->r_approx(prec*3), prec));
   }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Cbrt"); }
+#endif 
 };
 
 /// \class RootRepT
@@ -800,6 +889,10 @@ protected:
   { rootBd().root(child->get_rootBd(), m_k); }
   virtual bool compute_r_approx(prec_t prec) {
     return check_exact(appValue().root(child->r_approx(prec*m_k), m_k, prec));
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Radical"); }
+#endif 
   }
 private:
   unsigned long m_k;
@@ -815,9 +908,9 @@ public:
   { if (!is_self) first->inc_ref(); second->inc_ref(); }
   virtual ~BinaryOpRepT()
   { first->dec_ref(); second->dec_ref(); }
-  virtual size_t get_children_size()
+  virtual size_t get_children_size() const
   { return 2; }
-  virtual ExprRep* get_child(size_t i)
+  virtual ExprRep* get_child(size_t i) const
   { return i==0 ? first : second; } 
   /// check whether the operation and child nodes are both exact
   bool check_exact(bool ret)
@@ -959,6 +1052,10 @@ protected:
     return this->check_exact(appValue().addsub(first->a_approx(prec+2),
 	  second->a_approx(prec+2), abs2rel(prec+1), is_add)); 
   }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("AddSub"); }
+#endif 
 }; //AddSubRepT
 
 /// \class MulRepT
@@ -992,6 +1089,10 @@ protected:
   { rootBd().mul(first->get_rootBd(), second->get_rootBd()); }
   virtual bool compute_r_approx(prec_t prec) {
    return check_exact(appValue().mul(first->r_approx(prec+2), second->r_approx(prec+2), prec+1));
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Mul"); }
+#endif 
   }
 };
 
@@ -1029,6 +1130,10 @@ protected:
   { rootBd().div(first->get_rootBd(), second->get_rootBd()); }
   virtual bool compute_r_approx(prec_t prec) {
     return check_exact(appValue().div(first->r_approx(prec+2), second->r_approx(prec+2), prec+1));
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Div"); }
+#endif 
   }
 };
 
@@ -1050,9 +1155,9 @@ public:
     for (size_t i=0; i<children.size(); i++) 
       children[i]->dec_ref();
   }
-  virtual size_t get_children_size()
+  virtual size_t get_children_size() const
   { return children.size(); }
-  virtual ExprRep* get_child(size_t i)
+  virtual ExprRep* get_child(size_t i) const
   { return children[i]; } 
 protected:
   std::vector<ExprRep*> children;  /// <- vector of pointers to children nodes
@@ -1131,6 +1236,10 @@ protected:
     }
     return exact;
   }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Sum"); }
+#endif 
 public:
   bool is_self_mergable(prec_t absprec = DEF_INIT_PREC) {
     if (this->get_ref() > 1) return false;
@@ -1140,10 +1249,10 @@ public:
   }
 }; 
 
-/// \class SumRepT
+/// \class Product
 /// \brief summation node
 template <typename RootBd, typename Filter, typename Kernel>
-class MulSumOpRepT : public KnaryOpRepT<RootBd, Filter, Kernel> {
+class ProdOpRepT : public KnaryOpRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
   typedef KnaryOpRepT<RootBd, Filter, Kernel> KnaryOpRep;
   typedef RootBd* id_rootbd_t;
@@ -1155,10 +1264,10 @@ class MulSumOpRepT : public KnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::appValue;
   using ExprRep::rootBd;
 public:
-  MulSumOpRepT(const std::vector<ExprRep*>& c, bool is_self = false) : KnaryOpRep(c, is_self)  {
+  ProdOpRepT(const std::vector<ExprRep*>& c, bool is_self = false) : KnaryOpRep(c, is_self)  {
       compute_filter();
   }
-  virtual ~MulSumOpRepT() {}
+  virtual ~ProdOpRepT() {}
   
   void insert(ExprRep* c, bool is_self = false) {
     children.push_back(c);
@@ -1215,6 +1324,10 @@ protected:
     }
     return exact;
   }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Prod"); }
+#endif 
 }; 
 /*
 /// \class NegRepT macro version

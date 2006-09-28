@@ -1,6 +1,6 @@
 # Makefile for testFilter 
 #
-# Core Library, $Id: Makefile,v 1.1 2006-03-07 04:51:25 exact Exp $
+# Core Library, $Id: Makefile,v 1.2 2006-09-28 20:55:46 exact Exp $
 
 VAR=
 
@@ -17,6 +17,7 @@ MORE_TARGETS= testFilter morematrix
 TIME_TARGETS=timeFilter timeFilter1 
 
 p=tt
+p=t
 
 default: $(TARGETS)
 

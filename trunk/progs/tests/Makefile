@@ -1,4 +1,4 @@
-# Core Library, $Id: Makefile,v 1.1 2006-03-07 04:51:26 exact Exp $
+# Core Library, $Id: Makefile,v 1.2 2006-09-28 20:55:46 exact Exp $
 
 include ../Make.options
 
@@ -8,12 +8,15 @@ include ../Make.options
 p= floorLg
 p= zero
 p= wein_expr_3
+p= tExpr
+p= test
 
 TARGETS=
 MORETARGETS= floor_ceil bench
 
 #CXXFLAGS+= -pg
-CXXFLAGS=-O -Wall
+# CXXFLAGS=-O -Wall
+CXXFLAGS=-O -Wall -DCORE_DEBUG_ROOTBOUND -g
 
 all: $(TARGETS)
 
@@ -47,6 +50,10 @@ tBigFloat: tBigFloat.o
 tt: tt.o
 
 itoa: itoa.o
+
+tExpr: tExpr.o
+
+t: t.o
 
 #=================================================
 # Rules

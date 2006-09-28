@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.18 2006-09-22 11:56:18 exact Exp $
+ * $Id: Expr.h,v 1.19 2006-09-28 20:55:45 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -60,7 +60,7 @@ private: // private typedefs
   typedef MulRepT<RootBd, Filter, Kernel> MulRep;
   typedef DivRepT<RootBd, Filter, Kernel> DivRep;
   typedef SumOpRepT<RootBd, Filter, Kernel> SumRep;
-  typedef MulSumOpRepT<RootBd, Filter, Kernel> MulSumRep;
+  typedef ProdOpRepT<RootBd, Filter, Kernel> ProdRep;
 
 public:
   ExprT() : m_rep(new ConstLongRep(0L)) {}
@@ -197,7 +197,7 @@ public:
     else if (k==1) return e;
     else {
       std::vector<ExprRep*> c;
-      MulSumRep* newRep = new MulSumRep(c);
+      ProdRep* newRep = new ProdRep(c);
       for (unsigned int i=0; i<k; i++)
         newRep->insert (e.rep());
       return ExprT(newRep);
@@ -298,6 +298,7 @@ public: // public methods
   /// return internal rep
   ExprRep* rep() const
   { return m_rep; }
+
   
 private:
   void construct_from_string(const char* str, int base, prec_t prec) {
@@ -432,6 +433,18 @@ inline long ceilLg(const Expr& x) {
     return -floorLg(floor(1/x));
   else
     return ceilLg(ceil(x));
+}
+/// Debug Help Functions
+void debug(const Expr& x, int mode, int level, int depthLimit) {
+  std::cout << "-------- Expr debug() -----------" << std::endl;
+  std::cout << "rep = " << x.rep() << std::endl;
+  if (mode == LIST_MODE)
+    x.rep()->debugList(level, depthLimit);
+  else if (mode == TREE_MODE)
+    x.rep()->debugTree(level, 0, depthLimit);
+  else
+    core_error("unknown debugging mode", __FILE__, __LINE__, false);
+  std::cout << "---- End Expr debug(): " << std::endl;
 }
 CORE_END_NAMESPACE
 #endif // __CORE_EXPR_H__
