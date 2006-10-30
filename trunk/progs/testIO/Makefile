@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.1 2006-03-07 04:51:26 exact Exp $
+# Core Library, $Id: Makefile,v 1.2 2006-10-30 22:39:31 exact Exp $
 
 include ../Make.options
 
@@ -16,7 +16,7 @@ verbose=1
 #=================================================
 # Define target files (put all your files here)
 #=================================================
-TARGETS= testIO 
+TARGETS= testIO  testMpfr
 MORETARGETS= testSqrt
 
 default: $(TARGETS)
@@ -25,11 +25,14 @@ all: $(TARGETS) $(MORETARGETS)
 
 test: $(TARGETS)
 	./testIO
+	./testMpfr
 
 moretest: $(MORETARGETS)
 	./testSqrt 997 10 $(verbose)
 
 testIO: testIO.o
+
+testMpfr: testMpfr.o
 
 testSqrt: testSqrt.o
 
