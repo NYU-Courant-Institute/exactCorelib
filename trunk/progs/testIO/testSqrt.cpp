@@ -51,7 +51,7 @@
    Date:   Sept 28, 2003.  Revised, Mar 19, 2004.
 
    Since Core Library Version 1.6
-   $Id: testSqrt.cpp,v 1.2 2006-08-09 09:57:45 exact Exp $
+   $Id: testSqrt.cpp,v 1.3 2006-10-31 15:47:40 exact Exp $
  ************************************************ */  
 
 //# define CORE_DEBUG
@@ -89,7 +89,8 @@ Expr test(double n, bool showFlag){
      cout << "   Machine:   sqrt(" << n << ") = " << dd << endl;
      cout << "   ======= NOTE: the last three output should agree =====\n";
      cout << "===================== SELF-VALIDATION ===================\n";
-     }
+     } else 
+     cout << "tested expression " << e << endl;
 
      /* **************** DO SELF-VALIDATION *********    */
 
@@ -98,15 +99,17 @@ Expr test(double n, bool showFlag){
         if ( (relerr > 4*Expr(CORE_EPS))  && showFlag ) {
           cout<<"   ERROR:    | doubleVal - MachineVal | = " << relerr
 		  << " >  4 * CORE_EPS " << endl;
+	  core_error("Wrong Output", __FILE__, __LINE__, true);
 	} 
-	else if (showFlag)
+	else if (showFlag) {
 	  cout<< "   WARNING: | doubleVal - MachineVal | = " << relerr
 		  << endl;
-     } else if (showFlag)
+	  core_error("Inaccurate Output", __FILE__, __LINE__, false);
+        } else if (showFlag)
 	   cout << "   CORRECT:  doubleVal = MachineVal !! " << endl;
-
+     }
      return relerr;	// this ought to be bounded by 4*CORE_EPS
-}
+}//test
 
 int main(int argc, char** argv)
 {
@@ -137,10 +140,11 @@ int main(int argc, char** argv)
    	cout<< "    Maximum relative error, RelErr = " << maxError
 	   	<< " achieved at sqrt(" << worsti << ")" << endl;
    	cout<< "    Allowed relative error, ErrBound = " << 4*CORE_EPS << endl;
-   	if (maxError > 4 * Expr(CORE_EPS))
+   	if (maxError > 4 * Expr(CORE_EPS)){
        		cout<< "    ERROR!  RelErr > ErrBound" << endl;
-   	else
+	  	core_error("Wrong Output", __FILE__, __LINE__, true);
+	} else
        		cout<< "    CORRECT!  RelErr <= ErrBound" << endl;
    }   
    return 0;
-}
+}//main

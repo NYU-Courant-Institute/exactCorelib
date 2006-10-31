@@ -53,7 +53,7 @@
    Author: Jihun and Chee (Oct 2006)
 
    Since Core Library 2.0
-   $Id: testMpfr.cpp,v 1.2 2006-10-31 15:16:55 exact Exp $
+   $Id: testMpfr.cpp,v 1.3 2006-10-31 15:47:40 exact Exp $
  ************************************************ */  
 
 #ifndef CORE_LEVEL
@@ -174,9 +174,10 @@ void test(int prec, Expr exp, string ansstr){
 
   string str = oss.str();
   if (ansstr != ""){ // in case the correct answer is provided:
-    if (ansstr != str)
+    if (ansstr != str){
     	cout << "ERROR!!! output string is not correct" << endl;
-    else
+	core_error("Wrong Output", __FILE__, __LINE__, true);
+    } else
     	cout << "CORRECT!!! output string equals provided answer" << endl;
   } else {
   int D=0; 			// D=number of significant digits
@@ -192,6 +193,7 @@ void test(int prec, Expr exp, string ansstr){
     cout << "ERROR!!! output string is not correct" << endl;
     cout << "printout string:"<< str << endl;
     cout << "original string:"<< exp << endl;
+    core_error("Wrong Output", __FILE__, __LINE__, true);
   } else
     cout << "CORRECT!!! output string is correct" << endl;
   }
