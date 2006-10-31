@@ -10,7 +10,7 @@
 	% graham
 
    CORE Library Version 1.2
-   $Id: graham.cpp,v 1.1 2006-03-07 04:51:25 exact Exp $
+   $Id: graham.cpp,v 1.2 2006-10-31 16:29:21 exact Exp $
  ************************************** */
 
 
@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
   else relprec = 100;
  
   setDefaultRelPrecision(relprec);	// relative precision in bits
-  std::cout.precision(10+(relprec)/3);  	// print precision in digits
+  std::cout.precision(bits2digits(relprec));  	// print precision in digits
 
   long e1 = 1000001;
   long e2 = 1000025;

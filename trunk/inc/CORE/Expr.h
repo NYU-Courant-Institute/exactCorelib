@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.19 2006-09-28 20:55:45 exact Exp $
+ * $Id: Expr.h,v 1.20 2006-10-31 16:29:21 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -63,22 +63,26 @@ private: // private typedefs
   typedef ProdOpRepT<RootBd, Filter, Kernel> ProdRep;
 
 public:
-  ExprT() : m_rep(new ConstLongRep(0L)) {}
-  ExprT(char c) : m_rep(new ConstLongRep(long(c))) {}
-  ExprT(unsigned char uc) : m_rep(new ConstULongRep((unsigned long)(uc))) {}
-  ExprT(short s) : m_rep(new ConstLongRep(long(s))) {}
-  ExprT(unsigned short us) : m_rep(new ConstULongRep((unsigned long)(us))) {}
-  ExprT(int i) : m_rep(new ConstLongRep(long(i))) {}
-  ExprT(unsigned int ui) : m_rep(new ConstULongRep((unsigned long)(ui))) {}
-  ExprT(long l) : m_rep(new ConstLongRep(l)) {}
-  ExprT(unsigned long ul) : m_rep(new ConstULongRep(ul)) {}
-  ExprT(float f) : m_rep(new ConstDoubleRep(double(f))) {}
-  ExprT(double d) : m_rep(new ConstDoubleRep(d)) {}
-  ExprT(const ZT& z) : m_rep(new ConstZTRep(z)) {}
-  ExprT(const FT& f) : m_rep(new ConstFTRep(f)) {}
-  ExprT(const QT& q) 
-  { FT f; (f.set(q)==0)?(m_rep=new ConstFTRep(f)):(m_rep=new ConstQTRep(q)); }
-  ExprT(const KT& k) : m_rep(new ConstFTRep(k.get_f())) {}
+  ExprT() : m_rep(new ConstLongRep(0L, NODE_NT_INTEGER)) {}
+  ExprT(char c) : m_rep(new ConstLongRep(long(c), NODE_NT_INTEGER)) {}
+  ExprT(unsigned char uc) : m_rep(new ConstULongRep((unsigned long)(uc), NODE_NT_INTEGER)) {}
+  ExprT(short s) : m_rep(new ConstLongRep(long(s), NODE_NT_INTEGER)) {}
+  ExprT(unsigned short us) : m_rep(new ConstULongRep((unsigned long)(us), NODE_NT_INTEGER)) {}
+  ExprT(int i) : m_rep(new ConstLongRep(long(i), NODE_NT_INTEGER)) {}
+  ExprT(unsigned int ui) : m_rep(new ConstULongRep((unsigned long)(ui), NODE_NT_INTEGER)) {}
+  ExprT(long l) : m_rep(new ConstLongRep(l, NODE_NT_INTEGER)) {}
+  ExprT(unsigned long ul) : m_rep(new ConstULongRep(ul, NODE_NT_INTEGER)) {}
+  ExprT(float f) : m_rep(new ConstDoubleRep(double(f), NODE_NT_DYADIC)) {}
+  ExprT(double d) : m_rep(new ConstDoubleRep(d, NODE_NT_DYADIC)) {}
+  ExprT(const ZT& z) : m_rep(new ConstZTRep(z, NODE_NT_INTEGER)) {}
+  ExprT(const FT& f) : m_rep(new ConstFTRep(f, NODE_NT_DYADIC)) {}
+  ExprT(const QT& q) { 
+    FT f;
+    (f.set(q)==0)?
+    (m_rep=new ConstFTRep(f, NODE_NT_DYADIC)):
+    (m_rep=new ConstQTRep(q, NODE_NT_RATIONAL));
+  }
+  ExprT(const KT& k) : m_rep(new ConstFTRep(k.get_f(), NODE_NT_DYADIC)) {}
   ExprT(const char* s, int base = 10, prec_t prec = getDefaultInputDigits()) 
   { construct_from_string(s, base, prec); }
   ExprT(const std::string& s, int base = 10, prec_t prec =getDefaultInputDigits()) 
@@ -192,18 +196,24 @@ public:
     return ExprT(new ConstPolyRepT<RootBd, Filter, Kernel, NT>(p, BFInterval(x, y)));
   }
 
-  friend ExprT power(const ExprT& e, unsigned long k) {
+  friend ExprT power(const ExprT& e, long k) {
     if (k==0)  return 1;
     else if (k==1) return e;
     else {
+      bool sign = true;
+      if (k < 0) 
+      { sign = false; k = -k; }
       std::vector<ExprRep*> c;
       ProdRep* newRep = new ProdRep(c);
-      for (unsigned int i=0; i<k; i++)
+      for (unsigned int i=0; i < k; i++)
         newRep->insert (e.rep());
-      return ExprT(newRep);
+      if (sign)
+        return ExprT(newRep);
+      else
+        return ExprT(1) / ExprT(newRep);
     }
   }
-  friend ExprT pow(const ExprT& e, unsigned long k) {
+  friend ExprT pow(const ExprT& e, long k) {
     return power(e,k);
   }
 
@@ -299,27 +309,46 @@ public: // public methods
   ExprRep* rep() const
   { return m_rep; }
 
+  /// Debug Help Functions
+  void debug(int mode, int level, int depthLimit) {
+    std::cout << "-------- Expr debug() -----------" << std::endl;
+    std::cout << "rep = " << rep() << std::endl;
+    if (mode == LIST_MODE)
+      rep()->debugList(level, depthLimit);
+    else if (mode == TREE_MODE)
+      rep()->debugTree(level, 0, depthLimit);
+    else
+      core_error("unknown debugging mode", __FILE__, __LINE__, false);
+    std::cout << "---- End Expr debug(): " << std::endl;
+  }
   
 private:
   void construct_from_string(const char* str, int base, prec_t prec) {
     if (strchr(str, '/') != 0)
-      m_rep = new ConstQTRep(QT(str));
+      m_rep = new ConstQTRep(QT(str), NODE_NT_RATIONAL);
     else if (strchr(str, '.') != 0 && is_infty(prec))
-      m_rep = new ConstQTRep(QT(construct_rat(str).c_str()));
+      m_rep = new ConstQTRep(QT(construct_rat(str).c_str()), NODE_NT_RATIONAL);
     else if (is_infty(prec))
-      m_rep = new ConstFTRep(FT(str));
+      m_rep = new ConstFTRep(FT(str), NODE_NT_RATIONAL);
     else
-      m_rep = new ConstFTRep(FT(str, base, prec));
+      m_rep = new ConstFTRep(FT(str, base, prec), NODE_NT_RATIONAL);
   }
 
   const std::string construct_rat (const char* str) {
-    std::string num(str), den(str);
-    std::string::size_type dot_pos = num.find_first_of ('.');
-    num.erase (dot_pos,1);
-    den.replace (dot_pos+1, den.size()-dot_pos-1, den.size()-dot_pos-1, '0');
-    den.erase (0, dot_pos+1);
-    den.insert (0, 1, '1');
+    std::string s(str);
+    std::string d1,d2,exp;
+    
+    int dot = s.find('.');
+    int e = s.find('e');
+    d1 = s.substr(0, dot);
+    if (d1=="0") d1="";
+    d2 = s.substr(dot+1, s.size()-dot-1);
+    exp = s.substr(e+1, s.size()-e-1);
 
+    std::string num = d1+d2;
+    std::string den(d2.size()+1, '0');
+    den[0]='1';
+    
     return num + std::string("/") + den;
   }   
 private:
@@ -433,18 +462,6 @@ inline long ceilLg(const Expr& x) {
     return -floorLg(floor(1/x));
   else
     return ceilLg(ceil(x));
-}
-/// Debug Help Functions
-void debug(const Expr& x, int mode, int level, int depthLimit) {
-  std::cout << "-------- Expr debug() -----------" << std::endl;
-  std::cout << "rep = " << x.rep() << std::endl;
-  if (mode == LIST_MODE)
-    x.rep()->debugList(level, depthLimit);
-  else if (mode == TREE_MODE)
-    x.rep()->debugTree(level, 0, depthLimit);
-  else
-    core_error("unknown debugging mode", __FILE__, __LINE__, false);
-  std::cout << "---- End Expr debug(): " << std::endl;
 }
 CORE_END_NAMESPACE
 #endif // __CORE_EXPR_H__

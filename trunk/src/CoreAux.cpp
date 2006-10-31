@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.cpp,v 1.4 2006-09-28 20:55:46 exact Exp $
+ * $Id: CoreAux.cpp,v 1.5 2006-10-31 16:29:22 exact Exp $
  ***************************************************************************/
 #include <CORE/Config.h>
 #include <CORE/CoreDefs.h>
@@ -59,7 +59,7 @@ char* CORE_DIAGFILE = "Core_Diagnostics";  // global file name
  *      But errors are also written on std:cerr (similar to std::perror()).
  * */
 // Usage: core_error(message, file_with_error, line_number, err_type)
-//   where err_type=0 means WARNING, error_type=1 means ERROR
+//   where err_type=false means WARNING, error_type=true means ERROR
 void core_error(std::string msg, std::string file, int lineno, bool err) {
   std::ofstream outFile(CORE_DIAGFILE, std::ios::app);  // open to append
   if (!outFile) {               

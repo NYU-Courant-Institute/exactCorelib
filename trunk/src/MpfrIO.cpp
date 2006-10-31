@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: MpfrIO.cpp,v 1.4 2006-08-07 14:19:35 exact Exp $
+ * $Id: MpfrIO.cpp,v 1.5 2006-10-31 16:29:22 exact Exp $
  ***************************************************************************/
 #include <mpfr.h>
 #include <string>
@@ -135,10 +135,10 @@ std::string mpfr2str(
 
   if (fmt == 1) { // fixed format
     // counting trailing zeros
-    while (len > 0 && str[len-1] == '0')
+    while (len > 0 && str[len+first-1] == '0')
       len --;
 
-    result.assign(str, len);
+    result.assign(str,len+first);
     if (exp > 0) {  
       if ((unsigned long)exp > len-first) // integer need padding 0
         result.append(exp - len+first, '0');

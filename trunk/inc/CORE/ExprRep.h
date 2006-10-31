@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.14 2006-09-28 20:55:45 exact Exp $
+ * $Id: ExprRep.h,v 1.15 2006-10-31 16:29:21 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -32,6 +32,14 @@
 #include <sstream>
 
 CORE_BEGIN_NAMESPACE
+
+enum NODE_NUMTYPE {
+  NODE_NT_INTEGER,
+  NODE_NT_DYADIC,
+  NODE_NT_RATIONAL,
+  NODE_NT_ALGEBRAIC,
+  NODE_NT_TRANSCENDENTAL,
+};
 
 #define PREC_MIN        MPFR_PREC_MIN
 #define DEF_INIT_PREC   53UL
@@ -160,8 +168,6 @@ public:                                                       \
 template <typename RootBd, typename Filter, typename Kernel>
 class ExprRepT {
   typedef ExprRepT<RootBd, Filter, Kernel> thisClass;
-public:
-
 protected:
   ExprRepT() : m_nodeinfo(0), m_ref_counter(1)
   {} 
@@ -216,7 +222,7 @@ public: // public methods
     }
     // do exact evaluation
     if (!compute_uMSB())
-      refine();
+      refine();   // Chee: This is an overkill!!  
     
     flags().set(fuMSB);
     return uMSB(); 
@@ -325,24 +331,30 @@ public: // public methods
   } 
 
   void dump(int level) {
+    if (!m_nodeinfo) {
+      std::cout << "[uninitialized node]";
+      return;
+    }
     if (level == OPERATOR_ONLY) {
-//      os << op();
-    } else if (level == VALUE_ONLY) {
-      std::cout << appValue();
-    } else if (level == OPERATOR_VALUE) {
-//      os << op() << "[val: " << appValue() << "]";
-    } else if (level == FULL_DUMP) {
 #ifdef CORE_DEBUG
       std::cout << op();
 #endif
-      std::cout << "[val: "  << appValue() << "; "
+    } else if (level == VALUE_ONLY) {
+      std::cout << appValue();
+    } else if (level == OPERATOR_VALUE) {
 #ifdef CORE_DEBUG
-      << "r: " << relPrecision() << "; "
-      << "a: " << absPrecision() << "; "
+      std::cout << op() << "[val: " << appValue() << "]";
 #endif
+    } else if (level == FULL_DUMP) {
+      std::cout 
+#ifdef CORE_DEBUG
+      << op()
+#endif
+      << "[val: "  << appValue() << "; "
       << "lMSB: " << get_lMSB() << "; "
       << "uMSB: " << get_uMSB() << "; "
       << "sign: " << get_sign() << "; "
+      << "numType: " << numType() << "; "
       << "rootBd: " << get_rootBd().dump() << "; "
       << "]";
     }
@@ -383,15 +395,70 @@ public: // public methods
   ///   current approximation until the root bound.
   //
   // Aug 2006: Jihun pulled this refine() function out of AddSubRep.
-  ////////////////////////////////////////////////// 
+  // Oct 2006: Jihun/Chee implemented new refine() from Zilin's thesis (p.41)
+  //////////////////////////////////////////////////
   void refine() {
+    //Step 1
+    prec_t prec = 26, bound;
+    int bound_type;
+
+    if (!kernel_initialized())
+      initialize_kernel();
+    else
+      prec = get_prec();
+    //Step 2
+    if (is_transcendental()) {
+      bound = get_escape_bound();
+      bound_type = 1;
+    } else {
+      if (get_rootBd().is_constructive())
+        bound = get_rootBd().get_bound(get_Deg());
+      bound_type = 2;
+    }
+    // Step 3
+    if (bound > get_cut_off_bound()) {
+      bound = get_cut_off_bound(); bound_type = 1;
+    }
+    // Step 4
+    do {
+      prec <<= 1;
+#ifdef CORE_DEBUG_ROOTBOUND
+      std::cout << "refine prec=" << prec << std::endl;
+#endif
+      a_approx(prec);
+      if (appValue().has_sign()) {
+        set_flags(appValue().sgn(), appValue().uMSB(), appValue().lMSB());
+#ifdef CORE_DEBUG_ROOTBOUND
+        std::cerr << "found sign =" << appValue().sgn() << std::endl;
+#endif
+        return;
+      }
+    } while (prec < bound);
+#ifdef CORE_DEBUG_ROOTBOUND
+    std::cerr << "root bound=" << rootBd().get_bound(get_Deg()) << std::endl;
+    rootBd().dump();
+#endif
+
+    // Step 5
+    std::cout << "bound type=" << bound_type << std::endl;
+    if (bound_type < 2) {
+      core_error("Hit Escape bound or Cut-off Bound", __FILE__, __LINE__, false);
+   }
+    appValue().set(0);
+    set_flags(0, 0, MSB_MIN);
+  }
+  
+  void old_refine() {
     prec_t rootbd = get_rootBd().get_bound(get_Deg());
 #ifdef CORE_DEBUG_ROOTBOUND
-    std::cout << "rootbd degree upperbound = " << get_Deg() << std::endl;
+    std::cout << "\nrootbd degree upperbound = " << get_Deg() << std::endl;
     std::cout << "rootbd bit = " << rootbd << std::endl;
 #endif
     
-    for (prec_t prec=std::min(rootbd, DEF_INIT_PREC); prec<=rootbd; prec<<=1) {
+    for (prec_t prec=std::min(rootbd, DEF_INIT_PREC); prec<2*rootbd; prec<<=1) {
+#ifdef CORE_DEBUG_ROOTBOUND
+      std::cerr << "rootbd prec=" << prec << std::endl;
+#endif
       a_approx(prec);
       if (!appValue().has_zero()) {
         set_flags(appValue().sgn(), appValue().uMSB(), appValue().lMSB());
@@ -410,12 +477,19 @@ public: // public methods
 
 public: 
   /// convert absolute precision to relative precision
+  /// WARNING: we currently do not check for overflows
+  // TODO: have a "strict mode" where we do check overflow!
   // Note this output is at least PREC_MIN (=2).
-  prec_t abs2rel(prec_t prec)
-  { return std::max(long(prec) + get_uMSB(), long(PREC_MIN)); }
+  prec_t abs2rel(prec_t prec) {
+  //  core_assert(prec >= MPFR_PREC_MIN && prec <= MPFR_PREC_MAX)
+    return std::max(long(prec) + get_uMSB(), long(PREC_MIN)); 
+  }
   /// convert relative precision to absolute precision
-  prec_t rel2abs(prec_t prec)
-  { return std::max(long(prec) - get_lMSB(), long(PREC_MIN)); }
+  /// WARNING: we currently do not check for overflows
+  prec_t rel2abs(prec_t prec) {
+  //  core_assert(prec >= MPFR_PREC_MIN && prec <= MPFR_PREC_MAX)
+    return std::max(long(prec) - get_lMSB(), long(PREC_MIN)); 
+  }
 
 protected: 
   /// set flags
@@ -470,11 +544,22 @@ public:
   { return 0; }
 
 protected: 
+  bool is_transcendental() const 
+  { return numType() == NODE_NT_TRANSCENDENTAL; }
+  
   enum CachedFlags {
     fSign, fuMSB, flMSB, fRootBd, 
     fInit, fExact, numFlags
   };
   typedef std::bitset<numFlags> flag_t;
+
+  const bool kernel_initialized() const {
+    return m_nodeinfo != 0;
+  }
+  
+  void initialize_kernel() {
+    new_nodeinfo();
+  }
 
   const flag_t& flags() const { 
     assert(m_nodeinfo);
@@ -534,6 +619,8 @@ public:
 	
   Filter& filter() { return m_filter; }
   const Filter& filter() const { return m_filter; }
+  NODE_NUMTYPE& numType() { return _numType; }
+  const NODE_NUMTYPE& numType() const { return _numType; }
 public:
   /// node information
   struct NodeInfo {
@@ -546,7 +633,8 @@ public:
   };
 
   NodeInfo* m_nodeinfo; ///<- node information
-  Filter    m_filter;   ///<- filter 
+  Filter    m_filter;   ///<- filter
+  NODE_NUMTYPE _numType; ///<- number type
 
 public: // reference counting
   void inc_ref() 
@@ -575,12 +663,15 @@ class ConstRepT : public ExprRepT<RootBd, Filter, Kernel> {
   using ExprRep::new_nodeinfo;
   using ExprRep::init_value;
   using ExprRep::init_nodeinfo;
+  using ExprRep::numType;
 protected:
   T value;
 public:
   template <typename V>
-  ConstRepT(const V& v) : value(v)
-  { filter().set(v); }
+  ConstRepT(const V& v, NODE_NUMTYPE t) : value(v) {
+    filter().set(v);
+    numType() = t;
+  }  
   virtual ~ConstRepT() 
   {}
 
@@ -620,8 +711,8 @@ private:
   { set_flags(sgn(v), ceillg(v), floorlg(v)); }
 };
 
-/// \class ConstRepT 
-/// \brief constant node
+/// \class ConstPolyRepT 
+/// \brief Const Poly node
 template <typename RootBd, typename Filter, typename Kernel,typename NT>
 class ConstPolyRepT : public ExprRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
@@ -632,6 +723,7 @@ class ConstPolyRepT : public ExprRepT<RootBd, Filter, Kernel> {
   using ExprRep::lMSB;
   using ExprRep::appValue;
   using ExprRep::rootBd;
+  using ExprRep::numType;
 protected:
   Kernel value;
   Sturm<NT> ss; ///< internal Sturm sequences
@@ -650,6 +742,7 @@ public:
     if (I.first == I.second) value = I.first;
     else value.set(BigFloat2(I.first, I.second), 53);
     filter().set(value);
+    numType() = NODE_NT_ALGEBRAIC;
   }
 
   ConstPolyRepT(const Polynomial<NT>& p, const BFInterval& II) : ss(p), I(II) {
@@ -667,6 +760,7 @@ std::cout << "size of v =" << v.size() << std::endl;
     if (I.first == I.second) value.set(I.first, 53);
     else value.set(BigFloat2(I.first, I.second), 53);
     filter().set(value);
+    numType() = NODE_NT_ALGEBRAIC;
   }
 
   virtual ~ConstPolyRepT() 
@@ -732,9 +826,12 @@ class NegRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::appValue;
   using ExprRep::rootBd;
   using ExprRep::abs2rel;
+  using ExprRep::numType;
 public:
-  NegRepT(ExprRep* c) : UnaryOpRep(c) 
-  { filter().neg(child->filter()); }
+  NegRepT(ExprRep* c) : UnaryOpRep(c) {
+    filter().neg(child->filter());
+    numType() = child->numType();
+  }  
   virtual ~NegRepT() 
   {}
 protected:
@@ -751,12 +848,13 @@ protected:
     return check_exact(appValue().neg(child->r_approx(prec), prec));
   } 
   virtual bool compute_a_approx(prec_t prec) {
-    return this->check_exact(appValue().neg(child->a_approx(prec), abs2rel(prec)));
+    return this->check_exact(appValue().neg(child->a_approx(prec),
+			    abs2rel(prec)));
+  }
 #ifdef CORE_DEBUG
   virtual std::string op()
   { return std::string("Neg"); }
 #endif 
-  }
 };
 
 /// \class SqrtRepT
@@ -776,9 +874,11 @@ class SqrtRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::rootBd;
   using ExprRep::abs2rel;
   using ExprRep::init_value;  
+  using ExprRep::numType;  
 public:
   SqrtRepT(ExprRep* c) : UnaryOpRep(c) 
   { filter().sqrt(child->filter()); 
+    numType() = std::max(NODE_NT_ALGEBRAIC, child->numType());
     if (child->get_sign()<0) 
       core_error("sqrt of negative value", __FILE__, __LINE__, true);
     if (child->get_sign()==0)
@@ -823,9 +923,11 @@ class CbrtRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::rootBd;
   using ExprRep::abs2rel;
   using ExprRep::init_value;
+  using ExprRep::numType;
 public:
   CbrtRepT(ExprRep* c) : UnaryOpRep(c) 
   { filter().cbrt(child->filter());
+    numType() = std::max(NODE_NT_ALGEBRAIC, child->numType());
     if (child->get_sign()==0)
       init_value(0);
   }
@@ -866,6 +968,7 @@ class RootRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::rootBd;
   using ExprRep::abs2rel;
   using ExprRep::init_value;
+  using ExprRep::numType;
 public:
   RootRepT(ExprRep* c, unsigned long k) : UnaryOpRep(c), m_k(k) 
   { if (k == 0)
@@ -875,6 +978,7 @@ public:
     filter().root(child->filter(), k);
     if (child->get_sign()==0)
       init_value(0);
+    numType() = std::max(NODE_NT_ALGEBRAIC, child->numType());
   }
   virtual ~RootRepT() 
   {}
@@ -888,12 +992,13 @@ protected:
   virtual void compute_rootBd()
   { rootBd().root(child->get_rootBd(), m_k); }
   virtual bool compute_r_approx(prec_t prec) {
-    return check_exact(appValue().root(child->r_approx(prec*m_k), m_k, prec));
+    return check_exact(appValue().root(child->r_approx(prec*m_k),
+			    m_k, prec));
+  }
 #ifdef CORE_DEBUG
   virtual std::string op()
   { return std::string("Radical"); }
 #endif 
-  }
 private:
   unsigned long m_k;
 };
@@ -937,9 +1042,12 @@ class AddSubRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::appValue;
   using ExprRep::abs2rel;
   using ExprRep::set_flags;
+  using ExprRep::numType;
 public:
-  AddSubRepT(ExprRep* f, ExprRep* s, bool b = false) : BinaryOpRep(f, s, b)
-  {filter().addsub(first->filter(),second->filter(), is_add);}
+  AddSubRepT(ExprRep* f, ExprRep* s, bool b = false) : BinaryOpRep(f, s, b) {
+    filter().addsub(first->filter(),second->filter(), is_add);
+    numType() = std::max(first->numType(), second->numType());
+  }
   virtual ~AddSubRepT() 
   {}
 protected:
@@ -1073,9 +1181,12 @@ class MulRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::uMSB;
   using ExprRep::lMSB;
   using ExprRep::appValue;
+  using ExprRep::numType;
 public:
-  MulRepT(ExprRep* f, ExprRep* s, bool b = false) : BinaryOpRep(f, s, b)
-  { filter().mul(first->filter(), second->filter()); }
+  MulRepT(ExprRep* f, ExprRep* s, bool b = false) : BinaryOpRep(f, s, b) {
+    filter().mul(first->filter(), second->filter()); 
+    numType() = std::max(first->numType(), second->numType());
+  }  
   virtual ~MulRepT() 
   {}
 protected:
@@ -1088,12 +1199,13 @@ protected:
   virtual void compute_rootBd()
   { rootBd().mul(first->get_rootBd(), second->get_rootBd()); }
   virtual bool compute_r_approx(prec_t prec) {
-   return check_exact(appValue().mul(first->r_approx(prec+2), second->r_approx(prec+2), prec+1));
+   return check_exact(appValue().mul(first->r_approx(prec+2),
+			   second->r_approx(prec+2), prec+1));
+  }
 #ifdef CORE_DEBUG
   virtual std::string op()
   { return std::string("Mul"); }
 #endif 
-  }
 };
 
 /// \class DivRepT
@@ -1111,9 +1223,11 @@ class DivRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::uMSB;
   using ExprRep::lMSB;
   using ExprRep::appValue;
+  using ExprRep::numType;
 public:
   DivRepT(ExprRep* f, ExprRep* s, bool b = false) : BinaryOpRep(f, s, b)
   { filter().div(first->filter(), second->filter());
+    numType() = std::max(NODE_NT_RATIONAL, std::max(first->numType(), second->numType()));
     if (second->get_sign() == 0)
       core_error("divide by zero", __FILE__, __LINE__, true);
   }
@@ -1129,12 +1243,13 @@ protected:
   virtual void compute_rootBd()
   { rootBd().div(first->get_rootBd(), second->get_rootBd()); }
   virtual bool compute_r_approx(prec_t prec) {
-    return check_exact(appValue().div(first->r_approx(prec+2), second->r_approx(prec+2), prec+1));
+    return check_exact(appValue().div(first->r_approx(prec+2),
+			    second->r_approx(prec+2), prec+1));
+  }
 #ifdef CORE_DEBUG
   virtual std::string op()
   { return std::string("Div"); }
 #endif 
-  }
 };
 
 /// \class KnaryOpRepT
@@ -1180,28 +1295,37 @@ class SumOpRepT : public KnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::lMSB;
   using ExprRep::appValue;
   using ExprRep::abs2rel;
+  using ExprRep::numType;
 public:
   SumOpRepT(ExprRep* first, ExprRep* second, bool is_self = false) {
-    filter().set(0L);
     insert(first, is_self);
     insert(second);
   }    
     
   SumOpRepT(const std::vector<ExprRep*>& c, bool is_self = false) : KnaryOpRep(c, is_self)  {
     compute_filter();
+    compute_numtype();
   }
   virtual ~SumOpRepT() {}
   
   void insert(ExprRep* c, bool is_self = false) {
     children.push_back(c);
+    
     if (!is_self) c->inc_ref();
+    
     filter().addsub(filter(), c->filter(), true);
+    numType() = std::max(numType(), c->numType());
   }
 protected:
   void compute_filter () {
     filter().set(0L);
     for(size_t i=0; i<children.size(); i++)
       filter().addsub(filter(), children[i]->filter(), true);
+  }
+  void compute_numtype () {
+    numType() = NODE_NT_INTEGER;
+    for(size_t i=0; i<children.size(); i++)
+      numType() = std::max(numType(), children[i]->numType());
   }
 
   virtual bool compute_sign() {
@@ -1263,9 +1387,11 @@ class ProdOpRepT : public KnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::lMSB;
   using ExprRep::appValue;
   using ExprRep::rootBd;
+  using ExprRep::numType;
 public:
   ProdOpRepT(const std::vector<ExprRep*>& c, bool is_self = false) : KnaryOpRep(c, is_self)  {
-      compute_filter();
+    compute_filter();
+    compute_numtype();  
   }
   virtual ~ProdOpRepT() {}
   
@@ -1279,6 +1405,11 @@ protected:
     filter().set(1L);
     for(size_t i=0; i<children.size(); i++)
       filter().mul(filter(), children[i]->filter());
+  }
+  void compute_numtype () {
+    numType() = NODE_NT_INTEGER;
+    for(size_t i=0; i<children.size(); i++)
+      numType() = std::max(numType(), children[i]->numType());
   }
 
   virtual bool compute_sign() {
@@ -1338,7 +1469,7 @@ BEGIN_DEFINE_UNARY_NODE(NegRepT)
   END_DEFINE_RULE
 
   BEGIN_DEFINE_RULE_NUMTYPE
-//    this->_numType = this->child->_numType;
+    this->numType() = this->child->numType();
   END_DEFINE_RULE
 
   BEGIN_DEFINE_RULE_SIGN
@@ -1375,7 +1506,7 @@ BEGIN_DEFINE_BINARY_NODE(DivRepT)
   END_DEFINE_RULE
 
   BEGIN_DEFINE_RULE_NUMTYPE
-//    this->_numType = this->child->_numType;
+    this->numType() = this->child->numType();
   END_DEFINE_RULE
 
   BEGIN_DEFINE_RULE_SIGN

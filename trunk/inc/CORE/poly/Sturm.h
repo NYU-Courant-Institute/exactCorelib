@@ -51,7 +51,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Sturm.h,v $
- * $Revision: 1.6 $ $Date: 2006-09-22 11:56:19 $
+ * $Revision: 1.7 $ $Date: 2006-10-31 16:29:21 $
  ***************************************************************************/
 
 
@@ -838,9 +838,6 @@ public:
         getDefaultBFdivPrec(), BF_RNDU); // formula (2)
     }
 
-#ifdef CORE_DEBUG
-    std::cout <<"Value returned by Smale bound = " << temp * temp1.makeCeilExact() << std::endl;
-#endif
 
     if(temp * temp1 < 0.03)          // make temp1 exact!
       return true;
@@ -1092,23 +1089,10 @@ public:
 
 
 
-#ifdef CORE_DEBUG
-    std::cout << " Returning from Newton Refine: J.first = " << J.first
-	      << " J.second = " << J.second << " aprec = " << aprec
-	      << " Sign at the interval endpoints = " 
-	      << sign(evalExactSign(seq[0],J.first))
-	      << " : " << sign(evalExactSign(seq[0],J.second)) << " Err at starting = "
-	      << J.first.err() << " Err at end = " << J.second.err() << std::endl;
-#endif
-
-   assert( (evalExactSign(seq[0],J.first) * evalExactSign(seq[0],J.second) <= 0) );
-
-#ifdef CORE_DEBUG_NEWTON
     if (evalExactSign(seq[0],J.first) * evalExactSign(seq[0],J.second) > 0)
       std::cout <<" ERROR! Root is not in the Interval " << std::endl;
     if(J.second - J.first >  BigFloat::exp2(-aprec))
-      std::cout << "ERROR! Newton Refine failed to achieve the desired precision" << std::endl;
-#endif
+      std::cout << "ERROR! Newton Refine failed to achieve desired precision" << std::endl;
 
       return(J);
  }//End of newton refine

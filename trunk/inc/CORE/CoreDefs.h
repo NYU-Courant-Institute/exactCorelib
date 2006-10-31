@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.9 2006-09-22 11:56:18 exact Exp $
+ * $Id: CoreDefs.h,v 1.10 2006-10-31 16:29:21 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
@@ -42,7 +42,7 @@ typedef long msb_t;
 #define LOG10_2 0.30102999566398120 /* upper approximation of log(2)/log(10) */
   
 inline unsigned long digits2bits(unsigned long digits)
-{ return (unsigned long)((digits+1)*LOG2_10); }
+{ return (unsigned long)((digits)*LOG2_10); }
 
 inline unsigned long bits2digits(unsigned long bits)
 { return (unsigned long)(bits*LOG10_2); }
@@ -57,6 +57,8 @@ extern long defInputDigits;
 extern long defOutputDigits;
 extern long defBFdivRelPrec;
 extern long defBFradicalRelPrec;
+extern unsigned long cutOffBound;
+extern unsigned long escapeBound;
 
 /// This sets the global variable defRelPrec and defAbsPrec.
 //  PROBLEM IS this is "composite precision" which we don't really
@@ -67,9 +69,13 @@ extern long defBFradicalRelPrec;
 inline void setDefaultPrecision(long r, long a)
 { defRelPrec = r; defAbsPrec = a; }
 inline void setDefaultRelPrecision(long r)
-{ defRelPrec = r; }
-inline void setDefaultAbsPrecision(long a)
-{ defAbsPrec = a; }
+{ defRelPrec = r; 
+  defAbsPrec = CORE_INFTY;
+}
+inline void setDefaultAbsPrecision(long a) {
+  defAbsPrec = a; 
+  defRelPrec = CORE_INFTY;
+}
 
 inline long getDefaultInputDigits()
 { return defInputDigits; }
@@ -90,6 +96,22 @@ inline long getDefaultBFradicalPrec()
 { return defBFradicalRelPrec; }
 inline void setDefaultBFradicalPrec(long p)
 { defBFradicalRelPrec= p; }
+
+inline unsigned long get_cut_off_bound()
+{ return cutOffBound; }
+inline unsigned long set_cut_off_bound(unsigned long p) {
+  unsigned long ret = cutOffBound;
+  cutOffBound = p; 
+  return ret;
+}
+
+inline unsigned long get_escape_bound()
+{ return escapeBound; }
+inline unsigned long set_escape_bound(unsigned long p) {
+  unsigned long ret = escapeBound;
+  escapeBound = p; 
+  return ret;
+}
 
 CORE_END_NAMESPACE
 

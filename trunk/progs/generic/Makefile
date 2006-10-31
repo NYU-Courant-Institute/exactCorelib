@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.2 2006-03-07 05:01:26 exact Exp $
+# Core Library, $Id: Makefile,v 1.3 2006-10-31 16:29:21 exact Exp $
 
 #=================================================
 # If you set VAR below, it would override the default values
@@ -43,6 +43,8 @@ testmpfr:
 	./mpfrtest
 
 sample: sample.o
+
+t_mpfr: t_mpfr.o
 
 #=================================================
 # Rules

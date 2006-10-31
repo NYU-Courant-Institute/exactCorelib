@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.12 2006-08-07 13:46:14 exact Exp $
+ * $Id: BigFloat2.h,v 1.13 2006-10-31 16:29:21 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -450,20 +450,26 @@ public:
   }
   /// return the string representation
   std::string get_str(size_t digits = 0, int base = 10) const {
-	if (is_exact()) {
+    if (is_exact()) {
       return m_l.get_str(digits, base);
-	} else {
-     long bits = abs_diam().get_exp();
+    } else {
+      long bits = abs_diam().get_exp();
+      
       // round up to validate bits
       long valprec = m_l.get_exp() - bits;
-	  if (valprec <= 0) {
-		  valprec = bits;
-	  }
+     
+      if (valprec <= 0) {
+        valprec = bits;
+      }
       if (valprec < 2) valprec = 2;
 
-	  size_t valid_digits = (size_t)(valprec*log(2.0)/log(double(base)));
-      if (digits > 0U && digits < valid_digits) valid_digits = digits;
-	  if (valid_digits < 2) valid_digits = 2;
+      size_t valid_digits = (size_t)(valprec*log(2.0)/log(double(base)));
+      
+      if (digits > 0U && digits < valid_digits)
+        valid_digits = digits;
+      if (valid_digits < 2)
+        valid_digits = 2;
+  
       return m_l.get_str(valid_digits, base);
     }
   }
@@ -479,13 +485,16 @@ public:
     if (is_exact()) 
       return m_l;
     else {
+//	  std::cout << "\nm_r=" << m_r << std::endl;
+//	  std::cout << "m_l=" << m_l << std::endl;
       // get validate bits
       long bits = abs_diam().get_exp();
       // round up to validate bits
       FT result(m_l);
 
       long valprec = m_l.get_exp() - bits;
-      // in case of m_r.get_exp() > m_l.get_exp(), ex m_r = 0.1 * 2^-426, m_l = 0.1 * 2^-423, bits = -423
+      // jihun 2006: in case of m_r.get_exp() > m_l.get_exp(),
+      // e.g. m_r = 0.1 * 2^-426, m_l = 0.1 * 2^-423, bits = -423
       // I dont know how to deal with this.
       if (valprec <= 0) {
         valprec = bits;

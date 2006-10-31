@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.cpp,v 1.6 2006-05-06 21:39:31 exact Exp $
+ * $Id: CoreDefs.cpp,v 1.7 2006-10-31 16:29:22 exact Exp $
  ***************************************************************************/
 #include <CORE/Config.h>
 #include <CORE/BigFloat.h>
@@ -40,5 +40,10 @@ long defInputDigits = LONG_MAX;
 
 long defBFdivRelPrec = 54;
 long defBFradicalRelPrec = 54;
+
+unsigned long cutOffBound = CORE_INFTY;
+// used as transcendental number root bound
+unsigned long escapeBound = 100000;
+
 
 CORE_END_NAMESPACE
