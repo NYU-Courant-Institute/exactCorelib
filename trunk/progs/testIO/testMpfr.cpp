@@ -53,7 +53,7 @@
    Author: Jihun and Chee (Oct 2006)
 
    Since Core Library 2.0
-   $Id: testMpfr.cpp,v 1.3 2006-10-31 15:47:40 exact Exp $
+   $Id: testMpfr.cpp,v 1.4 2006-10-31 16:45:02 exact Exp $
  ************************************************ */  
 
 #ifndef CORE_LEVEL
@@ -89,7 +89,7 @@ int main( int argc, char *argv[] ) {
   //Default simple test:
   int prec = 200;		     // prec=200 bits becomes 60 digits
   Expr exp = sqrt(Expr(7));          // exp = sqrt(7)
-  string str=			     // this is the answer expected
+  string str=			     // this is the answer expected (60 digits)
 "2.6457513110645905905016157536392604257102591830824501803683";
   //Expr exp = "7/22";               // exp = rational approx to Pi
 
@@ -98,7 +98,7 @@ int main( int argc, char *argv[] ) {
   if (argc>3) str=argv[3];
 
   if (prec>0) {// do default simple test or one input expression
-	if ((argc>3) || (argc<3))
+	if ((argc>3) || (argc<2))
   		test(prec, exp, str);
 	else
   		test(prec, exp);
