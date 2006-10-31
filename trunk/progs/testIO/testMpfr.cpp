@@ -7,37 +7,53 @@
 	     internal computation cannot be verified
 	     unless we can exactly control the input and
 	     output of numbers. 
+   Usage:
+        % testMpfr 			     -- do the default simple test
+        % testMpfr 0			     -- do the default battery of test
+        % testMpfr [prec] [expr] [string=""] -- do a single test
 
   // Q: WHAT DOES CORRECTNESS OF EVERY OUTPUT DIGIT MEAN?
   // A: We compute any relative approx x with some relative p bits of precision 
   //    Then printout any q digits of this approximation x;
   //    say x' is the printout.
   //
-  //    PROPERTY 1:
-  //    	Count the number of digits after the decimal point.
-  //    	Say d, in x'.  Note that d can be 0.
-  //    	Then |x - x'| <= 10^(-d)
+  //    PROPERTY 1: (No Misleading Digits)
+  //    	First, suppose x' is in decimal notation.
+  //    	Count the number of digits after the decimal point in x'.
+  //    	Say d.  Note that d can be 0 (but we do not allow d<0).
+  //    	Then we require |x - x'| <= 10^(-d)
   //
   //    	In case the output x' is in scientific notation,
-  //    	with exponent of e (e.g., if x'=1.23e-5, then e=-5)
+  //    	with exponent of e (e.g., x'=1.234e-5, then d=3, e=-5)
   //    	Then we want 
   //    		|x - x'| <= 10^(e-d)
   //
-  // 	PROPERTY 2:
+  // 	PROPERTY 2: (Sufficient Accuracy)
   // 		Suppose x' has D digits starting from the most significant
   // 		digit (e.g., x'=123.456, then D=6, d=3).
   // 		An additional property must be fulfilled:
   //
   //    	If 10^q <= 2^p, then we want D=q
-  //    		(or D >= q, for a less strict interpretation)
   //
-   Usage:
-        % testMpfr
+  //    	(or D >= q, for a less strict interpretation of output)
+  //
+  //    REMARKS: 
+  //    We use MPFR's bigfloat output routines which uses relative
+  //    precision in its output digits.  E.g., if x=0.0012345, and
+  //    you ask for 3 digits from MPFR, you get x'=0.00123, not 0.001.
+  //
+  //    We also use C++ streams' notion of "output precision", which
+  //    also shows relative precision in digits: 
+  //    E.g., 
+  //	        cout << setprecision(6);
+  //   		cout<<  -0.00123456;  //shows -0.00123456
+  //            cout<<  -123456789.0; //shows -1.23457e+08
+  //            cout<<  -12345600.0;  //shows -1.23456e+07
 
-   Author: Jihun and Chee 
+   Author: Jihun and Chee (Oct 2006)
 
    Since Core Library 2.0
-   $Id: testMpfr.cpp,v 1.1 2006-10-30 22:39:50 exact Exp $
+   $Id: testMpfr.cpp,v 1.2 2006-10-31 15:16:55 exact Exp $
  ************************************************ */  
 
 #ifndef CORE_LEVEL
@@ -48,59 +64,105 @@
 
 using namespace std;
 
+// test(p, e, s="")
+// 	will validate whether expression e, evaluated to p bits
+// 	of relative precision, gives correct output. This correct
+// 	output is s (but if s="", then we generate s ourselves).
+//
 void test(int prec, Expr exp, string ans=string(""));
 
+// countDigits(s, &D, &d, &e)
+// 	where s is a string (in decimal notation or scientific notation)
+//   D is the number of digits after the most significant digit of s.
+//   d is similar, but counts number of digits after the decimal point in s.
+//   e is the exponent in scientific notation, but e=0 in decimal notation.
+//   E.g., s="123.456",  D=6, d=3, e=0.
+//         s="-1.23456e-4", D=6, d=5, e=-4.
+//         s="-0.12345e04", D=5, d=5, e=4.
+//
+void countDigits(string s, int * D, int *d, int *e);
+
+// main routine
+//
 int main( int argc, char *argv[] ) {
   
-  int prec = 200;		          // prec is   p=100
-  Expr exp = sqrt(Expr(7));               // exp = sqrt(7)
-  //Expr exp = "7/22";               // exp = sqrt(7)
+  //Default simple test:
+  int prec = 200;		     // prec=200 bits becomes 60 digits
+  Expr exp = sqrt(Expr(7));          // exp = sqrt(7)
+  string str=			     // this is the answer expected
+"2.6457513110645905905016157536392604257102591830824501803683";
+  //Expr exp = "7/22";               // exp = rational approx to Pi
 
   if (argc>1) prec=atoi(argv[1]);
   if (argc>2) exp=argv[2];
+  if (argc>3) str=argv[3];
 
-  if (prec>0)
-  	test(prec, exp);
-  else {//do a battery of standard tests
+  if (prec>0) {// do default simple test or one input expression
+	if ((argc>3) || (argc<3))
+  		test(prec, exp, str);
+	else
+  		test(prec, exp);
+  } else {     // else, do a battery of standard tests
 
-       // example from nested Sqrt:
-       int prec=40;
-       //std::cout.precision(40);
-       //setDefaultRelPrecision(20);
+      // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      // TEST ONE:
+      // illustrating C++ stream' output precision:
+      cout << "====== TEST ONE: cout precision" << endl;
+      cout<< setprecision(6) << -0.00123456 << endl; //shows -0.00123456
+      cout<< setprecision(6) << -123456789.0 << endl; //shows -1.23457e+08
+      cout<< setprecision(6) << -12345600.0 << endl; //shows -1.23456e+07
 
-       Expr E=2;
-       int k=4;
-       for (int i=0;i<k;i++)
+      // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      // TEST TWO: rational expressions
+      cout<< "====== TEST TWO: rational expressions" << endl;
+      for (int i=10095; i<10100; i++)
+	 test(i, Expr(i)/Expr(i+1));
+
+      // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      // TEST THREE: squareroot expressions
+      cout << "====== TEST THREE: sqrt expressions" << endl;
+      for (int i=1095; i<1100; i++)
+ 	test(i, sqrt(Expr(i)+sqrt(Expr(i))));
+
+      // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      // TEST FOUR: example from nested Sqrt (see "progs/nestedSqrt")
+      // 	The expression is E = sqrt[k]{(exp(k,2)-1)} - 2
+      // 		where sqrt[k]{.} means we take sqrt() k times
+      // 		and exp(k,x) means we raise to 2^x k times
+      // 	Hence, |E| is very small.  We use k=4, to compare to Core1.
+      cout << "====== TEST FOUR: nested sqrt" << endl;
+      int prec=40;
+      Expr E=2;
+      int k=4;  // can change if you want higher precision test
+      for (int i=0;i<k;i++)
                 E = E*E;
-	//std::cout << "E = SQRE(2, " << k << ") = " << E << std::endl;
-	//std::cout << "    where SQRE(2,k)= SQRE(2,k-1)**2 \n";
+	//cout << "E = SQRE(2, " << k << ") = " << E << endl;
+	//cout << "    where SQRE(2,k)= SQRE(2,k-1)**2 \n";
         E = E-1;
         for (int i=0;i<k;i++)
                 E = sqrt(E);
-	//std::cout << "e = SQRT(E-1, " << k << ") = " << E << std::endl;
-	//std::cout << "    where SQRT(F,k)= sqrt(log(F,k-1)) \n";
+	//cout << "e = SQRT(E-1, " << k << ") = " << E << endl;
+	//cout << "    where SQRT(F,k)= sqrt(log(F,k-1)) \n";
         E = E-2;
 
 	// This is testing against the output from Core1
-	//    (200 bits=60 digits)
+	//    (200 bits=60 relative digits)
 	test(200, E,
-	  "-.00000190736227536746916983256469775415813708674303147237637");
-%-.00000190736227536746916983256469775415813708674303147237637
-%-.0000019073622753674691698325646977541581370867430314723763721706
-%-.00000190736227536746916983256469775415813708674303147237637217065539
+        "-.00000190736227536746916983256469775415813708674303147237637217066");
 
-	  for (int i=1080; i<1100; i++)
-		  test(i, sqrt(i+sqrt(i)));
-  }
+  }//battery of tests
+
   return 0;
 
 }//main
 
+// testing routine
+// 
 void test(int prec, Expr exp, string ansstr){
   ostringstream oss;                      // oss is the string we print into
 
-  int digits = bits2digits(prec);         // digits is q=30
-  cout<< "digits = " << digits << endl;
+  int digits = bits2digits(prec);         // convert prec (in bits) into digits
+  cout<< "prec = " << prec << ", digits = " << digits << endl;
 
   setDefaultOutputDigits(digits, oss);    // display precision
   setDefaultOutputDigits(digits);
@@ -111,41 +173,53 @@ void test(int prec, Expr exp, string ansstr){
   oss << exp;                           // print into oss
 
   string str = oss.str();
-  if (ansstr != ""){ // in case we know what the correct answer is
+  if (ansstr != ""){ // in case the correct answer is provided:
     if (ansstr != str)
-    	cout << "ERROR(1)!!! output string is not correct" << std::endl;
+    	cout << "ERROR!!! output string is not correct" << endl;
+    else
+    	cout << "CORRECT!!! output string equals provided answer" << endl;
   } else {
-  int D=0; 				// D=number of significant digits
-  int d=0; 				// d=number of digits beyond decimal point
-  bool dot=false;			// if decimal point is found  
-  int e=0;				// value of exponent in scientific notation
-  int j=0;				// j= position of most significant digit
-
-  if ((str[0] == '+')|| (str[0] == '-')) j++;  // Takes care of sign
-  if (str[j] == 0) j++;                // Takes care of 0.XXX
-
-  for (size_t i = j; i < str.size(); i++) {// this loop counts D=number
-    if (str[i] == 'e' || str[i] == 'E') {  //   of printout digits
-      e=atoi(str.substr(i+1,str.size()-i).c_str());
-      break; }                             // 
-    if (str[i] == '.') dot=true;	   // found dot
-  
-    if (str[i] >= '0' && str[i] <= '9') {
-      D++;
-      if (dot) d++;
-    }
-  }
+  int D=0; 			// D=number of significant digits
+  int d=0; 			// d=number of digits beyond decimal point
+  int e=0;			// value of exponent in scientific notation
+  countDigits(str, &D, &d, &e);
   
   Expr diff = abs(exp - Expr(str, 10, CORE_INFTY));   // check the difference
 
   if (diff > pow(Expr(10), e-d)) {
 	  				   // PROPERTY 1 says relative error,
 					   //     diff <= 10^{e-d}
-    cout << "ERROR(1)!!! output string is not correct" << std::endl;
-    cout << "printout string:"<< str << std::endl;
-    cout << "original string:"<< exp << std::endl;
+    cout << "ERROR!!! output string is not correct" << endl;
+    cout << "printout string:"<< str << endl;
+    cout << "original string:"<< exp << endl;
   } else
-    cout << "CORRECT(1)!!! output string is correct" << std::endl;
+    cout << "CORRECT!!! output string is correct" << endl;
   }
 
 }//test
+
+// Analyzes number string:
+void countDigits(string str, int * D, int *d, int *e) {
+
+  *D=0; 			// D=number of significant digits
+  *d=0; 			// d=number of digits beyond decimal point
+  *e=0;				// value of exponent in scientific notation
+  bool dot=false;		// if decimal point is found  
+  int j=0;			// j= position of most significant digit
+
+  if ((str[0] == '+')|| (str[0] == '-')) j++;  // Takes care of sign
+  if (str[j] == 0) j++;         // Takes care of 0.XXX (but not 00.123)
+  				// CAVEAT: assuming there is at most one 0.
+
+  for (size_t i = j; i < str.size(); i++) {// this loop counts D=number
+    if (str[i] == 'e' || str[i] == 'E') {  //   of printout digits
+      *e=atoi(str.substr(i+1,str.size()-i).c_str());
+      break; } 
+    if (str[i] == '.') dot=true;	   // found dot
+  
+    if (str[i] >= '0' && str[i] <= '9') {
+      D++;
+      if (dot) d++;
+    }// else error!
+  }//for
+}

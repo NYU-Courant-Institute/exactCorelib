@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.2 2006-10-30 22:39:31 exact Exp $
+# Core Library, $Id: Makefile,v 1.3 2006-10-31 15:16:55 exact Exp $
 
 include ../Make.options
 
@@ -25,7 +25,7 @@ all: $(TARGETS) $(MORETARGETS)
 
 test: $(TARGETS)
 	./testIO
-	./testMpfr
+	./testMpfr 0
 
 moretest: $(MORETARGETS)
 	./testSqrt 997 10 $(verbose)
