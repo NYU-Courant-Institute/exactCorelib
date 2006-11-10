@@ -10,7 +10,7 @@
    Usage:
         % testMpfr 			     -- do the default simple test
         % testMpfr 0			     -- do the default battery of test
-        % testMpfr [prec] [expr] [string=""] -- do a single test
+        % testMpfr [prec] [expr] [digit] [string=""] -- do a single test
 
   // Q: WHAT DOES CORRECTNESS OF EVERY OUTPUT DIGIT MEAN?
   // A: We compute any relative approx x with some relative p bits of precision 
@@ -53,7 +53,7 @@
    Author: Jihun and Chee (Oct 2006)
 
    Since Core Library 2.0
-   $Id: testMpfr.cpp,v 1.4 2006-10-31 16:45:02 exact Exp $
+   $Id: testMpfr.cpp,v 1.5 2006-11-10 21:08:05 exact Exp $
  ************************************************ */  
 
 #ifndef CORE_LEVEL
@@ -64,12 +64,12 @@
 
 using namespace std;
 
-// test(p, e, s="")
+// test(p, e, s="",d=0)
 // 	will validate whether expression e, evaluated to p bits
-// 	of relative precision, gives correct output. This correct
-// 	output is s (but if s="", then we generate s ourselves).
+// 	of relative precision, gives correct output of digits d. This correct
+// 	output is s (but if s="", then we generate s ourselves. if d=0 d is conversion p bits to digits).
 //
-void test(int prec, Expr exp, string ans=string(""));
+void test(int prec, Expr exp, int digit=0, string ans=string(""));
 
 // countDigits(s, &D, &d, &e)
 // 	where s is a string (in decimal notation or scientific notation)
@@ -87,21 +87,32 @@ void countDigits(string s, int * D, int *d, int *e);
 int main( int argc, char *argv[] ) {
   
   //Default simple test:
-  int prec = 200;		     // prec=200 bits becomes 60 digits
+  int prec = 200;		     // prec=200
+  int digit = 60;		     // prec=200 bits becomes 60 digits
   Expr exp = sqrt(Expr(7));          // exp = sqrt(7)
   string str=			     // this is the answer expected (60 digits)
-"2.6457513110645905905016157536392604257102591830824501803683";
+"2.64575131106459059050161575363926042571025918308245018036833";
   //Expr exp = "7/22";               // exp = rational approx to Pi
 
   if (argc>1) prec=atoi(argv[1]);
   if (argc>2) exp=argv[2];
-  if (argc>3) str=argv[3];
+  if (argc>3) digit=atoi(argv[3]);
+  if (argc>4) str=argv[3];
 
   if (prec>0) {// do default simple test or one input expression
-	if ((argc>3) || (argc<2))
-  		test(prec, exp, str);
-	else
-  		test(prec, exp);
+    switch(argc) {
+      case 1:
+      case 5:
+        test(prec, exp, digit, str);
+        break;
+      case 2:
+      case 3:
+        test(prec, exp);
+        break;
+      case 4:
+        test(prec, exp, digit);
+        break;
+    }
   } else {     // else, do a battery of standard tests
 
       // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -147,7 +158,7 @@ int main( int argc, char *argv[] ) {
 
 	// This is testing against the output from Core1
 	//    (200 bits=60 relative digits)
-	test(200, E,
+	test(200, E, 60, 
         "-.00000190736227536746916983256469775415813708674303147237637217066");
 
   }//battery of tests
@@ -158,16 +169,34 @@ int main( int argc, char *argv[] ) {
 
 // testing routine
 // 
-void test(int prec, Expr exp, string ansstr){
+void test(int prec, Expr exp, int digits, string ansstr){
   ostringstream oss;                      // oss is the string we print into
 
-  int digits = bits2digits(prec);         // convert prec (in bits) into digits
+  if (digits == 0)
+    digits = bits2digits(prec);         // convert prec (in bits) into digits
   cout<< "prec = " << prec << ", digits = " << digits << endl;
+  prec += 4;				  // to guarantee prec relative digits output,
+                                          // 4 more precision is needed
 
   setDefaultOutputDigits(digits, oss);    // display precision
   setDefaultOutputDigits(digits);
-  exp.approx(prec, CORE_INFTY);           // compute to p relative bits
+  BigFloat bf = exp.approx(prec, CORE_INFTY);           // compute to p relative bits
   cout<< "expression = " << exp << endl;
+  cout<< "relative bit precision asked to guarantee = " << prec << endl;
+  cout<< "mantissa bits of the result Mpfr variable = " << bf.get_prec() << endl;
+
+  // check the relative error
+  if (abs((exp - bf) / exp) > pow(Expr(2), -(prec-1)))
+    cout << "ERROR!!! get_f is wrong" << std::endl;
+  if (abs((exp - exp.r_approx(prec).getLeft()) / exp) > pow(Expr(2), -(prec-1)))
+    cout << "ERROR!!! approx getLeft() is wrong" << std::endl;
+  if (abs((exp - exp.r_approx(prec).getRight()) / exp) > pow(Expr(2), -(prec-1)))
+    cout << "ERROR!!! approx getRight() is wrong" << std::endl;
+  if (abs((exp.r_approx(prec).getLeft() - exp.r_approx(prec).getRight()) / exp) > pow(Expr(2), -(prec-1)))
+    cout << "ERROR!!! approx getRight - getLeft is wrong" << std::endl;
+  // check if upper and lower bounds actually contain the exact value
+  if ((exp - exp.r_approx(prec).getLeft()) * (exp - exp.r_approx(prec).getRight()) > 0 )
+    cout << "ERROR!!! bounds do not contaion an exact value" << std::endl;
 
   oss.str("");
   oss << exp;                           // print into oss

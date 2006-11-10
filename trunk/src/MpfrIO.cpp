@@ -19,10 +19,11 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: MpfrIO.cpp,v 1.5 2006-10-31 16:29:22 exact Exp $
+ * $Id: MpfrIO.cpp,v 1.6 2006-11-10 21:08:05 exact Exp $
  ***************************************************************************/
 #include <mpfr.h>
 #include <string>
+#include <iostream>
 /* Define BITS_PER_MP_LIMB
    Can't use sizeof(mp_limb_t) since it should be a preprocessor constant */
 #if defined(GMP_NUMB_BITS) /* GMP 4.1.2 or above */
@@ -138,7 +139,7 @@ std::string mpfr2str(
     while (len > 0 && str[len+first-1] == '0')
       len --;
 
-    result.assign(str,len+first);
+    result.assign(str, len+first);
     if (exp > 0) {  
       if ((unsigned long)exp > len-first) // integer need padding 0
         result.append(exp - len+first, '0');
@@ -150,7 +151,11 @@ std::string mpfr2str(
     } else
       result.insert(first, "0.");
   } else { // scientific format
-    result.assign(str);
+    // counting trailing zeros
+    while (len > 0 && str[len+first-1] == '0')
+      len --;
+
+    result.assign(str, len+first);
     // put the decimal before the second digit
     result.insert(first+1, ".");
     // decrease the exponent by 1

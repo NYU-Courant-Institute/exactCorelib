@@ -8,7 +8,8 @@
 
    (1) For the BigInt class
    
-       int BigInt::fromString(const char* s, int b = 0)
+       int BigInt::set(const char* s, int b = 0)
+       int BigInt::set(const string s, int b = 0)
 
         -- this reads a string s (in the "base number format") in base b
        into a BigInt.  If b=0, then the base is directly
@@ -22,22 +23,20 @@
 
    (2) For the BigFloat class
 
-       void fromString(const char* s, const extLong& p=defBigFloatInputDigits)
+       void set(const char* s, int b = 10)
 
-        -- This reads a string s into a BigFloat accepting p as input digits.
-		   The base is always 10.
+        -- This reads a string s into a BigFloat in base b
 
-         string toString(long prec=defBigFloatOutputDigits, bool sci=false) 
+       string get_str(size_t n = 0, int b = 10, rnd_t rnd=MPFR_RND) 
 
-       -- Inverse of the previous function and printing in scientific format
-	      if specified.
+       -- Inverse of the previous function
 
    Usage:
         % stringIO
 
    Author: Joaquin Grech (jg568@nyu.edu)
 
-   $Id: stringIO.cpp,v 1.1 2006-03-07 04:51:24 exact Exp $
+   $Id: stringIO.cpp,v 1.2 2006-11-10 21:08:05 exact Exp $
  ************************************************ */
 
 #include <fstream>
@@ -102,10 +101,12 @@ int main (int argc, char **argv)
     // print out the result using scientific format
   cout.setf(ios::scientific, ios::floatfield);
   cout << "Result of BigFloat printed by cout " << fproduct << "\n\n";
-  cout << "Result of BigFloat.toString() " << fproduct.toString() << "\n";
+  cout << "Result of BigFloat.get_str() " << fproduct.get_str() << "\n";
   
-  ftest.fromString(fproduct.toString().c_str());
-  if (ftest.toString().compare(fproduct.toString()) == 0)
+  ftest.set(fproduct.get_str().c_str());
+  cout << "Result of ftest " << ftest << "\n\n";
+  cout << "Result of ftest.get_str()    " << ftest.get_str() << "\n";
+  if (ftest.get_str().compare(fproduct.get_str()) == 0)
      cout << "CORRECT! Bigfloat::tostring conversions is OK" << endl;
   else
      cout << "ERROR!!! Bigfloat::tostring conversions is wrong" << endl;
@@ -113,10 +114,11 @@ int main (int argc, char **argv)
   cout.setf(ios::fixed, ios::floatfield);
   cout << "\nNOT printing in scientist format:\n";
   cout << "The result of the BigFloat printed by cout " << fproduct << "\n\n";
-  cout << "The result of BigFloat.toString() " << fproduct.toString(defBigFloatOutputDigits,false) << "\n";
+  cout << "The result of BigFloat.get_str() " << fproduct.get_str() << "\n";
   
-  ftest.fromString(fproduct.toString().c_str());
-  if (ftest.toString().compare(fproduct.toString()) == 0)
+  ftest.set(fproduct.get_str().c_str());
+  cout << "Result of ftest.get_str()        " << ftest.get_str() << "\n";
+  if (ftest.get_str().compare(fproduct.get_str()) == 0)
      cout << "CORRECT!  BigFloat toString (non-scientific format) OK" << endl;
   else
      cout << "ERROR!!!  BigFloat toString (non-scientific format) bad" << endl;

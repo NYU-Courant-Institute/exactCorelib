@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.13 2006-10-31 16:29:21 exact Exp $
+ * $Id: BigFloat2.h,v 1.14 2006-11-10 21:08:05 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -485,12 +485,14 @@ public:
     if (is_exact()) 
       return m_l;
     else {
-//	  std::cout << "\nm_r=" << m_r << std::endl;
-//	  std::cout << "m_l=" << m_l << std::endl;
+      //BigFloat2 ret = (*this);
+      //return ret.centerize();
+
       // get validate bits
       long bits = abs_diam().get_exp();
       // round up to validate bits
       FT result(m_l);
+      //std::cout << "\nbits=" << bits << std::endl;
 
       long valprec = m_l.get_exp() - bits;
       // jihun 2006: in case of m_r.get_exp() > m_l.get_exp(),
@@ -503,6 +505,15 @@ public:
       if (valprec < 2) valprec = 2;
 
       result.prec_round(valprec);
+/*
+      std::cout << "\n   m_r's prec=" << m_r.get_prec() << std::endl;
+      std::cout << "result's prec=" << result.get_prec() << std::endl;
+      std::cout << "   m_l's prec=" << m_l.get_prec() << std::endl;
+
+      std::cout << "\n   m_r=" << m_r << std::endl;
+      std::cout << "result=" << result << std::endl;
+      std::cout << "   m_l=" << m_l << std::endl;
+*/
       return result;
     }
   }
@@ -544,11 +555,12 @@ public:
     else
       return m_r;
   }
-  void centerize() {
-    if (is_exact()) return;  
+  BigFloat centerize() {
+    if (is_exact()) return m_l;  
     m_l.add(m_l, m_r);
     m_l.div_2exp(m_l, 1);
     m_r = 0; m_exact = true;
+    return m_l;
   }
   /// check whether contains zero
   bool has_zero() const
