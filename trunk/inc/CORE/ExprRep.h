@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.15 2006-10-31 16:29:21 exact Exp $
+ * $Id: ExprRep.h,v 1.16 2006-11-13 20:10:43 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -440,7 +440,6 @@ public: // public methods
 #endif
 
     // Step 5
-    std::cout << "bound type=" << bound_type << std::endl;
     if (bound_type < 2) {
       core_error("Hit Escape bound or Cut-off Bound", __FILE__, __LINE__, false);
    }

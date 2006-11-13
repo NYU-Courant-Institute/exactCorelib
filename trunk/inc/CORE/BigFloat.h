@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.16 2006-11-10 21:08:04 exact Exp $
+ * $Id: BigFloat.h,v 1.17 2006-11-13 20:10:43 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -171,13 +171,13 @@ public:
   //@{
   /// return current precision (bit length of mantissa)
   prec_t get_prec() const
-  { return mpfr_get_prec(mp()); }
+  { return mpfr_get_prec(mp())-1; }
   /// set current precision (bit length of mantissa). Previous value lost.
   void set_prec(prec_t prec)
-  { mpfr_set_prec(mp(), prec); } // jihun:mpfr prec-bits only guarantee (prec-1) relative bits
+  { mpfr_set_prec(mp(), prec+1); }
   /// round the current precision to prec, using specified rounding mode.
   int prec_round(prec_t prec, rnd_t rnd = MPFR_RND)
-  { return mpfr_prec_round(mp(), prec, rnd); } 
+  { return mpfr_prec_round(mp(), prec+1, rnd); } 
   //@}
 
   /// \name exponent accessors

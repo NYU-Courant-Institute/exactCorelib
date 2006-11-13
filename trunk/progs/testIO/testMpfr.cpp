@@ -53,7 +53,7 @@
    Author: Jihun and Chee (Oct 2006)
 
    Since Core Library 2.0
-   $Id: testMpfr.cpp,v 1.5 2006-11-10 21:08:05 exact Exp $
+   $Id: testMpfr.cpp,v 1.6 2006-11-13 20:10:43 exact Exp $
  ************************************************ */  
 
 #ifndef CORE_LEVEL
@@ -181,21 +181,30 @@ void test(int prec, Expr exp, int digits, string ansstr){
   setDefaultOutputDigits(digits, oss);    // display precision
   setDefaultOutputDigits(digits);
   BigFloat bf = exp.approx(prec, CORE_INFTY);           // compute to p relative bits
+
   cout<< "expression = " << exp << endl;
   cout<< "relative bit precision asked to guarantee = " << prec << endl;
   cout<< "mantissa bits of the result Mpfr variable = " << bf.get_prec() << endl;
 
-  // check the relative error
-  if (abs((exp - bf) / exp) > pow(Expr(2), -(prec-1)))
+  BigFloat2 bound = exp.rep()->appValue();
+
+  // check if the relative precision is guaraunteed
+  if (abs((exp - bf) / exp) > pow(Expr(2), -prec))
     cout << "ERROR!!! get_f is wrong" << std::endl;
-  if (abs((exp - exp.r_approx(prec).getLeft()) / exp) > pow(Expr(2), -(prec-1)))
-    cout << "ERROR!!! approx getLeft() is wrong" << std::endl;
-  if (abs((exp - exp.r_approx(prec).getRight()) / exp) > pow(Expr(2), -(prec-1)))
-    cout << "ERROR!!! approx getRight() is wrong" << std::endl;
-  if (abs((exp.r_approx(prec).getLeft() - exp.r_approx(prec).getRight()) / exp) > pow(Expr(2), -(prec-1)))
-    cout << "ERROR!!! approx getRight - getLeft is wrong" << std::endl;
+
+  if ((bf - bound.getLeft()) * (bf - bound.getRight()) > 0 )
+    cout << "ERROR!!! get_f is not contained in the boundary" << std::endl;
+
+  if (abs((exp - bound.getLeft()) / exp) > pow(Expr(2), -prec))
+    cout << "ERROR!!! approx lower bound is out of range" << std::endl;
+  if (abs((exp - bound.getRight()) / exp) > pow(Expr(2), -prec))
+    cout << "ERROR!!! approx upper bound is out of range" << std::endl;
+
+  if (abs((bound.getLeft() - bound.getRight()) / exp) > pow(Expr(2), -prec))
+    cout << "ERROR!!! approx upper bound - lower bound is out of range" << std::endl;
+
   // check if upper and lower bounds actually contain the exact value
-  if ((exp - exp.r_approx(prec).getLeft()) * (exp - exp.r_approx(prec).getRight()) > 0 )
+  if ((exp - bound.getLeft()) * (exp - bound.getRight()) > 0 )
     cout << "ERROR!!! bounds do not contaion an exact value" << std::endl;
 
   oss.str("");
