@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.17 2006-11-13 20:10:43 exact Exp $
+ * $Id: BigFloat.h,v 1.18 2006-11-16 17:41:02 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -173,11 +173,17 @@ public:
   prec_t get_prec() const
   { return mpfr_get_prec(mp())-1; }
   /// set current precision (bit length of mantissa). Previous value lost.
-  void set_prec(prec_t prec)
-  { mpfr_set_prec(mp(), prec+1); }
+  void set_prec(prec_t prec) {
+    prec += 1;
+    prec = std::min(std::max(prec, prec_t(MPFR_PREC_MIN)), prec_t(MPFR_PREC_MAX));
+    mpfr_set_prec(mp(), prec);
+  }
   /// round the current precision to prec, using specified rounding mode.
-  int prec_round(prec_t prec, rnd_t rnd = MPFR_RND)
-  { return mpfr_prec_round(mp(), prec+1, rnd); } 
+  int prec_round(prec_t prec, rnd_t rnd = MPFR_RND) {
+    prec += 1;
+    prec = std::min(std::max(prec, prec_t(MPFR_PREC_MIN)), prec_t(MPFR_PREC_MAX));
+    return mpfr_prec_round(mp(), prec, rnd);
+  } 
   //@}
 
   /// \name exponent accessors
@@ -1044,7 +1050,7 @@ public:
   { return mpfr_div_2ui(mp(), x.mp(), y, rnd); }
   /// divide by 2
   int div2(const BigFloat& x, rnd_t rnd = MPFR_RND)
-  { set_prec(x.get_prec()); return div_2exp(x,1,rnd); }
+  { set_prec(x.get_prec()+1); return div_2exp(x,1,rnd); }
   //@}
 
   /// \name comparison functions

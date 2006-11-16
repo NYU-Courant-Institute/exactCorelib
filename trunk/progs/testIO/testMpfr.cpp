@@ -53,7 +53,7 @@
    Author: Jihun and Chee (Oct 2006)
 
    Since Core Library 2.0
-   $Id: testMpfr.cpp,v 1.6 2006-11-13 20:10:43 exact Exp $
+   $Id: testMpfr.cpp,v 1.7 2006-11-16 17:41:03 exact Exp $
  ************************************************ */  
 
 #ifndef CORE_LEVEL
@@ -142,7 +142,6 @@ int main( int argc, char *argv[] ) {
       // 		and exp(k,x) means we raise to 2^x k times
       // 	Hence, |E| is very small.  We use k=4, to compare to Core1.
       cout << "====== TEST FOUR: nested sqrt" << endl;
-      int prec=40;
       Expr E=2;
       int k=4;  // can change if you want higher precision test
       for (int i=0;i<k;i++)
@@ -174,17 +173,12 @@ void test(int prec, Expr exp, int digits, string ansstr){
 
   if (digits == 0)
     digits = bits2digits(prec);         // convert prec (in bits) into digits
-  cout<< "prec = " << prec << ", digits = " << digits << endl;
   prec += 4;				  // to guarantee prec relative digits output,
                                           // 4 more precision is needed
 
   setDefaultOutputDigits(digits, oss);    // display precision
   setDefaultOutputDigits(digits);
   BigFloat bf = exp.approx(prec, CORE_INFTY);           // compute to p relative bits
-
-  cout<< "expression = " << exp << endl;
-  cout<< "relative bit precision asked to guarantee = " << prec << endl;
-  cout<< "mantissa bits of the result Mpfr variable = " << bf.get_prec() << endl;
 
   BigFloat2 bound = exp.rep()->appValue();
 

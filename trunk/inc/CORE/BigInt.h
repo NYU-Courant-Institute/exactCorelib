@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigInt.h,v 1.9 2006-08-07 13:48:39 exact Exp $
+ * $Id: BigInt.h,v 1.10 2006-11-16 17:41:03 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGINT_H__
 #define __CORE_BIGINT_H__
@@ -1137,9 +1137,28 @@ inline std::ostream& operator<<(std::ostream& os, const BigInt& x)
 /// \addtogroup BigIntGlobalFunctions
 //@{
 /// read from file
-void readFromFile(BigInt& z, std::istream& in, long maxLength = 0);
+inline void readFromFile(BigInt& z, std::istream& in) {
+  std::string str; char c;
+  in >> c;
+  if (c != 'i')
+    return;
+  in >> str;
+  z.set(str);
+}
+
 /// write to file
-void writeToFile(const BigInt& z, std::ostream& in, int base=10, int width=80);
+inline void writeToFile(const BigInt& z, std::ostream& out, int base=10) {
+  std::string str("i");
+  if (base == 2)
+    str += "0b";
+  else if (base == 16)
+    str += "0x";
+  else if (base == 8)
+    str += '0';
+  str += z.get_str(base);
+  out << str;
+}
+  
 /// return a gmp_randstate_t structure
 inline gmp_randstate_t* getRandstate() {
   static gmp_randstate_t rstate;

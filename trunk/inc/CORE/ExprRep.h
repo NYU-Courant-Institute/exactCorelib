@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.16 2006-11-13 20:10:43 exact Exp $
+ * $Id: ExprRep.h,v 1.17 2006-11-16 17:41:03 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -480,13 +480,19 @@ public:
   // TODO: have a "strict mode" where we do check overflow!
   // Note this output is at least PREC_MIN (=2).
   prec_t abs2rel(prec_t prec) {
-  //  core_assert(prec >= MPFR_PREC_MIN && prec <= MPFR_PREC_MAX)
+    //core_assert(prec >= MPFR_PREC_MIN && prec <= MPFR_PREC_MAX)
+    prec_t ret= std::max(long(prec) + get_uMSB(), long(PREC_MIN)); 
+    if (ret < MPFR_PREC_MIN || ret > MPFR_PREC_MAX)
+      std::cout << "abs2rel error" << std::endl;
     return std::max(long(prec) + get_uMSB(), long(PREC_MIN)); 
   }
   /// convert relative precision to absolute precision
   /// WARNING: we currently do not check for overflows
   prec_t rel2abs(prec_t prec) {
-  //  core_assert(prec >= MPFR_PREC_MIN && prec <= MPFR_PREC_MAX)
+    //core_assert(prec >= MPFR_PREC_MIN && prec <= MPFR_PREC_MAX)
+    prec_t ret = std::max(long(prec) - get_lMSB(), long(PREC_MIN)); 
+    if (ret < MPFR_PREC_MIN || ret > MPFR_PREC_MAX)
+      std::cout << "rel2abs error" << std::endl;
     return std::max(long(prec) - get_lMSB(), long(PREC_MIN)); 
   }
 
@@ -1123,7 +1129,7 @@ protected:
        			// decide if first->MSB is different from second-MSB
    }
    //*/
-    /*
+   /*
     // The following code is right, but inefficient. Keep for debugging:
     sign_t sf = first->get_sign();
     sign_t ss = second->get_sign();

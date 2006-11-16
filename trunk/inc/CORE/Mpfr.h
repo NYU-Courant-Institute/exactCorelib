@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Mpfr.h,v 1.10 2006-07-05 00:25:22 exact Exp $
+ * $Id: Mpfr.h,v 1.11 2006-11-16 17:41:03 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_MPFR_H__
 #define __CORE_MPFR_H__
@@ -91,7 +91,7 @@ public:
 
   /// assignment operator for <tt>Mpfr</tt>
   Mpfr& operator=(const Mpfr& rhs) { 
-    if (this != &rhs)  { 
+    if (this != &rhs)  {
       mpfr_set_prec(m_mp, mpfr_get_prec(rhs.m_mp)); 
       mpfr_set(m_mp, rhs.m_mp, mpfr_get_default_rounding_mode());
     }

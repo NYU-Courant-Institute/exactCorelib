@@ -128,8 +128,9 @@ BigFloat2 evalExactSign(Polynomial<NT> &p, const BigFloat& val,
       return eVal.BigFloat2Value();
     } else 
       return rVal;
-  } else
+  } else {
     return ToBigFloat2(eval(p, val));
+  }
   
   assert(0);
   return 0;
@@ -258,6 +259,7 @@ BigFloat sepBound(Polynomial<NT> &p) {
 
   CORE::power(d, BigInt(deg), ((deg)+4)/2);
   e = CORE::power(height(p).getRight()+1, deg);
+
   return (BigFloat2(1)/(e*2*d)).getLeft();
         // BUG fix: ``return 1/e*2*d'' was wrong
         // NOTE: the relative error in this division (1/(e*2*d))

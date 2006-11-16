@@ -19,11 +19,10 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: MpfrIO.cpp,v 1.6 2006-11-10 21:08:05 exact Exp $
+ * $Id: MpfrIO.cpp,v 1.7 2006-11-16 17:41:03 exact Exp $
  ***************************************************************************/
 #include <mpfr.h>
 #include <string>
-#include <iostream>
 /* Define BITS_PER_MP_LIMB
    Can't use sizeof(mp_limb_t) since it should be a preprocessor constant */
 #if defined(GMP_NUMB_BITS) /* GMP 4.1.2 or above */
@@ -136,7 +135,7 @@ std::string mpfr2str(
 
   if (fmt == 1) { // fixed format
     // counting trailing zeros
-    while (len > 0 && str[len+first-1] == '0')
+    while (len > 1 && str[len+first-1] == '0')
       len --;
 
     result.assign(str, len+first);
@@ -152,7 +151,7 @@ std::string mpfr2str(
       result.insert(first, "0.");
   } else { // scientific format
     // counting trailing zeros
-    while (len > 0 && str[len+first-1] == '0')
+    while (len > 1 && str[len+first-1] == '0')
       len --;
 
     result.assign(str, len+first);

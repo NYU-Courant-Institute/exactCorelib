@@ -51,7 +51,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Sturm.h,v $
- * $Revision: 1.7 $ $Date: 2006-10-31 16:29:21 $
+ * $Revision: 1.8 $ $Date: 2006-11-16 17:41:03 $
  ***************************************************************************/
 
 
@@ -308,7 +308,7 @@ public:
             - signVariations(newy, sign(evalExactSign(seq[0],newy))) );
 */
 // Jihun: July 2006, implemented alternative that doesn't use separation bound
-//*
+///*
     if (signx != 0 && signy != 0)
       return (signVariations(x, signx) - signVariations(y, signy));
     else if (signx == 0 && signy == 0)
@@ -464,8 +464,9 @@ public:
     BigFloat m;
     m.div2(x+y);
     n = numberOfRoots(x, m);
-    if (n >= i)
+    if (n >= i) {
 	    return isolateRoot(i, x, m);
+    }
     // Now (n < i) but we have to be careful if m is a root
     if (sign(evalExactSign(seq[0], m)) != 0)   // usual case
       return isolateRoot(i-n, m, y);

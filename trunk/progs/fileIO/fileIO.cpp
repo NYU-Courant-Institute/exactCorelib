@@ -11,19 +11,18 @@
 
       Functions provided:
 
-   (1) void BigInt::readFromFile(istream is, long maxLen = 0) 
+   (1) void (const BigInt& z, istream is) 
 
-       -- this constructs a BigInt from file, reading at most
+       -- this constructs a BigInt z from file, reading at most
        maxlen number of digits (of the appropriate base).
        If maxLen=0, then read the entire file.
 
-   (2) void writeToFile(const BigInt& z, std::ostream os,
-   		int b = 10, int lineLen = 80)
+   (2) void writeToFile(const BigInt& z, std::ostream os, int b = 10)
 
        -- this writes the BigInt value to file os, in base b.  Each
        output line is 80 characters.
 
-   (3) int BigInt::fromString(const char* s, int b = 0)
+   (3) int BigInt::set_str(const char* s, int b = 0)
 
         -- this reads a string s (in the "base number format") in base b
        into a BigInt.  If b=0, then the base is directly
@@ -39,9 +38,9 @@
    Usage:
         % fileIO
 
-   Author: Zilin Du (zilin@cs.nyu.edu)
+   Author: Zilin Du (zilin@cs.nyu.edu), Jihun Yu(jihun@cs.nyu.edu)
 
-   $Id: fileIO.cpp,v 1.1 2006-03-07 04:51:24 exact Exp $
+   $Id: fileIO.cpp,v 1.2 2006-11-16 17:41:03 exact Exp $
  ************************************************ */
 
 #include <fstream>
@@ -88,17 +87,14 @@ int main (int argc, char **argv)
     cout << "\nWrite the result to the file "
 		<< filename[i] << " in base = " << bases[i] <<"...\n";
     outFile.open(filename[i]);
-    // product.writeToFile(outFile, bases[i], 40);
-    writeToFile(product, outFile, bases[i], 40);
+    writeToFile(product, outFile, bases[i]);
     outFile.close();
     outFile.clear();
     
     cout << "Read the result from the file " << filename[i] << "...\n";
     inFile.open(filename[i]);
     if (inFile.good()) {
-    //test.readFromFile(inFile, 0);     // maxLength = 0 means length is
-					// determined by length field in file.
-    readFromFile(test, inFile, 0);
+    readFromFile(test, inFile);
     } else {
       cout << "ERROR" << endl;
     }

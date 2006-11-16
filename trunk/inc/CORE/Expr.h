@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.20 2006-10-31 16:29:21 exact Exp $
+ * $Id: Expr.h,v 1.21 2006-11-16 17:41:03 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -205,7 +205,7 @@ public:
       { sign = false; k = -k; }
       std::vector<ExprRep*> c;
       ProdRep* newRep = new ProdRep(c);
-      for (unsigned int i=0; i < k; i++)
+      for (long i=0; i < k; i++)
         newRep->insert (e.rep());
       if (sign)
         return ExprT(newRep);
@@ -401,7 +401,7 @@ inline double Todouble(const Expr& e, prec_t r = defRelPrec, prec_t a=defAbsPrec
 inline BigFloat2 ToBigFloat2(const Expr& e, prec_t r = defRelPrec, prec_t a=defAbsPrec) {
   Expr* p = const_cast<Expr*>(&e);
   if (p->sign()) {
-    p->r_approx(r);
+    p->approx(r,a);
     return e.BigFloat2Value();
   } else
     return BigFloat2(0);
