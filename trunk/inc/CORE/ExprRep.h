@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.18 2006-11-20 19:47:59 exact Exp $
+ * $Id: ExprRep.h,v 1.19 2006-11-20 20:20:49 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -507,6 +507,8 @@ protected:
 
   template <typename V>
   void init_value(const V& value) {
+    if (!m_nodeinfo)
+      init_nodeinfo();
     // initialize approximated value
     if (this->appValue().set(value)) this->flags().set(fExact);
     // set flag
@@ -613,7 +615,7 @@ protected:
 
   void new_nodeinfo() { m_nodeinfo = new NodeInfo(); }
 public:
-  Kernel& appValue()  { 
+  Kernel& appValue()  {
     assert(m_nodeinfo);
     return m_nodeinfo->m_appValue;
   }
