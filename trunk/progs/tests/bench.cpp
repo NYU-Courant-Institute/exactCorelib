@@ -9,7 +9,7 @@
    Author: Sylvain Pion, August 2002.
 
    Since Core Library 1.5
-   $Id: bench.cpp,v 1.2 2006-08-09 09:59:06 exact Exp $
+   $Id: bench.cpp,v 1.3 2006-11-20 19:47:59 exact Exp $
  ************************************************ */        
 
 #include <iostream>
@@ -28,7 +28,7 @@ void bench_1(const Expr &x, const Expr &y)
   // assert(e != 0);
 
   // Print the root bound of e
-  std::cerr << "root bound = " << e.rep()->get_rootBd().get_bound() << std::endl;
+  std::cerr << "root bound = " << e.rep()->get_rootBd().get_bound(e.rep()->get_Deg()) << std::endl;
 }
 
 void bench_2(const Expr &x, const Expr &y)
@@ -39,7 +39,7 @@ void bench_2(const Expr &x, const Expr &y)
   assert(e == 0); 
 
   // Print the root bound of e
-  std::cerr << "root bound = " << e.rep()->get_rootBd().get_bound() << std::endl;
+  std::cerr << "root bound = " << e.rep()->get_rootBd().get_bound(e.rep()->get_Deg()) << std::endl;
 }
 
 void experiment_1(int loops) {

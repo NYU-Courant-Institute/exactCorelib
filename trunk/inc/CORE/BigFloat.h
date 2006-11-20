@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.18 2006-11-16 17:41:02 exact Exp $
+ * $Id: BigFloat.h,v 1.19 2006-11-20 19:47:58 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -312,7 +312,6 @@ public:
   //@{
   /// addition for <tt>BigFloat+BigFloat</tt> (fixed version)
   int add(const BigFloat& x, const BigFloat& y,prec_t prec,rnd_t rnd=MPFR_RND){
-    assert(prec>=2);
     if (&x == this || &y == this) { // if one of inputs are output
        if (prec > get_prec()) {
          prec_round (prec, rnd);
@@ -335,7 +334,6 @@ public:
   /// addition for <tt>BigFloat+T</tt> (fixed version)
   template <typename T> 
   int add(const BigFloat& x, const T& y, prec_t prec, rnd_t rnd = MPFR_RND) {
-    assert(prec>=2);
     if (&x == this) { // if x is same as output
 //*
       if (prec > get_prec()) {
@@ -434,7 +432,6 @@ public:
   //@{
   /// subtraction for <tt>BigFloat-BigFloat</tt> (fixed version)
   int sub(const BigFloat& x, const BigFloat& y,prec_t prec,rnd_t rnd=MPFR_RND){
-    assert(prec>=2);
     if (&x == this || &y == this) { // if one of inputs are output
        if (prec > get_prec()) {
          prec_round (prec, rnd);
@@ -458,7 +455,6 @@ public:
   /// subtraction for <tt>BigFloat-T</tt> (fixed version)
   template <typename T> 
   int sub(const BigFloat& x, const T& y, prec_t prec, rnd_t rnd = MPFR_RND) {
-    assert(prec>=2);
     if (&x == this) { // if x is same as output
        if (prec > get_prec()) {
          prec_round (prec, rnd);
@@ -480,7 +476,6 @@ public:
   /// subtraction for <tt>T-BigFloat</tt> (fixed version)
   template <typename T> 
   int sub(const T& x, const BigFloat& y, prec_t prec, rnd_t rnd = MPFR_RND) {
-    assert(prec>=2);
     if (&y == this) { // if y is same as output
        if (prec > get_prec()) {
          prec_round (prec, rnd);
@@ -557,7 +552,6 @@ public:
   //@{
   /// multiplication for <tt>BigFloat*BigFloat</tt> (fixed version)
   int mul(const BigFloat& x, const BigFloat& y,prec_t prec,rnd_t rnd=MPFR_RND){
-    assert(prec>=2);
     if (&x == this || &y == this) { // if one of inputs are output
        if (prec > get_prec()) {
          prec_round (prec, rnd);
@@ -578,7 +572,6 @@ public:
   /// multiplication for <tt>BigFloat*T</tt> (fixed version)
   template <typename T>
   int mul(const BigFloat& x, const T& y, prec_t prec, rnd_t rnd = MPFR_RND) {
-    assert(prec>=2);
     if (&x == this) { // if x is same as output
 //*
       if (prec > get_prec()) {
@@ -677,7 +670,6 @@ public:
   /// division for <tt>BigFloat/BigFloat</tt> (fixed version)
   int div(const BigFloat& x, const BigFloat& y, 
           prec_t prec = getDefaultBFdivPrec(), rnd_t rnd = MPFR_RND) {
-    assert(prec>=2);
     if (&x == this || &y == this) { // if one of inputs are output
        if (prec > get_prec()) {
          prec_round (prec, rnd);
@@ -699,7 +691,6 @@ public:
   template <typename T> 
   int div(const BigFloat& x, const T& y, 
           prec_t prec = getDefaultBFdivPrec(), rnd_t rnd = MPFR_RND) {
-    assert(prec>=2);
     if (&x == this) { // if x is same as output 
        if (prec > get_prec()) {
          prec_round (prec, rnd);
@@ -721,7 +712,6 @@ public:
   template <typename T>
   int div(const T& x, const BigFloat& y, 
           prec_t prec = getDefaultBFdivPrec(), rnd_t rnd = MPFR_RND) {
-    assert(prec>=2);
     if (&y == this) { // if y is same as output
        if (prec > get_prec()) {
          prec_round (prec, rnd);

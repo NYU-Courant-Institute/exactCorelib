@@ -10,7 +10,7 @@
  * Author: Shubin Zhao (shubinz@cs.nyu.edu), 2001.
  *
  * Since Core Library 1.4
- * $Id: pentagon.cpp,v 1.1 2006-03-07 04:51:25 exact Exp $
+ * $Id: pentagon.cpp,v 1.2 2006-11-20 19:47:59 exact Exp $
  *****************************************************************/
 
 #include "CORE.h"
@@ -66,19 +66,19 @@ void pent_print(Point3d pentagon[5]) {
 
 int main( int argc, char* argv[] ) {
 
-  EscapePrec = 30000;		// default escape precision
+  set_escape_bound(30000);		// default escape precision
   int rounds = 1;		// default number of rounds
   bool ratFlag = true;		// default is to reduce Expr to Rationals
 
   // Read command line arguments:
   if( argc > 1 ) 
-     EscapePrec = atoi( argv[1] );
+     set_escape_bound(atoi( argv[1] ));
   if( argc > 2 )
      rounds = atoi( argv[2] );
   if( argc > 3 )
      if (atoi( argv[3] ) <= 0) ratFlag = false;
 
-  setRationalReduceFlag(ratFlag);  // if ratFlag=true, reduce rational Expressions
+  //setRationalReduceFlag(ratFlag);  // if ratFlag=true, reduce rational Expressions
       
   // Read command line arguments:
   double buff[3];
@@ -86,7 +86,7 @@ int main( int argc, char* argv[] ) {
   Point3d pentInner[5];
   Point3d pentOuter[5];
 
-  std::cout << "EscapePrec=" << EscapePrec << std::endl;
+  std::cout << "EscapePrec=" << get_escape_bound() << std::endl;
   std::cout << "round=" << rounds << std::endl;
 
   // create pentagon in 3d by linear transformation

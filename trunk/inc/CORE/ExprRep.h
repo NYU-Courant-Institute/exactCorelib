@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.17 2006-11-16 17:41:03 exact Exp $
+ * $Id: ExprRep.h,v 1.18 2006-11-20 19:47:59 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -399,7 +399,7 @@ public: // public methods
   //////////////////////////////////////////////////
   void refine() {
     //Step 1
-    prec_t prec = 26, bound;
+    prec_t prec = 26, bound = 53;
     int bound_type;
 
     if (!kernel_initialized())
@@ -442,7 +442,7 @@ public: // public methods
     // Step 5
     if (bound_type < 2) {
       core_error("Hit Escape bound or Cut-off Bound", __FILE__, __LINE__, false);
-   }
+    }
     appValue().set(0);
     set_flags(0, 0, MSB_MIN);
   }

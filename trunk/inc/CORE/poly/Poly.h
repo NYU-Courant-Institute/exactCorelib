@@ -790,12 +790,14 @@ void mapleDump() const {
 
 ///Evaluation: Assumes that the point of evaluation has the same
 ///type as the coefficients.
-NT eval(const NT& f) const {	// evaluation
+template<typename T>
+T eval(const T& f) const {	// evaluation
   if (degree() == -1)
     return NT(0);
   if (degree() == 0)
-    return NT(coeff[0]);
-  NT val(0);
+    return NT(coeff()[0]);
+  T val(0);
+  //NT val(0);
   for (int i=degree(); i>=0; i--) {
     val *= f;
     val += coeff()[i];	

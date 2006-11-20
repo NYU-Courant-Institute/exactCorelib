@@ -30,7 +30,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.tcc,v $
- * $Revision: 1.1 $ $Date: 2006-03-03 21:16:43 $
+ * $Revision: 1.2 $ $Date: 2006-11-20 19:47:59 $
  ***************************************************************************/
 
 
@@ -1204,9 +1204,9 @@ int Curve<NT>::plot( BigFloat eps, BigFloat x1,
 
   const char* filename[] = {"data/input", "data/plot", "data/plot2"};
 
-  assert(eps.isExact()); // important for plotting...
-  assert(x1.isExact());
-  assert(y1.isExact());
+  //assert(eps.isExact()); // important for plotting...
+  //assert(x1.isExact());
+  //assert(y1.isExact());
 
   ofstream outFile;
   outFile.open(filename[fileNo]); // ought to check if open is successful!
@@ -1230,7 +1230,7 @@ int Curve<NT>::plot( BigFloat eps, BigFloat x1,
   outFile << 0 << "\t" << y1 << std::endl;
   outFile << 0 << "\t" << y2 << std::endl;
   // assert(eps>0)
-  int aprec = -(eps.lMSB()).toLong(); // By definition, eps.lMSB() <= lg(eps)
+  int aprec = -eps.lMSB(); // By definition, eps.lMSB() <= lg(eps)
 
   BigFloat xCurr = x1;
   BigFloat xLast = x1;
@@ -1336,7 +1336,7 @@ cout <<"Number of roots at " << xCurr << " are " << numRoots<<endl;
       numPoints++;
     }//if
     xCurr += eps;
-if (!xCurr.isExact()) std::cout<<"xCurr has error! xCurr=" << xCurr << std::endl;
+//if (!xCurr.isExact()) std::cout<<"xCurr has error! xCurr=" << xCurr << std::endl;
    }//main while loop
 
    // Need to flush out the final x-interval:

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.21 2006-11-16 17:41:03 exact Exp $
+ * $Id: Expr.h,v 1.22 2006-11-20 19:47:58 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -291,6 +291,14 @@ public: // public methods
   /// return BigFloat2Value
   KT BigFloat2Value() const
   { return m_rep->appValue(); }
+  /// double interval
+  void doubleInterval(double& lb, double& ub) {
+    ExprT* p = const_cast<ExprT*>(this);
+    p->r_approx(52);
+    KT interval = p->BigFloat2Value();
+    lb = interval.getLeft().get_d(BF_RNDD);
+    ub = interval.getRight().get_d(BF_RNDU);
+  }
 
   /// return sign (dirty cast)
   sign_t sign() const
@@ -304,6 +312,7 @@ public: // public methods
   /// absolute value
   ExprT abs() const 
   { return sign() >= 0 ? +(*this) : -(*this); }
+  
 
   /// return internal rep
   ExprRep* rep() const

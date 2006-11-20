@@ -63,7 +63,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.h,v $
- * $Revision: 1.1 $ $Date: 2006-03-03 21:16:43 $
+ * $Revision: 1.2 $ $Date: 2006-11-20 19:47:59 $
  ***************************************************************************/
 
 
@@ -71,8 +71,12 @@
 #define CORE_CURVES_H
 
 #include <fstream>
+#include <string>
 #include <list>
+#include <iostream>
 #include "CORE/poly/Poly.h"
+
+using namespace std;
 
 CORE_BEGIN_NAMESPACE
 

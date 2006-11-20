@@ -56,7 +56,7 @@
    Date:    Aug 2, 2002 (updated, Oct 10, 2004).
 
    Since Core Library  v1.4
-   $Id: tNewton.cpp,v 1.1 2006-03-07 04:51:25 exact Exp $
+   $Id: tNewton.cpp,v 1.2 2006-11-20 19:50:42 exact Exp $
  ************************************** */
 
 #include <fstream>
@@ -172,7 +172,7 @@ using namespace std;
     cout << "   ---------------------------------------------------\n";
     ifstream ifs1(fname1.data());	// input stream for sqrt 
     BigFloat rootN;
-    readFromFile(rootN, ifs1, readprec+1+(1+BigFloat(N).uMSB().asLong())/2 );
+    readFromFile(rootN, ifs1, readprec+1+(1+BigFloat(N).uMSB())/2 );
     	// read [readprec] many absolute bits of precision
 	// REMARK: we need to add "1" to get (***) above
 	//         we need to add (1+N.uMSB())/2 to convert the relative precision
@@ -224,7 +224,7 @@ using namespace std;
     cout << "   SELF-CHECK for cube root: reading from output file\n";
     cout << "   ---------------------------------------------------\n";
     ifstream ifs2(fname2.data());	// input stream for cuberoot
-    readFromFile(rootN, ifs2, readprec+2+(1+BigFloat(N).uMSB().asLong())/3); 
+    readFromFile(rootN, ifs2, readprec+2+(1+BigFloat(N).uMSB())/3); 
     	// read [readprec] bits 
     cout << "  CubeRoot(" << N << ") = " << rootN << endl;
 

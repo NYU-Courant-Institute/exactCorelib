@@ -238,7 +238,7 @@ Expr MathPi(int bits) {
   std::ifstream ifs;
   ifs.open("pi.big");
   BigFloat bf_pi;
-  readFromFile(bf_pi, ifs, bits);
+  readFromFile(bf_pi, ifs);
   Expr pi(bf_pi);
   pi.approx(CORE_posInfty, bits);
   return pi;
@@ -258,7 +258,7 @@ Expr MathLog2(int bits) {
   std::ifstream ifs;
   ifs.open("log2.big");
   BigFloat bf_log2;
-  readFromFile(bf_log2, ifs, bits);
+  readFromFile(bf_log2, ifs);
   Expr val(bf_log2);
   val.approx(CORE_posInfty, bits);
   return val;
@@ -274,7 +274,7 @@ Expr MathNaN() {
 template<class FLT> 
 FLT exp(FLT x)
 {
-  int eps = defRelPrec.asLong();
+  int eps = defRelPrec;
   FLT LOG2 = MathLog2(eps);
   long k = longValue(floor(x/LOG2));
 
@@ -287,7 +287,7 @@ FLT exp(FLT x)
 template<class FLT> 
 FLT sin(FLT x)
 {
-  int eps = defAbsPrec.asLong();
+  int eps = defAbsPrec;
   //std::cerr << "eps=" << eps << std::endl;
   FLT TWOPI = MathTwoPi(eps);
 
@@ -303,7 +303,7 @@ FLT sin(FLT x)
 template<class FLT> 
 FLT cos(FLT x)
 { 
-  int eps = defAbsPrec.asLong();
+  int eps = defAbsPrec;
   FLT TWOPI = MathTwoPi(eps);
 
   BigInt n = floor(x / TWOPI);
@@ -316,7 +316,7 @@ FLT cos(FLT x)
 template<class FLT> 
 FLT tan(FLT x)
 { 
-  int eps = defAbsPrec.asLong();
+  int eps = defAbsPrec;
   FLT TWOPI = MathTwoPi(eps);
 
   BigInt n = floor(x / TWOPI);
@@ -331,7 +331,7 @@ FLT tan(FLT x)
 template<class FLT> 
 FLT cot(FLT x)
 { 
-  int eps = defAbsPrec.asLong();
+  int eps = defAbsPrec;
   FLT TWOPI = MathTwoPi(eps);
 
   BigInt n = floor(x / TWOPI);
@@ -346,7 +346,7 @@ FLT cot(FLT x)
 template<class FLT> 
 FLT erf(FLT x)
 { 
-  int eps = defAbsPrec.asLong();
+  int eps = defAbsPrec;
   FLT PI = MathPi(eps);
   double d = x.doubleValue();
   if (d == 0)
@@ -365,7 +365,7 @@ FLT erf(FLT x)
 template<class FLT> 
 FLT asin(FLT x)
 {
-  int eps = defAbsPrec.asLong();
+  int eps = defAbsPrec;
   FLT PIOVERTWO = MathPiOverTwo(eps+1);
 
   int sign = (x < 0) ? -1 : 1;  
@@ -386,7 +386,7 @@ FLT asin(FLT x)
 template<class FLT> 
 FLT acos(FLT x)
 {
-  int eps = defAbsPrec.asLong();
+  int eps = defAbsPrec;
   FLT PI = MathPi(eps);
 
   int sign = (x < 0) ? -1 : 1;  
@@ -407,7 +407,7 @@ FLT acos(FLT x)
 template<class FLT> 
 FLT atan(FLT x)
 {
-  int eps = defAbsPrec.asLong();
+  int eps = defAbsPrec;
   FLT PIOVERTWO = MathPiOverTwo(eps+1);
 
   int sign = (x < 0) ? -1 : 1;  
@@ -427,14 +427,14 @@ FLT slog(FLT x)
   if (x < 0)
     return MathNaN();
  
-  int eps = defAbsPrec.asLong();
+  int eps = defAbsPrec;
   FLT xx = x;
   FLT kk = 0;
 
   if (xx > FLT(2)) {
     long tmp = x.longValue();
-    long k = flrLg(tmp);  
-    kk = k*MathLog2(eps+clLg(k)+1);
+    long k = floorLg(tmp);  
+    kk = k*MathLog2(eps+ceilLg(k)+1);
     FLT xx = x / (1 << k); 
     xx.approx(CORE_posInfty, eps+2);
   }
@@ -448,14 +448,14 @@ FLT log(FLT x)
   if (x < 0)
     return MathNaN();
 
-  int eps = defAbsPrec.asLong();
+  int eps = defAbsPrec;
   FLT xx = x;
   FLT kk = 0;
 
   if (xx > FLT(2)) {
     long tmp = x.longValue();
-    long k = flrLg(tmp);  
-    kk = MathLog2(eps+clLg(k)+1);
+    long k = floorLg(tmp);  
+    kk = MathLog2(eps+ceilLg(k)+1);
     xx = x / (1 << k); 
     xx.approx(CORE_posInfty, eps+2);
   }

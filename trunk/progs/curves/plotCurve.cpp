@@ -38,7 +38,7 @@
    Date:    June 20, 2004
 
    Since Core Library  Version 1.7
-   $Id: plotCurve.cpp,v 1.1 2006-03-07 04:51:23 exact Exp $
+   $Id: plotCurve.cpp,v 1.2 2006-11-20 19:47:59 exact Exp $
  ************************************** */
 
 #ifndef CORE_LEVEL
@@ -102,15 +102,15 @@ int main(int argc, char* argv[])
 	if (argc>1) curveDef = argv[1];
 		cout << "Your curve is: " << curveDef << endl;
 	eps = 0.03;
-		if (argc>2) eps = BigFloat(argv[2]).makeExact();
+		if (argc>2) eps = BigFloat(argv[2])/*.makeExact()*/;
 	xmin = -10.0;
-	if (argc>3) xmin = BigFloat(argv[3]).makeExact();
+	if (argc>3) xmin = BigFloat(argv[3])/*.makeExact()*/;
 	ymin = -10.0;
-	if (argc>4) ymin = BigFloat(argv[4]).makeExact();
+	if (argc>4) ymin = BigFloat(argv[4])/*.makeExact()*/;
 	xmax = 10.0;
-	if (argc>5) xmax = BigFloat(argv[5]).makeExact();
+	if (argc>5) xmax = BigFloat(argv[5])/*.makeExact()*/;
 	ymax = 10.0;
-	if (argc>6) ymax = BigFloat(argv[6]).makeExact();
+	if (argc>6) ymax = BigFloat(argv[6])/*.makeExact()*/;
 	extra = "";
 	if (argc>7) extra = argv[7];	// extra parameter
 

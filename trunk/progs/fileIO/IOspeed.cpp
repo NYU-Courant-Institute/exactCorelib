@@ -16,7 +16,7 @@
    Core Library
    Author: Zilin Du (zilin@cs.nyu.edu)
 
-   $Id: IOspeed.cpp,v 1.1 2006-03-07 04:51:23 exact Exp $
+   $Id: IOspeed.cpp,v 1.2 2006-11-20 19:47:59 exact Exp $
  ************************************************ */
 
 #include <fstream>
@@ -56,7 +56,7 @@ int main (int argc, char **argv)
     outFile.open(filename[i]);
     t1 = clock();
 
-    writeToFile(product, outFile, bases[i], 70);
+    writeToFile(product, outFile, bases[i]);
     t2 = clock();
     outFile.close();
     outFile.clear();
@@ -66,7 +66,7 @@ int main (int argc, char **argv)
     cout << "Read the result from the file " << filename[i] << "...\n";
     inFile.open(filename[i]);
     t1 = clock();
-    readFromFile(test, inFile, 0);	// maxLength = 0 means the length is
+    readFromFile(test, inFile);	// maxLength = 0 means the length is
 					// determined by length field in file.
     t2 = clock();
     inFile.close();

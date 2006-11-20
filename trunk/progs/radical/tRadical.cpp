@@ -122,6 +122,7 @@ int main(int argc , char ** argv) {
 	   cout << "CORRECT! for radical(i,k), (k=7,20), i = " << i << endl;
 	}
     }
+/*
 #ifdef _NT_BF
      BigFloat bf(283243346, 0, -4);
      BigFloat bf2(1234, 0, -5);
@@ -140,5 +141,5 @@ int main(int argc , char ** argv) {
 	     }
      }
 #endif
-  }
+*/  }
 }

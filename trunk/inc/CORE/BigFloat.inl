@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.13 2006-11-10 21:08:05 exact Exp $
+ * $Id: BigFloat.inl,v 1.14 2006-11-20 19:47:58 exact Exp $
  ***************************************************************************/
 
 /// \addtogroup BigFloatArithmeticOperators
@@ -502,7 +502,7 @@ inline std::istream& operator>>(std::istream& is, BigFloat& x)
 inline std::ostream& operator<<(std::ostream& os, const BigFloat& x) {
   return os <<
   mpfr2str(x.mp(),
-    std::min((unsigned long)get_output_precision(os), bits2digits(x.get_prec()+1)),
+    std::max(std::min((unsigned long)get_output_precision(os), bits2digits(x.get_prec()+1)), 2UL),
     get_output_base(os),
     get_output_fmt(os),
     get_output_rounding_mode(),
