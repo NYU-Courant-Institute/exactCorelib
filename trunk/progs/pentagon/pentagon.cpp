@@ -10,7 +10,7 @@
  * Author: Shubin Zhao (shubinz@cs.nyu.edu), 2001.
  *
  * Since Core Library 1.4
- * $Id: pentagon.cpp,v 1.3 2006-11-27 22:48:23 exact Exp $
+ * $Id: pentagon.cpp,v 1.4 2006-11-27 22:49:02 exact Exp $
  *****************************************************************/
 
 #include "CORE.h"
@@ -113,9 +113,6 @@ int main( int argc, char* argv[] ) {
     outer( pentInner, pentOuter );
   }
 
-
-  std::cout << "\nOriginal Pentagons:";
-  pent_print(pentagon3d);
 
   std::cout << "\n\nComputed using an identity (in-out) operations";
   pent_print(pentOuter);
