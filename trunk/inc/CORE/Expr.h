@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.22 2006-11-20 19:47:58 exact Exp $
+ * $Id: Expr.h,v 1.23 2006-11-27 22:49:34 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -350,14 +350,17 @@ private:
     int dot = s.find('.');
     int e = s.find('e');
     d1 = s.substr(0, dot);
+
     if (d1=="0") d1="";
+    if (d1=="+0" || d1=="-0") d1.erase(1,1); 
+
     d2 = s.substr(dot+1, s.size()-dot-1);
     exp = s.substr(e+1, s.size()-e-1);
 
     std::string num = d1+d2;
     std::string den(d2.size()+1, '0');
     den[0]='1';
-    
+
     return num + std::string("/") + den;
   }   
 private:
