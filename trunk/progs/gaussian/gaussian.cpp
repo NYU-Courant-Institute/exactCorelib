@@ -14,7 +14,11 @@
 	  to run the program.
 
    Since CORE Library Version 1.2
-   $Id: gaussian.cpp,v 1.4 2006-11-27 17:27:03 exact Exp $
+<<<<<<< gaussian.cpp
+   $Id: gaussian.cpp,v 1.5 2006-11-27 17:29:43 exact Exp $
+=======
+   $Id: gaussian.cpp,v 1.5 2006-11-27 17:29:43 exact Exp $
+>>>>>>> 1.2
  ************************************** */
 
 #ifndef CORE_LEVEL
@@ -131,7 +135,7 @@ int readMatrix(char *filename, double **A) {
     }
     int n;
     int a, b;
-    long la, lb;
+    double la, lb;
 
     ifs >> n;
 
@@ -169,7 +173,7 @@ int main( int argc, char *argv[] ) {
     std::cerr << "Usage: Gaussian <input_file> <num_of_execution>" << std::endl;
     exit(1);
   }
-
+  
   double *A;
   int n = readMatrix(argv[1], &A);
 
