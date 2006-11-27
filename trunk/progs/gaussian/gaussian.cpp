@@ -14,7 +14,7 @@
 	  to run the program.
 
    Since CORE Library Version 1.2
-   $Id: gaussian.cpp,v 1.3 2006-11-10 21:08:05 exact Exp $
+   $Id: gaussian.cpp,v 1.4 2006-11-27 17:27:03 exact Exp $
  ************************************** */
 
 #ifndef CORE_LEVEL
@@ -24,216 +24,69 @@
 #include <fstream>
 #include "CORE.h"
 
-double* SNF;
-int s, dim_n, dim_m;
-
 class Matrix {
-public:
-  int     n, m;
 private:
+  int     n;
   double* _rep;
 
 public:
-   Matrix(int r, int c) : n(r), m(c) { _rep   = new double [n*m]; }
-   Matrix(int r, int c, double M[]);
+   Matrix(int d) : n(d) { _rep   = new double [n*n]; }
+   Matrix(int d, double M[]);
    Matrix(const Matrix&);
    const Matrix& operator=(const Matrix&);
    ~Matrix() { delete [] _rep; }
-   const double& operator()(int r, int c) const { return _rep[r * m + c]; }
-   double& operator()(int r, int c) { return _rep[r * m + c]; }
+   const double& operator()(int r, int c) const { return _rep[r * n + c]; }
+   double& operator()(int r, int c) { return _rep[r * n + c]; }
    double determinant() const;
-   void row_minus(int x);
-   void row_switch(int x);
-   void col_minus(int x);
-   void col_switch(int x);
-   bool isZero();
    friend std::ostream& operator<<(std::ostream&, const Matrix&);
 };
 
-void solve(Matrix& A); 
-
-bool Matrix::isZero() {
-  bool ret = true;
-   for (int i = 0; i < n; i++)
-      for (int j = 0; j < m; j++)
-         if ((*this)(i,j) != 0) {
-           ret = false;
-           break;
-         }
-  return ret;
-}
-  
-  
-
-Matrix::Matrix(int r, int c, double M[]) : n(r), m(c) {
+Matrix::Matrix(int d, double M[]) : n(d) {
    int i, j;
-   _rep   = new double [n*m];
+   _rep   = new double [n*n];
    for (i = 0; i < n; i++)
-      for (j = 0; j < m; j++)
-         _rep[i * m + j] = M[i * m + j];
+      for (j = 0; j < n; j++)
+         _rep[i * n + j] = M[i * n + j];
 }
 
-Matrix::Matrix(const Matrix& M) : n(M.n), m(M.m) {
+Matrix::Matrix(const Matrix& M) : n(M.n) {
    int i, j;
-   _rep   = new double [n*m];
+   _rep   = new double [n*n];
    for (i = 0; i < n; i++)
-      for (j = 0; j < m; j++)
-         _rep[i * m + j] = M._rep[i * m + j];
+      for (j = 0; j < n; j++)
+         _rep[i * n + j] = M._rep[i * n + j];
 }
 
 const Matrix& Matrix::operator=(const Matrix& M) {
    int i, j;
-   if (n != M.n || m != M.m) {
+   if (n != M.n) {
       delete [] _rep;
       n = M.n;
-      m = M.m;
-      _rep = new double [n*m];
+      _rep = new double [n*n];
    }
    for (i = 0; i < n; i++)
-      for (j = 0; j < m; j++)
-         _rep[i * m + j] = M._rep[i * m
- + j];
+      for (j = 0; j < n; j++)
+         _rep[i * n + j] = M._rep[i * n + j];
    return *this;
 }
 
-void Matrix::row_minus(int x) {
-  double temp = (*this)(x, 0);
-  for (int i = 0; i < m; ++i) {
-    (*this)(x,i) = (*this)(x,i) - (*this)(0,i) * floor(temp/(*this)(0,0));
-  }
-  std::cout << "row_minus of A = \n" << (*this) << std::endl;
-  for (int i = 0; i < m; ++i) {
-    if ( abs((*this)(x,i)) != 0 && abs((*this)(x,i)) < abs((*this)(0,0))) {
-      row_switch(x);
-      col_switch(i);
-      solve(*this); return; 
-    }
-  }
+/* since we adapted new memory management code ver 1.4, the following 
+   functions are not supported now.
+*/
+/*
+extern int num_expr_new;
+extern int num_ConstRep_new;
+int num_inloop_new = 0;
+
+// Debugging tool: tells us how many new objects (Expr, ExprReps, etc)
+//	are created
+void print_num_mallocs() {
+  std::cout << num_expr_new << ", " 
+	<< num_ConstRep_new << ", " 
+	<< ", " << num_inloop_new << "."
+	<< std::endl ;
 }
-
-void Matrix::col_minus(int y) {
-  double temp = (*this)(0, y);
-  for (int j = 0; j < n; j++) {
-    (*this)(j, y) = (*this)(j,y) - (*this)(j,0) * floor(temp/(*this)(0,0));
-  }
-  std::cout << "col_minus of A = \n" << (*this) << std::endl;
-  for (int j = 0; j < n; j++) {
-    if ( abs((*this)(j,y)) != 0 && abs((*this)(j,y)) < abs((*this)(0,0)) ) {
-      row_switch(j); 
-      col_switch(y);
-      solve(*this); return;
-    }
-  }  
-}
-
-void Matrix::row_switch(int x) {
-  for (int i = 0; i < m; ++i) {
-    double temp = (*this)(0,i);
-    (*this)(0,i) = (*this)(x,i);
-    (*this)(x,i) = temp;
-  }
-}
-
-void Matrix::col_switch(int y) {
-  for (int j = 0; j < n; ++j) {
-    double temp = (*this)(j,0);
-    (*this)(j,0) = (*this)(j,y);
-    (*this)(j,y) = temp;
-  }
-}
-
-void min_matrix(Matrix& A) {
-  if (A(0,0) == 0)  {
-    for (int i = 0; i < A.n; i++) {
-      for (int j = 0; j < A.m; j++) {
-        if (A(i, j) != 0) {
-          A.row_switch(i);
-          A.col_switch(j);
-          break;
-        }
-      }
-    }    
-  }
-  double minA = A(0,0);
-
-  int minr = 0, minc = 0;
-  for (int i = 0; i < A.n; i++) {
-    for (int j = 0; j < A.m; j++) {
-      std::cout << "abs(A(" << i << "," << j << ")) = " << abs(A(i,j)) << std::endl;
-      if ( A(i,j) != 0 && abs(A(i,j)) < abs(minA)) {
-        std::cout << "minA = " << abs(minA) << " r:c=" << i << ":" << j << std::endl;
-        minA = A(i, j);
-        minr = i; minc = j;
-      }
-    }
-  }
-  std::cout << "min element, row:col" << minr << ":" << minc << std::endl;
-  A.row_switch(minr);
-  A.col_switch(minc);
-}
- 
-Matrix decrease_matrix(Matrix& A) {
-  Matrix B(A.n - 1,A.m - 1);
-   for (int i = 0; i < A.n - 1; i++)
-     for (int j = 0; j < A.m - 1; j++)
-       B(i,j)=A(i+1,j+1);
-  return B;
-}
-
-bool checkDivisible(Matrix &A) {
-  for (int i = 1; i < A.n; i++)
-    for (int j = 1; j < A.m; j++) {
-        std::cout << "checkDivisible A=\n" << A << std::endl;
-      if ( abs(gcd( ToBigInt( A(i, j) ), ToBigInt( A(0,0) ) ) ) != abs(A(0,0)) && A(i, j) != 0) {
-        double temp = A(i,j);
-        for (int k = 0; k < A.m; k++) {
-          A(0, k) += A(i, k);
-        }
-        std::cout << "checkDivisible A=\n" << A << std::endl;
-      
-        for (int k = 0; k < A.n; k++) 
-          A(k, j) = A(k, j)-(floor(temp / A(0, 0))) * A(k, 0);
-        std::cout << "checkDivisible A=\n" << A << std::endl;
-
-        return false;
-      }
-    }
-
-  return true;
-}
-
-void solve(Matrix& A) { 
-  if (A.isZero() || A.n == 1 || A.m == 1) {
-    SNF[s] = A(0,0);
-    s++;
-    Matrix result(dim_n,dim_m);
-    for (int i = 0; i < s; i++)
-      result(i,i) = SNF[i];
-
-    std::cout << "output matrix = \n" << result << std::endl;
-    exit(0);
-  }
-    
-  std::cout << "solve " << std::endl;
-
-  do {
-    min_matrix(A);
-    for (int i = 1; i < A.m; i++)
-      A.col_minus(i);
-    for (int j = 1; j < A.n; j++)
-      A.row_minus(j);
-  } while (checkDivisible(A) == false);
-
-  std::cout << "solve A=\n" << A << std::endl;
-
-  SNF[s] = A(0,0);
-  s++;
-  std::cout << "solve A=\n" << A << std::endl;
-
-  A = decrease_matrix(A);
-  std::cout << "solve A=\n" << A << std::endl;
-  solve(A);
-}
+*/
 
 double Matrix::determinant() const {
    Matrix A = *this;
@@ -260,8 +113,7 @@ double Matrix::determinant() const {
 std::ostream& operator<<(std::ostream& o, const Matrix& M) {
    int i, j;
    for (i = 0; i < M.n; i++) {
-     for (j = 0; j < M.m; j++) {
-
+     for (j = 0; j < M.n; j++) {
        //       double d = M(i,j);
        o << M(i, j) << " ";
        //       o << d << std::endl;
@@ -271,63 +123,66 @@ std::ostream& operator<<(std::ostream& o, const Matrix& M) {
    return o;
 }
 
-std::vector<int> readMatrix(char *filename, double **A) {
+int readMatrix(char *filename, double **A) {
     std::ifstream ifs(filename);
     if (!ifs) { 
        perror("cannot open the file");
        exit(1);
     }
-    int n, m;
-    int a;
-    double la;
+    int n;
+    int a, b;
+    long la, lb;
 
-    ifs >> n >> m;
+    ifs >> n;
 
-    *A = new double[n*m];
+    *A = new double[n*n];
 
     for (int i=0; i<n; i++) {
-      for (int j=0; j<m; j++) {
+      for (int j=0; j<n; j++) {
 	ifs >> a;
+        ifs >> b;
         la = a;
+        lb = b;
 
-        (*A)[j+i*m] =  la;
-        std::cout << "A(" << i << "," << j << ")= " << la << " ";
+        (*A)[j+i*n] =  la/lb;
       }
-      std::cout << std::endl;
     }
     ifs.close();
-
-    std::vector<int> vec;
-    vec.push_back(n);
-    vec.push_back(m);
-
-    return vec;
+   
+    return n;
 }
  
+double fac(int n) {
+   double f = 1.0;
+   for (int i=2; i<=n; i++)
+       f *= i;
+   return f;
+}
+
 int main( int argc, char *argv[] ) {
+  int i, imax;
+  double e = 0;
+  defRelPrec = 100;
+  int defPrtDgt = 40;
+  
+  if (argc != 3) {
+    std::cerr << "Usage: Gaussian <input_file> <num_of_execution>" << std::endl;
+    exit(1);
+  }
 
-  double* input;
-  std::vector<int> dim;
-  dim = readMatrix(argv[1], &input);
+  double *A;
+  int n = readMatrix(argv[1], &A);
 
-  int n, m; n = dim[0], m = dim[1];
-  std::cout << "m:n=" << m << ":" << n << std::endl;
-  Matrix A(n, m, input);
+  Matrix m(n, A);
+  imax = atoi(argv[2]);
+  for (i=0; i<imax; i++) {	
+    e = m.determinant();
+#if (CORE_LEVEL==3)
+    e.approx( defRelPrec, defAbsPrec ); /* to force the evaluation,
+		in order to get meaningful performance comparision */
+#endif
+  }
 
-  dim_n = n; dim_m = m;
-
-  std::cout << "Input matrix = \n" << A << std::endl;
-  min_matrix(A);
-  std::cout << "min_matrix of A = \n" << A << std::endl;
-
-  SNF = new double[std::min(n,m)];
-  s = 0;
-
-  std::cout << "begin solve(A) " << std::endl;
-  solve(A);
-  std::cout << "intermediate matrix = " << A << std::endl;
-    
-
-
+  std::cout << "Determinant = " << std::setprecision(defPrtDgt) << e << std::endl << std::endl;
   return 0;
 }
