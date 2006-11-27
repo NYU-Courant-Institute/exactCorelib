@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.19 2006-11-20 20:20:49 exact Exp $
+ * $Id: ExprRep.h,v 1.20 2006-11-27 17:32:49 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -615,7 +615,7 @@ protected:
 
   void new_nodeinfo() { m_nodeinfo = new NodeInfo(); }
 public:
-  Kernel& appValue()  {
+  Kernel& appValue()  { 
     assert(m_nodeinfo);
     return m_nodeinfo->m_appValue;
   }

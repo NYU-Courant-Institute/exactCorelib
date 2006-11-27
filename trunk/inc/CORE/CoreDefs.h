@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.10 2006-10-31 16:29:21 exact Exp $
+ * $Id: CoreDefs.h,v 1.11 2006-11-27 17:32:49 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
@@ -56,9 +56,11 @@ extern long defRelPrec;
 extern long defInputDigits;
 extern long defOutputDigits;
 extern long defBFdivRelPrec;
-extern long defBFradicalRelPrec;
-extern unsigned long cutOffBound;
-extern unsigned long escapeBound;
+extern long defBFradicalRelPrec;   // this replaces defBFsqrtAbsPrec in Core1
+                                   // Should also be used for any rootOf()
+extern unsigned long cutOffBound;  // arbitary cutoff for ABSOLUTE precision
+extern unsigned long escapeBound;  // this is to "escape" in transcendental
+                                   //  evaluation when we have no root bounds
 
 /// This sets the global variable defRelPrec and defAbsPrec.
 //  PROBLEM IS this is "composite precision" which we don't really

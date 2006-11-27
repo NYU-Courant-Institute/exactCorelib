@@ -14,12 +14,8 @@
 	  to run the program.
 
    Since CORE Library Version 1.2
-<<<<<<< gaussian.cpp
-   $Id: gaussian.cpp,v 1.5 2006-11-27 17:29:43 exact Exp $
-=======
-   $Id: gaussian.cpp,v 1.5 2006-11-27 17:29:43 exact Exp $
->>>>>>> 1.2
- ************************************** */
+   $Id: gaussian.cpp,v 1.6 2006-11-27 17:30:39 exact Exp $
+************************************** */
 
 #ifndef CORE_LEVEL
 #   define CORE_LEVEL 3

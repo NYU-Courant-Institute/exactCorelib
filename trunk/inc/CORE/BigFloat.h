@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.19 2006-11-20 19:47:58 exact Exp $
+ * $Id: BigFloat.h,v 1.20 2006-11-27 17:32:49 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -756,6 +756,8 @@ public:
   /// \name square root functions (fixed version)
   //@{
   /// square root function for <tt>BigFloat</tt> (fixed version)
+  //  Returns 0 if the sqrt is an exact operation,
+  //  Else it is a rounded operation
   int sqrt(const BigFloat& x, 
            prec_t prec = getDefaultBFradicalPrec(), rnd_t rnd = MPFR_RND) {
     assert(prec>=2);
@@ -782,6 +784,9 @@ public:
   { set_prec(prec); return r_sqrt(x, rnd); }
   //@}
 
+  // REMARK: unlike Core 1, there is no version of sqrt where we already
+  // know a very good approximation, and we only want to increase
+  // its precision.  May be we should improve this.
 
   /// \name power functions (raw version)
   //@{
