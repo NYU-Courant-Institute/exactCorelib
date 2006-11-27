@@ -29,7 +29,7 @@
 		x = 2.25 is the default
 
  Since CORE Library Version 1.5
- $Id: nestedSqrtX.cpp,v 1.2 2006-08-09 10:08:47 exact Exp $
+ $Id: nestedSqrtX.cpp,v 1.3 2006-11-27 23:34:22 exact Exp $
 ****************************************************************/
 
 #ifndef CORE_LEVEL
@@ -47,7 +47,6 @@ int main(int argc, char* argv[])
    // ========================================================================
 	std::cout.precision(40);		// printout precision
 	setDefaultRelPrecision(20);		// default relative precision
-	setDefaultAbsPrecision(CORE_posInfty);	// turn off absolute precision
 
    // COMMAND LINE ARGUMENTS
    // ========================================================================

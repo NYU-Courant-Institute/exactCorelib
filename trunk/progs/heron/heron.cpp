@@ -14,7 +14,7 @@
 	and opt-printDgt = 11 (comparable to Kahan).
 
    Core Library 
-   $Id: heron.cpp,v 1.1 2006-03-07 04:51:24 exact Exp $
+   $Id: heron.cpp,v 1.2 2006-11-27 23:30:35 exact Exp $
  ************************************** */
 
 #ifndef CORE_LEVEL
@@ -72,8 +72,6 @@ int main( int argc, char *argv[] ) {
   } else
   	setDefaultRelPrecision(54); 	// otherwise, defRelPrec = 54
 					// i.e., as in machine arithmetic 
-
-  setDefaultAbsPrecision(CORE_posInfty); 	// This ensures that defRelPrec is in control
 
   if (argc >= 3) {
 	std::cout.precision(atoi(argv[2]));	// if user specifies output precision

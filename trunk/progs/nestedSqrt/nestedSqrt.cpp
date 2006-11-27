@@ -27,7 +27,7 @@
 	On our machine, these two tests takes 30.9 and 1 second, respectively.
 
  Since CORE Library version 1.4
- $Id: nestedSqrt.cpp,v 1.1 2006-03-07 04:51:25 exact Exp $
+ $Id: nestedSqrt.cpp,v 1.2 2006-11-27 23:34:22 exact Exp $
 ****************************************************************/
 
 #ifndef CORE_LEVEL
@@ -40,7 +40,6 @@ int main(int argc, char* argv[])
 {
 	std::cout.precision(40);
 	setDefaultRelPrecision(20);
-	setDefaultAbsPrecision(CORE_posInfty);
 
         double E = 2;
         int i,k;
@@ -51,7 +50,7 @@ int main(int argc, char* argv[])
 	} else {
            k = atoi(argv[1]);
 	   if (argc == 3) {
-		int IncFlag = atoi(argv[2]);
+		//int IncFlag = atoi(argv[2]);
 		//if (IncFlag == 0) 
 		//	setIncrementalEvalFlag(false);
 		//else
