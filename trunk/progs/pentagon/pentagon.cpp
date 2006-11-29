@@ -10,7 +10,7 @@
  * Author: Shubin Zhao (shubinz@cs.nyu.edu), 2001.
  *
  * Since Core Library 1.4
- * $Id: pentagon.cpp,v 1.5 2006-11-27 22:52:59 exact Exp $
+ * $Id: pentagon.cpp,v 1.6 2006-11-29 04:13:03 exact Exp $
  *****************************************************************/
 
 #include "CORE.h"
@@ -22,7 +22,12 @@ void inner( Point3d pentagon[5], Point3d * output) {
   for(int i=0; i<5; i++) {
     Line3d diagnal1(pentagon[i], pentagon[(i+2)%5]);
     Line3d diagnal2(pentagon[(i+1)%5], pentagon[(i+4)%5]);
-    output[i] = *(Point3d *)diagnal1.intersection(diagnal2);
+    Point3d* ppt = (Point3d*)diagnal1.intersection(diagnal2);
+    if (!ppt) {
+      std::cout << "INCORRECT!!! diagonal lines are disjoint or identical" << std::endl;
+      exit(0);
+    }
+    output[i] = *ppt;
   }
 }
 
@@ -31,7 +36,12 @@ void outer( Point3d pentagon[5], Point3d * output) {
   for(int i=0; i<5; i++) {
     Line3d edge1(pentagon[i], pentagon[(i+1)%5]);
     Line3d edge4(pentagon[(i+3)%5], pentagon[(i+4)%5]);
-    output[i] = *(Point3d *)edge1.intersection(edge4);
+    Point3d* ppt = (Point3d*)edge1.intersection(edge4);
+    if (!ppt) {
+      std::cout << "INCORRECT!!! diagonal lines are disjoint or identical" << std::endl;
+      exit(0);
+    }
+    output[i] = *ppt;
   }
 }
 
