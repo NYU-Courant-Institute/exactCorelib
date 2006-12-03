@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.21 2006-12-03 18:52:06 exact Exp $
+ * $Id: ExprRep.h,v 1.22 2006-12-03 19:07:52 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -70,6 +70,7 @@ class cls_name : public UnaryOpRepT<RootBd, Filter, Kernel> { \
   using ExprRep::lMSB;                                        \
   using ExprRep::appValue;                                    \
   using ExprRep::abs2rel;                                     \
+  using ExprRep::numType;                                     \
 public:                                                       \
   cls_name(ExprRep* c) : UnaryOpRep(c)                        \
   { compute_filter(); compute_numtype(); }                    \
@@ -90,6 +91,7 @@ class cls_name : public BinaryOpRepT<RootBd, Filter, Kernel> {\
   using ExprRep::lMSB;                                        \
   using ExprRep::appValue;                                    \
   using ExprRep::abs2rel;                                     \
+  using ExprRep::numType;                                     \
 public:                                                       \
   cls_name(ExprRep* f, ExprRep* s, bool b = false)            \
    : BinaryOpRep(f, s, b)                                     \
@@ -110,8 +112,10 @@ class cls_name : public KnaryOpRepT<RootBd, Filter, Kernel> { \
   using ExprRep::lMSB;                                        \
   using ExprRep::appValue;                                    \
   using ExprRep::abs2rel;                                     \
+  using ExprRep::numType;                                     \
 public:                                                       \
-  cls_name(const std::vector<ExprRep*>& c)                    \
+  cls_name(const std::vector<ExprRep*>& c =                   \
+           std::vector<ExprRep*>())                           \
    : KnaryOpRep(c)                                            \
   { compute_filter(); compute_numtype(); }                    \
 protected:
@@ -508,7 +512,7 @@ protected:
   template <typename V>
   void init_value(const V& value) {
     if (!m_nodeinfo)
-      init_nodeinfo();
+      new_nodeinfo();
     // initialize approximated value
     if (this->appValue().set(value)) this->flags().set(fExact);
     // set flag
@@ -1381,7 +1385,7 @@ public:
     insert(second);
   }    
     
-  SumOpRepT(const std::vector<ExprRep*>& c, bool is_self = false) : KnaryOpRep(c, is_self)  {
+  SumOpRepT(const std::vector<ExprRep*>& c = std::vector<ExprRep*>(), bool is_self = false) : KnaryOpRep(c, is_self)  {
     compute_filter();
     compute_numtype();
   }
