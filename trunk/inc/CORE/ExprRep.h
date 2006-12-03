@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.20 2006-11-27 17:32:49 exact Exp $
+ * $Id: ExprRep.h,v 1.21 2006-12-03 18:52:06 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -684,7 +684,6 @@ public:
 
 protected:
   virtual void init_nodeinfo() {
-    new_nodeinfo();
     init_value(value);
   }
 
@@ -723,7 +722,6 @@ private:
 template <typename RootBd, typename Filter, typename Kernel,typename NT>
 class ConstPolyRepT : public ExprRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
-  typedef RootBd* id_rootbd_t;
   using ExprRep::filter;
   using ExprRep::sign;
   using ExprRep::uMSB;
@@ -793,6 +791,80 @@ protected:
   virtual std::string op()
   { return std::string("rootOf"); }
 #endif 
+};
+
+/// \class PiRepT
+template <typename RootBd, typename Filter, typename Kernel>
+class PiRepT : public ExprRepT<RootBd, Filter, Kernel> {
+  typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  using ExprRep::filter;
+  using ExprRep::sign;
+  using ExprRep::uMSB;
+  using ExprRep::lMSB;
+  using ExprRep::appValue;
+  using ExprRep::rootBd;
+  using ExprRep::numType;
+public:
+  PiRepT() {
+    compute_filter();
+    compute_numtype();
+  }
+  virtual ~PiRepT() 
+  {}
+protected:
+  void compute_filter() {
+    filter().set(3.14);
+  }
+  void compute_numtype() {
+    numType() = NODE_NT_TRANSCENDENTAL;
+  }
+  virtual bool compute_sign() 
+  { sign() = 1; return true;}
+  virtual bool compute_uMSB() 
+  { uMSB() = 2; return true;}
+  virtual bool compute_lMSB() 
+  { lMSB() = 1; return true;}
+  virtual void compute_rootBd()
+  { rootBd().set(3.14); }
+  virtual bool compute_r_approx(prec_t prec)
+  { return appValue().pi(prec);}
+};
+
+/// \class ERepT
+template <typename RootBd, typename Filter, typename Kernel>
+class ERepT : public ExprRepT<RootBd, Filter, Kernel> {
+  typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  using ExprRep::filter;
+  using ExprRep::sign;
+  using ExprRep::uMSB;
+  using ExprRep::lMSB;
+  using ExprRep::appValue;
+  using ExprRep::rootBd;
+  using ExprRep::numType;
+public:
+  ERepT() {
+    compute_filter();
+    compute_numtype();
+  }
+  virtual ~ERepT() 
+  {}
+protected:
+  void compute_filter() {
+    filter().set(2.72);
+  }
+  void compute_numtype() {
+    numType() = NODE_NT_TRANSCENDENTAL;
+  }
+  virtual bool compute_sign() 
+  { sign() = 1; return true;}
+  virtual bool compute_uMSB() 
+  { uMSB() = 2; return true;}
+  virtual bool compute_lMSB() 
+  { lMSB() = 1; return true;}
+  virtual void compute_rootBd()
+  { rootBd().set(2.72); }
+  virtual bool compute_r_approx(prec_t prec)
+  { return appValue().e(prec);}
 };
 
 /// \class UnaryOpRepT

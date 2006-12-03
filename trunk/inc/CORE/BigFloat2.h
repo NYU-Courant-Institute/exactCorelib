@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.15 2006-11-16 17:41:02 exact Exp $
+ * $Id: BigFloat2.h,v 1.16 2006-12-03 18:52:05 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -439,6 +439,22 @@ public:
   /// multiplication for <tt>T*BigFloat2</tt>
   template <typename T> bool mul(const T& x, const BigFloat2& y)
   { return _mul<AutoArithmeticPolicy, T>(x, y); }
+  //@}
+
+  /// \special functions
+  //@{
+  /// pi function
+  bool pi(prec_t prec) {
+    m_l.pi(prec, GMP_RNDD);
+    m_r.pi(prec, GMP_RNDU);
+    return false;
+  }
+  /// e function
+  bool e(prec_t prec) {
+     m_l.e(prec, GMP_RNDD);  
+     m_l.e(prec, GMP_RNDU);  
+    return false;
+  }
   //@}
 
 public:

@@ -19,11 +19,12 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.11 2006-11-27 17:32:49 exact Exp $
+ * $Id: CoreDefs.h,v 1.12 2006-12-03 18:52:06 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
 #include <climits>
+#include <string>
 
 CORE_BEGIN_NAMESPACE
 
@@ -62,6 +63,8 @@ extern unsigned long cutOffBound;  // arbitary cutoff for ABSOLUTE precision
 extern unsigned long escapeBound;  // this is to "escape" in transcendental
                                    //  evaluation when we have no root bounds
 
+extern void core_error(std::string msg, std::string file, int lineno, bool err);
+
 /// This sets the global variable defRelPrec and defAbsPrec.
 //  PROBLEM IS this is "composite precision" which we don't really
 //  support in Core2.  So, one of these two must be CORE_INFTY.
@@ -70,13 +73,21 @@ extern unsigned long escapeBound;  // this is to "escape" in transcendental
 //     Else defAbsPrec=CORE_INFTY, we compute to defRelPrec (relative prec).
 inline void setDefaultPrecision(long r, long a)
 { defRelPrec = r; defAbsPrec = a; }
-inline void setDefaultRelPrecision(long r)
-{ defRelPrec = r; 
+inline void setDefaultRelPrecision(long r) {
+  if (defRelPrec == CORE_INFTY)
+    core_error("Relative Prec and Absolute Prec are both CORE_INFTY", __FILE__, __LINE__, false);
+  defRelPrec = r; 
   defAbsPrec = CORE_INFTY;
 }
 inline void setDefaultAbsPrecision(long a) {
+  if (defAbsPrec == CORE_INFTY)
+    core_error("Relative Prec and Absolute Prec are both CORE_INFTY", __FILE__, __LINE__, false);
   defAbsPrec = a; 
   defRelPrec = CORE_INFTY;
+}
+inline void setDefaultComPrecision(long r, long a) {
+  defAbsPrec = a;
+  defRelPrec = r;
 }
 
 inline long getDefaultInputDigits()

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.20 2006-11-27 17:32:49 exact Exp $
+ * $Id: BigFloat.h,v 1.21 2006-12-03 18:52:05 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -31,6 +31,7 @@
 #include <iostream>
 #include <cassert>
 #include <cmath>
+#include <stdio.h>
 
 /* Known Issues:
 
@@ -553,6 +554,7 @@ public:
   /// multiplication for <tt>BigFloat*BigFloat</tt> (fixed version)
   int mul(const BigFloat& x, const BigFloat& y,prec_t prec,rnd_t rnd=MPFR_RND){
     if (&x == this || &y == this) { // if one of inputs are output
+//*
        if (prec > get_prec()) {
          prec_round (prec, rnd);
          return r_mul(x,y,rnd);
@@ -562,10 +564,11 @@ public:
        } else {
          return r_mul(x,y,rnd);
        }
-/*       BigFloat result(0, prec);
+/*/    BigFloat result(0, prec);
        int r = result.r_mul(x, y, rnd);
        swap(result); return r;
-*/     } else {
+//*/
+     } else {
        set_prec(prec); return r_mul(x, y, rnd);
      }
   }
@@ -587,7 +590,7 @@ public:
       int r = result.r_mul(x, y, rnd);
       swap(result); return r;
 //*/
-	 } else {
+     } else {
        set_prec(prec); return r_mul(x, y, rnd);
      }
   }
@@ -1206,6 +1209,20 @@ public:
   /// remove trailing zeros
   void remove_trailing_zeros()
   { mpfr_remove_trailing_zeros(mp()); }
+
+  /// special constant functions
+  //@{
+  /// pi
+  void pi(prec_t prec, rnd_t rnd = MPFR_RND) {
+    set_prec(prec);
+    mpfr_const_pi(mp(), rnd);
+  }
+  /// e
+  void e(prec_t prec, rnd_t rnd = MPFR_RND) {
+    set_prec(prec);
+    BigFloat bf(1);
+    mpfr_exp(mp(), bf.mp(), rnd);
+  }
 
   void rint(const BigFloat& x, rnd_t rnd = MPFR_RND)
   { mpfr_rint(mp(), x.mp(), rnd); }

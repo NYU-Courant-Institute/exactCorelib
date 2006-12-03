@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.23 2006-11-27 22:49:34 exact Exp $
+ * $Id: Expr.h,v 1.24 2006-12-03 18:52:06 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -61,6 +61,8 @@ private: // private typedefs
   typedef DivRepT<RootBd, Filter, Kernel> DivRep;
   typedef SumOpRepT<RootBd, Filter, Kernel> SumRep;
   typedef ProdOpRepT<RootBd, Filter, Kernel> ProdRep;
+  typedef PiRepT<RootBd, Filter, Kernel> PiRep;
+  typedef ERepT<RootBd, Filter, Kernel> ERep;
 
 public:
   ExprT() : m_rep(new ConstLongRep(0L, NODE_NT_INTEGER)) {}
@@ -165,6 +167,12 @@ public:
   /// kth-root
   friend ExprT root(const ExprT& e, unsigned long k)
   { return ExprT(new RootRep(e.rep(), k)); }
+  /// pi
+  friend ExprT pi()
+  { return ExprT(new PiRep()); }
+  /// e
+  friend ExprT e()
+  { return ExprT(new ERep()); }
   /// radical -- alternative name for root(n,k)
   template<class NT>
   friend ExprT radical(const NT& n, unsigned long k) {

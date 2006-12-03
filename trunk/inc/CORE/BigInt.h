@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigInt.h,v 1.10 2006-11-16 17:41:03 exact Exp $
+ * $Id: BigInt.h,v 1.11 2006-12-03 18:52:05 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGINT_H__
 #define __CORE_BIGINT_H__
@@ -1141,7 +1141,7 @@ inline void readFromFile(BigInt& z, std::istream& in) {
   std::string str; char c;
   in >> c;
   if (c != 'i')
-    return;
+    core_error("BigInt readFromFile wrong format", __FILE__, __LINE__, false);
   in >> str;
   z.set(str);
 }

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.14 2006-11-20 19:47:58 exact Exp $
+ * $Id: BigFloat.inl,v 1.15 2006-12-03 18:52:05 exact Exp $
  ***************************************************************************/
 
 /// \addtogroup BigFloatArithmeticOperators
@@ -530,6 +530,26 @@ inline long minStar(long m, long n) {
     return std::min(m, n);
   else
     return std::max(m, n);
+}
+/// read from file
+inline void readFromFile(BigFloat& z, std::istream& in) {
+  char c; char dummy[256];
+  int base;
+  std::string str;
+  do {
+    in >> c;
+    if (c != 'f')
+      in.getline(dummy, 256);
+  } while (c != 'f');
+  in >> base;
+  in >> str; str.erase(0, 1);
+  z.set_str(str.c_str(), base);
+}
+/// write to file
+inline void writeToFile(const BigFloat& z, std::ostream& out, int base=10) {
+  out << 'f';
+  out << base;
+  out << '|' << z.get_str(0, base) << std::endl; 
 }
 
 /// isDivisible(a,b) = "is a divisible by b"
