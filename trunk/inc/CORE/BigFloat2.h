@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.17 2006-12-04 03:43:00 exact Exp $
+ * $Id: BigFloat2.h,v 1.18 2006-12-04 21:14:20 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -252,9 +252,65 @@ public:
   /// sine for <tt>BigFloat2</tt>
   bool r_sin(const BigFloat2& x)
   { return _sin_f<RawArithmeticPolicy>(x); }
-  /// sin for <tt>T</tt>
+  /// sine for <tt>T</tt>
   template <typename T> bool r_sin(const T& x)
   { return _sin<RawArithmeticPolicy, T>(x); }
+
+  /// cosine for <tt>BigFloat2</tt>
+  bool r_cos(const BigFloat2& x)
+  { return _cos_f<RawArithmeticPolicy>(x); }
+  /// cosine for <tt>T</tt>
+  template <typename T> bool r_cos(const T& x)
+  { return _cos<RawArithmeticPolicy, T>(x); }
+
+  /// tangent for <tt>BigFloat2</tt>
+  bool r_tan(const BigFloat2& x)
+  { return _tan_f<RawArithmeticPolicy>(x); }
+  /// tangent for <tt>T</tt>
+  template <typename T> bool r_tan(const T& x)
+  { return _tan<RawArithmeticPolicy, T>(x); }
+
+  /// cotangent for <tt>BigFloat2</tt>
+  bool r_cot(const BigFloat2& x)
+  { return _cot_f<RawArithmeticPolicy>(x); }
+  /// cotangent for <tt>T</tt>
+  template <typename T> bool r_cot(const T& x)
+  { return _cot<RawArithmeticPolicy, T>(x); }
+
+  /// arcsine for <tt>BigFloat2</tt>
+  bool r_arcsin(const BigFloat2& x)
+  { return _arcsin_f<RawArithmeticPolicy>(x); }
+  /// arcsine for <tt>T</tt>
+  template <typename T> bool r_arcsin(const T& x)
+  { return _arcsin<RawArithmeticPolicy, T>(x); }
+
+  /// arccosine for <tt>BigFloat2</tt>
+  bool r_arccos(const BigFloat2& x)
+  { return _arccos_f<RawArithmeticPolicy>(x); }
+  /// sin for <tt>T</tt>
+  template <typename T> bool r_arccos(const T& x)
+  { return _arccos<RawArithmeticPolicy, T>(x); }
+
+  /// arctangent for <tt>BigFloat2</tt>
+  bool r_arctan(const BigFloat2& x)
+  { return _arctan_f<RawArithmeticPolicy>(x); }
+  /// arctangent for <tt>T</tt>
+  template <typename T> bool r_arctan(const T& x)
+  { return _arctan<RawArithmeticPolicy, T>(x); }
+
+  /// log_2 for <tt>BigFloat2</tt>
+  bool r_log_2(const BigFloat2& x)
+  { return _log_2_f<RawArithmeticPolicy>(x); }
+  /// sin for <tt>T</tt>
+  template <typename T> bool r_log_2(const T& x)
+  { return _log_2<RawArithmeticPolicy, T>(x); }
+
+  /// exponent for <tt>BigFloat2</tt>
+  bool r_expo(const BigFloat2& x)
+  { return _expo_f<RawArithmeticPolicy>(x); }
+  /// exponent for <tt>T</tt>
+  template <typename T> bool r_expo(const T& x)
+  { return _expo<RawArithmeticPolicy, T>(x); }
 
   /// addition/subtraction for <tt>BigFloat2</tt>
   bool r_addsub(const BigFloat2& x, const BigFloat2& y, bool is_add)
@@ -343,9 +399,65 @@ public:
   /// sine for <tt>BigFloat2</tt>
   bool sin(const BigFloat2& x, prec_t prec)
   { return _sin_f<FixedArithmeticPolicy>(x, prec); }
-  /// square root for <tt>T</tt>
+  /// sine for <tt>T</tt>
   template <typename T> bool sin(const T& x, prec_t prec)
   { return _sin<FixedArithmeticPolicy, T>(x, prec); }
+
+  /// sine for <tt>BigFloat2</tt>
+  bool cos(const BigFloat2& x, prec_t prec)
+  { return _cos_f<FixedArithmeticPolicy>(x, prec); }
+  /// cose for <tt>T</tt>
+  template <typename T> bool cos(const T& x, prec_t prec)
+  { return _cos<FixedArithmeticPolicy, T>(x, prec); }
+
+  /// tane for <tt>BigFloat2</tt>
+  bool tan(const BigFloat2& x, prec_t prec)
+  { return _tan_f<FixedArithmeticPolicy>(x, prec); }
+  /// tane for <tt>T</tt>
+  template <typename T> bool tan(const T& x, prec_t prec)
+  { return _tan<FixedArithmeticPolicy, T>(x, prec); }
+
+  /// coe for <tt>BigFloat2</tt>
+  bool cot(const BigFloat2& x, prec_t prec)
+  { return _cot_f<FixedArithmeticPolicy>(x, prec); }
+  /// cote for <tt>T</tt>
+  template <typename T> bool cot(const T& x, prec_t prec)
+  { return _cot<FixedArithmeticPolicy, T>(x, prec); }
+
+  /// arcsine for <tt>BigFloat2</tt>
+  bool arcsin(const BigFloat2& x, prec_t prec)
+  { return _arcsin_f<FixedArithmeticPolicy>(x, prec); }
+  /// arcsine for <tt>T</tt>
+  template <typename T> bool arcsin(const T& x, prec_t prec)
+  { return _arcsin<FixedArithmeticPolicy, T>(x, prec); }
+
+  /// arcosine for <tt>BigFloat2</tt>
+  bool arccos(const BigFloat2& x, prec_t prec)
+  { return _arccos_f<FixedArithmeticPolicy>(x, prec); }
+  /// arccosine for <tt>T</tt>
+  template <typename T> bool arccos(const T& x, prec_t prec)
+  { return _arccos<FixedArithmeticPolicy, T>(x, prec); }
+
+  /// arctangent for <tt>BigFloat2</tt>
+  bool arctan(const BigFloat2& x, prec_t prec)
+  { return _arctan_f<FixedArithmeticPolicy>(x, prec); }
+  /// arctangent for <tt>T</tt>
+  template <typename T> bool arctan(const T& x, prec_t prec)
+  { return _arctan<FixedArithmeticPolicy, T>(x, prec); }
+
+  /// log2 for <tt>BigFloat2</tt>
+  bool log_2(const BigFloat2& x, prec_t prec)
+  { return _log_2_f<FixedArithmeticPolicy>(x, prec); }
+  /// log2 for <tt>T</tt>
+  template <typename T> bool log_2(const T& x, prec_t prec)
+  { return _log_2<FixedArithmeticPolicy, T>(x, prec); }
+
+  /// exponent for <tt>BigFloat2</tt>
+  bool expo(const BigFloat2& x, prec_t prec)
+  { return _expo_f<FixedArithmeticPolicy>(x, prec); }
+  /// exponent for <tt>T</tt>
+  template <typename T> bool expo(const T& x, prec_t prec)
+  { return _expo<FixedArithmeticPolicy, T>(x, prec); }
 
   /// addition/subtraction for <tt>BigFloat2</tt>
   bool addsub(const BigFloat2& x, const BigFloat2& y, prec_t prec, bool is_add)
@@ -757,6 +869,54 @@ private:
   bool _sin_f(const BigFloat2& x, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>
   bool _sin(const T& x, prec_t prec = 0);
+ 
+  // cosine
+  template <template <typename, typename, typename> class Policy>
+  bool _cos_f(const BigFloat2& x, prec_t prec = 0);
+  template <template <typename, typename, typename> class Policy, typename T>
+  bool _cos(const T& x, prec_t prec = 0);
+ 
+  // tangent
+  template <template <typename, typename, typename> class Policy>
+  bool _tan_f(const BigFloat2& x, prec_t prec = 0);
+  template <template <typename, typename, typename> class Policy, typename T>
+  bool _tan(const T& x, prec_t prec = 0);
+ 
+  // cotangent
+  template <template <typename, typename, typename> class Policy>
+  bool _cot_f(const BigFloat2& x, prec_t prec = 0);
+  template <template <typename, typename, typename> class Policy, typename T>
+  bool _cot(const T& x, prec_t prec = 0);
+ 
+  // arcsine
+  template <template <typename, typename, typename> class Policy>
+  bool _arcsin_f(const BigFloat2& x, prec_t prec = 0);
+  template <template <typename, typename, typename> class Policy, typename T>
+  bool _arcsin(const T& x, prec_t prec = 0);
+ 
+  // arccosine
+  template <template <typename, typename, typename> class Policy>
+  bool _arccos_f(const BigFloat2& x, prec_t prec = 0);
+  template <template <typename, typename, typename> class Policy, typename T>
+  bool _arccos(const T& x, prec_t prec = 0);
+ 
+  // arctan
+  template <template <typename, typename, typename> class Policy>
+  bool _arctan_f(const BigFloat2& x, prec_t prec = 0);
+  template <template <typename, typename, typename> class Policy, typename T>
+  bool _arctan(const T& x, prec_t prec = 0);
+ 
+  // log_2
+  template <template <typename, typename, typename> class Policy>
+  bool _log_2_f(const BigFloat2& x, prec_t prec = 0);
+  template <template <typename, typename, typename> class Policy, typename T>
+  bool _log_2(const T& x, prec_t prec = 0);
+ 
+  // expo
+  template <template <typename, typename, typename> class Policy>
+  bool _expo_f(const BigFloat2& x, prec_t prec = 0);
+  template <template <typename, typename, typename> class Policy, typename T>
+  bool _expo(const T& x, prec_t prec = 0);
  
   // addition
   template <template <typename, typename, typename> class Policy>

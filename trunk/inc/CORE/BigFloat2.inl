@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.inl,v 1.7 2006-12-04 03:43:00 exact Exp $
+ * $Id: BigFloat2.inl,v 1.8 2006-12-04 21:14:20 exact Exp $
  ***************************************************************************/
 #define BF_RNDD GMP_RNDD
 #define BF_RNDU GMP_RNDU
@@ -171,6 +171,174 @@ template <template <typename, typename, typename> class Policy, typename T>
 inline bool BigFloat2::_sin(const T& x, prec_t prec) {
   set_exact(Policy<FT, T, FT>::sin(m_l, x, prec, BF_RNDD));
   if (!is_exact()) Policy<FT, T, FT>::sin(m_r, x, prec, BF_RNDU);
+  return is_exact();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// cosine -- cos(BigFloat2)
+template <template <typename, typename, typename> class Policy>
+inline bool BigFloat2::_cos_f(const BigFloat2& x, prec_t prec) {
+  if (x.is_exact())
+    return this->_cos<Policy, FT>(x.m_l, prec);
+  else {
+    Policy<FT, FT, FT>::cos(m_l, x.m_l, prec, BF_RNDD);
+    Policy<FT, FT, FT>::cos(m_r, x.m_r, prec, BF_RNDU);
+    set_exact(false);
+  }
+  return is_exact();
+}
+/// cosine -- cos(T)
+template <template <typename, typename, typename> class Policy, typename T>
+inline bool BigFloat2::_cos(const T& x, prec_t prec) {
+  set_exact(Policy<FT, T, FT>::cos(m_l, x, prec, BF_RNDD));
+  if (!is_exact()) Policy<FT, T, FT>::cos(m_r, x, prec, BF_RNDU);
+  return is_exact();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// tangent -- tan(BigFloat2)
+template <template <typename, typename, typename> class Policy>
+inline bool BigFloat2::_tan_f(const BigFloat2& x, prec_t prec) {
+  if (x.is_exact())
+    return this->_tan<Policy, FT>(x.m_l, prec);
+  else {
+    Policy<FT, FT, FT>::tan(m_l, x.m_l, prec, BF_RNDD);
+    Policy<FT, FT, FT>::tan(m_r, x.m_r, prec, BF_RNDU);
+    set_exact(false);
+  }
+  return is_exact();
+}
+/// tangent -- tan(T)
+template <template <typename, typename, typename> class Policy, typename T>
+inline bool BigFloat2::_tan(const T& x, prec_t prec) {
+  set_exact(Policy<FT, T, FT>::tan(m_l, x, prec, BF_RNDD));
+  if (!is_exact()) Policy<FT, T, FT>::tan(m_r, x, prec, BF_RNDU);
+  return is_exact();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// cotangent -- cot(BigFloat2)
+template <template <typename, typename, typename> class Policy>
+inline bool BigFloat2::_cot_f(const BigFloat2& x, prec_t prec) {
+  if (x.is_exact())
+    return this->_cot<Policy, FT>(x.m_l, prec);
+  else {
+    Policy<FT, FT, FT>::cot(m_l, x.m_l, prec, BF_RNDD);
+    Policy<FT, FT, FT>::cot(m_r, x.m_r, prec, BF_RNDU);
+    set_exact(false);
+  }
+  return is_exact();
+}
+/// cotangent -- cot(T)
+template <template <typename, typename, typename> class Policy, typename T>
+inline bool BigFloat2::_cot(const T& x, prec_t prec) {
+  set_exact(Policy<FT, T, FT>::cot(m_l, x, prec, BF_RNDD));
+  if (!is_exact()) Policy<FT, T, FT>::cot(m_r, x, prec, BF_RNDU);
+  return is_exact();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// arcsine -- arcsin(BigFloat2)
+template <template <typename, typename, typename> class Policy>
+inline bool BigFloat2::_arcsin_f(const BigFloat2& x, prec_t prec) {
+  if (x.is_exact())
+    return this->_arcsin<Policy, FT>(x.m_l, prec);
+  else {
+    Policy<FT, FT, FT>::arcsin(m_l, x.m_l, prec, BF_RNDD);
+    Policy<FT, FT, FT>::arcsin(m_r, x.m_r, prec, BF_RNDU);
+    set_exact(false);
+  }
+  return is_exact();
+}
+/// arcsine -- arcsin(T)
+template <template <typename, typename, typename> class Policy, typename T>
+inline bool BigFloat2::_arcsin(const T& x, prec_t prec) {
+  set_exact(Policy<FT, T, FT>::arcsin(m_l, x, prec, BF_RNDD));
+  if (!is_exact()) Policy<FT, T, FT>::arcsin(m_r, x, prec, BF_RNDU);
+  return is_exact();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// arccosine -- arccos(BigFloat2)
+template <template <typename, typename, typename> class Policy>
+inline bool BigFloat2::_arccos_f(const BigFloat2& x, prec_t prec) {
+  if (x.is_exact())
+    return this->_arccos<Policy, FT>(x.m_l, prec);
+  else {
+    Policy<FT, FT, FT>::arccos(m_l, x.m_l, prec, BF_RNDD);
+    Policy<FT, FT, FT>::arccos(m_r, x.m_r, prec, BF_RNDU);
+    set_exact(false);
+  }
+  return is_exact();
+}
+/// arccosine -- arccos(T)
+template <template <typename, typename, typename> class Policy, typename T>
+inline bool BigFloat2::_arccos(const T& x, prec_t prec) {
+  set_exact(Policy<FT, T, FT>::arccos(m_l, x, prec, BF_RNDD));
+  if (!is_exact()) Policy<FT, T, FT>::arccos(m_r, x, prec, BF_RNDU);
+  return is_exact();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// arctangent -- arctan(BigFloat2)
+template <template <typename, typename, typename> class Policy>
+inline bool BigFloat2::_arctan_f(const BigFloat2& x, prec_t prec) {
+  if (x.is_exact())
+    return this->_arctan<Policy, FT>(x.m_l, prec);
+  else {
+    Policy<FT, FT, FT>::arctan(m_l, x.m_l, prec, BF_RNDD);
+    Policy<FT, FT, FT>::arctan(m_r, x.m_r, prec, BF_RNDU);
+    set_exact(false);
+  }
+  return is_exact();
+}
+/// arctangent -- arctan(T)
+template <template <typename, typename, typename> class Policy, typename T>
+inline bool BigFloat2::_arctan(const T& x, prec_t prec) {
+  set_exact(Policy<FT, T, FT>::arctan(m_l, x, prec, BF_RNDD));
+  if (!is_exact()) Policy<FT, T, FT>::arctan(m_r, x, prec, BF_RNDU);
+  return is_exact();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// log base 2 -- log2(BigFloat2)
+template <template <typename, typename, typename> class Policy>
+inline bool BigFloat2::_log_2_f(const BigFloat2& x, prec_t prec) {
+  if (x.is_exact())
+    return this->_log_2<Policy, FT>(x.m_l, prec);
+  else {
+    Policy<FT, FT, FT>::log_2(m_l, x.m_l, prec, BF_RNDD);
+    Policy<FT, FT, FT>::log_2(m_r, x.m_r, prec, BF_RNDU);
+    set_exact(false);
+  }
+  return is_exact();
+}
+/// log base 2 -- log2(T)
+template <template <typename, typename, typename> class Policy, typename T>
+inline bool BigFloat2::_log_2(const T& x, prec_t prec) {
+  set_exact(Policy<FT, T, FT>::log_2(m_l, x, prec, BF_RNDD));
+  if (!is_exact()) Policy<FT, T, FT>::log_2(m_r, x, prec, BF_RNDU);
+  return is_exact();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// exponent -- expo(BigFloat2)
+template <template <typename, typename, typename> class Policy>
+inline bool BigFloat2::_expo_f(const BigFloat2& x, prec_t prec) {
+  if (x.is_exact())
+    return this->_expo<Policy, FT>(x.m_l, prec);
+  else {
+    Policy<FT, FT, FT>::expo(m_l, x.m_l, prec, BF_RNDD);
+    Policy<FT, FT, FT>::expo(m_r, x.m_r, prec, BF_RNDU);
+    set_exact(false);
+  }
+  return is_exact();
+}
+/// exponent -- expo(T)
+template <template <typename, typename, typename> class Policy, typename T>
+inline bool BigFloat2::_expo(const T& x, prec_t prec) {
+  set_exact(Policy<FT, T, FT>::expo(m_l, x, prec, BF_RNDD));
+  if (!is_exact()) Policy<FT, T, FT>::expo(m_r, x, prec, BF_RNDU);
   return is_exact();
 }
 

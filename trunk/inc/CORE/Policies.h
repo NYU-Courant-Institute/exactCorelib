@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Policies.h,v 1.7 2006-12-04 03:43:01 exact Exp $
+ * $Id: Policies.h,v 1.8 2006-12-04 21:14:20 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_POLICIES_H__
 #define __CORE_POLICIES_H__
@@ -49,6 +49,22 @@ struct RawArithmeticPolicy {
 
   static bool sin(T& z, const TL& x, prec_t, rnd_t rnd)
   { return z.r_sin(x, rnd) == 0; }
+  static bool cos(T& z, const TL& x, prec_t, rnd_t rnd)
+  { return z.r_cos(x, rnd) == 0; }
+  static bool tan(T& z, const TL& x, prec_t, rnd_t rnd)
+  { return z.r_tan(x, rnd) == 0; }
+  static bool cot(T& z, const TL& x, prec_t, rnd_t rnd)
+  { return z.r_cot(x, rnd) == 0; }
+  static bool arcsin(T& z, const TL& x, prec_t, rnd_t rnd)
+  { return z.r_arcsin(x, rnd) == 0; }
+  static bool arccos(T& z, const TL& x, prec_t, rnd_t rnd)
+  { return z.r_arccos(x, rnd) == 0; }
+  static bool arctan(T& z, const TL& x, prec_t, rnd_t rnd)
+  { return z.r_arctan(x, rnd) == 0; }
+  static bool log_2(T& z, const TL& x, prec_t, rnd_t rnd)
+  { return z.r_log_2(x, rnd) == 0; }
+  static bool expo(T& z, const TL& x, prec_t, rnd_t rnd)
+  { return z.r_expo(x, rnd) == 0; }
 
   static bool add(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
   { return z.r_add(x, y, rnd) == 0; }
@@ -83,6 +99,22 @@ struct FixedArithmeticPolicy {
 
   static bool sin(T& z, const TL& x, prec_t prec, rnd_t rnd)
   { return z.sin(x, prec, rnd) == 0; }
+  static bool cos(T& z, const TL& x, prec_t prec, rnd_t rnd)
+  { return z.cos(x, prec, rnd) == 0; }
+  static bool tan(T& z, const TL& x, prec_t prec, rnd_t rnd)
+  { return z.tan(x, prec, rnd) == 0; }
+  static bool cot(T& z, const TL& x, prec_t prec, rnd_t rnd)
+  { return z.cot(x, prec, rnd) == 0; }
+  static bool arcsin(T& z, const TL& x, prec_t prec, rnd_t rnd)
+  { return z.arcsin(x, prec, rnd) == 0; }
+  static bool arccos(T& z, const TL& x, prec_t prec, rnd_t rnd)
+  { return z.arccos(x, prec, rnd) == 0; }
+  static bool arctan(T& z, const TL& x, prec_t prec, rnd_t rnd)
+  { return z.arctan(x, prec, rnd) == 0; }
+  static bool log_2(T& z, const TL& x, prec_t prec, rnd_t rnd)
+  { return z.log_2(x, prec, rnd) == 0; }
+  static bool expo(T& z, const TL& x, prec_t prec, rnd_t rnd)
+  { return z.expo(x, prec, rnd) == 0; }
 
   static bool add(T& z, const TL& x, const TR& y, prec_t prec, rnd_t rnd)
   { return z.add(x, y, prec, rnd) == 0; }

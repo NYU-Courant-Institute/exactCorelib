@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.22 2006-12-04 03:43:00 exact Exp $
+ * $Id: BigFloat.h,v 1.23 2006-12-04 21:14:20 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -739,11 +739,75 @@ public:
   /// Sine function for <tt>BigFloat</tt> (raw version)
   int r_sin(const BigFloat& x, rnd_t rnd = MPFR_RND)
   { return mpfr_sin(mp(), x.mp(), rnd); }
-  /// square root function for <tt>int</tt> (raw version)
+  /// Sine function for <tt>T</tt> (raw version)
   template<typename T>
   int r_sin(T x, rnd_t rnd = MPFR_RND)
   { return r_sin(BigFloat(x), rnd); }
-  //@}
+
+  /// Cosine function for <tt>BigFloat</tt> (raw version)
+  int r_cos(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  { return mpfr_cos(mp(), x.mp(), rnd); }
+  /// Cosine function for <tt>T</tt> (raw version)
+  template<typename T>
+  int r_cos(T x, rnd_t rnd = MPFR_RND)
+  { return r_cos(BigFloat(x), rnd); }
+
+  /// Tangent function for <tt>BigFloat</tt> (raw version)
+  int r_tan(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  { return mpfr_tan(mp(), x.mp(), rnd); }
+  /// Tangent function for <tt>T</tt> (raw version)
+  template<typename T>
+  int r_tan(T x, rnd_t rnd = MPFR_RND)
+  { return r_tan(BigFloat(x), rnd); }
+
+  /// Cotangent function for <tt>BigFloat</tt> (raw version)
+   int r_cot(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  { return mpfr_cot(mp(), x.mp(), rnd); }
+  /// Cotangent function for <tt>T</tt> (raw version)
+  template<typename T>
+  int r_cot(T x, rnd_t rnd = MPFR_RND)
+  { return r_cot(BigFloat(x), rnd); }
+
+  /// Arcsine function for <tt>BigFloat</tt> (raw version)
+   int r_arcsin(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  { return mpfr_asin(mp(), x.mp(), rnd); }
+  /// Arcsine function for <tt>T</tt> (raw version)
+  template<typename T>
+  int r_arcsin(T x, rnd_t rnd = MPFR_RND)
+  { return r_arcsin(BigFloat(x), rnd); }
+
+  /// Arccosine function for <tt>BigFloat</tt> (raw version)
+   int r_arccos(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  { return mpfr_acos(mp(), x.mp(), rnd); }
+  /// Arccosine function for <tt>T</tt> (raw version)
+  template<typename T>
+  int r_arccos(T x, rnd_t rnd = MPFR_RND)
+  { return r_arccos(BigFloat(x), rnd); }
+
+  /// Arctangent function for <tt>BigFloat</tt> (raw version)
+   int r_arctan(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  { return mpfr_atan(mp(), x.mp(), rnd); }
+  /// Arctangent function for <tt>T</tt> (raw version)
+  template<typename T>
+  int r_arctan(T x, rnd_t rnd = MPFR_RND)
+  { return r_arctan(BigFloat(x), rnd); }
+
+  /// log2 function for <tt>BigFloat</tt> (raw version)
+   int r_log_2(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  { return mpfr_log2(mp(), x.mp(), rnd); }
+  /// log_2 function for <tt>T</tt> (raw version)
+  template<typename T>
+  int r_log_2(T x, rnd_t rnd = MPFR_RND)
+  { return r_log_2(BigFloat(x), rnd); }
+
+  /// exponent function for <tt>BigFloat</tt> (raw version)
+   int r_expo(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  { return mpfr_exp(mp(), x.mp(), rnd); }
+  /// exponent function for <tt>T</tt> (raw version)
+  template<typename T>
+  int r_expo(T x, rnd_t rnd = MPFR_RND)
+  { return r_expo(BigFloat(x), rnd); }
+   //@}
 
   /// \name Sine functions (fixed version)
   //@
@@ -769,6 +833,214 @@ public:
   template <typename T> 
   int sin(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
   { set_prec(prec); return r_sin(x, rnd); }
+  //@}
+
+  /// \name Cosine functions (fixed version)
+  //@
+  /// Cosine function for <tt>BigFloat</tt> (fixed version)
+  int cos(const BigFloat& x, 
+           prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
+    if (&x == this) { // if x is same as ouput
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_cos(x,rnd);
+       } else if (prec < get_prec()) {
+         r_cos(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_cos(x,rnd);
+       }
+    } else {
+      set_prec(prec); return r_cos(x, rnd);
+    }
+  }
+  /// Cosine function for <tt>T</tt> (fixed version)
+  template <typename T> 
+  int cos(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
+  { set_prec(prec); return r_cos(x, rnd); }
+  //@}
+
+  /// \name Tangent functions (fixed version)
+  //@
+  /// Tangent function for <tt>BigFloat</tt> (fixed version)
+  int tan(const BigFloat& x, 
+           prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
+    if (&x == this) { // if x is same as ouput
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_tan(x,rnd);
+       } else if (prec < get_prec()) {
+         r_tan(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_tan(x,rnd);
+       }
+    } else {
+      set_prec(prec); return r_tan(x, rnd);
+    }
+  }
+  /// Tangent function for <tt>T</tt> (fixed version)
+  template <typename T> 
+  int tan(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
+  { set_prec(prec); return r_tan(x, rnd); }
+  //@}
+
+  /// \name Cotangent functions (fixed version)
+  //@
+  /// Cotangent function for <tt>BigFloat</tt> (fixed version)
+  int cot(const BigFloat& x, 
+           prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
+    if (&x == this) { // if x is same as ouput
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_cot(x,rnd);
+       } else if (prec < get_prec()) {
+         r_cot(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_cot(x,rnd);
+       }
+    } else {
+      set_prec(prec); return r_cot(x, rnd);
+    }
+  }
+  /// Cotangent function for <tt>T</tt> (fixed version)
+  template <typename T> 
+  int cot(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
+  { set_prec(prec); return r_cot(x, rnd); }
+  //@}
+
+  /// \name Arcsine functions (fixed version)
+  //@
+  /// Arcsine function for <tt>BigFloat</tt> (fixed version)
+  int arcsin(const BigFloat& x, 
+           prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
+    if (&x == this) { // if x is same as ouput
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_arcsin(x,rnd);
+       } else if (prec < get_prec()) {
+         r_arcsin(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_arcsin(x,rnd);
+       }
+    } else {
+      set_prec(prec); return r_arcsin(x, rnd);
+    }
+  }
+  /// Arcsine function for <tt>T</tt> (fixed version)
+  template <typename T> 
+  int arcsin(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
+  { set_prec(prec); return r_arcsin(x, rnd); }
+  //@}
+
+  /// \name Arccosine functions (fixed version)
+  //@
+  /// Arccosine function for <tt>BigFloat</tt> (fixed version)
+  int arccos(const BigFloat& x, 
+           prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
+    if (&x == this) { // if x is same as ouput
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_arccos(x,rnd);
+       } else if (prec < get_prec()) {
+         r_arccos(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_arccos(x,rnd);
+       }
+    } else {
+      set_prec(prec); return r_arccos(x, rnd);
+    }
+  }
+  /// Arccosine function for <tt>T</tt> (fixed version)
+  template <typename T> 
+  int arccos(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
+  { set_prec(prec); return r_arccos(x, rnd); }
+  //@}
+
+  /// \name Arctangent functions (fixed version)
+  //@
+  /// Arctangent function for <tt>BigFloat</tt> (fixed version)
+  int arctan(const BigFloat& x, 
+           prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
+    if (&x == this) { // if x is same as ouput
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_arctan(x,rnd);
+       } else if (prec < get_prec()) {
+         r_arctan(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_arctan(x,rnd);
+       }
+    } else {
+      set_prec(prec); return r_arctan(x, rnd);
+    }
+  }
+  /// Arctangent function for <tt>T</tt> (fixed version)
+  template <typename T> 
+  int arctan(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
+  { set_prec(prec); return r_arctan(x, rnd); }
+  //@}
+
+  /// \name log_2 functions (fixed version)
+  //@
+  /// log_2 function for <tt>BigFloat</tt> (fixed version)
+  int log_2(const BigFloat& x, 
+           prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
+    if (&x == this) { // if x is same as ouput
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_log_2(x,rnd);
+       } else if (prec < get_prec()) {
+         r_log_2(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_log_2(x,rnd);
+       }
+    } else {
+      set_prec(prec); return r_log_2(x, rnd);
+    }
+  }
+  /// log2 function for <tt>T</tt> (fixed version)
+  template <typename T> 
+  int log_2(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
+  { set_prec(prec); return r_log_2(x, rnd); }
+  //@}
+
+  /// \name exponent functions (fixed version)
+  //@
+  /// exponent function for <tt>BigFloat</tt> (fixed version)
+  int expo(const BigFloat& x, 
+           prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
+    if (&x == this) { // if x is same as ouput
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_expo(x,rnd);
+       } else if (prec < get_prec()) {
+         r_expo(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_expo(x,rnd);
+       }
+    } else {
+      set_prec(prec); return r_expo(x, rnd);
+    }
+  }
+  /// exponent function for <tt>T</tt> (fixed version)
+  template <typename T> 
+  int expo(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
+  { set_prec(prec); return r_expo(x, rnd); }
   //@}
 
   /// \name square root functions (raw version)

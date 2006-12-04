@@ -15,15 +15,13 @@ int main( int argc, char *argv[] ) {
 
   Timer2 timer;
   timer.start();
-  Expr PI = pi();
-  PI.approx(prec, CORE_INFTY);
+  Expr SIN = sin(pi()/3);
+  SIN.approx(prec, CORE_INFTY);
   timer.stop();
 
-  std::cout << "compute pi to " << prec << " relative precision" << std::endl;
+  std::cout << "compute sin(pi/3) to " << prec << " relative precision" << std::endl;
+  std::cout << "sin(pi/3)  = " << SIN << std::endl;
   std::cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
-  //Expr E = e();
-  //E.approx(prec, CORE_INFTY);
-  //std::cout << "e  = " << E << std::endl;
  
   return 0;
 }

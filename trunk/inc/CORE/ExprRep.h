@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.23 2006-12-04 03:43:00 exact Exp $
+ * $Id: ExprRep.h,v 1.24 2006-12-04 21:14:20 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -283,6 +283,7 @@ public: // public methods
     if (!m_nodeinfo) init_nodeinfo();
     // do exact evaluation
     if (is_approx_needed(prec)) {
+      std::cout << "r_approx with " << op() << std::endl;
       if (compute_r_approx(prec)) flags().set(fExact);
       flags().set(fInit);
     }
@@ -1037,7 +1038,7 @@ protected:
 };
 
 /// \class Sin
-/// \brief geometric sin node
+/// \brief geometric sine node
 template <typename RootBd, typename Filter, typename Kernel>
 class SinRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
@@ -1070,14 +1071,251 @@ protected:
   virtual bool compute_lMSB() 
   { return false;}
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().sin(child->a_approx(prec+1), prec+1));
+    return check_exact(appValue().sin(child->a_approx(prec+1), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
   { return std::string("Sin"); }
 #endif 
 };
-/*
+/// \class Cos
+/// \brief geometric cosine node
+template <typename RootBd, typename Filter, typename Kernel>
+class CosRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
+  typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  typedef UnaryOpRepT<RootBd, Filter, Kernel> UnaryOpRep;
+  typedef RootBd* id_rootbd_t;
+  using UnaryOpRep::child;
+  using UnaryOpRep::check_exact;
+  using ExprRep::filter;
+  using ExprRep::sign;
+  using ExprRep::uMSB;
+  using ExprRep::lMSB;
+  using ExprRep::appValue;
+  using ExprRep::rootBd;
+  using ExprRep::abs2rel;
+  using ExprRep::init_value;
+  using ExprRep::numType;
+public:
+  CosRepT(ExprRep* c) : UnaryOpRep(c) {
+    numType() = std::max(NODE_NT_TRANSCENDENTAL, child->numType());
+    if (child->get_sign()==0)
+      init_value(1);
+  }
+  virtual ~CosRepT() 
+  {}
+protected:
+  virtual bool compute_sign() 
+  { return false;}
+  virtual bool compute_uMSB() 
+  { uMSB() = 0; return true;}
+  virtual bool compute_lMSB() 
+  { return false;}
+  virtual bool compute_a_approx(prec_t prec) {
+    return check_exact(appValue().cos(child->a_approx(prec+1), abs2rel(prec+1)));
+  }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Cos"); }
+#endif 
+};
+/// \class Tan
+/// \brief geometric tangent node
+template <typename RootBd, typename Filter, typename Kernel>
+class TanRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
+  typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  typedef UnaryOpRepT<RootBd, Filter, Kernel> UnaryOpRep;
+  typedef RootBd* id_rootbd_t;
+  using UnaryOpRep::child;
+  using UnaryOpRep::check_exact;
+  using ExprRep::filter;
+  using ExprRep::sign;
+  using ExprRep::uMSB;
+  using ExprRep::lMSB;
+  using ExprRep::appValue;
+  using ExprRep::rootBd;
+  using ExprRep::abs2rel;
+  using ExprRep::init_value;
+  using ExprRep::numType;
+public:
+  TanRepT(ExprRep* c) : UnaryOpRep(c) {
+    numType() = std::max(NODE_NT_TRANSCENDENTAL, child->numType());
+    if (child->get_sign()==0)
+      init_value(0);
+  }
+  virtual ~TanRepT() 
+  {}
+protected:
+  virtual bool compute_sign() 
+  { return false;}
+  virtual bool compute_uMSB() 
+  { return false;}
+  virtual bool compute_lMSB() 
+  { return false;}
+  virtual bool compute_a_approx(prec_t prec) {
+    return check_exact(appValue().tan(child->a_approx(prec+3), abs2rel(prec+1)));
+  }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Tan"); }
+#endif 
+};
+/// \class Cot
+/// \brief geometric cotangent node
+template <typename RootBd, typename Filter, typename Kernel>
+class CotRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
+  typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  typedef UnaryOpRepT<RootBd, Filter, Kernel> UnaryOpRep;
+  typedef RootBd* id_rootbd_t;
+  using UnaryOpRep::child;
+  using UnaryOpRep::check_exact;
+  using ExprRep::filter;
+  using ExprRep::sign;
+  using ExprRep::uMSB;
+  using ExprRep::lMSB;
+  using ExprRep::appValue;
+  using ExprRep::rootBd;
+  using ExprRep::abs2rel;
+  using ExprRep::init_value;
+  using ExprRep::numType;
+public:
+  CotRepT(ExprRep* c) : UnaryOpRep(c) {
+    numType() = std::max(NODE_NT_TRANSCENDENTAL, child->numType());
+  }
+  virtual ~CotRepT() 
+  {}
+protected:
+  virtual bool compute_sign() 
+  { return false;}
+  virtual bool compute_uMSB() 
+  { return false;}
+  virtual bool compute_lMSB() 
+  { return false;}
+  virtual bool compute_a_approx(prec_t prec) {
+    return check_exact(appValue().cot(child->a_approx(prec+2), abs2rel(prec+1)));
+  }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Cot"); }
+#endif 
+};
+/// \class ArcSin
+/// \brief geometric arcsine node
+template <typename RootBd, typename Filter, typename Kernel>
+class ArcSinRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
+  typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  typedef UnaryOpRepT<RootBd, Filter, Kernel> UnaryOpRep;
+  typedef RootBd* id_rootbd_t;
+  using UnaryOpRep::child;
+  using UnaryOpRep::check_exact;
+  using ExprRep::filter;
+  using ExprRep::sign;
+  using ExprRep::uMSB;
+  using ExprRep::lMSB;
+  using ExprRep::appValue;
+  using ExprRep::rootBd;
+  using ExprRep::abs2rel;
+  using ExprRep::init_value;
+  using ExprRep::numType;
+public:
+  ArcSinRepT(ExprRep* c) : UnaryOpRep(c) {
+    numType() = std::max(NODE_NT_TRANSCENDENTAL, child->numType());
+  }
+  virtual ~ArcSinRepT() 
+  {}
+protected:
+  virtual bool compute_sign() 
+  { return false;}
+  virtual bool compute_uMSB() 
+  { uMSB() = 1; return true;}
+  virtual bool compute_lMSB() 
+  { return false;}
+  virtual bool compute_a_approx(prec_t prec) {
+    return check_exact(appValue().arcsin(child->a_approx(prec+2), abs2rel(prec+1)));
+  }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("ArcSin"); }
+#endif 
+};
+/// \class ArcCos
+/// \brief geometric arcsine node
+template <typename RootBd, typename Filter, typename Kernel>
+class ArcCosRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
+  typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  typedef UnaryOpRepT<RootBd, Filter, Kernel> UnaryOpRep;
+  typedef RootBd* id_rootbd_t;
+  using UnaryOpRep::child;
+  using UnaryOpRep::check_exact;
+  using ExprRep::filter;
+  using ExprRep::sign;
+  using ExprRep::uMSB;
+  using ExprRep::lMSB;
+  using ExprRep::appValue;
+  using ExprRep::rootBd;
+  using ExprRep::abs2rel;
+  using ExprRep::init_value;
+  using ExprRep::numType;
+public:
+  ArcCosRepT(ExprRep* c) : UnaryOpRep(c) {
+    numType() = std::max(NODE_NT_TRANSCENDENTAL, child->numType());
+  }
+  virtual ~ArcCosRepT() 
+  {}
+protected:
+  virtual bool compute_sign() 
+  { sign() = 1; return true;}
+  virtual bool compute_uMSB() 
+  { uMSB() = 2; return true;}
+  virtual bool compute_lMSB() 
+  { return false;}
+  virtual bool compute_a_approx(prec_t prec) {
+    return check_exact(appValue().arccos(child->a_approx(prec+2), abs2rel(prec+1)));
+  }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("ArcCos"); }
+#endif 
+};
+/// \class ArcTan
+/// \brief geometric arcsine node
+template <typename RootBd, typename Filter, typename Kernel>
+class ArcTanRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
+  typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  typedef UnaryOpRepT<RootBd, Filter, Kernel> UnaryOpRep;
+  typedef RootBd* id_rootbd_t;
+  using UnaryOpRep::child;
+  using UnaryOpRep::check_exact;
+  using ExprRep::filter;
+  using ExprRep::sign;
+  using ExprRep::uMSB;
+  using ExprRep::lMSB;
+  using ExprRep::appValue;
+  using ExprRep::rootBd;
+  using ExprRep::abs2rel;
+  using ExprRep::init_value;
+  using ExprRep::numType;
+public:
+  ArcTanRepT(ExprRep* c) : UnaryOpRep(c) {
+    numType() = std::max(NODE_NT_TRANSCENDENTAL, child->numType());
+  }
+  virtual ~ArcTanRepT() 
+  {}
+protected:
+  virtual bool compute_sign() 
+  { return false;}
+  virtual bool compute_uMSB() 
+  { uMSB() = 1; return true;}
+  virtual bool compute_lMSB() 
+  { return false;}
+  virtual bool compute_a_approx(prec_t prec) {
+    return check_exact(appValue().arctan(child->a_approx(prec+1), abs2rel(prec+1)));
+  }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("ArcTan"); }
+#endif 
+};
 /// \class Expo
 /// \brief geometric power of e node
 template <typename RootBd, typename Filter, typename Kernel>
@@ -1098,9 +1336,10 @@ class ExpoRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::numType;
 public:
   ExpoRepT(ExprRep* c) : UnaryOpRep(c) {
+    std::cout << "Constructor Expo" << std::endl;
     numType() = std::max(NODE_NT_TRANSCENDENTAL, child->numType());
     if (child->get_sign()==0)
-      init_value(0);
+      init_value(1);
   }
   virtual ~ExpoRepT() 
   {}
@@ -1112,14 +1351,56 @@ protected:
   virtual bool compute_lMSB() 
   { return false;}
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().expo(child->a_approx(prec+1), prec+1));
+    std::cout << "compute_a_approx Expo" << std::endl;
+    return check_exact(appValue().expo(child->r_approx(prec+2), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
   { return std::string("Expo"); }
 #endif 
 };
-*/
+/// \class Log2
+/// \brief geometric logarithm base 2
+template <typename RootBd, typename Filter, typename Kernel>
+class Log2RepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
+  typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  typedef UnaryOpRepT<RootBd, Filter, Kernel> UnaryOpRep;
+  typedef RootBd* id_rootbd_t;
+  using UnaryOpRep::child;
+  using UnaryOpRep::check_exact;
+  using ExprRep::filter;
+  using ExprRep::sign;
+  using ExprRep::uMSB;
+  using ExprRep::lMSB;
+  using ExprRep::appValue;
+  using ExprRep::rootBd;
+  using ExprRep::abs2rel;
+  using ExprRep::init_value;
+  using ExprRep::numType;
+public:
+  Log2RepT(ExprRep* c) : UnaryOpRep(c) {
+    numType() = std::max(NODE_NT_TRANSCENDENTAL, child->numType());
+    if (child->get_sign()<=0)
+      core_error("log2 of negative value", __FILE__, __LINE__, true);
+  }
+  virtual ~Log2RepT() 
+  {}
+protected:
+  virtual bool compute_sign() 
+  { return false;}
+  virtual bool compute_uMSB() 
+  { return false;}
+  virtual bool compute_lMSB() 
+  { return false;}
+  virtual bool compute_a_approx(prec_t prec) {
+    return check_exact(appValue().log_2(child->a_approx(prec+child.get_lMSB()+1), abs2rel(prec+1)));
+  }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Expo"); }
+#endif 
+};
+
 /// \class RootRepT
 /// \brief k-th root node
 template <typename RootBd, typename Filter, typename Kernel>

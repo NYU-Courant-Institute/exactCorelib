@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.25 2006-12-04 03:43:00 exact Exp $
+ * $Id: Expr.h,v 1.26 2006-12-04 21:14:20 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -64,7 +64,14 @@ private: // private typedefs
   typedef PiRepT<RootBd, Filter, Kernel> PiRep;
   typedef ERepT<RootBd, Filter, Kernel> ERep;
   typedef SinRepT<RootBd, Filter, Kernel> SinRep;
-  //typedef ExpoRepT<RootBd, Filter, Kernel> ExpoRep;
+  typedef CosRepT<RootBd, Filter, Kernel> CosRep;
+  typedef TanRepT<RootBd, Filter, Kernel> TanRep;
+  typedef CotRepT<RootBd, Filter, Kernel> CotRep;
+  typedef ArcSinRepT<RootBd, Filter, Kernel> ArcSinRep;
+  typedef ArcCosRepT<RootBd, Filter, Kernel> ArcCosRep;
+  typedef ArcTanRepT<RootBd, Filter, Kernel> ArcTanRep;
+  typedef Log2RepT<RootBd, Filter, Kernel> Log2Rep;
+  typedef ExpoRepT<RootBd, Filter, Kernel> ExpoRep;
 
 public:
   ExprT() : m_rep(new ConstLongRep(0L, NODE_NT_INTEGER)) {}
@@ -169,6 +176,7 @@ public:
   /// kth-root
   friend ExprT root(const ExprT& e, unsigned long k)
   { return ExprT(new RootRep(e.rep(), k)); }
+  /// geometric functions and constants
   /// pi
   friend ExprT pi()
   { return ExprT(new PiRep()); }
@@ -179,9 +187,58 @@ public:
   friend ExprT sin(const ExprT& e)
   { return ExprT(new SinRep(e.rep())); }
   /// exponent
-  //friend ExprT expo(const ExprT& e)
-  //{ return ExprT(new ExpoRep(e.rep())); }
-  /// radical -- alternative name for root(n,k)
+  friend ExprT expo(const ExprT& e)
+  { return ExprT(new ExpoRep(e.rep())); }
+  /// log2
+  friend ExprT log_2(const ExprT& e)
+  { return ExprT(new Log2Rep(e.rep())); }
+  /// cosine
+  friend ExprT cos(const ExprT& e)
+  { return ExprT(new CosRep(e.rep())); }
+  /// tangent
+  friend ExprT tan(const ExprT& e) {
+    if (e >= 0 && e <= 3.14/4)
+      return ExprT(new TanRep(e.rep()));
+    else
+      return sin(e)/cos(e);
+  }
+  /// cotangent
+  friend ExprT cot(const ExprT& e) {
+    if (e >= 3.15/4 && e <= 3.14/2)
+      return ExprT(new CotRep(e.rep()));
+    else
+      return cos(e)/sin(e);
+  }
+  /// arcsine
+  friend ExprT arcsin(const ExprT& e) {
+    if (e.abs() > 1) {
+      core_error("arcsin out of range", __FILE__, __LINE__, true);
+      return ExprT(0);
+    }
+    else if (e.abs() >= 0.5)
+      return arccos(sqrt(1-pow(e,2)));
+    else
+      return ExprT(new ArcSinRep(e.rep()));
+  }
+  /// arcsocine
+  friend ExprT arccos(const ExprT& e) {
+    if (e.abs() > 1) {
+      core_error("arccos out of range", __FILE__, __LINE__, true);
+      return ExprT(0);
+    }
+    else if (e.abs() >= 0.5)
+      return arcsin(sqrt(1-pow(e,2)));
+    else
+      return ExprT(new ArcCosRep(e.rep()));
+  }
+  /// arctangent
+  friend ExprT arctan(const ExprT& e) {
+    if (e.abs() >= 1)
+      return arcsin(e / (sqrt(pow(e,2) + 1)));
+    else
+      return ExprT(new ArcTanRep(e.rep()));
+  }
+  // radical -- alternative name for root(n,k)
   template<class NT>
   friend ExprT radical(const NT& n, unsigned long k) {
     assert(n>=0 && k>=1);
