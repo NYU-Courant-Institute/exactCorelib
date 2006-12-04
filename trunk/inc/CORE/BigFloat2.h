@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.16 2006-12-03 18:52:05 exact Exp $
+ * $Id: BigFloat2.h,v 1.17 2006-12-04 03:43:00 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -249,6 +249,13 @@ public:
   // template <typename T> bool r_root(const T& x, unsigned long k)
   // { return _root<RawArithmeticPolicy, T>(x, k); }
 
+  /// sine for <tt>BigFloat2</tt>
+  bool r_sin(const BigFloat2& x)
+  { return _sin_f<RawArithmeticPolicy>(x); }
+  /// sin for <tt>T</tt>
+  template <typename T> bool r_sin(const T& x)
+  { return _sin<RawArithmeticPolicy, T>(x); }
+
   /// addition/subtraction for <tt>BigFloat2</tt>
   bool r_addsub(const BigFloat2& x, const BigFloat2& y, bool is_add)
   { return is_add ? r_add(x, y) : r_sub(x, y); }
@@ -332,6 +339,13 @@ public:
   // template <typename T> 
   // bool root(const T& x, unsigned long k, prec_t prec = getDefaultBFradicalPrec())
   // { return _root<FixedArithmeticPolicy, T>(x, k, prec); }
+
+  /// sine for <tt>BigFloat2</tt>
+  bool sin(const BigFloat2& x, prec_t prec)
+  { return _sin_f<FixedArithmeticPolicy>(x, prec); }
+  /// square root for <tt>T</tt>
+  template <typename T> bool sin(const T& x, prec_t prec)
+  { return _sin<FixedArithmeticPolicy, T>(x, prec); }
 
   /// addition/subtraction for <tt>BigFloat2</tt>
   bool addsub(const BigFloat2& x, const BigFloat2& y, prec_t prec, bool is_add)
@@ -738,6 +752,12 @@ private:
   template <template <typename, typename, typename> class Policy, typename T>
   bool _root(const T& x, unsigned long k, prec_t prec = 0);
   
+  // sine
+  template <template <typename, typename, typename> class Policy>
+  bool _sin_f(const BigFloat2& x, prec_t prec = 0);
+  template <template <typename, typename, typename> class Policy, typename T>
+  bool _sin(const T& x, prec_t prec = 0);
+ 
   // addition
   template <template <typename, typename, typename> class Policy>
   bool _add_f(const BigFloat2& x, const BigFloat2& y, prec_t prec = 0);

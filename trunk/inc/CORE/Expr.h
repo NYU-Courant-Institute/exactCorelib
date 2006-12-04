@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.24 2006-12-03 18:52:06 exact Exp $
+ * $Id: Expr.h,v 1.25 2006-12-04 03:43:00 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -63,6 +63,8 @@ private: // private typedefs
   typedef ProdOpRepT<RootBd, Filter, Kernel> ProdRep;
   typedef PiRepT<RootBd, Filter, Kernel> PiRep;
   typedef ERepT<RootBd, Filter, Kernel> ERep;
+  typedef SinRepT<RootBd, Filter, Kernel> SinRep;
+  //typedef ExpoRepT<RootBd, Filter, Kernel> ExpoRep;
 
 public:
   ExprT() : m_rep(new ConstLongRep(0L, NODE_NT_INTEGER)) {}
@@ -173,6 +175,12 @@ public:
   /// e
   friend ExprT e()
   { return ExprT(new ERep()); }
+  /// sine
+  friend ExprT sin(const ExprT& e)
+  { return ExprT(new SinRep(e.rep())); }
+  /// exponent
+  //friend ExprT expo(const ExprT& e)
+  //{ return ExprT(new ExpoRep(e.rep())); }
   /// radical -- alternative name for root(n,k)
   template<class NT>
   friend ExprT radical(const NT& n, unsigned long k) {
@@ -185,7 +193,7 @@ public:
     Q.setCoeff(k, 1);
     return rootOf(Q);
     */
-    return root(ExprT(n),k); //Jihun:this version is very slow.root bound becomes extremely large
+    return root(ExprT(n),k);
   }
 
   /// helper function for constructing Polynomial node (n-th node)

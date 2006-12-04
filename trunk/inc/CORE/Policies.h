@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Policies.h,v 1.6 2006-03-03 17:19:58 exact Exp $
+ * $Id: Policies.h,v 1.7 2006-12-04 03:43:01 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_POLICIES_H__
 #define __CORE_POLICIES_H__
@@ -46,6 +46,9 @@ struct RawArithmeticPolicy {
   { return z.r_cbrt(x, rnd) == 0; }
   static bool root(T& z, const TL& x, unsigned long k, prec_t, rnd_t rnd)
   { return z.r_root(x, k, rnd) == 0; }
+
+  static bool sin(T& z, const TL& x, prec_t, rnd_t rnd)
+  { return z.r_sin(x, rnd) == 0; }
 
   static bool add(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
   { return z.r_add(x, y, rnd) == 0; }
@@ -77,6 +80,9 @@ struct FixedArithmeticPolicy {
   { return z.cbrt(x, prec, rnd) == 0; }
   static bool root(T& z, const TL& x, unsigned long k, prec_t prec, rnd_t rnd)
   { return z.root(x, k, prec, rnd) == 0; }
+
+  static bool sin(T& z, const TL& x, prec_t prec, rnd_t rnd)
+  { return z.sin(x, prec, rnd) == 0; }
 
   static bool add(T& z, const TL& x, const TR& y, prec_t prec, rnd_t rnd)
   { return z.add(x, y, prec, rnd) == 0; }

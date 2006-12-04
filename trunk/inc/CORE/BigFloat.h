@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.21 2006-12-03 18:52:05 exact Exp $
+ * $Id: BigFloat.h,v 1.22 2006-12-04 03:43:00 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -732,6 +732,43 @@ public:
        set_prec(prec); return r_div(x, y, rnd);
      }
   }
+  //@}
+
+  /// \name Sine functions (raw version)
+  //@{
+  /// Sine function for <tt>BigFloat</tt> (raw version)
+  int r_sin(const BigFloat& x, rnd_t rnd = MPFR_RND)
+  { return mpfr_sin(mp(), x.mp(), rnd); }
+  /// square root function for <tt>int</tt> (raw version)
+  template<typename T>
+  int r_sin(T x, rnd_t rnd = MPFR_RND)
+  { return r_sin(BigFloat(x), rnd); }
+  //@}
+
+  /// \name Sine functions (fixed version)
+  //@
+  /// Sine function for <tt>BigFloat</tt> (fixed version)
+  int sin(const BigFloat& x, 
+           prec_t prec, rnd_t rnd = MPFR_RND) {
+    assert(prec>=2);
+    if (&x == this) { // if x is same as ouput
+       if (prec > get_prec()) {
+         prec_round (prec, rnd);
+         return r_sin(x,rnd);
+       } else if (prec < get_prec()) {
+         r_sin(x,rnd);
+         return prec_round (prec, rnd);
+       } else {
+         return r_sin(x,rnd);
+       }
+    } else {
+      set_prec(prec); return r_sin(x, rnd);
+    }
+  }
+  /// Sine function for <tt>T</tt> (fixed version)
+  template <typename T> 
+  int sin(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
+  { set_prec(prec); return r_sin(x, rnd); }
   //@}
 
   /// \name square root functions (raw version)

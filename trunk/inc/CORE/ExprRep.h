@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.22 2006-12-03 19:07:52 exact Exp $
+ * $Id: ExprRep.h,v 1.23 2006-12-04 03:43:00 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -30,6 +30,8 @@
 #include <bitset>
 #include <iostream>
 #include <sstream>
+
+#define CORE_DEBUG
 
 CORE_BEGIN_NAMESPACE
 
@@ -524,16 +526,16 @@ protected: // overridable methods
   { new_nodeinfo(); }
   /// compute sign
   virtual bool compute_sign()
-  { assert(0); return false;}
+  { return false;}
   /// compute uMSB
   virtual bool compute_uMSB()
-  { assert(0); return false;}
+  { return false;}
   /// compute lMSB
   virtual bool compute_lMSB()
-  { assert(0); return false;}
+  { return false;}
   /// compute rootBd
   virtual void compute_rootBd()
-  {assert(0);}
+  {}
 #ifdef CORE_DEBUG
   virtual std::string op()
   { return std::string("undefined"); }
@@ -1034,6 +1036,90 @@ protected:
 #endif 
 };
 
+/// \class Sin
+/// \brief geometric sin node
+template <typename RootBd, typename Filter, typename Kernel>
+class SinRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
+  typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  typedef UnaryOpRepT<RootBd, Filter, Kernel> UnaryOpRep;
+  typedef RootBd* id_rootbd_t;
+  using UnaryOpRep::child;
+  using UnaryOpRep::check_exact;
+  using ExprRep::filter;
+  using ExprRep::sign;
+  using ExprRep::uMSB;
+  using ExprRep::lMSB;
+  using ExprRep::appValue;
+  using ExprRep::rootBd;
+  using ExprRep::abs2rel;
+  using ExprRep::init_value;
+  using ExprRep::numType;
+public:
+  SinRepT(ExprRep* c) : UnaryOpRep(c) {
+    numType() = std::max(NODE_NT_TRANSCENDENTAL, child->numType());
+    if (child->get_sign()==0)
+      init_value(0);
+  }
+  virtual ~SinRepT() 
+  {}
+protected:
+  virtual bool compute_sign() 
+  { return false;}
+  virtual bool compute_uMSB() 
+  { uMSB() = 0; return true;}
+  virtual bool compute_lMSB() 
+  { return false;}
+  virtual bool compute_a_approx(prec_t prec) {
+    return check_exact(appValue().sin(child->a_approx(prec+1), prec+1));
+  }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Sin"); }
+#endif 
+};
+/*
+/// \class Expo
+/// \brief geometric power of e node
+template <typename RootBd, typename Filter, typename Kernel>
+class ExpoRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
+  typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  typedef UnaryOpRepT<RootBd, Filter, Kernel> UnaryOpRep;
+  typedef RootBd* id_rootbd_t;
+  using UnaryOpRep::child;
+  using UnaryOpRep::check_exact;
+  using ExprRep::filter;
+  using ExprRep::sign;
+  using ExprRep::uMSB;
+  using ExprRep::lMSB;
+  using ExprRep::appValue;
+  using ExprRep::rootBd;
+  using ExprRep::abs2rel;
+  using ExprRep::init_value;
+  using ExprRep::numType;
+public:
+  ExpoRepT(ExprRep* c) : UnaryOpRep(c) {
+    numType() = std::max(NODE_NT_TRANSCENDENTAL, child->numType());
+    if (child->get_sign()==0)
+      init_value(0);
+  }
+  virtual ~ExpoRepT() 
+  {}
+protected:
+  virtual bool compute_sign() 
+  { sign() = 1; return true;}
+  virtual bool compute_uMSB() 
+  { return false;}
+  virtual bool compute_lMSB() 
+  { return false;}
+  virtual bool compute_a_approx(prec_t prec) {
+    return check_exact(appValue().expo(child->a_approx(prec+1), prec+1));
+  }
+#ifdef CORE_DEBUG
+  virtual std::string op()
+  { return std::string("Expo"); }
+#endif 
+};
+*/
 /// \class RootRepT
 /// \brief k-th root node
 template <typename RootBd, typename Filter, typename Kernel>
