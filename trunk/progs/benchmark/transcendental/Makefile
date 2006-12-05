@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.1 2006-12-04 22:04:29 exact Exp $
+# Core Library, $Id: Makefile,v 1.2 2006-12-05 00:39:59 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -36,10 +36,8 @@ test:  $(TARGETS)
 	./tElemFun 1000 1
 
 moretest: $(TARGETS)
-	./tConst 1000
 	./tConst 10000
 	./tConst 100000
-	./tElemFun 1000
 	./tElemFun 10000
 	./tElemFun 100000
 
@@ -54,6 +52,11 @@ tConst: tConst.cpp
 tElemFun: tElemFun.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) tElemFun.cpp -o tElemFun.o
 	${CXX} $(LDFLAGS) tElemFun.o $(CORE_LIB) -o tElemFun
+
+time:
+	time ./tConst 10000
+	time ./tElemFun 10000
+
 #=================================================
 # Rules
 #=================================================
