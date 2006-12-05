@@ -18,7 +18,7 @@ int main( int argc, char *argv[] ) {
 
   Timer2 timer;
   timer.start();
-  Expr SIN = sin(Expr(0.7));
+  Expr SIN = sin(Expr("0.7"));
   SIN.approx(prec, CORE_INFTY);
   timer.stop();
 
@@ -28,7 +28,7 @@ int main( int argc, char *argv[] ) {
   std::cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
  
   timer.start();
-  Expr COS = cos(Expr(0.7));
+  Expr COS = cos(Expr("0.81"));
   COS.approx(prec, CORE_INFTY);
   timer.stop();
 
@@ -38,7 +38,7 @@ int main( int argc, char *argv[] ) {
   std::cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
 
   timer.start();
-  Expr TAN = tan(Expr(0.7));
+  Expr TAN = tan(Expr("0.7"));
   TAN.approx(prec, CORE_INFTY);
   timer.stop();
 
@@ -48,7 +48,7 @@ int main( int argc, char *argv[] ) {
   std::cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
  
   timer.start();
-  Expr COT = cot(Expr(0.7));
+  Expr COT = cot(Expr("0.7"));
   COT.approx(prec, CORE_INFTY);
   timer.stop();
 
