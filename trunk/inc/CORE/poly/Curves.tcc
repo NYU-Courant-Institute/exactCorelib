@@ -30,7 +30,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.tcc,v $
- * $Revision: 1.2 $ $Date: 2006-11-20 19:47:59 $
+ * $Revision: 1.3 $ $Date: 2006-12-11 13:53:18 $
  ***************************************************************************/
 
 
@@ -116,7 +116,7 @@ BiPoly<NT>::BiPoly(int deg, int *d, NT *C){
     for(int i=0; i <=deg; i++)
       max = core_max(d[i],max);
 
-    NT *c = new NT[max];
+    NT *c = new NT[max+1]; // 12/11/06: added "+1" (bug report by Michael Burr)
 
     for(int i=0; i<= deg; i++){
       for(int j=0; j <=d[i]; j++)
