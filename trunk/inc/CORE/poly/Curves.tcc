@@ -30,7 +30,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.tcc,v $
- * $Revision: 1.3 $ $Date: 2006-12-11 13:53:18 $
+ * $Revision: 1.4 $ $Date: 2006-12-14 20:02:33 $
  ***************************************************************************/
 
 
@@ -86,7 +86,7 @@ BiPoly<NT>::BiPoly(Polynomial<NT> p, bool flag){
       if(ydeg >=0){
         for(int i=0; i<=ydeg; i++){
 	  Polynomial<NT> temp(0);
-	  temp.setCoeff(0, p.getCoeffi(i));
+	  temp.setCoeff(0, p.getCoeff(i));
 	  coeffX.push_back(temp);	// does STL make a copy of temp?
         }//for
       }//if
@@ -833,7 +833,7 @@ BiPoly<NT> & BiPoly<NT>::convertXpoly(){
 
     for(int i=0; i<=xdeg; i++){
       for(int j=0; j<=ydeg; j++){
-	cs[j] = coeffX[j].getCoeffi(i);
+	cs[j] = coeffX[j].getCoeff(i);
       }
       
       vP.push_back(Polynomial<NT>(ydeg, cs));
@@ -873,7 +873,7 @@ Polynomial<NT>  BiPoly<NT>::replaceYwithX(){
     int m = getTrueYdegree();
     NT *cs = new NT[m+1];
     for(int i=0; i <= m ; i++)
-      cs[i]=coeffX[i].getCoeffi(0);
+      cs[i]=coeffX[i].getCoeff(0);
     delete[] cs;
 
     return Polynomial<NT>(m,cs);
