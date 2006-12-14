@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: MpfrIO.cpp,v 1.8 2006-12-14 20:01:55 exact Exp $
+ * $Id: MpfrIO.cpp,v 1.9 2006-12-14 22:07:51 exact Exp $
  ***************************************************************************/
 #include <mpfr.h>
 #include <string>
@@ -141,8 +141,9 @@ std::string mpfr2str(
     result.assign(str, len+first);
     if (exp > 0) {  
       // BUG fixed: if ((unsigned long)exp > len-first) (12/14/06)
+      //   result.append(exp - len+first, '0');
       if ((unsigned long)exp > len) // integer need padding 0
-        result.append(exp - len+first, '0');
+        result.append(exp - len, '0');
       else if ((unsigned long)exp < len) // float point value
         result.insert(first + exp, ".");
     } else if (exp < 0) {
