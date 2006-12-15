@@ -63,7 +63,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.h,v $
- * $Revision: 1.2 $ $Date: 2006-11-20 19:47:59 $
+ * $Revision: 1.3 $ $Date: 2006-12-15 20:19:07 $
  ***************************************************************************/
 
 
@@ -247,10 +247,13 @@ class BiPoly{
   int getYdegree() const;
   
   // getXdegree()
-  int getXdegree();
+  int getXdegree() const;
+
+  // getCoeff(i)
+  Polynomial<NT> getCoeff(int i) const;
 
   // getTrueYdegree
-  int getTrueYdegree();
+  int getTrueYdegree() ;
 
   //eval(x,y)
   Expr eval(Expr x, Expr y);//Evaluate the polynomial at (x,y)

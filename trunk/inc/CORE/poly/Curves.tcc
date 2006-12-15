@@ -30,7 +30,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.tcc,v $
- * $Revision: 1.4 $ $Date: 2006-12-14 20:02:33 $
+ * $Revision: 1.5 $ $Date: 2006-12-15 20:19:07 $
  ***************************************************************************/
 
 
@@ -106,26 +106,29 @@ BiPoly<NT>::BiPoly(Polynomial<NT> p, bool flag){
   //  d[] - array containing the degrees of each coefficient (i.e., X poly)
   //  C[] - list of coefficients, we use array d to select the
   //      coefficients
+  //
+  //  Dec'06: Bug Fixed by Michael Burr
 
 template <class NT>
 BiPoly<NT>::BiPoly(int deg, int *d, NT *C){
 
-    ydeg = deg;
+    int coeff = 0;
     Polynomial<NT> temp;
     int max=0;
     for(int i=0; i <=deg; i++)
       max = core_max(d[i],max);
 
-    NT *c = new NT[max+1]; // 12/11/06: added "+1" (bug report by Michael Burr)
+    NT *c = new NT[max+1];
 
     for(int i=0; i<= deg; i++){
       for(int j=0; j <=d[i]; j++)
-	c[j] = C[i+j];
+        c[j] = C[coeff+j];
       temp = Polynomial<NT>(d[i],c);
-      coeffX.push_back(temp);      
+      coeffX.push_back(temp);
+      coeff += d[i]+1;
     }
     delete[] c;
-  }//BiPoly(deg,d[],C[])
+}//BiPoly(deg,d[],C[])
 
 
 //The BNF syntax is the following:-
@@ -544,7 +547,7 @@ int BiPoly<NT>::getYdegree() const {
   
   // getXdegree()
 template <class NT>
-int BiPoly<NT>::getXdegree(){
+int BiPoly<NT>::getXdegree() const{
     int deg=-1;
     for(int i=0; i <=ydeg; i++)
       deg = max(deg, coeffX[i].getTrueDegree());
@@ -553,7 +556,7 @@ int BiPoly<NT>::getXdegree(){
 
   // getTrueYdegree
 template <class NT>
-int BiPoly<NT>::getTrueYdegree(){
+int BiPoly<NT>::getTrueYdegree() {
     for (int i=ydeg; i>=0; i--){
       coeffX[i].contract();
       if (!zeroP(coeffX[i]))
@@ -561,6 +564,13 @@ int BiPoly<NT>::getTrueYdegree(){
     }
     return -1;	// Zero polynomial
   }//getTrueYdegree
+
+
+// getCoeff(i)
+template <class NT>
+Polynomial<NT> BiPoly<NT>::getCoeff(int i) const{
+   return coeffX[i];
+  }
 
 
   //eval(x,y)
