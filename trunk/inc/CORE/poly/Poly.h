@@ -268,6 +268,8 @@ public:
   Polynomial(int n) : base_cls(n) {}
   /// constructor with coeff array
   Polynomial(int n, NT* coef) : base_cls(n, coef) {}
+  /// constructor from NT value
+  Polynomial(const NT &c ) : base_cls(c) {}
   /// constructor with coeff vector
   Polynomial(const VecNT & coef) : base_cls(coef.size(), coef) {}
   Polynomial(int n, const char* s[]) : base_cls(n, s) {}
@@ -793,17 +795,20 @@ void mapleDump() const {
 template<typename T>
 T eval(const T& f) const {	// evaluation
   if (degree() == -1)
-    return NT(0);
+    return T(0);
   if (degree() == 0)
-    return NT(coeff()[0]);
-  T val(0);
+    return T(coeff()[0]);
+  T val(NT(0));
   //NT val(0);
   for (int i=degree(); i>=0; i--) {
     val *= f;
-    val += coeff()[i];	
+    val += T(coeff()[i]);	
   }
   return val;
 }//eval
+
+template<typename T>
+  T operator() ( const T& x ) const {  return eval( x ) ; }
 
 };
 

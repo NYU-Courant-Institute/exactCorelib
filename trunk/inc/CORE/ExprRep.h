@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.24 2006-12-04 21:14:20 exact Exp $
+ * $Id: ExprRep.h,v 1.25 2006-12-19 01:02:23 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -283,7 +283,7 @@ public: // public methods
     if (!m_nodeinfo) init_nodeinfo();
     // do exact evaluation
     if (is_approx_needed(prec)) {
-      std::cout << "r_approx with " << op() << std::endl;
+      //      std::cout << "r_approx with " << op() << std::endl;
       if (compute_r_approx(prec)) flags().set(fExact);
       flags().set(fInit);
     }

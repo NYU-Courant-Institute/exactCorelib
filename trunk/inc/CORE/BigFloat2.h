@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.18 2006-12-04 21:14:20 exact Exp $
+ * $Id: BigFloat2.h,v 1.19 2006-12-19 01:02:23 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -131,6 +131,16 @@ public:
   /// set exactness
   void set_exact(bool b)
   { m_exact = b; }
+
+  /// if it's exact, return true
+  /// if not marked exact, but exact, set flag and return true;
+  /// else return false;
+  bool check_exactness() 
+  { 
+    if ( m_exact ) return true;
+    if ( m_l == m_r ) { set_exact( true ); return true; }    
+    return false;
+  }
   //@}
 
   /// \name assignment functions (raw version)

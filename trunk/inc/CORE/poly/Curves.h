@@ -63,7 +63,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.h,v $
- * $Revision: 1.3 $ $Date: 2006-12-15 20:19:07 $
+ * $Revision: 1.4 $ $Date: 2006-12-19 01:02:23 $
  ***************************************************************************/
 
 
@@ -149,6 +149,9 @@ class BiPoly{
 
   //BiPoly(n)
   BiPoly(int n);// creates a BiPoly with nominal y-degree equal to n.
+
+  //BiPoly(NT)
+  BiPoly( const NT& c ); 
 
   //BiPoly(vp)
   BiPoly(std::vector<Polynomial<NT> > vp); // From vector of Polynomials
@@ -255,8 +258,22 @@ class BiPoly{
   // getTrueYdegree
   int getTrueYdegree() ;
 
+  // templated eval
+  // assume NT \subseteq T 
+  // T requires *, + , =, *=, +=
+  // the last two operators 
+  // are only for efficiency
+  // sufficient for composition
+
+  template< class T > 
+  T eval( const T& x, const T& y ) const; 
+
+  // operator version of eval
+  template< class T >
+    T operator() ( const T &x, const T &y ) const { return eval( x, y ); } 
+
   //eval(x,y)
-  Expr eval(Expr x, Expr y);//Evaluate the polynomial at (x,y)
+  Expr eval(Expr x, Expr y) ;//Evaluate the polynomial at (x,y)
 
   ////////////////////////////////////////////////////////
   // Polynomial arithmetic (these are all self-modifying)
@@ -278,13 +295,13 @@ class BiPoly{
   BiPoly<NT> & operator=( const BiPoly<NT>& P);
 
   // Self-addition
-  BiPoly<NT> & operator+=( BiPoly<NT>& P);
+  BiPoly<NT> & operator+=( const BiPoly<NT>& P);
    
   // Self-subtraction
-  BiPoly<NT> & operator-=( BiPoly<NT>& P);
+  BiPoly<NT> & operator-=( const BiPoly<NT>& P);
 
   // Self-multiplication
-  BiPoly<NT> & operator*=( BiPoly<NT>& P);
+  BiPoly<NT> & operator*=( const BiPoly<NT>& P);
   
   // Multiply by a polynomial in X
   BiPoly<NT> & mulXpoly( Polynomial<NT> & p);
@@ -321,6 +338,8 @@ class BiPoly{
   BiPoly<NT> & convertXpoly();
 
   //Set Coeffecient to the polynomial passed as a parameter
+  Polynomial<NT> getCoeffY( int i ) const;
+  Polynomial<NT>& getCoeffY( int i );
   bool setCoeff(int i, Polynomial<NT> p);
 
   void reverse();
@@ -484,6 +503,7 @@ public:
   //
   int  plot( BigFloat eps=0.1, BigFloat x1=-1.0,
 	     BigFloat y1=-1.0, BigFloat x2=1.0, BigFloat y2=1.0, int fileNo=1);
+
 
 // selfIntersections():
 //   this should be another member function that lists

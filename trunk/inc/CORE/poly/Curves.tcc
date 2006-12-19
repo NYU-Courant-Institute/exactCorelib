@@ -30,7 +30,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.tcc,v $
- * $Revision: 1.5 $ $Date: 2006-12-15 20:19:07 $
+ * $Revision: 1.6 $ $Date: 2006-12-19 01:02:23 $
  ***************************************************************************/
 
 
@@ -65,6 +65,11 @@ BiPoly<NT>::BiPoly(int n){// creates a BiPoly with nominal y-degree equal to n.
     }
   }
 
+template <class NT>
+BiPoly<NT>::BiPoly( const NT& c ) { 
+	ydeg = 0;
+	coeffX.push_back( Polynomial<NT>(c) );
+}
   //BiPoly(vp)
 template <class NT>
 BiPoly<NT>::BiPoly(std::vector<Polynomial<NT> > vp){ 
@@ -112,6 +117,7 @@ BiPoly<NT>::BiPoly(Polynomial<NT> p, bool flag){
 template <class NT>
 BiPoly<NT>::BiPoly(int deg, int *d, NT *C){
 
+    ydeg = deg;
     int coeff = 0;
     Polynomial<NT> temp;
     int max=0;
@@ -573,6 +579,25 @@ Polynomial<NT> BiPoly<NT>::getCoeff(int i) const{
   }
 
 
+// assume that NT \subseteq T 
+
+template <class NT> template <class T>
+T BiPoly<NT>::eval(const T &x, const T &y ) const {
+    //Evaluate the polynomial at (x,y);	
+
+    int deg_y = ydeg;
+    if ( deg_y == -1 ) return T(0);
+
+    T res = T( coeffX[deg_y].eval(x) );
+
+    for(int i = deg_y - 1; i >= 0 ; --i){
+      res *= y;
+      res += T( coeffX[i].eval(x) );
+    }
+    return res;
+  }//eval
+
+
   //eval(x,y)
 template <class NT>
 Expr BiPoly<NT>::eval(Expr x, Expr y){//Evaluate the polynomial at (x,y)
@@ -583,6 +608,7 @@ Expr BiPoly<NT>::eval(Expr x, Expr y){//Evaluate the polynomial at (x,y)
     }
     return e;
   }//eval
+
 
   ////////////////////////////////////////////////////////
   // Polynomial arithmetic (these are all self-modifying)
@@ -634,7 +660,7 @@ BiPoly<NT> & BiPoly<NT>::operator=( const BiPoly<NT>& P) {
 
   // Self-addition
 template <class NT>
-BiPoly<NT> & BiPoly<NT>::operator+=( BiPoly<NT>& P) { // +=
+BiPoly<NT> & BiPoly<NT>::operator+=( const BiPoly<NT>& P) { // +=
 
     int d = P.getYdegree();
     if (d > ydeg)
@@ -647,7 +673,7 @@ BiPoly<NT> & BiPoly<NT>::operator+=( BiPoly<NT>& P) { // +=
    
   // Self-subtraction
 template <class NT>
-BiPoly<NT> & BiPoly<NT>::operator-=( BiPoly<NT>& P) { // -=
+BiPoly<NT> & BiPoly<NT>::operator-=( const BiPoly<NT>& P) { // -=
     int d = P.getYdegree();
     if (d > ydeg)
       expand(d);
@@ -659,7 +685,7 @@ BiPoly<NT> & BiPoly<NT>::operator-=( BiPoly<NT>& P) { // -=
 
   // Self-multiplication
 template <class NT>
-BiPoly<NT> & BiPoly<NT>::operator*=( BiPoly<NT>& P) { // *=
+BiPoly<NT> & BiPoly<NT>::operator*=( const BiPoly<NT>& P) { // *=
     int d = ydeg + P.getYdegree();
 
     std::vector<Polynomial<NT> > vP;
@@ -854,6 +880,18 @@ BiPoly<NT> & BiPoly<NT>::convertXpoly(){
     coeffX = vP;
     return (*this);
   }
+
+template <class NT>
+Polynomial<NT> BiPoly<NT>::getCoeffY( int i ) const { 
+	assert ( i >= 0 && i <= ydeg );
+	return coeffX[i];
+}
+
+template <class NT>
+Polynomial<NT>& BiPoly<NT>::getCoeffY( int i ) { 
+	assert ( i >= 0 && i <= ydeg );
+	return coeffX[i];
+}
 
   //Set Coeffecient to the polynomial passed as a parameter
 template <class NT>
