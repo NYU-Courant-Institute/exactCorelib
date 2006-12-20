@@ -53,20 +53,17 @@ template < class NT >
 Polynomial<NT> composeHorner ( const Polynomial<NT>& P, const Polynomial<NT>& X ) { 
 
   int i, deg_P;
-  NT ci;
- 
+  cerr << "degP " << P.degree() << " vs " << P.getTrueDegree() << endl;
+  cerr << "degX " << X.degree() << " vs " << X.getTrueDegree() << endl;
   deg_P = P.getTrueDegree();
   if ( deg_P < 0 ) return Polynomial<NT>::polyZero();
 
-  ci = P.getCoeff( deg_P );
-  Polynomial<NT> P_X = Polynomial<NT>( 0, &ci );
+  Polynomial<NT> P_X = Polynomial<NT>( P.getCoeff( deg_P ) );
   
   for ( i = deg_P-1 ; i >= 0 ; --i ) { 
 
     P_X *= X;
-
-    ci = P.getCoeff(i);
-    P_X += Polynomial<NT>( 0, &ci );
+    P_X += Polynomial<NT>( P.getCoeff(i) );
 
   }
 

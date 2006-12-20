@@ -56,7 +56,7 @@ void pBF( BigFloat b ) {
 
 template< class NumT > 
 void showBiPoly( BiPoly<NumT> bp ) { 
-  std::cout << "BiPoly<NT> ( deg = " << bp.ydeg << ")" << endl;
+  std::cout << "BiPoly<NT> ( deg = " << bp.ydeg << "/" << bp.getTrueYdegree() << ")" << endl;
   if ( bp.ydeg == -1 ) cerr << 0 << endl;
   for ( int i = 0 ; i <= bp.ydeg; ++i ) { 
 
@@ -228,15 +228,25 @@ int main(int argc, char* argv[])
      if ( t == 0 ) {  // 1(1)
        if ( argc > 5 ) reps = atoi(argv[5]);
        PolyNT f = PolyNT( argv[3] );
+       f.contract();
+       cerr << "P " << f << endl;
        PolyNT g = PolyNT( argv[4] );
+       g.contract();
+       cerr << "X " << g << endl;
        PolyNT res;
        for ( int u = 0 ; u < reps; u++ ) res = f(g); 
+       cout << res << endl; 
        res.mapleDump();
+       cerr << "horner" << endl;
+       PolyNT res2 = composeHorner(f,g);
+       cout << res2 << endl;
      } 
      else if ( t == 1 ) { 
        if ( argc > 5 ) reps = atoi(argv[5]);
        PolyNT f = PolyNT( argv[3] );
        BiPolyNT g = BiPolyNT( argv[4] );
+       cerr << "P " << f << endl << "x ";
+       showBiPoly( g );
        BiPolyNT res;
        for ( int u = 0 ; u < reps; u++ ) res = f(g);
        showBiPoly( res );

@@ -793,15 +793,16 @@ void mapleDump() const {
 ///Evaluation: Assumes that the point of evaluation has the same
 ///type as the coefficients.
 template<typename T>
-T eval(const T& f) const {	// evaluation
-  if (degree() == -1)
+T eval(const T& x) const {	// evaluation
+  int deg = degree();
+  if (deg == -1)
     return T(0);
-  if (degree() == 0)
+  if (deg == 0)
     return T(coeff()[0]);
-  T val(NT(0));
-  //NT val(0);
-  for (int i=degree(); i>=0; i--) {
-    val *= f;
+
+  T val(coeff()[deg]);
+  for (int i = deg-1; i>=0; i--) {
+    val *= x;
     val += T(coeff()[i]);	
   }
   return val;
@@ -828,6 +829,10 @@ Polynomial<NT> operator-(const Polynomial<NT>& x, const Polynomial<NT>& y) {
 template <typename NT>
 inline 
 Polynomial<NT> operator*(const Polynomial<NT>& x, const Polynomial<NT>& y) {
+
+  if ( x.getDegree() < 0 || y.getDegree() < 0 ) 
+    return Polynomial<NT>(NT(0));
+
   int d = x.getDegree() + y.getDegree();
   NT* c = new NT[d+1];
   for(int i=0; i<d+1; ++i)
