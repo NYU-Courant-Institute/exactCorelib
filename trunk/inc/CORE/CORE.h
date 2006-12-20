@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CORE.h,v 1.10 2006-07-17 06:55:02 exact Exp $
+ * $Id: CORE.h,v 1.11 2006-12-20 23:12:19 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_CORE_H__
 #define __CORE_CORE_H__
@@ -31,6 +31,7 @@
 #include <CORE/BigInt.h>
 #include <CORE/BigRat.h>
 #include <CORE/BigFloat.h>
+#include <CORE/BFInterval.h>
 // level 2
 #include <CORE/BigFloat2.h>
 // level 3

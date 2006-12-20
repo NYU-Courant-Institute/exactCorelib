@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.26 2006-12-04 21:14:20 exact Exp $
+ * $Id: Expr.h,v 1.27 2006-12-20 23:12:19 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -197,16 +197,16 @@ public:
   { return ExprT(new CosRep(e.rep())); }
   /// tangent
   friend ExprT tan(const ExprT& e) {
-    if (e >= 0 && e <= 3.14/4)
-      return ExprT(new TanRep(e.rep()));
-    else
+    //if (e >= 0 && e <= 3.14/4)
+    //  return ExprT(new TanRep(e.rep()));
+    //else
       return sin(e)/cos(e);
   }
   /// cotangent
   friend ExprT cot(const ExprT& e) {
-    if (e >= 3.15/4 && e <= 3.14/2)
-      return ExprT(new CotRep(e.rep()));
-    else
+    //if (e >= 3.15/4 && e <= 3.14/2)
+    //  return ExprT(new CotRep(e.rep()));
+    //else
       return cos(e)/sin(e);
   }
   /// arcsine

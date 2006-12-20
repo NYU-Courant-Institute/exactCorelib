@@ -19,14 +19,14 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.25 2006-12-19 01:02:23 exact Exp $
+ * $Id: ExprRep.h,v 1.26 2006-12-20 23:12:19 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
 
 #include <CORE/CoreAux.h>
-#include <CORE/poly/Poly.h>
 #include <CORE/poly/Sturm.h>
+#include <CORE/poly/Descartes.h>
 #include <bitset>
 #include <iostream>
 #include <sstream>
@@ -1336,7 +1336,6 @@ class ExpoRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::numType;
 public:
   ExpoRepT(ExprRep* c) : UnaryOpRep(c) {
-    std::cout << "Constructor Expo" << std::endl;
     numType() = std::max(NODE_NT_TRANSCENDENTAL, child->numType());
     if (child->get_sign()==0)
       init_value(1);
@@ -1351,7 +1350,6 @@ protected:
   virtual bool compute_lMSB() 
   { return false;}
   virtual bool compute_a_approx(prec_t prec) {
-    std::cout << "compute_a_approx Expo" << std::endl;
     return check_exact(appValue().expo(child->r_approx(prec+2), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG

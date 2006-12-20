@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.19 2006-12-19 01:02:23 exact Exp $
+ * $Id: BigFloat2.h,v 1.20 2006-12-20 23:12:19 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -33,7 +33,7 @@ CORE_BEGIN_NAMESPACE
 // 
 //  1. all fixed version and auto version have problems when one of input 
 //     are output since the set_prec function will reset the input value.
-//
+//	(Problem has been fixed, Jihun)
 
 /// \class BigFloat2
 /// \brief BigFloat2 is a floating-point interval class 
