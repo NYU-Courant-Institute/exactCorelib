@@ -1,8 +1,7 @@
-# Makefile for Curves 
+# Makefile for algebraicNum
 #
-# (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.1 2006-12-19 00:34:00 exact Exp $
+# Core Library, $Id: Makefile,v 1.2 2006-12-20 16:01:02 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -12,8 +11,8 @@ LINKAGE=static
 LINKAGE=shared
 
 #CHOOSE THE VARIANT Core Library you need
-VAR=GCC31
-VAR=Debug
+#VAR=GCC31
+#VAR=Debug
 #VAR=
 
 ifndef CORE_PATH 
@@ -32,20 +31,7 @@ TARGETS_20= algebraicNum
 OTHER_TARGETS = 
 TARGETS= $(TARGETS_20)
 
-n=1
-n=
-
 p=tt
-p=tCurves
-p=moreCurves
-p=plotCurve
-p=tPcurves
-p=parseCurve
-
-ifile=plot
-
-verbose=1
-verbose=
 
 #=================================================
 # TARGETS

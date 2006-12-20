@@ -249,7 +249,7 @@ int main(int argc, char* argv[])
        showBiPoly( g );
        BiPolyNT res;
        for ( int u = 0 ; u < reps; u++ ) res = f(g);
-       showBiPoly( res );
+       //showBiPoly( res );
      }
      else if ( t == 5 ) {  // 1(1)
        if ( argc > 5 ) reps = atoi(argv[5]);
@@ -257,7 +257,7 @@ int main(int argc, char* argv[])
        PolyNT g = PolyNT( argv[4] );
        PolyNT res;
        for ( int u = 0 ; u < reps; u++ ) res = composeNaive ( f, g ); 
-       res.mapleDump();
+       //res.mapleDump();
      } 
      else if ( t == 6 ) { 
        if ( argc > 5 ) reps = atoi(argv[5]);
@@ -265,7 +265,7 @@ int main(int argc, char* argv[])
        BiPolyNT g = BiPolyNT( argv[4] );
        BiPolyNT res; 
        for ( int u = 0 ; u < reps; u++ ) res = composeNaive( f, g );
-       showBiPoly( res );
+       //showBiPoly( res );
 
      }
      else { 
@@ -277,7 +277,7 @@ int main(int argc, char* argv[])
 	 BiPolyNT b = BiPolyNT( argv[5] );
 	 BiPolyNT res;
 	 for ( int u = 0 ; u < reps; u++ ) res = f( a, b );
-	 showBiPoly( res );
+	 //showBiPoly( res );
        }
        else if ( t == 7 ) { 
 	 if ( argc > 6 ) reps = atoi(argv[6]);
@@ -286,7 +286,7 @@ int main(int argc, char* argv[])
 	 BiPolyNT b = BiPolyNT( argv[5] );
 	 BiPolyNT res;
 	 for ( int u = 0 ; u < reps; u++ ) res = composeNaive( f, a, b );
-	 showBiPoly( res );
+	 //showBiPoly( res );
        }
        else if ( t == 3 ) { // 1(1,1)
 	 if ( argc > 6 ) reps = atoi(argv[6]);
@@ -295,7 +295,7 @@ int main(int argc, char* argv[])
 	 PolyNT b = PolyNT( argv[5] );
 	 PolyNT res;
 	 for ( int u = 0 ; u < reps; u++ ) res = composeBinary ( f, a, b ); 
-	 res.mapleDump();
+	 //res.mapleDump();
        } 
        else if ( t == 4 ) { // 1(1,1)
 	 if ( argc > 6 ) reps = atoi(argv[6]);
@@ -304,7 +304,7 @@ int main(int argc, char* argv[])
 	 BiPolyNT b = PolyNT( argv[5] );
 	 BiPolyNT res;
 	 for ( int u = 0 ; u < reps; u++ ) res = composeBinary ( f, a, b ); 
-	 showBiPoly(res);
+	 //showBiPoly(res);
        } 
      }
      return 0;
