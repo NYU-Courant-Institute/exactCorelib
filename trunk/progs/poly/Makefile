@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.4 2006-11-16 17:41:03 exact Exp $
+# Core Library, $Id: Makefile,v 1.5 2006-12-20 16:03:42 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -233,6 +233,8 @@ tt2:	tt2.o
 tt3:	tt3.o
 
 tBug:	tBug.o
+
+tDescartes : tDescartes.o
 
 #=================================================
 # Rules
