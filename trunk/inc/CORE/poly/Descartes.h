@@ -3,7 +3,6 @@
 
 #include "CORE/poly/Sturm.h"
 #include "CORE/poly/composePoly.h"
-#include "CORE/poly/composeBiPoly.h"
 
 CORE_BEGIN_NAMESPACE
 
@@ -51,17 +50,20 @@ public:
     BigFloat eps = BigFloat::exp2(-aprec);
     BigFloat mid;
 
+    sign_t x_sign = sign(evalExactSign(_poly, retI.first));
+
     while (retI.second - retI.first > eps) {
       mid.div2(retI.second + retI.first);
-      sign_t midsign = sign(evalExactSign(_poly,mid));
-      if (midsign == 0) {
+      sign_t mid_sign = sign(evalExactSign(_poly,mid));
+      if (mid_sign == 0) {
         retI.first = retI.second = mid;
         return retI;
       }
-      if (sign(evalExactSign(_poly, retI.first)) * midsign < 0) {
+      if (x_sign * mid_sign < 0) {
         retI.second = mid;
       } else {
         retI.first = mid;
+        x_sign = mid_sign;
       }
     }
     return retI;
