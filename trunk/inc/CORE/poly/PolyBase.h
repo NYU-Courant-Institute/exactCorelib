@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: PolyBase.h,v 1.4 2006-12-20 07:44:17 exact Exp $
+ * $Id: PolyBase.h,v 1.5 2006-12-20 23:04:27 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_POLYBASE_H__
 #define __CORE_POLYBASE_H__
@@ -52,6 +52,14 @@ public:
     if (_deg >= 0) {
       _coeff = new NT[_deg+1];
       for (int i=0; i<=_deg; ++i) _coeff[i] = rhs._coeff[i];
+    }
+  }
+  /// copy constructor
+  template <class T>
+  PolyBase(const PolyBase<T>& rhs) : _deg(rhs.degree()), _coeff(0) {
+    if (_deg >= 0) {
+      _coeff = new NT[_deg+1];
+      for (int i=0; i<=_deg; ++i) _coeff[i] = rhs.coeff()[i];
     }
   }
   /// destructor
@@ -134,7 +142,7 @@ public:
     }
   }
   //@}
-protected:
+public:
   /// return the coeff (const)
   const NT* coeff() const { return _coeff; }
   /// return the coeff

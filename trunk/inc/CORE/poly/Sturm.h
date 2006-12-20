@@ -51,7 +51,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Sturm.h,v $
- * $Revision: 1.9 $ $Date: 2006-12-20 17:16:30 $
+ * $Revision: 1.10 $ $Date: 2006-12-20 23:04:27 $
  ***************************************************************************/
 
 
@@ -726,6 +726,7 @@ public:
     extLong fuMSB=0, ffuMSB=0;
     return newtonIterE(prec, bf, del, fuMSB, ffuMSB);
   }
+
   // A Smale bound which is an \'a posteriori condition. Applying 
   // Newton iteration to any point z satisfying this condition we are 
   // sure to converge to the nearest root in a certain interval of z.
@@ -850,6 +851,7 @@ public:
     return  BigFloat(1)/(1 + power(BigFloat(deg), 3*deg+9)
                *power(2+height(p).getRight(),6*deg));
   }
+
 
   //newtonRefine(J, a) 
   //

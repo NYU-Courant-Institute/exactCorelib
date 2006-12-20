@@ -1,6 +1,7 @@
 #ifndef __CORE_POLY_H__
 #define __CORE_POLY_H__
 
+#include <CORE/Expr.h>
 #include <CORE/poly/PolyBase.h>
 #include <string>
 #include <iostream>
@@ -264,6 +265,9 @@ public:
   Polynomial() {}
   /// copy constructor
   Polynomial(const Polynomial &rhs) : base_cls(rhs) {}
+  /// copy constructor
+  template <class T>
+  Polynomial(const Polynomial<T> &rhs) : base_cls(rhs) {}
   /// constructor of the Unit Polynomial of nominal deg n>=0
   Polynomial(int n) : base_cls(n) {}
   /// constructor with coeff array
@@ -1291,6 +1295,30 @@ Polynomial<NT> compose ( const Polynomial<NT>& P, const Polynomial<NT>& X ) {
 }
 
 
+template < class NT >
+Polynomial<NT> composeHornerBinary ( const Polynomial<NT>& P, const Polynomial<NT>& A, const Polynomial<NT>& B ) { 
+  
+  int i, deg_P;
+  NT ci;
+ 
+  deg_P = P.getTrueDegree();
+
+  // leading coeff of P
+  ci = P.getCoeff(deg_P);
+  Polynomial<NT> P_AB = Polynomial<NT>(0, &ci);
+  // temporary B for powering
+  Polynomial<NT> pB = B;
+
+  for ( i = deg_P - 1 ; i >= 0 ; --i ) { 
+    P_AB *= A;
+    ci = P.getCoeff(i);
+    P_AB += pB * Polynomial<NT>(0, &ci);
+    pB *= B;
+  }
+
+  return P_AB;
+}
+
 
 template < class NT >
 Polynomial<NT> composeBinary ( const Polynomial<NT>& P, const Polynomial<NT>& A, const Polynomial<NT>& B ) { 
@@ -1319,6 +1347,293 @@ Polynomial<NT> composeBinary ( const Polynomial<NT>& P, const Polynomial<NT>& A,
  
 }
 
+/// Bounds
+//{@
+
+//NOTE: In most of the bounds below we assume that there is a constructor
+//of the form BigFloat2(NT) for all NT's.
+
+/// An iterative version of computing Cauchy Bound from Erich Kaltofen.
+// See the writeup under collab/sep/.
+template < class NT >
+BigInt CauchyBound(Polynomial<NT> &p) {
+  int deg = p.getTrueDegree();
+  BigInt B(1);
+  BigFloat lhs(0), rhs(1);
+  while (true) {
+    /* compute \sum_{i=0}{deg-1}{|a_i|B^i} */
+    lhs = 0;
+    for (int i=deg-1; i>=0; i--) {
+      lhs *= B;
+      lhs += ToBigFloat2(abs(p.coeff()[i])).getLeft();//Need a lower bound on 
+                                                    //the absolute value
+    }
+    //lhs /= abs(p.coeff()[deg]);
+    //lhs.makeFloorExact();
+    /* compute B^{deg} */
+    if (rhs * ToBigFloat2(abs(p.coeff()[deg])).getRight() <= lhs) {
+      B <<= 1;
+      rhs *= (BigInt(1)<<deg);
+    } else
+      break;
+  }
+  return B;
+}
+
+
+
+///Another iterative bound which is at least as good as the above bound
+///by Erich Kaltofen.
+template < class NT >
+BigInt UpperBound(Polynomial<NT> &p) {
+  int deg = p.getTrueDegree();
+
+  BigInt B(1);
+  BigFloat lhsPos(0), lhsNeg(0), rhs(1);
+  while (true) {
+    /* compute \sum_{i=0}{deg-1}{|a_i|B^i} */
+    lhsPos = lhsNeg = 0;
+    for (int i=deg-1; i>=0; i--) {
+      if (p.coeff()[i]>0) {
+      	lhsPos = lhsPos * B + ToBigFloat2(p.coeff()[i]).getLeft();
+      	lhsNeg = lhsNeg * B;
+      } else {
+      	lhsNeg = lhsNeg * B - ToBigFloat2(p.coeff()[i]).getLeft();
+      	lhsPos = lhsPos * B;
+      } 
+    }
+
+    /*lhsNeg /= abs(p.coeff()[deg]);
+    lhsPos /= abs(p.coeff()[deg]);
+    lhsPos.makeCeilExact();
+    lhsNeg.makeCeilExact();*/
+    //We can avoid the above steps by multiplying rhs by the leading coefficient
+    //and then compare the result. Though we have to take get a BigFloat2 
+    //approximation that is an upper bound on the leading coefficient.
+    //
+    /* compute B^{deg} */
+    if (rhs * ToBigFloat2(abs(p.coeff()[deg])).getRight() <= std::max(lhsPos,lhsNeg)) {
+      B <<= 1;
+      rhs *= (BigInt(1)<<deg);
+    } else
+      break;
+  }
+  return B;
+}
+
+// Cauchy Lower Bound on Roots
+// -- ASSERTION: NT is an integer type
+template < class NT >
+BigFloat CauchyLowerBound(Polynomial<NT> &p) {
+  if ((zeroP(p)) || p.coeff()[0] == 0)
+    return BigFloat(0);
+  NT mx = 0;
+  int deg = p.getTrueDegree();
+  for (int i = 1; i <= deg; ++i) {
+    mx = core_max(mx, abs(p.coeff()[i]));
+  }
+  BigFloat2 e = ToBigFloat2(abs(p.coeff()[0]))/ ToBigFloat2(abs(p.coeff()[0]) + mx);
+  return (div2(e.getLeft()));
+}
+
+// Separation bound for polynomials that may have multiple roots.
+// We use the Rump-Schwartz bound.
+//
+//    ASSERT(the return value is an exact BigFloat and a Lower Bound)
+//
+template < class NT >
+BigFloat sepBound(Polynomial<NT> &p) {
+  BigInt d;
+  BigFloat e;
+  int deg = p.getTrueDegree();
+
+  CORE::power(d, BigInt(deg), ((deg)+4)/2);
+  e = CORE::power(height(p).getRight()+1, deg);
+
+  return (BigFloat2(1)/(e*2*d)).getLeft();
+        // BUG fix: ``return 1/e*2*d'' was wrong
+        // NOTE: the relative error in this division (1/(e*2*d))
+        //   is defBFdivRelPrec (a global variable), but
+        //   since this is always positive, we are OK.
+        //   But to ensure that defBFdivRelPrec is used,
+        //   we must make sure that e and d are exact.
+        // Finally, using "makeFloorExact()" is OK because
+        //   the mantissa minus error (i.e., m-err) will remain positive
+        //   as long as the relative error (defBFdivRelPrec) is >1.
+}
+
+//@}
+
+  // A Smale bound which is an \'a posteriori condition. Applying 
+  // Newton iteration to any point z satisfying this condition we are 
+  // sure to converge to the nearest root in a certain interval of z.
+  // The condition is for all k >= 2,
+  //    | \frac{p^(k)(z)}{k!p'(z)} |^{1\(k-1)} < 1/8 * |\frac{p'(z)}{p(z)}|
+  // Note: code below has been streamlined (Chee)
+  /*
+    bool smaleBound(const Polynomial<NT> * p, BigFloat z){
+    int deg = p[0].getTrueDegree();
+    BigFloat max, temp, temp1, temp2;
+    temp2 = p[1].eval(z);
+    temp = core_abs(temp2/p[0].eval(z))/8;
+    BigInt fact_k = 2;
+    for(int k = 2; k <= deg; k++){
+      temp1 = core_abs(p[k].eval(z)/(fact_k*temp2)); 
+      if(k-1 == 2)
+	temp1 = sqrt(temp1);
+      else
+	temp1 = root(temp1, k-1);
+      if(temp1 >= temp) return false; 
+    }
+    return true;
+    }
+   */
+
+  //An easily computable Smale's point estimate for Newton as compared to the
+  //one above. The criterion is
+  //
+  // ||f||_{\infty} * \frac{|f(z)|}{|f'(z)|^2} 
+  //                * \frac{\phi'(|z|)^2}{\phi(|z|)}  < 0.03
+  // where
+  //           \phi(r) = \sum_{i=0}{m}r^i,
+  //           m = deg(f)
+  //
+  //It is given as Theorem B in [Smale86].
+  //Reference:- Chapter 8 in Complexity and Real Computation, by
+  //            Blum, Cucker, Shub and Smale
+  //
+  //For our implementation we calculate an upper bound on
+  //the second fraction in the inequality above.  For r>0,
+  //
+  //    \phi'(r)^2     m^2 (r^m + 1)^2
+  //     ---------  <  -------------------          (1)
+  //    \phi(r)        (r-1) (r^{m+1} - 1)
+  //
+  // Alternatively, we have
+  // 
+  //    \phi'(r)^2     (mr^{m+1} + 1)^2
+  //     ---------  <  -------------------          (2)
+  //    \phi(r)        (r-1)^3 (r^{m+1} - 1)
+  //
+  // The first bound is better when r > 1.
+  // The second bound is better when r << 1.
+  // Both bounds (1) and (2) assumes r is not equal to 1.
+  // When r=1, the exact value is
+  //
+  //    \phi'(r)^2     m^2 (m + 1)
+  //     ---------  =  -----------                  (3)
+  //    \phi(r)            4
+  // 
+  // REMARK: smaleBoundTest(z) actually computes an upper bound
+  // 	on alpha(f,z), and compares it to 0.02 (then our theory
+  // 	says that z is a robust approximate zero).
+  //
+  template <class NT>
+  bool smaleBoundTest(Polynomial<NT> _poly, Polynomial<NT> _poly_derivative, const BigFloat& z){
+    //assert(z.isExact());   // the bound only makes sense for exact z
+
+#ifdef CORE_DEBUG
+    std::cout <<"Computing Smale's bound = " <<  std::endl;
+#endif
+
+    if(evalExactSign(_poly, z) == 0)// Reached the exact root.
+      return true;
+
+    BigFloat fprime = core_abs(evalExactSign(_poly_derivative,z)).getLeft();
+    if (fprime == 0) return false;  // z is a critical value!
+    BigFloat temp = core_abs(evalExactSign(_poly,z)).getRight();
+    temp.div(temp, power(fprime, 2), getDefaultBFdivPrec(), BF_RNDU);
+    temp = temp*height(_poly).getLeft();  // remains exact
+    //Thus, temp >=  ||f||_{\infty} |\frac{f(z)}{f'(z)^2}|
+
+    int m = _poly.getTrueDegree();    
+    BigFloat x = core_abs(z);
+    if (x==1)   {// special case, using (3)
+            temp *= m*m*(m+1);
+            temp.div_2exp(temp, 2);
+	    return (temp < 0.02);
+    }
+
+    BigFloat temp1;
+    if (x>1) { // use formula (1)
+      //temp1 = power(m* (power(x, m)+1), 2);          // m^2*(x^m + 1)^2
+      //temp1 /= ((x - 1)*(power(x, m+1) - 1));        // formula (1)
+      temp1.div(power(m* (power(x, m)+1), 2), ((x - 1)*(power(x, m+1) - 1)), 
+        getDefaultBFdivPrec(), BF_RNDU);        // formula (1)
+    } else {  // use formula (2)
+      //temp1 = power(m*(power(x, m+1) +1), 2);        // (m*x^{m+1} + 1)^2
+      //temp1 /= (power(x - 1,3)*(power(x, m+1) -1));  // formula (2)
+      temp1.div(power(m*(power(x, m+1) +1), 2), 
+        (power(x-1,3)*(power(x, m+1)-1)), 
+        getDefaultBFdivPrec(), BF_RNDU); // formula (2)
+    }
+
+
+    if(temp * temp1 < 0.03)          // make temp1 exact!
+      return true;
+    else
+      return false;
+  }//smaleBoundTest
+
+
+  // yapsBound(p)
+  // 	returns a bound on size of isolating interval of polynomial p
+  // 	which is guaranteed to be in the Newton Zone.
+  //    N.B. p MUST be square-free
+  //
+  //   Reference: Theorem 6.37, p.184 of Yap's book
+  //   	   [Fundamental Problems of Algorithmic Algebra]
+
+  template<class NT>
+  BigFloat yapsBound(const Polynomial<NT> & p) {
+    unsigned int deg = p.getTrueDegree();
+    return  BigFloat(1)/(1 + power(BigFloat(deg), 3*deg+9)
+               *power(2+height(p).getRight(),6*deg));
+  }
+
+///Norms on Polynomials
+//{@
+/// height function
+/// @return a BigFloat with error
+template < class NT >
+BigFloat2 height(const Polynomial<NT> &p) {
+  if (zeroP(p))
+    return BigFloat(0);
+  int deg = p.getTrueDegree();
+  NT ht = 0;
+  for (int i = 0; i<= deg; i++)
+    if (ht < abs(p.coeff()[i]))
+      ht = abs(p.coeff()[i]);
+  return ToBigFloat2(ht);
+}
+
+
+/// length function
+/// @return a BigFloat with error
+template < class NT >
+BigFloat2 length(Polynomial<NT> &p) {
+  if (zeroP(p))
+    return BigFloat(0);
+  int deg = p.getTrueDegree();
+  NT length = 0;
+  for (int i = 0; i< deg; i++)
+    length += abs(p.coeff()[i]*p.coeff()[i]);
+  return sqrt(ToBigFloat2(length));
+}
+
+template<class NT>
+int signVariationofCoeff(const Polynomial<NT> p) {
+  int deg = p.getTrueDegree();
+  int count = 0;
+  int last_sign = sign(p.coeff()[deg]);
+  for (int i=deg-1; i>=0; i--) {
+    if (sign(p.coeff()[i]) * last_sign < 0) {
+      count++;
+      last_sign *= -1;
+    }
+  }
+  return count;
+}
 
 //@}
 CORE_END_NAMESPACE

@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.5 2006-12-20 16:03:42 exact Exp $
+# Core Library, $Id: Makefile,v 1.6 2006-12-20 23:05:02 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -12,9 +12,9 @@ LINKAGE=static
 LINKAGE=shared
 
 #CHOOSE THE VARIANT Core Library you need
-VAR=GCC31
-VAR=Debug
-VAR=
+#VAR=GCC31
+#VAR=Debug
+#VAR=
 
 CORE_PATH=../..
 include ${CORE_PATH}/progs/Make.options
@@ -40,6 +40,7 @@ p=solve
 p=tNewton
 p=tSturm${n}
 p=tSturm
+p=tDescartes
 p=pisot
 p=tRootOf
 p=tPseudo
@@ -47,7 +48,7 @@ p=tGCD
 p=readpoly
 
 TARGETS= tBug
-TARGETS= tSturm tSturmBF 
+TARGETS= tSturm tSturmBF tDescartes
 
 MORE_TARGETS = tNewton tPolyALL tSturmLon tSturmRat tSturmExp tSturmInt \
     tWilk20 tWilk20deriv tKameny4 tGCD tRootOf wein
@@ -63,6 +64,7 @@ default: $(TARGETS)
 test:  $(TARGETS)
 	./tSturm
 	./tSturmBF
+	./tDescartes
 
 moretest: $(MORE_TARGETS)
 	./tPoly
@@ -206,6 +208,35 @@ tSturmRat: tSturm.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_RAT tSturm.cpp -o tSturmRat.o
 	${CXX} $(LDFLAGS) tSturmRat.o $(CORE_LIB) -o tSturmRat
 
+# Compile tDescartes with NT=BigInt (default), or NT=BigFloat, NT=Expr,
+#                NT=BigRat, NT=int, or NT=long:
+# tDescartesALL: tDescartes tDescartesBF tDescartesExp tDescartesInt tDescartesRat tDescartesLon
+tDescartesALL: tDescartes tDescartesBF tDescartesExp tDescartesInt tDescartesRat tDescartesLon
+
+tDescartes: tDescartes.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) tDescartes.cpp -o tDescartes.o
+	${CXX} $(LDFLAGS) tDescartes.o $(CORE_LIB) -o tDescartes
+
+tDescartesBF: tDescartes.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_BF tDescartes.cpp -o tDescartesBF.o
+	${CXX} $(LDFLAGS) tDescartesBF.o $(CORE_LIB) -o tDescartesBF
+
+tDescartesExp: tDescartes.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_EXP tDescartes.cpp -o tDescartesExp.o
+	${CXX} $(LDFLAGS) tDescartesExp.o $(CORE_LIB) -o tDescartesExp
+
+tDescartesInt: tDescartes.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_INT tDescartes.cpp -o tDescartesInt.o
+	${CXX} $(LDFLAGS) tDescartesInt.o $(CORE_LIB) -o tDescartesInt
+
+tDescartesLon: tDescartes.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_LONG tDescartes.cpp -o tDescartesLon.o
+	${CXX} $(LDFLAGS) tDescartesLon.o $(CORE_LIB) -o tDescartesLon
+
+tDescartesRat: tDescartes.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_NT_RAT tDescartes.cpp -o tDescartesRat.o
+	${CXX} $(LDFLAGS) tDescartesRat.o $(CORE_LIB) -o tDescartesRat
+
 timeNewton: timeNewton.o
 
 solve: solve.o
@@ -234,8 +265,6 @@ tt3:	tt3.o
 
 tBug:	tBug.o
 
-tDescartes : tDescartes.o
-
 #=================================================
 # Rules
 #=================================================
@@ -259,8 +288,10 @@ EXEPROGS=$(ALL:=$(EXETYPE))
 
 veryclean: clean
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
+	-@rm -f tDescartes$(EXETYPE) tDescartesExp$(EXETYPE) tDescartesBF$(EXETYPE) \
+		tDescartesInt$(EXETYPE) tDescartesLon$(EXETYPE) tDescartesRat$(EXETYPE)
 	-@rm -f tSturm$(EXETYPE) tSturmExp$(EXETYPE) tSturmBF$(EXETYPE) \
-		tSturmInt$(EXETYPE) tSturmLon$(EXETYPE)
+		tSturmInt$(EXETYPE) tSturmLon$(EXETYPE) tSturmRat$(EXETYPE)
 	-@rm -f tNewton$(EXETYPE) tNewtonBF$(EXETYPE) 
 	-@rm -f tPoly$(EXETYPE) tPolyExp$(EXETYPE) \
 	          tPolyInt$(EXETYPE) tPolyRat$(EXETYPE) tPolyBF$(EXETYPE) tPolyLon$(EXETYPE)

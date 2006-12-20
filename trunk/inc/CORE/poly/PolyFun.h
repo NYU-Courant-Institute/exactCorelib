@@ -136,14 +136,6 @@ BigFloat2 evalExactSign(Polynomial<NT> &p, const BigFloat& val,
   return 0;
 }//evalExactSign
   
-//@}
-
-/// Bounds
-//{@
-
-//NOTE: In most of the bounds below we assume that there is a constructor
-//of the form BigFloat2(NT) for all NT's.
-
 /// Cauchy Upper Bound on Roots.
 // -- ASSERTION: NT is an integer type
 template < class NT >
@@ -162,151 +154,44 @@ BigFloat CauchyUpperBound(Polynomial<NT> &p) {
   return (e.BigFloatValue() + 2);
 }
 
+/// Moebius Transform
+template<class NT, class T>
+Polynomial<MAX_TYPE(NT,T)>
+moebiusTransform (const Polynomial<NT>& _poly,
+                  const T& a, const T& b,
+                  const T& c, const T& d) {
+  typedef MAX_TYPE(NT, T) ResultT;
+  ResultT coeff[2];
+  Polynomial<ResultT> _maxpoly(_poly);
 
-/// An iterative version of computing Cauchy Bound from Erich Kaltofen.
-// See the writeup under collab/sep/.
-template < class NT >
-BigInt CauchyBound(Polynomial<NT> &p) {
-  int deg = p.getTrueDegree();
-  BigInt B(1);
-  BigFloat lhs(0), rhs(1);
-  while (true) {
-    /* compute \sum_{i=0}{deg-1}{|a_i|B^i} */
-    lhs = 0;
-    for (int i=deg-1; i>=0; i--) {
-      lhs *= B;
-      lhs += ToBigFloat2(abs(p.coeff()[i])).getLeft();//Need a lower bound on 
-                                                    //the absolute value
-    }
-    //lhs /= abs(p.coeff()[deg]);
-    //lhs.makeFloorExact();
-    /* compute B^{deg} */
-    if (rhs * ToBigFloat2(abs(p.coeff()[deg])).getRight() <= lhs) {
-      B <<= 1;
-      rhs *= (BigInt(1)<<deg);
-    } else
-      break;
-  }
-  return B;
+  coeff[0] = a; coeff[1] = b;
+  Polynomial<ResultT> bXplusa(1, coeff);
+
+  coeff[0] = c; coeff[1] = d;
+  Polynomial<ResultT> dXplusc(1, coeff); 
+
+  //return composeHornerBinary(_poly, bXplusa, dXplusc);
+  return composeBinary(_maxpoly, bXplusa, dXplusc);
 }
 
+/// Moebius Transform
+Polynomial<BigFloat>
+moebiusTransform (const Polynomial<BigFloat>& _poly,
+                  const BigFloat& a, const BigFloat& b,
+                  const BigFloat& c, const BigFloat& d) {
+  BigFloat coeff[2];
 
+  coeff[0] = a; coeff[1] = b;
+  Polynomial<BigFloat> bXplusa(1, coeff);
 
-///Another iterative bound which is at least as good as the above bound
-///by Erich Kaltofen.
-template < class NT >
-BigInt UpperBound(Polynomial<NT> &p) {
-  int deg = p.getTrueDegree();
+  coeff[0] = c; coeff[1] = d;
+  Polynomial<BigFloat> dXplusc(1, coeff); 
 
-  BigInt B(1);
-  BigFloat lhsPos(0), lhsNeg(0), rhs(1);
-  while (true) {
-    /* compute \sum_{i=0}{deg-1}{|a_i|B^i} */
-    lhsPos = lhsNeg = 0;
-    for (int i=deg-1; i>=0; i--) {
-      if (p.coeff()[i]>0) {
-      	lhsPos = lhsPos * B + ToBigFloat2(p.coeff()[i]).getLeft();
-      	lhsNeg = lhsNeg * B;
-      } else {
-      	lhsNeg = lhsNeg * B - ToBigFloat2(p.coeff()[i]).getLeft();
-      	lhsPos = lhsPos * B;
-      } 
-    }
-
-    /*lhsNeg /= abs(p.coeff()[deg]);
-    lhsPos /= abs(p.coeff()[deg]);
-    lhsPos.makeCeilExact();
-    lhsNeg.makeCeilExact();*/
-    //We can avoid the above steps by multiplying rhs by the leading coefficient
-    //and then compare the result. Though we have to take get a BigFloat2 
-    //approximation that is an upper bound on the leading coefficient.
-    //
-    /* compute B^{deg} */
-    if (rhs * ToBigFloat2(abs(p.coeff()[deg])).getRight() <= std::max(lhsPos,lhsNeg)) {
-      B <<= 1;
-      rhs *= (BigInt(1)<<deg);
-    } else
-      break;
-  }
-  return B;
-}
-
-// Cauchy Lower Bound on Roots
-// -- ASSERTION: NT is an integer type
-template < class NT >
-BigFloat CauchyLowerBound(Polynomial<NT> &p) {
-  if ((zeroP(p)) || p.coeff()[0] == 0)
-    return BigFloat(0);
-  NT mx = 0;
-  int deg = p.getTrueDegree();
-  for (int i = 1; i <= deg; ++i) {
-    mx = core_max(mx, abs(p.coeff()[i]));
-  }
-  BigFloat2 e = ToBigFloat2(abs(p.coeff()[0]))/ ToBigFloat2(abs(p.coeff()[0]) + mx);
-  return (div2(e.getLeft()));
-}
-
-// Separation bound for polynomials that may have multiple roots.
-// We use the Rump-Schwartz bound.
-//
-//    ASSERT(the return value is an exact BigFloat and a Lower Bound)
-//
-template < class NT >
-BigFloat sepBound(Polynomial<NT> &p) {
-  BigInt d;
-  BigFloat e;
-  int deg = p.getTrueDegree();
-
-  CORE::power(d, BigInt(deg), ((deg)+4)/2);
-  e = CORE::power(height(p).getRight()+1, deg);
-
-  return (BigFloat2(1)/(e*2*d)).getLeft();
-        // BUG fix: ``return 1/e*2*d'' was wrong
-        // NOTE: the relative error in this division (1/(e*2*d))
-        //   is defBFdivRelPrec (a global variable), but
-        //   since this is always positive, we are OK.
-        //   But to ensure that defBFdivRelPrec is used,
-        //   we must make sure that e and d are exact.
-        // Finally, using "makeFloorExact()" is OK because
-        //   the mantissa minus error (i.e., m-err) will remain positive
-        //   as long as the relative error (defBFdivRelPrec) is >1.
+  return composeHornerBinary(_poly, bXplusa, dXplusc);
+  //return composeBinary(_poly, bXplusa, dXplusc);
 }
 
 //@}
-
-///Norms on Polynomials
-//{@
-/// height function
-/// @return a BigFloat with error
-template < class NT >
-BigFloat2 height(const Polynomial<NT> &p) {
-  if (zeroP(p))
-    return BigFloat(0);
-  int deg = p.getTrueDegree();
-  NT ht = 0;
-  for (int i = 0; i<= deg; i++)
-    if (ht < abs(p.coeff()[i]))
-      ht = abs(p.coeff()[i]);
-  return ToBigFloat2(ht);
-}
-
-
-/// length function
-/// @return a BigFloat with error
-template < class NT >
-BigFloat2 length(Polynomial<NT> &p) {
-  if (zeroP(p))
-    return BigFloat(0);
-  int deg = p.getTrueDegree();
-  NT length = 0;
-  for (int i = 0; i< deg; i++)
-    length += abs(p.coeff()[i]*p.coeff()[i]);
-  return sqrt(ToBigFloat2(length));
-}
-
-
-//@}
-
 CORE_END_NAMESPACE
 
 #endif /*__CORE_POLYFUN_H__*/
