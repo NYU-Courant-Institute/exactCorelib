@@ -1,8 +1,7 @@
 #ifndef CORE_DESCARTES_H
 #define CORE_DESCARTES_H
 
-#include "CORE/poly/Sturm.h"
-#include "CORE/poly/composePoly.h"
+#include "CORE/poly/Poly.h"
 
 CORE_BEGIN_NAMESPACE
 

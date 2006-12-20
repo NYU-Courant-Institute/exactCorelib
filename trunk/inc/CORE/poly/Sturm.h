@@ -51,26 +51,16 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Sturm.h,v $
- * $Revision: 1.8 $ $Date: 2006-11-16 17:41:03 $
+ * $Revision: 1.9 $ $Date: 2006-12-20 17:16:30 $
  ***************************************************************************/
 
 
 #ifndef CORE_STURM_H
 #define CORE_STURM_H
 
-#include "CORE/BigFloat.h"
-#include "CORE/BigFloat2.h"
-#include "CORE/Expr.h"
 #include "CORE/poly/Poly.h"
-#include <vector>
 
 CORE_BEGIN_NAMESPACE
-
-typedef long extLong;
-typedef std::pair<BigFloat, BigFloat>   BFInterval;
-// NOTE: an error condition is indicated by
-// the special interval (1, 0)
-typedef std::vector<BFInterval> BFVecInterval;
 
 // ==================================================
 // Sturm Class

@@ -30,9 +30,11 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.tcc,v $
- * $Revision: 1.8 $ $Date: 2006-12-20 08:06:28 $
+ * $Revision: 1.9 $ $Date: 2006-12-20 17:16:30 $
  ***************************************************************************/
 
+
+#include "./desc2/descartes.h"
 
 //CONSTRUCTORS FOR THE BIPOLY CLASS
   ////////////////////////////////////////////////////////
@@ -1223,7 +1225,8 @@ int Curve<NT>::verticalIntersections(const BigFloat & x, BFVecInterval & vI,
 
     Sturm<Expr> SS(PY); // should be replaced by BigFloat version
     // Sturm<BigFloat> SS(PY); // unstable still
-    SS.isolateRoots(vI);
+    //SS.isolateRoots(vI);
+    findIsolatingIntervals(PY, BigFloat2, vI, aprec);
 
     int s = vI.size();
     if ((aprec != 0) && (s>0))
