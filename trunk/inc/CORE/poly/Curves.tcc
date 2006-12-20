@@ -30,7 +30,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.tcc,v $
- * $Revision: 1.7 $ $Date: 2006-12-20 07:44:16 $
+ * $Revision: 1.8 $ $Date: 2006-12-20 08:06:28 $
  ***************************************************************************/
 
 
@@ -65,16 +65,19 @@ BiPoly<NT>::BiPoly(int n){// creates a BiPoly with nominal y-degree equal to n.
     }
   }
 
+// Construct constant polynomial from an NT value
+// WARNING: this can be confused with the 'int' constructor 
+// for some number types. . 
 template <class NT>
 BiPoly<NT>::BiPoly( const NT& c ) { 
   if ( c == NT(0) ) { 
     ydeg = -1;
-    std::cerr << "bipoly: const zero constructor: 0 : " << ydeg <<  std::endl;
+//    std::cerr << "bipoly: const zero constructor: 0 : " << ydeg <<  std::endl;
   }
   else { 
     ydeg = 0;
     coeffX.push_back( Polynomial<NT>(c) );
-    std::cerr << "bipoly: const constructor: " << c << " : " << ydeg <<  std::endl;
+//    std::cerr << "bipoly: const constructor: " << c << " : " << ydeg <<  std::endl;
   }
 }
   //BiPoly(vp)
