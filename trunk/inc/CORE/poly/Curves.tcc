@@ -30,7 +30,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.tcc,v $
- * $Revision: 1.10 $ $Date: 2006-12-21 17:41:42 $
+ * $Revision: 1.11 $ $Date: 2006-12-21 19:17:15 $
  ***************************************************************************/
 
 
@@ -1199,13 +1199,15 @@ Curve<NT>::Curve(const char * s, char myX, char myY)
 
   // verticalIntersections(x, vecI, aprec=0, range=[1,0]):
   //
+  //  NOTE: [1,0]=INVALID_BFInterval (a constant defined in BFInterval.h)
+  //
   //    The list vecI is passed an isolating intervals for y's such that (x,y)
   //    lies on the curve.
   //    If aprec is non-zero (!), the intervals have with < 2^{-aprec}.
   //    Return is -2 if curve equation does not depend on Y
-  //    	-1 if infinitely roots at x,
-  //    	0 if no roots at x
-  //    	1 otherwise
+  //      	  -1 if infinitely roots at x,
+  //    	   0 if no roots at x
+  //      	   1 otherwise
   //
 template < class NT >
 int Curve<NT>::verticalIntersections(const BigFloat & x, BFVecInterval & vI,
@@ -1214,10 +1216,9 @@ int Curve<NT>::verticalIntersections(const BigFloat & x, BFVecInterval & vI,
     if(d <= 0) return(-2);
     	   // This returns a NULL vI, which should be caught by caller
 	
-    // Chee: this next line should be removed!
-    //   Polynomial<Expr> PY = this->yExprPolynomial(x); // should be replaced
-    // assert(x.isExact());
-    Polynomial<BigFloat> PY = this->yBFPolynomial(x); // unstable still
+    // Chee: this next line never be used except to debug!
+    //   Polynomial<Expr> PY = this->yExprPolynomial(x); 
+    Polynomial<BigFloat> PY = this->yBFPolynomial(x); // working now (Dec'06)
 
     d = PY.getTrueDegree();
     if(d <= 0) return(d);
@@ -1300,6 +1301,7 @@ int Curve<NT>::plot( BigFloat eps, BigFloat x1,
   unsigned int numRoots=0;
   unsigned int numPoints=0;
   BFVecInterval vI;
+  BFInterval yRange(y1, y2); //for plotting
 
 cout <<"Current value of x " << xCurr << endl;
   //===================================================================
@@ -1307,7 +1309,7 @@ cout <<"Current value of x " << xCurr << endl;
   //===================================================================
   do {
     vI.clear();
-    if (verticalIntersections(xCurr, vI, aprec) > 0) {
+    if (verticalIntersections(xCurr, vI, aprec, yRange) > 0) {
       numRoots = vI.size();
 cout <<"Number of roots at " << xCurr << " are " << numRoots<<endl;
     }
@@ -1348,7 +1350,7 @@ cout <<"Number of roots at " << xCurr << " are " << numRoots<<endl;
 
   while (xCurr < x2) { //main loop
     //std::cout << "Doing verticalintersec at " << xCurr << std::endl;
-    verticalIntersections(xCurr, vI, aprec);
+    verticalIntersections(xCurr, vI, aprec, yRange);
     if (vI.size() != numRoots) { // an x-interval discovered!
 	// write previous x-interval to output file
         outFile << "########################################\n";
