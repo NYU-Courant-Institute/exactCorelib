@@ -29,8 +29,8 @@
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *
- * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.tcc,v $
- * $Revision: 1.12 $ $Date: 2006-12-21 19:44:58 $
+ * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/CurvesDesc.tcc,v $
+ * $Revision: 1.1 $ $Date: 2006-12-21 19:44:58 $
  ***************************************************************************/
 
 //These inclusions are implied by Curves.h
@@ -1225,8 +1225,9 @@ int Curve<NT>::verticalIntersections(const BigFloat & x, BFVecInterval & vI,
     if(d <= 0) return(d);
 
     //Sturm<Expr> SS(PY); // should be replaced by BigFloat version
-    Sturm<BigFloat> SS(PY); 
+    //Sturm<BigFloat> SS(PY); 
     // SHOULD DO THE DESCARTES VERSION...
+    Descartes<BigFloat> SS(PY); 
 
     if (range.first > range.second)
     	SS.isolateRoots(vI); // don't know any range
@@ -1464,7 +1465,8 @@ cout <<"Number of roots at " << xCurr << " are " << numRoots<<endl;
 //  Assumes that C & D are quasi-monic.(or generally aligned)
 template <class NT>
 void  Xintersections( Curve<NT>& P ,Curve<NT>& Q, BFVecInterval &vI){
-  Sturm<NT> SS(resY(P, Q));
+  //Sturm<NT> SS(resY(P, Q));
+  Descartes<NT> SS(resY(P, Q));
   SS.isolateRoots(vI);
 }
 
@@ -1472,7 +1474,8 @@ void  Xintersections( Curve<NT>& P ,Curve<NT>& Q, BFVecInterval &vI){
 //	similar to Xintersections
 template <class NT>
 void  Yintersections( Curve<NT>& P ,Curve<NT>& Q, BFVecInterval &vI){
-  Sturm<NT> SS(resX(P, Q));
+  //Sturm<NT> SS(resX(P, Q));
+  Descartes<NT> SS(resX(P, Q));
   SS.isolateRoots(vI);
 }
 

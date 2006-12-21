@@ -64,7 +64,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.h,v $
- * $Revision: 1.6 $ $Date: 2006-12-21 17:41:42 $
+ * $Revision: 1.7 $ $Date: 2006-12-21 19:44:58 $
  ***************************************************************************/
 
 
@@ -729,7 +729,10 @@ void showIntervals(char* s, BFVecInterval &vI);
 ////////////////////////////////////////////////////////
 // IMPLEMENTATIONS ARE FOUND IN Curves.tcc
 ////////////////////////////////////////////////////////
-#include <CORE/poly/Curves.tcc>
+
+// CHOOSE ! implementation: Sturm or Descartes
+#include <CORE/poly/Curves.tcc> 	// Sturm: still better than Descartes
+//#include <CORE/poly/CurvesDesc.tcc>	// Descartes: why is this worse? 
 
 
 CORE_END_NAMESPACE
