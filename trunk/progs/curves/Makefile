@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.1 2006-03-07 04:51:23 exact Exp $
+# Core Library, $Id: Makefile,v 1.2 2006-12-21 17:41:14 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -12,9 +12,10 @@ LINKAGE=static
 LINKAGE=shared
 
 #CHOOSE THE VARIANT Core Library you need
-VAR=GCC31
-VAR=
-VAR=Debug
+#VAR=GCC31
+#VAR=Debug
+#VAR=
+#VAR=Opt
 
 CORE_PATH=../..
 include ${CORE_PATH}/progs/Make.options
@@ -111,13 +112,13 @@ tt3:	tt3.o
 plotCurve pc: plotCurve.o
 
 s show:
-	../../ext/graphics/drawcurve$(EXETYPE) $(verbose) < data/${ifile}
+	../../ext/graphics/drawCurve$(EXETYPE) $(verbose) < data/${ifile}
 
 s2 show2:
-	../../ext/graphics/drawcurve$(EXETYPE) $(verbose) < data/${ifile}2
+	../../ext/graphics/drawCurve$(EXETYPE) $(verbose) < data/${ifile}2
 
 d debug:
-	../../ext/graphics/drawcurve$(EXETYPE) verbose < data/${ifile}
+	../../ext/graphics/drawCurve$(EXETYPE) verbose < data/${ifile}
 
 #=================================================
 # Rules
