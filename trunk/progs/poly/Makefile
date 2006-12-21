@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.6 2006-12-20 23:05:02 exact Exp $
+# Core Library, $Id: Makefile,v 1.7 2006-12-21 15:29:09 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -48,7 +48,7 @@ p=tGCD
 p=readpoly
 
 TARGETS= tBug
-TARGETS= tSturm tSturmBF tDescartes
+TARGETS= tSturm tDescartes tSturmBF tDescartesBF
 
 MORE_TARGETS = tNewton tPolyALL tSturmLon tSturmRat tSturmExp tSturmInt \
     tWilk20 tWilk20deriv tKameny4 tGCD tRootOf wein
@@ -64,7 +64,7 @@ default: $(TARGETS)
 test:  $(TARGETS)
 	./tSturm
 	./tSturmBF
-	./tDescartes
+	./tDescartesBF
 
 moretest: $(MORE_TARGETS)
 	./tPoly
@@ -77,6 +77,10 @@ moretest: $(MORE_TARGETS)
 	./tSturmRat
 	./tSturmInt
 	./tSturmLon
+	./tDescartesExp
+	./tDescartesRat
+	./tDescartesInt
+	./tDescartesLon
 	./tWilk20
 	./tWilk20deriv
 	./tKameny4
