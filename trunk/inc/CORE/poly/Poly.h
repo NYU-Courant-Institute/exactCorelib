@@ -265,9 +265,9 @@ public:
   Polynomial() {}
   /// copy constructor
   Polynomial(const Polynomial &rhs) : base_cls(rhs) {}
-  /// copy constructor
+  /// copy constructor (from possibly different NT polynomial type)
   template <class T>
-  Polynomial(const Polynomial<T> &rhs) : base_cls(rhs) {}
+    Polynomial(const Polynomial<T> &rhs) : base_cls(rhs) {}
   /// constructor of the Unit Polynomial of nominal deg n>=0
   Polynomial(int n) : base_cls(n) {}
   /// constructor with coeff array

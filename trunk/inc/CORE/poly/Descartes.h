@@ -26,6 +26,7 @@ private:
   Polynomial<NT> _poly_derivative;
   bool NEWTON_DIV_BY_ZERO;  // this is set to true when divide by 0 in Newton
 public:
+  Descartes() : NEWTON_DIV_BY_ZERO(false) {}
   Descartes(Polynomial<NT> p) : _poly(p), NEWTON_DIV_BY_ZERO(false){
     len = p.getTrueDegree();
     if (len < 0) return;
@@ -33,6 +34,18 @@ public:
     _poly.sqFreePart();
     _poly_derivative = differentiate(_poly);  
   }
+  Descartes(Descartes& d) : _poly(d._poly), NEWTON_DIV_BY_ZERO(false),
+  	len(d.len){}
+
+  void setPoly(Polynomial<NT> p) {
+    len = p.getTrueDegree();
+    if (len < 0) return;
+
+    _poly = p;
+    _poly.sqFreePart();
+    _poly_derivative = differentiate(_poly);  
+  }
+
 
   void isolateRoots(const BigFloat &x, const BigFloat &y,
                     BFVecInterval &v) {
@@ -626,6 +639,16 @@ inline void testNewtonDescartes(const Polynomial<NT>&P, int prec, int n = -1) {
   }
 }// testNewtonDescartes
 
+// WARNING: this name is a misnomer!  It is only
+// an UPPER Bound on the number of Roots, using
+// the Descartes test:
+//
+template<class NT>
+inline int numberOfRoots(Polynomial<NT> poly, BFInterval I) {
+  return signVariationofCoeff(
+         moebiusTransform(poly, I.first, I.second, BigFloat(1), BigFloat(1))
+  );
+}
 
 CORE_END_NAMESPACE
 

@@ -64,7 +64,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.h,v $
- * $Revision: 1.5 $ $Date: 2006-12-20 17:16:30 $
+ * $Revision: 1.6 $ $Date: 2006-12-21 17:41:42 $
  ***************************************************************************/
 
 
@@ -483,7 +483,7 @@ public:
   //    	1 otherwise
 
   int verticalIntersections(const BigFloat & x, BFVecInterval & vI,
-			    int aprec=0, BFInterval range=BFInterval(1,0) );
+		    int aprec=0, BFInterval range=INVALID_BFInterval );
   
   // TO DO: 
   // 		horizontalIntersections(...)

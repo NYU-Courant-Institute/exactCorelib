@@ -51,7 +51,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Sturm.h,v $
- * $Revision: 1.10 $ $Date: 2006-12-20 23:04:27 $
+ * $Revision: 1.11 $ $Date: 2006-12-21 17:41:43 $
  ***************************************************************************/
 
 
@@ -125,6 +125,10 @@ public:
   Sturm(Polynomial<BigFloat> pp, bool fake) : NEWTON_DIV_BY_ZERO(false) {
     len = pp.getTrueDegree();
     if (len <= 0) return; // hence, seq is not defined in these cases
+
+    //Which is the right type to set?
+    //	seq = new Polynomial<MAX_TYPE(NT,BigFloat)> [len+1];
+    //  seq = new Polynomial<BigFloat> [len+1];
     seq = new Polynomial<NT> [len+1];
     seq[0] = pp;
     g = seq[0].sqFreePart();

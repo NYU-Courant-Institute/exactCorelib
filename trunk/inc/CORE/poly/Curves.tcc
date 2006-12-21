@@ -30,11 +30,12 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.tcc,v $
- * $Revision: 1.9 $ $Date: 2006-12-20 17:16:30 $
+ * $Revision: 1.10 $ $Date: 2006-12-21 17:41:42 $
  ***************************************************************************/
 
 
-#include "./desc2/descartes.h"
+//#include "./desc2/descartes.h"
+#include "Descartes.h"
 
 //CONSTRUCTORS FOR THE BIPOLY CLASS
   ////////////////////////////////////////////////////////
@@ -524,7 +525,6 @@ template <class NT>
   }
 
   // Specialized version of yPolynomial for BigFloat
-  // ASSERTION: BigFloat x is exact
 template <class NT>
   Polynomial<BigFloat> BiPoly<NT>::yBFPolynomial(const BigFloat & x) {
     BigFloat coeffVec[ydeg+1];
@@ -1197,7 +1197,7 @@ Curve<NT>::Curve(const char * s, char myX, char myY)
   }
 
 
-  // verticalIntersections(x, vecI, aprec=0):
+  // verticalIntersections(x, vecI, aprec=0, range=[1,0]):
   //
   //    The list vecI is passed an isolating intervals for y's such that (x,y)
   //    lies on the curve.
@@ -1207,26 +1207,29 @@ Curve<NT>::Curve(const char * s, char myX, char myY)
   //    	0 if no roots at x
   //    	1 otherwise
   //
-  //    ASSERTION: x is an exact BigFloat
-
 template < class NT >
 int Curve<NT>::verticalIntersections(const BigFloat & x, BFVecInterval & vI,
-	int aprec) {
+	int aprec, BFInterval range) {
     int d= Curve<NT>::getTrueYdegree();
     if(d <= 0) return(-2);
     	   // This returns a NULL vI, which should be caught by caller
 	
-    Polynomial<Expr> PY = this->yExprPolynomial(x); // should be replaced
+    // Chee: this next line should be removed!
+    //   Polynomial<Expr> PY = this->yExprPolynomial(x); // should be replaced
     // assert(x.isExact());
-    // Polynomial<BigFloat> PY = yBFPolynomial(x); // unstable still
+    Polynomial<BigFloat> PY = this->yBFPolynomial(x); // unstable still
 
     d = PY.getTrueDegree();
     if(d <= 0) return(d);
 
-    Sturm<Expr> SS(PY); // should be replaced by BigFloat version
-    // Sturm<BigFloat> SS(PY); // unstable still
-    //SS.isolateRoots(vI);
-    findIsolatingIntervals(PY, BigFloat2, vI, aprec);
+    //Sturm<Expr> SS(PY); // should be replaced by BigFloat version
+    Sturm<BigFloat> SS(PY); 
+
+    if (range.first > range.second)
+    	SS.isolateRoots(vI); // don't know any range
+    else 
+	SS.isolateRoots(range.first, range.second, vI);
+    //findIsolatingIntervals(PY, BigFloat2, vI, aprec);
 
     int s = vI.size();
     if ((aprec != 0) && (s>0))
@@ -1257,7 +1260,6 @@ int Curve<NT>::verticalIntersections(const BigFloat & x, BFVecInterval & vI,
   //       (3) should allow the ability to look for interesting
   //             features
   //
-  //    ASSERTION: all input BigFloats are exact
   //
 template < class NT >
 int Curve<NT>::plot( BigFloat eps, BigFloat x1,
