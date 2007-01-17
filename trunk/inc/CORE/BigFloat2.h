@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.20 2006-12-20 23:12:19 exact Exp $
+ * $Id: BigFloat2.h,v 1.21 2007-01-17 18:52:46 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -697,6 +697,24 @@ public:
   }
   void makeExact() { 
     set_exact(true);
+  }
+  FT get_max() const {
+    if (is_exact()) return m_l;
+    if (has_sign())
+      if (sgn() > 0) return m_r;
+      else return m_l;
+    else
+      if (abs(m_l) > abs(m_r)) return m_l;
+      else return m_r;
+  }
+  FT get_min() const {
+    if (is_exact()) return m_l;
+    if (has_sign())
+      if (sgn() > 0) return m_l;
+      else return m_r;
+    else
+      if (abs(m_l) > abs(m_r)) return m_r;
+      else return m_l;
   }
   BigFloat getLeft() const {
     return m_l;

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.15 2006-12-03 18:52:05 exact Exp $
+ * $Id: BigFloat.inl,v 1.16 2007-01-17 18:53:09 exact Exp $
  ***************************************************************************/
 
 /// \addtogroup BigFloatArithmeticOperators
@@ -663,7 +663,7 @@ inline BigFloat abs(const BigFloat& a) { BigFloat r; r.abs(a); return r; }
 inline BigFloat neg(const BigFloat& a) { BigFloat r; r.neg(a); return r; }
 /// pow 
 inline BigFloat power(const BigFloat& a, unsigned long p) 
-{ BigFloat r; r.pow(a, p, a.get_prec()*p); return r; }
+{ BigFloat r; r.pow(a, p, std::max(a.get_prec()*p, 2UL)); return r; }
 /// floorlg
 inline long floorLg(const BigFloat& a) { return a.lMSB(); }
 inline long floorlg(const BigFloat& a) { return a.lMSB(); }

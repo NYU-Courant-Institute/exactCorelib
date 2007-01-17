@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.26 2006-12-20 23:12:19 exact Exp $
+ * $Id: ExprRep.h,v 1.27 2007-01-17 18:52:08 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -1339,18 +1339,34 @@ public:
     numType() = std::max(NODE_NT_TRANSCENDENTAL, child->numType());
     if (child->get_sign()==0)
       init_value(1);
+    child->a_approx(2);
   }
   virtual ~ExpoRepT() 
   {}
 protected:
   virtual bool compute_sign() 
   { sign() = 1; return true;}
-  virtual bool compute_uMSB() 
-  { return false;}
-  virtual bool compute_lMSB() 
-  { return false;}
+  virtual bool compute_uMSB() {
+    if (child->get_sign())
+      uMSB() = child->appValue().getRight().get_si() * 2;
+    else if(child->get_sign() < 0)
+      uMSB() = child->appValue().getLeft().get_si();
+    else
+      uMSB() = 0;
+    return 1;
+  }
+  virtual bool compute_lMSB() {
+    if (child->get_sign() < 0)
+      lMSB() = child->appValue().getRight().get_si() * 2;
+    else if(child->get_sign() > 0)
+      lMSB() = child->appValue().getLeft().get_si();
+    else
+      lMSB() = 0;
+    return 1;
+  }
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().expo(child->r_approx(prec+2), abs2rel(prec+1)));
+    prec_t L = prec + 2 * (abs(child->appValue().get_max()).get_ui() + 1);
+    return check_exact(appValue().expo(child->a_approx(L), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
