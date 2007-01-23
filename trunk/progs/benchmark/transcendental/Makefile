@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.2 2006-12-05 00:39:59 exact Exp $
+# Core Library, $Id: Makefile,v 1.3 2007-01-23 15:36:56 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -11,11 +11,6 @@
 LINKAGE=static
 LINKAGE=shared
 
-#CHOOSE THE VARIANT Core Library you need
-VAR=GCC31
-VAR=Debug
-VAR=
-
 CORE_PATH=../../..
 include ${CORE_PATH}/progs/Make.options
 
@@ -23,7 +18,7 @@ include ${CORE_PATH}/progs/Make.options
 # TARGET FILES
 #=================================================
 
-TARGETS= tConst tElemFun 
+TARGETS= tConst tElemFun tManyDigits 
 
 #=================================================
 # TARGETS
@@ -52,6 +47,10 @@ tConst: tConst.cpp
 tElemFun: tElemFun.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) tElemFun.cpp -o tElemFun.o
 	${CXX} $(LDFLAGS) tElemFun.o $(CORE_LIB) -o tElemFun
+
+tManyDigits: tManyDigits.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) tManyDigits.cpp -o tManyDigits.o
+	${CXX} $(LDFLAGS) tManyDigits.o $(CORE_LIB) -o tManyDigits
 
 time:
 	time ./tConst 10000

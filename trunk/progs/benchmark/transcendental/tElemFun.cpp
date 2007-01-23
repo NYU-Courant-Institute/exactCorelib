@@ -28,7 +28,7 @@ int main( int argc, char *argv[] ) {
   std::cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
  
   timer.start();
-  Expr COS = cos(Expr("0.81"));
+  Expr COS = cos(Expr("0.7"));
   COS.approx(prec, CORE_INFTY);
   timer.stop();
 
@@ -57,42 +57,55 @@ int main( int argc, char *argv[] ) {
     std::cout << "cot(0.7)  = " << COT << std::endl;
   std::cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
 
-/* 
   timer.start();
   Expr EXPO = expo(pi()/3);
   EXPO.approx(prec, CORE_INFTY);
   timer.stop();
 
   std::cout << "compute e^(pi/3) to " << prec << " relative precision" << std::endl;
-  std::cout << "e^(pi/3)  = " << EXPO << std::endl;
+  if (print > 0)
+    std::cout << "e^(pi/3)  = " << EXPO << std::endl;
   std::cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
 
   timer.start();
-  Expr ARCSIN = arcsin(pi()/6);
+  Expr ARCSIN = arcsin("0.9");
   ARCSIN.approx(prec, CORE_INFTY);
   timer.stop();
 
-  std::cout << "compute arcsin(pi/3) to " << prec << " relative precision" << std::endl;
-  std::cout << "arcsin(pi/3)  = " << ARCSIN << std::endl;
+  std::cout << "compute arcsin(0.9) to " << prec << " relative precision" << std::endl;
+  if (print > 0)
+    std::cout << "arcsin(0.9)  = " << ARCSIN << std::endl;
   std::cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
  
   timer.start();
-  Expr ARCCOS = arccos(pi()/6);
+  Expr ARCCOS = arccos("0.2");
   ARCCOS.approx(prec, CORE_INFTY);
   timer.stop();
 
-  std::cout << "compute arccos(pi/3) to " << prec << " relative precision" << std::endl;
-  std::cout << "arccos(pi/3)  = " << ARCCOS << std::endl;
+  std::cout << "compute arccos(0.2) to " << prec << " relative precision" << std::endl;
+  if (print > 0)
+    std::cout << "arccos(0.2)  = " << ARCCOS << std::endl;
   std::cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
+
   timer.start();
-  Expr ARCTAN = arctan(pi()/3);
+  Expr ARCTAN = arctan("2");
   ARCTAN.approx(prec, CORE_INFTY);
   timer.stop();
 
-  std::cout << "compute arctan(pi/3) to " << prec << " relative precision" << std::endl;
-  std::cout << "arctan(pi/3)  = " << ARCTAN << std::endl;
+  std::cout << "compute arctan(2) to " << prec << " relative precision" << std::endl;
+  if (print > 0)
+    std::cout << "arctan(2)  = " << ARCTAN << std::endl;
   std::cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
- 
-*/ 
+
+  timer.start();
+  Expr LOG = log_2(pi());
+  LOG.approx(prec, CORE_INFTY);
+  timer.stop();
+
+  std::cout << "compute log2(pi) to " << prec << " relative precision" << std::endl;
+  if (print > 0)
+    std::cout << "log2(pi)  = " << LOG << std::endl;
+  std::cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
+
   return 0;
 }
