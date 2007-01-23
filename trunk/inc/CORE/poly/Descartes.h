@@ -49,7 +49,7 @@ public:
 
   void isolateRoots(const BigFloat &x, const BigFloat &y,
                     BFVecInterval &v) {
-    int n = numberOfRoots(x,y);
+    int n = signVar(x,y);
     if (n==0) return;
     if (n==1)
       v.push_back(std::make_pair(x,y));
@@ -97,33 +97,38 @@ public:
   /**   If i is negative, then we want the i-th largest root in [x,y]
    *    We assume i is not zero.
    */
+  BFInterval isolateRoot(int i, BFInterval &I)
+  { return isolateRoot(i, I.first, I.second); }
+
   BFInterval isolateRoot(int i, const BigFloat& x, const BigFloat& y) {
-    int n = numberOfRoots(x,y);
-    if (i < 0) {//then we want the n-i+1 root
-      i += n+1;
+    BFVecInterval v;
+
+    isolateRoots(x, y, v);
+    int n = v.size();
+
+    if (i < 0) {
+      i += n + 1;
       if (i <= 0)
-        return BFInterval(1,0); // ERROR CONDITION
+        return BFInterval(1,0);
     }
-    if (n < i)
-      return BFInterval(1,0);  // ERROR CONDITION INDICATED
-    //Now 0< i <= n
-    if (n == 1) {
-      if ((x>0) || (y<0)) return BFInterval(x, y);
-      if (_poly.coeff()[0] == NT(0)) return BFInterval(0,0);
-      if (numberOfRoots(0, y)==0) return BFInterval(x,0);
-      return BFInterval(0,y);
+ 
+    if (i > n)
+      return BFInterval(1,0);
+
+    //Now 0 < i <= n
+    if (n==1)
+      return *(v.begin());
+
+    if (i == n)
+      return (*(v.end()-1));
+
+    int count = 1;
+    for (BFVecInterval::const_iterator it = v.begin(); ; ++it) {
+      if (count == i)
+        return (*it);
+      else
+        count++;
     }
-    BigFloat m;
-    m.div2(x+y);
-    n = numberOfRoots(x, m);
-    if (n >= i) {
-	    return isolateRoot(i, x, m);
-    }
-    // Now (n < i) but we have to be careful if m is a root
-    if (sign(evalExactSign(_poly, m)) != 0)   // usual case
-      return isolateRoot(i-n, m, y);
-    else
-      return isolateRoot(i-n+1, m, y);
   }
 
   // same as isolateRoot(i).
@@ -160,11 +165,23 @@ public:
       return BFInterval(-bdBF, e);
     return isolateRoot(n, -bdBF, e);
   }
-
-  int numberOfRoots(const BigFloat &x, const BigFloat &y) {
+  
+  int signVar(BFInterval& I)
+  { return signVar(I.first, I.second); }
+  
+  int signVar(const BigFloat &x, const BigFloat &y) {
     return signVariationofCoeff(
            moebiusTransform(_poly, x, y, BigFloat(1), BigFloat(1))
 	   );
+  }
+
+  int numberOfRoots(BFInterval& I)
+  { return numberOfRoots(I.first, I.second); }
+
+  int numberOfRoots(const BigFloat &x, const BigFloat &y) {
+    BFVecInterval v;
+    isolateRoots(x, y, v);
+    return v.size();
   }
 
   BFInterval refine(const BFInterval& I, int aprec) {
@@ -639,12 +656,8 @@ inline void testNewtonDescartes(const Polynomial<NT>&P, int prec, int n = -1) {
   }
 }// testNewtonDescartes
 
-// WARNING: this name is a misnomer!  It is only
-// an UPPER Bound on the number of Roots, using
-// the Descartes test:
-//
 template<class NT>
-inline int numberOfRoots(Polynomial<NT> poly, BFInterval I) {
+inline int signVar(Polynomial<NT> poly, BFInterval I) {
   return signVariationofCoeff(
          moebiusTransform(poly, I.first, I.second, BigFloat(1), BigFloat(1))
   );
