@@ -9,8 +9,150 @@ CORE_BEGIN_NAMESPACE
  * Descartes Class:
  *   this is modeled after the Sturm class.
  *
- * Author: Jihun Yu (Dec 2006)
+ * Author: Vikram Sharma, Jihun Yu,  (Dec 2006)
  ***************************************************/
+
+template <typename T>
+void shift(T* coeff, int deg, T* shifted){
+  //This is the ascending coefficient method suggested by
+  //Krandick in Isolierung reeller Nullstellen von Polynomen
+  //( English version is called Isolation of Polynomial Real Roots)
+  //to compute the Taylor shift of a polynomial by one.
+
+  for(int i=0; i<= deg ; i++)
+    shifted[i] = coeff[i];
+  
+  for(int i=0; i<= deg-1;i++)
+    for(int j=deg-1; j>=i; j--)
+      shifted[j]+=shifted[j+1];
+
+}
+
+template <typename T>
+void half(T* coeff, int deg, T* halved){
+  for(int i=0; i<= deg; i++)
+    halved[i] = coeff[i]*(BigInt(1)<<(deg-i));
+}
+
+//Given the coefficient sequence coeff of some polynomial P
+//this computes the coefficient sequence contracted of the polynomial
+//P(\lambda X). Since lambda can be of a different type than the
+//coefficients of P we need introduce another typename to resolve this.
+//We assume that T2 is more general than T1 so that the conversion from
+// the latter to the former can take place without error.
+template <typename T1, typename T2>
+void contract(T1* coeff, int deg, T2 lambda, T2* contracted){
+  T2 pow=1;
+  for(int i=0; i <= deg ; i++){
+    contracted[i] = coeff[i]*pow;
+    pow*=lambda;
+  }
+}
+
+//void shift(BigFloat* coeff, int deg, BigFloat lambda, BigFloat* shifted){}
+
+//Computes the Taylor shift by a constant lambda. Confer the comments
+//for contract above.
+template <typename T1, typename T2>
+void shift(T1* coeff, int deg, T2 lambda, T2* shifted){
+
+  for(int i=0; i<= deg ; i++)
+    shifted[i] = coeff[i];
+  
+  if(lambda != 0){
+    for(int i=0; i<= deg-1;i++)
+      for(int j=deg-1; j>=i; j--)
+	shifted[j]+= lambda * shifted[j+1];
+  }
+}
+
+template <typename T>
+int shiftAndSigncount(T* coeff, int deg){
+  //This is the ascending coefficient method suggested by
+  //Krandick in Isolierung reeller Nullstellen von Polynomen
+  //( English version is called Isolation of Polynomial Real Roots)
+  //to compute the Taylor shift of a polynomial by one.
+  //The advantage of this method is that it computes the coefficient of x^i
+  //in n-i steps. Thus we can check for sign variation as we compute
+  //the coefficients.
+
+  //First reverse the polynomial
+  T temp[deg + 1];
+  for(int i=0; i<= deg ; i++)
+    temp[i] = coeff[deg-i];
+
+  
+  int num=0, i;
+  int lastsign =0;//The last non-zero sign
+  int currsign;//The sign of the current coefficient
+
+  //Compute the sequence of coefficients and simultaneously get
+  //the number of sign variations. If the sign variations are greater
+  //than one then break out of the loop, i.e. return num.
+  for(i=0; i<= deg-1;i++){
+    for(int j=deg-1; j>=i; j--)
+      temp[j]+=temp[j+1];
+
+    currsign = sign(temp[i]);
+    if(currsign !=0){
+      if (lastsign * currsign < 0) num++;
+      lastsign = currsign;//lastsign is always non-zero except for the starting.
+    }
+     if(num > 1) return -1;
+  }
+  //To account the sign variation between the previous non-zero coefficient
+  // and deg coeffecient.
+  //This is done if the number of sign variations were less than or
+  //equal to one from the above loop.
+  if(lastsign*sign(temp[deg]) < 0) num++;
+  //  if(sign(temp[deg-1])*sign(temp[deg]) < 0) num++;
+  if(num ==2 ) return -1;
+  return num;
+}
+//Isolates real roots of P in the interval (0,1).
+//The roots of P are in bijective correspondence with the roots of
+//the original input polynomial P_{in}. More precisely,
+//P has a root in (0,1) iff P_{in} has a root in I.
+//We also ensure that the list of isolating intervals in v
+//is sorted. The intervals in v are of two types:
+//1) Both the end points of the interval are the same. This happens
+//only if the end point is a root of P.
+//2) Otherwise the interval represents an open interval which contains a root.
+// Note, the end points may be roots but they will be distinct in this case.
+//Advantage of this representation is that we don't have to compute the separation
+//bound.
+template <typename T>
+void isolateRoots_deg(Polynomial<T> P, const BFInterval I, int deg,
+                    BFVecInterval &v) {
+  
+ int num = shiftAndSigncount(P.coeff(), deg);
+  //cout << "sign variations after shift " << num << endl;
+  //cout <<"Interval is ["<<I.first << ":"<< I.second << "]"<<endl;
+  //cout << "Polynomial is "; P.dump() ; cout <<endl;
+  if(num == 0) return;
+  else if(num == 1)
+    v.push_back(I);
+  else{
+    BigFloat m = I.second + I.first/2;
+    T* temp1 = new T[deg +1];
+    T* temp2 = new T[deg +1];
+
+    half(P.coeff(),deg, temp1);
+    Polynomial<T> Q(deg, temp1);
+    //    cout <<"After halving polynomial is "; Q.dump(); cout<<endl;
+    
+    shift(temp1, deg, temp2);
+    Polynomial<T> R(deg, temp2);
+    //    cout<<"Inside isolateRoots: second polynomial "<< R << endl;
+    
+    BFInterval J = std::make_pair(I.first, m);
+    BFInterval JJ = std::make_pair(m, I.second);
+    isolateRoots_deg(Q, J, deg, v);
+    if(R.coeff()[0] == 0) 
+      v.push_back(std::make_pair(m,m));
+    isolateRoots_deg(R, JJ, deg, v);
+  }
+}
 
 template <class NT>
 class Descartes {
@@ -46,30 +188,46 @@ public:
     _poly_derivative = differentiate(_poly);  
   }
 
+  //Isolates roots of P in the CLSOED interval I; assumes P is square-free.
+  //This is achieved by computing a polynomial Q whose roots in the
+  //unit interval are in bijective correspondence with the roots of
+  //P in I. More precisely, Q(X) = P((b-a)X + a) where I=(a,b).
+  //This is obtained by first computing the Taylor shift by a of the polynomial
+  //and then doing a contraction by b-a.
+  //Again v contains the sorted list of intervals.
+  void isolateRoots(const BFInterval &I, BFVecInterval& v)
+  { isolateRoots(I.first, I.second, v); }
 
   void isolateRoots(const BigFloat &x, const BigFloat &y,
                     BFVecInterval &v) {
-    int n = signVar(x,y);
-    if (n==0) return;
-    if (n==1)
-      v.push_back(std::make_pair(x,y));
-    if (n>1) {
-      BigFloat mid; mid.div2(x+y);
-      if (sign(evalExactSign(_poly,mid)) != 0) {
-         isolateRoots(x, mid, v);
-         isolateRoots(mid, y, v);
-      } else {
-        isolateRoots(x, mid, v);
-        isolateRoots(mid, y, v);
-        v.push_back(std::make_pair(mid, mid));
-      }
-    }
+    int deg = _poly.getTrueDegree();
+    if(deg == 0)
+      std::cerr<< "Polynomial is a constant" << std::endl;
+  
+    int n = _poly.getTrueDegree();
+    BigFloat temp1[n + 1], temp2[n+1];
+
+    shift(_poly.coeff(), n, x, temp1);
+    contract(temp1, n, y-x, temp2);
+
+    if(evalExactSign(_poly, x) == 0)
+      v.push_back(std::make_pair(x, x));
+
+    Polynomial<BigFloat> R(n, temp2);
+    //cout <<"Corresponding polynomial with roots in unit interval ";R.dump();
+    //cout <<endl;
+  
+    isolateRoots_deg(R, BFInterval(x, y), n, v);
+
+    if(eval(_poly, y) == 0)
+      v.push_back(BFInterval(y, y));
   }
 
   // isolateRoots(v)
   ///   isolates all roots and returns them in v
   /**   v is a vector of isolated intervals
    */
+  /*
   void isolateRoots(BFVecInterval &v) {
     if (len <= 0) {
        v.clear(); return;
@@ -77,6 +235,59 @@ public:
     BigFloat bd = CauchyUpperBound(_poly);
     // Note: bd is an exact BigFloat (this is important)
     isolateRoots(-bd, bd, v);
+  }
+  */
+  //An alternative approach to isolating all roots. Here we separate the positive
+  //and negative roots separately. This is slightly more efficient than the method
+  //above.
+  void isolateRoots(BFVecInterval& v)
+  {
+    int deg = _poly.getTrueDegree();
+    if(deg == 0)
+      std::cerr << "Polynomial is a constant" << std::endl;
+
+    //Compute an upper bound on the positive roots of P
+    NT B = CauchyBound(_poly);
+
+    bool isZeroRoot = false;
+  
+    if(_poly.coeff()[0] == 0)
+      isZeroRoot = true;
+
+    NT temp1[deg+1];
+
+    //Construct the polynomial whose roots in the unit interval correspond
+    //with the roots of P in (0, B)
+    contract(_poly.coeff(), deg, B, temp1);
+    Polynomial<NT> Q(deg, temp1);
+  
+    BFVecInterval vPos;//Stores the intervals for the positive roots of P
+    BFInterval I = BFInterval(0,B);
+    isolateRoots_deg(Q, I, deg, vPos);
+
+    //Flip the signs of the coefficients of Q to construct a polynomial whose
+    //roots in the unit interval correspond with the roots of P in (-B, 0). 
+    for(int i=1; i<= deg; i++){
+      if(i % 2 != 0)
+        Q.coeff()[i] *=-1;
+    }
+  
+    I = BFInterval(-B, 0);
+    isolateRoots_deg(Q, I, deg, v);
+    //This ensures that the interval corresponding to the roots are in sorted order 
+    if(isZeroRoot)
+      v.push_back(std::make_pair(0,0));
+  
+    for (BFVecInterval::const_iterator it = vPos.begin(); it != vPos.end(); ++it)
+      v.push_back(*it);
+#ifdef DEBUG
+    for (BFVecInterval::const_iterator it = vPos.begin(); it != vPos.end(); ++it) {
+      int leftSign = sign(evalExactSign(_poly, (*it).first));
+      int rightSign = sign(evalExactSign(_poly, (*it).second));
+
+      assert( leftSign * rightSign < 0 );
+    }
+#endif      
   }
 
   // isolateRoot(i)
@@ -103,31 +314,46 @@ public:
   BFInterval isolateRoot(int i, const BigFloat& x, const BigFloat& y) {
     BFVecInterval v;
 
-    isolateRoots(x, y, v);
-    int n = v.size();
-
-    if (i < 0) {
-      i += n + 1;
-      if (i <= 0)
-        return BFInterval(1,0);
+    // We isolate the positive and negative roots separately, thus ensuring
+    // that zero is not contained within an interval.
+    if(sign(x) == sign(y))
+      isolateRoots(BFInterval(x,y), v);
+    else{
+      isolateRoots(BFInterval(x, 0), v);
+      if(_poly.coeff()[0] == NT(0)) // zero is a root of P
+        v.erase(v.end() -1, v.end()); // erase the entry corresponding to zero in
+                                    // v since the next call we add it again
+      isolateRoots(BFInterval(0, y), v);
     }
- 
-    if (i > n)
-      return BFInterval(1,0);
 
-    //Now 0 < i <= n
-    if (n==1)
+  
+    int n= v.size(); //the precise number of real roots in I
+    if (i < 0) {//then we want the n-i+1 root
+      i += n+1;
+      if (i <= 0)
+        return BFInterval(1,0); // ERROR CONDITION
+    }
+    if(i > n)
+      return BFInterval(1,0);  // ERROR CONDITION INDICATED
+
+    //Now 0< i <= n
+    if (n == 1) {// Thus there is only one root in (x,y). Moreover, the way
+                 // we isolated the root we are sure that the interval in v
+                 // does not contain any zero. 
       return *(v.begin());
+    }
 
-    if (i == n)
+    //Otherwise traverse v and return the i'th interval
+    if(i == n)//slight optimization
       return (*(v.end()-1));
 
-    int count = 1;
+    //Now 1 <= i < n
+    int count =1;
     for (BFVecInterval::const_iterator it = v.begin(); ; ++it) {
-      if (count == i)
+      if(count == i)
         return (*it);
       else
-        count++;
+        count ++;
     }
   }
 
@@ -430,7 +656,7 @@ public:
       return J;
     }
 
-    assert( leftSign * rightSign < 0 );
+//    assert( leftSign * rightSign < 0 );
 
     //N is number of times Newton is called without checking
     // whether the result is still in the interval or not
