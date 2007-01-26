@@ -2,7 +2,7 @@
  File: README for pi
  Author: Chee and Chen Li (June 2000)
  Since CORE Library version 1.2
-	$Id: README,v 1.1 2006-03-07 04:51:25 exact Exp $
+	$Id: README,v 1.2 2007-01-26 21:04:43 exact Exp $
 ================================================================================
 SYNOPSIS:
 	% make		-- makes the executable "newPi"
@@ -112,3 +112,10 @@ Oct, 2004:
 	pi    100000 0 0	segment fault	Original implementation of Machin's.
 
 =================================================================
+Nov, 2005:
+	We now understand why our original Brent's implementation
+	was slower than the theoretical prediction.  See the paper
+	on Robust Approximate Zero by Sharma, Du, Yap.   The reason
+	is that we did not approximate each step to sufficient relative
+	precision -- in this case, it can be shown that we only
+	get linear convergence.
