@@ -131,9 +131,13 @@ void isolateRoots_deg(Polynomial<T> P, const BFInterval I, int deg,
   //cout << "Polynomial is "; P.dump() ; cout <<endl;
   if(num == 0) return;
   else if(num == 1)
-    v.push_back(I);
+    if (I.first < I.second)
+      v.push_back(I);
+    else
+      v.push_back(BFInterval(I.second, I.first));
   else{
-    BigFloat m = I.second + I.first/2;
+    BigFloat m;
+    m.div2(I.second + I.first);
     T* temp1 = new T[deg +1];
     T* temp2 = new T[deg +1];
 
@@ -264,7 +268,15 @@ public:
     BFVecInterval vPos;//Stores the intervals for the positive roots of P
     BFInterval I = BFInterval(0,B);
     isolateRoots_deg(Q, I, deg, vPos);
+#ifdef DEBUG
+    for (BFVecInterval::const_iterator it = vPos.begin(); it != vPos.end(); ++it) {
+      int leftSign = sign(evalExactSign(_poly, (*it).first));
+      int rightSign = sign(evalExactSign(_poly, (*it).second));
+      //std::cout << (*it).first << " : " << (*it).second << std::endl;
 
+      assert( leftSign * rightSign <= 0 );
+    }
+#endif      
     //Flip the signs of the coefficients of Q to construct a polynomial whose
     //roots in the unit interval correspond with the roots of P in (-B, 0). 
     for(int i=1; i<= deg; i++){
@@ -272,22 +284,24 @@ public:
         Q.coeff()[i] *=-1;
     }
   
-    I = BFInterval(-B, 0);
+    I = BFInterval(0, -B);
     isolateRoots_deg(Q, I, deg, v);
+#ifdef DEBUG
+    for (BFVecInterval::const_iterator it = v.begin(); it != v.end(); ++it) {
+      int leftSign = sign(evalExactSign(_poly, (*it).first));
+      int rightSign = sign(evalExactSign(_poly, (*it).second));
+      //std::cout << (*it).first << " : " << (*it).second << std::endl;
+
+      assert( leftSign * rightSign <= 0 );
+    }
+#endif    
     //This ensures that the interval corresponding to the roots are in sorted order 
     if(isZeroRoot)
       v.push_back(std::make_pair(0,0));
   
     for (BFVecInterval::const_iterator it = vPos.begin(); it != vPos.end(); ++it)
       v.push_back(*it);
-#ifdef DEBUG
-    for (BFVecInterval::const_iterator it = vPos.begin(); it != vPos.end(); ++it) {
-      int leftSign = sign(evalExactSign(_poly, (*it).first));
-      int rightSign = sign(evalExactSign(_poly, (*it).second));
-
-      assert( leftSign * rightSign < 0 );
-    }
-#endif      
+  
   }
 
   // isolateRoot(i)
