@@ -30,7 +30,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.tcc,v $
- * $Revision: 1.12 $ $Date: 2006-12-21 19:44:58 $
+ * $Revision: 1.13 $ $Date: 2007-02-01 16:34:53 $
  ***************************************************************************/
 
 //These inclusions are implied by Curves.h
@@ -172,16 +172,17 @@ void BiPoly<NT>::constructFromString(string & s, char myX, char myY){
   if((myX != 'x' || myX != 'X') && (myY != 'y' || myY != 'Y')){
     //Replace myX with 'x' and myY with 'y' in s.
     unsigned int loc = s.find(myX, 0);
-    while(loc != string::npos){
+    while(loc < s.length()){
       s.replace(loc,1,1,'x');
       loc = s.find(myX, loc+1);
     }
     loc = s.find(myY, 0);
-    while(loc != string::npos){
+    while(loc < s.length()){
       s.replace(loc,1,1,'y');
       loc = s.find(myY, loc+1);
     }
   }
+  std::cout << "constructFromString" << s << std::endl; 
   (*this) =  (*this).getbipoly(s);
 
 }
@@ -375,9 +376,10 @@ int BiPoly<NT>::getterm(string s, BiPoly<NT> & P){
 template <class NT>
 BiPoly<NT> BiPoly<NT>::getbipoly(string s){
 
+    std::cout << "getbipoly 0" << s << std::endl;
     //Remove white spaces from the string
     unsigned int cnt=s.find(' ',0);
-    while(cnt != string::npos){
+    while(cnt < s.length()){
       s.erase(cnt, 1);
       cnt = s.find(' ', cnt);
     }
@@ -387,11 +389,13 @@ BiPoly<NT> BiPoly<NT>::getbipoly(string s){
       return BiPoly<NT>();
     }
 
+    std::cout << "getbipoly 1" << s << std::endl;
+
     //To handle the case when there is one '=' sign
     //Suppose s is of the form s1 = s2. Then we assign s to
     //s1 + (-1)(s2) and reset len
     unsigned int loc;
-    if((loc=s.find('=',0)) != string::npos){
+    if((loc=s.find('=',0)) < s.length()){
       s.replace(loc,1,1,'+');
       string s3 = "(-1)(";
       s.insert(loc+1, s3);
@@ -987,6 +991,7 @@ bool isZeroPinY(BiPoly<NT> & P){
       return true;
     return false;
 }
+
 
 // gcd(P,Q)
 //   This gcd is based upon the subresultant PRS to avoid
