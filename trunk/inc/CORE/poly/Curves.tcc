@@ -30,7 +30,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.tcc,v $
- * $Revision: 1.13 $ $Date: 2007-02-01 16:34:53 $
+ * $Revision: 1.14 $ $Date: 2007-02-01 16:58:11 $
  ***************************************************************************/
 
 //These inclusions are implied by Curves.h
@@ -182,7 +182,6 @@ void BiPoly<NT>::constructFromString(string & s, char myX, char myY){
       loc = s.find(myY, loc+1);
     }
   }
-  std::cout << "constructFromString" << s << std::endl; 
   (*this) =  (*this).getbipoly(s);
 
 }
@@ -376,7 +375,6 @@ int BiPoly<NT>::getterm(string s, BiPoly<NT> & P){
 template <class NT>
 BiPoly<NT> BiPoly<NT>::getbipoly(string s){
 
-    std::cout << "getbipoly 0" << s << std::endl;
     //Remove white spaces from the string
     unsigned int cnt=s.find(' ',0);
     while(cnt < s.length()){
@@ -388,8 +386,6 @@ BiPoly<NT> BiPoly<NT>::getbipoly(string s){
     if(len <= 0){//Zero Polynomial
       return BiPoly<NT>();
     }
-
-    std::cout << "getbipoly 1" << s << std::endl;
 
     //To handle the case when there is one '=' sign
     //Suppose s is of the form s1 = s2. Then we assign s to
