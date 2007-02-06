@@ -155,7 +155,7 @@ BigFloat CauchyUpperBound(Polynomial<NT> &p) {
 
 /// Moebius Transform
 template<class NT, class T>
-Polynomial<MAX_TYPE(NT,T)>
+inline Polynomial<MAX_TYPE(NT,T)>
 moebiusTransform (const Polynomial<NT>& _poly,
                   const T& a, const T& b,
                   const T& c, const T& d) {
@@ -174,7 +174,7 @@ moebiusTransform (const Polynomial<NT>& _poly,
 }
 
 /// Moebius Transform
-Polynomial<BigFloat>
+inline Polynomial<BigFloat>
 moebiusTransform (const Polynomial<BigFloat>& _poly,
                   const BigFloat& a, const BigFloat& b,
                   const BigFloat& c, const BigFloat& d) {

@@ -158,7 +158,7 @@ inline void isolateRoots_unit(Polynomial<T>& P, const BFInterval I, int deg,
   }
 }
 
-void isolateRoots(Polynomial<BigInt>& P, BFInterval I, BFVecInterval& v){
+inline void isolateRoots(Polynomial<BigInt>& P, BFInterval I, BFVecInterval& v){
   int deg = P.getTrueDegree();
   if(deg == 0)
     cout<< "Polynomial is a constant" << endl;
@@ -209,10 +209,10 @@ inline void isolateRoots(Polynomial<T>& P, BFInterval I, BFVecInterval& v){
     v.push_back(std::make_pair(b, b));
 }
 
-void isolateRoots(Polynomial<int>& P, BFInterval I, BFVecInterval& v)
+inline void isolateRoots(Polynomial<int>& P, BFInterval I, BFVecInterval& v)
 { Polynomial<BigInt> poly(P); isolateRoots(poly, I, v); }
 
-void isolateRoots(Polynomial<long>& P, BFInterval I, BFVecInterval& v)
+inline void isolateRoots(Polynomial<long>& P, BFInterval I, BFVecInterval& v)
 { Polynomial<BigInt> poly(P); isolateRoots(poly, I, v); }
 
 //An alternative approach to isolating all roots. Here we separate the positive
