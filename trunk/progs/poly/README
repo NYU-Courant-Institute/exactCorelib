@@ -8,7 +8,7 @@ Description:
 
 Author:
 	Chee Yap, July 2002
-$Id: README,v 1.1 2006-03-07 04:51:25 exact Exp $
+$Id: README,v 1.2 2007-02-06 20:46:54 exact Exp $
 ============================================================
 
 Files:
@@ -118,3 +118,18 @@ complex numerical precision.
 --Chee
 Mar 26, 2004
 ============================================================
+NOTE ON ISOLATING ROOT INTERVAL USING DESCARTES' RULE OF SIGN
+
+We have implemented Descartes's algorithm for getting isolating root interval.
+tDescartes.cpp is created for testing timing compared to tSturm.cpp
+
+Timings are
+
+NT		tSturm		tDescartes
+======		======		==========
+Expr		9.089		1.245		
+BigRat		1.696		0.924
+BigFloat	1.166		1.136
+BigInt		1.307		0.781
+long		0.798		0.521
+int		0.835		0.499

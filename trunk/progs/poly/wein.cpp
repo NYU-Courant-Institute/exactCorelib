@@ -61,7 +61,7 @@ int main()
   std::vector<CoNT>          rroots (nn_roots);
   int                        i;
 
-  std::cout << setprecision(100);
+  //std::cout << setprecision(100);
 
   std::cout << "The roots of p are:" << std::endl;
   for (i = 0; i < n_roots; i++)

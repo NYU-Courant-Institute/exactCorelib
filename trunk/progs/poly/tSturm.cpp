@@ -31,7 +31,7 @@
    Date:    July 20, 2002
 
    Since Core Library  v1.4
-   $Id: tSturm.cpp,v 1.4 2006-11-16 17:41:03 exact Exp $
+   $Id: tSturm.cpp,v 1.5 2007-02-06 20:46:54 exact Exp $
  ************************************** */
 
 #  define CORE_LEVEL 4
@@ -198,6 +198,7 @@ int main(int argc, char** argv){
 // The next test will fail in NT=int or NT=long, so we omit it.
 #ifndef _NT_LONG
 #ifndef _NT_INT
+#ifndef _NT_EXP
     cout <<"=============================================================\n"
       << "TEST 4:   Mignotte Polynomial,  P(X) = X^20 - 2(100X-1)^2 \n" <<
       "=============================================================" << endl;
@@ -223,6 +224,7 @@ int main(int argc, char** argv){
     // then a polynomial like X^20 + (100 X+1)^2 has no real roots.
 
 
+#endif
 #endif
 #endif
 

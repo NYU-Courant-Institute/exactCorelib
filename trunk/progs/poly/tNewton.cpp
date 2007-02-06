@@ -56,7 +56,7 @@
    Date:    Aug 2, 2002 (updated, Oct 10, 2004).
 
    Since Core Library  v1.4
-   $Id: tNewton.cpp,v 1.2 2006-11-20 19:50:42 exact Exp $
+   $Id: tNewton.cpp,v 1.3 2007-02-06 20:46:54 exact Exp $
  ************************************** */
 
 #include <fstream>
@@ -157,12 +157,13 @@ using namespace std;
     BigFloat val;
     val = NP.newtonIterE(prec, N, del); 
     		// compute to sqrt(N) to prec absolute bits
+    cout << "   ---------------------------------------------------\n";
 
     ofs1 << "# Filename: poly/" << fname1 << endl; 
     ofs1 << "# This stores sqrt(" << N << ") to " << prec
 		<< " absolute bits, in base 10" << endl; 
-    int base = 10; int linelength = 70;
-    writeToFile(val, ofs1, base, linelength);
+    int base = 10;
+    writeToFile(val, ofs1, base);
     ofs1 << "# END of FILE " << fname1 << endl; 
     ofs1.close();
 
@@ -172,7 +173,7 @@ using namespace std;
     cout << "   ---------------------------------------------------\n";
     ifstream ifs1(fname1.data());	// input stream for sqrt 
     BigFloat rootN;
-    readFromFile(rootN, ifs1, readprec+1+(1+BigFloat(N).uMSB())/2 );
+    readFromFile(rootN, ifs1);
     	// read [readprec] many absolute bits of precision
 	// REMARK: we need to add "1" to get (***) above
 	//         we need to add (1+N.uMSB())/2 to convert the relative precision
@@ -181,6 +182,7 @@ using namespace std;
 
     cout << "  >>> Reading [readprec]=" << readprec << " bits \n";
     Expr diff2 = (Expr(N)/Expr(rootN) - Expr(rootN))/2;
+    diff2.approx(CORE_INFTY, readprec);
     cout << "uMSB=" << diff2.BigFloatValue().uMSB() << endl;
     cout << "readprec=" << -readprec << endl;
     if (diff2.BigFloatValue().uMSB() > -readprec)
@@ -191,8 +193,9 @@ using namespace std;
 
     //============================================================
     cout << "  >>> AGAIN, reading all " << prec << " bits \n";
-    readFromFile(rootN, ifs1, 0);	// read all digits in file
+    readFromFile(rootN, ifs1);	// read all digits in file
     diff2 = (Expr(N)/Expr(rootN) - Expr(rootN))/2;
+    diff2.approx(CORE_INFTY, prec);
     cout << "uMSB=" << diff2.BigFloatValue().uMSB() << endl;
     cout << "prec=" << -prec << endl;
     if (diff2.BigFloatValue().uMSB() > -prec)
@@ -215,7 +218,7 @@ using namespace std;
     ofs2 << "# Filename: poly/" << fname2 << endl; 
     ofs2 << "# This stores cuberoot(" << N << ") to " << prec
 		<< " absolute bits, in base 10" << endl; 
-    writeToFile(val, ofs2, base, linelength);
+    writeToFile(val, ofs2, base);
     ofs2 << "# END of FILE " << fname2 << endl; 
     ofs2.close();
  
@@ -224,12 +227,13 @@ using namespace std;
     cout << "   SELF-CHECK for cube root: reading from output file\n";
     cout << "   ---------------------------------------------------\n";
     ifstream ifs2(fname2.data());	// input stream for cuberoot
-    readFromFile(rootN, ifs2, readprec+2+(1+BigFloat(N).uMSB())/3); 
+    readFromFile(rootN, ifs2); 
     	// read [readprec] bits 
     cout << "  CubeRoot(" << N << ") = " << rootN << endl;
 
     Expr ExprrootN=Expr(rootN);
     Expr diff3 = (Expr(N)/(ExprrootN*ExprrootN) - ExprrootN)/3;
+    diff3.approx(CORE_INFTY, readprec);
     cout << "uMSB=" << diff3.BigFloatValue().uMSB() << endl;
     cout << "readprec=" << -readprec << endl;
     if (diff3.BigFloatValue().uMSB() > -readprec)

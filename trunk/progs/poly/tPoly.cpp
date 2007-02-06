@@ -21,7 +21,7 @@
  Date:   May 28, 2002. (Revised Mar 24, 2004)
  
  Since Core Library v1.4.1
- $Id: tPoly.cpp,v 1.4 2006-05-06 21:59:34 exact Exp $
+ $Id: tPoly.cpp,v 1.5 2007-02-06 20:46:54 exact Exp $
  ************************************** */ 
 
 #define CORE_LEVEL 4
@@ -358,7 +358,7 @@ cout << "================================================\n";
 // ==================================================
 // ADDITIONAL TESTS 
 // ==================================================
-
+/*
 #if defined _NT_BF
    Poly BF_R(1);
       BF_R.setCoeff(0, BigFloat(123, 0, -4));  
@@ -400,7 +400,7 @@ cout << "================================================\n";
   testPseudo(BF_A, BF_B, true);
 
 #endif
-
+*/
   cout << " ================= END OF TEST POLY ================= " << endl;
 
 #if defined _NT_INT
