@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.h,v 1.10 2006-08-07 13:50:03 exact Exp $
+ * $Id: CoreAux.h,v 1.11 2007-02-06 22:40:04 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREAUX_H__
 #define __CORE_COREAUX_H__
@@ -91,8 +91,14 @@ inline int max(int x, int y)
 inline sign_t sgn(unsigned long v)
 { return v==0 ? 0 : 1; }
 unsigned long gcd(unsigned long x, unsigned long y);
-msb_t ceillg(unsigned long v);
-msb_t floorlg(unsigned long v);
+/* size_t and unsigned long are the same in some OS and different in others.
+ * When they are different, the compiler does not complain.
+ * When they are the same, the compiler will complain about
+ * the following functions (ceillg and floorlg) because of duplicated definitions
+ * So we decide to comment this out:
+ * */
+//msb_t ceillg(unsigned long v);
+//msb_t floorlg(unsigned long v);
 
 // help inline functions for double
 inline sign_t sgn(double v)
