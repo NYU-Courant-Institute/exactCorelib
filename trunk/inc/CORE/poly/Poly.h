@@ -272,8 +272,6 @@ public:
   Polynomial(int n) : base_cls(n) {}
   /// constructor with coeff array
   Polynomial(int n, NT* coef) : base_cls(n, coef) {}
-  /// constructor from NT value
-  Polynomial(const NT &c ) : base_cls(c) {}
   /// constructor with coeff vector
   Polynomial(const VecNT & coef) : base_cls(coef.size(), coef) {}
   Polynomial(int n, const char* s[]) : base_cls(n, s) {}
@@ -813,6 +811,21 @@ T eval(const T& x) const {	// evaluation
 }//eval
 
 template<typename T>
+int evalSign(const T& f) {
+  int deg = getTrueDegree();
+  if (deg == -1)
+    return 0;
+  if (deg == 0 || f == 0)
+    return sign(coeff()[0]);
+  T val(coeff()[deg]);
+  for (int i=deg-1; i>=0; i--) {
+    val *= f;
+    val += T(coeff()[i]);	
+  }
+  return sign(val);
+}  
+
+template<typename T>
   T operator() ( const T& x ) const {  return eval( x ) ; }
 
 };
@@ -833,9 +846,8 @@ Polynomial<NT> operator-(const Polynomial<NT>& x, const Polynomial<NT>& y) {
 template <typename NT>
 inline 
 Polynomial<NT> operator*(const Polynomial<NT>& x, const Polynomial<NT>& y) {
-
   if ( x.getDegree() < 0 || y.getDegree() < 0 ) 
-    return Polynomial<NT>(NT(0));
+    return Polynomial<NT>(std::vector<NT>(1, NT(0)));
 
   int d = x.getDegree() + y.getDegree();
   NT* c = new NT[d+1];

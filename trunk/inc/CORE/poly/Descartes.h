@@ -1,8 +1,9 @@
 #ifndef CORE_DESCARTES_H
 #define CORE_DESCARTES_H
 
-#include "CORE/poly/Poly.h"
+#include <CORE/poly/Poly.h>
 
+using namespace std;
 CORE_BEGIN_NAMESPACE
 
 /***************************************************
@@ -13,7 +14,7 @@ CORE_BEGIN_NAMESPACE
  ***************************************************/
 
 template <typename T>
-void shift(T* coeff, int deg, T* shifted){
+inline void shift(T* coeff, int deg, T* shifted){
   //This is the ascending coefficient method suggested by
   //Krandick in Isolierung reeller Nullstellen von Polynomen
   //( English version is called Isolation of Polynomial Real Roots)
@@ -29,7 +30,7 @@ void shift(T* coeff, int deg, T* shifted){
 }
 
 template <typename T>
-void half(T* coeff, int deg, T* halved){
+inline void half(T* coeff, int deg, T* halved){
   for(int i=0; i<= deg; i++)
     halved[i] = coeff[i]*(BigInt(1)<<(deg-i));
 }
@@ -40,8 +41,8 @@ void half(T* coeff, int deg, T* halved){
 //coefficients of P we need introduce another typename to resolve this.
 //We assume that T2 is more general than T1 so that the conversion from
 // the latter to the former can take place without error.
-template <typename T1, typename T2>
-void contract(T1* coeff, int deg, T2 lambda, T2* contracted){
+template <typename T1, typename T2, typename T3>
+inline void contract(T1* coeff, int deg, T2 lambda, T3* contracted){
   T2 pow=1;
   for(int i=0; i <= deg ; i++){
     contracted[i] = coeff[i]*pow;
@@ -53,8 +54,8 @@ void contract(T1* coeff, int deg, T2 lambda, T2* contracted){
 
 //Computes the Taylor shift by a constant lambda. Confer the comments
 //for contract above.
-template <typename T1, typename T2>
-void shift(T1* coeff, int deg, T2 lambda, T2* shifted){
+template <typename T1, typename T2, typename T3>
+inline void shift(T1* coeff, int deg, T2 lambda, T3* shifted){
 
   for(int i=0; i<= deg ; i++)
     shifted[i] = coeff[i];
@@ -67,7 +68,7 @@ void shift(T1* coeff, int deg, T2 lambda, T2* shifted){
 }
 
 template <typename T>
-int shiftAndSigncount(T* coeff, int deg){
+inline int shiftAndSigncount(T* coeff, int deg){
   //This is the ascending coefficient method suggested by
   //Krandick in Isolierung reeller Nullstellen von Polynomen
   //( English version is called Isolation of Polynomial Real Roots)
@@ -122,7 +123,7 @@ int shiftAndSigncount(T* coeff, int deg){
 //Advantage of this representation is that we don't have to compute the separation
 //bound.
 template <typename T>
-void isolateRoots_deg(Polynomial<T> P, const BFInterval I, int deg,
+inline void isolateRoots_unit(Polynomial<T>& P, const BFInterval I, int deg,
                     BFVecInterval &v) {
   
  int num = shiftAndSigncount(P.coeff(), deg);
@@ -131,13 +132,12 @@ void isolateRoots_deg(Polynomial<T> P, const BFInterval I, int deg,
   //cout << "Polynomial is "; P.dump() ; cout <<endl;
   if(num == 0) return;
   else if(num == 1)
-    if (I.first < I.second)
-      v.push_back(I);
-    else
+    if (I.first > I.second)
       v.push_back(BFInterval(I.second, I.first));
+    else
+      v.push_back(I);
   else{
-    BigFloat m;
-    m.div2(I.second + I.first);
+    BigFloat m; m.div2(I.second + I.first);
     T* temp1 = new T[deg +1];
     T* temp2 = new T[deg +1];
 
@@ -151,12 +151,121 @@ void isolateRoots_deg(Polynomial<T> P, const BFInterval I, int deg,
     
     BFInterval J = std::make_pair(I.first, m);
     BFInterval JJ = std::make_pair(m, I.second);
-    isolateRoots_deg(Q, J, deg, v);
+    isolateRoots_unit(Q, J, deg, v);
     if(R.coeff()[0] == 0) 
       v.push_back(std::make_pair(m,m));
-    isolateRoots_deg(R, JJ, deg, v);
+    isolateRoots_unit(R, JJ, deg, v);
   }
 }
+
+void isolateRoots(Polynomial<BigInt>& P, BFInterval I, BFVecInterval& v){
+  int deg = P.getTrueDegree();
+  if(deg == 0)
+    cout<< "Polynomial is a constant" << endl;
+  
+  BigFloat a = I.first, b=I.second;
+  
+  int n = P.getTrueDegree();
+  BigFloat temp1[n + 1], temp2[n+1];
+
+  shift(P.coeff(), n, a, temp1);
+  contract(temp1, n, b-a, temp2);
+
+  if(P.evalSign(a) == 0)
+    v.push_back(std::make_pair(a, a));
+
+  Polynomial<BigFloat> R(n, temp2);
+  //cout <<"Corresponding polynomial with roots in unit interval ";R.dump();
+  //cout <<endl;
+  
+  isolateRoots_unit(R, I, n, v);
+
+ if(P.evalSign(b) == 0)
+    v.push_back(std::make_pair(b, b));
+}
+
+template <typename T>
+inline void isolateRoots(Polynomial<T>& P, BFInterval I, BFVecInterval& v){
+  int deg = P.getTrueDegree();
+  if(deg == 0)
+    cout<< "Polynomial is a constant" << endl;
+  
+  BigFloat a = I.first, b=I.second;
+
+  int n = P.getTrueDegree();
+  T temp1[n + 1], temp2[n+1];
+
+  shift(P.coeff(), n, a, temp1);
+  contract(temp1, n, b-a, temp2);
+
+  if(evalExactSign(P, a) == 0)
+    v.push_back(std::make_pair(a, a));
+
+  Polynomial<T> R(n, temp2);
+  
+  isolateRoots_unit(R, I, n, v);
+
+ if(evalExactSign(P, b) == 0)
+    v.push_back(std::make_pair(b, b));
+}
+
+void isolateRoots(Polynomial<int>& P, BFInterval I, BFVecInterval& v)
+{ Polynomial<BigInt> poly(P); isolateRoots(poly, I, v); }
+
+void isolateRoots(Polynomial<long>& P, BFInterval I, BFVecInterval& v)
+{ Polynomial<BigInt> poly(P); isolateRoots(poly, I, v); }
+
+//An alternative approach to isolating all roots. Here we separate the positive
+//and negative roots separately. This is slightly more efficient than the method
+//above.
+template <typename T>
+inline void isolateRoots(Polynomial<T>& P, BFVecInterval& v)
+{
+  int deg = P.getTrueDegree();
+  if(deg == 0)
+    cout<< "Polynomial is a constant" << endl;
+
+  //Compute an upper bound on the positive roots of P
+  BigInt B = CauchyBound(P);
+
+  bool isZeroRoot = false;
+  
+  if(P.coeff()[0] == 0)
+    isZeroRoot = true;
+
+  T temp1[deg+1];
+
+  //Construct the polynomial whose roots in the unit interval correspond
+  //with the roots of P in (0, B)
+  contract(P.coeff(), deg, B, temp1);
+  Polynomial<T> Q(deg, temp1);
+  
+  BFVecInterval vPos;//Stores the intervals for the positive roots of P
+  BFInterval I = BFInterval(0,B);
+  isolateRoots_unit(Q, I, deg, vPos);
+
+  //Flip the signs of the coefficients of Q to construct a polynomial whose
+  //roots in the unit interval correspond with the roots of P in (-B, 0). 
+  for(int i=1; i<= deg; i++){
+    if(i % 2 != 0)
+      Q.coeff()[i] *=-1;
+  }
+  
+  I = BFInterval(0, -B);
+  isolateRoots_unit(Q, I, deg, v);
+  //This ensures that the interval corresponding to the roots are in sorted order 
+  if(isZeroRoot)
+    v.push_back(std::make_pair(0,0));
+  
+  for (BFVecInterval::const_iterator it = vPos.begin(); it != vPos.end(); ++it)
+    v.push_back(*it);
+}
+
+inline void isolateRoots(Polynomial<long>& P, BFVecInterval& v)
+{ Polynomial<BigInt> poly(P); isolateRoots(poly, v); }
+
+inline void isolateRoots(Polynomial<int>& P, BFVecInterval& v)
+{ Polynomial<BigInt> poly(P); isolateRoots(poly, v); }
 
 template <class NT>
 class Descartes {
@@ -200,110 +309,20 @@ public:
   //and then doing a contraction by b-a.
   //Again v contains the sorted list of intervals.
   void isolateRoots(const BFInterval &I, BFVecInterval& v)
-  { isolateRoots(I.first, I.second, v); }
+  { CORE_NS::isolateRoots(_poly, I, v); }
 
   void isolateRoots(const BigFloat &x, const BigFloat &y,
                     BFVecInterval &v) {
-    int deg = _poly.getTrueDegree();
-    if(deg == 0)
-      std::cerr<< "Polynomial is a constant" << std::endl;
-  
-    int n = _poly.getTrueDegree();
-    BigFloat temp1[n + 1], temp2[n+1];
-
-    shift(_poly.coeff(), n, x, temp1);
-    contract(temp1, n, y-x, temp2);
-
-    if(evalExactSign(_poly, x) == 0)
-      v.push_back(std::make_pair(x, x));
-
-    Polynomial<BigFloat> R(n, temp2);
-    //cout <<"Corresponding polynomial with roots in unit interval ";R.dump();
-    //cout <<endl;
-  
-    isolateRoots_deg(R, BFInterval(x, y), n, v);
-
-    if(eval(_poly, y) == 0)
-      v.push_back(BFInterval(y, y));
-  }
+    isolateRoots(_poly, BFInterval(x, y), v);
+   }
 
   // isolateRoots(v)
   ///   isolates all roots and returns them in v
   /**   v is a vector of isolated intervals
    */
-  /*
-  void isolateRoots(BFVecInterval &v) {
-    if (len <= 0) {
-       v.clear(); return;
-    }
-    BigFloat bd = CauchyUpperBound(_poly);
-    // Note: bd is an exact BigFloat (this is important)
-    isolateRoots(-bd, bd, v);
+  void isolateRoots(BFVecInterval& v) {
+    CORE_NS::isolateRoots(_poly, v);
   }
-  */
-  //An alternative approach to isolating all roots. Here we separate the positive
-  //and negative roots separately. This is slightly more efficient than the method
-  //above.
-  void isolateRoots(BFVecInterval& v)
-  {
-    int deg = _poly.getTrueDegree();
-    if(deg == 0)
-      std::cerr << "Polynomial is a constant" << std::endl;
-
-    //Compute an upper bound on the positive roots of P
-    NT B = CauchyBound(_poly);
-
-    bool isZeroRoot = false;
-  
-    if(_poly.coeff()[0] == 0)
-      isZeroRoot = true;
-
-    NT temp1[deg+1];
-
-    //Construct the polynomial whose roots in the unit interval correspond
-    //with the roots of P in (0, B)
-    contract(_poly.coeff(), deg, B, temp1);
-    Polynomial<NT> Q(deg, temp1);
-  
-    BFVecInterval vPos;//Stores the intervals for the positive roots of P
-    BFInterval I = BFInterval(0,B);
-    isolateRoots_deg(Q, I, deg, vPos);
-#ifdef DEBUG
-    for (BFVecInterval::const_iterator it = vPos.begin(); it != vPos.end(); ++it) {
-      int leftSign = sign(evalExactSign(_poly, (*it).first));
-      int rightSign = sign(evalExactSign(_poly, (*it).second));
-      //std::cout << (*it).first << " : " << (*it).second << std::endl;
-
-      assert( leftSign * rightSign <= 0 );
-    }
-#endif      
-    //Flip the signs of the coefficients of Q to construct a polynomial whose
-    //roots in the unit interval correspond with the roots of P in (-B, 0). 
-    for(int i=1; i<= deg; i++){
-      if(i % 2 != 0)
-        Q.coeff()[i] *=-1;
-    }
-  
-    I = BFInterval(0, -B);
-    isolateRoots_deg(Q, I, deg, v);
-#ifdef DEBUG
-    for (BFVecInterval::const_iterator it = v.begin(); it != v.end(); ++it) {
-      int leftSign = sign(evalExactSign(_poly, (*it).first));
-      int rightSign = sign(evalExactSign(_poly, (*it).second));
-      //std::cout << (*it).first << " : " << (*it).second << std::endl;
-
-      assert( leftSign * rightSign <= 0 );
-    }
-#endif    
-    //This ensures that the interval corresponding to the roots are in sorted order 
-    if(isZeroRoot)
-      v.push_back(std::make_pair(0,0));
-  
-    for (BFVecInterval::const_iterator it = vPos.begin(); it != vPos.end(); ++it)
-      v.push_back(*it);
-  
-  }
-
   // isolateRoot(i)
   ///   Isolates the i-th smallest root 
   ///         If i<0, isolate the (-i)-th largest root
@@ -316,7 +335,6 @@ public:
     BigFloat bd = CauchyUpperBound(_poly);
     return isolateRoot(i, -bd, bd);
   }
-
   // isolateRoot(i, x, y)
   ///   isolates the i-th smallest root in [x,y]
   /**   If i is negative, then we want the i-th largest root in [x,y]
@@ -413,6 +431,11 @@ public:
     return signVariationofCoeff(
            moebiusTransform(_poly, x, y, BigFloat(1), BigFloat(1))
 	   );
+  }
+  int numberOfRoots() {
+    BFVecInterval v;
+    isolateRoots(v);
+    return v.size();
   }
 
   int numberOfRoots(BFInterval& I)
@@ -877,7 +900,6 @@ inline void testNewtonDescartes(const Polynomial<NT>&P, int prec, int n = -1) {
   Descartes<NT> D (P);
   BFVecInterval v;
   D.newtonRefineAllRoots(v, prec);
-//  D.refineAllRoots(v, prec);
   std::cout << "   Number of roots is " << v.size();
   if ((n >= 0) & (v.size() == (unsigned)n))
     std::cout << " (CORRECT!)" << std::endl;

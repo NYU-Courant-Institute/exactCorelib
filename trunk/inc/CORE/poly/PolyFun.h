@@ -40,7 +40,6 @@ MAX_TYPE(NT, T) eval(Polynomial<NT> &p,const T& f) {	// evaluation
   return val;
 }//eval
 
-
 /// Approximate Evaluation of Polynomials
 /// 	the coefficients of the polynomial are approximated to some
 ///	specified composite precision (r,a).
