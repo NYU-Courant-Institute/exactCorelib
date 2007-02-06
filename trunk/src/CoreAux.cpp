@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.cpp,v 1.6 2007-01-31 20:40:44 exact Exp $
+ * $Id: CoreAux.cpp,v 1.7 2007-02-06 22:58:51 exact Exp $
  ***************************************************************************/
 #include <CORE/Config.h>
 #include <CORE/CoreDefs.h>
@@ -42,11 +42,13 @@ msb_t floorlg(long v)
 long gcd(long x, long y)
 { return gcd(BigInt(x), BigInt(y)).get_si(); }
 
+#if defined ((gnu) || (cygwin))
 // it produces error in linux and mac os x
-//msb_t ceillg(unsigned long v)
-//{ return BigInt(v).ceillg(); }
+msb_t ceillg(unsigned long v)
+{ return BigInt(v).ceillg(); }
 msb_t floorlg(unsigned long v)
 { return BigInt(v).floorlg(); }
+#endif
 
 int gcd(int x, int y)
 { return gcd(BigInt(x), BigInt(y)).get_si(); }

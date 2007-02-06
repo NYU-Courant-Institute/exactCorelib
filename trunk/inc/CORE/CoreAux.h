@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.h,v 1.11 2007-02-06 22:40:04 exact Exp $
+ * $Id: CoreAux.h,v 1.12 2007-02-06 22:57:19 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREAUX_H__
 #define __CORE_COREAUX_H__
@@ -97,8 +97,11 @@ unsigned long gcd(unsigned long x, unsigned long y);
  * the following functions (ceillg and floorlg) because of duplicated definitions
  * So we decide to comment this out:
  * */
-//msb_t ceillg(unsigned long v);
-//msb_t floorlg(unsigned long v);
+#if defined (gnu) || (cygwin)
+msb_t ceillg(unsigned long v);
+msb_t floorlg(unsigned long v);
+#endif
+
 
 // help inline functions for double
 inline sign_t sgn(double v)
