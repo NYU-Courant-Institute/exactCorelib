@@ -97,22 +97,22 @@ makeall:  makeprogs
 ############################################################
 # Housekeeping
 ############################################################
-clean: cleanbasicprogs
+clean: cleanbasic
 	@for p in ${moreprogs}; do \
 	  if test -d "$$p"; then echo $$p; ${MAKE} -C $$p clean; echo ""; fi; \
 	done
 
-cleanbasicprogs: 
+cleanbasic: 
 	@for p in ${basicprogs}; do \
 	  if test -d "$$p"; then echo $$p; ${MAKE} -C $$p clean; echo ""; fi; \
 	done
 
-veryclean: verycleanbasicprogs
+veryclean: verycleanbasic
 	@for p in ${moreprogs}; do \
 	  if test -d "$$p"; then echo $$p; ${MAKE} -C $$p veryclean; echo ""; fi\
 	done
 
-verycleanbasicprogs: 
+verycleanbasic: 
 	@for p in ${basicprogs}; do \
 	  if test -d "$$p"; then echo $$p; ${MAKE} -C $$p veryclean; echo ""; fi\
 	done
