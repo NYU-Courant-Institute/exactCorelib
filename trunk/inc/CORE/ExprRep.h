@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.27 2007-01-17 18:52:08 exact Exp $
+ * $Id: ExprRep.h,v 1.28 2007-02-08 20:26:32 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -30,8 +30,6 @@
 #include <bitset>
 #include <iostream>
 #include <sstream>
-
-#define CORE_DEBUG
 
 CORE_BEGIN_NAMESPACE
 
@@ -203,7 +201,7 @@ public: // public methods
         return appValue().sgn();
     }
     // do exact evaluation
-    if (!compute_sign()) 
+    if (!compute_sign())
       refine();
     
     flags().set(fSign);
@@ -283,7 +281,6 @@ public: // public methods
     if (!m_nodeinfo) init_nodeinfo();
     // do exact evaluation
     if (is_approx_needed(prec)) {
-      //      std::cout << "r_approx with " << op() << std::endl;
       if (compute_r_approx(prec)) flags().set(fExact);
       flags().set(fInit);
     }
@@ -426,6 +423,9 @@ public: // public methods
     if (bound > get_cut_off_bound()) {
       bound = get_cut_off_bound(); bound_type = 1;
     }
+#ifdef CORE_DEBUG_ROOTBOUND
+      std::cout << "refine bound type=" << bound_type << std::endl;
+#endif
     // Step 4
     do {
       prec <<= 1;
@@ -1225,11 +1225,11 @@ public:
   {}
 protected:
   virtual bool compute_sign() 
-  { return false;}
+  { sign() = child->get_sign(); return true; }
   virtual bool compute_uMSB() 
   { uMSB() = 1; return true;}
   virtual bool compute_lMSB() 
-  { return false;}
+  { lMSB() = floorlg(abs(child->a_approx(2).get_min())); return true;}
   virtual bool compute_a_approx(prec_t prec) {
     return check_exact(appValue().arcsin(child->a_approx(prec+2), abs2rel(prec+1)));
   }
@@ -1396,18 +1396,27 @@ public:
     numType() = std::max(NODE_NT_TRANSCENDENTAL, child->numType());
     if (child->get_sign()<=0)
       core_error("log2 of negative value", __FILE__, __LINE__, true);
+    child->a_approx(2);
   }
   virtual ~Log2RepT() 
   {}
 protected:
-  virtual bool compute_sign() 
-  { return false;}
+  virtual bool compute_sign() {
+    if (child->appValue().get_min() > 1)
+    { sign() = 1; return true; }
+    else if (child->appValue().get_max() < 1)
+    { sign() = -1; return true; }
+    else if (child->appValue().is_exact() && child->appValue() == 1)
+    { sign() = 0; return true; }
+    else
+      return false;
+  }
   virtual bool compute_uMSB() 
-  { return false;}
+  { uMSB() = ceillg(child->get_uMSB()); return true; }
   virtual bool compute_lMSB() 
-  { return false;}
+  { lMSB() = floorlg(child->get_lMSB()); return true; }
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().log_2(child->a_approx(prec+child.get_lMSB()+1), abs2rel(prec+1)));
+    return check_exact(appValue().log_2(child->a_approx(prec+1-floorlg(child->a_approx(2).get_min())), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()

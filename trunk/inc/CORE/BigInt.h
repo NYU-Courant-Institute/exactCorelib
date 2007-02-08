@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigInt.h,v 1.11 2006-12-03 18:52:05 exact Exp $
+ * $Id: BigInt.h,v 1.12 2007-02-08 20:26:32 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGINT_H__
 #define __CORE_BIGINT_H__
@@ -476,7 +476,10 @@ public:
   { return ceillg(); } 
   /// return lower bound of MSB
   long lMSB() const
-  { return floorlg(); } 
+  { return floorlg(); }
+  /// binomial coefficient
+  void binomial(unsigned long n, unsigned long k)
+  { mpz_bin_uiui(mp(), n, k); } 
   //@}
 
   /// \name helper functions
@@ -1229,6 +1232,9 @@ inline BigInt pow(const BigInt& a, unsigned long ui)
 // bit length
 inline int bitLength(const BigInt& a) 
 { return a.sizeinbase(2); }
+// binomial
+inline BigInt binomial(unsigned long n, unsigned long k)
+{ BigInt r; r.binomial(n, k); return r; }
 /// floorLg -- floor of log_2(a)
 /** Convention: a=0, floorLg(a) returns -1. (!!changed: return 0) 
  *  This makes sense for integer a.

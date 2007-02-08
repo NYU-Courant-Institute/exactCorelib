@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.27 2006-12-20 23:12:19 exact Exp $
+ * $Id: Expr.h,v 1.28 2007-02-08 20:26:32 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -197,16 +197,10 @@ public:
   { return ExprT(new CosRep(e.rep())); }
   /// tangent
   friend ExprT tan(const ExprT& e) {
-    //if (e >= 0 && e <= 3.14/4)
-    //  return ExprT(new TanRep(e.rep()));
-    //else
       return sin(e)/cos(e);
   }
   /// cotangent
   friend ExprT cot(const ExprT& e) {
-    //if (e >= 3.15/4 && e <= 3.14/2)
-    //  return ExprT(new CotRep(e.rep()));
-    //else
       return cos(e)/sin(e);
   }
   /// arcsine
@@ -215,8 +209,10 @@ public:
       core_error("arcsin out of range", __FILE__, __LINE__, true);
       return ExprT(0);
     }
+    else if (e.abs() >= 1 / sqrt(ExprT(2)))
+      return 2 * e.sign() * arcsin(sqrt((1 - sqrt(1 - e*e)) / 2));
     else if (e.abs() >= 0.5)
-      return arccos(sqrt(1-pow(e,2)));
+      return arctan(e / sqrt(1-e*e));
     else
       return ExprT(new ArcSinRep(e.rep()));
   }
@@ -226,8 +222,10 @@ public:
       core_error("arccos out of range", __FILE__, __LINE__, true);
       return ExprT(0);
     }
+    else if (e.abs() >= 1 / sqrt(ExprT(2)))
+      return 2 * e.sign() * arccos(sqrt((1 + sqrt(1 - e*e)) / 2));
     else if (e.abs() >= 0.5)
-      return arcsin(sqrt(1-pow(e,2)));
+      return ExprT(new PiRep()) / 2 - arcsin(e);
     else
       return ExprT(new ArcCosRep(e.rep()));
   }

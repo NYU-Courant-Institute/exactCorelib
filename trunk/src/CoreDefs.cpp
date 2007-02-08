@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.cpp,v 1.7 2006-10-31 16:29:22 exact Exp $
+ * $Id: CoreDefs.cpp,v 1.8 2007-02-08 20:27:18 exact Exp $
  ***************************************************************************/
 #include <CORE/Config.h>
 #include <CORE/BigFloat.h>
@@ -34,16 +34,16 @@ mp_rnd_t def_output_rounding_mode = MPFR_RND;
 // default output base
 int def_output_base = 0;
 
-long defAbsPrec = LONG_MAX;
+long defAbsPrec = CORE_INFTY;
 long defRelPrec = 52;
-long defInputDigits = LONG_MAX;
+long defInputDigits = CORE_INFTY;
 
 long defBFdivRelPrec = 54;
 long defBFradicalRelPrec = 54;
 
 unsigned long cutOffBound = CORE_INFTY;
 // used as transcendental number root bound
-unsigned long escapeBound = 100000;
+unsigned long escapeBound = 10000;
 
 
 CORE_END_NAMESPACE
