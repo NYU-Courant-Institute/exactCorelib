@@ -288,14 +288,14 @@ template<class FLT>
 FLT sin(FLT x)
 {
   int eps = defAbsPrec;
-  //std::cerr << "eps=" << eps << std::endl;
+std::cerr << "eps=" << eps << std::endl;
   FLT TWOPI = MathTwoPi(eps);
 
   BigInt n = floor(x / TWOPI);
-  //std::cerr << "n=" << n << std::endl;
+std::cerr << "n=" << n << std::endl;
   FLT xx = x - TWOPI * n; 
   xx.approx(CORE_posInfty, eps+1);
-  //std::cerr << "xx=" << xx << std::endl;
+std::cerr << "xx=" << xx << std::endl;
   
   return MultiPrecision<FLT>::ElementaryFunction::eval(MultiPrecision<FLT>::Sin::_key, xx, eps+1);
 }

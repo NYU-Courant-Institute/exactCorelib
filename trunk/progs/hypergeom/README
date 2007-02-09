@@ -1,8 +1,24 @@
 file: README CORE/progs/hyperGeom
 Since Core Library Version 1.4
 
-$Id: README,v 1.1 2006-03-07 04:51:24 exact Exp $
+$Id: README,v 1.2 2007-02-09 19:17:56 exact Exp $
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+WARNING: In Core2, this implementation of hypergeometric functions
+	seems to be partially broken.  For instance, when we compute 
+		sin(0.01), sin(0.41), sin(0.81), sin(1.21)
+	to 100 digits, we find that the first result was completely wrong,
+	but the remainting three are still correct (checked against MAPLE).
+	So sin(x) where x is small does not work.
+
+	There are other problems like arccos() and arcsin() becoming very slow
+	for higher output digits. e.g.) when the output digits is 91.
+	it is not terminating. But it seems ok at 90 (strange).
+	Also exp() does not terminate at all for any value.
+
+	-- Jihun (Feb 2007)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
 Synopsis:
 	Facility to compute hypergeometric functions to any desired accuracy.
 
