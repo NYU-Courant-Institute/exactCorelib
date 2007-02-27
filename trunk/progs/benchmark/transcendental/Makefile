@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.3 2007-01-23 15:36:56 exact Exp $
+# Core Library, $Id: Makefile,v 1.4 2007-02-27 22:16:23 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -48,6 +48,11 @@ tElemFun: tElemFun.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) tElemFun.cpp -o tElemFun.o
 	${CXX} $(LDFLAGS) tElemFun.o $(CORE_LIB) -o tElemFun
 
+t: t.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) t.cpp -o t.o
+	${CXX} $(LDFLAGS) t.o $(CORE_LIB) -o t
+
+	
 tManyDigits: tManyDigits.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) tManyDigits.cpp -o tManyDigits.o
 	${CXX} $(LDFLAGS) tManyDigits.o $(CORE_LIB) -o tManyDigits
