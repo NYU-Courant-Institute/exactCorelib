@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.28 2007-02-08 20:26:32 exact Exp $
+ * $Id: Expr.h,v 1.29 2007-02-27 22:11:45 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -71,7 +71,7 @@ private: // private typedefs
   typedef ArcCosRepT<RootBd, Filter, Kernel> ArcCosRep;
   typedef ArcTanRepT<RootBd, Filter, Kernel> ArcTanRep;
   typedef Log2RepT<RootBd, Filter, Kernel> Log2Rep;
-  typedef ExpoRepT<RootBd, Filter, Kernel> ExpoRep;
+  typedef ExpRepT<RootBd, Filter, Kernel> ExpRep;
 
 public:
   ExprT() : m_rep(new ConstLongRep(0L, NODE_NT_INTEGER)) {}
@@ -187,8 +187,8 @@ public:
   friend ExprT sin(const ExprT& e)
   { return ExprT(new SinRep(e.rep())); }
   /// exponent
-  friend ExprT expo(const ExprT& e)
-  { return ExprT(new ExpoRep(e.rep())); }
+  friend ExprT exp(const ExprT& e)
+  { return ExprT(new ExpRep(e.rep())); }
   /// log2
   friend ExprT log_2(const ExprT& e)
   { return ExprT(new Log2Rep(e.rep())); }
@@ -546,5 +546,65 @@ inline long ceilLg(const Expr& x) {
   else
     return ceilLg(ceil(x));
 }
+inline void getDigits(string& strin, string& strout, int& exponent) {
+					// strin = string to be analyzed,
+					// strout = string of valid digits(removing preceding 0's)
+  exponent = 0;				// value of exponent
+  bool dot = false;			// if decimal point is found
+  int j = 0;				// position of most significant digit
+
+  if ((strin[0] == '+')|| (strin[0] == '-')) j++;	// Takes care of sign
+  if (strin[j] == 0) j++;         		// Takes care of 0.XXX (but not 00.123)
+  						// CAVEAT: assuming there is at most one 0.
+
+  for (size_t i = j; i < strin.size(); i++) {	// this loop counts D=number
+    if (strin[i] == 'e' || strin[i] == 'E') {  	//   of printout digits
+      exponent = atoi(strin.substr(i+1,strin.size()-i).c_str());
+      break;
+    } 
+    if (strin[i] == '.')
+     dot = true;			   	// found dot
+  
+    if (strin[i] >= '0' && strin[i] <= '9') {
+      strout += strin[i];
+      if (dot) exponent--;			// take into account the effect of decimal point to exponent
+    }// else error!
+  }//for
+}  
+
+inline bool isCompatible(Expr& exp, int digits, string strAns) {
+  std::ostringstream oss;                 // oss is the string we print into
+
+  prec_t prec = digits2bits(digits);      // convert prec (in bits) into digits
+
+  prec += 4;				  // to guarantee prec relative digits output,
+                                          // 4 more precision is needed
+
+  setDefaultOutputDigits(digits, oss);    // display precision
+
+  exp.approx(prec, CORE_INFTY);         // approximate value
+
+  oss.str("");
+  oss << exp;                           // print into oss
+
+  std::string strExp = oss.str();
+
+  int expoExp, expoAns;
+  std::string digExp, digAns;
+
+  getDigits(strExp, digExp, expoExp);
+  getDigits(strAns, digAns, expoAns);
+
+  digExp.erase(digExp.end() - 1);	// delete the last digit. 
+  size_t minlength = std::min (digExp.size(), digAns.size());
+
+  if (expoExp != expoAns) return false;
+  if (digExp.substr(0, minlength - 1) != digAns.substr(0, minlength - 1)) return false; 
+  
+  return true;
+}
+
+
+
 CORE_END_NAMESPACE
 #endif // __CORE_EXPR_H__

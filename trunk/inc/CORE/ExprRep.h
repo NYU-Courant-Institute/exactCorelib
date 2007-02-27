@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.28 2007-02-08 20:26:32 exact Exp $
+ * $Id: ExprRep.h,v 1.29 2007-02-27 22:11:45 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -1309,17 +1309,17 @@ protected:
   virtual bool compute_lMSB() 
   { return false;}
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().arctan(child->a_approx(prec+1), abs2rel(prec+1)));
+    return check_exact(appValue().arctan(child->a_approx(prec+2), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
   { return std::string("ArcTan"); }
 #endif 
 };
-/// \class Expo
+/// \class Exp
 /// \brief geometric power of e node
 template <typename RootBd, typename Filter, typename Kernel>
-class ExpoRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
+class ExpRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
   typedef UnaryOpRepT<RootBd, Filter, Kernel> UnaryOpRep;
   typedef RootBd* id_rootbd_t;
@@ -1335,13 +1335,13 @@ class ExpoRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::init_value;
   using ExprRep::numType;
 public:
-  ExpoRepT(ExprRep* c) : UnaryOpRep(c) {
+  ExpRepT(ExprRep* c) : UnaryOpRep(c) {
     numType() = std::max(NODE_NT_TRANSCENDENTAL, child->numType());
     if (child->get_sign()==0)
       init_value(1);
     child->a_approx(2);
   }
-  virtual ~ExpoRepT() 
+  virtual ~ExpRepT() 
   {}
 protected:
   virtual bool compute_sign() 
@@ -1370,7 +1370,7 @@ protected:
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
-  { return std::string("Expo"); }
+  { return std::string("Exp"); }
 #endif 
 };
 /// \class Log2
@@ -1420,7 +1420,7 @@ protected:
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
-  { return std::string("Expo"); }
+  { return std::string("log2"); }
 #endif 
 };
 
