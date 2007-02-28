@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.h,v 1.13 2007-02-28 19:20:40 exact Exp $
+ * $Id: CoreAux.h,v 1.14 2007-02-28 19:47:36 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREAUX_H__
 #define __CORE_COREAUX_H__
@@ -163,7 +163,7 @@ inline int getUncertainty( std::string& strin) {
   bool dot=false;	// have we seen decimal point yet?
   int j=0;		// position of most significant digit
   if ((strin[0] == '+')|| (strin[0] == '-')) j++;	// Takes care of sign
-  while (strin[j] == 0) j++;   // Takes care of initial zeros: 00123.456
+  while (strin[j] == '0') j++;   // Takes care of initial zeros: 00123.456
 
   for (size_t i = j; i < strin.size(); i++) {	
     if (strin[i] == 'e' || strin[i] == 'E') {  
@@ -191,10 +191,10 @@ inline void getDigits(std::string& strin, std::string& strout, int& exponent) {
   int j = 0;			// position of most significant digit
 
   if ((strin[0] == '+')|| (strin[0] == '-')) {
-    strout += strin[0];	 	// sign in strout seems to cause trouble!!
+    if (strin[0] == '-') strout += strin[0]; // +sign in strout cause trouble!!
     j++;			// Takes care of sign
   }
-  while (strin[j] == 0) j++;    // Takes care of 00012.345 
+  while (strin[j] == '0') j++;    // Takes care of 00012.345 
 
   for (size_t i = j; i < strin.size(); i++) {	
     if (strin[i] == 'e' || strin[i] == 'E') {  
@@ -208,6 +208,7 @@ inline void getDigits(std::string& strin, std::string& strout, int& exponent) {
       if (dot) exponent--;	// takes account of decimal point 
     }// else error!
   }//for
+  if (strout.size() == 0) strout="0";
 }  
 
 /// Function to convert a decimal string into a BigRat
