@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.4 2006-10-31 15:47:40 exact Exp $
+# Core Library, $Id: Makefile,v 1.5 2007-02-28 19:02:57 exact Exp $
 
 include ../Make.options
 
@@ -38,6 +38,8 @@ testMpfr: testMpfr.o
 testSqrt: testSqrt.o
 
 sqrt: sqrt.o
+
+cur testCompatible: testCompatible.o
 
 #=================================================
 # Rules
