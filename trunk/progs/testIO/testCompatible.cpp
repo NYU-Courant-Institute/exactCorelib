@@ -1,17 +1,43 @@
 /* ************************************************
    File: testCompatible.cpp
 
-   Purpose:  Given two decimal strings, are they compatible?
+   Purpose:  Tests if two decimal strings, are they compatible?
+   		Strings can be in scientific or positional notation
 
    Usage:
         % testCompatible
+	% testCompatible [string1] [string2] [compatible]
+	% testCompatible 12.34 1234e-2 true
 
-   To Do: Make these routines "self-validating".
+   Theory: Here is the definition of compatibility
+     For any decimal string SX, it has a nominal value X
+     and also an uncertainty UX.
 
-   Author: Chee Yap (yap@cs.nyu.edu)
+     E.g., SX= 1.234 then X=1.234 and UX=0.001
+     E.g., SX= 1200e-2 then X=12.00 and UX=0.01
+     E.g., SX= 12 then X=12 and UX=1
+
+ 	The string SX then defines an interval [X-UX, X+UX].
+ 
+     When we say two strings, SX and SY are compatible, we mean
+     that the corresponding intervals overlap.
+
+     To decide compatibility of SX and SY, we first compute
+     X, UX, Y, UY.  Wlog, let X <= Y.  Then
+     SX and SY are compatible iff
+           X + UX >= Y - UY.
+     REMARK: we could try to work with the stricter notion with
+     	   X + UX > Y - UY
+     but it might cause trouble with some of our other implementations.
+
+     E.g., 1.200 is compatible with 1.19999 and 1.201
+     E.g., 1.234 is compatible with 1.235 and 1.233
+
+
+   Author: Jihun and Chee Yap
 
    Since Core Library 1.4
-   $Id: testCompatible.cpp,v 1.1 2007-02-28 19:02:58 exact Exp $
+   $Id: testCompatible.cpp,v 1.2 2007-02-28 19:11:51 exact Exp $
  ************************************************ */  
 
 #ifndef CORE_LEVEL
@@ -49,7 +75,7 @@ int main( int argc, char *argv[] ) {
 
   BigInt temp;
   temp.pow(10, 0);
-  cout << "temp = " << temp << std::endl;
+  cout << "temp = " << temp << endl;
 
   string stringIn = "123.456";
   string stringAns = "123.45555";
@@ -65,16 +91,16 @@ int main( int argc, char *argv[] ) {
 
   if (getUncertainty(stringIn) != uIn ||
       getUncertainty(stringAns) != uAns)
-	  cout << "ERROR getUncertainty is wrong" << std::endl;
+	  cout << "ERROR getUncertainty is wrong" << endl;
   else
-	  cout << "CORRECT getUncertainty" << std::endl;
+	  cout << "CORRECT getUncertainty" << endl;
 
   
   getDigits(stringIn, digitIn_, exponentIn_);
   if (digitIn != digitIn_ || exponentIn != exponentIn_)
-	  cout << "ERROR getDigits is wrong" << std::endl;
+	  cout << "ERROR getDigits is wrong" << endl;
   else
-	  cout << "CORRECT getDigits" << std::endl;
+	  cout << "CORRECT getDigits" << endl;
   
   bool answer=true;
 
