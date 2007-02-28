@@ -50,8 +50,11 @@ void function_test (string strFun, string strVal, int outDigit,
 
   if (compatible && isCompatible(funVal, outDigit, strMaple))
     cout << "CORRECT!!!" <<   strFun << "(" << strVal << ")" << " is correponding to the same of Maple" << endl;
-  else if (compatible)
+  else if (compatible) {
     cout << "ERROR!!!" <<   strFun << "(" << strVal << ")" << " is not correponding to the same of Maple" << endl;
+    cout << "CORE2 : " << funVal << std::endl;
+    cout << "Maple : " << strMaple << std::endl;
+  }
 }
 
 int main( int argc, char *argv[] ) {

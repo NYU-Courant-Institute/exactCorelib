@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.4 2007-02-27 22:16:23 exact Exp $
+# Core Library, $Id: Makefile,v 1.5 2007-02-28 22:18:16 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -29,12 +29,13 @@ default: $(TARGETS)
 test:  $(TARGETS)
 	./tConst 1000 1
 	./tElemFun 1000 1
+	./tElemFunBF 1000 1
 
 moretest: $(TARGETS)
 	./tConst 10000
 	./tConst 100000
 	./tElemFun 10000
-	./tElemFun 100000
+	./tElemFunBF 100000
 
 bench: moretest
 
@@ -48,6 +49,11 @@ tElemFun: tElemFun.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) tElemFun.cpp -o tElemFun.o
 	${CXX} $(LDFLAGS) tElemFun.o $(CORE_LIB) -o tElemFun
 
+cur tElemFunBF: tElemFunBF.cpp
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) tElemFunBF.cpp -o tElemFunBF.o
+	${CXX} $(LDFLAGS) tElemFunBF.o $(CORE_LIB) -o tElemFunBF
+
+t: t.cpp
 t: t.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) t.cpp -o t.o
 	${CXX} $(LDFLAGS) t.o $(CORE_LIB) -o t
