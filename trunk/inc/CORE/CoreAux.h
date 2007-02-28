@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.h,v 1.12 2007-02-06 22:57:19 exact Exp $
+ * $Id: CoreAux.h,v 1.13 2007-02-28 19:20:40 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREAUX_H__
 #define __CORE_COREAUX_H__
@@ -129,6 +129,131 @@ inline  void core_swap(T& a, T& b) {
   a = b;
   b = tmp;
 }
+
+////////////////////////////////////////////////////
+// Functions to check if two decimal strings are
+// compatible.   Here is the definition:
+//     For any decimal string SX, it has a nominal value X
+//     and also an uncertainty EX.
+//     E.g., SX= 1.234 then X=1.234 and EX=0.001
+//     E.g., SX= 1200e-2 then X=12.00 and EX=0.01
+//     E.g., SX= 12 then X=12 and EX=1
+//
+// The string SX then defines an interval [X-EX, X+EX].
+// 
+//     When we say two strings, SX and SY are compatible, we mean
+//     that the corresponding intervals overlap.
+//
+//     To decide compatibility of SX and SY, we first compute
+//     X, EX, Y, EY.  Wlog, let X <= Y.  Then
+//     SX and SY are compatible iff
+//           X + EX >= Y - EY.
+//     REMARK: we could try to work with the stricter notion of X+EX > Y-EY
+//     but that might cause trouble with some of our other implementations.
+//
+//
+//     E.g., 1.200 is compatible with 1.19999 and 1.201
+//     E.g., 1.234 is compatible with 1.235 and 1.233
+//
+////////////////////////////////////////////////////
+
+/// Returns the uncertainty log_10(EX) in an output decimal string SX
+inline int getUncertainty( std::string& strin) {
+  int u = 0;  		// eventually we want to return u
+  bool dot=false;	// have we seen decimal point yet?
+  int j=0;		// position of most significant digit
+  if ((strin[0] == '+')|| (strin[0] == '-')) j++;	// Takes care of sign
+  while (strin[j] == 0) j++;   // Takes care of initial zeros: 00123.456
+
+  for (size_t i = j; i < strin.size(); i++) {	
+    if (strin[i] == 'e' || strin[i] == 'E') {  
+      u += atoi(strin.substr(i+1,strin.size()-i).c_str());
+      break;
+    } 
+    if (strin[i] == '.')
+     dot = true;   	// found dot
+    if (strin[i] >= '0' && strin[i] <= '9') {
+      if (dot) u--;
+    }// else error!
+  }//for
+  return u;
+}  
+
+// helper function for isCompatible
+// this extract mantissa and exponent from decimal string
+// i.e., if value is m 10^e, then return (m, e).
+inline void getDigits(std::string& strin, std::string& strout, int& exponent) {
+	// strin = string to be analyzed,
+	// strout = string representing an integer (removing preceding 0's,
+	// 	dot and exponents)
+  exponent = 0;			// value of exponent
+  bool dot = false;		// if decimal point is found
+  int j = 0;			// position of most significant digit
+
+  if ((strin[0] == '+')|| (strin[0] == '-')) {
+    strout += strin[0];	 	// sign in strout seems to cause trouble!!
+    j++;			// Takes care of sign
+  }
+  while (strin[j] == 0) j++;    // Takes care of 00012.345 
+
+  for (size_t i = j; i < strin.size(); i++) {	
+    if (strin[i] == 'e' || strin[i] == 'E') {  
+      exponent += atoi(strin.substr(i+1,strin.size()-i).c_str());
+      break;
+    } 
+    if (strin[i] == '.')
+     dot = true;		// found dot
+    if (strin[i] >= '0' && strin[i] <= '9') {
+      strout += strin[i];
+      if (dot) exponent--;	// takes account of decimal point 
+    }// else error!
+  }//for
+}  
+
+/// Function to convert a decimal string into a BigRat
+inline BigRat stringToBigRat(std::string & strIn) {
+  std::string digitIn;
+  int expIn;
+  
+  getDigits(strIn, digitIn, expIn);
+  BigRat XIn(digitIn);
+  BigInt powIn;
+  powIn.pow(10, abs(expIn));
+  if (expIn > 0)
+    XIn *= powIn;
+  else
+    XIn /= powIn;
+  return(XIn);
+}
+
+/// Function to check if two decimal string values are compatible
+/// Every decimal string has an implicit uncertainty, and 2 strings are
+/// compatible if they could be equal within this uncertainty.
+inline bool isCompatible(std::string & strIn, std::string & strAns) {
+  int uIn=getUncertainty(strIn);
+  int uAns=getUncertainty(strAns);
+  
+  BigInt temp;
+  temp.pow(10,abs(uIn));
+  BigRat uncertaintyIn(temp);
+  temp.pow(10,abs(uAns));
+  BigRat uncertaintyAns(temp);
+  if (uIn < 0)
+    uncertaintyIn.inv();  
+  if (uAns < 0)
+    uncertaintyAns.inv();  
+
+  BigRat XIn=stringToBigRat(strIn);
+  BigRat XAns=stringToBigRat(strAns);
+
+  if (XIn >= XAns) 
+	  return (XIn - uncertaintyIn <= XAns + uncertaintyAns);
+  else
+	  return (XIn + uncertaintyIn >= XAns - uncertaintyAns);
+}//isCompatible
+
+
+
 
 #ifdef CORE_OLDNAMES 
 /// \addtogroup GlobalBackCompatiableFunctions

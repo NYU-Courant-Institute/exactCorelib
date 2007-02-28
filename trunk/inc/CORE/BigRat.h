@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigRat.h,v 1.11 2006-08-07 14:10:40 exact Exp $
+ * $Id: BigRat.h,v 1.12 2007-02-28 19:20:40 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGRAT_H__
 #define __CORE_BIGRAT_H__
@@ -121,6 +121,12 @@ public:
   /// absolute value
   void abs(const BigRat& x)
   { mpq_abs(mp(), x.mp()); }
+  /// inversion (i.e., reciprocal)
+  void inv(const BigRat& x)
+  { mpq_inv(mp(), x.mp()); }
+  void inv()
+  { BigRat r; r.inv(*this); *this = r; }
+  //@}
   //@}
   
   /// \name shift functions
