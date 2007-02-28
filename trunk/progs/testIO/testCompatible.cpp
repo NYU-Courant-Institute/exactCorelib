@@ -33,11 +33,10 @@
      E.g., 1.200 is compatible with 1.19999 and 1.201
      E.g., 1.234 is compatible with 1.235 and 1.233
 
-
    Author: Jihun and Chee Yap
 
-   Since Core Library 1.4
-   $Id: testCompatible.cpp,v 1.2 2007-02-28 19:11:51 exact Exp $
+   Since Core Library 2.0
+   $Id: testCompatible.cpp,v 1.3 2007-02-28 19:47:06 exact Exp $
  ************************************************ */  
 
 #ifndef CORE_LEVEL
@@ -48,18 +47,22 @@
 
 using namespace std;
 
+//////////////////////////////////////////////////
+// test routine
+//////////////////////////////////////////////////
 void test (string& strIn, string& strAns, bool answer) {
   if (isCompatible(strIn, strAns) == answer)
     cout << "CORRECT!!! isCompatible(" << strIn << ", "
 	    << strAns << ") = " << answer << endl;
   else {
+    cout << "ERROR!!! isCompatible(" << strIn << ", "
+	    << strAns << ") <> " << answer << endl;
     string digitIn, digitAns;
     int exponentIn, exponentAns;
 
     getDigits(strIn, digitIn, exponentIn);
     getDigits(strAns, digitAns, exponentAns);
     
-    cout << "ERROR!!! isCompatible is wrong" << endl;
     cout << "Input String = " << strIn << endl;
     cout << "\tUncertainty =" << getUncertainty(strIn) << endl;
     cout << "\tDigits =" << digitIn << endl;
@@ -71,11 +74,10 @@ void test (string& strIn, string& strAns, bool answer) {
   }
 }	
 
+//////////////////////////////////////////////////
+// main
+//////////////////////////////////////////////////
 int main( int argc, char *argv[] ) {
-
-  BigInt temp;
-  temp.pow(10, 0);
-  cout << "temp = " << temp << endl;
 
   string stringIn = "123.456";
   string stringAns = "123.45555";
@@ -125,10 +127,32 @@ int main( int argc, char *argv[] ) {
   stringIn = "-12";
   answer = false;
   test(stringIn, stringAns, answer);
-
-  if (argc>1) stringIn=argv[1];
-  if (argc>2) stringAns=argv[2];
-  if (argc>3) answer=atoi(argv[3]);
-
+  stringAns = "-15";
+  answer = false;
   test(stringIn, stringAns, answer);
+  stringAns = "-13";
+  answer = true;
+  test(stringIn, stringAns, answer);
+
+  stringIn = "+00012.5";
+  stringAns = "013";
+  answer = true;
+  test(stringIn, stringAns, answer);
+
+  stringIn = "0";
+  stringAns = "1";
+  answer = true;
+  test(stringIn, stringAns, answer);
+
+  stringIn = "0.0";
+  stringAns = "0.12";
+  answer = false;
+  test(stringIn, stringAns, answer);
+
+  if (argc>1) {
+    stringIn=argv[1];
+    if (argc>2) stringAns=argv[2];
+    if (argc>3) answer=atoi(argv[3]);
+    test(stringIn, stringAns, answer);
+  }
 }//main
