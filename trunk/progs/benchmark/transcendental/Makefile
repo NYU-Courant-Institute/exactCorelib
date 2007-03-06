@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.5 2007-02-28 22:18:16 exact Exp $
+# Core Library, $Id: Makefile,v 1.6 2007-03-06 23:49:24 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -18,7 +18,7 @@ include ${CORE_PATH}/progs/Make.options
 # TARGET FILES
 #=================================================
 
-TARGETS= tConst tElemFun tManyDigits 
+TARGETS= tConst tElemFun tElemFunBF tManyDigits 
 
 #=================================================
 # TARGETS
@@ -37,35 +37,23 @@ moretest: $(TARGETS)
 	./tElemFun 10000
 	./tElemFunBF 100000
 
-bench: moretest
-
-all: $(TARGETS) 
-
-tConst: tConst.cpp
-	${CXX} -c $(CXXFLAGS) $(CORE_INC) tConst.cpp -o tConst.o
-	${CXX} $(LDFLAGS) tConst.o $(CORE_LIB) -o tConst
-
-tElemFun: tElemFun.cpp
-	${CXX} -c $(CXXFLAGS) $(CORE_INC) tElemFun.cpp -o tElemFun.o
-	${CXX} $(LDFLAGS) tElemFun.o $(CORE_LIB) -o tElemFun
-
-cur tElemFunBF: tElemFunBF.cpp
-	${CXX} -c $(CXXFLAGS) $(CORE_INC) tElemFunBF.cpp -o tElemFunBF.o
-	${CXX} $(LDFLAGS) tElemFunBF.o $(CORE_LIB) -o tElemFunBF
-
-t: t.cpp
-t: t.cpp
-	${CXX} -c $(CXXFLAGS) $(CORE_INC) t.cpp -o t.o
-	${CXX} $(LDFLAGS) t.o $(CORE_LIB) -o t
-
-	
-tManyDigits: tManyDigits.cpp
-	${CXX} -c $(CXXFLAGS) $(CORE_INC) tManyDigits.cpp -o tManyDigits.o
-	${CXX} $(LDFLAGS) tManyDigits.o $(CORE_LIB) -o tManyDigits
-
 time:
 	time ./tConst 10000
 	time ./tElemFun 10000
+
+all: $(TARGETS) 
+
+t: t.o
+	
+bench: moretest
+
+tConst: tConst.o
+
+tElemFun: tElemFun.o
+
+tElemFunBF2: tElemFunBF.o
+
+tManyDigits: tManyDigits.o
 
 #=================================================
 # Rules

@@ -9,7 +9,7 @@ using namespace std;
 
 #define DEFAULT_SIN 
 
-void function_test (string strFun, string strVal, int outDigit, 
+void function_test (string strFun, string strVal, int outDigit,  
                     bool timing = false, bool compatible = false,
                     string strMaple = string(""))
 {
@@ -48,11 +48,15 @@ void function_test (string strFun, string strVal, int outDigit,
   if (timing)
     cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
 
-  if (compatible && isCompatible(funVal, outDigit, strMaple))
+  string strfunVal = funVal.toString();
+  if (compatible && isCompatible(strfunVal, strMaple))
     cout << "CORRECT!!!" <<   strFun << "(" << strVal << ")" << " is correponding to the same of Maple" << endl;
   else if (compatible) {
     cout << "ERROR!!!" <<   strFun << "(" << strVal << ")" << " is not correponding to the same of Maple" << endl;
+    cout << "STRING: " << strfunVal << std::endl;
     cout << "CORE2 : " << funVal << std::endl;
+    cout << "UPPER : " << funVal.BigFloat2Value().getRight() << std::endl;
+    cout << "LOWER : " << funVal.BigFloat2Value().getLeft() << std::endl;
     cout << "Maple : " << strMaple << std::endl;
   }
 }
@@ -70,7 +74,19 @@ int main( int argc, char *argv[] ) {
   strMap.insert(pair<string, string>("arccos", "0.795398830184143555490968338925"));
   strMap.insert(pair<string, string>("arctan", "0.610725964389208616543758876490"));
   strMap.insert(pair<string, string>("exp",    "2.01375270747047652162454938858"));
-  strMap.insert(pair<string, string>("log2",   "-0.514573172829758240428350112255"));
+  strMap.insert(pair<string, string>("log2",   "-0.514573172829758240428350112258"));
+  
+  map<string, string> strMap2;
+
+  strMap2.insert(pair<string, string>("sin",    "0.00099999983333334166666646825397100970015131473480865841900"));
+  strMap2.insert(pair<string, string>("cos",    "0.99999950000004166666527777780257936480379188921289614586985"));
+  strMap2.insert(pair<string, string>("tan",    "0.00100000033333346666672063494250441803431495977419338549240"));
+  strMap2.insert(pair<string, string>("cot",    "999.999666666644444442328042116402095024315082134968695793042"));
+  strMap2.insert(pair<string, string>("arcsin", "0.00100000016666674166671130955419149062614469765573280956976"));
+  strMap2.insert(pair<string, string>("arccos", "1.56979632662822987756461038208555995147244000203182010091770"));
+  strMap2.insert(pair<string, string>("arctan", "0.00099999966666686666652380963492054401162093455426801309143"));
+  strMap2.insert(pair<string, string>("exp",    "1.00100050016670834166805575399305831156307620058070146022851"));
+  strMap2.insert(pair<string, string>("log2",   "-9.9657842846620870436109582884681705275944941790737418361642"));
 
   string strFun("sin");
   string strVal("0.7");
@@ -83,6 +99,7 @@ int main( int argc, char *argv[] ) {
 
     setDefaultOutputDigits(outDigit);
 
+    int argPrec = 100;
     function_test("sin", strVal, outDigit, false, true, strMap["sin"]);  
     function_test("cos", strVal, outDigit, false, true, strMap["cos"]);  
     function_test("tan", strVal, outDigit, false, true, strMap["tan"]);  
@@ -93,6 +110,20 @@ int main( int argc, char *argv[] ) {
     function_test("exp", strVal, outDigit, false, true, strMap["exp"]);  
     function_test("log2", strVal, outDigit, false, true, strMap["log2"]);  
 
+    outDigit = 50;
+    setDefaultOutputDigits(outDigit);
+    string strVal("0.001");
+    
+    argPrec = 250;
+    function_test("sin", strVal, outDigit, false, true, strMap2["sin"]);  
+    function_test("cos", strVal, outDigit, false, true, strMap2["cos"]);  
+    function_test("tan", strVal, outDigit, false, true, strMap2["tan"]);  
+    function_test("cot", strVal, outDigit, false, true, strMap2["cot"]);  
+    function_test("arcsin", strVal, outDigit, false, true, strMap2["arcsin"]);  
+    function_test("arccos", strVal, outDigit, false, true, strMap2["arccos"]);  
+    function_test("arctan", strVal, outDigit, false, true, strMap2["arctan"]);  
+    function_test("exp", strVal, outDigit, false, true, strMap2["exp"]);  
+    function_test("log2", strVal, outDigit, false, true, strMap2["log2"]);  
     return 0;
   }
 

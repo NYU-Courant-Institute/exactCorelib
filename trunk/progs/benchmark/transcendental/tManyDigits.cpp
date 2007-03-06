@@ -54,7 +54,7 @@ int main( int argc, char *argv[] ) {
  
   // C04 
   timer.start();
-  Expr COT = expo(pi() * sqrt(2011));
+  Expr COT = exp(pi() * sqrt(2011));
   COT.approx(prec, CORE_INFTY);
   timer.stop();
 
@@ -65,7 +65,7 @@ int main( int argc, char *argv[] ) {
 
   // C05 
   timer.start();
-  Expr EXPO = expo(expo(expo("1/2")));
+  Expr EXPO = exp(exp(exp("1/2")));
   EXPO.approx(prec, CORE_INFTY);
   timer.stop();
 
@@ -86,6 +86,7 @@ int main( int argc, char *argv[] ) {
   std::cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
  
   // C08
+  /*
   timer.start();
   Expr ARCCOS = sin(pow(6,pow(6,6)));
   ARCCOS.approx(prec, CORE_INFTY);
@@ -95,7 +96,7 @@ int main( int argc, char *argv[] ) {
   if (print > 0)
     std::cout << "sin(6^(6^6))  = " << ARCCOS << std::endl;
   std::cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
-
+  */
   // basic test for trigonometric formulas
   // disable filter feature : trigonometric filers functions are not implemented yet.
   setFpFilterFlag(false);

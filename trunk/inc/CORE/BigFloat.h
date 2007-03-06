@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.23 2006-12-04 21:14:20 exact Exp $
+ * $Id: BigFloat.h,v 1.24 2007-03-06 23:49:39 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -108,16 +108,17 @@ public:
     : base_cls(i, DOUBLE_PREC, rnd) {}
   /// constructor for <tt>BigInt</tt> 
   BigFloat(const BigInt& x, rnd_t rnd = MPFR_RND)
-    : base_cls(x.mp(), count_prec(x), rnd) {}
+    : base_cls(x.mp(), std::max(count_prec(x), (prec_t)32), rnd) {}
   /// constructor for <tt>BigRat</tt> (use DOUBLE_PREC by default)
   BigFloat(const BigRat& x, rnd_t rnd = MPFR_RND)
-    : base_cls(x.mp(), count_prec(x), rnd) {}
+    : base_cls(x.mp(), std::max(count_prec(x), (prec_t)32), rnd) {}
   /// constructor for <tt>char*</tt> (no implicit conversion)
   explicit BigFloat(const char* s, int base = 10, rnd_t rnd = MPFR_RND)
-    : base_cls(s, base, count_prec(s), rnd) {}
+    : base_cls(s, base, std::max(count_prec(s), (prec_t)32), rnd) {}
   /// constructor for <tt>char</tt> (no implicit conversion)
   explicit BigFloat(const std::string& s, int base = 10, rnd_t rnd = MPFR_RND)
-    : base_cls(s.c_str(), base, count_prec(s.c_str()), rnd) {}
+    : base_cls(s.c_str(), base,
+      std::max(count_prec(s.c_str()), (prec_t)32), rnd) {}
   //@}
 
   /// \name constructors (fixed version)
@@ -150,8 +151,8 @@ public:
   explicit BigFloat(const char* s, int base, prec_t prec, rnd_t rnd = MPFR_RND)
     : base_cls(s, base, prec, rnd) {}
   /// constructor for <tt>std::string</tt> with specified precision
-  explicit BigFloat(const std::string& s,int b,prec_t prec,rnd_t rnd=MPFR_RND)
-    : base_cls(s.c_str(), b, prec, rnd) {}
+  explicit BigFloat(const std::string& s,int base,prec_t prec,rnd_t rnd=MPFR_RND)
+    : base_cls(s.c_str(), base, prec, rnd) {}
 
   /// constructor with value \f$i*2^e\f$ for <tt>int</tt>
   BigFloat(int i, exp_t e, prec_t prec, rnd_t rnd = MPFR_RND)
@@ -189,7 +190,10 @@ public:
 
   /// \name exponent accessors
   //@{
-  /// return exponent
+  /// return exponent of Mpfr
+  // internal represenation of Mpfr is
+  // (-1)^s * m * 2^e
+  // m is the mantissa with with 0.5 < m < 1, e is the sxponent
   exp_t get_exp() const
   { return sgn() ? mpfr_get_exp(mp()) : 0; }
   //@}
@@ -1433,19 +1437,22 @@ public:
       BigRat q; q.div_2exp(x, -e); return q;
     }
   }
-  /// return the string representation in scienfic format
   std::string get_str(size_t n=0,int b=10, rnd_t rnd=MPFR_RND) const {
-    return mpfr2str(mp(), n, b, get_output_fmt(), rnd, get_output_showpoint(),
-                  get_output_showpos(), get_output_uppercase());
-  }
-  // jihun : we dont need this version of get_str anymore
-/*  /// return the string representation in fixed format
-  std::string get_fixed_str(size_t n=0, int b=10, rnd_t rnd=MPFR_RND) const {
-    return mpfr2str(mp(), n, b, 1, rnd, get_output_showpoint(),
-                  get_output_showpos(), get_output_uppercase());
+    return mpfr2str(mp(),
+                    std::max(
+                      std::min(
+                        (unsigned long)n,
+	                 bits2digits(get_prec()+1)),
+                      2UL),
+		    b,
+  	            get_output_fmt(),
+		    rnd,
+		    get_output_showpoint(),
+                    get_output_showpos(),
+		    get_output_uppercase());
   }
   //@}
-*/  
+  
   /// return 2^{e}
   static BigFloat exp2(int e)
   { return BigFloat(1, e, 2); }

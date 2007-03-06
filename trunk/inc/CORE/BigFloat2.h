@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.21 2007-01-17 18:52:46 exact Exp $
+ * $Id: BigFloat2.h,v 1.22 2007-03-06 23:49:40 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -637,35 +637,20 @@ public:
     if (is_exact()) 
       return m_l;
     else {
-      //BigFloat2 ret = (*this);
-      //return ret.centerize();
-
-      // get validate bits
+      // get error precision
       long bits = abs_diam().get_exp();
+      
       // round up to validate bits
-      FT result(m_l);
-      //std::cout << "\nbits=" << bits << std::endl;
+      FT result(getCenter());
 
-      long valprec = m_l.get_exp() - bits;
+      long valprec = result.get_exp() - bits;
       // jihun 2006: in case of m_r.get_exp() > m_l.get_exp(),
-      // e.g. m_r = 0.1 * 2^-426, m_l = 0.1 * 2^-423, bits = -423
+      // e.g. m_l = 0.1 * 2^-426, m_r = 0.1 * 2^-423, bits = -423
       // I dont know how to deal with this.
-      if (valprec <= 0) {
-        valprec = bits;
-        if (valprec < 0) valprec -= valprec;
-      }
-      if (valprec < 2) valprec = 2;
+      // We need to check if m_l and m_r has the same exponent value
+      if (valprec > 0)
+        result.prec_round(std::max(valprec, (long)2));
 
-      result.prec_round(valprec);
-/*
-      std::cout << "\n   m_r's prec=" << m_r.get_prec() << std::endl;
-      std::cout << "result's prec=" << result.get_prec() << std::endl;
-      std::cout << "   m_l's prec=" << m_l.get_prec() << std::endl;
-
-      std::cout << "\n   m_r=" << m_r << std::endl;
-      std::cout << "result=" << result << std::endl;
-      std::cout << "   m_l=" << m_l << std::endl;
-*/
       return result;
     }
   }
@@ -724,6 +709,12 @@ public:
       return m_l;
     else
       return m_r;
+  }
+  BigFloat getCenter() const {
+    if (is_exact()) return m_l;
+    BigFloat ret;
+    ret.div2(m_l + m_r);
+    return ret;
   }
   BigFloat centerize() {
     if (is_exact()) return m_l;  
