@@ -36,7 +36,7 @@
    Author: Jihun and Chee Yap
 
    Since Core Library 2.0
-   $Id: testCompatible.cpp,v 1.3 2007-02-28 19:47:06 exact Exp $
+   $Id: testCompatible.cpp,v 1.4 2007-03-07 20:26:25 exact Exp $
  ************************************************ */  
 
 #ifndef CORE_LEVEL
@@ -147,6 +147,11 @@ int main( int argc, char *argv[] ) {
   stringIn = "0.0";
   stringAns = "0.12";
   answer = false;
+  test(stringIn, stringAns, answer);
+
+  stringIn = "0.9999995000000416666652777778025793648037918892129";
+  stringAns= "0.99999950000004166666527777780257936480379188921289614586985";
+  answer = true;
   test(stringIn, stringAns, answer);
 
   if (argc>1) {

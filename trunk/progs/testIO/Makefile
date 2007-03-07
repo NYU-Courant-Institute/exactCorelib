@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.6 2007-02-28 19:47:06 exact Exp $
+# Core Library, $Id: Makefile,v 1.7 2007-03-07 20:26:25 exact Exp $
 
 include ../Make.options
 
@@ -16,7 +16,7 @@ verbose=1
 #=================================================
 # Define target files (put all your files here)
 #=================================================
-TARGETS= testIO  testMpfr testSqrt testCompatible
+TARGETS= testIO  testMpfr testSqrt testCompatible testBigFloat
 MORETARGETS= 
 
 default: $(TARGETS)
@@ -28,6 +28,7 @@ test: $(TARGETS)
 	./testMpfr 0
 	./testSqrt 997 10 
 	./testCompatible 
+	./testBigFloat 
 
 moretest: $(MORETARGETS)
 	./testSqrt 997 10 $(verbose)
@@ -43,7 +44,9 @@ sqrt: sqrt.o
 
 testCompatible: testCompatible.o
 
-cur: testCompatible
+testBigFloat: testBigFloat.o
+
+cur: testBigFloat
 
 #=================================================
 # Rules
