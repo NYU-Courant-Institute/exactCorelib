@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.6 2007-03-06 23:49:24 exact Exp $
+# Core Library, $Id: Makefile,v 1.7 2007-03-07 00:00:47 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -28,18 +28,18 @@ default: $(TARGETS)
 
 test:  $(TARGETS)
 	./tConst 1000 1
-	./tElemFun 1000 1
-	./tElemFunBF 1000 1
+	./tElemFun 
+	./tElemFunBF 
 
 moretest: $(TARGETS)
 	./tConst 10000
 	./tConst 100000
-	./tElemFun 10000
-	./tElemFunBF 100000
+	./tElemFun 
+	./tElemFunBF 
 
 time:
 	time ./tConst 10000
-	time ./tElemFun 10000
+	time ./tElemFun 
 
 all: $(TARGETS) 
 
