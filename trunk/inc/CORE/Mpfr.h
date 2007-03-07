@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Mpfr.h,v 1.11 2006-11-16 17:41:03 exact Exp $
+ * $Id: Mpfr.h,v 1.12 2007-03-07 02:05:11 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_MPFR_H__
 #define __CORE_MPFR_H__
@@ -29,6 +29,11 @@
 
 #ifndef CORE_DISABLE_REFCOUNTING
   #include <CORE/RefCounting.h>
+#endif
+
+// default rouning mode
+#ifndef MPFR_RND
+#define MPFR_RND mpfr_get_default_rounding_mode()
 #endif
 
 // typedefs:

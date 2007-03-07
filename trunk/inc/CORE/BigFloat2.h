@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.22 2007-03-06 23:49:40 exact Exp $
+ * $Id: BigFloat2.h,v 1.23 2007-03-07 02:05:11 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -316,11 +316,11 @@ public:
   { return _log_2<RawArithmeticPolicy, T>(x); }
 
   /// exponent for <tt>BigFloat2</tt>
-  bool r_expo(const BigFloat2& x)
-  { return _expo_f<RawArithmeticPolicy>(x); }
+  bool r_exp(const BigFloat2& x)
+  { return _exp_f<RawArithmeticPolicy>(x); }
   /// exponent for <tt>T</tt>
-  template <typename T> bool r_expo(const T& x)
-  { return _expo<RawArithmeticPolicy, T>(x); }
+  template <typename T> bool r_exp(const T& x)
+  { return _exp<RawArithmeticPolicy, T>(x); }
 
   /// addition/subtraction for <tt>BigFloat2</tt>
   bool r_addsub(const BigFloat2& x, const BigFloat2& y, bool is_add)
@@ -463,11 +463,11 @@ public:
   { return _log_2<FixedArithmeticPolicy, T>(x, prec); }
 
   /// exponent for <tt>BigFloat2</tt>
-  bool expo(const BigFloat2& x, prec_t prec)
-  { return _expo_f<FixedArithmeticPolicy>(x, prec); }
+  bool exp(const BigFloat2& x, prec_t prec)
+  { return _exp_f<FixedArithmeticPolicy>(x, prec); }
   /// exponent for <tt>T</tt>
-  template <typename T> bool expo(const T& x, prec_t prec)
-  { return _expo<FixedArithmeticPolicy, T>(x, prec); }
+  template <typename T> bool exp(const T& x, prec_t prec)
+  { return _exp<FixedArithmeticPolicy, T>(x, prec); }
 
   /// addition/subtraction for <tt>BigFloat2</tt>
   bool addsub(const BigFloat2& x, const BigFloat2& y, prec_t prec, bool is_add)
@@ -602,6 +602,8 @@ public:
   }
   /// return the string representation
   std::string get_str(size_t digits = 0, int base = 10) const {
+    return get_f().get_str(digits, base);
+    /*
     if (is_exact()) {
       return m_l.get_str(digits, base);
     } else {
@@ -624,6 +626,7 @@ public:
   
       return m_l.get_str(valid_digits, base);
     }
+    */
   }
   /// return <tt>BigInt</tt> value
   ZT get_z() const
@@ -640,9 +643,9 @@ public:
       // get error precision
       long bits = abs_diam().get_exp();
       
-      // round up to validate bits
       FT result(getCenter());
 
+      // round up to validate precision
       long valprec = result.get_exp() - bits;
       // jihun 2006: in case of m_r.get_exp() > m_l.get_exp(),
       // e.g. m_l = 0.1 * 2^-426, m_r = 0.1 * 2^-423, bits = -423
@@ -931,11 +934,11 @@ private:
   template <template <typename, typename, typename> class Policy, typename T>
   bool _log_2(const T& x, prec_t prec = 0);
  
-  // expo
+  // exp
   template <template <typename, typename, typename> class Policy>
-  bool _expo_f(const BigFloat2& x, prec_t prec = 0);
+  bool _exp_f(const BigFloat2& x, prec_t prec = 0);
   template <template <typename, typename, typename> class Policy, typename T>
-  bool _expo(const T& x, prec_t prec = 0);
+  bool _exp(const T& x, prec_t prec = 0);
  
   // addition
   template <template <typename, typename, typename> class Policy>

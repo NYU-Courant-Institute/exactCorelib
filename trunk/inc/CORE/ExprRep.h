@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.29 2007-02-27 22:11:45 exact Exp $
+ * $Id: ExprRep.h,v 1.30 2007-03-07 02:05:11 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -1366,7 +1366,7 @@ protected:
   }
   virtual bool compute_a_approx(prec_t prec) {
     prec_t L = prec + 2 * (abs(child->appValue().get_max()).get_ui() + 1);
-    return check_exact(appValue().expo(child->a_approx(L), abs2rel(prec+1)));
+    return check_exact(appValue().exp(child->a_approx(L), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1560,8 +1560,7 @@ protected:
       uMSB() = std::max(uf, us) + 1;
       if (sf == ss) uMSB() += 1;
     }
-  */
-  //*
+  /*/
     msb_t uf = first->get_uMSB();
     msb_t us = second->get_uMSB();
     uMSB() = std::max(uf, us) + 1;
@@ -1596,8 +1595,7 @@ protected:
        return false; // failed to compute lMSB if different sign and we cannot
        			// decide if first->MSB is different from second-MSB
    }
-   //*/
-   /*
+   /*/
     // The following code is right, but inefficient. Keep for debugging:
     sign_t sf = first->get_sign();
     sign_t ss = second->get_sign();
@@ -1623,7 +1621,7 @@ protected:
           return false;
       }
     }
-    */
+    //*/
     return true;
   } //compute_lMSB
 

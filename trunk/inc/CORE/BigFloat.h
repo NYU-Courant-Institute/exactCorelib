@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.24 2007-03-06 23:49:39 exact Exp $
+ * $Id: BigFloat.h,v 1.25 2007-03-07 02:05:10 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -39,10 +39,6 @@
      returns -1. So you cannot get the exactness of the results.
  */
 
-// default rouning mode
-#ifndef MPFR_RND
-#define MPFR_RND mpfr_get_default_rounding_mode()
-#endif
 
 // Invert a round mode
 #define INVERT_RND(rnd) \
@@ -805,12 +801,12 @@ public:
   { return r_log_2(BigFloat(x), rnd); }
 
   /// exponent function for <tt>BigFloat</tt> (raw version)
-   int r_expo(const BigFloat& x, rnd_t rnd = MPFR_RND)
+   int r_exp(const BigFloat& x, rnd_t rnd = MPFR_RND)
   { return mpfr_exp(mp(), x.mp(), rnd); }
   /// exponent function for <tt>T</tt> (raw version)
   template<typename T>
-  int r_expo(T x, rnd_t rnd = MPFR_RND)
-  { return r_expo(BigFloat(x), rnd); }
+  int r_exp(T x, rnd_t rnd = MPFR_RND)
+  { return r_exp(BigFloat(x), rnd); }
    //@}
 
   /// \name Sine functions (fixed version)
@@ -1024,27 +1020,27 @@ public:
   /// \name exponent functions (fixed version)
   //@
   /// exponent function for <tt>BigFloat</tt> (fixed version)
-  int expo(const BigFloat& x, 
+  int exp(const BigFloat& x, 
            prec_t prec, rnd_t rnd = MPFR_RND) {
     assert(prec>=2);
     if (&x == this) { // if x is same as ouput
        if (prec > get_prec()) {
          prec_round (prec, rnd);
-         return r_expo(x,rnd);
+         return r_exp(x,rnd);
        } else if (prec < get_prec()) {
-         r_expo(x,rnd);
+         r_exp(x,rnd);
          return prec_round (prec, rnd);
        } else {
-         return r_expo(x,rnd);
+         return r_exp(x,rnd);
        }
     } else {
-      set_prec(prec); return r_expo(x, rnd);
+      set_prec(prec); return r_exp(x, rnd);
     }
   }
   /// exponent function for <tt>T</tt> (fixed version)
   template <typename T> 
-  int expo(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
-  { set_prec(prec); return r_expo(x, rnd); }
+  int exp(const T& x, prec_t prec, rnd_t rnd = MPFR_RND)
+  { set_prec(prec); return r_exp(x, rnd); }
   //@}
 
   /// \name square root functions (raw version)

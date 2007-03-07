@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.inl,v 1.8 2006-12-04 21:14:20 exact Exp $
+ * $Id: BigFloat2.inl,v 1.9 2007-03-07 02:05:11 exact Exp $
  ***************************************************************************/
 #define BF_RNDD GMP_RNDD
 #define BF_RNDU GMP_RNDU
@@ -322,23 +322,23 @@ inline bool BigFloat2::_log_2(const T& x, prec_t prec) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// exponent -- expo(BigFloat2)
+/// exponent -- exp(BigFloat2)
 template <template <typename, typename, typename> class Policy>
-inline bool BigFloat2::_expo_f(const BigFloat2& x, prec_t prec) {
+inline bool BigFloat2::_exp_f(const BigFloat2& x, prec_t prec) {
   if (x.is_exact())
-    return this->_expo<Policy, FT>(x.m_l, prec);
+    return this->_exp<Policy, FT>(x.m_l, prec);
   else {
-    Policy<FT, FT, FT>::expo(m_l, x.m_l, prec, BF_RNDD);
-    Policy<FT, FT, FT>::expo(m_r, x.m_r, prec, BF_RNDU);
+    Policy<FT, FT, FT>::exp(m_l, x.m_l, prec, BF_RNDD);
+    Policy<FT, FT, FT>::exp(m_r, x.m_r, prec, BF_RNDU);
     set_exact(false);
   }
   return is_exact();
 }
-/// exponent -- expo(T)
+/// exponent -- exp(T)
 template <template <typename, typename, typename> class Policy, typename T>
-inline bool BigFloat2::_expo(const T& x, prec_t prec) {
-  set_exact(Policy<FT, T, FT>::expo(m_l, x, prec, BF_RNDD));
-  if (!is_exact()) Policy<FT, T, FT>::expo(m_r, x, prec, BF_RNDU);
+inline bool BigFloat2::_exp(const T& x, prec_t prec) {
+  set_exact(Policy<FT, T, FT>::exp(m_l, x, prec, BF_RNDD));
+  if (!is_exact()) Policy<FT, T, FT>::exp(m_r, x, prec, BF_RNDU);
   return is_exact();
 }
 

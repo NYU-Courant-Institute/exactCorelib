@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.30 2007-02-28 19:20:40 exact Exp $
+ * $Id: Expr.h,v 1.31 2007-03-07 02:05:11 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -406,34 +406,13 @@ private:
   void construct_from_string(const char* str, int base, prec_t prec) {
     if (strchr(str, '/') != 0)
       m_rep = new ConstQTRep(QT(str), NODE_NT_RATIONAL);
-    else if (strchr(str, '.') != 0 && is_infty(prec))
-      m_rep = new ConstQTRep(QT(construct_rat(str).c_str()), NODE_NT_RATIONAL);
-    else if (is_infty(prec))
+    else if (strchr(str, '.') != 0 && is_infty(prec)) {
+      m_rep = new ConstQTRep(stringToBigRat(str), NODE_NT_RATIONAL);
+    } else if (is_infty(prec))
       m_rep = new ConstFTRep(FT(str), NODE_NT_RATIONAL);
     else
       m_rep = new ConstFTRep(FT(str, base, prec), NODE_NT_RATIONAL);
   }
-
-  const std::string construct_rat (const char* str) {
-    std::string s(str);
-    std::string d1,d2,exp;
-    
-    int dot = s.find('.');
-    int e = s.find('e');
-    d1 = s.substr(0, dot);
-
-    if (d1=="0") d1="";
-    if (d1=="+0" || d1=="-0") d1.erase(1,1); 
-
-    d2 = s.substr(dot+1, s.size()-dot-1);
-    exp = s.substr(e+1, s.size()-e-1);
-
-    std::string num = d1+d2;
-    std::string den(d2.size()+1, '0');
-    den[0]='1';
-
-    return num + std::string("/") + den;
-  }   
 private:
   ExprRep* m_rep; ///<- internal representation
 }; // end if ExprT

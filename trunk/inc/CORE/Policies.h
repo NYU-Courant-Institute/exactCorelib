@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Policies.h,v 1.8 2006-12-04 21:14:20 exact Exp $
+ * $Id: Policies.h,v 1.9 2007-03-07 02:05:11 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_POLICIES_H__
 #define __CORE_POLICIES_H__
@@ -63,8 +63,8 @@ struct RawArithmeticPolicy {
   { return z.r_arctan(x, rnd) == 0; }
   static bool log_2(T& z, const TL& x, prec_t, rnd_t rnd)
   { return z.r_log_2(x, rnd) == 0; }
-  static bool expo(T& z, const TL& x, prec_t, rnd_t rnd)
-  { return z.r_expo(x, rnd) == 0; }
+  static bool exp(T& z, const TL& x, prec_t, rnd_t rnd)
+  { return z.r_exp(x, rnd) == 0; }
 
   static bool add(T& z, const TL& x, const TR& y, prec_t, rnd_t rnd)
   { return z.r_add(x, y, rnd) == 0; }
@@ -113,8 +113,8 @@ struct FixedArithmeticPolicy {
   { return z.arctan(x, prec, rnd) == 0; }
   static bool log_2(T& z, const TL& x, prec_t prec, rnd_t rnd)
   { return z.log_2(x, prec, rnd) == 0; }
-  static bool expo(T& z, const TL& x, prec_t prec, rnd_t rnd)
-  { return z.expo(x, prec, rnd) == 0; }
+  static bool exp(T& z, const TL& x, prec_t prec, rnd_t rnd)
+  { return z.exp(x, prec, rnd) == 0; }
 
   static bool add(T& z, const TL& x, const TR& y, prec_t prec, rnd_t rnd)
   { return z.add(x, y, prec, rnd) == 0; }

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.h,v 1.14 2007-02-28 19:47:36 exact Exp $
+ * $Id: CoreAux.h,v 1.15 2007-03-07 02:05:11 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREAUX_H__
 #define __CORE_COREAUX_H__
@@ -212,6 +212,22 @@ inline void getDigits(std::string& strin, std::string& strout, int& exponent) {
 }  
 
 /// Function to convert a decimal string into a BigRat
+inline BigRat stringToBigRat(const char* pStrIn) {
+  std::string strIn(pStrIn);
+  std::string digitIn;
+  int expIn;
+  
+  getDigits(strIn, digitIn, expIn);
+  BigRat XIn(digitIn);
+  BigInt powIn;
+  powIn.pow(10, abs(expIn));
+  if (expIn > 0)
+    XIn *= powIn;
+  else
+    XIn /= powIn;
+  return(XIn);
+}
+
 inline BigRat stringToBigRat(std::string & strIn) {
   std::string digitIn;
   int expIn;
