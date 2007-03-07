@@ -1,4 +1,4 @@
-# Core Library, $Id: Makefile,v 1.3 2006-10-31 16:29:21 exact Exp $
+# Core Library, $Id: Makefile,v 1.4 2007-03-07 02:29:54 exact Exp $
 
 include ../Make.options
 
@@ -13,10 +13,6 @@ p= test
 
 TARGETS=
 MORETARGETS= floor_ceil bench
-
-#CXXFLAGS+= -pg
-# CXXFLAGS=-O -Wall
-CXXFLAGS=-O -Wall -DCORE_DEBUG_ROOTBOUND -g -DCORE_DEBUG
 
 all: $(TARGETS)
 
