@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.7 2006-12-21 15:29:09 exact Exp $
+# Core Library, $Id: Makefile,v 1.8 2007-03-07 02:48:54 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -48,10 +48,10 @@ p=tGCD
 p=readpoly
 
 TARGETS= tBug
-TARGETS= tSturm tDescartes tSturmBF tDescartesBF
+TARGETS= tSturm tDescartes tSturmBF tDescartes tDescartesBF
 
-MORE_TARGETS = tNewton tPolyALL tSturmLon tSturmRat tSturmExp tSturmInt \
-    tWilk20 tWilk20deriv tKameny4 tGCD tRootOf wein
+MORE_TARGETS = tNewton tPolyALL tSturmLon tSturmRat tSturmExp tSturmInt\
+    tWilk20 tWilk20deriv tKameny4 tGCD tRootOf wein tDescartesLon tDescartesRat tDescartesExp tDescartesInt
 
 OTHER_TARGETS = solve pisot parsepoly
 
