@@ -19,10 +19,11 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.cpp,v 1.8 2007-02-08 20:27:18 exact Exp $
+ * $Id: CoreDefs.cpp,v 1.9 2007-03-07 02:16:25 exact Exp $
  ***************************************************************************/
 #include <CORE/Config.h>
-#include <CORE/BigFloat.h>
+#include <CORE/CoreDefs.h>
+#include <CORE/Mpfr.h>
 
 CORE_BEGIN_NAMESPACE
 
