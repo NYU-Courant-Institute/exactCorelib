@@ -1,6 +1,6 @@
 ************************************************************
 file: README for  $(CORE_PATH)/progs
-$Id: README,v 1.1 2006-03-07 04:51:22 exact Exp $
+$Id: README,v 1.2 2007-03-20 14:36:27 exact Exp $
 ************************************************************
 
 Files in this subdirectory, $(CORE_PATH)/progs:
@@ -80,3 +80,4 @@ We welcome your contributions or improvements to this list.
    Sylvain (pion@cs.nyu.edu)
    Zilin Du (zilin@cs.nyu.edu)
    Vikram Sharma (sharma@cs.nyu.edu)
+   Jihun Yu (jihun@cs.nyu.edu)

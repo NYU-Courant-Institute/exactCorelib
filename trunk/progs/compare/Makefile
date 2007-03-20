@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.1 2006-03-07 04:51:23 exact Exp $
+# Core Library, $Id: Makefile,v 1.2 2007-03-20 14:36:27 exact Exp $
 
 VAR=Bfms
 VAR=Bfmss
@@ -20,10 +20,13 @@ test: $(TARGETS)
 	./compare 10 1
 
 moretest:
-# nothing to do
+#do nothing for moretest
 
-testslow: $(TARGETS)
+bench: $(TARGETS)
 	./compare 1000 2
+	./compare 2000 2
+	./compare 8000 2
+	./compare 10000 2
 
 compare: compare.o
 

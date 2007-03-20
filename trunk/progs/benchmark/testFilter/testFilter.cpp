@@ -24,7 +24,7 @@
 	may be found in this directory.
 
    Since CORE Library Version 1.4
-   $Id: testFilter.cpp,v 1.1 2006-03-07 05:15:39 exact Exp $
+   $Id: testFilter.cpp,v 1.2 2007-03-20 14:36:27 exact Exp $
  ******************************************************************** */
 
 #ifndef CORE_LEVEL
@@ -33,8 +33,7 @@
 
 #include <ctime>
 #include <fstream>
-#include <iostream>
-#include <CORE/CORE.h>
+#include "CORE.h"
 
 using namespace std;
 
@@ -196,8 +195,6 @@ void testing(char* filename) {
 
     if (sign1 != sign2) {
       count_errors ++;
-      cout << "sign1 = " << sign1 << endl;
-      cout << "sign2 = " << sign2 << endl;
       cout << "ID = " << k << endl;
     }
   }

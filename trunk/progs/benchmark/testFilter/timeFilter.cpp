@@ -24,7 +24,7 @@
 	may be found in this directory.
 
    Since CORE Library Version 1.4
-   $Id: timeFilter.cpp,v 1.1 2006-03-07 05:15:39 exact Exp $
+   $Id: timeFilter.cpp,v 1.2 2007-03-20 14:36:27 exact Exp $
  ******************************************************************** */
 
 #ifndef CORE_LEVEL
@@ -33,8 +33,7 @@
 
 #include <ctime>
 #include <fstream>
-#include <iostream>
-#include <CORE/CORE.h>
+#include "CORE.h"
 
 class Matrix {
 private:
@@ -115,14 +114,6 @@ std::ostream& operator<<(std::ostream& o, const Matrix& M) {
    return o;
 }
 
-static int 
-cputime ()
-{ 
-  struct rusage rus; 
-  getrusage (0, &rus);
-  return rus.ru_utime.tv_sec * 1000 + rus.ru_utime.tv_usec / 1000;
-} 
-
 int timing(char* filename, bool filterFlag) {
 
   machine_long u1=0, u2=0, total=0;
@@ -162,13 +153,10 @@ int timing(char* filename, bool filterFlag) {
     // assign A to the matrix 
     Matrix m(dim, A);
 
-    //u1 = clock();
-    u1 = cputime();
+    u1 = clock();
     sign = (m.determinant()).sign();
-    //u2 = clock();
-    u2 = cputime();
+    u2 = clock();
 
-    //std::cout << "u2-u1=" << (u2-u1) << std::endl;
     total += (u2 - u1);
 
     count[1 + sign]++;  // how many determinants of each sign is produced
@@ -198,14 +186,11 @@ int main( int argc, char *argv[] ) {
   total2 = timing(filename, false); 
 
   std::cout << "Total USER time spent w/ filter : " << \
-	//((float)total1) / CLOCKS_PER_SEC << " seconds" << std::endl;
-	total1 << " mseconds" << std::endl;
+	((float)total1) / CLOCKS_PER_SEC << " seconds" << std::endl;
 
   std::cout << "Total USER time spent w/o filter : " << \
-	//((float)total2) / CLOCKS_PER_SEC << " seconds" << std::endl;
-	total2 << " mseconds" << std::endl;
+	((float)total2) / CLOCKS_PER_SEC << " seconds" << std::endl;
 
-  //std::cout << "Speedup: " << (total2-total1)*100/total2 << "%" << std::endl;
   std::cout << "Speedup: " << (total2-total1)*100/total2 << "%" << std::endl;
 
   return 0;

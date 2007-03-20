@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.8 2007-03-07 02:48:54 exact Exp $
+# Core Library, $Id: Makefile,v 1.9 2007-03-20 14:35:59 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -62,7 +62,6 @@ OTHER_TARGETS = solve pisot parsepoly
 default: $(TARGETS)
 
 test:  $(TARGETS)
-	./tSturm
 	./tSturmBF
 	./tDescartesBF
 
@@ -126,10 +125,23 @@ testSturm:
 	./tSturmBF
 	./tSturmExp
 
-time:  tPoly tNewton tSturm
-	time tPoly
-	time tNewton
-	time tSturm
+timetmp:  tSturm tDescartes \
+		tSturmBF tDescartesBF \
+		tSturmRat tDescartesRat 
+	time tSturm	2>&1 | tee tmp/time_tSturm
+	time tDescartes	2>&1 | tee tmp/time_tDescartes
+	time tSturmBF	2>&1 | tee tmp/time_tSturmBF
+	time tDescartesBF 2>&1 | tee tmp/time_tDescartesBF
+	time tSturmRat	2>&1 | tee tmp/time_tSturmRat
+	time tDescartesRat 2>&1 | tee tmp/time_tDescartesRat
+
+time:  tPoly tNewton tSturm tSturmBF tDescartes tDescartesBF
+	time tPoly 	2>&1 | tee tmp/time_tPoly
+	time tNewton	2>&1 | tee tmp/time_tNewton
+	time tSturm	2>&1 | tee tmp/time_tSturm
+	time tSturmBF	2>&1 | tee tmp/time_tSturmBF
+	time tDescartes	2>&1 | tee tmp/time_tDescartes
+	time tDescartesBF 2>&1 | tee tmp/time_tDescartesBF
 
 # Compiling Polynomial class with various number types (int, BigInt, Exp)
 tPolyALL: tPoly tPolyRat tPolyInt tPolyExp tPolyBF tPolyLon

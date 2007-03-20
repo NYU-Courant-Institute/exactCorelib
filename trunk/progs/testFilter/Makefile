@@ -1,6 +1,6 @@
 # Makefile for testFilter 
 #
-# Core Library, $Id: Makefile,v 1.2 2006-09-28 20:55:46 exact Exp $
+# Core Library, $Id: Makefile,v 1.3 2007-03-20 14:36:27 exact Exp $
 
 VAR=
 
@@ -28,6 +28,14 @@ test: $(TARGETS)
 
 moretest: $(MORE_TARGETS) 
 	./testFilter inputs/1000x2x10matrices
+	./testFilter inputs/1000x3x10matrices
+	./testFilter inputs/1000x4x10matrices
+	./testFilter inputs/500x5x10matrices
+	./testFilter inputs/500x6x10matrices
+	./testFilter inputs/500x7x10matrices
+	./testFilter inputs/500x8x10matrices	
+
+bench: $(MORE_TARGETS) 
 	./testFilter inputs/1000x3x10matrices
 	./testFilter inputs/1000x4x10matrices
 	./testFilter inputs/500x5x10matrices

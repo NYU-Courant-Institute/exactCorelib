@@ -5,7 +5,7 @@ Purpose: To compute Pi using several algorithms:
 		Brent's algorithma and Machin's algorithm
    	     
    Usage:
-	  % multiPi [optPrec=54] [method=2]
+	  % newPi [optPrec=54] [method=2]
 
 	where the arguments (all optional) are
 
@@ -13,16 +13,16 @@ Purpose: To compute Pi using several algorithms:
 		Default is [optPrec] = 54 (as in machine double)
 	-- [method] specifies the algorithm:
 
-		 method=1 for machin's algorithm
-		 method=2 for brent's algorithm (dynamically checking if suff.precision)
-		 method=3 for brent's algorithm (static determination of suff.precision)
+	 method=1 for machin's algorithm
+	 method=2 for brent's algorithm (dynamically checking if suff.precision)
+	 method=3 for brent's algorithm (static determination of suff.precision)
 
 	EXAMPLE:  To compute Pi to 2000 digits, set [optPrec] to
 	6644 (= 2000 * log_2(10)).  
 
    Author: Zilin (Oct 2004)
    Since Core Library Version 1.7
-   	$Id: newPi.cpp,v 1.1 2006-03-07 04:51:25 exact Exp $
+   	$Id: newPi.cpp,v 1.2 2007-03-20 14:31:58 exact Exp $
  *************************************************************** */
 
 // This program MUST be run at CORE_LEVEL 4:
@@ -94,7 +94,8 @@ Expr machin(int prec) {
 }
 
 BigFloat brent(int prec) {
-  defBFsqrtAbsPrec = prec;
+  //defBFsqrtAbsPrec = prec;
+  setDefaultBFradicalPrec(prec);
   BigFloat A = 1;
   BigFloat B = 1;
   B /= sqrt(BigFloat(2));
@@ -110,9 +111,9 @@ BigFloat brent(int prec) {
 	sq = (A-Y)*(A-Y);
 	T -= X * sq;
 	X <<= 1;
-	A.makeExact();
-	B.makeExact();
-	T.makeExact();
+	//A.makeExact();
+	//B.makeExact();
+	//T.makeExact();
         count ++;
   }
   //Expr ans = Expr(A)*Expr(A)/Expr(T);

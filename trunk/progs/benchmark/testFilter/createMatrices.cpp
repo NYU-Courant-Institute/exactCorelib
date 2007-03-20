@@ -23,7 +23,7 @@
  	 b     = bit length of entries
 
    Since CORE Library 1.4
-   $Id: createMatrices.cpp,v 1.1 2006-03-07 05:15:39 exact Exp $
+   $Id: createMatrices.cpp,v 1.2 2007-03-20 14:36:27 exact Exp $
  ************************************** */
 
 #ifndef CORE_LEVEL
@@ -32,7 +32,7 @@
 
 #include <ctime>
 #include <fstream>
-#include <CORE/CORE.h>
+#include "CORE.h"
 
 int main( int argc, char *argv[] ) {
   int matrices;
