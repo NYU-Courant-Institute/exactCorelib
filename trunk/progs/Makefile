@@ -109,10 +109,15 @@ cleanbasic:
 
 veryclean: verycleanbasic
 	@for p in ${moreprogs}; do \
-	  if test -d "$$p"; then echo $$p; ${MAKE} -C $$p veryclean; echo ""; fi\
+	  if test -d "$$p"; then echo $$p; ${MAKE} -C $$p veryclean; echo ""; fi; \
 	done
 
 verycleanbasic: 
 	@for p in ${basicprogs}; do \
-	  if test -d "$$p"; then echo $$p; ${MAKE} -C $$p veryclean; echo ""; fi\
+	  if test -d "$$p"; then echo $$p; ${MAKE} -C $$p veryclean; echo ""; fi; \
 	done
+
+############################################################
+# End
+############################################################
+
