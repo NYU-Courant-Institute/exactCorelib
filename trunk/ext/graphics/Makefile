@@ -82,7 +82,7 @@ ext=.cpp
 # program base is "p"
 p=draw
 p=drawpoly
-p=drawcurve
+p=drawCurve
 
 # program version is "v"
 v=1
@@ -120,9 +120,9 @@ poly drawpoly: drawpoly.cc
 	$(CC) -g $(INC) drawpoly.cc \
 	    $(LDFLAGS) $(LIBS) -o drawpoly
 
-curve drawcurve: drawcurve.cpp
-	$(CC) -g $(INC) drawcurve.cpp \
-	    $(LDFLAGS) $(LIBS) -o drawcurve
+curve drawCurve: drawCurve.cpp
+	$(CC) -g $(INC) drawCurve.cpp \
+	    $(LDFLAGS) $(LIBS) -o drawCurve
 
 draw.orig: draw.orig.cc
 	$(CC) -g $(INC) draw.orig.cc \
@@ -130,16 +130,16 @@ draw.orig: draw.orig.cc
 
 # main test
 test1:
-	./drawcurve < ${DATA}test1
+	./drawCurve < ${DATA}test1
 
 test test0 testcurve:
-	./drawcurve < ${DATA}test0
+	./drawCurve < ${DATA}test0
 
 t:
-	./drawcurve < ${DATA}${ifile}
+	./drawCurve < ${DATA}${ifile}
 
 t1:
-	./drawcurve 1 < ${DATA}plot
+	./drawCurve 1 < ${DATA}plot
 
 testpoly:
 	./drawpoly < ${DATA}${ifile}
@@ -169,7 +169,7 @@ tar1:
 	tar -cvf $(fn).tar Makefile README drawpoly.cc data/input*
 
 distrib:
-	tar -cvf $(fn).tar Makefile README drawcurve.cpp data/test* data/butterfly
+	tar -cvf $(fn).tar Makefile README drawCurve.cpp data/test* data/butterfly
 
 clean:
 	-@rm -f *.o *~

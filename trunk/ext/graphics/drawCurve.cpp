@@ -1,5 +1,5 @@
 /***********************************************************************
- * LAST UPDATE  $Id: drawCurve.cpp,v 1.1 2006-12-18 19:22:53 exact Exp $
+ * LAST UPDATE  $Id: drawCurve.cpp,v 1.2 2007-04-02 22:29:57 exact Exp $
  *
  * FILE NAME: drawcurve.cpp 
  * (adapted from drawpoly.cc)
@@ -77,7 +77,7 @@ using namespace std;
 const int SIZEOFBUFFER = 500;
 
 // DBL_MAX not found in cygwin environment, so hack:
-double DBL_MAX = (double)(1L << 30);
+//double DBL_MAX = (double)(1L << 30);
 
 char buf[SIZEOFBUFFER];
 
