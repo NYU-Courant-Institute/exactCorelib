@@ -12,10 +12,10 @@ Many of our programs are self-validating:
 	this wrong answer is expected (e.g., we run a program
 	at Level 1 accuracy).  But "ERROR" is more serious.
 
-In short: grep these diagnostic files 
-	for "ERROR" to see if CORE has any errors;
-	for "error" or "Error" to see if there are compiler errors;
-	for "cannot" to see if there are missing files. 
+To check for errors: grep these diagnostic files 
+	-- grep "ERROR" to see if CORE has any errors;
+	-- grep "error" or "Error" to see if there are compiler errors;
+	-- grep "cannot" to see if there are missing files. 
 
 Also, Core may create and write messages in 
 	the file "Core_Diagnostics" in the individual directories
