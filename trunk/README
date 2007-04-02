@@ -12,9 +12,9 @@
 *
 *                    http://cs.nyu.edu/exact/
 *        
-*  Copyright (c) 1998-2006 by Exact Computation Project, NYU
+*  Copyright (c) 1998-2007 by Exact Computation Project, NYU
 *
-*  $Id: README,v 1.6 2006-05-06 23:11:35 exact Exp $
+*  $Id: README,v 1.7 2007-04-02 00:51:13 exact Exp $
 *************************************************************
 
 README FILE: TABLE OF CONTENTS
@@ -29,7 +29,7 @@ README FILE: TABLE OF CONTENTS
 *************************************************************
 1) ORIENTATION
 
-   This is Core Library Version 2.0, released on June 1, 2006.
+   This is Core Library Version 2.0, released on May 1, 2007.
 
    The Core Library is a collection of C/C++ classes for exact
    computation with real algebraic numbers.
@@ -66,7 +66,7 @@ README FILE: TABLE OF CONTENTS
 
                 #include "CORE/CORE.h"
 
-   following all the standard include statements.  The default accuracy
+   following all other standard include statements.  The default accuracy
    is Level III.  At this level, a variable with the machine type
    "double" or "long" is redefined as an instance of the class "Expr"
    (a C++ class).  All comparisons involving Expr are error-free,
@@ -85,7 +85,7 @@ README FILE: TABLE OF CONTENTS
    
    In the framework of EGC, error-free comparisons amount to
    computing the ''exact geometry'' in your programs.  Nonrobustness
-   issues from round-off errors are thereby abolished.
+   issues arising from round-off errors are thereby abolished.
 
    A tutorial in this "doc" subdirectory, plus the many
    sample programs in the "progs" subdirectory, should allow you
@@ -99,7 +99,7 @@ README FILE: TABLE OF CONTENTS
    The Core Library is relatively small.  For convenience, we offer
    three distributions: "base distribution" has the basics, including
    source code and examples.  The "full distribution" is the 
-   base distribution plus documentation, gmp and mpfr.
+   base distribution, plus documentation, gmp and mpfr.
    The library has been tested on solaris, linux, cygwin and Windows. 
    It is also fully compatible with CGAL, and distributed with CGAL.
 
@@ -114,13 +114,14 @@ README FILE: TABLE OF CONTENTS
 2) DIRECTORIES AND FILES
 
    The Core Directory is denoted ${CORE_PATH} in these notes.
-   The base distribution has the following files and subdirectories:
+   The base distribution has the following files and subdirectories
+   under ${CORE_PATH}:
 
        README        This file
        ANNOUNCEMENT  Release announcement
        AUTHORS       Authors of Core Library
        Makefile      Makefile for the whole library
-       Make.config   Compiler flags (this file is included by other Makefiles)
+       Make.config   Compiler flags (this file is inherited by other Makefiles)
        FAQs          Frequently asked questions
        LICENSE.QPL   The Q Public License 
 
@@ -135,7 +136,7 @@ README FILE: TABLE OF CONTENTS
        win32/        Windows related files (can be deleted for unix-base)
        bin/          executable programs (mostly for development currently)
        builds/       directory for building gmp and mpfr (it is possible
-			 to delete this directory if you don't need it later)
+                         to delete this directory if you don't need it later)
        gmp/          gmp installation directory (may be a link).  This
                          directory may be missing if you have your own gmp.
        mpfr/         mpfr installation directory (may be a link).  This
@@ -158,14 +159,14 @@ README FILE: TABLE OF CONTENTS
         For compilers, "g++" is also recommended but not required.
         In turn, "g++" will need "m4" (the macro preprocessor).
         We DO NOT assume that you already have "gmp" (GNU's multiprecision
-        number package). If you do not download the full version, you
-	may need "wget" to download automatically from the web).
+        number package). If you do not download the full version, we will use
+        "wget" to automatically download gmp from the web).
 
         For Windows: you could replace g++ with Visual C++.
         However we highly recommend "Cygwin" from Red Hat.  This is a free
         and easy-to-install Unix-like environment that sits on top of all 
         versions of Windows.   All the needed tools (g++, m4, make, tar, gzip,
-	etc) are available (you need to choose them).  Advantages of Cygwin are:
+        wget, etc) are available (you must choose them).  Advantages of Cygwin:
         (I) There is no need for dual booting;
         (II) There is no need to partition your disc;
         (III) You can share files between Windows and Cygwin; 
@@ -183,16 +184,16 @@ README FILE: TABLE OF CONTENTS
                 http://cs.nyu.edu/exact/core.
 
         There are three distributions, a "base distribution", a "standard
-	distribution" and a "full distribution".  The standard distribution
-	includes the base distribution and documentation.  The full 
-	distribution includes the standard distribution, plus gmp and mpfr.
+        distribution" and a "full distribution".  The standard distribution
+        includes the base distribution and documentation.  The full 
+        distribution includes the standard distribution, plus gmp and mpfr.
 
         The main steps here describes an installation from a full distribution 
         in a unix-like environment: it is the simplest to install.
-	But see 3.10) below for *variant* installations: these include
-	installing only the base distribution, using dynamic libraries,
-	Windows platform, re-installing the Core Library, building Debugging
-	Versions of Core Library, etc.
+        But see 3.10) below for *variant* installations: these include
+        installing only the base distribution, using dynamic libraries,
+        Windows platform, re-installing the Core Library, building Debugging
+        Versions of Core Library, etc.
 
         The overall installation time is 25-40 minutes on a typical
         machine.  If you already have gmp, the time is halved (on Pentium III
@@ -240,7 +241,7 @@ README FILE: TABLE OF CONTENTS
                                 PLATFORM variable.
   
         To see what your chosen options are, do:
-            % make opt[ions] -- this will show the various global settings
+            % make options   -- this will show the various global settings
                              -- e.g. PLATFORM=gnu, LINKAGE=static, VAR=, etc.
 
    3.4) STAGE 1: INSTALLING GMP 
@@ -259,14 +260,15 @@ README FILE: TABLE OF CONTENTS
         
          % export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${your_gmp_install_dir}/lib
 
-        In option b) below, there is an example where
-        ${your_gmp_install_dir}=/usr/local.
+        For instance, ${your_gmp_install_dir} might be /usr/local.
+        If you are installing gmp using option d) below, we suggest
+        letting ${your_gmp_install_dir}=${CORE_PATH}/gmp.
 
         NOW we are ready to proceed with installing gmp.
         Choose one of the following three situations that apply to you:
 
-        b) IF GMP IS ALL READY TO GO:
-	You already have GMP header files and library files on 
+        b) YOU HAVE AN INSTALLED GMP IS ALL READY TO GO:
+        You already have GMP header files and library files on 
         your system directory, AND they can be found by your
         C++ compiler.  In this case, there is nothing to do.
         In any case, if you want to quickly check if you are in this
@@ -276,11 +278,11 @@ README FILE: TABLE OF CONTENTS
                 % make testgmp
 
         This test simply computes 12345 * 67890 = 838102050,
-	and 111111111 * 111111111 = 12,345,678,987,654,321.
+        and 111111111 * 111111111 = 12,345,678,987,654,321.
         If you pass the test, you may go to STAGE 2.
 
-        c) IF YOU HAVE GMP BUT IT IS NOT FOUND:
-	Assuming you a properly installed GMP in some 
+        c) YOU HAVE AN INSTALLED GMP BUT CORE COULD NOT FIND IT:
+        Assuming you a properly installed GMP in some 
         directory which cannot be found by the above test, then make a 
         symbolic link from ${CORE_PATH}/gmp using the following command:
 
@@ -295,8 +297,8 @@ README FILE: TABLE OF CONTENTS
         and /usr/local/lib (respectively).  Hence, in this case,
         ${your_gmp_install_dir}=/usr/local.
 
-        d) IF YOU NEED TO INSTALL GMP:
-	In this case, we may assume that you have downloaded
+        d) YOU NEED TO INSTALL GMP:
+        In this case, we may assume that you have downloaded
         our full distribution which has gmp, follow the following steps:
 
             % cd ${CORE_PATH}
@@ -315,6 +317,8 @@ README FILE: TABLE OF CONTENTS
             % make third     -- installs gmp (same as "make install-gmp")
                              -- screen output from this process is placed
                                 in the file ${CORE_PATH}/tmp/DIAG_INSTALL_GMP
+                                (at this point, you can go to the gmp directory
+                                and do a "make check" for extra assurance)
             % make testgmp   -- you must pass this test to continue.
                                 output in file ${CORE_PATH}/tmp/DIAG_TEST_GMP
 
@@ -324,16 +328,18 @@ README FILE: TABLE OF CONTENTS
 
    3.5) STAGE 2: INSTALLING MPFR
 
-	a) If you have already installed MPFR, you can verify this by
+        As for stage 1, we have three possible scenarios:
+
+        a) If you have already installed MPFR, you can verify this by
 
                 % cd ${CORE_PATH} 
                 % make testmpfr
 
- 	If your screen shows the answer 8.3810205000e8 and 3.1415929208,
+         If your screen shows the answer 8.3810205000e8 and 3.1415929208,
         you have passed the test and may go to STAGE 3.
 
-        b) Perhaps you have installed MPFR, but it could not be found 
-        by your compiler in a).  In this case, we make a 
+        b) You have installed MPFR, but it could not be found 
+        by the compiler in a).  In this case, we make a 
         symbolic link from ${CORE_PATH}/gmp using the following command:
 
             % cd ${CORE_PATH}
@@ -342,11 +348,11 @@ README FILE: TABLE OF CONTENTS
 
         If you pass this test, you can go to STAGE 3.
 
-	c) Otherwise, proceed as follows:
+        c) If you do not have MPFR, we will install MPFR as follows:
 
             % make fourth    -- configures mpfr (same as "make config-mpfr")
                              -- screen output is placed in the file
-				${CORE_PATH}/tmp/DIAG_CONFIG_MPFR
+                                ${CORE_PATH}/tmp/DIAG_CONFIG_MPFR
             % make fifth     -- builds mpfr library (same as "make build-mpfr")
                              -- screen output is placed
                                 in the file ${CORE_PATH}/tmp/DIAG_BUILD_MPFR
@@ -358,8 +364,8 @@ README FILE: TABLE OF CONTENTS
 
 
    3.6) STAGE 3: BUILD CORE LIBRARY.
-	
-	Now that gmp and mpfr are properly installed, you are ready to 
+        
+        Now that gmp and mpfr are properly installed, you are ready to 
         install CORE.  IMPORTANT: the compilation settings for STAGE 3 
         are found in ${CORE_PATH}/Make.config.  They are described 
         in Step 3.3) above, and also Step 3.10) below.  Do the following:
@@ -459,7 +465,7 @@ README FILE: TABLE OF CONTENTS
 
         If these tests print encouraging messages,
         you may continue from STAGE 3 (Step 3.6) above.  
-	Otherwise you need to do STAGES 1 and 2 first.
+        Otherwise you need to do STAGES 1 and 2 first.
 
         (2) INSTALLATION FOR WINDOWS PLATFORM
         If you use cygwin on your windows platform, then the installation
@@ -829,7 +835,7 @@ README FILE: TABLE OF CONTENTS
        polynomials.  An interactive version of Core Library called "InCore"
        is available.  Beginning graphic capability for display of curves.
    Version 2.0 (Jun 2006) complete redesign of Core Library (templated
-	Expr class taking parameters for Filter class, Rootbound class
+        Expr class taking parameters for Filter class, Rootbound class
         and BigFloat class), incorporation of transcendental functions into
         Expr, Redesigned BigFloat (split off another class called BigFloat2),
         general speed improvement 2-10 times.
