@@ -2,7 +2,7 @@
    File: newPi.ccp
 
 Purpose: To compute Pi using several algorithms:
-		Brent's algorithma and Machin's algorithm
+		Brent's algorithm and Machin's algorithm
    	     
    Usage:
 	  % newPi [optPrec=54] [method=2]
@@ -22,7 +22,7 @@ Purpose: To compute Pi using several algorithms:
 
    Author: Zilin (Oct 2004)
    Since Core Library Version 1.7
-   	$Id: newPi.cpp,v 1.2 2007-03-20 14:31:58 exact Exp $
+   	$Id: newPi.cpp,v 1.3 2007-04-02 21:52:21 exact Exp $
  *************************************************************** */
 
 // This program MUST be run at CORE_LEVEL 4:
@@ -95,7 +95,7 @@ Expr machin(int prec) {
 
 BigFloat brent(int prec) {
   //defBFsqrtAbsPrec = prec;
-  setDefaultBFradicalPrec(prec);
+  setDefaultBFradicalPrec(prec*3); //prec*3 is a hack.
   BigFloat A = 1;
   BigFloat B = 1;
   B /= sqrt(BigFloat(2));
@@ -103,11 +103,12 @@ BigFloat brent(int prec) {
   BigInt X = 1;
   BigFloat Y;
   BigFloat eps = BigFloat::exp2(- prec +1);	
+cout << "eps = " << eps << endl;
   BigFloat sq;
   int count = 0;
 
   while (A - B > eps) {
-	Y = A; A = (A+B).div2(); B = sqrt(B*Y);
+	Y = A; A.div2(A+B); B = sqrt(B*Y);  // should use div2()
 	sq = (A-Y)*(A-Y);
 	T -= X * sq;
 	X <<= 1;
@@ -119,14 +120,16 @@ BigFloat brent(int prec) {
   //Expr ans = Expr(A)*Expr(A)/Expr(T);
   //ans.approx(CORE_posInfty, prec);
   cout << "Number of iterations = " << count << endl;
-  BigFloat ans = (A*A).div(T, prec + T.lMSB() - 2* A.uMSB() + 2);
+  BigFloat ans;
+  ans.div(A*A, T, prec + T.lMSB() - 2* A.uMSB() + 2);
   return ans;
 } //brent
 
 BigFloat brent2(int prec) {
   int iters = (int)(log(prec*log(2.0)/log(10.0))/log(2.0));
   cout << "Need " << iters << " iterations" << endl; 
-  defBFsqrtAbsPrec = prec;
+  //defBFsqrtAbsPrec = prec;
+  defBFradicalRelPrec = prec;
   BigFloat A = 1;
   BigFloat B = BigFloat(1)/sqrt(BigFloat(2));
   BigFloat T = 0.25;
@@ -139,19 +142,20 @@ BigFloat brent2(int prec) {
 
   for (int p = -1; p < prec*2+10; p = p*2+10) {
         Y = A*B; 
-        A = (A+B).div2(); 
+        A.div2(A+B); 
         B = sqrt(Y);
         AA = A*A;
         sq = AA - Y;
         T -= X * sq;
         X <<= 1;
-        A.makeExact();
-        B.makeExact();
-        T.makeExact();
+        //A.makeExact();
+        //B.makeExact();
+        //T.makeExact();
 	count ++;
   }
   cout << "Number of Iteration = " << count << endl;
-  BigFloat ans = (AA).div(T, prec + 2);
+  BigFloat ans;
+  ans.div(AA, T, prec + 2);
   return ans;
 }
 
@@ -170,19 +174,20 @@ BigFloat brent3(int prec) {
 
   for (int p = -1; p < prec*2+10; p = p*2+10) {
         Y = A*B;
-        A = (A+B).div2();
+        A.div2(A+B);
         B = Y.sqrt(p+10);
         AA = A*A;
         sq = AA - Y;
         T -= X * sq;
         X <<= 1;
-        A.makeExact();
-        B.makeExact();
-        T.makeExact();
+        //A.makeExact();
+        //B.makeExact();
+        //T.makeExact();
         count ++;
   }
   cout << "Number of Iteration = " << count << endl;
-  BigFloat ans = (AA).div(T, prec + 2);
+  BigFloat ans;
+  ans.div(AA, T, prec + 2);
   return ans;
 }
 

@@ -1,8 +1,9 @@
 ================================================================================
  File: README for pi
  Author: Chee and Chen Li (June 2000)
+         Jihun (Apr 2007)
  Since CORE Library version 1.2
-	$Id: README,v 1.2 2007-01-26 21:04:43 exact Exp $
+	$Id: README,v 1.3 2007-04-02 21:52:21 exact Exp $
 ================================================================================
 SYNOPSIS:
 	% make		-- makes the executable "newPi"
@@ -119,3 +120,10 @@ Nov, 2005:
 	is that we did not approximate each step to sufficient relative
 	precision -- in this case, it can be shown that we only
 	get linear convergence.
+=================================================================
+Mar, 2007:
+	Brent's algorithm in newPi.cpp and in brent.cpp are no longer correct
+	after we moved from the old BigFloat to the new BigFloat class.
+	Hope to come back to this in the future.
+					-- Jihun & Chee
+=================================================================

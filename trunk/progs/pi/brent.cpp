@@ -24,7 +24,7 @@
 
    Author: Chee Yap and Chen Li (June 2000)
    Since CORE Library Version 1.2
-   	$Id: brent.cpp,v 1.1 2006-03-07 04:51:25 exact Exp $
+   	$Id: brent.cpp,v 1.2 2007-04-02 21:52:21 exact Exp $
  *************************************************************** */
 
 // This program MUST be run at CORE_LEVEL 3:
@@ -63,7 +63,7 @@ Expr brent(int prec) {
 
 // New version using BigFloat
 Expr brent(int prec) {
-  defBFsqrtAbsPrec = prec;
+  defBFradicalRelPrec = prec;
   BigFloat A = 1;
   BigFloat B = 1;
   B /= sqrt(BigFloat(2));
@@ -74,7 +74,7 @@ Expr brent(int prec) {
   BigFloat sq;
 
   while (A - B > eps) {
-	Y = A; A = (A+B).div2(); B = sqrt(B*Y);
+	Y = A; A.div2(A+B); B = sqrt(B*Y);
 	sq = (A-Y)*(A-Y);
 	T -= X * sq;
 	X <<= 1;
@@ -127,11 +127,11 @@ int main( int argc, char *argv[] ) {
     prec = 1;
   }
   if (DOvalidate == 1) {
-    prec = core_min(eps, 830);	// 830 bits = 250 digits.
+    prec = min(eps, 830);	// 830 bits = 250 digits.
     from.open("inputs/PI250", ios::in);	// read 250 digits of Pi from file
   }
   if (DOvalidate == 2) {
-    prec = core_min(eps, 6644);	// 6644 bits = 2000 digits
+    prec = min(eps, 6644);	// 6644 bits = 2000 digits
     from.open("inputs/PI2000", ios::in);	// read 2000 digits of Pi from file
   }
 
@@ -155,9 +155,9 @@ int main( int argc, char *argv[] ) {
     // Need to take the min of outputPrec and the number of digits in bigPi
     int minPrec = 0;
     if (DOvalidate == 1)
-	minPrec = core_min(outputPrec, 250);
+	minPrec = min(outputPrec, 250);
     if (DOvalidate == 2) 
-	minPrec = core_min(outputPrec, 2000);
+	minPrec = min(outputPrec, 2000);
 //debug:
 cout << "minPrec = " << minPrec << endl;
 cout << "bigPi = " << setprecision(outputPrec+1) << bigPi << endl;
