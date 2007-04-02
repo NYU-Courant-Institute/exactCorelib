@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.25 2007-03-07 02:05:10 exact Exp $
+ * $Id: BigFloat.h,v 1.26 2007-04-02 22:27:53 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -1434,12 +1434,13 @@ public:
     }
   }
   std::string get_str(size_t n=0,int b=10, rnd_t rnd=MPFR_RND) const {
+    if (n == 1) n = 2UL; 	// If n=0, then MPFR will return
+    				// a string with the full precision.
+				// However, n=1 is invalid for MPFR.
     return mpfr2str(mp(),
-                    std::max(
-                      std::min(
-                        (unsigned long)n,
-	                 bits2digits(get_prec()+1)),
-                      2UL),
+                    std::min(
+                      (unsigned long)n,
+	               bits2digits(get_prec()+1)),
 		    b,
   	            get_output_fmt(),
 		    rnd,

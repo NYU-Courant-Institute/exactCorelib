@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.cpp,v 1.9 2007-03-07 02:16:25 exact Exp $
+ * $Id: CoreDefs.cpp,v 1.10 2007-04-02 22:27:07 exact Exp $
  ***************************************************************************/
 #include <CORE/Config.h>
 #include <CORE/CoreDefs.h>
@@ -46,5 +46,7 @@ unsigned long cutOffBound = CORE_INFTY;
 // used as transcendental number root bound
 unsigned long escapeBound = 10000;
 
+bool coretest_error = false;
+bool coretest_verbose = false;
 
 CORE_END_NAMESPACE

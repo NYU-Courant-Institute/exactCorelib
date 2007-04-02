@@ -1,6 +1,11 @@
 /****************************************************************************
  * CoreAux.h -- Auxilliary functions for the Core Library
  *
+ * WHAT IS IN THIS FILE?
+ * 	-- low level bit manipulation routines (like ceiling log_2, etc)
+ * 	-- unit test routines
+ * 	-- standard error routine
+ *
  * Core Library Version 2.0, March 2006
  * Copyright (c) 1995-2006 Exact Computation Project
  * All rights reserved.
@@ -19,7 +24,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.h,v 1.16 2007-04-02 20:23:44 exact Exp $
+ * $Id: CoreAux.h,v 1.17 2007-04-02 22:27:53 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREAUX_H__
 #define __CORE_COREAUX_H__
@@ -34,12 +39,26 @@ CORE_BEGIN_NAMESPACE
  *  (not just warning).  In this case, the message is also printed in
  *  std::cerr, using std::perror().
  *  */
-void core_error(std::string msg, std::string file, int lineno, bool err);
+void core_error(std::string msg, std::string file, int lineno, bool err = true);
 
 /// This is for debugging messages
 inline void core_debug(std::string msg){
   std::cout << __FILE__ << "::" << __LINE__ << ": " << msg
             << std::endl;
+}
+template <class T1, class T2>
+void core_test(T1 ans, T2 unknown, std::string msg1 = "", std::string msg2 = "") {
+ if (ans != unknown) {
+	 std::cout << "ERROR!!! " << msg1 << std::endl;
+	 std::cout << "  answer : " << ans << std::endl;
+	 std::cout << "  unknown : " << unknown << std::endl;
+ }
+ else if (coretest_verbose) {
+	 std::cout << "CORRECT!!! " << msg2 << std::endl;
+	 std::cout << "  answer : " << ans << std::endl;
+	 std::cout << "  unknown : " << unknown << std::endl;
+ }
+ coretest_error = true;
 }
 
 // help inline functions for size_t

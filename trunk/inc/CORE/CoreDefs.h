@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.12 2006-12-03 18:52:06 exact Exp $
+ * $Id: CoreDefs.h,v 1.13 2007-04-02 22:27:53 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
@@ -62,6 +62,8 @@ extern long defBFradicalRelPrec;   // this replaces defBFsqrtAbsPrec in Core1
 extern unsigned long cutOffBound;  // arbitary cutoff for ABSOLUTE precision
 extern unsigned long escapeBound;  // this is to "escape" in transcendental
                                    //  evaluation when we have no root bounds
+extern bool coretest_error;	   // error flag for unit test
+extern bool coretest_verbose;	   // verbose flag for unit test
 
 extern void core_error(std::string msg, std::string file, int lineno, bool err);
 
