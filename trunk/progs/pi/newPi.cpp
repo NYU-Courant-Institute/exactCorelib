@@ -22,10 +22,10 @@ Purpose: To compute Pi using several algorithms:
 
    Author: Zilin (Oct 2004)
    Since Core Library Version 1.7
-   	$Id: newPi.cpp,v 1.3 2007-04-02 21:52:21 exact Exp $
+   	$Id: newPi.cpp,v 1.4 2007-04-05 18:36:54 exact Exp $
  *************************************************************** */
 
-// This program MUST be run at CORE_LEVEL 4:
+// This program MUST be run at CORE_LEVEL 4 :
 #  define CORE_LEVEL 4
 
 #include <fstream> 
