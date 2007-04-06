@@ -1612,10 +1612,14 @@ BigFloat2 height(const Polynomial<NT> &p) {
   if (zeroP(p))
     return BigFloat(0);
   int deg = p.getTrueDegree();
-  NT ht = 0;
-  for (int i = 0; i<= deg; i++)
-    if (ht < abs(p.coeff()[i]))
-      ht = abs(p.coeff()[i]);
+  NT ht = abs(p.coeff()[0]);
+
+  for (int i = 1; i<= deg; i++) {
+    NT absVal = abs(p.coeff()[i]);
+    if (ht < absVal)
+      ht = absVal;
+  }
+
   return ToBigFloat2(ht);
 }
 
