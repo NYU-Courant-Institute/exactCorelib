@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.30 2007-03-07 02:05:11 exact Exp $
+ * $Id: ExprRep.h,v 1.31 2007-04-06 15:43:51 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -401,9 +401,10 @@ public: // public methods
   // Aug 2006: Jihun pulled this refine() function out of AddSubRep.
   // Oct 2006: Jihun/Chee implemented new refine() from Zilin's thesis (p.41)
   //////////////////////////////////////////////////
+
   void refine() {
     //Step 1
-    prec_t prec = 26, bound = 53;
+    prec_t prec = 53, bound = 53;
     int bound_type;
 
     if (!kernel_initialized())
@@ -428,7 +429,6 @@ public: // public methods
 #endif
     // Step 4
     do {
-      prec <<= 1;
 #ifdef CORE_DEBUG_ROOTBOUND
       std::cout << "refine prec=" << prec << std::endl;
 #endif
@@ -440,7 +440,8 @@ public: // public methods
 #endif
         return;
       }
-    } while (prec < bound);
+      prec <<= 1;
+    } while (prec < 2*bound);
 #ifdef CORE_DEBUG_ROOTBOUND
     std::cerr << "root bound=" << rootBd().get_bound(get_Deg()) << std::endl;
     rootBd().dump();
@@ -453,9 +454,11 @@ public: // public methods
     appValue().set(0);
     set_flags(0, 0, MSB_MIN);
   }
-  
-  void old_refine() {
-    prec_t rootbd = get_rootBd().get_bound(get_Deg());
+/*
+  void refine() {
+    prec_t rootbd;
+    if(get_rootBd().is_constructive())
+      rootbd = get_rootBd().get_bound(get_Deg());
 #ifdef CORE_DEBUG_ROOTBOUND
     std::cout << "\nrootbd degree upperbound = " << get_Deg() << std::endl;
     std::cout << "rootbd bit = " << rootbd << std::endl;
@@ -480,7 +483,7 @@ public: // public methods
 #endif
     set_flags(0, 0, MSB_MIN);
   }//refine
-
+*/  
 public: 
   /// convert absolute precision to relative precision
   /// WARNING: we currently do not check for overflows

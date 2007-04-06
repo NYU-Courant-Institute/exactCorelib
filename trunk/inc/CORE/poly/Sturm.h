@@ -51,7 +51,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Sturm.h,v $
- * $Revision: 1.11 $ $Date: 2006-12-21 17:41:43 $
+ * $Revision: 1.12 $ $Date: 2007-04-06 15:43:51 $
  ***************************************************************************/
 
 
@@ -300,9 +300,9 @@ public:
       newy = y;
     return (signVariations(newx, sign(evalExactSign(seq[0],newx)))
             - signVariations(newy, sign(evalExactSign(seq[0],newy))) );
-*/
+/*/
 // Jihun: July 2006, implemented alternative that doesn't use separation bound
-///*
+//*
     if (signx != 0 && signy != 0)
       return (signVariations(x, signx) - signVariations(y, signy));
     else if (signx == 0 && signy == 0)

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.24 2007-04-02 22:27:53 exact Exp $
+ * $Id: BigFloat2.h,v 1.25 2007-04-06 15:43:51 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -653,7 +653,7 @@ public:
       // We need to check if m_l and m_r has the same exponent value
       if (valprec > 0)
         result.prec_round(std::max(valprec, (long)2));
-      else
+      else if (valprec < 0)
 	core_error("This BigFloat2 has no implicit error representation",
 			__FILE__, __LINE__, true);
         // COMMENT: A BigFloat say 0.1234 has an implicit error of 0.0001.
