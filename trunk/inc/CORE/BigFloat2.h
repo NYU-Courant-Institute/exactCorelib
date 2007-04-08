@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.26 2007-04-08 02:22:37 exact Exp $
+ * $Id: BigFloat2.h,v 1.27 2007-04-08 21:11:43 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -631,7 +631,7 @@ public:
         result.prec_round(std::max(valprec, (long)2));
       else if (valprec < 0) {
 	core_error("This BigFloat2 has no implicit error representation",
-			__FILE__, __LINE__, true);
+			__FILE__, __LINE__, false);
       }
         // COMMENT: A BigFloat say 0.1234 has an implicit error of 0.0001.
 	//          So we say 0.1234 is an "implicit error representation"

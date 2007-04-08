@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.32 2007-04-08 02:22:37 exact Exp $
+ * $Id: Expr.h,v 1.33 2007-04-08 21:11:43 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -328,14 +328,14 @@ public: // public methods
     // Jihun 04/07/2007
     // when exp == 0, BigFloat2 may have no implicit error representation.
     // then get_f() produces an error.
-    if(sign() == 0)
-      return 0;
     if (a_prec == CORE_INFTY)
-      return r_approx(r_prec).get_f();
+      r_approx(r_prec);
     else if (r_prec == CORE_INFTY)
-      return a_approx(a_prec).get_f();
+      a_approx(a_prec);
     else 
-      return a_approx( std::min(a_prec, m_rep->rel2abs(r_prec)) ).get_f();
+      a_approx( std::min(a_prec, m_rep->rel2abs(r_prec)) );
+
+    return sign() == 0 ? 0 : m_rep->appValue().get_f();
   }
   /// return integer value 
   int intValue() const {
