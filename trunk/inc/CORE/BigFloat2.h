@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.25 2007-04-06 15:43:51 exact Exp $
+ * $Id: BigFloat2.h,v 1.26 2007-04-08 02:22:37 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -603,30 +603,6 @@ public:
   /// return the string representation
   std::string get_str(size_t digits = 0, int base = 10) const {
     return get_f().get_str(digits, base);
-    /*
-    if (is_exact()) {
-      return m_l.get_str(digits, base);
-    } else {
-      long bits = abs_diam().get_exp();
-      
-      // round up to validate bits
-      long valprec = m_l.get_exp() - bits;
-     
-      if (valprec <= 0) {
-        valprec = bits;
-      }
-      if (valprec < 2) valprec = 2;
-
-      size_t valid_digits = (size_t)(valprec*log(2.0)/log(double(base)));
-      
-      if (digits > 0U && digits < valid_digits)
-        valid_digits = digits;
-      if (valid_digits < 2)
-        valid_digits = 2;
-  
-      return m_l.get_str(valid_digits, base);
-    }
-    */
   }
   /// return <tt>BigInt</tt> value
   ZT get_z() const
@@ -653,9 +629,10 @@ public:
       // We need to check if m_l and m_r has the same exponent value
       if (valprec > 0)
         result.prec_round(std::max(valprec, (long)2));
-      else if (valprec < 0)
+      else if (valprec < 0) {
 	core_error("This BigFloat2 has no implicit error representation",
 			__FILE__, __LINE__, true);
+      }
         // COMMENT: A BigFloat say 0.1234 has an implicit error of 0.0001.
 	//          So we say 0.1234 is an "implicit error representation"
 	//          of the BigFloat2 [0.1233,0.1235].

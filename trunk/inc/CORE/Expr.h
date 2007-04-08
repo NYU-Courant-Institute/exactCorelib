@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.31 2007-03-07 02:05:11 exact Exp $
+ * $Id: Expr.h,v 1.32 2007-04-08 02:22:37 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -325,6 +325,11 @@ public: // public methods
   
   /// return approximation \f$[r, \infty]\f$ or \f$[\infty, a]\f$
   FT approx(prec_t r_prec = defRelPrec, prec_t a_prec = defAbsPrec) {
+    // Jihun 04/07/2007
+    // when exp == 0, BigFloat2 may have no implicit error representation.
+    // then get_f() produces an error.
+    if(sign() == 0)
+      return 0;
     if (a_prec == CORE_INFTY)
       return r_approx(r_prec).get_f();
     else if (r_prec == CORE_INFTY)
