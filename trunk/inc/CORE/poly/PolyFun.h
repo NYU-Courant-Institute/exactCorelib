@@ -123,8 +123,7 @@ BigFloat2 evalExactSign(Polynomial<NT> &p, const BigFloat& val,
     BigFloat2 rVal = evalApprox(p, val, r);
     if (rVal.isZeroIn()) {
       Expr eVal = eval(p, Expr(val));	// eval gives exact value
-      eVal.approx(54,CORE_INFTY);  // if value is 0, we get exact 0
-      return eVal.BigFloat2Value();
+      return ToBigFloat2(eVal, 54, CORE_INFTY);
     } else 
       return rVal;
   } else {
