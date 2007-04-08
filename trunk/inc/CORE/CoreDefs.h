@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.13 2007-04-02 22:27:53 exact Exp $
+ * $Id: CoreDefs.h,v 1.14 2007-04-08 21:17:43 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
@@ -76,20 +76,22 @@ extern void core_error(std::string msg, std::string file, int lineno, bool err);
 inline void setDefaultPrecision(long r, long a)
 { defRelPrec = r; defAbsPrec = a; }
 inline void setDefaultRelPrecision(long r) {
-  if (defRelPrec == CORE_INFTY)
-    core_error("Relative Prec and Absolute Prec are both CORE_INFTY", __FILE__, __LINE__, false);
   defRelPrec = r; 
   defAbsPrec = CORE_INFTY;
+  if (defRelPrec == CORE_INFTY)
+    core_error("Relative Prec and Absolute Prec are both CORE_INFTY", __FILE__, __LINE__, false);
 }
 inline void setDefaultAbsPrecision(long a) {
-  if (defAbsPrec == CORE_INFTY)
-    core_error("Relative Prec and Absolute Prec are both CORE_INFTY", __FILE__, __LINE__, false);
   defAbsPrec = a; 
   defRelPrec = CORE_INFTY;
+  if (defAbsPrec == CORE_INFTY)
+    core_error("Relative Prec and Absolute Prec are both CORE_INFTY", __FILE__, __LINE__, false);
 }
 inline void setDefaultComPrecision(long r, long a) {
   defAbsPrec = a;
   defRelPrec = r;
+  if (defAbsPrec == CORE_INFTY && defRelPrec == CORE_INFTY)
+    core_error("Relative Prec and Absolute Prec are both CORE_INFTY", __FILE__, __LINE__, false);
 }
 
 inline long getDefaultInputDigits()
