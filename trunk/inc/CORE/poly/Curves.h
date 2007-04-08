@@ -64,7 +64,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.h,v $
- * $Revision: 1.7 $ $Date: 2006-12-21 19:44:58 $
+ * $Revision: 1.8 $ $Date: 2007-04-08 03:32:18 $
  ***************************************************************************/
 
 
@@ -155,7 +155,7 @@ class BiPoly{
   BiPoly( const NT& c ); 
 
   //BiPoly(vp)
-  BiPoly(std::vector<Polynomial<NT> > vp); // From vector of Polynomials
+  BiPoly(std::vector<Polynomial<NT> >& vp); // From vector of Polynomials
 
   //BiPoly(p, flag):
   //	if true, it converts polynomial p(X) into P(Y)
@@ -434,7 +434,7 @@ public:
   
   //Curve(vp):
   //    construct from a vector of polynomials
-  Curve(std::vector<Polynomial<NT> > vp);
+  Curve(std::vector<Polynomial<NT> >& vp);
   //	  : BiPoly<NT>(vp){
   //}
   

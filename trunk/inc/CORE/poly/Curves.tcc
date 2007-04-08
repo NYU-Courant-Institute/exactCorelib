@@ -30,7 +30,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.tcc,v $
- * $Revision: 1.14 $ $Date: 2007-02-01 16:58:11 $
+ * $Revision: 1.15 $ $Date: 2007-04-08 03:32:18 $
  ***************************************************************************/
 
 //These inclusions are implied by Curves.h
@@ -86,7 +86,7 @@ BiPoly<NT>::BiPoly( const NT& c ) {
 }
   //BiPoly(vp)
 template <class NT>
-BiPoly<NT>::BiPoly(std::vector<Polynomial<NT> > vp){ 
+BiPoly<NT>::BiPoly(std::vector<Polynomial<NT> >& vp){ 
     // From vector of Polynomials
     ydeg = vp.size() - 1;
     if(ydeg >=0){
@@ -1149,7 +1149,7 @@ Curve<NT>::Curve(){} // zero polynomial
   //Curve(vp):
   //    construct from a vector of polynomials
 template < class NT >
-Curve<NT>::Curve(std::vector<Polynomial<NT> > vp)
+Curve<NT>::Curve(std::vector<Polynomial<NT> >& vp)
 	  : BiPoly<NT>(vp){
   }
   
