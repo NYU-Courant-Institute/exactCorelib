@@ -24,7 +24,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.h,v 1.17 2007-04-02 22:27:53 exact Exp $
+ * $Id: CoreAux.h,v 1.18 2007-04-08 02:50:46 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREAUX_H__
 #define __CORE_COREAUX_H__
@@ -48,17 +48,17 @@ inline void core_debug(std::string msg){
 }
 template <class T1, class T2>
 void core_test(T1 ans, T2 unknown, std::string msg1 = "", std::string msg2 = "") {
- if (ans != unknown) {
-	 std::cout << "ERROR!!! " << msg1 << std::endl;
-	 std::cout << "  answer : " << ans << std::endl;
-	 std::cout << "  unknown : " << unknown << std::endl;
- }
- else if (coretest_verbose) {
-	 std::cout << "CORRECT!!! " << msg2 << std::endl;
-	 std::cout << "  answer : " << ans << std::endl;
-	 std::cout << "  unknown : " << unknown << std::endl;
- }
- coretest_error = true;
+  if (ans != unknown) {
+    std::cout << "ERROR!!! " << msg1 << std::endl;
+    std::cout << "  answer : " << ans << std::endl;
+    std::cout << "  unknown : " << unknown << std::endl;
+    coretest_error = true;
+  }
+  else if (coretest_verbose) {
+    std::cout << "CORRECT!!! " << msg2 << std::endl;
+    std::cout << "  answer : " << ans << std::endl;
+    std::cout << "  unknown : " << unknown << std::endl;
+  }
 }
 
 // help inline functions for size_t

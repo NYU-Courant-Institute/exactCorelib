@@ -1,4 +1,4 @@
-# Core Library, $Id: Makefile,v 1.4 2007-03-07 02:29:54 exact Exp $
+# Core Library, $Id: Makefile,v 1.5 2007-04-08 02:54:19 exact Exp $
 
 include ../Make.options
 
@@ -9,7 +9,6 @@ p= floorLg
 p= zero
 p= wein_expr_3
 p= tExpr
-p= test
 
 TARGETS=
 MORETARGETS= floor_ceil bench

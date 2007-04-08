@@ -22,7 +22,7 @@ Purpose: To compute Pi using several algorithms:
 
    Author: Zilin (Oct 2004)
    Since Core Library Version 1.7
-   	$Id: newPi.cpp,v 1.4 2007-04-05 18:36:54 exact Exp $
+   	$Id: newPi.cpp,v 1.5 2007-04-08 02:57:16 exact Exp $
  *************************************************************** */
 
 // This program MUST be run at CORE_LEVEL 4 :
@@ -103,7 +103,6 @@ BigFloat brent(int prec) {
   BigInt X = 1;
   BigFloat Y;
   BigFloat eps = BigFloat::exp2(- prec +1);	
-cout << "eps = " << eps << endl;
   BigFloat sq;
   int count = 0;
 
