@@ -1,13 +1,13 @@
 # Makefile for gaussian
 #
-# Core Library, $Id: Makefile,v 1.2 2006-11-10 21:08:05 exact Exp $
+# Core Library, $Id: Makefile,v 1.3 2007-04-08 02:43:01 exact Exp $
 
 include ../Make.options
 
 #=================================================
 # Define target files (put all your files here)
 #=================================================
-TARGETS= gaussian_level3 
+TARGETS= gaussian_level3 gaussian_level1
 
 MORETARGETS= gaussianX_level3 gaussianX_level1
 
