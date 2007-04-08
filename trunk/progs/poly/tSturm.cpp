@@ -31,7 +31,7 @@
    Date:    July 20, 2002
 
    Since Core Library  v1.4
-   $Id: tSturm.cpp,v 1.5 2007-02-06 20:46:54 exact Exp $
+   $Id: tSturm.cpp,v 1.6 2007-04-08 01:10:48 exact Exp $
  ************************************** */
 
 #  define CORE_LEVEL 4
@@ -176,7 +176,6 @@ int main(int argc, char** argv){
       cout << "The preceding is a root (CORRECT!)" << endl;
     else
       cout << "The preceding is not a root (ERROR!)" << endl;
-    std::cout << "defRelPrec" << defRelPrec << std::endl;
     
     // Test all roots
     testNewtonSturm(P, prec, 6);
@@ -279,7 +278,6 @@ int main(int argc, char** argv){
     PolyNT P9(10, cs9);
     SturmNT SS9(P9);
     BFInterval I = SS9.isolateRoot(1);
-    std::cout << I.second << std::endl;
     cout << " The smallest root lies in the interval ["
 	    	<< I.first << ", " << I.second << "]" << endl;
     I = SS9.isolateRoot(3);

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.31 2007-04-06 15:43:51 exact Exp $
+ * $Id: ExprRep.h,v 1.32 2007-04-08 01:07:42 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -317,17 +317,16 @@ public: // public methods
   }
 
   void compute_Deg(unsigned long& deg) {
-    if (rootBd().get_visit() == false) {
-      deg *= rootBd().get_deg();
-      rootBd().set_visit(true);
-    }
+    deg *= rootBd().get_deg();
+    rootBd().set_visit(true);
     for (size_t i=0; i < get_children_size(); i++) {
-      get_child(i)->compute_Deg(deg);
+      if (get_child(i)->rootBd().get_visit() == false)
+        get_child(i)->compute_Deg(deg);
     }
   }
 
   unsigned long get_Deg() {
-    unsigned long deg = 1;
+    unsigned long deg = 1; 
     compute_Deg(deg);
     rootBd_init();
 
@@ -483,7 +482,8 @@ public: // public methods
 #endif
     set_flags(0, 0, MSB_MIN);
   }//refine
-*/  
+*/
+
 public: 
   /// convert absolute precision to relative precision
   /// WARNING: we currently do not check for overflows
@@ -763,7 +763,6 @@ public:
   ConstPolyRepT(const Polynomial<NT>& p, const BFInterval& II) : ss(p), I(II) {
     BFVecInterval v;
     ss.isolateRoots(I.first, I.second, v);
-std::cout << "size of v =" << v.size() << std::endl;
     if (v.size() != 1) {
       core_error("root interval is not isolating", __FILE__, __LINE__, true);
     }
