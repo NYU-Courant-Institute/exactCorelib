@@ -1,0 +1,24 @@
+# Makefile rules
+# $Id: Make.rules,v 1.1 2006-03-07 05:13:57 exact Exp $
+
+#====================================================================
+# Rules
+#
+# $@ -- The file name of the target of the rule
+# $< -- The name of the first prerequisite 
+# $^ -- The names of all the prerequisites, with spaces between them.
+# $? -- The names of all the prerequisites that are newer than the 
+#       target, with spaces between them.
+#====================================================================
+%: %.o
+	${CXX} $(LDFLAGS) $< $(CORE_LIB) -o $@
+
+.cpp.o:
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) $< -o $@
+
+#=================================================
+# Clean object files
+#=================================================
+clean:
+	-@test -z "*.o" || rm -f *.o
+	rm -f ${TARGETS}

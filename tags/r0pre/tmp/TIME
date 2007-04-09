@@ -1,0 +1,12 @@
+TIME
+
+Some typical times
+==================
+
+Platform: Intel Pentium M, 1.60GHz, 504 MB RAM
+	Cygwin g++ on Windows XP
+
+	Core2:
+	make first -- 4 minutes
+	make fourth -- 2 minutes
+	make fifth -- 10 minutes
