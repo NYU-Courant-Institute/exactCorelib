@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Filters.h,v 1.8 2007-04-09 02:55:42 exact Exp $
+ * $Id: Filters.h,v 1.9 2007-04-09 21:28:32 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_FILTERS_H__
 #define __CORE_FILTERS_H__
@@ -97,10 +97,10 @@ class BfsFilter {
   prec_t _r_prec;
   prec_t _a_prec;
   // REFERENCE: Burnikel, Funke, Schirra (BFS) filter
-  // Chee: in isOK(), you used the test "|fpVal| >= maxAbs * ind * 2^{-52}" 
+  // Feb'07, Chee: in isOK(), you used the test "|fpVal| >= maxAbs * ind * 2^{-52}" 
   // which seems to be correct (i.e., not |fpVal| > maxAbs * ind * 2^{-52})
-  // Jihun : Above is wrong. The correct test is |fpVal > maxAbs * ind * 2^{-52}
-  // Especially when value is very close to zero, fpVal = maxAbs = 0
+  // Apr'07, Jihun : Above is wrong. The correct test is |fpVal| > maxAbs * ind * 2^{-52}
+  //  This is because when value is very close to zero, fpVal = maxAbs = 0
   typedef BfsFilter thisClass;
   typedef typename Kernel::ZT ZT;
   typedef typename Kernel::QT QT;
