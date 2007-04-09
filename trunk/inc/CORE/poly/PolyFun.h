@@ -114,7 +114,7 @@ BigFloat2 evalExactSign(Polynomial<NT> &p, const BigFloat& val,
     return BigFloat2(0);
   
   if (hasExactDivision<NT>::check()) { // currently, only to detect NT=Expr and NT=BigRat
-    extLong r = 1000;
+    extLong r;
     r = 1 + height(p).uMSB() + ceilLg(long(p.getTrueDegree()+1));
     if (val > 1)
       r += p.getTrueDegree() * val.uMSB();
@@ -127,7 +127,7 @@ BigFloat2 evalExactSign(Polynomial<NT> &p, const BigFloat& val,
     } else 
       return rVal;
   } else {
-    return ToBigFloat2(eval(p, val));
+    return eval(p, val);
   }
   
   assert(0);

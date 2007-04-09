@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.26 2007-04-02 22:27:53 exact Exp $
+ * $Id: BigFloat.h,v 1.27 2007-04-09 01:04:27 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -1817,6 +1817,8 @@ public:
   static bool hasExactDivision() { return false; }
   /// set value from <tt>const char*</tt>
   int set_str(const char* s, int base = 0) { return set(s, base); }
+  /// set value from <tt>const string</tt>
+  int set_str(const std::string s, int base = 0) { return set(s, base); }
   /// intValue
   int intValue() const { return static_cast<int>(get_si()); }
   /// longValue

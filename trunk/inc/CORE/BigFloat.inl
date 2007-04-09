@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.18 2007-04-02 22:27:53 exact Exp $
+ * $Id: BigFloat.inl,v 1.19 2007-04-09 01:04:27 exact Exp $
  ***************************************************************************/
 
 /// \addtogroup BigFloatArithmeticOperators
@@ -545,7 +545,7 @@ inline void readFromFile(BigFloat& z, std::istream& in) {
   } while (c != 'f');
   in >> base;
   in >> str; str.erase(0, 1);
-  z.set_str(str.c_str(), base);
+  z.set(str, base);
 }
 /// write to file
 inline void writeToFile(const BigFloat& z, std::ostream& out, int base=10) {

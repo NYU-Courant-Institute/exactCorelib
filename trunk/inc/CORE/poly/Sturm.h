@@ -51,7 +51,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Sturm.h,v $
- * $Revision: 1.12 $ $Date: 2007-04-06 15:43:51 $
+ * $Revision: 1.13 $ $Date: 2007-04-09 01:04:27 $
  ***************************************************************************/
 
 
@@ -706,8 +706,8 @@ public:
   BigFloat newtonIterE(int prec, const BigFloat& bf, BigFloat& del, 
 	extLong& fuMSB, extLong& ffuMSB) {
     // usually, prec is positive
-    int count = N_STOP_ITER; // upper bound on number of iterations
-    int stepsize = 1;
+    long count = N_STOP_ITER; // upper bound on number of iterations
+    long stepsize = 1;
     BigFloat val = bf;
     BigFloat err = 0;
 

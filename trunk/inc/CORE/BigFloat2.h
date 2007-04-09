@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.27 2007-04-08 21:11:43 exact Exp $
+ * $Id: BigFloat2.h,v 1.28 2007-04-09 01:04:27 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -1023,12 +1023,6 @@ inline BigFloat2 root(const BigFloat2& x, unsigned long k, prec_t prec = getDefa
 
 // include inline functions (private)
 #include <CORE/BigFloat2.inl>
-/*
-// convert any type to BigFloat
-template <typename T>
-inline BigFloat2 ToBigFloat2(const T& x, prec_t r = defRelPrec) 
-{ std::cout << "r=" << r << std::endl; return BigFloat2(x, r); }
-*/
 inline int sign(const BigFloat2& x) 
 { return x.sgn(); }
 
