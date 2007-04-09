@@ -56,7 +56,7 @@
    Date:    Aug 2, 2002 (updated, Oct 10, 2004).
 
    Since Core Library  v1.4
-   $Id: tNewton.cpp,v 1.3 2007-02-06 20:46:54 exact Exp $
+   $Id: tNewton.cpp,v 1.4 2007-04-09 02:55:28 exact Exp $
  ************************************** */
 
 #include <fstream>
@@ -150,12 +150,13 @@ using namespace std;
     //============================================================
 
     NT cs2[] = {-2, 0, 1};	// coefficients of Polynomial
+    cs2[0] = -N;
     Sturm<NT> NP (Polynomial<NT>(2, cs2));	// Sturm object
-    NP.seq[0].setCoeff(0, -N);	  // make -N the constant coefficient
 
     BigFloat del;
     BigFloat val;
-    val = NP.newtonIterE(prec, N, del); 
+
+    val = NP.newtonIterE(prec, N, del);
     		// compute to sqrt(N) to prec absolute bits
     cout << "   ---------------------------------------------------\n";
 

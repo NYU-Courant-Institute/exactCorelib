@@ -127,7 +127,7 @@ BigFloat2 evalExactSign(Polynomial<NT> &p, const BigFloat& val,
     } else 
       return rVal;
   } else {
-    return eval(p, val);
+    return ToBigFloat2(eval(p, val));
   }
   
   assert(0);

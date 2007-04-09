@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.32 2007-04-08 01:07:42 exact Exp $
+ * $Id: ExprRep.h,v 1.33 2007-04-09 02:55:42 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -688,6 +688,7 @@ public:
   ConstRepT(const V& v, NODE_NUMTYPE t) : value(v) {
     filter().set(v);
     numType() = t;
+    init_nodeinfo();
   }  
   virtual ~ConstRepT() 
   {}
