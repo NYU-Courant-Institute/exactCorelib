@@ -1,0 +1,8 @@
+README for bareiss
+
+Implementation of the Bareiss algorithm for computing determinants
+of matrices. This version performs pivoting
+(compare Gaussian.cc in ${CORE}/progs/gaussian). 
+
+The input matrices are hard-coded.
+
