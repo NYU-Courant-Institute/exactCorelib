@@ -97,10 +97,11 @@ int main( int argc, char *argv[] ) {
     std::cout << "sin(6^(6^6))  = " << ARCCOS << std::endl;
   std::cout << "it took " << timer.get_mseconds() << " mseconds." << std::endl;
   */
+
   // basic test for trigonometric formulas
   // disable filter feature : trigonometric filers functions are not implemented yet.
-  setFpFilterFlag(false);
- 
+  set_escape_bound(1000);
+  
   std::cout << "test for sinx^2 + cosx^2 = 1" << std::endl;
   Expr x = pi() / 2;
   Expr expr1 = sin(x);// * sin(x);// + cos(x) * cos(x);

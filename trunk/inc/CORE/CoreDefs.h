@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.14 2007-04-08 21:17:43 exact Exp $
+ * $Id: CoreDefs.h,v 1.15 2007-04-13 21:43:38 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
@@ -114,6 +114,8 @@ inline long getDefaultBFradicalPrec()
 inline void setDefaultBFradicalPrec(long p)
 { defBFradicalRelPrec= p; }
 
+/// get bound (in bits) for global absolute error iteration
+/// this bound is used in refine()
 inline unsigned long get_cut_off_bound()
 { return cutOffBound; }
 inline unsigned long set_cut_off_bound(unsigned long p) {
@@ -122,6 +124,7 @@ inline unsigned long set_cut_off_bound(unsigned long p) {
   return ret;
 }
 
+/// escape bound is used as root bound for transcendental nodes
 inline unsigned long get_escape_bound()
 { return escapeBound; }
 inline unsigned long set_escape_bound(unsigned long p) {

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: ExprRep.h,v 1.33 2007-04-09 02:55:42 exact Exp $
+ * $Id: ExprRep.h,v 1.34 2007-04-13 21:43:38 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPRREP_H__
 #define __CORE_EXPRREP_H__
@@ -186,7 +186,9 @@ public: // public methods
   /// return sign
   sign_t get_sign() {
     // if filter works
-    if (filter().is_ok())
+    // filter is turned off for transcendental nodes
+    // it is temporary. eventually we will implement filter for such nodes.
+    if (filter().is_ok() && !is_transcendental())
       return filter().sign();
     
     // initialize nodeinfo if necessary
@@ -211,7 +213,7 @@ public: // public methods
   /// return uMSB
   msb_t get_uMSB() { 
     // if filter works
-    if (filter().is_ok())
+    if (filter().is_ok() && !is_transcendental())
       return filter().uMSB();
     // initialize nodeinfo if necessary
     if (!m_nodeinfo)
@@ -239,7 +241,7 @@ public: // public methods
    */
   msb_t get_lMSB() {
     // if filter works
-    if (filter().is_ok())
+    if (filter().is_ok() && !is_transcendental())
       return filter().lMSB();
     // initialize nodeinfo if necessary
     if (!m_nodeinfo)
