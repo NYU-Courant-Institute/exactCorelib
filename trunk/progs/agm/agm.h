@@ -1,8 +1,10 @@
 #ifndef __AGM_H__
 #define __AGM_H__
 
-#include <CORE/CoreAux.h>
-#include <CORE/BigFloat.h>
+#define CORE_LEVEL 4
+
+#include <CORE/CORE.h>
+
 
 typedef CORE::BigFloat NT;
 typedef unsigned long ulong;
@@ -21,14 +23,14 @@ void agm_pi(NT& A, NT& T, int prec);
 ///
 inline NT pi(int prec) {
   NT A, T; agm_pi(A, T, prec + 6);
-  return A*A.div(T, prec + 5).makeExact();
+  return A*A.div(T, prec + 5);
 }
 
 /// compute \sqrt{\pi} to prec relative precision
 ///
 inline NT sqrtpi(int prec) {
   NT A, T; agm_pi(A, T, prec + 5);
-  return A.div(T.sqrt(prec + 5), prec + 4).makeExact();
+  return div(A, sqrt(T, prec + 5), prec + 4);
 }
 
 /// newton evaluation function pointer
@@ -75,33 +77,32 @@ inline NT prim_log(const NT& x, int prec) {
       break;
     }
   }
-  //std::cout << "x0=" << x0 << std::endl;
   NT m = newton(eval_T, x, x0, prec);
   return eval_U(pi(prec+8), m, prec+1);
 }
 
 // compute \tan(x/2)
 inline NT half_tan(const NT& x, int prec) {
-  return newton2(eval_A, x.div2(), x.div2(), prec, prim_log(NT(4.0), prec*2));
+  return newton2(eval_A, div2(x), div2(x), prec, prim_log(NT(4.0), prec*2));
 }
 
 /// compute \sin(x) using \sin(x) = 2*m/(1+m*m) where m = tan(x/2)
 inline NT prim_sin(const NT& x, int prec) {
   NT m = half_tan(x, prec+2);
-  return 2*m.div(1+m*m, prec+1).makeExact();
+  return 2*m.div(1+m*m, prec+1);
 }
 
 /// compute \cos(x) using \cos(x) = (1-m*m)/(1+m*m) = 2/(1+m*m) - 1
 ///  where m = tan(x/2)
 inline NT prim_cos(const NT& x, int prec) {
   NT m = half_tan(x, prec+3);
-  return NT(2.0).div(1+m*m, prec+1).makeExact() - NT(1.0);
+  return NT(2.0).div(1+m*m, prec+1) - NT(1.0);
 }
 
 /// compute \tan(x) using \tan(x) = 2*m/(1-m*m) where m = tan(x/2)
 inline NT prim_tan(const NT& x, int prec) {
   NT m = half_tan(x, prec+4);
-  return 2*m.div(1-m*m, prec+1).makeExact();
+  return 2*m.div(1-m*m, prec+1);
 }
 
 /// compute arctan(x)

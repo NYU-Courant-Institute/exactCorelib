@@ -1,6 +1,6 @@
 #include "agm.h"
 
-#include <CORE/Expr.h>
+#include <CORE/CORE.h>
 
 using namespace CORE;
 using namespace std;
