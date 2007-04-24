@@ -8,7 +8,7 @@
 	which was in turn derived from Fortune's implementation in C.
 
  Date: May 2000
- CORE Library, $Id: README,v 1.1 2006-03-07 04:54:37 exact Exp $
+ CORE Library, $Id: README,v 1.2 2007-04-24 16:45:52 exact Exp $
 =============================================================================
 SYNOPSIS:
 	Fortune's sweepline algorithm for Voronoi diagram of a 2-D point set.
@@ -16,7 +16,7 @@ SYNOPSIS:
 Files in this directory:
      README		--This file
      Makefile 		--To compile and test programs
-     main.ccp		--Compiles to executable program called "voronoi"
+     main.cpp		--Compiles to executable program called "voronoi"
      definitions.h 
      edgelist.ccp
      geometry.ccp
