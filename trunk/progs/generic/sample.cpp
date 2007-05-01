@@ -6,7 +6,7 @@
   BUGS: In Core2, this demo seems to have different behavior?  CHECK!
 
   CORE Library 
-  $Id: sample.cpp,v 1.4 2007-05-01 16:40:17 exact Exp $
+  $Id: sample.cpp,v 1.5 2007-05-01 16:46:49 exact Exp $
 ************************************************************/
  
 #ifndef CORE_LEVEL
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
   cout << "      sqrt(x): " << sqrt(x) << endl;
   cout << "==================================================" << endl;
 
-  cout << setprecision(6) ;
+  cout << setprecision(6) ;	// setprecision is a C++ function, std::setprecision()
   cout << "    y = \"1.44\". // string literal; defInputDigits = 20\n";
   cout << "    Set CORE Printout Digits to 6 " << endl;
   cout << "Printout of y: " << y << endl;
