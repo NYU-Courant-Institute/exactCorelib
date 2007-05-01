@@ -1,9 +1,12 @@
 /************************************************************
-  file: sample.cc
+  file: sample.ccp
   purpose:
 	a simple sample CORE program
+
+  BUGS: In Core2, this demo seems to have different behavior?  CHECK!
+
   CORE Library 
-  $Id: sample.cpp,v 1.3 2007-05-01 16:38:10 exact Exp $
+  $Id: sample.cpp,v 1.4 2007-05-01 16:40:17 exact Exp $
 ************************************************************/
  
 #ifndef CORE_LEVEL
