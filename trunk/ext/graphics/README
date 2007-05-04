@@ -13,7 +13,11 @@ Drawpoly Files:
 	to choose the platform option (cygwin,unix,etc) in the Makefile.
 	You may need to fix other options in this file.  
 	Then type "make".  This creates the executable for draw.curve.
+	(NOTE: the Makefile now just assume that the platform variable "pf"
+	is set to "cyg" for cygwin)
+
 	--To run the program for a simple example, type "make test".
+
 	--For more details on the input file format, see the source files 
 	(drawcurve.cpp).
 
