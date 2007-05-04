@@ -51,6 +51,7 @@ ext=.cpp
 # Runtime libraries
    ifeq ($(pf),cyg)
 	LIBS= -L\bin -lglut32 -LC:\WINNT\system32 -lopengl32 -lglu32
+	LIBS=-lm -lglut32 -lglu32 -lopengl32 
    else
 	LIBS = -L/usr/X11R6/lib -L/usr/unsupported/installers/chenli/lib \
 		-lglut -lGL -lGLU -lXmu -lXi -lXext -lX11 -lm -lsocket -lnsl
@@ -60,6 +61,7 @@ ext=.cpp
 	LIBS = -L/usr/X11R6/lib \
 		-L/usr/unsupported/installers/exact/glut-3.7/lib/glut \
 		-lglut -lGL -lGLU -lXmu -lXi -lXext -lX11 -lm -lsocket -lnsl
+	LIBS=-lglut -lGLU -lGL -lm -L/usr/X11R6/lib -lXi -lXmu
    endif
 
 

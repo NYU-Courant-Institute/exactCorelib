@@ -1,5 +1,5 @@
 /***********************************************************************
- * LAST UPDATE  $Id: drawCurve.cpp,v 1.2 2007-04-02 22:29:57 exact Exp $
+ * LAST UPDATE  $Id: drawCurve.cpp,v 1.3 2007-05-04 05:26:27 exact Exp $
  *
  * FILE NAME: drawcurve.cpp 
  * (adapted from drawpoly.cc)
@@ -52,6 +52,7 @@
  *      zooming, panning,
  *      axes display
  *      labels and point display
+ *      calls Core plot to redraw curve?
  *
  * HISTORY:
  *	Jan 28, 1999: original version by Chen Li, for
