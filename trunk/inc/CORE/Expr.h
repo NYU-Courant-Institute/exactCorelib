@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.34 2007-04-13 21:43:38 exact Exp $
+ * $Id: Expr.h,v 1.35 2007-05-16 10:16:36 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -94,9 +94,9 @@ public:
     (m_rep=new ConstQTRep(q, NODE_NT_RATIONAL));
   }
   ExprT(const KT& k) : m_rep(new ConstFTRep(k.get_f(), NODE_NT_DYADIC)) {}
-  ExprT(const char* s, int base = 10, prec_t prec = getDefaultInputDigits()) 
+  ExprT(const char* s, int base = 10, prec_t prec = digits2bits(getDefaultInputDigits())) 
   { construct_from_string(s, base, prec); }
-  ExprT(const std::string& s, int base = 10, prec_t prec =getDefaultInputDigits()) 
+  ExprT(const std::string& s, int base = 10, prec_t prec = digits2bits(getDefaultInputDigits())) 
   { construct_from_string(s.c_str(), base, prec); }
 public:
   ExprT(ExprRep* r) : m_rep(r) {}

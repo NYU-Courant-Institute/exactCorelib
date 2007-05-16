@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.15 2007-04-13 21:43:38 exact Exp $
+ * $Id: CoreDefs.h,v 1.16 2007-05-16 10:16:36 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
@@ -42,12 +42,6 @@ typedef long msb_t;
 #define LOG2_10 3.3219280948873626 /* upper approximation of log(10)/log(2) */
 #define LOG10_2 0.30102999566398120 /* upper approximation of log(2)/log(10) */
   
-inline unsigned long digits2bits(unsigned long digits)
-{ return (unsigned long)((digits)*LOG2_10); }
-
-inline unsigned long bits2digits(unsigned long bits)
-{ return (unsigned long)(bits*LOG10_2); }
-
 #define CORE_INFTY LONG_MAX
 #define CORE_posInfty LONG_MAX
 #define CORE_negInfty LONG_MIN
@@ -66,6 +60,12 @@ extern bool coretest_error;	   // error flag for unit test
 extern bool coretest_verbose;	   // verbose flag for unit test
 
 extern void core_error(std::string msg, std::string file, int lineno, bool err);
+
+inline unsigned long digits2bits(unsigned long digits)
+{ return std::min((unsigned long)((digits)*LOG2_10), (unsigned long)CORE_INFTY); }
+
+inline unsigned long bits2digits(unsigned long bits)
+{ return (unsigned long)(bits*LOG10_2); }
 
 /// This sets the global variable defRelPrec and defAbsPrec.
 //  PROBLEM IS this is "composite precision" which we don't really

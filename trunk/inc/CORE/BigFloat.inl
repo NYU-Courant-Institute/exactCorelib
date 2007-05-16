@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.19 2007-04-09 01:04:27 exact Exp $
+ * $Id: BigFloat.inl,v 1.20 2007-05-16 10:16:36 exact Exp $
  ***************************************************************************/
 
 /// \addtogroup BigFloatArithmeticOperators
@@ -524,6 +524,10 @@ inline BigFloat cbrt(const BigFloat& x, prec_t prec = getDefaultBFradicalPrec())
 /// k-th root
 inline BigFloat root(const BigFloat& x, unsigned long k, prec_t prec = getDefaultBFradicalPrec())
 { BigFloat r(0, prec); r.root(x, k); return r; }
+inline BigFloat div(const BigFloat& x, const BigFloat& y, prec_t prec = getDefaultBFradicalPrec())
+{ BigFloat r(0, prec); r.div(x, y); return r; }
+inline BigFloat div2(const BigFloat& x, prec_t prec = getDefaultBFradicalPrec())
+{ BigFloat r(0, prec); r.div2(x); return r; }
 
 /// minStar(m,n) returns the min-star of m and n
 inline long minStar(long m, long n) {

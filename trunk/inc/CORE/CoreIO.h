@@ -128,6 +128,10 @@ inline void setScientificFormat(std::ostream& os = std::cout)
 { set_scientific_output(os); }
 inline void setDefaultOutputDigits(long p, std::ostream& o = std::cout)
 { set_output_precision(p, o); }
+/// This is the simple interface for setting both the output precision
+/// and the precision for internal computation to the same precision in digits.
+inline void setDefaultDigits(long p, std::ostream& o = std::cout)
+{ setDefaultOutputDigits(p, o); setDefaultRelPrecision(digits2bits(p)); }
 inline long getDefaultOutputDigits()
 { return get_output_precision(); }
 #endif

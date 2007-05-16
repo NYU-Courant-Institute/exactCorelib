@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.27 2007-04-09 01:04:27 exact Exp $
+ * $Id: BigFloat.h,v 1.28 2007-05-16 10:16:36 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -1809,6 +1809,7 @@ public: // C++ operators
   //@}
 
 public:
+
   operator BigRat() const { return get_q(); }
 #ifndef CORE_DISABLE_OLDNAMES
   /// \name back-compatiable functions
