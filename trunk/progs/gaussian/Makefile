@@ -1,13 +1,13 @@
 # Makefile for gaussian
 #
-# Core Library, $Id: Makefile,v 1.3 2007-04-08 02:43:01 exact Exp $
+# Core Library, $Id: Makefile,v 1.4 2007-10-09 21:32:49 exact Exp $
 
 include ../Make.options
 
 #=================================================
 # Define target files (put all your files here)
 #=================================================
-TARGETS= gaussian_level3 gaussian_level1
+TARGETS= gaussian_level3 gaussian_level1 pivotgaussian_level3 pivotgaussian_level1
 
 MORETARGETS= gaussianX_level3 gaussianX_level1
 
@@ -19,6 +19,7 @@ test: $(TARGETS)
 	./gaussian_level1 inputs/MatHilbert6 3
 	./gaussian_level3 inputs/MatZero4 3
 	./gaussian_level1 inputs/MatZero4 3
+	./pivotgaussian_level3 inputs/pivot 3
 
 moretest: $(TARGETS) $(MORETARGETS)
 	./gaussian_level3 inputs/gregA 3

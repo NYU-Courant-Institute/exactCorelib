@@ -14,7 +14,7 @@
 	  to run the program.
 
    Since CORE Library Version 1.2
-   $Id: pivotgaussian.cpp,v 1.1 2007-10-09 21:28:11 exact Exp $
+   $Id: pivotgaussian.cpp,v 1.2 2007-10-09 21:32:50 exact Exp $
 ************************************** */
 
 #ifndef CORE_LEVEL
@@ -116,8 +116,6 @@ double Matrix::determinant() {
             exchangerows(A, i, j);
             break;
           }
-
-      std::cout << A;
 
       for (j = i + 1; j < n; j++)
          for (k = i + 1; k < n; k++) {
