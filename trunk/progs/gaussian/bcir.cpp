@@ -14,7 +14,7 @@
 	  to run the program.
 
    Since CORE Library Version 1.2
-   $Id: bcir.cpp,v 1.1 2007-10-11 02:54:26 exact Exp $
+   $Id: bcir.cpp,v 1.2 2007-10-11 12:58:43 exact Exp $
 ************************************** */
 
 #ifndef CORE_LEVEL
@@ -182,39 +182,36 @@ double fac(int n) {
 //recursive 'solve' function
 //the result of each call is placed in
 //vector pointed to by 'd'.
-//tau, p, A, inv_L, and  inv_U  need to be globally accessible.
+// c, tau, p, A, inv_L, and  inv_U  need to be globally accessible.
 // n is the dimension.
 // 
-void solve(vector& d, vector& f, int n, int j) {
-  double **z,**u,**v; 
-  *z = new double[n]
-  *u = new double[n]
-  *v = new double[n]
+void solve(Vector& d, Vector& f, int n, int j) {
+  Vector z(n),u(n),v(n);
   int new_precision = ceil(c+tau*2^(j-p))
     if j==0 then { 
-      //set prec = newp  
 
+      //set prec = new_precision  
       //z=(L^-1)*b
-      v_product(z,inv_L,b);
+      z.product(inv_L,b);
       //d=(u^-1)*z
-      v_product(d,inv_U,z);
+      d.product(inv_U,z);
 
       return;
 
     } else {
 
-      solve(z,f,j-1);
+      solve(z,f,n,j-1);
 
-      //set prec = newp
+      //set prec = new_precision
       //u=Az-b;
-      v_product(u,A,z);
-      v_difference(u,u,b);
+      u.product(A,z);
+      u.difference(u,b);
 
-      solve(v,u,j-1);
+      solve(v,u,n,j-1);
 
-      //set prec = newp
+      //set prec = new_precision
       //d=z-v;
-      v_difference(d,z,v);
+      d.difference(z,v);
 
       return;
     }
