@@ -14,7 +14,7 @@
 	  to run the program.
 
    Since CORE Library Version 1.2
-   $Id: bcir.cpp,v 1.2 2007-10-11 12:58:43 exact Exp $
+   $Id: bcir.cpp,v 1.3 2007-10-11 16:49:36 exact Exp $
 ************************************** */
 
 #ifndef CORE_LEVEL
@@ -217,30 +217,52 @@ void solve(Vector& d, Vector& f, int n, int j) {
     }
 }
 
+int tau;
+int p;
+int c;
+Matrix m; // for A
+Vector v; // for b;
+Matrix inv_L;
+Matrix inv_U;
+
 int main( int argc, char *argv[] ) {
-  int i, imax;
+  int i, epsilon; //this epsilon is -log2 of the orig. epsilon from the paper.
   double e = 0;
   defRelPrec = 100;
   int defPrtDgt = 40;
-  
-  if (argc != 3) {
-    std::cerr << "Usage: Gaussian <input_file> <num_of_execution>" << std::endl;
+  double B = 128.0;   
+
+  if (argc != 4) {
+    std::cerr << "Usage: bcir <matrix_input_file> <vector_inout_file> <epsilon>" << std::endl;
     exit(1);
   }
   
+  //load matrix 'm'
   double *A;
   int n = readMatrix(argv[1], &A);
-
   Matrix m(n, A);
-  imax = atoi(argv[2]);
-  for (i=0; i<imax; i++) {	
-    e = m.determinant();
-#if (CORE_LEVEL==3)
-    e.approx( defRelPrec, defAbsPrec ); /* to force the evaluation,
-		in order to get meaningful performance comparision */
-#endif
-  }
 
-  std::cout << "Determinant = " << std::setprecision(defPrtDgt) << e << std::endl << std::endl;
-  return 0;
+  //load vector 'b' here
+
+  epsilon = atoi(argv[3]);
+  tau = 2 + epsilon;
+  c = ceil(log2(B))+5;
+  P = max (0,floor(log2(min(tau/c,n/))));
+
+  //set prec t0 ceil(c+tau^(-p))
+
+  //factor A and derive inv_ L and inv_U
+
+  solve(x,b,p);
+
+  //  for (i=0; i<imax; i++) {	
+  //  e = m.determinant();
+  //#if (CORE_LEVEL==3)
+  //  e.approx( defRelPrec, defAbsPrec ); /* to force the evaluation,
+  //		in order to get meaningful performance comparision */
+  //#endif
+  //}
+
+  //std::cout << "Determinant = " << std::setprecision(defPrtDgt) << e << std::endl << std::endl;
+  //return 0;
 }
