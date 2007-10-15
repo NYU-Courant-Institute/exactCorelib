@@ -1,20 +1,20 @@
 /******************************************************************
- * Core Library Version 1.7, August 2004
+ * Core Library Version 2.0, October 2007
  * Copyright (c) 1995-2002 Exact Computation Project
  * 
- * File: LinearAlgebra.h
+ * File: LinearAlgebraT.h
  * Synopsis:
- *      Linear Algebra Extension of Core Library introducing
+ *      Templated Linear Algebra Extension of Core Library introducing
  *              class Vector
  *              class Matrix
  *
  * Written by
- *       Shubin Zhao (shubinz@cs.nyu.edu) (2001)
+ *       Jihun Yu (jihun@cs.nyu.edu) (2007)
  *
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *
- * $Id: linearAlgebraT.h,v 1.1 2007-10-15 17:28:27 exact Exp $
+ * $Id: linearAlgebraT.h,v 1.2 2007-10-15 20:05:16 exact Exp $
  *****************************************************************/
 
 #ifndef CORE_LINEAR_ALGEBRAT_H
