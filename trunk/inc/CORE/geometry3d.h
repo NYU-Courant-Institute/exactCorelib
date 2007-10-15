@@ -10,7 +10,7 @@
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *
- * $Id: geometry3d.h,v 1.1 2006-04-03 18:55:31 exact Exp $
+ * $Id: geometry3d.h,v 1.2 2007-10-15 17:29:00 exact Exp $
  *****************************************************************/
 
 #ifndef CORE_GEOMETRY3D_H
@@ -21,6 +21,7 @@
 #endif
 
 #include <CORE/linearAlgebra.h>
+#include <CORE/linearAlgebraT.h>
 
 class Point3d;
 class Line3d;
