@@ -1,6 +1,6 @@
 # Makefile for gaussian
 #
-# Core Library, $Id: Makefile,v 1.4 2007-10-09 21:32:49 exact Exp $
+# Core Library, $Id: Makefile,v 1.5 2007-10-15 17:33:08 exact Exp $
 
 include ../Make.options
 
@@ -32,10 +32,10 @@ simpletest: $(TARGETS)
 	./gaussian_level1 inputs/MatHilbert6 1
 
 %_level1: %_level1.o 
-	${CXX} $(LDFLAGS) $? $(CORE_LIB) -o $@
+	${CXX} $(LDFLAGS) $? $(CORE_LIB) $(COREX_LIB_LEVEL1) -o $@
 
 %_level3: %_level3.o
-	${CXX} $(LDFLAGS) $? $(CORE_LIB) -o $@
+	${CXX} $(LDFLAGS) $? $(CORE_LIB) $(COREX_LIB_LEVEL3) -o $@
 
 #=================================================
 # Rules for CORE_LEVEL 1 and CORE_LEVEL 3
