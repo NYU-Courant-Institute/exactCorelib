@@ -15,7 +15,7 @@
 	 
 
    Since CORE Library Version 1.2
-   $Id: bcir.cpp,v 1.1 2007-10-18 16:04:45 exact Exp $
+   $Id: bcir.cpp,v 1.2 2007-10-18 16:19:43 exact Exp $
 ************************************** */
 
 #ifndef CORE_LEVEL
@@ -242,6 +242,11 @@ int main( int argc, char *argv[] ) {
   // output vector x
   std::cout << " solution: x = " << std::setprecision(defPrtDgt) <<  x << std::endl << std::endl;
   
+  std::cout << std::endl << "Verifying solution ..." << std::endl << std::endl;
+  std::cout << "      is A*x = " << std::setprecision(defPrtDgt) <<  A*x << std::endl << std::endl;
+  std::cout << " eqalal to b = " << std::setprecision(defPrtDgt) << Tb << std::endl << std::endl;
+  
+
   return 0;
 
 }
