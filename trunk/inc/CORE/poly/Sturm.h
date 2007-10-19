@@ -51,7 +51,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Sturm.h,v $
- * $Revision: 1.13 $ $Date: 2007-04-09 01:04:27 $
+ * $Revision: 1.14 $ $Date: 2007-10-19 15:56:32 $
  ***************************************************************************/
 
 
@@ -392,13 +392,13 @@ public:
       }
     } else { // n > 1
       BigFloat mid;
-      mid.div2(x+y); // So mid is exact.
+      mid = div2(x+y); // So mid is exact.
       if (sign(evalExactSign(seq[0],mid)) != 0)  { // usual case: mid is non-root
       	isolateRoots(x, mid, v);
       	isolateRoots(mid, y, v); 
       } else { // special case: mid is a root
 	BigFloat tmpEps;
-        tmpEps.div2(sepBound(seq[0]));  // this is exact!
+        tmpEps = div2(sepBound(seq[0]));  // this is exact!
 	if(mid-tmpEps > x )//Since otherwise there are no roots in (x,mid)
 	  isolateRoots(x, (mid-tmpEps), v);
 	v.push_back(std::make_pair(mid, mid));
@@ -816,7 +816,7 @@ public:
     BigFloat x = core_abs(z);
     if (x==1)   {// special case, using (3)
             temp *= m*m*(m+1);
-            temp.div_2exp(temp, 2);
+            temp.div_2exp(2);
 	    return (temp < 0.02);
     }
 
@@ -918,7 +918,7 @@ public:
     BigFloat yap = yapsBound(seq[0]);
 
     BigFloat old_width = J.second - J.first;
-    x.div2(J.second + J.first);
+    x = div2(J.second + J.first);
 
     // initial estimate for the evaluation of filter to floating point precision
     extLong fuMSB=54, ffuMSB=54;
@@ -984,7 +984,7 @@ public:
 	// 
 	// x = (J.second + J.first).div2();
 	if (J.first > x || J.second < x)
-	  x.div2(J.second + J.first);
+	  x = div2(J.second + J.first);
 
 	old_width = width; // update width
 
@@ -993,7 +993,7 @@ public:
 		   //
       } else {// Either NEWTON_DIV_BY_ZERO=true
 	      // Or width has not decreased sufficiently
-	x.div2(J.second + J.first);//Reset x to midpoint since it was the
+	x = div2(J.second + J.first);//Reset x to midpoint since it was the
 	                                //value from a failed Newton step
 	xSign = sign(evalExactSign(seq[0], x));
 	if (xSign == rightSign) {
@@ -1003,9 +1003,9 @@ public:
 	} else { // xSign must be 0
 	  J.first = J.second = x; return J;
 	}
-	x.div2(J.second + J.first);
+	x = div2(J.second + J.first);
 
-	old_width.div2(old_width); // update width
+	old_width.div2(); // update width
 	
 	// reduce value of N:
 	N = std::max(N-1, NO_STEPS);   // N must be at least NO_STEPS
