@@ -22,7 +22,7 @@ Purpose: To compute Pi using several algorithms:
 
    Author: Zilin (Oct 2004)
    Since Core Library Version 1.7
-   	$Id: newPi.cpp,v 1.5 2007-04-08 02:57:16 exact Exp $
+   	$Id: newPi.cpp,v 1.6 2007-10-19 15:47:21 exact Exp $
  *************************************************************** */
 
 // This program MUST be run at CORE_LEVEL 4 :
@@ -107,7 +107,7 @@ BigFloat brent(int prec) {
   int count = 0;
 
   while (A - B > eps) {
-	Y = A; A.div2(A+B); B = sqrt(B*Y);  // should use div2()
+	Y = A; A = div2(A+B); B = sqrt(B*Y);  // should use div2()
 	sq = (A-Y)*(A-Y);
 	T -= X * sq;
 	X <<= 1;
@@ -141,7 +141,7 @@ BigFloat brent2(int prec) {
 
   for (int p = -1; p < prec*2+10; p = p*2+10) {
         Y = A*B; 
-        A.div2(A+B); 
+        A = div2(A+B); 
         B = sqrt(Y);
         AA = A*A;
         sq = AA - Y;
@@ -173,7 +173,7 @@ BigFloat brent3(int prec) {
 
   for (int p = -1; p < prec*2+10; p = p*2+10) {
         Y = A*B;
-        A.div2(A+B);
+        A = div2(A+B);
         B = Y.sqrt(p+10);
         AA = A*A;
         sq = AA - Y;
