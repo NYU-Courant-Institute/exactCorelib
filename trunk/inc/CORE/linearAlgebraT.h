@@ -14,7 +14,7 @@
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *
- * $Id: linearAlgebraT.h,v 1.2 2007-10-15 20:05:16 exact Exp $
+ * $Id: linearAlgebraT.h,v 1.3 2007-10-19 15:57:16 exact Exp $
  *****************************************************************/
 
 #ifndef CORE_LINEAR_ALGEBRAT_H
@@ -66,7 +66,7 @@ public:
    T norm() const;
    T maxnorm() const;
    T infnorm() const;
-   T dimension() const {return dim;}
+   int dimension() const {return dim;}
    bool isZero() const;
    VectorT<T> cross(const VectorT<T> &v) const; 
    static VectorT<T> crossProduct(int, ...);

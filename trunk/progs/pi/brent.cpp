@@ -24,7 +24,7 @@
 
    Author: Chee Yap and Chen Li (June 2000)
    Since CORE Library Version 1.2
-   	$Id: brent.cpp,v 1.2 2007-04-02 21:52:21 exact Exp $
+   	$Id: brent.cpp,v 1.3 2007-10-19 16:00:58 exact Exp $
  *************************************************************** */
 
 // This program MUST be run at CORE_LEVEL 3:
@@ -74,7 +74,7 @@ Expr brent(int prec) {
   BigFloat sq;
 
   while (A - B > eps) {
-	Y = A; A.div2(A+B); B = sqrt(B*Y);
+	Y = A; A = div2(A+B); B = sqrt(B*Y);
 	sq = (A-Y)*(A-Y);
 	T -= X * sq;
 	X <<= 1;

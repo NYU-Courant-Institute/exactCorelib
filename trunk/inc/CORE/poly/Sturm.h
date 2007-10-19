@@ -51,7 +51,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Sturm.h,v $
- * $Revision: 1.14 $ $Date: 2007-10-19 15:56:32 $
+ * $Revision: 1.15 $ $Date: 2007-10-19 16:02:32 $
  ***************************************************************************/
 
 
@@ -456,7 +456,7 @@ public:
       return BFInterval(0,y);
     }
     BigFloat m;
-    m.div2(x+y);
+    m = div2(x+y);
     n = numberOfRoots(x, m);
     if (n >= i) {
 	    return isolateRoot(i, x, m);
