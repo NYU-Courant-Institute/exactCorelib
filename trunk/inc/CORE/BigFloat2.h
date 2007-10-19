@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.29 2007-04-13 21:43:38 exact Exp $
+ * $Id: BigFloat2.h,v 1.30 2007-10-19 01:21:33 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -697,14 +697,13 @@ public:
   }
   BigFloat getCenter() const {
     if (is_exact()) return m_l;
-    BigFloat ret;
-    ret.div2(m_l + m_r);
+    BigFloat ret = div2(m_l + m_r);
     return ret;
   }
   BigFloat centerize() {
     if (is_exact()) return m_l;  
     m_l.add(m_l, m_r);
-    m_l.div_2exp(m_l, 1);
+    m_l.div_2exp(1);
     m_r = 0; m_exact = true;
     return m_l;
   }

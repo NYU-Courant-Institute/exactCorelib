@@ -137,7 +137,7 @@ inline void isolateRoots_unit(Polynomial<T>& P, const BFInterval I, int deg,
     else
       v.push_back(I);
   else{
-    BigFloat m; m.div2(I.second + I.first);
+    BigFloat m = div2(I.second + I.first);
     T* temp1 = new T[deg +1];
     T* temp2 = new T[deg +1];
 
