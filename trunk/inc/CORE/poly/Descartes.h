@@ -460,7 +460,7 @@ public:
     sign_t x_sign = sign(evalExactSign(_poly, retI.first));
 
     while (retI.second - retI.first > eps) {
-      mid.div2(retI.second + retI.first);
+      mid = div2(retI.second + retI.first);
       sign_t mid_sign = sign(evalExactSign(_poly,mid));
       if (mid_sign == 0) {
         retI.first = retI.second = mid;
@@ -709,7 +709,7 @@ public:
     BigFloat yap = yapsBound(_poly);
 
     BigFloat old_width = J.second - J.first;
-    x.div2(J.second + J.first);
+    x = div2(J.second + J.first);
 
     // initial estimate for the evaluation of filter to floating point precision
     extLong fuMSB=54, ffuMSB=54;
@@ -775,7 +775,7 @@ public:
 	// 
 	// x = (J.second + J.first).div2();
 	if (J.first > x || J.second < x)
-	  x.div2(J.second + J.first);
+	  x = div2(J.second + J.first);
 
 	old_width = width; // update width
 
@@ -784,7 +784,7 @@ public:
 		   //
       } else {// Either NEWTON_DIV_BY_ZERO=true
 	      // Or width has not decreased sufficiently
-	x.div2(J.second + J.first);//Reset x to midpoint since it was the
+	x = div2(J.second + J.first);//Reset x to midpoint since it was the
 	                                //value from a failed Newton step
 	xSign = sign(evalExactSign(_poly, x));
 	if (xSign == rightSign) {
@@ -794,9 +794,9 @@ public:
 	} else { // xSign must be 0
 	  J.first = J.second = x; return J;
 	}
-	x.div2(J.second + J.first);
+	x = div2(J.second + J.first);
 
-	old_width.div2(old_width); // update width
+	old_width.div2(); // update width
 	
 	// reduce value of N:
 	N = std::max(N-1, NO_STEPS);   // N must be at least NO_STEPS

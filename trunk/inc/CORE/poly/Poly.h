@@ -1562,7 +1562,7 @@ BigFloat sepBound(Polynomial<NT> &p) {
     BigFloat x = core_abs(z);
     if (x==1)   {// special case, using (3)
             temp *= m*m*(m+1);
-            temp.div_2exp(temp, 2);
+            temp.div_2exp(2);
 	    return (temp < 0.02);
     }
 
