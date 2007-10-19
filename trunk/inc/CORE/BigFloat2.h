@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.30 2007-10-19 01:21:33 exact Exp $
+ * $Id: BigFloat2.h,v 1.31 2007-10-19 15:39:02 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -633,6 +633,7 @@ public:
 	core_error("This BigFloat2 has no implicit error representation",
 			__FILE__, __LINE__, false); // this is a warning, not necessarily an error!
       }
+
         // COMMENT: A BigFloat say 0.1234 has an implicit error of 0.0001.
 	//          So we say 0.1234 is an "implicit error representation"
 	//          of the BigFloat2 [0.1233,0.1235].

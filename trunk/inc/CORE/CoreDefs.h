@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.16 2007-05-16 10:16:36 exact Exp $
+ * $Id: CoreDefs.h,v 1.17 2007-10-19 15:39:02 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
@@ -53,11 +53,21 @@ extern long defOutputDigits;
 extern long defBFdivRelPrec;
 extern long defBFradicalRelPrec;   // this replaces defBFsqrtAbsPrec in Core1
                                    // Should also be used for any rootOf()
+extern long defWBFPrec;		   // weak bigfloat precision
+extern bool WBFenabled;
 extern unsigned long cutOffBound;  // arbitary cutoff for ABSOLUTE precision
 extern unsigned long escapeBound;  // this is to "escape" in transcendental
                                    //  evaluation when we have no root bounds
 extern bool coretest_error;	   // error flag for unit test
 extern bool coretest_verbose;	   // verbose flag for unit test
+
+
+inline unsigned long digits2bits(unsigned long digits)
+{ return std::min((unsigned long)((digits)*LOG2_10), (unsigned long)CORE_INFTY); }
+
+inline unsigned long bits2digits(unsigned long bits)
+{ return (unsigned long)(bits*LOG10_2); }
+
 
 extern void core_error(std::string msg, std::string file, int lineno, bool err);
 
@@ -131,6 +141,24 @@ inline unsigned long set_escape_bound(unsigned long p) {
   unsigned long ret = escapeBound;
   escapeBound = p; 
   return ret;
+}
+
+inline void setWBFmode(bool bEnable) {
+  WBFenabled = bEnable;
+}
+
+inline bool getWBFmode() {
+  return WBFenabled;
+}
+
+// Temporary test. Weak BigFloat precision control functions.
+inline void set_bf_prec(unsigned long p) {
+  setDefaultBFdivPrec(p);
+  defWBFPrec = p;
+}
+
+inline unsigned long get_bf_prec() {
+  return defWBFPrec;
 }
 
 CORE_END_NAMESPACE

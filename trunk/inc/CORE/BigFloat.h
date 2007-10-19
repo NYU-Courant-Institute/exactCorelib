@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.29 2007-10-19 01:20:43 exact Exp $
+ * $Id: BigFloat.h,v 1.30 2007-10-19 15:39:01 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -38,7 +38,6 @@
   1. mpfr_set_str() returns 0 if the string is a valid number, otherwise 
      returns -1. So you cannot get the exactness of the results.
  */
-
 
 // Invert a round mode
 #define INVERT_RND(rnd) \
@@ -1603,6 +1602,9 @@ public:
   // count how many precision needed for exact addition/subtraction
   // between one bigfloat and one integer
   static prec_t add_prec(const BigFloat& x, prec_t prec) {
+    if (getWBFmode() == true)
+      return get_bf_prec();
+
     exp_t diff = x.get_exp() - x.get_prec();
     if (diff >= 0)
       return std::max(2UL, 1+std::max(x.get_prec() + diff, prec));
@@ -1612,6 +1614,9 @@ public:
   // count how many precision needed for exact addition/subtraction
   // of two bigfloats, see lemma in Zilin's thesis
   static prec_t add_prec(const BigFloat& x, const BigFloat& y) {
+    if (getWBFmode() == true)
+      return get_bf_prec();
+
     exp_t diff = x.get_exp() - x.get_prec() - y.get_exp() + y.get_prec();
     if (diff >= 0)
       return std::max(2UL, 1+std::max(x.get_prec() + diff, y.get_prec()));
@@ -1620,12 +1625,18 @@ public:
   }
   // count how many precision needed for exact multiplication
   // between one bigfloat and one integer
-  static prec_t mul_prec(const BigFloat& x, prec_t prec) 
-  { return x.get_prec() + prec; }
+  static prec_t mul_prec(const BigFloat& x, prec_t prec) { 
+    if (getWBFmode() == true)
+      return get_bf_prec();
+    return x.get_prec() + prec;
+  }
   // count how many precision needed for exact multiplication of two bigfloats
   // see lemma in Zilin's thesis
-  static prec_t mul_prec(const BigFloat& x, const BigFloat& y) 
-  { return x.get_prec() + y.get_prec(); }
+  static prec_t mul_prec(const BigFloat& x, const BigFloat& y) {
+    if (getWBFmode() == true)
+      return get_bf_prec();
+    return x.get_prec() + y.get_prec();
+  }
 
 public: // C++ operators
   /// \name unary, increment, decrement operators
