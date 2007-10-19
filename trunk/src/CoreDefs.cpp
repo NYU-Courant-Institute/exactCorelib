@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.cpp,v 1.10 2007-04-02 22:27:07 exact Exp $
+ * $Id: CoreDefs.cpp,v 1.11 2007-10-19 15:40:02 exact Exp $
  ***************************************************************************/
 #include <CORE/Config.h>
 #include <CORE/CoreDefs.h>
@@ -41,6 +41,9 @@ long defInputDigits = CORE_INFTY;
 
 long defBFdivRelPrec = 54;
 long defBFradicalRelPrec = 54;
+
+long defWBFPrec = 54;
+bool WBFenabled = false;
 
 unsigned long cutOffBound = CORE_INFTY;
 // used as transcendental number root bound

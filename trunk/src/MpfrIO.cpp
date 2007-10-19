@@ -19,10 +19,11 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: MpfrIO.cpp,v 1.10 2007-04-08 21:47:00 exact Exp $
+ * $Id: MpfrIO.cpp,v 1.11 2007-10-19 15:40:02 exact Exp $
  ***************************************************************************/
 #include <mpfr.h>
 #include <string>
+#include <iostream>
 /* Define BITS_PER_MP_LIMB
    Can't use sizeof(mp_limb_t) since it should be a preprocessor constant */
 #if defined(GMP_NUMB_BITS) /* GMP 4.1.2 or above */
@@ -95,6 +96,7 @@ std::string mpfr2str(
   bool showpos,     // show '+' sign
   bool uppercase    // show in uppercase
 ) {
+using namespace std;
   // check zero
   bool is_zero = mpfr_zero_p(mp) != 0;
   // if zero and fmt = 0
