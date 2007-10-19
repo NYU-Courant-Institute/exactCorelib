@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.28 2007-05-16 10:16:36 exact Exp $
+ * $Id: BigFloat.h,v 1.29 2007-10-19 01:20:43 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -1330,34 +1330,35 @@ public:
   //@}
 
   /// \name shift functions
-  //@{
+  /// self modifying versions are implemented as member functions
+  /// non-self modifying versions are implemented as friend functions in BigFloat.inl
   /// left shift for <tt>int</tt>
-  int mul_2exp(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
-  { return mul_2exp(x, static_cast<long>(y), rnd); }
+  BigFloat& mul_2exp(int y)
+  { return mul_2exp(static_cast<long>(y)); }
   /// left shift for <tt>unsigned int</tt>
-  int mul_2exp(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
-  { return mul_2exp(x, static_cast<unsigned long>(y), rnd); }
+  BigFloat& mul_2exp(unsigned int y)
+  { return mul_2exp(static_cast<unsigned long>(y)); }
   /// left shift for <tt>long</tt>
-  int mul_2exp(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
-  { return mpfr_mul_2si(mp(), x.mp(), y, rnd); }
+  BigFloat& mul_2exp(long y)
+  { mpfr_mul_2si(mp(), mp(), y, MPFR_RND); return (*this); }
   /// left shift for <tt>unsigned long</tt>
-  int mul_2exp(const BigFloat& x, unsigned long y, rnd_t rnd = MPFR_RND)
-  { return mpfr_mul_2ui(mp(), x.mp(), y, rnd); }
+  BigFloat& mul_2exp(unsigned long y)
+  { mpfr_mul_2ui(mp(), mp(), y, MPFR_RND); return(*this); }
   /// right shift for <tt>int</tt>
-  int div_2exp(const BigFloat& x, int y, rnd_t rnd = MPFR_RND)
-  { return div_2exp(x, static_cast<long>(y), rnd); }
+  BigFloat& div_2exp(int y)
+  { return div_2exp(static_cast<long>(y)); }
   /// right shift for <tt>unsigned int</tt>
-  int div_2exp(const BigFloat& x, unsigned int y, rnd_t rnd = MPFR_RND)
-  { return div_2exp(x, static_cast<unsigned long>(y), rnd); }
+  BigFloat& div_2exp(unsigned int y)
+  { return div_2exp(static_cast<unsigned long>(y)); }
   /// right shift for <tt>long</tt>
-  int div_2exp(const BigFloat& x, long y, rnd_t rnd = MPFR_RND)
-  { return mpfr_div_2si(mp(), x.mp(), y, rnd); }
+  BigFloat& div_2exp(long y)
+  { mpfr_div_2si(mp(), mp(), y, MPFR_RND); return (*this); }
   /// right shift for <tt>unsigned long</tt>
-  int div_2exp(const BigFloat& x, unsigned long y, rnd_t rnd = MPFR_RND)
-  { return mpfr_div_2ui(mp(), x.mp(), y, rnd); }
+  BigFloat& div_2exp(unsigned long y)
+  { mpfr_div_2ui(mp(), mp(), y, MPFR_RND); return (*this); }
   /// divide by 2
-  int div2(const BigFloat& x, rnd_t rnd = MPFR_RND)
-  { set_prec(x.get_prec()+1); return div_2exp(x,1,rnd); }
+  BigFloat& div2()
+  { return div_2exp(1); }
   //@}
 
   /// \name comparison functions
@@ -1784,28 +1785,28 @@ public: // C++ operators
 
   /// compound assignment operator <tt><<=</tt>
   BigFloat& operator<<=(int i)
-  { mul_2exp(*this, i); return *this; }
+  { return mul_2exp(i); }
   /// compound assignment operator <tt><<=</tt>
   BigFloat& operator<<=(unsigned int ui)
-  { mul_2exp(*this, ui); return *this; }
+  { return mul_2exp(ui); }
   /// compound assignment operator <tt><<=</tt>
   BigFloat& operator<<=(long l)
-  { mul_2exp(*this, l); return *this; }
+  { return mul_2exp(l); }
   /// compound assignment operator <tt><<=</tt>
   BigFloat& operator<<=(unsigned long ul)
-  { mul_2exp(*this, ul); return *this; }
+  { return mul_2exp(ul); }
   /// compound assignment operator <tt>>>=</tt>
   BigFloat& operator>>=(int i)
-  { div_2exp(*this, i); return *this; }
+  { return div_2exp(i); }
   /// compound assignment operator <tt>>>=</tt>
   BigFloat& operator>>=(unsigned int ui)
-  { div_2exp(*this, ui); return *this; }
+  { return div_2exp(ui); }
   /// compound assignment operator <tt>>>=</tt>
   BigFloat& operator>>=(long l)
-  { div_2exp(*this, l); return *this; }
+  { return div_2exp(l); }
   /// compound assignment operator <tt>>>=</tt>
   BigFloat& operator>>=(unsigned long ul)
-  { div_2exp(*this, ul); return *this; }
+  { return div_2exp(ul); }
   //@}
 
 public:

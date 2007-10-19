@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.20 2007-05-16 10:16:36 exact Exp $
+ * $Id: BigFloat.inl,v 1.21 2007-10-19 01:20:44 exact Exp $
  ***************************************************************************/
 
 /// \addtogroup BigFloatArithmeticOperators
@@ -189,29 +189,29 @@ inline BigFloat operator/(const BigFloat& x, const BigRat& y)
 //@}
 
 /// BigFloat  << int
-inline BigFloat  operator<<(const BigFloat & x, int y)
-{ BigFloat  r; r.mul_2exp(x, y); return r; }
+inline BigFloat operator<<(const BigFloat & x, int y)
+{ BigFloat r(x); r.mul_2exp(y); return r; }
 /// BigFloat  << unsigned int
-inline BigFloat  operator<<(const BigFloat & x, unsigned int y)
-{ BigFloat  r; r.mul_2exp(x, y); return r; }
+inline BigFloat operator<<(const BigFloat & x, unsigned int y)
+{ BigFloat r(x); r.mul_2exp(y); return r; }
 /// BigFloat  << long
-inline BigFloat  operator<<(const BigFloat & x, long y)
-{ BigFloat  r; r.mul_2exp(x, y); return r; }
+inline BigFloat operator<<(const BigFloat & x, long y)
+{ BigFloat r(x); r.mul_2exp(y); return r; }
 /// BigFloat  << unsigned long
-inline BigFloat  operator<<(const BigFloat & x, unsigned long y)
-{ BigFloat  r; r.mul_2exp(x, y); return r; }
+inline BigFloat operator<<(const BigFloat & x, unsigned long y)
+{ BigFloat r(x); r.mul_2exp(y); return r; }
 /// BigFloat  >> int
-inline BigFloat  operator>>(const BigFloat & x, int y)
-{ BigFloat  r; r.div_2exp(x, y); return r; }
+inline BigFloat operator>>(const BigFloat & x, int y)
+{ BigFloat r(x); r.div_2exp(y); return r; }
 /// BigFloat  >> unsigned int
-inline BigFloat  operator>>(const BigFloat & x, unsigned int y)
-{ BigFloat  r; r.div_2exp(x, y); return r; }
+inline BigFloat operator>>(const BigFloat & x, unsigned int y)
+{ BigFloat r(x); r.div_2exp(y); return r; }
 /// BigFloat  >> long
-inline BigFloat  operator>>(const BigFloat & x, long y)
-{ BigFloat  r; r.div_2exp(x, y); return r; }
+inline BigFloat operator>>(const BigFloat & x, long y)
+{ BigFloat r(x); r.div_2exp(y); return r; }
 /// BigFloat  >> unsigned long
-inline BigFloat  operator>>(const BigFloat & x, unsigned long y)
-{ BigFloat  r; r.div_2exp(x, y); return r; }
+inline BigFloat operator>>(const BigFloat & x, unsigned long y)
+{ BigFloat r(x); r.div_2exp(y); return r; }
 //@}
 
 /// \addtogroup BigFloatComparisonOperators
@@ -526,8 +526,33 @@ inline BigFloat root(const BigFloat& x, unsigned long k, prec_t prec = getDefaul
 { BigFloat r(0, prec); r.root(x, k); return r; }
 inline BigFloat div(const BigFloat& x, const BigFloat& y, prec_t prec = getDefaultBFradicalPrec())
 { BigFloat r(0, prec); r.div(x, y); return r; }
-inline BigFloat div2(const BigFloat& x, prec_t prec = getDefaultBFradicalPrec())
-{ BigFloat r(0, prec); r.div2(x); return r; }
+/// left shift for <tt>unsigned int</tt>
+inline BigFloat mul_2exp(const BigFloat& x, int y)
+{ BigFloat r(x); return r.mul_2exp(y); }
+/// left shift for <tt>unsigned int</tt>
+inline BigFloat mul_2exp(const BigFloat& x, unsigned int y)
+{ BigFloat r(x); return r.mul_2exp(y); }
+/// left shift for <tt>long</tt>
+inline BigFloat mul_2exp(const BigFloat& x, long y)
+{ BigFloat r(x); return r.mul_2exp(y); }
+/// left shift for <tt>unsigned long</tt>
+inline BigFloat mul_2exp(const BigFloat& x, unsigned long y)
+{ BigFloat r(x); return r.mul_2exp(y); }
+/// right shift for <tt>int</tt>
+inline BigFloat div_2exp(const BigFloat& x, int y)
+{ BigFloat r(x); return r.div_2exp(y); }
+/// right shift for <tt>unsigned int</tt>
+inline BigFloat div_2exp(const BigFloat& x, unsigned int y)
+{ BigFloat r(x); return r.div_2exp(y); }
+/// right shift for <tt>long</tt>
+inline BigFloat div_2exp(const BigFloat& x, long y)
+{ BigFloat r(x); return r.div_2exp(y); }
+/// right shift for <tt>unsigned long</tt>
+inline BigFloat div_2exp(const BigFloat& x, unsigned long y)
+{ BigFloat r(x); return r.div_2exp(y); }
+/// divide by 2
+inline BigFloat div2(const BigFloat& x)
+{ BigFloat r(x); return r.div2(); }
 
 /// minStar(m,n) returns the min-star of m and n
 inline long minStar(long m, long n) {
@@ -649,7 +674,7 @@ inline BigFloat gcd(const BigFloat& a, const BigFloat& b) {
 
   // return x*2^{dx}
   BigFloat x(r);
-  x.mul_2exp(x, dx);
+  x.mul_2exp(dx);
   return x;
 }
 
