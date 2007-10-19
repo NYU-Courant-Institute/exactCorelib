@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.17 2007-10-19 15:39:02 exact Exp $
+ * $Id: CoreDefs.h,v 1.18 2007-10-19 15:45:15 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
@@ -70,12 +70,6 @@ inline unsigned long bits2digits(unsigned long bits)
 
 
 extern void core_error(std::string msg, std::string file, int lineno, bool err);
-
-inline unsigned long digits2bits(unsigned long digits)
-{ return std::min((unsigned long)((digits)*LOG2_10), (unsigned long)CORE_INFTY); }
-
-inline unsigned long bits2digits(unsigned long bits)
-{ return (unsigned long)(bits*LOG10_2); }
 
 /// This sets the global variable defRelPrec and defAbsPrec.
 //  PROBLEM IS this is "composite precision" which we don't really
