@@ -15,33 +15,36 @@
 	 
 
    Since CORE Library Version 1.2
-   $Id: bcir.cpp,v 1.2 2007-10-18 16:19:43 exact Exp $
+   $Id: bcir.cpp,v 1.3 2007-10-22 20:29:47 exact Exp $
 ************************************** */
 
-#ifndef CORE_LEVEL
-#   define CORE_LEVEL 1
-#endif
 
 #include <fstream>
-#include <CORE\linearAlgebraT.h>
+#include <CORE/linearAlgebraT.h>
 #include <CORE.h>
+
+using namespace std;
 
 typedef MatrixT<double> MatrixD;
 typedef VectorT<double> VectorD;
 
 // This function decomposes the matrix A into the product
-// A=LU where L is lower triangular (with unit diagonal and
+// PA=LU where L is lower triangular (with unit diagonal and
 // U is upper triangular. P is a permutation matrix that 
 // records the rearrangment of row due to any pivoting of A.
 // P, L, and U are overwriten.
+// We assume A is invertible.
 void LU_decompose(MatrixD& A, MatrixD& P, MatrixD& L, MatrixD& U ) {
    int n = A.dimension_1();
    int i, j, k;
    U = A;
+   
    for (i = 0; i < n; i++) {
-	// This is the pivoting version of
+	
+        // This is the pivoting version of
 	// Gaussian elimination:
       	// if exchange rows to make sure that A(i,i) != 0
+        // invariant P*A = L*U
       if(U(i,i) == 0)
         for (j = i +1; j < n; j++)
           if (U(j, i) != 0) {
@@ -61,6 +64,7 @@ void LU_decompose(MatrixD& A, MatrixD& P, MatrixD& L, MatrixD& U ) {
       L(i,i)=1;
    }
 }
+
 
 // This function solves an upper triangular system Ux=b.
 void solve_Upper_Triangular(MatrixD& m, VectorD& y, VectorD& r ) {
@@ -93,23 +97,21 @@ void solve_Lower_Triangular(MatrixD& m, VectorD& y, VectorD& r ) {
 }
 
 int readMatrix(char *filename, double **A) {
-    std::ifstream ifs(filename);
+    ifstream ifs(filename);
     if (!ifs) { 
        perror("cannot open the file");
        exit(1);
     }
     int n;
-    int a, b;
-    double la, lb;
+    int a;
+    double la;
     ifs >> n;
     *A = new double[n*n];
     for (int i=0; i<n; i++) {
       for (int j=0; j<n; j++) {
 	ifs >> a;
-        ifs >> b;
         la = a;
-        lb = b;
-        (*A)[j+i*n] =  la/lb;
+        (*A)[j+i*n] =  la;
       }
     }
     ifs.close();
@@ -117,22 +119,20 @@ int readMatrix(char *filename, double **A) {
 }
 
 int readVector(char *filename, double **A) {
-    std::ifstream ifs(filename);
+    ifstream ifs(filename);
     if (!ifs) { 
        perror("cannot open the file");
        exit(1);
     }
     int n;
-    int a, b;
-    double la, lb;
+    int a;
+    double la;
     ifs >> n;
     *A = new double[n];
     for (int i=0; i<n; i++) {
 	ifs >> a;
-        ifs >> b;
         la = a;
-        lb = b;
-        (*A)[i] =  la/lb;
+        (*A)[i] =  la;
     }
     ifs.close();
     return n;
@@ -166,7 +166,7 @@ void solve(VectorD& d, VectorD& f, int j) {
       solve(z,f,j-1);
       //set prec = new_precision
       u = A * z;
-      u -= b;
+      u -= f;
       solve(v,u,j-1);
       //set prec = new_precision
       d = z - v;
@@ -177,27 +177,31 @@ void solve(VectorD& d, VectorD& f, int j) {
 
 int main( int argc, char *argv[] ) {
   double B_cond_num = 128.0;   
-  defRelPrec = 100;
-  int defPrtDgt = 40;
+  defRelPrec = 200;
+  int defPrtDgt = 50;
+
+  
 
   if (argc != 4) {
-    std::cerr << "Usage: bcir <matrix_input_file> <vector_inout_file> <epsilon>" << std::endl;
+    cerr << "Usage: bcir <matrix_input_file> <vector_inout_file> <epsilon>" << endl;
     exit(1);
   }
-  
+ 
+  cout << setprecision(defPrtDgt);
+
   //load matrix 'A'
   double *M;
   n = readMatrix(argv[1], &M);
   MatrixD TA(n, n, M);
   A = TA;
-  std::cout << std::endl << std::endl << "A = " << std::setprecision(defPrtDgt) <<  A << std::endl << std::endl;
+  cout << endl << endl << "A = " <<  A << endl << endl;
 
   //load vector 'b' here
   double *V;
   n = readVector(argv[2], &V);
   VectorD Tb(n, V);
 
-  std::cout << "b = " << std::setprecision(defPrtDgt) <<  Tb << std::endl << std::endl;
+  cout << "b = " <<  Tb << endl << endl;
 
   // calculate number of iterative calls.
   int epsilon; //this epsilon is -log2 of the orig. epsilon from the paper.
@@ -206,10 +210,10 @@ int main( int argc, char *argv[] ) {
   c = int(ceil(log2(B_cond_num)))+5;
   p = int( max( 0, int( floor( log2( min( double(tau/c), double(n/2.0)) ) ) ) ) );
 
- std::cout << "epsilon = " << std::setprecision(defPrtDgt) << epsilon   << std::endl << std::endl;
- std::cout << "tau = " << std::setprecision(defPrtDgt) << tau   << std::endl << std::endl;
- std::cout << "c = " << std::setprecision(defPrtDgt) << c   << std::endl << std::endl;
- std::cout << "p = " << std::setprecision(defPrtDgt) <<  p   << std::endl << std::endl;
+ cout << "epsilon = " << epsilon   << endl << endl;
+ cout << "tau = " << tau   << endl << endl;
+ cout << "c = " << c   << endl << endl;
+ cout << "p = " <<  p   << endl << endl;
 
   //set prec to base prcision (t0= ceil(c+tau^(-p)))
 
@@ -223,28 +227,31 @@ int main( int argc, char *argv[] ) {
   }
 
   LU_decompose(A,P_matrix,L,U);  
-  std::cout << std::endl << "After LU decomposition we have: " << std::endl << std::endl;
-  std::cout << " L = " << std::setprecision(defPrtDgt) <<  L << std::endl << std::endl;
-  std::cout << " P = " << std::setprecision(defPrtDgt) <<  P_matrix << std::endl << std::endl;
-  std::cout << " U = " << std::setprecision(defPrtDgt) <<  U << std::endl << std::endl;
-  
+  cout << endl << "After LU decomposition we have: " << endl << endl;
+  cout << " L = " <<  L << endl << endl;
+  cout << " P = " <<  P_matrix << endl << endl;
+  cout << " U = " <<  U << endl << endl;
+
+  A = P_matrix * TA ;  
+  cout << " self check should be zero ..." <<  A-L*U << endl << endl;
+  cout << " P*A-L*U = " <<  A-L*U << endl << endl;
+
   //solve our system
   //first permute Tb to get new b since P_matrix*A=LU
   b = P_matrix * Tb; 
   VectorD x(n); 
 
-  std::cout << " P*b = " << std::setprecision(defPrtDgt) <<  b << std::endl << std::endl;
+  cout << " P*b = " <<  b << endl << endl;
 
-  std::cout << std::endl << "Computing solution ... " << std::endl << std::endl;
-  //p=0; //for debuging
+  cout << endl << "Computing solution ... " << endl << endl;
   solve(x,b,p);
 
   // output vector x
-  std::cout << " solution: x = " << std::setprecision(defPrtDgt) <<  x << std::endl << std::endl;
+  cout << " solution: x = " <<  x << endl << endl;
   
-  std::cout << std::endl << "Verifying solution ..." << std::endl << std::endl;
-  std::cout << "      is A*x = " << std::setprecision(defPrtDgt) <<  A*x << std::endl << std::endl;
-  std::cout << " eqalal to b = " << std::setprecision(defPrtDgt) << Tb << std::endl << std::endl;
+  cout << endl << "Verifying solution ..." << endl << endl;
+  cout << "      is A*x = " <<  TA*x << endl << endl;
+  cout << " eqalal to b = " << Tb << endl << endl;
   
 
   return 0;
