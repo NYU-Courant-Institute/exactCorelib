@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.18 2007-10-19 15:45:15 exact Exp $
+ * $Id: CoreDefs.h,v 1.19 2007-10-22 19:15:58 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
@@ -137,21 +137,21 @@ inline unsigned long set_escape_bound(unsigned long p) {
   return ret;
 }
 
-inline void setWBFmode(bool bEnable) {
+inline void set_wbf_mode(bool bEnable) {
   WBFenabled = bEnable;
 }
 
-inline bool getWBFmode() {
+inline bool get_wbf_mode() {
   return WBFenabled;
 }
 
 // Temporary test. Weak BigFloat precision control functions.
-inline void set_bf_prec(unsigned long p) {
+inline void set_wbf_prec(unsigned long p) {
   setDefaultBFdivPrec(p);
   defWBFPrec = p;
 }
 
-inline unsigned long get_bf_prec() {
+inline unsigned long get_wbf_prec() {
   return defWBFPrec;
 }
 

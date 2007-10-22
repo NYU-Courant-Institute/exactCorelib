@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.30 2007-10-19 15:39:01 exact Exp $
+ * $Id: BigFloat.h,v 1.31 2007-10-22 19:15:58 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -1602,8 +1602,8 @@ public:
   // count how many precision needed for exact addition/subtraction
   // between one bigfloat and one integer
   static prec_t add_prec(const BigFloat& x, prec_t prec) {
-    if (getWBFmode() == true)
-      return get_bf_prec();
+    if (get_wbf_mode() == true)
+      return get_wbf_prec();
 
     exp_t diff = x.get_exp() - x.get_prec();
     if (diff >= 0)
@@ -1614,8 +1614,8 @@ public:
   // count how many precision needed for exact addition/subtraction
   // of two bigfloats, see lemma in Zilin's thesis
   static prec_t add_prec(const BigFloat& x, const BigFloat& y) {
-    if (getWBFmode() == true)
-      return get_bf_prec();
+    if (get_wbf_mode() == true)
+      return get_wbf_prec();
 
     exp_t diff = x.get_exp() - x.get_prec() - y.get_exp() + y.get_prec();
     if (diff >= 0)
@@ -1626,15 +1626,15 @@ public:
   // count how many precision needed for exact multiplication
   // between one bigfloat and one integer
   static prec_t mul_prec(const BigFloat& x, prec_t prec) { 
-    if (getWBFmode() == true)
-      return get_bf_prec();
+    if (get_wbf_mode() == true)
+      return get_wbf_prec();
     return x.get_prec() + prec;
   }
   // count how many precision needed for exact multiplication of two bigfloats
   // see lemma in Zilin's thesis
   static prec_t mul_prec(const BigFloat& x, const BigFloat& y) {
-    if (getWBFmode() == true)
-      return get_bf_prec();
+    if (get_wbf_mode() == true)
+      return get_wbf_prec();
     return x.get_prec() + y.get_prec();
   }
 
