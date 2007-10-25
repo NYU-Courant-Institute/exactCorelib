@@ -14,7 +14,7 @@
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *
- * $Id: linearAlgebraT.h,v 1.4 2007-10-19 16:26:14 exact Exp $
+ * $Id: linearAlgebraT.h,v 1.5 2007-10-25 17:26:43 exact Exp $
  *****************************************************************/
 
 #ifndef CORE_LINEAR_ALGEBRAT_H
@@ -698,7 +698,7 @@ VectorT<T> operator*(const MatrixT<T>& a, const VectorT<T>& b) {
 
 template <class T>
 MatrixT<T> operator*(const MatrixT<T>& a, const MatrixT<T>& b) {
-   if (a.dim2 != b.dim1) throw MatrixT<T>::ArithmeticException();
+   if (a.dim2 != b.dim1) throw typename MatrixT<T>::ArithmeticException();
    MatrixT<T> m(a.dim1, b.dim2);
    for (int i = 0; i < a.dim1; i++)
       for (int j = 0; j < b.dim2; j++) {
@@ -719,7 +719,8 @@ MatrixT<T> transpose(const MatrixT<T>& a) {
 
 template <class T>
 void MatrixT<T>::rowExchange(int r1, int r2) {
-  double tmp;
+  T tmp;
+
   MatrixT<T>& A = *this;
 
   for(int i = 0; i < dim2; i++) {

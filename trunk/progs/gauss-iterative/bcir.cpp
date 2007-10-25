@@ -15,23 +15,25 @@
 	 
 
    Since CORE Library Version 1.2
-   $Id: bcir.cpp,v 1.3 2007-10-22 20:29:47 exact Exp $
+   $Id: bcir.cpp,v 1.4 2007-10-25 17:24:38 exact Exp $
 ************************************** */
 
+#define CORE_LEVEL 2
 
 #include <fstream>
-#include <CORE/linearAlgebraT.h>
 #include <CORE.h>
+#include <CORE/linearAlgebraT.h>
 
 using namespace std;
+using namespace CORE;
 
-typedef MatrixT<double> MatrixD;
-typedef VectorT<double> VectorD;
+typedef MatrixT<BigFloat> MatrixD;
+typedef VectorT<BigFloat> VectorD;
 
 // This function decomposes the matrix A into the product
 // PA=LU where L is lower triangular (with unit diagonal and
 // U is upper triangular. P is a permutation matrix that 
-// records the rearrangment of row due to any pivoting of A.
+// records the rearrangment of rows due to any pivoting of A.
 // P, L, and U are overwriten.
 // We assume A is invertible.
 void LU_decompose(MatrixD& A, MatrixD& P, MatrixD& L, MatrixD& U ) {
@@ -70,7 +72,7 @@ void LU_decompose(MatrixD& A, MatrixD& P, MatrixD& L, MatrixD& U ) {
 void solve_Upper_Triangular(MatrixD& m, VectorD& y, VectorD& r ) {
    int n = m.dimension_1();
    int i, j;
-   double t=0;
+   BigFloat t=0;
    y[n-1] = r[n-1]/m(n-1,n-1);
    for (i = n - 2; i >= 0; i--) {
      t = 0;
@@ -85,7 +87,7 @@ void solve_Upper_Triangular(MatrixD& m, VectorD& y, VectorD& r ) {
 void solve_Lower_Triangular(MatrixD& m, VectorD& y, VectorD& r ) {
    int n = m.dimension_1();
    int i, j;
-   double t=0;
+   BigFloat t=0;
    y[0] = r[0]/m(0,0);
    for (i = 1; i < n; i++) {
      t = 0;
@@ -96,7 +98,7 @@ void solve_Lower_Triangular(MatrixD& m, VectorD& y, VectorD& r ) {
    }
 }
 
-int readMatrix(char *filename, double **A) {
+int readMatrix(char *filename, BigFloat **A) {
     ifstream ifs(filename);
     if (!ifs) { 
        perror("cannot open the file");
@@ -104,9 +106,9 @@ int readMatrix(char *filename, double **A) {
     }
     int n;
     int a;
-    double la;
+    BigFloat la;
     ifs >> n;
-    *A = new double[n*n];
+    *A = new BigFloat[n*n];
     for (int i=0; i<n; i++) {
       for (int j=0; j<n; j++) {
 	ifs >> a;
@@ -118,7 +120,7 @@ int readMatrix(char *filename, double **A) {
     return n;
 }
 
-int readVector(char *filename, double **A) {
+int readVector(char *filename, BigFloat **A) {
     ifstream ifs(filename);
     if (!ifs) { 
        perror("cannot open the file");
@@ -126,9 +128,9 @@ int readVector(char *filename, double **A) {
     }
     int n;
     int a;
-    double la;
+    BigFloat la;
     ifs >> n;
-    *A = new double[n];
+    *A = new BigFloat[n];
     for (int i=0; i<n; i++) {
 	ifs >> a;
         la = a;
@@ -156,66 +158,83 @@ static VectorD b(0);
 void solve(VectorD& d, VectorD& f, int j) {
   int n=d.dimension();
   VectorD z(n),u(n),v(n);
-  int new_precision = int(ceil(c+tau*2^(j-p)));
-    if (j==0) { 
-      //set prec = new_precision  
+
+  int new_precision = int(ceil(double(c)+double(tau)/pow(2.0,double(p-j))));
+      cout << " 'solve' called using precision (bits) : " << new_precision << endl;
+
+  if (j==0) { 
+      //set prec = new_precision 
+      set_wbf_prec(new_precision);
       solve_Lower_Triangular(L,z,f);
       solve_Upper_Triangular(U,d,z);
+      cout << " 'solve' returning answer with precision : " << new_precision << endl;
+      cout << " first element of 'd' is = " << d[0] << endl;
       return;  
     } else {
       solve(z,f,j-1);
       //set prec = new_precision
+      set_wbf_prec(new_precision);
       u = A * z;
       u -= f;
       solve(v,u,j-1);
       //set prec = new_precision
+      set_wbf_prec(new_precision);
       d = z - v;
+      cout << " 'solve' returning answer with precision : " << new_precision << endl;
+      cout << " first element of 'd' is = " << d[0] << endl;
       return;
     }
 }
 
 
 int main( int argc, char *argv[] ) {
-  double B_cond_num = 128.0;   
-  defRelPrec = 200;
-  int defPrtDgt = 50;
-
-  
-
   if (argc != 4) {
     cerr << "Usage: bcir <matrix_input_file> <vector_inout_file> <epsilon>" << endl;
     exit(1);
   }
- 
+
+  bool verbose=true;
+
+  set_wbf_mode(true); 
+
+  double B_cond_num = 2.0;   
+  int epsilon = atoi(argv[3]);
+  tau = 2 + epsilon;
+  int defPrtDgt = int(ceil(log10(pow(2.0,double(tau)))));
+  cout << endl << "***INPUT***  (will print " << int(ceil(log10(pow(2.0,double(tau))))) << " digits.)" << endl;  
   cout << setprecision(defPrtDgt);
 
+  //set prec so we can load A and b with epsilon + 2 bits of prec
+  set_wbf_prec(tau);
+
   //load matrix 'A'
-  double *M;
+  BigFloat *M;
   n = readMatrix(argv[1], &M);
   MatrixD TA(n, n, M);
   A = TA;
-  cout << endl << endl << "A = " <<  A << endl << endl;
+
+
+
+  if (verbose == true) {
+    cout << endl << "A = " <<  A << endl << endl;
+  }
 
   //load vector 'b' here
-  double *V;
+  BigFloat *V;
   n = readVector(argv[2], &V);
   VectorD Tb(n, V);
-
-  cout << "b = " <<  Tb << endl << endl;
+  if (verbose == true) {
+    cout << "b = " <<  Tb << endl << endl;
+  }
 
   // calculate number of iterative calls.
-  int epsilon; //this epsilon is -log2 of the orig. epsilon from the paper.
-  epsilon = atoi(argv[3]);
-  tau = 2 + epsilon;
   c = int(ceil(log2(B_cond_num)))+5;
   p = int( max( 0, int( floor( log2( min( double(tau/c), double(n/2.0)) ) ) ) ) );
 
- cout << "epsilon = " << epsilon   << endl << endl;
- cout << "tau = " << tau   << endl << endl;
- cout << "c = " << c   << endl << endl;
- cout << "p = " <<  p   << endl << endl;
+  cout << " epsilon = " << epsilon << " tau = " << tau << " c = " << c << " p = " <<  p   << endl << endl;
 
-  //set prec to base prcision (t0= ceil(c+tau^(-p)))
+  //set prec to base precision (t0= ceil(c+tau*2^(-p)))
+  set_wbf_prec(int(ceil(double(c)+double(tau)/pow(2.0,double(p)))));
 
   //factor A into L and U
   // first prepare L and P (P is a permutation matrix to undo any pivoting)
@@ -227,32 +246,42 @@ int main( int argc, char *argv[] ) {
   }
 
   LU_decompose(A,P_matrix,L,U);  
-  cout << endl << "After LU decomposition we have: " << endl << endl;
-  cout << " L = " <<  L << endl << endl;
-  cout << " P = " <<  P_matrix << endl << endl;
-  cout << " U = " <<  U << endl << endl;
+  if (verbose == true) {
+    cout << endl << "After LU decomposition we have: " << endl << endl;
+    cout << " L = " <<  L << endl << endl;
+    cout << " P = " <<  P_matrix << endl << endl;
+    cout << " U = " <<  U << endl << endl;
+  }
 
   A = P_matrix * TA ;  
-  cout << " self check should be zero ..." <<  A-L*U << endl << endl;
-  cout << " P*A-L*U = " <<  A-L*U << endl << endl;
+  if (verbose == true) {
+    cout << " self check should be zero ..." << endl;
+    cout << " P*A-L*U = " <<  A-L*U << endl << endl;
+  }
 
   //solve our system
   //first permute Tb to get new b since P_matrix*A=LU
   b = P_matrix * Tb; 
   VectorD x(n); 
 
-  cout << " P*b = " <<  b << endl << endl;
+  if (verbose == true) {
+    cout << " P*b = " <<  b << endl << endl;
+  }
 
   cout << endl << "Computing solution ... " << endl << endl;
   solve(x,b,p);
 
   // output vector x
-  cout << " solution: x = " <<  x << endl << endl;
+
+  if ( verbose==true ) {
+    cout << endl << endl << " solution: x = " <<  x << endl << endl;
   
-  cout << endl << "Verifying solution ..." << endl << endl;
-  cout << "      is A*x = " <<  TA*x << endl << endl;
-  cout << " eqalal to b = " << Tb << endl << endl;
+    cout << endl << "Verifying solution ..." << endl << endl;
+    cout << "      is A*x = " <<  TA*x << endl << endl;
+    cout << " eqalal to b = " << Tb << endl << endl;
+  }
   
+  cout << endl << endl << endl << endl << endl;
 
   return 0;
 

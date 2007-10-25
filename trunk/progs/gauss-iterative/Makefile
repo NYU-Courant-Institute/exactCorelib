@@ -1,6 +1,6 @@
 # Makefile for bcir
 #
-# Core Library, $Id: Makefile,v 1.2 2007-10-22 20:29:47 exact Exp $
+# Core Library, $Id: Makefile,v 1.3 2007-10-25 17:24:38 exact Exp $
 
 include ../Make.options
 
@@ -18,8 +18,11 @@ default: $(TARGETS)
 
 test: $(TARGETS)
 	./bcir_level2 inputs/matrix_d4_1 inputs/vector_d4_1 200
+	./bcir_level2 inputs/matrix_d4_2 inputs/vector_d4_2 200
 	./bcir_level2 inputs/matrix_d10_1 inputs/vector_d10_1 200
-#	./bcir inputs/matrix_d10_2 inputs/vector_d10_2 200
+	./bcir_level2 inputs/matrix_d30_1 inputs/vector_d30_1 200
+	./bcir_level2 inputs/matrix_d100_1 inputs/vector_d100_1 2000
+
 
 moretest: $(TARGETS) $(MORETARGETS)
 
