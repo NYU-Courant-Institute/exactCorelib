@@ -1,0 +1,47 @@
+README file for demos 
+Core Library: $Id: README,v 1.1 2006-03-07 04:51:23 exact Exp $
+==================================================================
+
+These are simple programs to demo the basic capabilities
+	of the Core Library.  I use some of these as demos
+	in my talks.  Chee 
+
+==================================================================
+To make and test all the test program, do
+
+	% make test
+	% make moretest
+
+The default CORE_LEVEL is 3, but
+you can compile and test the same programs at CORE_LEVEL 1 by doing
+
+	% make veryclean
+	% make all LEV=1
+	% make test
+
+==================================================================
+PROGRAMS:
+
+1. simple.cpp
+	-- to show CORE comparison of the expressions
+		sqrt(x)+sqrt(y) : sqrt(x+y + 2*sqrt(xy))
+	   for various values of x and y.
+	-- in Level 3, they are all equal, and in Level 1, they
+		are mostly unequal.
+	
+2. pointOnPlane.cpp
+	-- if you compute the intersection of a line and
+		a plane, and test if the intersection is
+		on the plane, what is the probability that
+		you get the correct response?  -- about 66%
+
+3. scheinerman.cpp
+	-- an imaginary conversation between a student and teacher
+		in which the teacher convinces the student that
+		you cannot prove algebraic identities by numerical
+		approximation  (Adapted from a paper by Ed Scheinerman)
+
+4. golden.cpp
+	-- some simple tests with the golden ratio
+
+==================================================================
