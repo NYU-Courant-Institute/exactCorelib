@@ -14,7 +14,7 @@
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *
- * $Id: linearAlgebra.h,v 1.1 2006-04-03 18:55:31 exact Exp $
+ * $Id: linearAlgebra.h,v 1.2 2008-04-09 22:32:42 exact Exp $
  *****************************************************************/
 
 #ifndef CORE_LINEAR_ALGEBRA_H
@@ -151,6 +151,22 @@ public:
    friend std::ostream& operator<<(std::ostream&, const Matrix&);
 
 }; //Matrix
+
+Matrix operator+(const Matrix&, const Matrix&);
+Matrix operator-(const Matrix&, const Matrix&);
+Matrix operator*(const Matrix&, double);
+Matrix operator*(double, const Matrix&);
+Vector operator*(const Vector&, const Matrix&);
+Vector operator*(const Matrix&, const Vector&);
+Matrix operator*(const Matrix&, const Matrix&);
+Matrix transpose(const Matrix&);
+
+double det(const double a, const double b,
+                const double c, const double d);
+double det(const Vector u, const Vector & v);  // u,v are 2d vectors
+   
+std::istream& operator>>(std::istream&, Matrix&);
+std::ostream& operator<<(std::ostream&, const Matrix&);
 
 #endif
 
