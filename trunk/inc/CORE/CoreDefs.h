@@ -19,12 +19,13 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.19 2007-10-22 19:15:58 exact Exp $
+ * $Id: CoreDefs.h,v 1.20 2008-10-08 23:35:02 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
 #include <climits>
 #include <string>
+#include <stack>
 
 CORE_BEGIN_NAMESPACE
 
@@ -154,6 +155,44 @@ inline void set_wbf_prec(unsigned long p) {
 inline unsigned long get_wbf_prec() {
   return defWBFPrec;
 }
+
+// code for managing core Environment. Haag 10/08/2008
+
+enum GlobalParamType { _WBFenabled, _defWBFPrec};
+
+class coreEnv {
+
+  bool setEnv_WBFenabled;
+  bool Env_WBFenabled;
+  bool prevEnv_WBFenabled;
+
+  bool setEnv_defWBFPrec;
+  long Env_defWBFPrec;
+  long prevEnv_defWBFPrec;
+
+public:
+  coreEnv();
+  void Env_set_wbf_mode( bool v) { setEnv_WBFenabled = true; Env_WBFenabled = v;}
+  bool Env_get_wbf_mode() { return  Env_WBFenabled;}
+  void Env_unset_wbf_mode() { setEnv_WBFenabled = false;}
+  bool Env_test_wbf_mode() { return setEnv_WBFenabled;}
+  bool prevEnv_get_wbf_mode() { return  prevEnv_WBFenabled;}
+
+  void Env_set_wbf_prec( long v) { setEnv_defWBFPrec = true; Env_defWBFPrec = v;}
+  long Env_get_wbf_prec() { return Env_defWBFPrec; }
+  void Env_unset_wbf_prec() { setEnv_defWBFPrec = false;}
+  bool Env_test_wbf_prec() { return setEnv_defWBFPrec;}
+  long prevEnv_get_wbf_prec() { return prevEnv_defWBFPrec; }
+
+  long apply();
+};
+
+
+long restoreEnv(); 
+
+// End core Environment code
+
+
 
 CORE_END_NAMESPACE
 

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.cpp,v 1.11 2007-10-19 15:40:02 exact Exp $
+ * $Id: CoreDefs.cpp,v 1.12 2008-10-08 23:35:49 exact Exp $
  ***************************************************************************/
 #include <CORE/Config.h>
 #include <CORE/CoreDefs.h>
@@ -51,5 +51,66 @@ unsigned long escapeBound = 10000;
 
 bool coretest_error = false;
 bool coretest_verbose = false;
+
+// core Environment code
+coreEnv::coreEnv() {
+
+  setEnv_WBFenabled = false;
+  Env_WBFenabled = false;
+  prevEnv_WBFenabled = false;
+
+  setEnv_defWBFPrec = false;
+  Env_defWBFPrec = 54;
+  prevEnv_defWBFPrec = 54;
+ 	 
+}
+
+std::stack<coreEnv>* ActiveEnv = NULL;
+
+long coreEnv::apply() {
+  if (ActiveEnv == NULL) { 
+	 printf("wer");
+
+    ActiveEnv = new std::stack<coreEnv>;
+  }
+  if ( setEnv_WBFenabled == true ) {	  
+	   //std::cout << "WE" <<  std::endl;
+    prevEnv_WBFenabled = get_wbf_mode();
+    set_wbf_mode(Env_WBFenabled);
+  }
+  if ( setEnv_defWBFPrec == true ) {
+   prevEnv_defWBFPrec = get_wbf_prec();
+   set_wbf_prec(Env_defWBFPrec);
+  }
+    ActiveEnv->push(*this);
+
+return get_wbf_prec();
+	
+}
+
+long restoreEnv() {
+	long i= ActiveEnv->top().Env_get_wbf_prec();
+  if (ActiveEnv != NULL) {	  
+	  // std::cout << "EP" <<  std::endl;
+
+    if ( ActiveEnv->top().Env_test_wbf_mode() == true ) {	  
+  	   //std::cout << "WE" <<  std::endl;
+
+      set_wbf_mode(ActiveEnv->top().prevEnv_get_wbf_mode());
+    }
+    if (  ActiveEnv->top().Env_test_wbf_prec() == true ) {
+      set_wbf_prec(ActiveEnv->top().prevEnv_get_wbf_prec());
+     // i= ActiveEnv->top().prevEnv_get_wbf_prec();
+    }
+
+    ActiveEnv->pop();
+  } else {
+    return 0;
+  }
+return i;
+
+}
+// End core Environment code
+
 
 CORE_END_NAMESPACE
