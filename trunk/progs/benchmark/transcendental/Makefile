@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.7 2007-03-07 00:00:47 exact Exp $
+# Core Library, $Id: Makefile,v 1.8 2008-10-31 20:08:48 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -54,6 +54,8 @@ tElemFun: tElemFun.o
 tElemFunBF2: tElemFunBF.o
 
 tManyDigits: tManyDigits.o
+
+tZimmerman : tZimmerman.o
 
 #=================================================
 # Rules
