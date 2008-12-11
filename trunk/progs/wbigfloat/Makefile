@@ -1,6 +1,6 @@
 # Makefile for gaussian
 #
-# Core Library, $Id: Makefile,v 1.1 2007-10-22 19:34:37 exact Exp $
+# Core Library, $Id: Makefile,v 1.2 2008-12-11 21:24:19 exact Exp $
 
 include ../Make.options
 
@@ -12,7 +12,7 @@ TARGETS= wbigfloat
 default: $(TARGETS)
 
 wbigfloat: wbigfloat.o
-	${CXX} $(LDFLAGS) $? $(CORE_LIB) $(COREX_LIB_LEVEL3) -o $@
+	${CXX} $(LDFLAGS) $? $(CORE_LIB) -o $@
 
 .cpp.o:
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) $< -o $@

@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.inl,v 1.21 2007-10-19 01:20:44 exact Exp $
+ * $Id: BigFloat.inl,v 1.22 2008-12-11 21:24:16 exact Exp $
  ***************************************************************************/
 
 /// \addtogroup BigFloatArithmeticOperators
@@ -676,6 +676,10 @@ inline BigFloat gcd(const BigFloat& a, const BigFloat& b) {
   BigFloat x(r);
   x.mul_2exp(dx);
   return x;
+}
+
+inline BigFloat fabs(const BigFloat& a) {
+  return abs(a);
 }
 
 //@}

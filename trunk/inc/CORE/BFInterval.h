@@ -1,6 +1,11 @@
 #ifndef BFINTERVAL_H
 #define BFINTERVAL_H
 
+/* BFInterval is a light weight version of BigFloat2
+ * It is mostly used in root isolation routines (Sturm, etc)
+ * It has a special interval [1,0] as error indicator.
+ */
+
 #include <vector>
 
 CORE_BEGIN_NAMESPACE

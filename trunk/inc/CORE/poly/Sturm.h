@@ -51,7 +51,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Sturm.h,v $
- * $Revision: 1.16 $ $Date: 2008-12-11 19:17:14 $
+ * $Revision: 1.17 $ $Date: 2008-12-11 21:24:18 $
  ***************************************************************************/
 
 
@@ -1089,13 +1089,16 @@ public:
     }
 
 
-
-    if ((evalExactSign(seq[0],J.first) * evalExactSign(seq[0],J.second)).has_sign())
+    if ((evalExactSign(seq[0],J.first) * evalExactSign(seq[0],J.second)).getRight() > 0){
       std::cout <<" ERROR! Root is not in the Interval " << std::endl;
-    if(J.second - J.first >  BigFloat::exp2(-aprec))
+      return(BFInterval(1,0)); // error indicator
+    }
+    if(J.second - J.first >  BigFloat::exp2(-aprec)){
       std::cout << "ERROR! Newton Refine failed to achieve desired precision" << std::endl;
+      return(BFInterval(1,0));
+    }
 
-      return(J);
+    return(J);
  }//End of newton refine
 
 };// Sturm class

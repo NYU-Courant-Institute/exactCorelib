@@ -15,6 +15,7 @@ basicprogs=bareiss \
 	demos \
 	fileIO \
 	fortune \
+	gaussian \
 	generic \
 	kahan \
 	pi \

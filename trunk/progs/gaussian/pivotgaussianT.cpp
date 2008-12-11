@@ -14,7 +14,7 @@
 	  to run the program.
 
    Since CORE Library Version 1.2
-   $Id: pivotgaussianT.cpp,v 1.1 2007-10-15 17:33:08 exact Exp $
+   $Id: pivotgaussianT.cpp,v 1.2 2008-12-11 21:24:19 exact Exp $
 ************************************** */
 
 #ifndef CORE_LEVEL
@@ -22,7 +22,7 @@
 #endif
 
 #include <fstream>
-#include <CORE\linearAlgebraT.h>
+#include <CORE/linearAlgebraT.h>
 #include <CORE.h>
 
 typedef MatrixT<double> MatrixD;

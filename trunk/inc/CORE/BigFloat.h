@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.32 2008-10-24 20:44:28 exact Exp $
+ * $Id: BigFloat.h,v 1.33 2008-12-11 21:24:16 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -1621,7 +1621,12 @@ public:
 
     exp_t diff = x.get_exp() - x.get_prec();
     if (diff >= 0)
-      return std::max(2UL, 1+std::max(x.get_prec() + diff, prec));
+      ret = std::max(2UL, 1+std::max(x.get_prec() + diff, prec));
+    else
+      ret = std::max(2UL, 1+std::max(x.get_prec(), prec - diff));
+
+    if (get_wbf_mode() == true)
+      return std::min(get_wbf_prec(), ret);
     else
       return std::max(2UL, 1+std::max(x.get_prec(), prec - diff));
 
@@ -1630,27 +1635,33 @@ public:
   // of two bigfloats, see lemma in Zilin's thesis
   static prec_t add_prec(const BigFloat& x, const BigFloat& y) {
 
-
     if (get_wbf_mode() == true)
       return get_wbf_prec();
 
     exp_t diff = x.get_exp() - x.get_prec() - y.get_exp() + y.get_prec();
     if (diff >= 0)
-      return std::max(2UL, 1+std::max(x.get_prec() + diff, y.get_prec()));
+      ret = std::max(2UL, 1+std::max(x.get_prec() + diff, y.get_prec()));
     else
-      return std::max(2UL, 1+std::max(x.get_prec(), y.get_prec() - diff));
+      ret = std::max(2UL, 1+std::max(x.get_prec(), y.get_prec() - diff));
+
+    if (get_wbf_mode() == true)
+      return std::min(get_wbf_prec(), ret);
+    else
+      return ret;
   }
   // count how many precision needed for exact multiplication
   // between one bigfloat and one integer
   static prec_t mul_prec(const BigFloat& x, prec_t prec) { 
+    prec_t ret;	  
+    ret = x.get_prec() + prec;
     if (get_wbf_mode() == true)
-      return get_wbf_prec();
-    return x.get_prec() + prec;
+      return std::min(get_wbf_prec(), ret);
+    else
+      return ret;
   }
   // count how many precision needed for exact multiplication of two bigfloats
   // see lemma in Zilin's thesis
   static prec_t mul_prec(const BigFloat& x, const BigFloat& y) {
-
     if (get_wbf_mode() == true)
       return get_wbf_prec();
 

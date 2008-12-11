@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreDefs.h,v 1.20 2008-10-08 23:35:02 exact Exp $
+ * $Id: CoreDefs.h,v 1.21 2008-12-11 21:24:17 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_COREDEFS_H__
 #define __CORE_COREDEFS_H__
@@ -138,10 +138,14 @@ inline unsigned long set_escape_bound(unsigned long p) {
   return ret;
 }
 
+/// COMMENTS NEEDED...
+// Jihun (Oct 2007)
 inline void set_wbf_mode(bool bEnable) {
   WBFenabled = bEnable;
 }
 
+/// COMMENTS NEEDED...
+// Jihun (Oct 2007)
 inline bool get_wbf_mode() {
   return WBFenabled;
 }

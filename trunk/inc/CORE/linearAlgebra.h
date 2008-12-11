@@ -14,7 +14,7 @@
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *
- * $Id: linearAlgebra.h,v 1.2 2008-04-09 22:32:42 exact Exp $
+ * $Id: linearAlgebra.h,v 1.3 2008-12-11 21:24:17 exact Exp $
  *****************************************************************/
 
 #ifndef CORE_LINEAR_ALGEBRA_H
@@ -80,6 +80,10 @@ public:
    friend Vector operator*(const Vector&, const Matrix&);
    friend double dotProduct(const Vector&, const Vector&);
 
+   friend double det(const Vector u, const Vector v);  // u,v are 2d vectors
+   friend double det(const double a, const double b,
+                     const double c, const double d);
+
    friend std::istream& operator>>(std::istream&, Vector&);
    friend std::ostream& operator<<(std::ostream&, const Vector&);
 };
@@ -143,10 +147,6 @@ public:
    friend Matrix operator*(const Matrix&, const Matrix&);
    friend Matrix transpose(const Matrix&);
 
-   friend double det(const double a, const double b,
-                const double c, const double d);
-   friend double det(const Vector u, const Vector & v);  // u,v are 2d vectors
-   
    friend std::istream& operator>>(std::istream&, Matrix&);
    friend std::ostream& operator<<(std::ostream&, const Matrix&);
 

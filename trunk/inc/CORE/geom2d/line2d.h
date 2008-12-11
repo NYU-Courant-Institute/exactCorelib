@@ -15,13 +15,14 @@
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *
- * $Id: line2d.h,v 1.1 2006-04-03 20:05:18 exact Exp $
+ * $Id: line2d.h,v 1.2 2008-12-11 21:24:17 exact Exp $
  *****************************************************************/
 
 #ifndef _LINE2D_H_
 #define _LINE2D_H_
 
 #include <CORE/geom2d/point2d.h>
+#include <CORE/linearAlgebra.h>
 
 class Line2d : public GeomObj {
 
@@ -101,13 +102,15 @@ public:
   bool isVertical() const { return p0.X() == p1.X(); }
   bool isHorizontal() const { return p0.Y() == p1.Y(); }
   bool is_trivial() const {return p0 == p1; }   //meaning for a line?
+  
+  friend double det(const Vector u, const Vector v);  // u,v are 2d vectors
 
   bool contains( const Point2d& p) const { 
           return orientation2d(p0, p1, p) == 0; }
   bool isCoincident( const Line2d& g) const { 
           return contains(g.p0) && contains(g.p1); }  
   bool isParallel(const Line2d& l) const {
-    return det(V, l.direction()) == 0; }
+	  return det(V, l.direction()) == 0; }
 
   bool operator==( const Line2d& g ) const { return isCoincident(g); }
   bool operator!=( const Line2d& g ) const { return !operator==(g); }

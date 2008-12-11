@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat2.h,v 1.31 2007-10-19 15:39:02 exact Exp $
+ * $Id: BigFloat2.h,v 1.32 2008-12-11 21:24:17 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT2_H__
 #define __CORE_BIGFLOAT2_H__
@@ -598,7 +598,7 @@ public:
   //@{
   /// return double value
   double get_d() const {
-    return m_l.get_d();
+    return getCenter().get_d();
   }
   /// return the string representation
   std::string get_str(size_t digits = 0, int base = 10) const {

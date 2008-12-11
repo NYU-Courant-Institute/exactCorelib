@@ -15,14 +15,13 @@
 	 
 
    Since CORE Library Version 1.2
-   $Id: bcir.cpp,v 1.4 2007-10-25 17:24:38 exact Exp $
+   $Id: bcir.cpp,v 1.5 2008-12-11 21:24:18 exact Exp $
 ************************************** */
 
 #define CORE_LEVEL 2
 
 #include <fstream>
 #include <CORE.h>
-#include <CORE/linearAlgebraT.h>
 
 using namespace std;
 using namespace CORE;

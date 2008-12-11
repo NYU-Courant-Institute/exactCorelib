@@ -19,16 +19,20 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CORE.h,v 1.11 2006-12-20 23:12:19 exact Exp $
+ * $Id: CORE.h,v 1.12 2008-12-11 21:24:17 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_CORE_H__
 #define __CORE_CORE_H__
+
+#ifndef CORE_LEVEL
+  #define CORE_LEVEL 3
+#endif
 
 #include <CORE/Config.h>
 #include <CORE/CoreDefs.h>
 
 // level 1
-#include <CORE/BigInt.h>
+#include <CORE/BigInt.h> 
 #include <CORE/BigRat.h>
 #include <CORE/BigFloat.h>
 #include <CORE/BFInterval.h>
@@ -46,11 +50,17 @@
 typedef double machine_double;
 typedef long machine_long;
 
-#ifndef CORE_LEVEL
-  #define CORE_LEVEL 3
-#endif
-
-#if CORE_LEVEL == 3
+#if CORE_LEVEL == 1
+  #define BigInt long
+  #define BigFloat double
+  #define BigRat double
+  #define Expr double
+#elif CORE_LEVEL == 2
+  #undef double
+  #define double BigFloat
+  #undef long
+  #define long BigInt
+#elif CORE_LEVEL == 3
   #undef double
   #define double Expr
   #undef long

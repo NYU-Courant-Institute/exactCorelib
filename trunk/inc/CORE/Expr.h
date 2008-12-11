@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: Expr.h,v 1.35 2007-05-16 10:16:36 exact Exp $
+ * $Id: Expr.h,v 1.36 2008-12-11 21:24:17 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_EXPR_H__
 #define __CORE_EXPR_H__
@@ -429,7 +429,7 @@ CORE_END_NAMESPACE
 CORE_BEGIN_NAMESPACE
 
 // BFMSS root bound + BFS filter + BigFloat2
-typedef ExprT<BfmssRootBd<BigFloat2>, BfsFilter<BigFloat2>, BigFloat2> Expr;
+typedef ExprT<BfmsskRootBd<BigFloat2>, BfsFilter<BigFloat2>, BigFloat2> Expr;
 
 // BFMSS root bound + Dummy filter + BigFloat2
 //typedef ExprT<BfmssRootBd<BigFloat2>, DummyFilter, BigFloat2> Expr;

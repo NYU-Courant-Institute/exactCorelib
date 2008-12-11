@@ -5,7 +5,7 @@
 //  Linear Algebra Extension of the CORE library, ver. 1.0
 //    Copyright (c) 1998, 1999, 2000 Exact Computation Project
 //    written by Igor Pechtchanski (pechtcha@cs.nyu.edu)
-//  $Id: linearAlgebra.cpp,v 1.1 2006-04-03 18:55:31 exact Exp $
+//  $Id: linearAlgebra.cpp,v 1.2 2008-12-11 21:24:16 exact Exp $
 //
 
 #ifndef CORE_LEVEL
@@ -125,8 +125,9 @@ double Vector::maxnorm() const {
 
 double Vector::infnorm() const {
    double n = 0;
-   for (int i = 0; i < dim; i++)
-      n += fabs(_rep[i]);
+   for (int i = 0; i < dim; i++) {
+      n += fabs(_rep[i]);	   
+   }
    return n;
 }
 
@@ -408,7 +409,7 @@ double det(const double a, const double b,
 }
 
 // friend det function (u, v are 2d vectors)
-double det(const Vector u, const Vector & v) {
+double det(const Vector u, const Vector v) {
         assert(u.dimension()==2); assert(v.dimension()==2);
         return( u[0] * v[1] - u[1] * v[0] );
 }
