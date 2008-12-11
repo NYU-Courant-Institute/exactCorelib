@@ -51,7 +51,7 @@
  * Email: exact@cs.nyu.edu
  *
  * $Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Sturm.h,v $
- * $Revision: 1.15 $ $Date: 2007-10-19 16:02:32 $
+ * $Revision: 1.16 $ $Date: 2008-12-11 19:17:14 $
  ***************************************************************************/
 
 
@@ -802,12 +802,16 @@ public:
     std::cout <<"Computing Smale's bound = " <<  std::endl;
 #endif
 
-    if(evalExactSign(seq[0], z) == 0)// Reached the exact root.
+    if(evalExactSign(seq[0], z).sgn() == 0)// Reached the exact root.
       return true;
 
-    BigFloat fprime = core_abs(evalExactSign(seq[1],z)).getLeft();
+    BigFloat2 signEval = evalExactSign(seq[1],z);
+    BigFloat fprime = signEval.getLeft();
+    if (signEval.sgn() < 0) fprime *= -1;
     if (fprime == 0) return false;  // z is a critical value!
-    BigFloat temp = core_abs(evalExactSign(seq[0],z)).getRight();
+    signEval = evalExactSign(seq[0],z);
+    BigFloat temp = signEval.getRight();
+    if (signEval.sgn() < 0) temp *= -1;
     temp.div(temp, power(fprime, 2), getDefaultBFdivPrec(), BF_RNDU);
     temp = temp*height(seq[0]).getLeft();  // remains exact
     //Thus, temp >=  ||f||_{\infty} |\frac{f(z)}{f'(z)^2}|
@@ -1086,7 +1090,7 @@ public:
 
 
 
-    if (evalExactSign(seq[0],J.first) * evalExactSign(seq[0],J.second) > 0)
+    if ((evalExactSign(seq[0],J.first) * evalExactSign(seq[0],J.second)).has_sign())
       std::cout <<" ERROR! Root is not in the Interval " << std::endl;
     if(J.second - J.first >  BigFloat::exp2(-aprec))
       std::cout << "ERROR! Newton Refine failed to achieve desired precision" << std::endl;

@@ -3,7 +3,6 @@
 
 #include <CORE/poly/Poly.h>
 
-using namespace std;
 CORE_BEGIN_NAMESPACE
 
 /***************************************************
@@ -127,9 +126,9 @@ inline void isolateRoots_unit(Polynomial<T>& P, const BFInterval I, int deg,
                     BFVecInterval &v) {
   
  int num = shiftAndSigncount(P.coeff(), deg);
-  //cout << "sign variations after shift " << num << endl;
-  //cout <<"Interval is ["<<I.first << ":"<< I.second << "]"<<endl;
-  //cout << "Polynomial is "; P.dump() ; cout <<endl;
+  //std::cout << "sign variations after shift " << num << endl;
+  //std::cout <<"Interval is ["<<I.first << ":"<< I.second << "]"<<endl;
+  //std::cout << "Polynomial is "; P.dump() ; std::cout <<endl;
   if(num == 0) return;
   else if(num == 1)
     if (I.first > I.second)
@@ -143,11 +142,11 @@ inline void isolateRoots_unit(Polynomial<T>& P, const BFInterval I, int deg,
 
     half(P.coeff(),deg, temp1);
     Polynomial<T> Q(deg, temp1);
-    //    cout <<"After halving polynomial is "; Q.dump(); cout<<endl;
+    //    std::cout <<"After halving polynomial is "; Q.dump(); std::cout<<endl;
     
     shift(temp1, deg, temp2);
     Polynomial<T> R(deg, temp2);
-    //    cout<<"Inside isolateRoots: second polynomial "<< R << endl;
+    //    std::cout<<"Inside isolateRoots: second polynomial "<< R << endl;
     
     BFInterval J = std::make_pair(I.first, m);
     BFInterval JJ = std::make_pair(m, I.second);
@@ -161,7 +160,7 @@ inline void isolateRoots_unit(Polynomial<T>& P, const BFInterval I, int deg,
 inline void isolateRoots(Polynomial<BigInt>& P, BFInterval I, BFVecInterval& v){
   int deg = P.getTrueDegree();
   if(deg == 0)
-    cout<< "Polynomial is a constant" << endl;
+    std::cout<< "Polynomial is a constant" << endl;
   
   BigFloat a = I.first, b=I.second;
   
@@ -175,8 +174,8 @@ inline void isolateRoots(Polynomial<BigInt>& P, BFInterval I, BFVecInterval& v){
     v.push_back(std::make_pair(a, a));
 
   Polynomial<BigFloat> R(n, temp2);
-  //cout <<"Corresponding polynomial with roots in unit interval ";R.dump();
-  //cout <<endl;
+  //std::cout <<"Corresponding polynomial with roots in unit interval ";R.dump();
+  //std::cout <<endl;
   
   isolateRoots_unit(R, I, n, v);
 
@@ -188,7 +187,7 @@ template <typename T>
 inline void isolateRoots(Polynomial<T>& P, BFInterval I, BFVecInterval& v){
   int deg = P.getTrueDegree();
   if(deg == 0)
-    cout<< "Polynomial is a constant" << endl;
+    std::cout<< "Polynomial is a constant" << endl;
   
   BigFloat a = I.first, b=I.second;
 
@@ -198,14 +197,14 @@ inline void isolateRoots(Polynomial<T>& P, BFInterval I, BFVecInterval& v){
   shift(P.coeff(), n, a, temp1);
   contract(temp1, n, b-a, temp2);
 
-  if(evalExactSign(P, a) == 0)
+  if(evalExactSign(P, a).sgn() == 0)
     v.push_back(std::make_pair(a, a));
 
   Polynomial<T> R(n, temp2);
   
   isolateRoots_unit(R, I, n, v);
 
- if(evalExactSign(P, b) == 0)
+ if(evalExactSign(P, b).sgn() == 0)
     v.push_back(std::make_pair(b, b));
 }
 
@@ -223,7 +222,7 @@ inline void isolateRoots(Polynomial<T>& P, BFVecInterval& v)
 {
   int deg = P.getTrueDegree();
   if(deg == 0)
-    cout<< "Polynomial is a constant" << endl;
+    std::cout<< "Polynomial is a constant" << endl;
 
   //Compute an upper bound on the positive roots of P
   BigInt B = CauchyBound(P);
@@ -877,7 +876,7 @@ public:
 
 
 
-    if (evalExactSign(_poly,J.first) * evalExactSign(_poly,J.second) > 0)
+    if ((evalExactSign(_poly,J.first) * evalExactSign(_poly,J.second)).has_sign())
       std::cout <<" ERROR! Root is not in the Interval " << std::endl;
     if(J.second - J.first >  BigFloat::exp2(-aprec))
       std::cout << "ERROR! Newton Refine failed to achieve desired precision" << std::endl;

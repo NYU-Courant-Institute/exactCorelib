@@ -1547,13 +1547,16 @@ BigFloat sepBound(Polynomial<NT> &p) {
 #ifdef CORE_DEBUG
     std::cout <<"Computing Smale's bound = " <<  std::endl;
 #endif
-
-    if(evalExactSign(_poly, z) == 0)// Reached the exact root.
+    if(evalExactSign(_poly, z).sgn() == 0)// Reached the exact root.
       return true;
 
-    BigFloat fprime = core_abs(evalExactSign(_poly_derivative,z)).getLeft();
+    BigFloat2 signEval = evalExactSign(_poly_derivative,z);
+    BigFloat fprime = signEval.getLeft();
+    if (signEval.sgn() < 0) fprime *= -1;
     if (fprime == 0) return false;  // z is a critical value!
-    BigFloat temp = core_abs(evalExactSign(_poly,z)).getRight();
+    signEval = evalExactSign(_poly,z);
+    BigFloat temp = signEval.getRight();
+    if (signEval.sgn() < 0) temp *= -1;
     temp.div(temp, power(fprime, 2), getDefaultBFdivPrec(), BF_RNDU);
     temp = temp*height(_poly).getLeft();  // remains exact
     //Thus, temp >=  ||f||_{\infty} |\frac{f(z)}{f'(z)^2}|
