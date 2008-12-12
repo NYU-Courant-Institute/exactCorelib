@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: BigFloat.h,v 1.33 2008-12-11 21:24:16 exact Exp $
+ * $Id: BigFloat.h,v 1.34 2008-12-12 14:00:32 exact Exp $
  ***************************************************************************/
 #ifndef __CORE_BIGFLOAT_H__
 #define __CORE_BIGFLOAT_H__
@@ -32,12 +32,6 @@
 #include <cassert>
 #include <cmath>
 #include <stdio.h>
-
-// trying idea
-typedef int  weak;
-typedef bool strong;
-
-
 
 
 /* Known Issues:
@@ -81,7 +75,6 @@ const size_t DOUBLE_PREC = 53;
 
 /// \class BigFloat BigFloat.h
 /// \brief BigFloat is a big floating-point number class based on MPFR
-template <class U>
 class BigFloat : public BigFloatBase {
   typedef BigFloatBase base_cls;
 public: // public typedefs
@@ -611,7 +604,7 @@ public:
   //@{
   /// multiplication for <tt>BigFloat*BigFloat</tt> (auto version)
 
-  int mul(const BigFloat<U>& x, const BigFloat<U>& y, rnd_t rnd = MPFR_RND) {
+  int mul(const BigFloat& x, const BigFloat& y, rnd_t rnd = MPFR_RND) {
     int r = mul(x, y, mul_prec(x, y), rnd);  // call fixed version
     remove_trailing_zeros(); return r;       // remove extra zeros
   }
@@ -620,13 +613,13 @@ public:
 
   /// multiplication for <tt>BigFloat*T</tt> (auto version)
   template <typename T>
-  int mul(const BigFloat<U>& x, const T& y, rnd_t rnd = MPFR_RND) {
+  int mul(const BigFloat& x, const T& y, rnd_t rnd = MPFR_RND) {
     int r = mul(x, y, mul_prec(x, count_prec(y)), rnd);  // call fixed version
     remove_trailing_zeros(); return r;                   // remove extra zeros
   }
   /// multiplication for <tt>T*BigFloat</tt> (auto version)
   template <typename T>
-  int mul(const T& x, const BigFloat<U>& y, rnd_t rnd = MPFR_RND)
+  int mul(const T& x, const BigFloat& y, rnd_t rnd = MPFR_RND)
   { return mul(y, x, rnd); }
   //@}
 
@@ -1621,14 +1614,14 @@ public:
 
     exp_t diff = x.get_exp() - x.get_prec();
     if (diff >= 0)
-      ret = std::max(2UL, 1+std::max(x.get_prec() + diff, prec));
-    else
-      ret = std::max(2UL, 1+std::max(x.get_prec(), prec - diff));
-
-    if (get_wbf_mode() == true)
-      return std::min(get_wbf_prec(), ret);
+      return std::max(2UL, 1+std::max(x.get_prec() + diff, prec));
     else
       return std::max(2UL, 1+std::max(x.get_prec(), prec - diff));
+
+//    if (get_wbf_mode() == true)
+//      return std::min(get_wbf_prec(), ret);
+//    else
+//      return std::max(2UL, 1+std::max(x.get_prec(), prec - diff));
 
   }
   // count how many precision needed for exact addition/subtraction
@@ -1640,14 +1633,15 @@ public:
 
     exp_t diff = x.get_exp() - x.get_prec() - y.get_exp() + y.get_prec();
     if (diff >= 0)
-      ret = std::max(2UL, 1+std::max(x.get_prec() + diff, y.get_prec()));
+      return std::max(2UL, 1+std::max(x.get_prec() + diff, y.get_prec()));
     else
-      ret = std::max(2UL, 1+std::max(x.get_prec(), y.get_prec() - diff));
+      return std::max(2UL, 1+std::max(x.get_prec(), y.get_prec() - diff));
 
-    if (get_wbf_mode() == true)
-      return std::min(get_wbf_prec(), ret);
-    else
-      return ret;
+//    if (get_wbf_mode() == true)
+//      return std::min(get_wbf_prec(), ret);
+//    else
+//      return ret;
+
   }
   // count how many precision needed for exact multiplication
   // between one bigfloat and one integer
@@ -1879,18 +1873,6 @@ public:
 #endif
 };
 
-  template<class T>
-  int BigFloat<strong>::mul(const BigFloat<strong>& x, const T& y, rnd_t rnd) {
-    int r = mul(x, y, mul_prec(x, y), rnd);  // call fixed version
-    remove_trailing_zeros(); return r;       // remove extra zeros
-  }
-
-  int BigFloat<weak>::mul(const BigFloat<weak>& x, const BigFloat<weak>& y, rnd_t rnd ) {
-    int r = mul(x, y, mul_prec(x, y), rnd);  // call fixed version
-    remove_trailing_zeros(); return r;       // remove extra zeros
-  }
-
- 
 
 
  
