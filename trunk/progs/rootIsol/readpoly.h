@@ -18,14 +18,15 @@ std::string TESTDIR="../data/polynomials/";
 using namespace CORE;
 using namespace std;
 
-
-//The file 'file' contains a sequence of strings each on its own line.
-//This function creates a vector whose contents are the strings contained
-//in 'file'. Basically, we have to read a line from 'file' and construct
-//a  corresponding string.
-//Ignores all lines starting or containing a #.
-//Does not handle white space in the file.
-void readString(char *file, VecString &v){
+// The file 'file' contains a sequence of strings each on its own line.
+// This function creates a vector whose contents are the strings contained
+// in 'file'. Basically, we have to read a line from 'file' and construct
+// a corresponding string.
+// Ignores all lines starting or containing a #.
+// Does not handle white space in the file.
+// Option specifies the type of input file: option = 1 means the file contains
+// name of mpsolve files; option=2 means the file contains strings of polynomials.
+void readString(char *file, VecString &v, int option){
   ifstream inFile(file);
   
   string line;
@@ -34,11 +35,13 @@ void readString(char *file, VecString &v){
     if(line.find(COMMENT, 0) == string::npos)
       v.push_back(line);
   }
-  for (VecString::iterator it = v.begin();
+  if(option == 1)
+    for (VecString::iterator it = v.begin();
 	 it != v.end(); ++it) {
-    (*it).insert(0,TESTDIR);
-  }
+      (*it).insert(0,TESTDIR);// Insert TESTDIR at the starting of all strings
+    }
 }
+
 
 
 template <typename T>
