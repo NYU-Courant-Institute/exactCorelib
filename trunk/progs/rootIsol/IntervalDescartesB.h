@@ -89,7 +89,7 @@ namespace IntervalDescartesB {
     BigFloat m;
     unsigned int type; // Identifies the type of the interval
     unsigned int EPS_DEPTH;
-    int logDeg = ceilLg(deg);
+    int logDeg = ceillg(deg);
 
     while (!S.empty()){
       COUNTER++;
@@ -104,7 +104,7 @@ namespace IntervalDescartesB {
 
       // At SDL.depth we have an EPS_DEPTH sleeve.
       // Since since error at depth h is 2^{-EPS} * 4*deg*h.
-      EPS_DEPTH = EPS-2- logDeg - ceilLg((int)SDL.depth);
+      EPS_DEPTH = EPS-2- logDeg - ceillg((int)SDL.depth);
 
       type = checkSleeve(SDL.slv, deg, EPS_DEPTH);
       
