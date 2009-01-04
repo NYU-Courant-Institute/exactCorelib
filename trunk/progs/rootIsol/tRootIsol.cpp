@@ -1,4 +1,4 @@
- #define CORE_LEVEL 4
+#define CORE_LEVEL 4
 #include "CORE/CORE.h"
 #include "readpoly.h"
 #include "DescartesP.h"
@@ -98,7 +98,6 @@ int main(int argc, char* argv[]) {
     //IntervalNewtonIsol::test(P, iter);
     cout <<"Interval Descartes: ";
     IntervalDescartesB::test(P, iter);
-
  }  
  
   

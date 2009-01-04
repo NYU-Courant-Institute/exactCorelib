@@ -16,12 +16,10 @@ using namespace std;
 namespace IntervalDescartesB {
 
   int COUNTER = 0;
-  unsigned int EPSEXP = 6;
-  double EPS = 1e-6;
-  int DEF_SCALE = 18;
+  // Our initial sleeve has error 2*EPS_DOUBLE=2*2^{1-DOUBLE_PREC}}.
 
-  template <typename Vec> 
-    unsigned int checkSleeve(Vec& slv, int deg){
+  template <typename Vec, typename FT> 
+    unsigned int checkSleeve(Vec& slv, int deg, FT EPS){
   
     int type = sleeveVar(slv, deg);
     if(type < 2)
@@ -48,7 +46,7 @@ namespace IntervalDescartesB {
     // Check if the sleeve is small
     bool coeffSmall = true;
     for(int i=0; i <= deg; i++){
-      if( core_abs(slv[i]) > EPS && core_abs(slv[i]) > EPS)
+      if( log_2(slv[i].get_max()) > 3-EPS)// That is, |slv[i]| > 8*2^{-EPS}
 	coeffSmall=false;
     }
     if(coeffSmall) return 3;
@@ -73,20 +71,26 @@ namespace IntervalDescartesB {
     precision.
     
   */
-  template <typename RT, typename Vec, typename IntvData>
-    void isolateRoots(Vec& slv, int deg, RT a, RT b, unsigned scale, prec_t prec,
+  template <typename Vec, typename IntvData>
+    void isolateRoots(Vec& slv, int deg, IntvData &ID,
 		      BFVecInterval &v, BFVecInterval &monotone, 
-		      std::stack<IntvData> &reinit) {
+		      std::stack<IntvData> &reinit,
+		      unsigned int EPS) {
     
-    typedef SlvSubDivData<RT, BigFloat2> SlvSubDivData;
+    typedef SlvSubDivData<BigFloat, BigFloat2> SlvSubDivData;
     
     std::stack< SlvSubDivData > S;
     SlvSubDivData SD(deg+1);
 
-    S.push(SlvSubDivData(a, b, slv));
+    S.push(SlvSubDivData(ID.a, ID.b, slv));
+    unsigned int scale = ID.s;
+    prec_t prec = ID.p;
+
     BigFloat m;
     unsigned int type; // Identifies the type of the interval
-    
+    unsigned int EPS_DEPTH;
+    int logDeg = ceilLg(deg);
+
     while (!S.empty()){
       COUNTER++;
       SD = S.top(); S.pop();
@@ -96,31 +100,36 @@ namespace IntervalDescartesB {
 
       m = (SD.a + SD.b).div2();
       SDL.a = SD.a; SDL.b = m; SDR.a = m; SDR.b = SD.b;
+      SDL.depth = SD.depth+1; SDR.depth=SDL.depth;
 
-      type = checkSleeve(SDL.slv, deg);
+      // At SDL.depth we have an EPS_DEPTH sleeve.
+      // Since since error at depth h is 2^{-EPS} * 4*deg*h.
+      EPS_DEPTH = EPS-2- logDeg - ceilLg((int)SDL.depth);
+
+      type = checkSleeve(SDL.slv, deg, EPS_DEPTH);
       
       if(type != 0){
 	if(type == 1) // Found a root
 	  v.push_back(BFInterval(SDL.a, SDL.b));
 	else if(type == 2)// Polynomial is monotone
 	  monotone.push_back(BFInterval(SDL.a, SDL.b));
-	else if(type == 3) // Sleeve is small, must scale.
-	  reinit.push(IntvData(SDL.a, SDL.b, scale+DEF_SCALE, prec));
-	else if((SDL.b - SDL.a) < EPS*(SD.b - SD.a))// Done sufficient subdivisions
+	else if(type == 3) // Sleeve is smaller than 8*2^{-EPS_DEPTH}.
+	  reinit.push(IntvData(SDL.a, SDL.b, scale+EPS_DEPTH-3, prec));
+	else if(SDL.depth > EPS)// Done sufficient subdivisions
 	  reinit.push(IntvData(SDL.a, SDL.b, scale, prec));
 	else
 	  S.push(SDL);
       }
       
-      type = checkSleeve(SDR.slv, deg);
+      type = checkSleeve(SDR.slv, deg, EPS_DEPTH);
       if(type != 0){
 	if(type == 1) // Found a root
 	  v.push_back(BFInterval(SDR.a, SDR.b));
 	else if(type == 2)// Polynomial is monotone
 	  monotone.push_back(BFInterval(SDR.a, SDR.b));
 	else if(type == 3) // Sleeve is small, must scale.
-	  reinit.push(IntvData(SDR.a, SDR.b, scale+DEF_SCALE, prec));
-	else if((SDR.b - SDR.a) < EPS*(SD.b - SD.a))// Done sufficient subdivisions
+	  reinit.push(IntvData(SDR.a, SDR.b, scale+EPS_DEPTH-3, prec));
+	else if(SDR.depth > EPS)// Done sufficient subdivisions
 	  reinit.push(IntvData(SDR.a, SDR.b, scale, prec));
 	else
 	  S.push(SDR);
@@ -135,7 +144,7 @@ namespace IntervalDescartesB {
   */
   template <typename T, typename Vec>
     void isolateRoots(Polynomial<T> &P, int deg, BFInterval I, BFVecInterval &v,
-		      Vec &B) {
+		      Vec &Binomial) {
     
     std::vector<BigFloat2> slv(deg+1);// The sleeve for P on I. 
     //By default the prec is double precision
@@ -148,14 +157,16 @@ namespace IntervalDescartesB {
     reinit.push(IntvData(I.first, I.second, 0, DOUBLE_PREC));
     IntvData ID;
 
+    // The initializeSleeve computes a 2^{-EPS_INIT} sleeve.
+    unsigned int EPS_INIT = DOUBLE_PREC - 2;
     int type;
 
     while(!reinit.empty()){
       ID = reinit.top(); reinit.pop();
 
-      initializeSleeve(P, deg, ID.a, ID.b, ID.s, ID.p, slv, B, EPS);// Modifies ID.p
+      initializeSleeve(P, deg, ID.a, ID.b, ID.s, ID.p, slv, Binomial, EPS_INIT);// Modifies ID.p
 
-      type = checkSleeve(slv, deg);
+      type = checkSleeve(slv, deg, EPS_INIT);
       
       if(type != 0){
 	if(type == 1) // Found a root
@@ -163,10 +174,9 @@ namespace IntervalDescartesB {
 	else if(type == 2)// Polynomial is monotone
 	  monotone.push_back(BFInterval(ID.a, ID.b));
 	else if(type == 3) // Sleeve is small, must scale.
-	  reinit.push(IntvData(ID.a, ID.b, ID.s+DEF_SCALE, ID.p));
+	  reinit.push(IntvData(ID.a, ID.b, ID.s+EPS_INIT-3, ID.p));
 	else
-	  IntervalDescartesB::isolateRoots(slv, deg, ID.a, ID.b, 
-					   ID.s, ID.p, v, monotone, reinit);
+	  IntervalDescartesB::isolateRoots(slv, deg, ID, v, monotone, reinit, EPS_INIT);
 
       }
     }

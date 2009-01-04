@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.1 2006-03-07 04:51:25 exact Exp $
+# Core Library, $Id: Makefile,v 1.2 2009-01-04 18:16:05 sharma Exp $
 
 include ../Make.options
 
@@ -20,25 +20,11 @@ moretest:
 
 # nothing to do
 
-real: real.o
-
-real2: real2.o
-
-simple: simple.o
-
-simple2: simple2.o
-
 t: t.o  
 
 tDescartes:tDescartes.o
 
 testSturm:testSturm.o
-
-danielbug:danielbug.o
-
-danielbug1:danielbug1.o
-
-danielbug2:danielbug2.o
 
 tRootIsol:tRootIsol.o
 #=================================================

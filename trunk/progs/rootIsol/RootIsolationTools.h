@@ -79,9 +79,10 @@ template < typename RT, typename T >
   {
     RT a, b;
     std::vector<T> slv;
+    unsigned int depth;
 
     SlvSubDivData(RT a_, RT b_, std::vector<T> &slv_){
-      a=a_; b=b_; slv=slv_;
+      a=a_; b=b_; slv=slv_; depth=0;
     }
     SlvSubDivData(int sz){
       slv.reserve(sz);
@@ -522,7 +523,7 @@ void initializeSleeve(Polynomial<T> &P, int deg, RT a, RT b, unsigned int s,
       slv[i].set(SLV[i], DOUBLE_PREC);
     
     for ( int i=0; i <= deg; i++ ){
-      if( slv[i].abs_diam() < EPS){
+      if( log_2(slv[i].abs_diam()) < -EPS){
 	suffprec = false;
 	break;
       }
