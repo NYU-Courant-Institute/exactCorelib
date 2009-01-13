@@ -20,6 +20,7 @@ namespace IntervalDescartesB {
 
   template <typename Vec, typename FT> 
     unsigned int checkSleeve(Vec& slv, int deg, FT EPS){
+    cout << " Inside check Sleeve: EPS = " << EPS << endl;
   
     int type = sleeveVar(slv, deg);
     if(type < 2)
@@ -42,12 +43,23 @@ namespace IntervalDescartesB {
 	return 2;// The check will be performed later.
       }
     }
-    
+
+    cout.precision(DOUBLE_PREC);    
+    cout <<"Inside CheckSleeve "<<endl;
     // Check if the sleeve is small
     bool coeffSmall = true;
     for(int i=0; i <= deg; i++){
-      if( log_2(slv[i].get_max()) > 3-EPS)// That is, |slv[i]| > 8*2^{-EPS}
+      cout << " slv["<<i<<"] = ["<< ((slv[i].getLeft())<<EPS-3) << " , " << ((slv[i].getRight())<<EPS-3) << "]" 
+	   << (slv[i].getLeft()).uMSB() << "; 3- EPS = "<< 3-EPS<<endl;
+      //      cout <<"slv[ "<< i <<" ] =" << slv[i] << " log |slv["<<i<<"]| = "
+      //	   << (slv[i].getLeft()).uMSB() << "; 3- EPS = "<< 3-EPS<<endl;
+      if( core_max((slv[i].getLeft()).uMSB(), (slv[i].getRight()).uMSB()) < 3-EPS)
+	// That is, |slv[i]| < 8*2^{-EPS}
+	;
+      else{
 	coeffSmall=false;
+	//	break;
+      }
     }
     if(coeffSmall) return 3;
 
@@ -75,20 +87,21 @@ namespace IntervalDescartesB {
     void isolateRoots(Vec& slv, int deg, IntvData &ID,
 		      BFVecInterval &v, BFVecInterval &monotone, 
 		      std::stack<IntvData> &reinit,
-		      unsigned int EPS) {
-    
+		      int EPS) {
+
+    cout<<"Inside sleeve solver "<< endl;    
     typedef SlvSubDivData<BigFloat, BigFloat2> SlvSubDivData;
     
     std::stack< SlvSubDivData > S;
     SlvSubDivData SD(deg+1);
 
     S.push(SlvSubDivData(ID.a, ID.b, slv));
-    unsigned int scale = ID.s;
+    int scale = ID.s;
     prec_t prec = ID.p;
 
     BigFloat m;
     unsigned int type; // Identifies the type of the interval
-    unsigned int EPS_DEPTH;
+    int EPS_DEPTH;
     int logDeg = ceillg(deg);
 
     while (!S.empty()){
@@ -96,7 +109,8 @@ namespace IntervalDescartesB {
       SD = S.top(); S.pop();
       
       SlvSubDivData SDL(deg+1), SDR(deg+1);
-      deCasteljau(SD.slv, SDL.slv, SDR.slv, BigFloat2(0.5), deg);
+      deCasteljau(SD.slv, SDL.slv, SDR.slv, BigFloat2(0.5), 
+		  BigFloat2(0), BigFloat2(1), deg);
 
       m = (SD.a + SD.b).div2();
       SDL.a = SD.a; SDL.b = m; SDR.a = m; SDR.b = SD.b;
@@ -104,9 +118,12 @@ namespace IntervalDescartesB {
 
       // At SDL.depth we have an EPS_DEPTH sleeve.
       // Since since error at depth h is 2^{-EPS} * 4*deg*h.
-      EPS_DEPTH = EPS-2- logDeg - ceillg((int)SDL.depth);
+      EPS_DEPTH = EPS-2- logDeg - ceillg((long)SDL.depth);
 
       type = checkSleeve(SDL.slv, deg, EPS_DEPTH);
+      cout <<"Type of left sleeve "<< type <<" DEPTH = "<< SDL.depth
+	   << " Interval is [" << SDL.a << " , "<< SDL.b << "]"
+	   << " EPS_DEPTH = "<< EPS_DEPTH <<endl;
       
       if(type != 0){
 	if(type == 1) // Found a root
@@ -122,6 +139,10 @@ namespace IntervalDescartesB {
       }
       
       type = checkSleeve(SDR.slv, deg, EPS_DEPTH);
+      cout <<"Type of right sleeve "<< type
+	   << " Interval is [" << SDR.a << " , "<< SDR.b << "]"
+	   << " EPS_DEPTH = "<< EPS_DEPTH <<endl;
+
       if(type != 0){
 	if(type == 1) // Found a root
 	  v.push_back(BFInterval(SDR.a, SDR.b));
@@ -136,6 +157,7 @@ namespace IntervalDescartesB {
       }
       
     }
+    cout<<"Exiting sleeve solver "<< endl;    
   }
   
   /*
@@ -144,29 +166,37 @@ namespace IntervalDescartesB {
   */
   template <typename T, typename Vec>
     void isolateRoots(Polynomial<T> &P, int deg, BFInterval I, BFVecInterval &v,
-		      Vec &Binomial) {
-    
+		      BFVecInterval monotone, Vec &Binomial) {
+
+    cout<<"Inside unit interval root solver "; 
+    P.dump(); cout << endl;    
     std::vector<BigFloat2> slv(deg+1);// The sleeve for P on I. 
     //By default the prec is double precision
     
-    BFVecInterval monotone;
-    typedef IntvData<BigFloat, unsigned int, prec_t> IntvData;
+
+    typedef IntvData<BigFloat, int, prec_t> IntvData;
     std::stack<IntvData> reinit;
 
 
     reinit.push(IntvData(I.first, I.second, 0, DOUBLE_PREC));
     IntvData ID;
+    cout<<"Pused data on the stack "<< endl;    
 
     // The initializeSleeve computes a 2^{-EPS_INIT} sleeve.
-    unsigned int EPS_INIT = DOUBLE_PREC - 2;
+    int EPS_INIT = DOUBLE_PREC - 2;
+    cout <<"Initialization precision is " << EPS_INIT << endl;
     int type;
 
     while(!reinit.empty()){
       ID = reinit.top(); reinit.pop();
 
       initializeSleeve(P, deg, ID.a, ID.b, ID.s, ID.p, slv, Binomial, EPS_INIT);// Modifies ID.p
-
+      cout<<"Initialization successful: Sleeve is "<< endl;    
+      //      for(int i=0; i<= deg; i++)
+      //	cout <<"slv["<<i<<"]"<<slv[i] <<endl;
+      
       type = checkSleeve(slv, deg, EPS_INIT);
+      cout<<"Sleeve type "<< type<< endl;    
       
       if(type != 0){
 	if(type == 1) // Found a root
@@ -181,14 +211,6 @@ namespace IntervalDescartesB {
       }
     }
     
-    int sa, sb;
-    for (BFVecInterval::const_iterator it = monotone.begin();
-       it != monotone.end(); ++it) {
-      
-      sa = sign(P.eval(it->first)); sb=sign(P.eval(it->second));
-      if(sa * sb <= 0)
-	v.push_back(BFInterval(it->first, it->second));
-    }
   }
 
 
@@ -209,6 +231,11 @@ namespace IntervalDescartesB {
 
     Polynomial<BigRat> Q(P);
     BFVecInterval vT;//Temporary storage of intervals containing roots
+    BFVecInterval monotone;// Storage of intervals for which Bernstein 
+    // polynomial is monotone
+    BRVecInterval checkMonotone; // Storage of intervals for which power
+    // polynomial is monotone
+
     //std::cout<<std::endl;Q.dump();cout<<endl;
     // Construct the Bernstein coefficients of polynomial Q(x) whose roots in
     // [0,1] correspond with the roots of P(x) in [-infty, 0]. 
@@ -224,6 +251,7 @@ namespace IntervalDescartesB {
     computeMatrix(deg, Binomial);
     
     BigRat H = height(P).getRight();
+    Q.coeff()[0] /= H; Q.coeff()[deg] /= H;
     for(int i = 1; i < deg; i++){
       if(i <= deg/2)
 	Q.coeff()[i] /= (Binomial[i]*H);
@@ -232,23 +260,13 @@ namespace IntervalDescartesB {
     }
     
     // Now we know that the height of Q is smaller than one.
-    IntervalDescartesB::isolateRoots(Q, deg, BFInterval(0,1), vT, Binomial);
+    cout<<"Calling root isolation on negative half "<< endl;
+    IntervalDescartesB::isolateRoots(Q, deg, BFInterval(0,1), vT, monotone, Binomial);
 
     // Map the intervals in vT back to [0, infty], flip the signs and add to v.
     // The mapping back yields us intervals with rational endpoints.
-    BRInterval I;
-    BigRat tempa, tempb;
-    for (BFVecInterval::const_iterator it = vT.begin(); it != vT.end(); ++it){
-      tempa = (*it).first; tempb = 1- tempa;
-      I.second = -1* tempa/tempb;
-      if((*it).second != 1){
-	tempa = (*it).second; tempb = 1-tempa;
-	I.first = -1* tempa/tempb;
-      }else{
-	I.first = -B;
-      }
-      v.push_back(I);
-    }
+    getInterval(vT, v, B, false);// mapping to [-infty, 0]
+    getInterval(monotone, checkMonotone, B, false);
 
     if(P.coeff()[0] == 0)
       v.push_back(std::make_pair(0,0));
@@ -263,22 +281,23 @@ namespace IntervalDescartesB {
     //Q.dump();cout<<endl;
     
     vT.clear();// Clear the temporary vector for reuse
-    IntervalDescartesB::isolateRoots(Q, deg, BFInterval(0,1), vT, Binomial);
+    monotone.clear();// Clear the monotone vector for reuse
+    IntervalDescartesB::isolateRoots(Q, deg, BFInterval(0,1), vT, monotone, Binomial);
     //  std::cout<<"Isolated positive roots "<<std::endl;
     //  int i=0;
-    for (BFVecInterval::const_iterator it = vT.begin(); it != vT.end(); ++it){
-      //    std::cout << ++i << "th Root is in ["
-      //    << it->first << " ; " << it->second << "]" << std::endl;
-      tempa = (*it).first; tempb = 1-tempa;
-      I.first = tempa/tempb;
-      if((*it).second != 1){
-	tempa = (*it).second; tempb = 1-tempa;
-	I.second = tempa/tempb;
-      }else{
-	I.second = B;
-      }
-      v.push_back(I);
+    getInterval(vT, v, B, true);
+    getInterval(monotone, checkMonotone, B, true);
+
+    int sa, sb;
+    cout << "Number of monotone intervals " << checkMonotone.size() << endl;
+    for (BRVecInterval::const_iterator it = checkMonotone.begin();
+       it != checkMonotone.end(); ++it) {
+      
+      sa = sign(P.eval(it->first)); sb=sign(P.eval(it->second));
+      if(sa * sb <= 0)
+	v.push_back(BFInterval(it->first, it->second));
     }
+
   }
 
 

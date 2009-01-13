@@ -76,6 +76,7 @@ int main(int argc, char* argv[]) {
     else
       cout<<"../data/d30_n50.dat"<<endl;
 
+
   //This loop gives the timing for all methods applied to a certain polynomial
   for (VecString::const_iterator it = v.begin();
 	 it != v.end(); ++it) {
@@ -97,10 +98,21 @@ int main(int argc, char* argv[]) {
     //cout <<"Interval Newton:     ";
     //IntervalNewtonIsol::test(P, iter);
     cout <<"Interval Descartes: ";
-    IntervalDescartesB::test(P, iter);
+    IntervalDescartesB::test(P, 1);
  }  
- 
-  
+
+  BigFloat2 a(1.123456), b(2.123456), c;
+  cout << a.get_prec() << "  " << b.get_prec() << "  " << c.get_prec() << endl;
+  //  cout << a.get_prec() << "  " << b.get_prec() << "  " << c.get_prec() << endl;
+  c.add(a,b, 10);
+  cout << a.get_prec() << "  " << b.get_prec() << "  " << c.get_prec() << endl;
+  cout << c << endl;
+  c=a+b;
+  cout << c << endl;
+  cout << a.get_prec() << "  " << b.get_prec() << "  " << c.get_prec() << endl;
+
+  BigFloat aa(7.244403103554832e-20);
+  cout << aa.uMSB() << " " << aa.lMSB()  << endl;
   return 0;
 }
 

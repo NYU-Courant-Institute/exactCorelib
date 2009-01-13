@@ -85,7 +85,7 @@ template < typename RT, typename T >
       a=a_; b=b_; slv=slv_; depth=0;
     }
     SlvSubDivData(int sz){
-      slv.reserve(sz);
+      slv= std::vector<T>(sz);
     }
     
   };
@@ -264,28 +264,41 @@ int shiftAndSigncount(T* coeff, int deg){
 */
 
 
-// Perform deCasteljau's algorithm on P with the subdivision point
-// at num/den, and stores the left coefficients in PL and right 
-// coefficients in PR. This is the NON fraction-free variant.
-// u is the point of subdivision
+// Given the Bernstein coefficients of P w.r.t. the interval [a, b] (by default [0,1]).
+// Perform deCasteljau's algorithm on P at the point u in [a,b].
+// The Bernstein coefficients w.r.t. [a,u] are in PL and w.r.t. [u,b] in PR. 
+// This is the NON fraction-free variant.
 // Deg should be the true degree, otherwise me may return an incorrect answer
 template <typename Vec, typename T2>
-  void deCasteljau (const Vec& P, Vec& PL, Vec& PR, T2 u, int deg){
-  
+  void deCasteljau (const Vec& P, Vec& PL, Vec& PR, T2 u, T2 a, T2 b, int deg){
+  cout <<" Inside deCasteljau "<<endl;  
   //  cout<<"den = "<< den << " denLg = "<<denLg << endl;
   PL[0] = P[0]; PR[deg] = P[deg];
 
   Vec coefft(deg);
-  for(int i=0; i < deg; i++)
-    coefft[i] = u*P[i]+(1-u)*P[i+1];
-  
+
+  cout <<" Precision before addition is "<< coefft[0].get_prec()<<endl;
+  for(int i=0; i < deg; i++){
+    coefft[i] = (b-u)*P[i]+ (u-a)*P[i+1];    
+    //    coefft[i].mul(u, P[i], prec);
+    //    temp.mul(OneMinusU, P[i+1], prec);
+    //    coefft[i].add(coefft[i], temp, prec);
+  }
+
+  cout <<" Precision after addition is "<< coefft[0].get_prec()<<endl;
   PL[1] = coefft[0]; PR[deg-1] = coefft[deg-1];
 
   for(int i=2; i <= deg; i++){
-    for(int j=0; j <= deg-i; j++)
-      coefft[j] = u*coefft[j]+ (1-u)*coefft[j+1];    
+    for(int j=0; j <= deg-i; j++){
+      // Precision controled version of 
+      coefft[j] = (b-u)*coefft[j]+ (u-a)*coefft[j+1];    
+      //coefft[j].mul(u, coefft[j], prec);
+      //      temp.mul(OneMinusU, coefft[j+1], prec);
+      //      coefft[j].add(coefft[j], temp, prec);
+    }
     PL[i] = coefft[0]; PR[deg-i] = coefft[deg-i];
   }
+  cout <<" Precision after addition is "<< PL[1].get_prec()<<endl;
 }
 
 
@@ -455,6 +468,39 @@ void computeMatrix(unsigned deg, std::vector<C>& B)
     }
 }
 
+template<typename V1, typename V2, typename Bd>
+  void getInterval(V1 &vT, V2 &v, Bd B, bool isPos){
+    BRInterval I;
+    BigRat tempa, tempb;
+
+    if(!isPos){
+      for (BFVecInterval::const_iterator it = vT.begin(); it != vT.end(); ++it){
+	tempa = (*it).first; tempb = 1- tempa;
+	I.second = -1* tempa/tempb;
+	if((*it).second != 1){
+	  tempa = (*it).second; tempb = 1-tempa;
+	  I.first = -1* tempa/tempb;
+	}else{
+	  I.first = -B;
+	}
+	v.push_back(I);
+      }
+    }else{
+      for (BFVecInterval::const_iterator it = vT.begin(); it != vT.end(); ++it){
+	//    std::cout << ++i << "th Root is in ["
+	//    << it->first << " ; " << it->second << "]" << std::endl;
+	tempa = (*it).first; tempb = 1-tempa;
+	I.first = tempa/tempb;
+	if((*it).second != 1){
+	  tempa = (*it).second; tempb = 1-tempa;
+	  I.second = tempa/tempb;
+	}else{
+	  I.second = B;
+	}
+	v.push_back(I);
+      }
+    }
+}
 /*
   The number of times the sleeve defined by ubp and dbp intersects
   the x-axis. Returns 0, 1, or 2. The last
@@ -494,7 +540,7 @@ int sleeveVar(VECT& slv, int sz)
 
 
 /*
-  Computes the sleeve for the polynomial P (in poewr basis) on the
+  Computes the sleeve for the polynomial P (in Bernstein basis w.r.t. [0,1]) on the
   interval [a,b], where the scaling to be done is s and the starting precision
   is p. Sleeve is returned in slv and the precision, if increased, in p.
   B contains the binomial coefficients.
@@ -502,28 +548,43 @@ int sleeveVar(VECT& slv, int sz)
 template <typename T, typename RT, typename Vec1, typename Vec2, typename FT>
 void initializeSleeve(Polynomial<T> &P, int deg, RT a, RT b, unsigned int s, 
 		      prec_t &p, Vec1 &slv, Vec2 &B, FT EPS){
+  cout <<"Inside initalizeSleeve "<< EPS << endl;
+  
+  Polynomial<T> Q(P);
+  Q.dump() ; cout << endl;
 
-  Polynomial<T> Q(deg);
-  for(int i=0; i <= deg; i++)
-    Q.coeff()[i] = P.coeff()[i]<< s;
+  if(s != 0)
+    for(int i=0; i <= deg; i++)
+      Q.coeff()[i] <<= s;
 
+  cout <<"Scaled the polynomial by "<< s << " Interval is ["
+       << a << " , "<< b << "]"<< endl;
+  
   bool suffprec = false;
-  prec_t oldp = mpfr_get_default_prec();
-  if(p != oldp)
-    mpfr_set_default_prec(p);
 
-  std::vector<BigFloat2> SLV(deg+1);
+  std::vector<BigFloat2> SLV(deg+1); 
   
   do{
+
     suffprec = true;
     //monomialToBezier(Q, deg, a, b, SLV, B);
-    bezierToBezier(Q, deg, a, b, SLV);
-
-    for(int i=0; i<= deg; i++)
-      slv[i].set(SLV[i], DOUBLE_PREC);
+    bezierToBezier(Q, deg, a, b, SLV, p);
+    cout <<"Called bezierToBezier " << endl;
+    cout <<"Precision of high prec sleeve = "<< SLV[0].get_prec() <<endl;
+    cout.precision(SLV[0].get_prec());
+    
+    for(int i=0; i<= deg; i++){
+      slv[i].set(SLV[i], DOUBLE_PREC);		       
+      cout <<"SLV["<<i<<"] = ["<< SLV[i].getLeft() << " , " << SLV[i].getRight() << "]"
+	   << " slv["<<i<<"] = ["<< slv[i].getLeft() << " , " << slv[i].getRight() << "]" << endl;
+    }
     
     for ( int i=0; i <= deg; i++ ){
-      if( log_2(slv[i].abs_diam()) < -EPS){
+      if( (slv[i].abs_diam().uMSB() > 2-EPS) &&
+	  (slv[i].abs_diam().uMSB() > floorlg(slv[i].get_max()) + 2-EPS) ){
+	// EITHER ABS OR REL. APPROX.
+	cout <<" Not sufficient precision: slv " << slv[i].abs_diam().uMSB() << " SLV  " 
+	     << SLV[i].abs_diam().uMSB() << " Required "<< 2-EPS << endl;
 	suffprec = false;
 	break;
       }
@@ -531,13 +592,16 @@ void initializeSleeve(Polynomial<T> &P, int deg, RT a, RT b, unsigned int s,
     
     //    std::cout<<"Suff prec =" << suffprec << std::endl;
     if(!suffprec){
-      //      std::cout<<"Precision increased"<<std::endl;
-      p <<= 1;     mpfr_set_default_prec(p);;
+      p <<= 1;     //mpfr_set_default_prec(p);
+      //      for(int i=0; i <= deg; i++)
+      //      	SLV[i].set_prec(p);
+      std::cout<<"Precision increased to "<< p << std::endl;
     }
 
   }while(!suffprec);
 
-  mpfr_set_default_prec(oldp);
+  //  mpfr_set_default_prec(oldp);
+  cout <<"Exiting initializesleeve: Width is " << slv[0].abs_diam().uMSB() << " Desired is "<< (2-EPS) << endl;
 }
 
 // All arithmetic is BigFloat2 arithmetic
@@ -569,23 +633,48 @@ void monomialToBezier(Polynomial<T> &P, int deg, RT a, RT b, int s,
 
 // All arithmetic is BigFloat2 arithmetic. We know the Bernstein coefficients
 // of P on the unit interval, and we want to compute its Berstein coefficients on
-// [a,b]
-template <typename T, typename RT, typename T2>
-void bezierToBezier(Polynomial<T> &P, int deg, RT a, RT b, T2& bz){
+// [a,b]. We are using the auto version of BigFloat2 arithmetic, i.e., the precision
+// of the interval endpoints is increased automoatically. This isn't much because
+// the increase is by logarithm of the degree, as we do only O(n^2) operations.
+template <typename T, typename RT, typename T2, typename PT>
+  void bezierToBezier(Polynomial<T> &P, int deg, RT a, RT b, T2& bz, PT prec){
+  cout<<"Inside bezierToBezier"<<endl;
 
-  BigFloat2 A(a), B(b);
-  
-  std::vector<BigFloat2> tempL(deg+1), tempR(deg+1), PP(deg+1);
+  BigFloat2 A(a, prec), B(b, prec), One(1, prec), Zero(0, prec);
+
+  cout << " Initial precision is "<< A.get_prec() << endl;
+
+  std::vector<BigFloat2> tempL(deg+1), tempR(deg+1);  
   for(int i=0; i<=deg; i++)
-    PP[i] = BigFloat2(P.coeff()[i]);
+    bz[i] = BigFloat2(P.coeff()[i], prec);
 
-  // First subdivide at A if it's not zero
-  if(A != BigFloat2(0) )
-    deCasteljau(PP, tempL, tempR, A, deg);
 
-  // Then subdivide the right half on B, if it's not one
-  if(B != BigFloat2(1))
-    deCasteljau(tempR, bz, tempL, B, deg);
+  //  cout << " Precision before deCasltejau "<< bz[0].get_prec() << endl;  
+  // First subdivide [0,1] at A if it's not zero
+  if(A != BigFloat2(0) ){
+    cout<<"Subdividing at "<< A << endl;
+    deCasteljau(bz, tempL, tempR, A, Zero, One, deg);
+    cout << " Precision after deCasltejau "<< tempL[0].get_prec() << endl;  
+    /*    for(int i= 0; i <= deg; i++)
+      cout << "Input  "<<i<<" = " << bz[i] 
+	   << " Left  "<<i<<" = " << tempL[i]
+	   << " Right  "<<i<<" = " << tempR[i] << endl;
+    */
+    bz = tempR;
+  }
+
+
+  // Then subdivide [A, 1], the right half, on B, if it's not one
+  if(B != BigFloat2(1)){
+    cout<<"Subdividing at "<< B << endl;
+    deCasteljau(bz, tempL, tempR, B, A, One, deg);
+    /*    for(int i= 0; i <= deg; i++)
+      cout << "Input  "<<i<<" = " << bz[i]
+	   << " Left  "<<i<<" = " << tempL[i]
+	   << " Right  "<<i<<" = " << tempR[i] << endl;
+    */
+    bz = tempL;
+  }
 }
 
 /*
