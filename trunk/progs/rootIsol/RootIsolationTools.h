@@ -69,7 +69,7 @@ template<typename RT,typename T, typename Prec>
     Prec p;
 
     IntvData(){}
-    IntvData(const RT a_, RT b_, T s_, Prec p_){
+    IntvData(RT a_, RT b_, T s_, Prec p_){
       a = a_; b= b_; s=s_; p=p_;
     }
   };
@@ -89,6 +89,24 @@ template < typename RT, typename T >
     }
     
   };
+template < typename RT, typename T >
+  struct SlvSubDivDataDouble
+  {
+    RT a, b;
+    std::vector<T> upSlv;
+    std::vector<T> lowSlv;
+    unsigned int depth;
+
+    SlvSubDivDataDouble(RT a_, RT b_, std::vector<T> &upslv_, std::vector<T> &lowslv_){
+      a=a_; b=b_; upSlv=upslv_; lowSlv=lowslv_; depth=0;
+    }
+    SlvSubDivDataDouble(int sz){
+      upSlv= std::vector<T>(sz);
+      lowSlv= std::vector<T>(sz);
+    }
+    
+  };
+
 /*******************************************************/
 /**********PROCEDURES***********************************/
 /*******************************************************/
@@ -263,42 +281,108 @@ int shiftAndSigncount(T* coeff, int deg){
 }
 */
 
+// Decasteljau's algorithm for the special case when the 
+// the upper and the lower sleeve are given explicitly as a pair of vectors
+// and we always subdivide at the midpoint.
+template <typename T>
+void deCasteljau(const std::vector<T>& upSlv, const std::vector<T>& lowSlv, 
+			std::vector<T>& upSlvL, std::vector<T>& lowSlvL, 
+			std::vector<T>& upSlvR, std::vector<T>& lowSlvR, 
+			int deg){
+  
+  upSlvL[0] = upSlv[0]; lowSlvL[0] = lowSlv[0];
+  upSlvR[deg] = upSlv[deg]; lowSlvR[deg] = lowSlv[deg];
+
+
+  T ud[deg], ld[deg];
+  for(int i=0; i < deg; i++){
+    ud[i] = upSlv[i]+ upSlv[i+1];
+    ld[i] = lowSlv[i]+ lowSlv[i+1];
+  }
+
+  upSlvL[1] = ud[0]/2; lowSlvL[1] = ld[0]/2;
+  upSlvR[deg-1] = ud[deg-1]/2; lowSlvR[deg-1] = ld[deg-1]/2;
+  
+  T pow2;
+  for(int i=2; i <= deg; i++){
+    for(int j=0; j <= deg-i; j++){
+      ud[j] += ud[j+1]; 
+      ld[j] += ld[j+1];
+    }
+    pow2 = exp2(i);
+    upSlvL[i] = ud[0]/pow2; lowSlvL[i] = ld[0]/pow2;
+    upSlvR[deg-i] = ud[deg-i]/pow2; lowSlvR[deg-i] = ld[deg-i]/pow2;
+  }
+}
 
 // Given the Bernstein coefficients of P w.r.t. the interval [a, b] (by default [0,1]).
 // Perform deCasteljau's algorithm on P at the point u in [a,b].
 // The Bernstein coefficients w.r.t. [a,u] are in PL and w.r.t. [u,b] in PR. 
 // This is the NON fraction-free variant.
-// Deg should be the true degree, otherwise me may return an incorrect answer
-template <typename Vec, typename T2>
-  void deCasteljau (const Vec& P, Vec& PL, Vec& PR, T2 u, T2 a, T2 b, int deg){
-  cout <<" Inside deCasteljau "<<endl;  
+// Deg should be the true degree, otherwise me may return an incorrect answer.
+// isExactArith = true means increase the precision of the BigFloat2 arithmetic;
+// isExactArith = false means do BigFlaot2 arithmetic with fixed precision prec.
+template <typename Vec, typename T2, typename PT>
+  void deCasteljau (const Vec& P, Vec& PL, Vec& PR, T2 u, T2 a, T2 b, int deg,
+		    bool isExactArith, PT prec){
+  //  cout <<" Inside deCasteljau "<<endl;  
   //  cout<<"den = "<< den << " denLg = "<<denLg << endl;
   PL[0] = P[0]; PR[deg] = P[deg];
 
   Vec coefft(deg);
-
-  cout <<" Precision before addition is "<< coefft[0].get_prec()<<endl;
-  for(int i=0; i < deg; i++){
-    coefft[i] = (b-u)*P[i]+ (u-a)*P[i+1];    
-    //    coefft[i].mul(u, P[i], prec);
-    //    temp.mul(OneMinusU, P[i+1], prec);
-    //    coefft[i].add(coefft[i], temp, prec);
-  }
-
-  cout <<" Precision after addition is "<< coefft[0].get_prec()<<endl;
-  PL[1] = coefft[0]; PR[deg-1] = coefft[deg-1];
-
-  for(int i=2; i <= deg; i++){
-    for(int j=0; j <= deg-i; j++){
-      // Precision controled version of 
-      coefft[j] = (b-u)*coefft[j]+ (u-a)*coefft[j+1];    
-      //coefft[j].mul(u, coefft[j], prec);
-      //      temp.mul(OneMinusU, coefft[j+1], prec);
-      //      coefft[j].add(coefft[j], temp, prec);
+  T2 x, xT, y;
+  y.sub(u, a, prec);
+  xT.sub(b, a, prec);
+  x.div(y, xT, prec);
+  /*  cout << "Precision of u " << u.get_prec() << endl;
+  cout << "Precision of a " << a.get_prec() << endl;
+  cout << "Precision of b " << b.get_prec() << endl;
+  cout << "Precision of b-a " << xT.get_prec() << endl;
+  cout << "Precision of x " << x.get_prec() << endl;
+  */
+  if(isExactArith){
+    //cout <<" Precision before addition is "<< coefft[0].get_prec()<<endl;
+    for(int i=0; i < deg; i++){
+      coefft[i] = (1-x)*P[i]+ x*P[i+1];    
     }
-    PL[i] = coefft[0]; PR[deg-i] = coefft[deg-i];
+
+    //    cout <<" Precision after addition is "<< coefft[0].get_prec()<<endl;
+    PL[1] = coefft[0]; PR[deg-1] = coefft[deg-1];
+    
+    for(int i=2; i <= deg; i++){
+      for(int j=0; j <= deg-i; j++){
+	coefft[j] = (1-x)*coefft[j]+ x*coefft[j+1];    
+      }
+      PL[i] = coefft[0]; PR[deg-i] = coefft[deg-i];
+    }
+    //    cout <<" Precision after addition is "<< PL[1].get_prec()<<endl;
+  }else{
+    //    cout <<" Subdivision ratio  "<< x<<endl;
+    T2 temp, temp1, OneMinusX;
+    OneMinusX.sub(1, x, prec);
+    //    cout <<" Precision before addition is "<< coefft[0].get_prec()<<endl;
+    for(int i=0; i < deg; i++){
+      // coefft[i] = (1-x)*P[i]+ x*P[i+1];    
+      temp1.mul(x, P[i+1], prec);// temp1 = x*P[i+1]
+      temp.mul(OneMinusX, P[i], prec);// temp = (1-x)*P[i]
+      coefft[i].add(temp1, temp, prec);
+    }
+
+    //    cout <<" Precision after addition is "<< coefft[0].get_prec()<<endl;
+    PL[1] = coefft[0]; PR[deg-1] = coefft[deg-1];
+
+    for(int i=2; i <= deg; i++){
+      for(int j=0; j <= deg-i; j++){
+	// Precision controled version of 
+	// coefft[j] = (1-x)*coefft[j]+ x*coefft[j+1];    
+	temp.mul(OneMinusX, coefft[j], prec);// temp = (1-x) * coefft[j]
+	temp1.mul(x, coefft[j+1], prec);// temp1 = x* coefft[j+1]
+	coefft[j].add(temp, temp1, prec);
+      }
+      PL[i] = coefft[0]; PR[deg-i] = coefft[deg-i];
+    }
+    //    cout <<" Precision after addition is "<< PL[1].get_prec()<<endl;
   }
-  cout <<" Precision after addition is "<< PL[1].get_prec()<<endl;
 }
 
 
@@ -313,6 +397,8 @@ void deCasteljau (const T1* P, T1* PL,
 		  T1* PR, int deg,  BigInt num, BigInt den){
   
   unsigned long denLg = floorLg(den);
+  if(den == 1)
+    denLg =1;
   //  cout<<"den = "<< den << " denLg = "<<denLg << endl;
   PL[0] = P[0]<<(deg*denLg); PR[deg] = P[deg]<<(deg*denLg);
   BigInt den_num = den - num;
@@ -469,6 +555,42 @@ void computeMatrix(unsigned deg, std::vector<C>& B)
 }
 
 template<typename V1, typename V2, typename Bd>
+  void getInterval(V1 &vT, V2 &v, Bd B, bool isPos, bool isUnit){
+
+  BigRat tempa, tempb;
+
+  if(isUnit){
+    if(isPos){
+      for (BFVecInterval::const_iterator it = vT.begin(); it != vT.end(); ++it)
+	v.push_back(BRInterval((*it).first, (*it).second));
+    }else{
+      for (BFVecInterval::const_iterator it = vT.begin(); it != vT.end(); ++it){
+	tempa = (*it).first; tempb = (*it).second;
+	v.push_back(BRInterval(-tempb, -tempa));
+      }
+    }
+  }else{
+    if(isPos){
+      for (BFVecInterval::const_iterator it = vT.begin(); it != vT.end(); ++it){
+	tempa = (*it).first; tempb = (*it).second;
+	if((*it).first != 0)
+	  v.push_back(BRInterval(1/tempb, 1/tempa));
+	else
+	  v.push_back(BRInterval(1/tempb, BigRat(B)));
+      }
+    }else{
+      for (BFVecInterval::const_iterator it = vT.begin(); it != vT.end(); ++it){
+	tempa = (*it).first; tempb = (*it).second;
+	if(tempa != 0)
+	  v.push_back(BRInterval(-1/tempa, -1/tempa));
+	else
+	  v.push_back(BRInterval(-B, -1/tempb));
+      }
+    }
+  }
+}
+
+template<typename V1, typename V2, typename Bd>
   void getInterval(V1 &vT, V2 &v, Bd B, bool isPos){
     BRInterval I;
     BigRat tempa, tempb;
@@ -538,53 +660,86 @@ int sleeveVar(VECT& slv, int sz)
   return num; //either zero or one
 }
 
+template <typename VECT>
+int sleeveVar(VECT& upSlv, VECT& lowSlv, int sz){
+ int lastsign=0, currsign, num=0;
+  int ui, di;
+  for(int i=0; i<= sz; i++){
+    ui = sgn(upSlv[i]); di = sgn(lowSlv[i]);
+    //    cout<<"sgn ubp["<<i<<"]="<< ui << " sgn dbp["<<i<<"]="<< di << std::endl;
+    if(ui * di >= 0){
+      currsign = sign(ui+di); // currsign is zero only if both ui and di are zero
+      if(currsign != 0){
+	if(lastsign * currsign < 0) num++;
+	if(num > 1) return num;
+	lastsign = currsign;
+      }
+    }
+    if(ui * di < 0){
+      if(i == 0 || i == sz -1) // Cannot decide if there is an indecisive crossing in starting or end.
+	return 2;
+      else{
+	lastsign *=-1;
+	num ++;
+	if(num > 1) return num;
+      }
+    }
+  }
+  return num; //either zero or one
+
+}
+
 
 /*
   Computes the sleeve for the polynomial P (in Bernstein basis w.r.t. [0,1]) on the
   interval [a,b], where the scaling to be done is s and the starting precision
   is p. Sleeve is returned in slv and the precision, if increased, in p.
   B contains the binomial coefficients.
+  The boolean variable isExactArith tells us whether the Bigfloat2 precision
+  is increased during arithmetic or we keep it fixed to EPS.
  */
 template <typename T, typename RT, typename Vec1, typename Vec2, typename FT>
 void initializeSleeve(Polynomial<T> &P, int deg, RT a, RT b, unsigned int s, 
-		      prec_t &p, Vec1 &slv, Vec2 &B, FT EPS){
-  cout <<"Inside initalizeSleeve "<< EPS << endl;
+		      prec_t &p, Vec1 &slv, Vec2 &B, bool isExactArith, FT EPS){
+  //  cout <<"Inside initalizeSleeve "<< EPS << endl;
   
   Polynomial<T> Q(P);
-  Q.dump() ; cout << endl;
+  //  Q.dump() ; cout << endl;
 
   if(s != 0)
     for(int i=0; i <= deg; i++)
       Q.coeff()[i] <<= s;
 
-  cout <<"Scaled the polynomial by "<< s << " Interval is ["
-       << a << " , "<< b << "]"<< endl;
+  //  cout <<"Scaled the polynomial by "<< s << " Interval is ["
+  //       << a << " , "<< b << "]"<< endl;
   
   bool suffprec = false;
+  long logWidth;
 
   std::vector<BigFloat2> SLV(deg+1); 
   
   do{
 
     suffprec = true;
-    //monomialToBezier(Q, deg, a, b, SLV, B);
-    bezierToBezier(Q, deg, a, b, SLV, p);
-    cout <<"Called bezierToBezier " << endl;
-    cout <<"Precision of high prec sleeve = "<< SLV[0].get_prec() <<endl;
-    cout.precision(SLV[0].get_prec());
+    //monomialToBezier(Q, deg, a, b, SLV, B, p);
+    bezierToBezier(Q, deg, a, b, SLV, isExactArith, p);
+    //    cout <<"Called bezierToBezier " << endl;
+    //    cout <<"Precision of high prec sleeve = "<< SLV[0].get_prec() <<endl;
+    //    cout.precision(SLV[0].get_prec());
     
     for(int i=0; i<= deg; i++){
       slv[i].set(SLV[i], DOUBLE_PREC);		       
-      cout <<"SLV["<<i<<"] = ["<< SLV[i].getLeft() << " , " << SLV[i].getRight() << "]"
-	   << " slv["<<i<<"] = ["<< slv[i].getLeft() << " , " << slv[i].getRight() << "]" << endl;
+      //      cout <<"SLV["<<i<<"] = ["<< SLV[i].getLeft() << " , " << SLV[i].getRight() << "]"
+      //   << " slv["<<i<<"] = ["<< slv[i].getLeft() << " , " << slv[i].getRight() << "]" << endl;
     }
     
     for ( int i=0; i <= deg; i++ ){
-      if( (slv[i].abs_diam().uMSB() > 2-EPS) &&
-	  (slv[i].abs_diam().uMSB() > floorlg(slv[i].get_max()) + 2-EPS) ){
+      logWidth = slv[i].abs_diam().uMSB();// If the interval endpoints are same them Zero is returned
+      if( (logWidth != 0) && (logWidth > 2-EPS) ){
+	  //	  &&	  (logWidth > floorlg(slv[i].get_max()) + 2-EPS) ){
 	// EITHER ABS OR REL. APPROX.
-	cout <<" Not sufficient precision: slv " << slv[i].abs_diam().uMSB() << " SLV  " 
-	     << SLV[i].abs_diam().uMSB() << " Required "<< 2-EPS << endl;
+	//	cout <<" Not sufficient precision: slv " << slv[i].abs_diam().uMSB() << " SLV  " 
+	//		     << SLV[i].abs_diam().uMSB() << " Required "<< 2-EPS << endl;
 	suffprec = false;
 	break;
       }
@@ -595,27 +750,28 @@ void initializeSleeve(Polynomial<T> &P, int deg, RT a, RT b, unsigned int s,
       p <<= 1;     //mpfr_set_default_prec(p);
       //      for(int i=0; i <= deg; i++)
       //      	SLV[i].set_prec(p);
-      std::cout<<"Precision increased to "<< p << std::endl;
+      //      std::cout<<"Precision increased to "<< p << std::endl;
     }
 
   }while(!suffprec);
 
   //  mpfr_set_default_prec(oldp);
-  cout <<"Exiting initializesleeve: Width is " << slv[0].abs_diam().uMSB() << " Desired is "<< (2-EPS) << endl;
+  //  cout <<"Exiting initializesleeve: Width is " << slv[0].abs_diam().uMSB() << " Desired is "<< (2-EPS) << endl;
 }
 
 // All arithmetic is BigFloat2 arithmetic
-template <typename T, typename RT, typename T2, typename Vec>
+template <typename T, typename RT, typename T2, typename Vec, typename PREC>
 void monomialToBezier(Polynomial<T> &P, int deg, RT a, RT b, int s, 
-		      T2& bz, Vec &Bin){
+		      T2& bz, Vec &Bin, PREC p){
 
   Polynomial<BigFloat2> PP(P);
-  BigFloat2 A(a), B(b);
+  BigFloat2 A(a, p), B(b, p);
 
-  if(A !=0) 
+  if(A != BigFloat2(0)) 
     shift(PP.coeff(), deg, A);
 
-  scale(PP.coeff(), deg, B-A, PP.coeff());
+  if(B-A != BigFloat2(1))
+    scale(PP.coeff(), deg, B-A, PP.coeff());
 
   bz[0] = PP.coeff()[0]; bz[deg] = PP.coeff()[deg];
   for(unsigned i = 1; i < deg; i++){
@@ -637,12 +793,13 @@ void monomialToBezier(Polynomial<T> &P, int deg, RT a, RT b, int s,
 // of the interval endpoints is increased automoatically. This isn't much because
 // the increase is by logarithm of the degree, as we do only O(n^2) operations.
 template <typename T, typename RT, typename T2, typename PT>
-  void bezierToBezier(Polynomial<T> &P, int deg, RT a, RT b, T2& bz, PT prec){
-  cout<<"Inside bezierToBezier"<<endl;
+  void bezierToBezier(Polynomial<T> &P, int deg, RT a, RT b, T2& bz, bool isExactArith, 
+		      PT prec){
+  //  cout<<"Inside bezierToBezier"<<endl;
 
   BigFloat2 A(a, prec), B(b, prec), One(1, prec), Zero(0, prec);
 
-  cout << " Initial precision is "<< A.get_prec() << endl;
+  //  cout << " Initial precision is "<< A.get_prec() << endl;
 
   std::vector<BigFloat2> tempL(deg+1), tempR(deg+1);  
   for(int i=0; i<=deg; i++)
@@ -651,10 +808,10 @@ template <typename T, typename RT, typename T2, typename PT>
 
   //  cout << " Precision before deCasltejau "<< bz[0].get_prec() << endl;  
   // First subdivide [0,1] at A if it's not zero
-  if(A != BigFloat2(0) ){
-    cout<<"Subdividing at "<< A << endl;
-    deCasteljau(bz, tempL, tempR, A, Zero, One, deg);
-    cout << " Precision after deCasltejau "<< tempL[0].get_prec() << endl;  
+  if(A != Zero ){
+    //    cout<<"Subdividing at "<< A << endl;
+    deCasteljau(bz, tempL, tempR, A, Zero, One, deg, isExactArith, prec);
+    //    cout << " Precision after deCasltejau "<< tempL[0].get_prec() << endl;  
     /*    for(int i= 0; i <= deg; i++)
       cout << "Input  "<<i<<" = " << bz[i] 
 	   << " Left  "<<i<<" = " << tempL[i]
@@ -664,10 +821,10 @@ template <typename T, typename RT, typename T2, typename PT>
   }
 
 
-  // Then subdivide [A, 1], the right half, on B, if it's not one
-  if(B != BigFloat2(1)){
-    cout<<"Subdividing at "<< B << endl;
-    deCasteljau(bz, tempL, tempR, B, A, One, deg);
+  // Then subdivide [A, 1], the right half, at B if it's not one
+  if(B != One){
+    //    cout<<"Subdividing at "<< B << endl;
+    deCasteljau(bz, tempL, tempR, B, A, One, deg, isExactArith, prec);
     /*    for(int i= 0; i <= deg; i++)
       cout << "Input  "<<i<<" = " << bz[i]
 	   << " Left  "<<i<<" = " << tempL[i]
@@ -675,6 +832,54 @@ template <typename T, typename RT, typename T2, typename PT>
     */
     bz = tempL;
   }
+}
+
+/*
+  Returns the Bernstein coefficient of P on [0,1] in Q
+  if isPos=true; otherwise the Bernstein coefficients are w.r.t. [-1,0].
+ */
+template <typename T, typename FT, typename VEC>
+  void convertToBernstein(const Polynomial<T> &P, Polynomial<FT> &Q, 
+			  int deg, VEC &Binomial,
+			  bool isPos, bool fractionFree){
+
+  for(int i=0; i <= deg; i++){
+    Q.coeff()[i] = P.coeff()[i];
+  }
+  
+  if(!isPos){
+    for(int i=0; i <= deg; i++)
+      if(i % 2 != 0){
+	Q.coeff()[i] *= -1;
+      }
+  }
+
+  if(fractionFree){
+    BigInt degfact=1, ifact=1;
+    for(int i=1; i<= deg; i++)
+      degfact *=i;
+    
+    Q.coeff()[0]*= degfact; Q.coeff()[deg] *= degfact; 
+    degfact = div_exact(degfact, deg);
+    
+    for(int i=1; i< deg; i++){
+      Q.coeff()[i] *= ifact * degfact;
+      ifact *= (i+1); degfact = div_exact(degfact, deg -i);
+    }
+  }else{
+    for(int i = 1; i < deg; i++){
+      if(i <= deg/2){
+	Q.coeff()[i] /= Binomial[i];
+      }
+      else{
+	Q.coeff()[i] /= Binomial[deg-i];
+      }
+    }
+  }
+  for(int i =1; i<= deg; i++)
+    for(int j=deg; j >= i; j--){
+      Q.coeff()[j]+= Q.coeff()[j-1];
+    }
 }
 
 /*

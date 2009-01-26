@@ -130,7 +130,7 @@ void test(const Polynomial<NT>& P, int n=10) {
   
   BRVecInterval v;
   
-  Timer t1;
+  Timer2 t1;
   t1.start();
   for(int i=1; i <= n ; i++)
     isolateRoots(P, v);

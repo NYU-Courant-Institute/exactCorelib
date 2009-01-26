@@ -3,8 +3,8 @@
   basis representation of intermediate polynomials. 
   This is Lane-Reisenfeld's algorithm.
  */
-#ifndef __DESCARTESB_H__
-#define __DESCARTESB_H__
+#ifndef __DESCARTESB2_H__
+#define __DESCARTESB2_H__
 
 #define CORE_LEVEL 4
 #include<stack>
@@ -14,7 +14,7 @@
 using namespace CORE;
 using namespace std;
 
-namespace DescartesB {
+namespace DescartesB2 {
   
 int COUNTER = 0;
 
@@ -126,9 +126,10 @@ void isolateRoots(const Polynomial<T>& P, const BFInterval I, int deg,
 //This is obtained by first computing the Taylor shift by a of the polynomial
 //and then doing a contraction by b-a.
 //Again v contains the sorted list of intervals.
-template <typename T>
-void isolateRoots(const Polynomial<T>& P, BFInterval I, BFVecInterval& v){
-}
+//template <typename T>
+//void isolateRoots(const Polynomial<T>& P, BFInterval I, BFVecInterval& v){
+//}
+
 
 
 
@@ -143,62 +144,63 @@ void isolateRoots(const Polynomial<T>& P, BRVecInterval& v)
     return;
   //    cout<< "Polynomial is a constant" << endl;
 
-  //Compute an upper bound on the positive roots of P
-  BigFloat B = CauchyUpperBound(P);
+  Polynomial<T> Q(deg);
 
+  std::vector<int> Binomial;
 
-  Polynomial<T> Q(P);
+  T B = CauchyUpperBound(P).get_z(GMP_RNDU);
+
   BFVecInterval vT;//Temporary storage of intervals containing roots
   //std::cout<<std::endl;Q.dump();cout<<endl;
-  // Construct the Bernstein coefficients of polynomial Q(x) whose roots in
-  // [0,1] correspond with the roots of P(x) in [-infty, 0]. 
 
-  //  std::cout<<"Flipping signs "<<std::endl;
-  // First flip the signs of odd coeffs.
-  for(int i=1; i<= deg; i++){
-    if(i % 2 != 0)
-      Q.coeff()[i] *=-1;
-  }
-  //  std::cout<<"Flipped signs "<<std::endl;
-  //  Q.dump();cout<<endl;
-  // Then multiply the ith coefficient by n!/{n \choose i} = i!(n-i)!, n = deg.
-  BigInt degfact=1, ifact=1;
-  for(int i=1; i<= deg; i++)
-    degfact *=i;
+  /***** STANDARD PROCDURE: MAP THE INTERVAL [-B, B] to [0,1] -- INEFFICIENT
+  Polynomial<T> R(deg);
+  shift(P.coeff(), deg, -B, R.coeff());
+  contract(R.coeff(), deg, 2*B, R.coeff());
+  convertToBernstein(R, Q, deg, Binomial, true, true);
+  DescartesB2::isolateRoots(Q, BFInterval(0,1), deg, vT);  
+  ****/
 
-  Q.coeff()[0]*= degfact; Q.coeff()[deg] *= degfact; degfact = div_exact(degfact, deg);
-  
-  for(int i=1; i< deg; i++){
-    Q.coeff()[i] *= ifact * degfact;
-    ifact *= (i+1); degfact = div_exact(degfact, deg -i);
-  }
-  //  std::cout<<"Constructed fraction free Bernstein coeffs for negative part "<<std::endl;
-  //  Q.dump();cout<<endl;
+  /***** ISOLATE ROOTS IN [0, 1] *****/
 
+  // First get the Bernstein coefficients w.r.t. [0,1]
+  convertToBernstein(P, Q, deg, Binomial, true, true);
+  // Isolating roots.
   isolateRoots(Q, BFInterval(0,1), deg, vT);
-  //  std::cout<<"Isolated negative roots "<<std::endl;
+  // Getting back the intervals on [0,1]
+  getInterval(vT, v, B, true, true);
+  vT.clear();
+  //  std::cout<<"Isolated roots in [0,1] "<<std::endl;
 
-  // Map the intervals in vT back to [-infty, 0], flip the signs and add to v.
-  // The mapping back yields us intervals with rational endpoints.
-  getInterval(vT, v, B, false);
+  /***** ISOLATE ROOTS IN [1,infty] *****/
 
-  if(P.coeff()[0] == 0)
-    v.push_back(std::make_pair(0,0));
-
-  // Now isolate the roots of P(X) in $[0, infty]$. We first flip back the
-  // signs of the odd coeffs of Q(x), and then isolate its roots in [0,1]
-  for(int i=1; i<= deg; i++){
-    if(i % 2 != 0)
-      Q.coeff()[i] *=-1;
-  }
-  //std::cout<<"Constructed fraction free Bernstein coeffs for positive part "<<std::endl;
-  //Q.dump();cout<<endl;
-
+  // First reverse the polynomial
+  Polynomial <T> R(P); R.reverse();
+  // Get the Bernstein coefficients w.r.t. [0,1] of the reversed polynomial
+  convertToBernstein(R, Q, deg, Binomial, true, true);
+  // Then isolate the roots of P in (1, infty) or the roots of R in (0,1)
+  isolateRoots(Q, BFInterval(0,1), deg, vT);
+  // Convert the intervals in [0,1] to [1, infty]
+  getInterval(vT, v, B, true, false);
   vT.clear();// Clear the temporary vector for reuse
-  isolateRoots(Q, BFInterval(0,1), deg, vT);
-  //  std::cout<<"Isolated positive roots "<<std::endl;
-  getInterval(vT, v, B, true);
 
+  /***** ISOLATE ROOTS IN [-1, 0] *****/
+  // First get the Bernstein coefficients w.r.t. [0,1] of P(-X)
+  convertToBernstein(P, Q, deg, Binomial, false, true);
+  // Isolate the roots of P in (-1, 0), i.e., the roots of Q in (0,1)
+  isolateRoots(Q, BFInterval(0,1), deg, vT);
+  // Convert the intervals in [0,1] to [-1,0]
+  getInterval(vT, v, B, false, true);
+  vT.clear();
+
+  /***** ISOLATE ROOTS IN [-infty, -1] *****/
+  // First get the Bernstein coefficients w.r.t. [0,1] of P(-1/X)
+  convertToBernstein(R, Q, deg, Binomial, false, true);
+  // Isolate the roots of P in [-infty, -1], i.e., the roots of Q in (0,1)
+  isolateRoots(Q, BFInterval(0,1), deg, vT);
+  // Convert the intervals in [0,1] to [-infty, -1]  
+  getInterval(vT, v, B, false, false);
+  
   // Should sort the vector 
   //  std::sort(v.begin(), v.end());
 }
@@ -241,7 +243,14 @@ void test(Polynomial<NT>& P, int n) {
   std::cout << " #roots = " << v.size()/n;
   std::cout<<" Time " << t1.getSeconds()/n <<endl;
   //  std::cout<<" Time per evaluation " << t1.getSeconds()/(COUNTER) <<std::endl;
+  int i=0;
+  for (BRVecInterval::const_iterator it = v.begin();
+       i != v.size()/n; ++it) {
+    std::cout << ++i << "th Root is in ["
+	      << it->first << " ; " << it->second << "]" << std::endl;
+    }
+
 }
 
-}// end namespace DescartesB
-#endif // __DESCARTESB_H__
+}// end namespace DescartesB2
+#endif // __DESCARTESB2_H__

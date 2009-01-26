@@ -104,23 +104,22 @@ void isolateRoots(Polynomial<T>& P, BFInterval I, BFVecInterval& v){
   
   BigFloat a = I.first, b=I.second;
   
-  int n = P.getTrueDegree();
-  BigFloat temp1[n + 1], temp2[n+1];
+  BigFloat temp1[deg + 1], temp2[deg+1];
 
-  shift(P.coeff(), n, a, temp1);
-  contract(temp1, n, b-a, temp2);
+  shift(P.coeff(), deg, a, temp1);
+  contract(temp1, deg, b-a, temp2);
 
 
 
   if(P.eval(a) == 0)
     v.push_back(std::make_pair(a, a));
 
-  Polynomial<BigFloat> R(n, temp2);
+  Polynomial<BigFloat> R(deg, temp2);
   //cout <<"Corresponding polynomial with roots in unit interval ";R.dump();
   //cout <<endl;
   //COUNTER=0;
   
-  isolateRoots(R, I, n, v);
+  isolateRoots(R, I, deg, v);
 
   //  std::cout << "Number of recursive steps = " << COUNTER << std::endl;
   
@@ -170,10 +169,10 @@ void isolateRoots(Polynomial<T>& P, BRVecInterval& v)
     P.mulXpower(-1); // Changes the true degree
   }
 
+  T B = CauchyUpperBound(P).get_z(GMP_RNDU);
   // First isolate the roots of P in the unit interval
-  isolateRoots(P, BFInterval(0,1), P.getTrueDegree(), vT);
-  for (BFVecInterval::const_iterator it = vT.begin(); it != vT.end(); ++it)
-    v.push_back(BRInterval((*it).first, (*it).second));
+  DescartesP::isolateRoots(P, BFInterval(0,1), P.getTrueDegree(), vT);
+  getInterval(vT, v, B, true, true);
   vT.clear();
 
   // Check if one is a root of P
@@ -181,17 +180,8 @@ void isolateRoots(Polynomial<T>& P, BRVecInterval& v)
     v.push_back(BRInterval(1,1));
 
 // Then isolate the roots of P in (1, infty) or the roots of Q in (0,1)
-  isolateRoots(Q, BFInterval(0,1), Q.getTrueDegree(), vT);
-  BigRat tempa, tempb;
-  T B = CauchyUpperBound(P).get_z(GMP_RNDU);
-
-  for (BFVecInterval::const_iterator it = vT.begin(); it != vT.end(); ++it){
-    tempa = (*it).first; tempb = (*it).second;
-    if((*it).first != 0)
-      v.push_back(BRInterval(1/tempb, 1/tempa));
-    else
-      v.push_back(BRInterval(1/tempb, BigRat(B)));
-  }
+  DescartesP::isolateRoots(Q, BFInterval(0,1), Q.getTrueDegree(), vT);
+  getInterval(vT, v, B, true, false);
   vT.clear();
 
   Polynomial<T> R(deg);
@@ -206,11 +196,8 @@ void isolateRoots(Polynomial<T>& P, BRVecInterval& v)
   // Isolate the roots of P in (-1, 0), i.e., the roots of R in (0,1)
   //  cout<<"Isolate roots in (-1, 0)"<<endl;
   //  R.dump();
-  isolateRoots(R, BFInterval(0,1), R.getTrueDegree(), vT);
-  for (BFVecInterval::const_iterator it = vT.begin(); it != vT.end(); ++it){
-    tempa = (*it).first; tempb = (*it).second;
-    v.push_back(BRInterval(-tempb, -tempa));
-  }
+  DescartesP::isolateRoots(R, BFInterval(0,1), R.getTrueDegree(), vT);
+  getInterval(vT, v, B, false, true);
   vT.clear();
 
   // Check if -one is a root of P
@@ -218,15 +205,8 @@ void isolateRoots(Polynomial<T>& P, BRVecInterval& v)
     v.push_back(BRInterval(-1,-1));
 
   // Isolate the roots of P in [-infty, -1], i.e., the roots of Q in (0,1)
-  isolateRoots(Q, BFInterval(0,1), Q.getTrueDegree(), vT);
-  for (BFVecInterval::const_iterator it = vT.begin(); it != vT.end(); ++it){
-    tempa = (*it).first; tempb = (*it).second;
-    if(tempa != 0)
-      v.push_back(BRInterval(-1/tempa, -1/tempa));
-    else
-      v.push_back(BRInterval(-B, -1/tempb));
-  }
-
+  DescartesP::isolateRoots(Q, BFInterval(0,1), Q.getTrueDegree(), vT);
+  getInterval(vT, v, B, false, false);
   // std::sort(v.begin(), v.end());
   
 }
@@ -258,7 +238,7 @@ void test(Polynomial<NT>& P, int n) {
   
   BRVecInterval v;
   
-  Timer t1;
+  Timer2 t1;
   t1.start();
   for(int i=1; i <= n ; i++)
     isolateRoots(P, v);
