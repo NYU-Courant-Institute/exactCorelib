@@ -12,9 +12,9 @@
 *
 *                    http://cs.nyu.edu/exact/
 *        
-*  Copyright (c) 1998-2007 by Exact Computation Project, NYU
+*  Copyright (c) 1998-2009 by Exact Computation Project, NYU
 *
-*  $Id: README,v 1.7 2007-04-02 00:51:13 exact Exp $
+*  $Id: README,v 1.8 2009-02-05 16:25:03 exact Exp $
 *************************************************************
 
 README FILE: TABLE OF CONTENTS
@@ -267,10 +267,21 @@ README FILE: TABLE OF CONTENTS
         NOW we are ready to proceed with installing gmp.
         Choose one of the following three situations that apply to you:
 
-        b) YOU HAVE AN INSTALLED GMP IS ALL READY TO GO:
+        b) YOU HAVE AN INSTALLED GMP ALL READY TO GO:
         You already have GMP header files and library files on 
         your system directory, AND they can be found by your
         C++ compiler.  In this case, there is nothing to do.
+	E.g., you had previously downloaded a Full Version Core Library
+	and successfully installed it, then it will have the subdirectories
+	"gmp" and "mpfr"; then you can link that "gmp" and "mpfr"
+	into your new Core library directory.
+
+		% cd ${CORE_PATH}
+		% ln -s ${PREVIOUS_CORE_PATH}/gmp gmp
+		% ln -s ${PREVIOUS_CORE_PATH}/mpfr mpfr
+
+	That is it!
+
         In any case, if you want to quickly check if you are in this
         best case situation, do the following:
 
