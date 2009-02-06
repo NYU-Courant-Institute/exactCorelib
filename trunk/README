@@ -14,7 +14,7 @@
 *        
 *  Copyright (c) 1998-2009 by Exact Computation Project, NYU
 *
-*  $Id: README,v 1.8 2009-02-05 16:25:03 exact Exp $
+*  $Id: README,v 1.9 2009-02-06 00:50:21 exact Exp $
 *************************************************************
 
 README FILE: TABLE OF CONTENTS
@@ -271,16 +271,6 @@ README FILE: TABLE OF CONTENTS
         You already have GMP header files and library files on 
         your system directory, AND they can be found by your
         C++ compiler.  In this case, there is nothing to do.
-	E.g., you had previously downloaded a Full Version Core Library
-	and successfully installed it, then it will have the subdirectories
-	"gmp" and "mpfr"; then you can link that "gmp" and "mpfr"
-	into your new Core library directory.
-
-		% cd ${CORE_PATH}
-		% ln -s ${PREVIOUS_CORE_PATH}/gmp gmp
-		% ln -s ${PREVIOUS_CORE_PATH}/mpfr mpfr
-
-	That is it!
 
         In any case, if you want to quickly check if you are in this
         best case situation, do the following:
@@ -293,7 +283,7 @@ README FILE: TABLE OF CONTENTS
         If you pass the test, you may go to STAGE 2.
 
         c) YOU HAVE AN INSTALLED GMP BUT CORE COULD NOT FIND IT:
-        Assuming you a properly installed GMP in some 
+        Assuming you have a properly installed GMP in some 
         directory which cannot be found by the above test, then make a 
         symbolic link from ${CORE_PATH}/gmp using the following command:
 
@@ -307,6 +297,11 @@ README FILE: TABLE OF CONTENTS
         header file and library files in /usr/local/include
         and /usr/local/lib (respectively).  Hence, in this case,
         ${your_gmp_install_dir}=/usr/local.
+
+	E.g., You had successfully installed an older version of Corelib
+	in ${OLD_CORE_PATH}.  Say gmp and mpfr are in these
+	directories.  Then you can simply link from ${CORE_PATH} to
+	both these directories as above.
 
         d) YOU NEED TO INSTALL GMP:
         In this case, we may assume that you have downloaded
