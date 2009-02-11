@@ -1,5 +1,5 @@
 # Makefile for Core Library
-# $Id: Makefile,v 1.8 2008-03-17 03:08:17 exact Exp $
+# $Id: Makefile,v 1.9 2009-02-11 03:17:10 exact Exp $
 
 #################################################################
 #
@@ -25,8 +25,8 @@ include Make.config
 #	gmp paths  
 #	mpfr paths  
 #################################################################
-gmp	    := gmp-4.2.2
-mpfr	    := mpfr-2.3.1
+gmp	    := gmp-4.2.4
+mpfr	    := mpfr-2.4.0
 
 #################################################################
 #	Default make target 

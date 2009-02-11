@@ -14,7 +14,7 @@
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *
- * $Id: linearAlgebra.h,v 1.3 2008-12-11 21:24:17 exact Exp $
+ * $Id: linearAlgebra.h,v 1.4 2009-02-11 03:17:10 exact Exp $
  *****************************************************************/
 
 #ifndef CORE_LINEAR_ALGEBRA_H
@@ -163,7 +163,7 @@ Matrix transpose(const Matrix&);
 
 double det(const double a, const double b,
                 const double c, const double d);
-double det(const Vector u, const Vector & v);  // u,v are 2d vectors
+double det(const Vector u, const Vector v);  // u,v are 2d vectors
    
 std::istream& operator>>(std::istream&, Matrix&);
 std::ostream& operator<<(std::ostream&, const Matrix&);

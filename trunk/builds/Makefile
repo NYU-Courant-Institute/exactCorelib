@@ -1,7 +1,7 @@
 # Makefile for preparing softwares 
 
-GMP=gmp-4.2.2
-MPFR=mpfr-2.3.1
+GMP=gmp-4.2.4
+MPFR=mpfr-2.4.0
 SIP=sip-4.3.2
 
 PLATFORM=macx-g++

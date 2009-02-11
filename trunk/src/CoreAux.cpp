@@ -19,7 +19,7 @@
  * WWW URL: http://cs.nyu.edu/exact/core
  * Email: exact@cs.nyu.edu
  *
- * $Id: CoreAux.cpp,v 1.10 2008-08-20 16:00:25 exact Exp $
+ * $Id: CoreAux.cpp,v 1.11 2009-02-11 03:17:10 exact Exp $
  ***************************************************************************/
 #include <CORE/Config.h>
 #include <CORE/CoreDefs.h>
@@ -46,6 +46,7 @@ long gcd(long x, long y)
  * 8/20/2008, Yap/Haag: we had to comment this out to compile
  * on the machine "jinai", Linux Intel 64 bit machine:
  *
+************************** */
 #if defined (gnu) || (cyg)
 // it produces error in linux and mac os x
 msb_t ceillg(unsigned long v)
@@ -53,7 +54,6 @@ msb_t ceillg(unsigned long v)
 msb_t floorlg(unsigned long v)
 { return BigInt(v).floorlg(); }
 #endif
-************************** */
 
 int gcd(int x, int y)
 { return gcd(BigInt(x), BigInt(y)).get_si(); }
