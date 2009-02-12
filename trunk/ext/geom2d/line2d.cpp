@@ -15,7 +15,7 @@
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *
- * $Id: line2d.cpp,v 1.1 2006-04-03 18:55:31 exact Exp $
+ * $Id: line2d.cpp,v 1.2 2009-02-12 03:50:53 exact Exp $
  *****************************************************************/
 
 
@@ -32,13 +32,13 @@ Line2d::Line2d(const double& a, const double& b, const double& c){
   	// line with equation aX+bY+c=0
 	if (b != 0) {
 		p0 = Point2d(0.0, -c/b);
-		if (a != 0) p1 = Point2d(-c/a, 0.0);
-		else p1 = Point2d(1.0, -c/b);
+		p1 = Point2d(1.0, (-c-a)/b);
 	}
 	else {
 		p0 = Point2d(-c/a, 0.0);
 		p1 = Point2d(-c/a, 1.0);
 	}
+ 	V = p0 - p1;
 }
 
 Line2d::Line2d() : p0(0.0, 0.0), p1(0.0, 0.0), V(0) {}
@@ -109,15 +109,15 @@ int Line2d::intersects(const Line2d& l) const{
 }
 
 GeomObj* Line2d::intersection(const Line2d& l) const {
-   if ( intersects(l) == -1 ) return NULL;
-
-   if( is_trivial() || l.is_trivial() ) {
+   if( is_trivial() || l.is_trivial() ) 
      return NULL;
-   }
 
   if( isCoincident( l ) )
     return new Line2d(*this);
-    
+
+  if( isParallel( l ) )
+    return NULL;
+
   double u = det(l.direction(), V);
   double w = det(l.direction(), l.startPt() - p0 );
   double lambda = w/u;

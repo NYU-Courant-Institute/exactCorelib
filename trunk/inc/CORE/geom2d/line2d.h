@@ -15,7 +15,7 @@
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *
- * $Id: line2d.h,v 1.2 2008-12-11 21:24:17 exact Exp $
+ * $Id: line2d.h,v 1.3 2009-02-12 03:50:53 exact Exp $
  *****************************************************************/
 
 #ifndef _LINE2D_H_
@@ -103,13 +103,11 @@ public:
   bool isHorizontal() const { return p0.Y() == p1.Y(); }
   bool is_trivial() const {return p0 == p1; }   //meaning for a line?
   
-  friend double det(const Vector u, const Vector v);  // u,v are 2d vectors
-
   bool contains( const Point2d& p) const { 
           return orientation2d(p0, p1, p) == 0; }
   bool isCoincident( const Line2d& g) const { 
           return contains(g.p0) && contains(g.p1); }  
-  bool isParallel(const Line2d& l) const {
+  bool isParallel(const Line2d& l) const { 
 	  return det(V, l.direction()) == 0; }
 
   bool operator==( const Line2d& g ) const { return isCoincident(g); }
