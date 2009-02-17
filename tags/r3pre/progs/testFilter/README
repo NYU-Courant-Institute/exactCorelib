@@ -1,0 +1,25 @@
+Core Library 
+
+README for testFilter
+=====================
+Various sample programs that test the effectiveness
+of the BFS filter we implemented.
+
+We took other test programs in under ${CORE_PATH}/progs
+such as "gaussian" and "chull".
+
+   testFilter.cc	-- testing the correctness of filter
+   timeFilter.cc	-- timing with filter on and off, for matrices
+			   with rational entries.  Based on gaussian.cc.
+   timeFilter1.cc	-- variant of testFilter.cc for matrices
+			   with integer entries.
+   inputs/		-- subdirectory for input matrices
+   createMatrices.cc	-- to create random matrices
+			   (See Makefile for how to run this)
+   results.txt	  	-- some test results and timings
+
+For details about the timing results, see README file
+under the "inputs" subdirectory here.
+
+-- Chee Yap and Zilin Du (Oct, 2001)
+
