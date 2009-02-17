@@ -16,7 +16,7 @@
  *
  * Date:   Apr 14, 2004
  * Since Core Library Version 1.7
- * $Id: scheinerman.cpp,v 1.1 2006-03-07 04:51:23 exact Exp $
+ * $Id: scheinerman.cpp,v 1.2 2009-02-17 05:35:23 exact Exp $
  **************************************************************/
 
 
@@ -32,133 +32,142 @@ int main() {
   cout << "SCHEINERMAN'S TEST" << endl;
   cout << "==============================================" << endl;
   setDefaultOutputDigits(10);
-  cout << "###########   Output Digits = 10" << endl;
+  //cout << "###########   Output Digits = 10 \n" << endl;
 
 // ****************************************************************************
 // TEACHER: Show that sqrt(2) + sqrt(5 - 2* sqrt(6))  = sqrt(3)
+  cout << "TEACHER: Show that sqrt(2) + sqrt(5 - 2* sqrt(6))  = sqrt(3)\n\n";
 // ****************************************************************************
 
   double X = sqrt(Expr(2)) + sqrt(5 - 2* sqrt(Expr(6)));
   double Y = sqrt(double(3));
 
-  cout << "\n X = sqrt(2) + sqrt(5-2 sqrt(6)) \n"
-  	<< "     = " << X << endl;
-  cout << "\n Y = sqrt(3) \n"
-  	<< "     = " << Y << endl;
- 
-// ****************************************************************************
-// STUDENT: They are the same!  My calculator shows that both sides
-//	evaluates to 1.732050808.
-// TEACHER: That is an accident!  Your calculator display only 10 digits.
+  cout << "STUDENT: let me use my calculator...\n\n"
+  	<< "           X = sqrt(2) + sqrt(5-2 sqrt(6)) \n"
+  	<< "             = " << X << endl;
+  cout	<< "           Y = sqrt(3) \n"
+  	<< "             = " << Y << endl;
+  cout 	<< "        So they are the same!\n"
+	<< "        My calculator that they are equal to 1.732050808\n" << endl;
 
-// STUDENT: Go away, it cannot be coincidence.
-// TEACHER: OK, try this on your calculator:
-// 	sqrt(75025) + sqrt(121393) + sqrt(196418) + sqrt(317811) 
+// ****************************************************************************
+// TEACHER: That is an accident!  Your calculator display only 10 digits.
+  cout	<< "TEACHER: That is an accident!"
+	<< " Your calculator only displays 10 digits.\n" << endl;
+  cout	<< "STUDENT: It cannot be coincidence.\n" << endl;
+  cout	<< "TEACHER: Of course it can.\n"
+	<< "         Here, compute this on your calculator:\n" 
+	<< "         A = sqrt(75025) + sqrt(121393) + sqrt(196418) + sqrt(317811)\n"
+	<< endl;
 // ****************************************************************************
 		
   double A = sqrt(Expr(75025))+sqrt(Expr(121393))+sqrt(Expr(196418))+sqrt(Expr(317811));
 
-  cout  << "\n A = sqrt(75025) + sqrt(121393) + sqrt(196418) + sqrt(317811) \n"
-  	<< "     = " << A << endl;
+  cout	<< "STUDENT: OK,...  (after a pause) ... I get\n\n"
+  	<< "            A = " << A << endl << endl;
 	
 // ****************************************************************************
-// STUDENT: (after a pause) I get 1629.259889.
-// TEACHER: Good, now try sqrt(514229) + sqrt(832040)
+   cout	<< "TEACHER: Good, now compute:\n"
+	<< "          B = sqrt(514229) + sqrt(832040)\n" << endl;
 // ****************************************************************************
 
   double B = sqrt(Expr(514229)) + sqrt(Expr(832040));
-  cout  << "\n B = sqrt(514229) + sqrt(832040) \n"
-  	<< "     = " << B << endl;
+  cout	<< "STUDENT:    Sure,... (after a pause) ... I get\n\n"
+  	<< "            B = " << B << endl;
+  cout	<< "         They are both equal to 1629.259889 !! \n\n";
 
 // ****************************************************************************
-// STUDENT: (after another pause) Hey, I get 1629.259889 again!
-// 	So they are equal.
-// TEACHER:  No, let me show you in Core Library...
+  cout	<< "TEACHER:  But they are NOT the same.\n"
+	<< "          Let me show you in Core Library...\n" 
+	<< "          First, we must display the output to 20 digits\n" << endl;
 // ****************************************************************************
 
 // ****************************************************************************
 // Set the output to 20 digits first
 // ****************************************************************************
   setDefaultOutputDigits(20);
-  cout << "\n\n ###########   Output Digits = 20" << endl;
 
 // ****************************************************************************
 // Redisplay A and B at 20 digit
 // ****************************************************************************
-  cout  << "\n Here is A again:   " << A << endl;
-  cout  << "\n Here is B again:   " << B << endl;
+  cout	<< "          Here is A again:   " << A << endl;
+  cout	<< "          Here is B again:   " << B << endl <<endl;
+
+  cout	<< "NARRATOR: Your printout should show \n"
+	<< "             A=1629.25888633142\n"
+	<< "             B=1629.25888630189.\n" << endl;
 
 // ****************************************************************************
-// TEACHER: Notice that these two numbers differ at the 9th decimal place.
-// 	   But you see, it would be impossible to numerically determine
-// 	   whether 
-//
-// 	   	X = sqrt(2) + sqrt(5 - 2* sqrt(6))  
-// 	   	Y = sqrt(3)
-// 	   
-// 	   since no many how many digits of a and b you compute, you
-// 	   will see that they agree except possibly the last one.
-//
-// 	   Let us compute X and Y to 70 digits.
+// Lesson Continues
 // ****************************************************************************
+  cout	<< "TEACHER: These two numbers differ at the 9th decimal place. \n"
+	<< "          So you see, it is impossible to numerically determine\n"
+	<< "          if two expressions are the same, no matter how many\n"
+	<< "          digits you compute.  They will agree except for the last digit\n"
+	<< "	     Going back to our previous example, let us compute\n"
+	<< "               X = sqrt(2) + sqrt(5 - 2* sqrt(6))\n"
+	<< "               Y = sqrt(3)\n"
+	<< "          to 70 digits:\n" << endl;
 
+// ****************************************************************************
   setDefaultOutputDigits(70);
-  cout << "\n\n ###########   Output Digits = 70" << endl;
-
+  cout	<< "NARRATOR: The output digits is now set to 70.\n" << endl;
+// ****************************************************************************
   cout  << "\n X = sqrt(2) + sqrt(5-2 sqrt(6)) \n"
   	<< "     = " << X << endl;
-  // Prints: 1.7320508075688772935274463415058723669428 (41 digits)
+  // Prints: X=1.7320508075688772935274463415058723669428 (41 digits)
+  // REMARK: In Core2, it prints only X=1.732050807568877 !!!
   cout  << "\n Y = sqrt(3) \n"
-  	<< "     = " << Y << endl;
-  // Prints: 1.73205080756887729352744634150587236694 (39 digits)
+  	<< "     = " << Y << endl << endl;
+  // Prints: Y=1.73205080756887729352744634150587236694 (39 digits)
+  // REMARK: In Core2, it prints only Y=1.73205080756888 !!!
 
 // ****************************************************************************
-// STUDENT: Hey, they seem to agree, but neither one printed 70 digits!
+  cout	<< "STUDENT: Hey, they seem to agree,\n"
+	<< "          but neither one printed 70 digits!\n" << endl;
 //
-// TEACHER: Oh, I know what is going on.  I read in the Tutorial that
-// 	Core Library prints the current approximation that it knows
-// 	Apparently, the current approximations do not have 70 digits of accuracy.  
-//
-// 	We can ask Core Library to approximate X and Y to at least 70 digits.  
-// 	Let us see: 70 digits is less than 4*70 = 280 bits.  
-// 	So if we force evaluation to 280 relative bits of precision,
-// 	we will be able to see 70 digits.
+  cout	<< "TEACHER: Oh, I know what is going on...\n"
+	<< "          I read in the Tutorial that Core Library never prints\n"
+        << "          more digits than it CURRENTLY knows about.\n"
+	<< "          Apparently, the current approximations do not have\n"
+        << "          70 digits of accuracy.\n"
+	<< "          We must first ask Core Library to approximate X and Y \n"
+	<< "          to at least 70 digits.  Let's see: 70 digits is less\n"
+        << "          than 4*70 = 280 bits.  So we force CORE to evaluate\n"
+        << "          to 280 relative bits of precision:\n" << endl;
 // ****************************************************************************
 
-  cout << "\n\n ###########   Approximate to 280 bits of relative precision"
+  cout << "CORE LIBRARY: X and Y are now approximated to 280 bits of relative precision\n"
 	  << endl;
   X.approx(280,CORE_INFTY);
   Y.approx(280,CORE_INFTY);
 
-  cout << "\n X = " << X << endl;
+  cout << "X = " << X << endl;
 // X = 1.732050807568877293527446341505872366942805253810380628055806979451933
-  cout << "\n Y = " << Y << endl;
+  cout << "Y = " << Y << endl << endl;
 // Y = 1.732050807568877293527446341505872366942805253810380628055806979451933
 
 // ****************************************************************************
-// STUDENT: Great, both prints exactly 70 digits.  But
-// 	why don't we ask Core Library whether X and Y are equal?
+  cout	<< "STUDENT: Great, both prints exactly 70 digits.  But why don't\n"
+	<< "         we ask Core Library whether X and Y are equal?\n\n";
 // ****************************************************************************
 
   if (X == Y)
-	  cout << "\n Core Library thinks X == Y (CORRECT!)" << endl;
+  cout << "CORE LIBRARY:  I declare X and Y equal (CORRECT!)" << endl;
   else 	
-	  cout << "\n Core Library thinks X != Y (ERROR!)" << endl;
+  cout << "CORE LIBRARY:  I declare X and Y unequal (ERROR!)" << endl<<endl;
 
 // ****************************************************************************
-// STUDENT: Hey, Core Library got it right! 
-//
-// TEACHER:  Perhaps that was a fluke. Let us run a few more tests.
-//
-// 	(After testing a few more identities...)
-//
-// 	Amazing!  Core Library got it right every time!
-//
-// 	Now I am convinced that Core Library does some kind of theorem proving.
-// 	After all, we know that that it is impossible to decide equality by
-// 	numerical approximation.
-//
-// STUDENT: Thanks, teach!  That was a great object lesson.
+  cout	<< "STUDENT: Hey, Core Library got it right!\n" << endl;
+
+  cout  << "TEACHER: That must be a fluke. Let us run a few more tests.\n"
+	<< "         (After a few more identities and non-identities...)\n"
+	<< "         Amazing!  Core Library got it right every time!\n"
+	<< "         I am convinced that Core Library does some kind of\n"
+        << "         theorem proving.  After all, we know that that\n"
+        << "         it is impossible to decide equality by approximation.\n\n";
+
+  cout	<< "STUDENT: Thanks, teach!  That was a great object lesson.\n\n";
 // ****************************************************************************
  
   return 0;
