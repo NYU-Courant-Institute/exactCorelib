@@ -1,6 +1,15 @@
-# Makefile for testPoint 
+# Makefile for demos
 #
-# Core Library, $Id: Makefile,v 1.1 2006-03-07 04:51:23 exact Exp $
+# DEMO LIST:
+# 	Scheinerman
+# 	simple or pointOnLine
+# 	pointOnCircle
+# 	golden
+#
+# You can call this makefile with LEV=1 or LEV=3
+# 	in compiling these demos
+#
+# Core Library, $Id: Makefile,v 1.2 2009-02-18 00:07:45 exact Exp $
 
 include ../Make.options
 
@@ -8,10 +17,11 @@ include ../Make.options
 # Define variables 
 #=================================================
 
-p=pointOnPlane
 p=simple
 p=golden
 p=scheinerman
+p=pointOnPlane
+p=pointOnLine
 
 ifile=i
 arg= < inputs/${ifile}
@@ -39,13 +49,15 @@ moretest: $(MORETARGETS)
 all: $(TARGETS) $(MORETARGETS)
 
 p: ${p}
-	./${p}${LEV} ${arg}
+	./${p} ${arg}
 
 ${p}: ${p}.o
 
 pointOnCircle: pointOnCircle.o
 
 pointOnPlane${LEV}: pointOnPlane.o
+
+pointOnLine${LEV}: pointOnLine.o
 
 scheinerman${LEV}: scheinerman.o
 
@@ -65,7 +77,7 @@ t: t.o
 	${CXX} $(LDFLAGS) $< -lcorex++$(VAR)_level${LEV} $(CORE_LIB) -o $@
 
 .cpp.o:
-	${CXX} -c $(CXXFLAGS) -DCORE_LEVEL=${LEV} $(CORE_INC) $< -o $@
+	${CXX} -c $(CXXFLAGS) -DCORE_LEVEL=${LEV} $(CORE_INC) $< -o $@$
 
 #=================================================
 # Clean object files
