@@ -1,0 +1,13 @@
+File: README for tests
+Core Library, $Id: README,v 1.1 2006/03/07 04:51:26 exact Exp $
+=============================================================================
+SYNOPSIS:
+	floor_ceil.cpp 
+		includes some tests for the functions
+		"BigInt floor(Expr)" and  "BigInt ceil(Expr)".
+
+	invalid.cpp
+		tests the behavior of CORE on invalid inputs
+
+=============================================================================
+

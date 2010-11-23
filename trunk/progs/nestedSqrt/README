@@ -1,0 +1,23 @@
+File: README for nestedSqrts
+Core Library
+$Id: README,v 1.2 2009/11/27 10:16:22 exact Exp $
+
+========================================================================
+SYNOPSIS:
+	The following example is from a paper in SODA'98 by
+	Burnikel, Fleischer, Mehlhorn and Schirra (BFMS)
+	describing their constructive root bound for radical expressions.
+
+	Let POWER(k) = 2^POWER(k-1) if k > 0	, = 1 otherwise
+	    SQRT(x, k) = sqrt(SQRT((x, k-1)) if k > 0  , = x otherwise
+
+	This program computes SQRT(POWER(K+1) - 1, k) - 2,
+	which should be very close to zero.
+
+	We also use this as a demo of the use of Incremental Flag, to
+	show the dramatic improvement in speed for some expressions.
+
+NOTE: the Incremental Flag feature is temporarily unavailable
+	in Core2 (Nov 2009).
+========================================================================
+

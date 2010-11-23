@@ -1,0 +1,11 @@
+README file for progs/complex
+
+	A complex number package developed primarily for use
+	in the CEVAL algorithm (progs/mesh/ceval) . It contains
+	(reasonably) complete implementations of polar and
+	cartesian complex number classes. All basic arithmetic
+	operations on complex numbers are defined, as well as
+	conversions between the two types.
+
+--Narayan (June 2010)
+
