@@ -68,6 +68,8 @@ extern int  coreErrorFlag;		// This is 0 if no error,
 extern std::string coreErrorMsg; // Message that will be printed by core_error()
 								// User can set this message before a suspected error.
 
+extern bool rationalReduceFlag;  // We bring this back from Core1. We make rational nodes as leaf nodes by computing expression
+
 
 inline unsigned long digits2bits(unsigned long digits)
 {
@@ -151,6 +153,16 @@ inline unsigned long get_cut_off_bound()
 inline unsigned long set_cut_off_bound(unsigned long p) {
   unsigned long ret = cutOffBound;
   cutOffBound = p; 
+  return ret;
+}
+
+inline bool get_rational_reduce_flag() {
+  return rationalReduceFlag;
+}
+
+inline bool set_rational_reduce_flag(const bool b) {
+  bool ret = rationalReduceFlag;
+  rationalReduceFlag = b;
   return ret;
 }
 

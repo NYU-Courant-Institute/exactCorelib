@@ -119,7 +119,7 @@ int gcd(int x, int y);
 inline int (max)(int x, int y)
 { return x>=y ? x : y; }
 inline int power(int x, int y)
-{ return ::pow((double)x,y); }
+{ return (int)::pow((double)x,(double)y); }
 
 // help inline functions for unsigned long
 inline sign_t sgn(unsigned long v)

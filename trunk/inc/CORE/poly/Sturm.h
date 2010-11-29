@@ -1012,7 +1012,7 @@ public:
 	old_width.div2(); // update width
 	
 	// reduce value of N:
-	N = std::max(N-1, NO_STEPS);   // N must be at least NO_STEPS
+	N = (std::max)(N-1, NO_STEPS);   // N must be at least NO_STEPS
       }
     }//MAIN WHILE LOOP
 

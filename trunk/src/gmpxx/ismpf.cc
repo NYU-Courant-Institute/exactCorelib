@@ -43,7 +43,8 @@ using namespace std;
    what the current operator<< implementation produces.  */
 
 istream &
-operator>> (istream &i, mpf_ptr f)
+//operator>>
+extract(istream &i, mpf_ptr f)
 {
   int base;
   char c = 0;

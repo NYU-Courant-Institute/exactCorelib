@@ -790,8 +790,9 @@ inline bool operator<(const BigInt& x, const BigRat& y)
 /// \addtogroup BigRatIostreamOperators 
 //@{
 /// istream operator for <tt>BigRat</tt>
+extern std::istream& extract(std::istream &i, mpq_ptr x);
 inline std::istream& operator>>(std::istream& is, BigRat& x)
-{ return is >> x.mp(); }
+{ return extract(is, x.mp()); }
 /// ostream operator for <tt>BigRat</tt>
 inline std::ostream& operator<<(std::ostream& os, const BigRat& x)
 { return os << x.get_str(); }

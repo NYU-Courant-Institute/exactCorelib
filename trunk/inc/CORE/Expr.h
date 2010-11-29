@@ -499,39 +499,40 @@ public: // public methods
 
   /// return integer value 
   int intValue() const {
-    ExprT* p = const_cast<ExprT*>(this);
-    p->a_approx(2);
-    return (int)m_rep->appValue().get_d();
+    return (int)longValue();
   }
   /// return long value 
-  long longValue() const
-  { return (long)m_rep->appValue().get_d(); }
+  long longValue() const {
+    return (long)const_cast<ExprT*>(this)->a_approx(2).get_d();
+  }
   /// return float value 
-  float floatValue() const
-  { return (float)m_rep->appValue().get_d(); }
+  float floatValue() const {
+    return (float)doubleValue();
+  }
   /// return double value 
   double doubleValue() const {
-    ExprT* p = const_cast<ExprT*>(this);
-    p->r_approx(52);
-    return m_rep->appValue().get_d();
+    return const_cast<ExprT*>(this)->r_approx(52).get_d();
   }
   /// return BigInt value 
-  BigInt BigIntValue() const
-  { return m_rep->appValue().get_z(); }
+  BigInt BigIntValue() const {
+    return const_cast<ExprT*>(this)->a_approx(2).get_z(); 
+  }
   /// return BigRat value 
-  BigRat BigRatValue() const
-  { return m_rep->appValue().get_q(); }
+  BigRat BigRatValue(const prec_t r=defRelPrec, const prec_t a=defAbsPrec) const {
+    return const_cast<ExprT*>(this)->approx2(r,a).get_q();
+  }
   /// return BigFloatValue
-  FT BigFloatValue() const
-  { return m_rep->appValue().get_f(); }
+  FT BigFloatValue(const prec_t r=defRelPrec, const prec_t a=defAbsPrec) const {
+    return const_cast<ExprT*>(this)->approx(r,a);
+  }
   /// return BigFloat2Value
-  KT BigFloat2Value() const
-  { return m_rep->appValue(); }
+  KT BigFloat2Value(const prec_t r=defRelPrec, const prec_t a=defAbsPrec) const {
+    return const_cast<ExprT*>(this)->approx2(r,a);
+  }
   /// double interval
   void doubleInterval(double& lb, double& ub) {
     ExprT* p = const_cast<ExprT*>(this);
-    p->r_approx(52);
-    KT interval = p->BigFloat2Value();
+    KT interval = p->r_approx(52);
     lb = interval.getLeft().get_d(BF_RNDD);
     ub = interval.getRight().get_d(BF_RNDU);
   }

@@ -76,8 +76,10 @@ public:
   explicit BigFloat2(const BigInt& v) : m_l(v), m_exact(true) {}
   /// constructor for <tt>BigFloat</tt> 
   explicit BigFloat2(const BigFloat& v) : m_l(v), m_exact(true) {}
+#ifndef CORE_LEVEL_1_NO_WRAPPERS
   /// constructor for <tt>DoulbeWrapper</tt> 
   explicit BigFloat2(const DoubleWrapper& v) : m_l(v.doubleValue()), m_exact(true) {}
+#endif
   /// generic constructor for <tt>T</TT>
 //  template <typename T> BigFloat2(const T& v) : m_l(v), m_exact(true) {}
   /// construct for <tt>QT = BigRat</tt>

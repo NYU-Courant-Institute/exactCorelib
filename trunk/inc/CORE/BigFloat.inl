@@ -519,8 +519,15 @@ inline bool operator<(const BigRat& x, const BigFloat & y)
 /// istream operator for <tt>BigFloat</tt>
 inline std::istream& operator>>(std::istream& is, BigFloat& x)
 {
-  assert(getDefaultInputDigits() != CORE_INFTY);
-  x.set_prec(digits2bits(getDefaultInputDigits()));
+  // Jihun Nov,2010
+  // this is hack.
+  // Users should not call this operator with infinity input digits
+  // Bigrat number type must be used instead.
+  if(getDefaultInputDigits() == CORE_INFTY) {
+    x.set_prec(52); // default double precision
+  } else {
+    x.set_prec(digits2bits(getDefaultInputDigits()));
+  }
   return is >> x.mp();
 }
 /// ostream operator for <tt>BigFloat</tt>

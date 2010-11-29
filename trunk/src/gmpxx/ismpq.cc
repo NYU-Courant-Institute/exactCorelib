@@ -29,9 +29,9 @@ void __gmp_istream_set_digits (std::string &, std::istream &, char &, bool &, in
 
 using namespace std;
 
-
 istream &
-operator>> (istream &i, mpq_ptr q)
+//operator>> (istream &i, mpq_ptr q)
+extract(istream &i, mpq_ptr q)
 {
   int base;
   char c = 0;
@@ -105,3 +105,4 @@ operator>> (istream &i, mpq_ptr q)
 
   return i;
 }
+
