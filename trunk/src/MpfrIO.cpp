@@ -113,9 +113,9 @@ using namespace std;
   if (ndigits == 0) { // impossible to predetermine the size of string
     str = mpfr_get_str(0, &exp, base, ndigits, mp, rnd);
   } else {
-    len = std::max(ndigits + 2UL, 7UL);
+    len = (std::max)(ndigits + 2UL, 7UL);
     tmp.alloc(len);
-    str = mpfr_get_str(tmp.str, &exp, base, std::max(ndigits, size_t(2)), mp, rnd);
+    str = mpfr_get_str(tmp.str, &exp, base, (std::max)(ndigits, size_t(2)), mp, rnd);
   }
   
   // if failed, return empty string
