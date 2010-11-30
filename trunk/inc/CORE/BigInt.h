@@ -30,6 +30,8 @@
 #include <limits>
 #include <assert.h>
 
+extern std::istream& extract(std::istream &i, mpz_ptr z);
+
 CORE_BEGIN_NAMESPACE
 
 /* _gmp_alloc_cstr */
@@ -1132,9 +1134,8 @@ inline bool operator<(double x, const BigInt& y)
 /// \addtogroup BigIntIostreamOperators
 //@{
 /// istream operator for <tt>BigInt</tt>
-extern std::istream& extract(std::istream &i, mpz_ptr z);
 inline std::istream& operator>>(std::istream& is, BigInt& x)
-{ return extract(is, x.mp()); }
+{ return ::extract(is, x.mp()); }
 /// ostream operator for <tt>BigInt</tt>
 inline std::ostream& operator<<(std::ostream& os, const BigInt& x)
 { return os << x.get_str(); }

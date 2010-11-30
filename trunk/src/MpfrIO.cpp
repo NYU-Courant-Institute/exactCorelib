@@ -57,7 +57,7 @@ extern std::istream& extract(std::istream& i, mpf_t x);
 std::istream& operator>>(std::istream& is, mpfr_ptr f) {
   mpf_t tmp; 
   mpf_init2(tmp, mpfr_get_prec(f));
-  extract(is,tmp);
+  ::extract(is,tmp);
   mpfr_set_f(f, tmp, __gmp_default_rounding_mode);
   mpf_clear(tmp); 
   return is;
