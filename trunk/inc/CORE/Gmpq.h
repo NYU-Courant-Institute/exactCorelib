@@ -69,7 +69,7 @@ public:
   explicit Gmpq(mpz_srcptr z)
   { mpq_init(m_mp); mpq_set_z(m_mp, z); }
   /// constructor for <tt>mpz_srcptr, mpz_srcptr</tt>
-  explicit Gmpq(mpz_srcptr& num, mpz_srcptr den) {
+  explicit Gmpq(const mpz_srcptr& num, mpz_srcptr den) {
     mpq_init(m_mp); 
     mpz_set(mpq_numref(m_mp), num); mpz_set(mpq_denref(m_mp), den);
     mpq_canonicalize(m_mp);
