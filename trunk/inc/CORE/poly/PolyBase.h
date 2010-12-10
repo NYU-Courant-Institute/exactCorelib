@@ -74,7 +74,7 @@ public:
     }
   }
   /// constructor with coeff array
-  PolyBase(int n, const NT* coef) : _deg(n), _coeff(0) {
+  PolyBase(int n, NT* coef) : _deg(n), _coeff(0) {
     assert(coef != 0);
     if (_deg >= 0) {
       _coeff = new NT[_deg+1];
@@ -102,7 +102,7 @@ public:
     if (this != &rhs) {
       _deg = rhs._deg;
       if (_deg >= 0) {
-        delete[] _coeff;
+ 	 delete[] _coeff;
         _coeff = new NT[_deg+1];
         for (int i=0; i<=_deg; ++i) _coeff[i] = rhs._coeff[i];
       }
@@ -125,10 +125,10 @@ public:
         for (int i=0; i<=_deg; ++i) _coeff[i] = coef[i];
       }
      * */
-    delete[] _coeff;
     if (_deg >= 0) {
-    	_coeff = new NT[_deg+1];
-    	for (int i=0; i<=_deg; ++i) _coeff[i] = coef[i];
+      delete[] _coeff;
+      _coeff = new NT[_deg+1];
+      for (int i=0; i<=_deg; ++i) _coeff[i] = coef[i];
     }
   }
   /// assignment function for coeff vector
@@ -176,7 +176,7 @@ public:
   /// constructor for unit polynomial with nominal degree n
   RcPolyBase(int n) : base_cls(new PolyBase<NT>(n)) {}
   /// constructor with coeff array
-  RcPolyBase(int n, const NT* coef) : base_cls(new PolyBase<NT>(n, coef)) {}
+  RcPolyBase(int n, NT* coef) : base_cls(new PolyBase<NT>(n, coef)) {}
   /// constructor with coeff vector
   RcPolyBase(int n, const VecNT& coef): base_cls(new PolyBase<NT>(n, coef)) {}
   /// constructor from <tt>char*</tt> (no implicit conversion)
@@ -189,7 +189,7 @@ public:
     return *this;
   }
   /// assignment function for coeff array
-  void set(int n, const NT* coef) { base_cls::set(n, coef); }
+  void set(int n, NT* coef) { base_cls::set(n, coef); }
   /// assignment function for coeff vector
   void set(int n, const VecNT& coef) { base_cls::set(n, coef); }
   //@}
