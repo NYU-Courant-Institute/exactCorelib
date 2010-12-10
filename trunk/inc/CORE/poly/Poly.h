@@ -306,7 +306,7 @@ public:
   /// constructor of the Unit Polynomial of nominal deg n>=0
   Polynomial(int n) : base_cls(n) {}
   /// constructor with coeff array
-  Polynomial(int n, const NT* coef) : base_cls(n, coef) {}
+  Polynomial(int n, NT* coef) : base_cls(n, coef) {}
   /// constructor with coeff vector
   Polynomial(const VecNT & coef) : base_cls(coef.size(), coef) {}
   Polynomial(int n, const char* s[]) : base_cls(n, s) {}
