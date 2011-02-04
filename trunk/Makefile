@@ -282,7 +282,6 @@ vclean veryclean:
 # superclean: clean everything (including *.o and *.a files)
 #
 superclean: veryclean cleangmp
-	-@rm -rf ${CORE_PATH}/gmp
 	-@rm -rf ${CORE_PATH}/lib/*.{a,so}
 	-@rm -rf ${CORE_PATH}/src/*.o
 	-@rm -rf ${CORE_PATH}/src/gmpxx/*.o
