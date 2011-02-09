@@ -69,10 +69,14 @@ void ClearBackground() {
   const machine_double scale = display_params.scale;
   const machine_double x_delta = display_params.x_delta;
   const machine_double y_delta = display_params.y_delta;
-  gluOrtho2D((display_params.x_min + x_delta)*scale,
-             (display_params.x_max + x_delta)*scale,
-             (display_params.y_min + y_delta)*scale,
-             (display_params.y_max + y_delta)*scale);
+  gluOrtho2D((display_params.x_min)*scale + x_delta,
+             (display_params.x_max)*scale + x_delta,
+             (display_params.y_min)*scale + y_delta,
+             (display_params.y_max)*scale + y_delta);
+  //gluOrtho2D((display_params.x_min + x_delta)*scale,
+  //           (display_params.x_max + x_delta)*scale,
+  //           (display_params.y_min + y_delta)*scale,
+  //           (display_params.y_max + y_delta)*scale);
   glMatrixMode(GL_MODELVIEW);
   glClearColor(255.0/256.0,192.0/256.0,203.0/256.0,0.0);
 }
@@ -106,13 +110,13 @@ void KeyHandler(const unsigned char key, const int x, const int y) {
       display_params.x_delta+=0.5;
       break;
     case 'i':  // zoom in
-      display_params.scale /= 0.9;
+      display_params.scale *= 0.9;
       //display_params.x_delta = 0;
       //display_params.y_delta = 0;
       break;
     case 'k':  // zoom out
     case 'o':  // zoom out
-      display_params.scale *= 0.9;
+      display_params.scale /= 0.9;
       //display_params.x_delta = 0;
       //display_params.y_delta = 0;
       break;
