@@ -10,7 +10,7 @@
 	    Jun, 2010: Narayan Kamath (refactored code into independent units)
 
    Since Core Library  Version 2.0
-   $Id: display.cpp,v 1.6 2010/09/20 16:07:59 exact Exp $
+   $Id: display.cpp,v 1.7 2011/02/09 22:16:07 exact Exp $
  ************************************** */
 
 #include <utility>

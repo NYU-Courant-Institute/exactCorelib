@@ -95,8 +95,9 @@ ymax=1.5
 maxsize=0.1
 minsize=0.001
 offset=0
-showbox=true
-display=true
+showbox=0
+showbox=1
+display=1
 
 #=================================================
 # TARGETS
@@ -135,34 +136,44 @@ testall: cxy1 cxy2 cxy3
 # type of the curve is guaranteed correct!
 # You can zoom into the curve to see how the wriggly-ness arise.
 # ********************************************************************** 
+eg: eg4
+
 # eg1 -- show the subdiv boxes (default), refined to 0.2
-eg eg1:  $(TARGETS)
-	./cxy$(SUFFIX) "x^2 - 3x^4 - 2y^2 + 1" \
+eg1:  $(TARGETS)
+	./cxy$(SUFFIX) "(x^2 - 3x^4 - 2y^2 + 1)(x^3-xy)" \
 		$(xmin) $(ymin) $(xmax) $(ymax) \
-		$(maxsize) $(minsize) $(offset) $(showbox)
+		$(maxsize) $(minsize) $(offset) $(showbox) $(display)
 
 # eg2 -- do not show the subdiv boxes, refined to 0.2
 eg2:  $(TARGETS)
-	./cxy$(SUFFIX) "x^2 - 3x^4 - 2y^2 + 1" -1.5 -1.5 1.5 1.5 0.1 0.0001 0 0
+	./cxy$(SUFFIX) "(x^2 - 3x^4 - 2y^2 + 1)(x^3-xy)" \
+		$(xmin) $(ymin) $(xmax) $(ymax) \
+		$(maxsize) $(minsize) $(offset) 0 $(display)
 
 # eg3 -- max size is 10000 (this basically stops the subdivision when isotopy is achieved)
 # 	Thus, this should be the fastest
 eg3:  $(TARGETS)
-	./cxy$(SUFFIX) "x^2 - 3x^4 - 2y^2 + 1" -1.5 -1.5 1.5 1.5 10000 0.0001 0 0 
+	./cxy$(SUFFIX) "(x^2 - 3x^4 - 2y^2 + 1)(x^3 -xy)" \
+		$(xmin) $(ymin) $(xmax) $(ymax) \
+		$(maxsize) $(minsize) $(offset) $(showbox) 1
 
 # eg4 -- like eg1, but min size is 0.01 (this forces subdivision until at least 0.01)
 # 	This can be slow unless in Level 1!
 # 	On the platform in the README file, takes 379 ms.
 # 	You can zoom into the image to see the fine details.
 eg4:  $(TARGETS)
-	./cxy$(SUFFIX) "x^2 - 3x^4 - 2y^2 + 1" -1.5 -1.5 1.5 1.5 0.01 0.0001 0 1
+	./cxy$(SUFFIX) "(x^2 - 3x^4 - 2y^2 + 1)(x^3 -xy)" \
+		$(xmin) $(ymin) $(xmax) $(ymax) \
+		0.01 $(minsize) $(offset) $(showbox) 1
 
 # eg5 -- like eg1, but min size is 0.0001 (this forces subdivision until at least 0.0001)
 # 	This can be very slow even in Level 1! 
 # 	On the platform in the README file, it takes 20892 ms.
 # 	You can zoom into the image to see the fine details.
 eg5:  $(TARGETS)
-	./cxy$(SUFFIX) "x^2 - 3x^4 - 2y^2 + 1" -1.5 -1.5 1.5 1.5 0.001 0.0001 0 1
+	./cxy$(SUFFIX) "(x^2 - 3x^4 - 2y^2 + 1)(x^3 -xy)" \
+		$(xmin) $(ymin) $(xmax) $(ymax) \
+		$(maxsize) 0.0001 $(offset) $(showbox) 1
 
 # ********************************************************************** 
 

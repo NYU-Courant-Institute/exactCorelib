@@ -74,7 +74,7 @@
 	  subsequent viewing and analysis.
 
    Since Core Library  Version 2.0
-   $Id: cxy.cpp,v 1.10 2010/11/09 15:32:18 exact Exp $
+   $Id: cxy.cpp,v 1.11 2011/02/09 22:16:07 exact Exp $
  ************************************** */
 
 #include <iostream>
@@ -106,7 +106,8 @@ int main(int argc, char* argv[]) {
 
   // DEFAULT  VALUES
 	  double offset_value;
-	  bool draw_box = false;
+	  bool draw_box = true;	
+	  bool display_flag = false;
 	  double min_size = 0.0001;
 	  double max_size = 100000;
 	  Curve<double> bi_poly;
@@ -123,6 +124,8 @@ int main(int argc, char* argv[]) {
 	      cout << "Your input Curve is " << bi_poly.toString() << endl;
 	      cout << "-------------------" << endl;
 	      break;
+	    case 11:
+	      display_flag = static_cast<bool>(std::atoi(argv[10]));
 	    case 10:
 	      draw_box = static_cast<bool>(std::atoi(argv[9]));
 	    case 9:
@@ -204,6 +207,8 @@ int main(int argc, char* argv[]) {
 	  << " ms" << endl;
 
   // Set display parameters.
+  if (! display_flag) return 0;
+
   display_funcs::SetDisplayParams(&B0, draw_box,
       cxy.c0(), cxy.q3(), cxy.unresolved(), &line_output);
 
