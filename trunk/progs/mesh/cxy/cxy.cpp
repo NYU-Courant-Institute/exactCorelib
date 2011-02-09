@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
   // DEFAULT  VALUES
 	  double offset_value;
 	  bool draw_box = true;	
-	  bool display_flag = false;
+	  bool display_flag = true;
 	  double min_size = 0.0001;
 	  double max_size = 100000;
 	  Curve<double> bi_poly;
