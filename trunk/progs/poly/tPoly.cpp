@@ -91,19 +91,19 @@ cout << "================================================\n";
   Poly zP;
   cout << "Zero Poly (zP) :\n>  " << zP << endl;
 
-  if (zP != Poly::polyZero()) 
-     cout << "ERROR: either polyZero() or zP is not the zero polynomial" << endl;
+  if (zP != Poly::Zero()) 
+     cout << "ERROR: either Zero() or zP is not the zero polynomial" << endl;
   else
-     cout << "CORRECT: polyZero() = zP" << endl;
+     cout << "CORRECT: Zero() = zP" << endl;
 
   Poly oneP(0);
   cout << "Unity Poly (oneP) :\n>  " << oneP << endl;
 
-  if (oneP != Poly::polyUnity()) 
-     cout << "ERROR: either polyUnity() or oneP is not the unity polynomial"
+  if (oneP != Poly::Unity()) 
+     cout << "ERROR: either Unity() or oneP is not the unity polynomial"
 		<< endl;
   else
-     cout << "CORRECT: polyUnity() = oneP" << endl;
+     cout << "CORRECT: Unity() = oneP" << endl;
 
   Poly U(5);
   cout << "Another Unit Poly U :\n>  " << U << endl;
@@ -266,7 +266,7 @@ cout << "================================================\n";
     cout << "CORRECT! pseudoQuotient of (P4)^5 divided P4" << endl;
   else
     cout << "ERROR! pseudoQuotient of (P4)^5 divided P4" << endl;
-  if (P0 == Poly::polyZero()) 
+  if (P0 == Poly::Zero()) 
     cout << "CORRECT! pseudoRemainder of (P4)^5 divided P4 is 0" << endl;
   else
     cout << "ERROR! pseudoRemainder of (P4)^5 divided P4 is not 0" << endl;
