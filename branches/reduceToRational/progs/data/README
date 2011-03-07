@@ -1,0 +1,22 @@
+file: progs/data/README
+	$Id: README,v 1.3 2010/06/28 15:58:19 exact Exp $
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Contents of this directory:
+
+README: this file
+
+frisco:	this directory contains the "FRISCO Test Suite"
+	comprising 165 polynomials from Bini and Fiorentino.  It 
+	accompanies their well-known MPSolve software for root isolation:
+
+	    http://www.dm.unipi.it/cluster-pages/mpsolve/.
+
+FriscoFormat: a description of the Frisco File format
+
+polynomials: polynomials we use for testing our programs
+
+++++++++++++++++++++++++++++++++++++++++++++++++++
+END
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
