@@ -1,7 +1,8 @@
 # Makefile for preparing softwares 
 
 GMP=gmp-5.0.1
-MPFR=mpfr-3.0.0
+MPFR=mpfr-3.0.0  # Chee: obsolete (Aug2011)
+MPFR=mpfr-3.0.1
 SIP=sip-4.3.2
 
 PLATFORM=macx-g++
