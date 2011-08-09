@@ -3,7 +3,7 @@
  * Copyright (c) 1995-2004 Exact Computation Project
  * All rights reserved.
  * 	$Source: /home/exact/cvsroot/exact/corelib2/inc/CORE/poly/Curves.tcc,v $
- * 	$Revision: 1.38 $ $Date: 2010/11/08 14:52:09 $
+ * 	$Revision: 1.34 $ $Date: 2010/07/14 14:56:04 $
  *
  * This file is part of CORE (http://cs.nyu.edu/exact/core/); you may
  * redistribute it under the terms of the Q Public License version 1.0.
@@ -42,89 +42,82 @@
   //Constructors
   ////////////////////////////////////////////////////////
 
-// default constructor
 template <class NT>
-BiPoly<NT>::BiPoly(){ 
-	  ydeg = -1;
-	}
+BiPoly<NT>::BiPoly(){ // zero polynomial
+    ydeg = -1;
+  }
   
-//BiPoly(n)
+  //BiPoly(n)
+
 template <class NT>
 BiPoly<NT>::BiPoly(int n){// creates a BiPoly with nominal y-degree equal to n.
-	     // To support this constructor, you need functions
-	     // that are equivalent to "setCoeff(i, PolyNT q)" in the Poly Class
-	     // You also want "getCoeff(i)" functions.
-	     // E.g. BiPoly<NT> p(10);
-	     //      PolyNT q(3, {1,2,3,4});
-	     //      p.setCoeff(10, q);
-	     //      p.setCoeff(0, PolyNT());
-	     //
-	    ydeg = n;
-	    if (n<0) return; // coeffX not needed
-	    for(int i=0; i<= ydeg; i++){
-	      Polynomial<NT> temp;
-	      coeffX.push_back(temp);      
-	    }
-	  }
+
+     // To support this constructor, you need functions
+     // that are equivalent to "setCoeff(i, PolyNT q)" in the Poly Class
+     // You also want "getCoeff(i)" functions.
+     // E.g. BiPoly<NT> p(10);
+     //      PolyNT q(3, {1,2,3,4});
+     //      p.setCoeff(10, q);
+     //      p.setCoeff(0, PolyNT());
+     //
+    ydeg = n;
+    if (n<0) return; // coeffX not needed
+    for(int i=0; i<= ydeg; i++){
+      Polynomial<NT> temp;
+      coeffX.push_back(temp);      
+    }
+  }
 
 // Construct constant polynomial from an NT value
 // WARNING: this can be confused with the 'int' constructor 
 // for some number types. . 
 template <class NT>
 BiPoly<NT>::BiPoly( const NT& c ) { 
-	  if ( c == NT(0) ) { 
-	    ydeg = -1;
-	//    std::cerr << "bipoly: const zero constructor: 0 : " << ydeg <<  std::endl;
-	  }
-	  else { 
-	    ydeg = 0;
-	    // COMMIT THIS
-	    Polynomial<NT> f(0);
-	    f.coeff()[0] = c;
-	    coeffX.push_back( f );
-	//    std::cerr << "bipoly: const constructor: " << c << " : " << ydeg <<  std::endl;
-	  }
-	}
-
-//BiPoly(int n, Polynomial<NT> * ap) // added, Nov 2010
-template <class NT>
-BiPoly<NT>::BiPoly(int n, Polynomial<NT> * ap){ 
-	    ydeg = n;
-	    if (n == -1) return;
-	    for (int i=0; i<= n; i++)
-	        coeffX.push_back(ap[i]);
-	  }
-  
-//BiPoly(vp)
+  if ( c == NT(0) ) { 
+    ydeg = -1;
+//    std::cerr << "bipoly: const zero constructor: 0 : " << ydeg <<  std::endl;
+  }
+  else { 
+    ydeg = 0;
+    // COMMIT THIS
+    Polynomial<NT> f(0);
+    f.coeff()[0] = c;
+    coeffX.push_back( f );
+//    std::cerr << "bipoly: const constructor: " << c << " : " << ydeg <<  std::endl;
+  }
+}
+  //BiPoly(vp)
 template <class NT>
 BiPoly<NT>::BiPoly(std::vector<Polynomial<NT> >& vp){ 
-	    // From vector of Polynomials
-	    ydeg = vp.size() - 1;
-	    if(ydeg >=0){
-	      coeffX = vp;
-	    }
-	  }
+    // From vector of Polynomials
+    ydeg = vp.size() - 1;
+    if(ydeg >=0){
+      coeffX = vp;
+    }
+  }
   
-//BiPoly(p, flag):
-//	if true, it converts polynomial p(X) into P(Y)
-// 	if false, it creates the polynomial Y-p(X)
+  //BiPoly(p, flag):
+  //	if true, it converts polynomial p(X) into P(Y)
+  // 	if false, it creates the polynomial Y-p(X)
+
 template <class NT>
 BiPoly<NT>::BiPoly(Polynomial<NT> p, bool flag){
-	    if (flag){
-	      ydeg = p.getTrueDegree();
-	      if(ydeg >=0){
-	        for(int i=0; i<=ydeg; i++){
-		  Polynomial<NT> temp(0);
-		  temp.setCoeff(0, p.getCoeff(i));
-		  coeffX.push_back(temp);	// does STL make a copy of temp?
-	        }//for
-	      }//if
-	    } else {
-	      ydeg = 1;
-	      coeffX.push_back(p);
-	      coeffX.push_back(Polynomial<NT>::Unity());
-	    }//else
-	  }//BiPoly(p)
+    if (flag){
+      ydeg = p.getTrueDegree();
+      if(ydeg >=0){
+        for(int i=0; i<=ydeg; i++){
+	  Polynomial<NT> temp(0);
+	  temp.setCoeff(0, p.getCoeff(i));
+	  coeffX.push_back(temp);	// does STL make a copy of temp?
+        }//for
+      }//if
+    } else {
+      ydeg = 1;
+      coeffX.push_back(p);
+      coeffX.push_back(Polynomial<NT>::polyUnity());
+    }//else
+  }//BiPoly(p)
+
 
   //BiPoly(deg, d[], C[]):
   //	Takes in a list of list of coefficients.
@@ -139,45 +132,33 @@ BiPoly<NT>::BiPoly(Polynomial<NT> p, bool flag){
 
 template <class NT>
 BiPoly<NT>::BiPoly(int deg, int *d, NT *C){
-	    ydeg = deg;
-	    int coeff = 0;
-	    Polynomial<NT> temp;
-	    int max=0;
-	    for(int i=0; i <=deg; i++)
-	      max = core_max(d[i],max);
-	
-	    NT *c = new NT[max+1];
-	
-	    for(int i=0; i<= deg; i++){
-	      for(int j=0; j <=d[i]; j++)
-	        c[j] = C[coeff+j];
-	      temp = Polynomial<NT>(d[i],c);
-	      coeffX.push_back(temp);
-	      coeff += d[i]+1;
-	    }
-	    delete[] c;
-	}//BiPoly(deg,d[],C[])
 
-//The string representation of bipoly is extremely flexible.
-//	E.g., "x^3 y^4 + x -32.1 y^2 + 3"
-//
-// 	You are allowed to have one equality symbol:
-// 		e.g., "x^2 = 3xy + 1"
-// 	yields the same polynomial as "x^2 - 3xy - 1".
-//
-// 	You can have arbitrarily nesting of parenthesis:
-// 		e.g. "((x-1)^2 + (y-7)^3 = 3^2) ( 2x-3y+1)"
-//	
+    ydeg = deg;
+    int coeff = 0;
+    Polynomial<NT> temp;
+    int max=0;
+    for(int i=0; i <=deg; i++)
+      max = core_max(d[i],max);
+
+    NT *c = new NT[max+1];
+
+    for(int i=0; i<= deg; i++){
+      for(int j=0; j <=d[i]; j++)
+        c[j] = C[coeff+j];
+      temp = Polynomial<NT>(d[i],c);
+      coeffX.push_back(temp);
+      coeff += d[i]+1;
+    }
+    delete[] c;
+}//BiPoly(deg,d[],C[])
+
+
 //The BNF syntax is the following:-
-//
-//    [bipoly] -> [term]| [term] +/- [bipoly] | [bipoly] = [bipoly]
-//
-//
+//    [bipoly] -> [term]| [term] +/- [bipoly]
 //    [term] -> [basic term]|[basic term] [term]|[basic term]*[term]
 //    [basic term] -> [number]|'x'|'y'|[basic term]'^'[number]
 //                    | '(' [bipoly]')'|'-'
 //Unary minus is treated as a basic term
-//
 template <class NT>
 BiPoly<NT>::BiPoly(const char * s, char myX, char myY){
 	string ss(s);
@@ -190,39 +171,42 @@ BiPoly<NT>::BiPoly(const string & s, char myX, char myY){
 }
 template <class NT>
 void BiPoly<NT>::constructFromString(string & s, char myX, char myY){
-	  if((myX != 'x' || myX != 'X') && (myY != 'y' || myY != 'Y')){
-	    //Replace myX with 'x' and myY with 'y' in s.
-	    unsigned int loc = s.find(myX, 0);
-	    while(loc < s.length()){
-	      s.replace(loc,1,1,'x');
-	      loc = s.find(myX, loc+1);
-	    }
-	    loc = s.find(myY, 0);
-	    while(loc < s.length()){
-	      s.replace(loc,1,1,'y');
-	      loc = s.find(myY, loc+1);
-	    }
-	  }
-	  (*this) =  (*this).getbipoly(s);
-	
-	}
+  if((myX != 'x' || myX != 'X') && (myY != 'y' || myY != 'Y')){
+    //Replace myX with 'x' and myY with 'y' in s.
+    unsigned int loc = s.find(myX, 0);
+    while(loc < s.length()){
+      s.replace(loc,1,1,'x');
+      loc = s.find(myX, loc+1);
+    }
+    loc = s.find(myY, 0);
+    while(loc < s.length()){
+      s.replace(loc,1,1,'y');
+      loc = s.find(myY, loc+1);
+    }
+  }
+  (*this) =  (*this).getbipoly(s);
+
+}
 
 //Constructor from another BiPoly
 template <class NT>
 BiPoly<NT>::BiPoly(const BiPoly<NT> &P) : ydeg(P.ydeg) {
-	  coeffX = P.coeffX;
-	}
+  coeffX = P.coeffX;
+}
 
-//Destructor
+  //Destructor
 template <class NT>
 void BiPoly<NT>::deleteCoeffX(){
-	  coeffX.clear(); }
+  coeffX.clear();
+}
 
 template <class NT>
 BiPoly<NT>::~BiPoly(){
-	  if (ydeg >= 0)
-	    deleteCoeffX();
-	}
+  if (ydeg >= 0)
+    deleteCoeffX();
+}
+
+
 
 
   ////////////////////////////////////////////////////////
@@ -464,144 +448,50 @@ BiPoly<NT> BiPoly<NT>::getbipoly(string s){
   // METHODS
   ////////////////////////////////////////////////////////
   
-template <class NT>
-std::string BiPoly<NT>::toString(char xvar, char yvar) {
-	  int d= getTrueYdegree();
-	  if (d == -1) return std::string("0");
-	  std::ostringstream oss;
-	  std::string s;
-	  int i = d;
-	  //
-	  Polynomial<NT> c;	// coefficient of y powers
-	  c = getCoeff(d);	// first term
-	  if (d==0) {// we now know that c != 0
-		oss << c.toString(xvar);
-		s = oss.str();
-		return s;}
-	  if (d==1) {
-		if (c == Polynomial<NT>().Unity())
-			oss << yvar;
-		else if (c == Polynomial<NT>().NegUnity())
-			oss << "-" << yvar;
-	  	else if (c.getTrueDegree()==0)
-			oss << c.toString() << yvar;
-		else
-			oss << "(" << c.toString(xvar) << ")" << yvar;
-	  } else {	// d>1
-		if (c == Polynomial<NT>().Unity())
-			oss << yvar << "^" << d;
-		else if (c == Polynomial<NT>().NegUnity())
-			oss << "-" << yvar << "^" << i;
-	  	else if (c.getTrueDegree() == 0) // c is constant, unequal to 1 or -1
-			oss << c.toString(xvar) << yvar << "^" << i;
-		else 	// c has degree at least 1
-			oss << yvar << "^" << i << "(" << c.toString(xvar) << ")" ;
-	  }// done with first term.
-	  i=d-1;
-	  NT cc;
-	  for (; i>= 2; i--) {	// general term (non-first, deg at least 2)
-		c = getCoeff(i);
-		if (c != Polynomial<NT>().Zero()) {
-		  if (c == Polynomial<NT>().Unity())
-	  		oss << " + " << yvar << "^" << i;
-		  else if (c == Polynomial<NT>().NegUnity())
-	  		oss << " - " << yvar << "^" << i;
-		  else if (c.getTrueDegree() == 0) {// c=const, unequal to 1 or -1
-			cc = c.getCoeff(0);
-			if (cc > 0) // assume cc (type NT) has operator<<()
-	  			oss << " + " << cc << yvar << "^" << i;
-			else {
-				cc *= NT(-1);  //negate c
-	  			oss << " - " << cc << yvar << "^" << i; } }
-		  else  // c has degree at least 1
-	  		oss << " + (" << c.toString(xvar) << ")" << yvar << "^" << i; }
-		  } //for (i>=2)
-	  //Finally: handle linear and constant terms which are NOT leading terms:
-	  if (d > 1) { // process linear term, but only if d>1 (else duplicated)
-		  c = getCoeff(1); // linear term
-		  if (c != Polynomial<NT>().Zero()) {
-			if (c == Polynomial<NT>().Unity())
-				oss << " + " << yvar;
-			else if (c == Polynomial<NT>().NegUnity())
-				oss << " - " << yvar;
-			else if (c.getTrueDegree() == 0) { // c is constant
-				cc = c.getCoeff(0);
-				if (cc > 0) oss << " + " << cc << yvar;
-				else {
-					cc *= NT(-1);
-					oss << " - " << cc << yvar; } }
-			else // c has degree at least 1
-				oss << " + (" << c.toString(xvar) << ")" << yvar; }
-	  	}// linear term if d>1
-	  if (d > 0) { // process constant term, but only if d>0
-	  	  c = getCoeff(0); // constant term
-	   	  if (c != Polynomial<NT>().Zero()) {
-			if (c.getTrueDegree() == 0) {
-				cc = c.getCoeff(0);
-				if (cc > 0) oss << " + " << cc;
-				else { // cc < 0
-					cc *= NT(-1);
-					oss << " - " << cc; } }
-			else  // c has degree at least 1
-	  			oss << " + (" << c.toString(xvar) << ")"; }
-		  }// constant term if d>0
-	  s=oss.str();
-	  return s;
-	}//toString(BiPoly,x,y)
-
-
   // filedump (msg, ofs, com, com2)
-  // 	where msg, com, com2 are strings.
-  // 	msg is message (e.g., msg="Polynomial=" or msg="",
-  // 	com is character preceding each output line (e.g., com="# ")
-  // 	com2 is character preceding every 3rd output line (e.g., com="# ")
+  // 	where msg and com are strings.
+  // 	msg is an message and com is the character preceding each line
   // 	(e.g., msg=""  and com=com2="# ")
-  // Output looks like (3 terms per line):
-  // 	# [p_0(x)] + [p_1(x)]y + [p_2(x)] y^2 
-  // 	# + [p_3(x)]y^3+ [p_4(x)]y^4 + [p_5(x)] y^5 
-  // 	# + [p_6(x)]y^3+ [p_7(x)]y^7 ...
   // This is called by the other dump functions
-  //
 template <class NT>
 void BiPoly<NT>::dump(std::ostream & os, std::string msg,
-	    std::string com, std::string com2) const {
-	    if (msg != "")
-	      os << msg << std::endl;
-	    if(ydeg == -1) {
-	      os << com << " Zero Polynomial" << std::endl;
-	      return;
-	    }
-	    bool first = true;
-	    os << com;
-	    for (int i=0; i <= ydeg; i++){
-	      if (!zeroP(coeffX[i])){
-		if (i % 3 == 0) os << std::endl << com2; // output 3 coeffs per line
-		if (first) first = false;
-		else os << " + ";
-		os << "[";
-		coeffX[i].filedump(os,"","",com2); // First comment string is ""
-		os << "]";
-	        if (i == 1) os <<" * y" ;
-	        else if (i > 1) os <<" * y^"<< i ;
-	      }
-	    }
-	  }//dump
+    std::string com, std::string com2) const {
+    if (msg != "")
+      os << msg << std::endl;
+    if(ydeg == -1) {
+      os << com << " Zero Polynomial" << std::endl;
+      return;
+    }
+    bool first = true;
+    os << com;
+    for (int i=0; i <= ydeg; i++){
+      if (!zeroP(coeffX[i])){
+	if (i % 3 == 0) os << std::endl << com2 ;  // output 3 coefficients per line
+	if (first) first = false;
+	else os << " + ";
+	os << "[";
+	coeffX[i].filedump(os,"","",com2); // Note: first comment string is ""
+	os << "]";
+        if (i > 0) os <<" * y^"<< i ;
+      }
+    }
+  }//dump
 
   // dump(ofs, msg, com, com2) -- dump to file
   //
 /*
 template <class NT>
 void BiPoly<NT>::dump(std::ofstream & ofs, std::string msg,
-      std::string com, std::string com2) const {
-	    dump(ofs, msg, com, com2);
-	  }
+              std::string com, std::string com2) const {
+    dump(ofs, msg, com, com2);
+  }
 */
-  // dump(msg, com, com2) -- dump to std output
+  // dump(msg, com) -- dump to std output
 template <class NT>
 void BiPoly<NT>::dump(std::string msg, std::string com,
-	    std::string com2) const {
-	    dump(std::cout, msg, com, com2);
-	  }
+    std::string com2) const {
+    dump(std::cout, msg, com, com2);
+  }
 
   /* ***********************************************************
     We want to substitute X or Y with a general Expression or BigFloat
@@ -744,16 +634,45 @@ Expr BiPoly<NT>::eval(Expr x, Expr y){//Evaluate the polynomial at (x,y)
   }//eval
 
 
+/*
 // Interval Versions of Eval:
-// Written by Shuxing Lu (Mar 2009)
+//      Shuxing Lu (Mar 2009) did not implement this. 
+//      Shang Wang and Chee implemente this in July 2011.  We need
+//      the quadratic converging version based on centered form
+//       applied to the Jacobian only.
+Interval BiPoly<NT>::eval(const IntervalT<T> &x, const IntervalT<T> &y) const {
+     T fm = eval(x.mid(), y.mid());
+    BiPoly<NT> fx = this, fy = this;
+    fx.differentiateX();  
+    fy.differentiateY();
+    IntervalT<T> x_range(x.getL()-x.mid(), x.getR()-x.mid());
+    IntervalT<T> y_range(y.getL()-y.mid(), y.getR()-y.mid());
+    return fm + (fx.eval(x,y)*x_range + fy.eval(x,y)*y_range);
+}
 
-//Interval BiPoly<NT>::eval(const Interval &x, const Interval &y) const {
-//}
-
+  // This is the Jacobian Test on a box B
+  //   It returns true iff 0 is not in det(JF(B))
+  //   If true, then B has at most one root.
+  bool JTest(const Box *box) const {
+    const Interval &x_range = box->x_range;
+    const Interval &y_range = box->y_range;
+    Interval a = jacobian_(0, 0).eval<Interval>(x_range, y_range);
+    Interval b = jacobian_(0, 1).eval<Interval>(x_range, y_range);
+    Interval c = jacobian_(1, 0).eval<Interval>(x_range, y_range);
+    Interval d = jacobian_(1, 1).eval<Interval>(x_range, y_range);
+    Interval det = a*d - b*c;
+    if(det.zero()) {
+//cout << "zero" << endl;
+      return false;
+    }
+    else {
+      return true;
+    }
+  }
+*/
   ////////////////////////////////////////////////////////
   // Polynomial arithmetic (these are all self-modifying)
   ////////////////////////////////////////////////////////
-  
   // Expands the nominal y-degree to n;
   //	Returns n if nominal y-degree is changed to n
   //	Else returns -2
@@ -764,7 +683,7 @@ int BiPoly<NT>::expand(int n) {
       return -2;
     
     for(int i=ydeg+1; i <=n ;i++)
-      coeffX.push_back(Polynomial<NT>::Zero());
+      coeffX.push_back(Polynomial<NT>::polyZero());
     
     ydeg = n;
     return n;
@@ -786,47 +705,6 @@ int BiPoly<NT>::contract() {
     }
     return d;
   }//contract
-
-// stream i/o
-// Chee(Nov5'2010): need a stream output so that we can output
-// 	for subsequent reading in again.
-// 	The output is a string of the form "c0 + y (c1) + y^2 (c2) +..."
-// 	where c0, c1, etc, are polynomials in x.
-// 	We need a corresponding method for univariate polynomials to
-// 	output c0, c1, etc.
-template <typename NT>
-std::ostream& operator<<(std::ostream& o, BiPoly<NT>& p) {
-  int d= p.getTrueYdegree();
-//
-  o << "String output:" << std::endl;
-  if (d == -1) {
-	o << "0" << std::endl;
-  } else {
-	int i=0;
-	while (p.coeffX[i++].getTrueDegree() == -1);
-	if (i > 0) o << "y^" << i;
-	o << "(" << p.coeffX[i++].toString() << ")";
-	for (; i<= d; i++)
-		o << " + y^" << i << "(" << p.coeffX[i].toString() << ")";
-  }
-/*
-  o <<   "BiPoly<NT> ( deg = " << d ;
-  if (d == -1) {
-	  o << "," << std::endl;
-	  o << ">  coeff c0 = 0)" << std::endl;
-	  return o;
-  }
-  // else d >= 0
-  o << "," << std::endl;
-  o << ">  coeff c0,c1,... : " << std::endl;
-  o << ">  " << p.coeffX[0];
-  for (int i=1; i<= d ; i++)
-    o << ">  , " <<  p.coeffX[i];
-  o << ")" << std::endl;
-  */
-  return o;
-}//operator<<
-
 
   // Self-assignment
 template <class NT>
@@ -928,7 +806,7 @@ BiPoly<NT> & BiPoly<NT>::mulYpower(int s) {
   std::vector<Polynomial<NT> > vP;
   if(s > 0){
     for(int i=0; i < s; i ++)
-      vP.push_back(Polynomial<NT>::Zero());
+      vP.push_back(Polynomial<NT>::polyZero());
     for(int i=s; i<=d; i++)
       vP.push_back(coeffX[i-s]);
   }
@@ -1267,7 +1145,7 @@ Polynomial<NT>  resY( BiPoly<NT>& P ,BiPoly<NT>& Q){
   int n = Q.getTrueYdegree();
 
   //If either polynomial is zero, return zero
-  if( m == -1 || n == -1) return Polynomial<NT>();//::Zero();
+  if( m == -1 || n == -1) return Polynomial<NT>();//::polyZero();
 
   if(n > m){
     if (((m*n) %2)==0) return resY(Q,P);
@@ -1284,7 +1162,7 @@ Polynomial<NT>  resY( BiPoly<NT>& P ,BiPoly<NT>& Q){
 
   //if(isZeroPinY(P) && n > 0)
   if ((P.getTrueYdegree() == -1) && n > 0) 
-    return Polynomial<NT>();//::Zero();
+    return Polynomial<NT>();//::polyZero();
 
   //if(Q.getTrueYdegree() == 0 && isZeroPinY(P))
   if ((Q.getTrueYdegree() == 0) && P.getTrueYdegree()==-1)
@@ -1328,12 +1206,6 @@ bool operator==(const BiPoly<NT>& P, const BiPoly<NT>& Q) {	// ==
     }
   }
   return true;
-}
-
-//Inequality operator for BiPoly
-template <class NT>
-bool operator!=(const BiPoly<NT>& P, const BiPoly<NT>& Q) {	// !=
-  return (!(P == Q));
 }
 
   // Addition P + Q
@@ -1479,102 +1351,103 @@ int Curve<NT>::verticalIntersections(const BigFloat & x, BFVecInterval & vI,
   //       (3) should allow the ability to look for interesting
   //             features
   //
+  //
 template < class NT >
 int Curve<NT>::plot( BigFloat eps, BigFloat x1,
 	BigFloat y1, BigFloat x2, BigFloat y2, int fileNo){
-	
-	 const char* filename[] = {"data/input", "data/plot", "data/plot2"};
 
-	 //assert(eps.isExact()); // important for plotting...
-	 //assert(x1.isExact());
-	 //assert(y1.isExact());
+  const char* filename[] = {"data/input", "data/plot", "data/plot2"};
 
-	 ofstream outFile;
-	 outFile.open(filename[fileNo]); // ought to check if open is successful!
-	 outFile << "########################################\n";
-	 outFile << "# Curve equation: \n";
-	 this->dump(outFile,"", "# ");
-	 outFile << std::endl;
-	 outFile << "# Plot parameters:  step size (eps) = " << eps << std::endl;
-	 outFile << "#                   x1 = " << x1 << ",\t y1 = " << y1 << std::endl;
-	 outFile << "#                   x2 = " << x2 << ",\t y2 = " << y2 << std::endl;
-	 outFile << "########################################\n";
-	 outFile << "# X-axis " << std::endl;
-	 outFile << "o 2" << std::endl;
-	 outFile << "0.99 \t 0.99 \t 0.99" << std::endl;
-	 outFile << x1 << "\t" << 0 << std::endl;
-	 outFile << x2 << "\t" << 0 << std::endl;
-	 outFile << "########################################\n";
-	 outFile << "# Y-axis " << std::endl;
-	 outFile << "o 2" << std::endl;
-	 outFile << "0.99 \t 0.99 \t 0.99" << std::endl;
-	 outFile << 0 << "\t" << y1 << std::endl;
-	 outFile << 0 << "\t" << y2 << std::endl;
-	 // assert(eps>0)
-	 int aprec = -eps.lMSB(); // By definition, eps.lMSB() <= lg(eps)
+  //assert(eps.isExact()); // important for plotting...
+  //assert(x1.isExact());
+  //assert(y1.isExact());
 
-	 BigFloat xCurr = x1;
-	 BigFloat xLast = x1;
-	 unsigned int numRoots=0;
-	 unsigned int numPoints=0;
-	 BFVecInterval vI;
-	 BFInterval yRange(y1, y2); //for plotting
+  ofstream outFile;
+  outFile.open(filename[fileNo]); // ought to check if open is successful!
+  outFile << "########################################\n";
+  outFile << "# Curve equation: \n";
+  this->dump(outFile,"", "# ");
+  outFile << std::endl;
+  outFile << "# Plot parameters:  step size (eps) = " << eps << std::endl;
+  outFile << "#                   x1 = " << x1 << ",\t y1 = " << y1 << std::endl;
+  outFile << "#                   x2 = " << x2 << ",\t y2 = " << y2 << std::endl;
+  outFile << "########################################\n";
+  outFile << "# X-axis " << std::endl;
+  outFile << "o 2" << std::endl;
+  outFile << "0.99 \t 0.99 \t 0.99" << std::endl;
+  outFile << x1 << "\t" << 0 << std::endl;
+  outFile << x2 << "\t" << 0 << std::endl;
+  outFile << "########################################\n";
+  outFile << "# Y-axis " << std::endl;
+  outFile << "o 2" << std::endl;
+  outFile << "0.99 \t 0.99 \t 0.99" << std::endl;
+  outFile << 0 << "\t" << y1 << std::endl;
+  outFile << 0 << "\t" << y2 << std::endl;
+  // assert(eps>0)
+  int aprec = -eps.lMSB(); // By definition, eps.lMSB() <= lg(eps)
 
-	//cout <<"Current value of x " << xCurr << endl;
-	 //===================================================================
-	 // FIRST locate the first x-value where there are roots for plotting
-	 //===================================================================
-	 do {
-	   vI.clear();
-	   if (verticalIntersections(xCurr, vI, aprec, yRange) > 0) {
-	     numRoots = vI.size();
-	//cout <<"Number of roots at " << xCurr << " are " << numRoots<<endl;
-	   }
-	   xCurr += eps;
+  BigFloat xCurr = x1;
+  BigFloat xLast = x1;
+  unsigned int numRoots=0;
+  unsigned int numPoints=0;
+  BFVecInterval vI;
+  BFInterval yRange(y1, y2); //for plotting
 
-	 } while ((numRoots == 0) && (xCurr < x2));//numRoots <= ydeg
+cout <<"Current value of x " << xCurr << endl;
+  //===================================================================
+  // FIRST locate the first x-value where there are roots for plotting
+  //===================================================================
+  do {
+    vI.clear();
+    if (verticalIntersections(xCurr, vI, aprec, yRange) > 0) {
+      numRoots = vI.size();
+cout <<"Number of roots at " << xCurr << " are " << numRoots<<endl;
+    }
+    xCurr += eps;
 
-	 if (numRoots == 0 && x2 <= xCurr) {//if numRoots > 0 then there exists a
-	                                    //valid point for plotting
+  } while ((numRoots == 0) && (xCurr < x2));//numRoots <= ydeg
+
+  if (numRoots == 0 && x2 <= xCurr) {//if numRoots > 0 then there exists a
+                                     //valid point for plotting
 	  return -1; // nothing to plot!
-	 }
+  }
 
-	 int limit = ((x2 - xCurr + eps)/eps).intValue()+1;
-	 //std::cout << "Limit = " << limit << std::endl;
-	 machine_double plotCurves[this->getTrueYdegree()][limit];//plot buffer 
-	 machine_double yval;
+  int limit = ((x2 - xCurr + eps)/eps).intValue()+1;
+  //std::cout << "Limit = " << limit << std::endl;
+  machine_double plotCurves[this->getTrueYdegree()][limit];//plot buffer 
+  machine_double yval;
 
-	 for (unsigned int i=0; i< numRoots; i++) {
-	    yval = (vI[i].first + vI[i].second).doubleValue()/2;
-	    if (yval < y1) plotCurves[i][numPoints] = y1.doubleValue();
-	    else if (yval > y2) plotCurves[i][numPoints] = y2.doubleValue();
-	    else plotCurves[i][numPoints] = yval;
-	 }
+  for (unsigned int i=0; i< numRoots; i++) {
+     yval = (vI[i].first + vI[i].second).doubleValue()/2;
+     if (yval < y1) plotCurves[i][numPoints] = y1.doubleValue();
+     else if (yval > y2) plotCurves[i][numPoints] = y2.doubleValue();
+     else plotCurves[i][numPoints] = yval;
+  }
 
-	 vI.clear();
-	 xLast = xCurr - eps;  // -eps to compensate for the forward value of xCurr
-	 numPoints = 1;
+  vI.clear();
+  xLast = xCurr - eps;  // -eps to compensate for the forward value of xCurr
+  numPoints = 1;
 
-	 //===================================================================
-	 // Get all the curves in a main loop
-	 // 	-- dump the curves when an x-interval is discovered
-	 // 	We define an "x-interval" to be a maximal interval
-	 // 	where the number of curves is constant (this is a heuristic!)
-	 // 	Note that this includes the special case where number is 0.
-	 //===================================================================
+  //===================================================================
+  // Get all the curves in a main loop
+  // 	-- dump the curves when an x-interval is discovered
+  // 	We define an "x-interval" to be a maximal interval
+  // 	where the number of curves is constant (this is a heuristic!)
+  // 	Note that this includes the special case where number is 0.
+  //===================================================================
 
-	 BigFloat tmp; // used to step from xLast to xCurr in loops
+  BigFloat tmp; // used to step from xLast to xCurr in loops
 
-	 while (xCurr < x2) { //main loop
-	   //std::cout << "Doing verticalintersec at " << xCurr << std::endl;
-	   verticalIntersections(xCurr, vI, aprec, yRange);
-	   if (vI.size() != numRoots) { // an x-interval discovered!
+  while (xCurr < x2) { //main loop
+    //std::cout << "Doing verticalintersec at " << xCurr << std::endl;
+    verticalIntersections(xCurr, vI, aprec, yRange);
+    if (vI.size() != numRoots) { // an x-interval discovered!
 	// write previous x-interval to output file
-	       outFile << "########################################\n";
-	       outFile << "# New x-interval with " << numRoots << " roots\n";
+        outFile << "########################################\n";
+        outFile << "# New x-interval with " << numRoots << " roots\n";
 	for (unsigned int i=0; i< numRoots; i++) {
-	         outFile << "#=======================================\n";
-	         outFile << "# Curve No. " << i+1 << std::endl;
+          outFile << "#=======================================\n";
+          outFile << "# Curve No. " << i+1 << std::endl;
 	  outFile << "o " << numPoints << std::endl;
 	  outFile << red_comp(i) << "\t"
 		  << green_comp(i)  << "\t"
@@ -1590,10 +1463,10 @@ int Curve<NT>::plot( BigFloat eps, BigFloat x1,
 	numPoints = 0;          // reset
 	numRoots = vI.size();   // reset
 	xLast = xCurr;		// reset
-	   }//if vI.size() !=
-	   if (numRoots>0){ // record curr. vertical intersections if numRoots>0
-	     for (unsigned int i=0; i< numRoots; i++) {
-	        yval = (vI[i].first + vI[i].second).doubleValue()/2;
+    }//if vI.size() !=
+    if (numRoots>0){ // record curr. vertical intersections if numRoots>0
+      for (unsigned int i=0; i< numRoots; i++) {
+         yval = (vI[i].first + vI[i].second).doubleValue()/2;
 	 // HERE SHOULD BE A LOOP TO OUTPUT MORE POINTS IN CASE THE slope IS LARGE
 	 // Idea: let previous value of yval be yval-old.  
 	 //
@@ -1610,25 +1483,25 @@ int Curve<NT>::plot( BigFloat eps, BigFloat x1,
 	 // 			OR (sign of slope changes)
 	 // 			OR (hit the ymax or ymin boundary)
 	 //
-	        if (yval < y1) plotCurves[i][numPoints] = y1.doubleValue();
-	        else if (yval > y2) plotCurves[i][numPoints] = y2.doubleValue();
-	        else plotCurves[i][numPoints] = yval;
-	     }//for i
-	     vI.clear();  //Should clear the intersection points
-	     numPoints++;
-	   }//if
-	   xCurr += eps;
-	//if (!xCurr.isExact()) std::cout<<"xCurr has error! xCurr=" << xCurr << std::endl;
-	  }//main while loop
+         if (yval < y1) plotCurves[i][numPoints] = y1.doubleValue();
+         else if (yval > y2) plotCurves[i][numPoints] = y2.doubleValue();
+         else plotCurves[i][numPoints] = yval;
+      }//for i
+      vI.clear();  //Should clear the intersection points
+      numPoints++;
+    }//if
+    xCurr += eps;
+//if (!xCurr.isExact()) std::cout<<"xCurr has error! xCurr=" << xCurr << std::endl;
+   }//main while loop
 
-	  // Need to flush out the final x-interval:
-	  if ((numRoots>0) && (numPoints >0)) { 
+   // Need to flush out the final x-interval:
+   if ((numRoots>0) && (numPoints >0)) { 
 	// write to output file
-	       outFile << "########################################\n";
-	       outFile << "# New x-interval with " << numRoots << " roots\n";
+        outFile << "########################################\n";
+        outFile << "# New x-interval with " << numRoots << " roots\n";
 	for (unsigned int i=0; i< numRoots; i++) {
-	         outFile << "#=======================================\n";
-	         outFile << "# Curve No. " << i+1 << std::endl;
+          outFile << "#=======================================\n";
+          outFile << "# Curve No. " << i+1 << std::endl;
 	  outFile << "o " << numPoints << std::endl;
 	  outFile << red_comp(i) << "\t"
 		  << green_comp(i)  << "\t"
@@ -1641,22 +1514,22 @@ int Curve<NT>::plot( BigFloat eps, BigFloat x1,
 		  tmp += eps;
 	  }//for j
 	}//for i
-	   }//if
+    }//if
 
-	   // Put out the final frame (this hides the artificial cut-off of curves
-	   outFile << "########################################\n";
-	   outFile << "# FRAME around our figure " << std::endl;
-	   outFile << "p 4" << std::endl;
-	   outFile << "0.99 \t 0.99 \t 0.99" << std::endl;
-	   outFile << x1 << "\t" << y1 << std::endl;
-	   outFile << x2 << "\t" << y1 << std::endl;
-	   outFile << x2 << "\t" << y2 << std::endl;
-	   outFile << x1 << "\t" << y2 << std::endl;
-	   outFile << "######### End of File ##################\n";
+    // Put out the final frame (this hides the artificial cut-off of curves
+    outFile << "########################################\n";
+    outFile << "# FRAME around our figure " << std::endl;
+    outFile << "p 4" << std::endl;
+    outFile << "0.99 \t 0.99 \t 0.99" << std::endl;
+    outFile << x1 << "\t" << y1 << std::endl;
+    outFile << x2 << "\t" << y1 << std::endl;
+    outFile << x2 << "\t" << y2 << std::endl;
+    outFile << x1 << "\t" << y2 << std::endl;
+    outFile << "######### End of File ##################\n";
 
-	   outFile.close();
-	   return 0;
-	 }//plot
+    outFile.close();
+    return 0;
+  }//plot
 
 // selfIntersections():
 //   this should be another member function that lists
@@ -1666,6 +1539,8 @@ int Curve<NT>::plot( BigFloat eps, BigFloat x1,
 //  void selfIntersections(BFVecInterval &vI){
 //  ...
 //  }
+
+
 
   ////////////////////////////////////////////////////////
   // Curve helper functions

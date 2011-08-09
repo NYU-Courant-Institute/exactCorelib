@@ -356,6 +356,7 @@ class BiPoly{
   // Self-multiplication
   BiPoly<NT> & operator*=( const BiPoly<NT>& P);
   
+
   // Multiply by a polynomial in X
   BiPoly<NT> & mulXpoly( Polynomial<NT> & p);
 
@@ -506,6 +507,11 @@ template <class NT>
 //Multiplication operator for BiPoly
 template <class NT>
  BiPoly<NT> operator*(const BiPoly<NT>& P, const BiPoly<NT>& Q);
+
+ // output operator for polynomial
+ // implemented on Aug, 2011
+ template <class NT>
+ std::ostream& operator<<( std::ostream& P, BiPoly<NT>& Q);
 
 
   ////////////////////////////////////////////////////////
