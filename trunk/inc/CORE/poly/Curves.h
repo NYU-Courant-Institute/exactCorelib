@@ -89,10 +89,20 @@
 #include <iostream>
 #include "CORE/poly/Poly.h"
 
+// NOTE: This IntervalT.h is only used in eval1 and eval2 methods(see below)
+// The following pre-definition is because Curves.h(current file)
+// is also included by IntervalT.h, thus it's a mutual inclusion
+// of c++ header. (Shang Wang, Aug 2011)
+#include "CORE/IntervalT.h"
+// pre-define
+template <class NT>
+class IntervalT;
+
 // NOTE: at the end of this file, we include "Curves.tcc" which has
 //   is based on Sturm sequences.  An alternative is to include 
 //   "CurvesDesc.tcc" which is based on Descartes method.
 //   The parser for bivariate polynomials is implemented in "Curves.tcc".
+
 
 using namespace std;
 
@@ -294,15 +304,52 @@ class BiPoly{
   // getTrueYdegree
   int getTrueYdegree() ;
 
-  // templated eval
+//////////////////////////////////////////////////
+////  For interval evaluation, we provide THREE VERSIONS of eval.
+////  	We need this in the work on Modified Miranda.
+////  	-- Chee and Shang Wang (Aug2011)  
+////
+////  (1) eval (really should be called "eval0")
+////  		based on Horner's evaluation of polynomial.
+////
+////  (2) eval1 -- using the mean value form
+////
+////  		f(I,J) = f(mx,my + fx(I,J).I' + fy(I,J).J'
+////
+////  		where m(I)=mx,  m(J)=my, I' = I-mx,  J' = J-my
+////
+////		NOTE: fx(I,J) and fy(I,J) uses eval0.  We can rewrite eval1 in terms of eval0:
+////		
+////		eval1(f, I, J) = eval0(f, mx, my) + eval0(fx, I, J).I' + eval0(fy, I, J).J'.
+////
+////  (3) eval2 -- using the second order mean value form
+////
+////  		f(I,J) = f(mx,my + fx(mx,my).I' + fy(mx,my).J'
+////  			 + fxx(I,J).I'^2  + fyy(I,J).J'^2  + 2.fxy(I,J).I'.J'
+////
+////		THIS VERSION HAS QUADRATIC CONVERGENCE!
+////		NOTE: fxx(I,J), fyy(I,J) and fxy(I,J) uses eval0 (Horner's rule).
+////		We can rewrite eval2 in terms of eval1 and eval0:
+////
+////		eval2(f, I, J) = eval0(f, mx, my) + eval1(fx, I, J).I' + eval1(fy, I, J).J'.
+
+
+  // templated eval(also known as eval0)
   // assume NT \subseteq T 
   // T requires *, + , =, *=, +=
   // the last two operators 
   // are only for efficiency
   // sufficient for composition
-
   template< class T > 
   T eval( const T& x, const T& y ) const; 
+
+  template < class T >
+  IntervalT<T> eval1( const IntervalT<T> &x, const IntervalT<T> &y ) const;
+
+  template < class T >
+  IntervalT<T> eval2( const IntervalT<T> &x, const IntervalT<T> &y ) const;
+  
+//////////////////////////////////////////////////
 
   // operator version of eval
   template< class T >

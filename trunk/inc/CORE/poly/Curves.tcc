@@ -715,7 +715,7 @@ Polynomial<NT> BiPoly<NT>::getCoeff(int i) const{
 //////////////////////////////////////////////////
 ////  For interval evaluation, we provide THREE VERSIONS of eval.
 ////  	We need this in the work on Modified Miranda.
-////  	-- Chee and Shang (Aug2011)  
+////  	-- Chee and Shang Wang (Aug2011)  
 ////
 ////  (1) eval (really should be called "eval0")
 ////  		based on Horner's evaluation of polynomial.
@@ -749,7 +749,6 @@ Polynomial<NT> BiPoly<NT>::getCoeff(int i) const{
 /// 	It is adequate when type T is a number, but inadequate when T is an interval.
 ///
 /// Precondition: NT \subseteq T 
-
 template <class NT> template <class T>
 T BiPoly<NT>::eval(const T &x, const T &y ) const {
     //Evaluate the polynomial at (x,y);	
@@ -764,8 +763,47 @@ T BiPoly<NT>::eval(const T &x, const T &y ) const {
       res += T( coeffX[i].eval(x) );
     }
     return res;
-  }//eval
+}//eval
 
+// eval1 for Interval implementation only
+template <class NT> template <class T>
+IntervalT<T> BiPoly<NT>::eval1 (const IntervalT<T> &x, const IntervalT<T> &y) const {
+  BiPoly<NT> fx(*this), fy(*this);
+  fx.differentiateX();
+  fy.differentiateY();
+  
+  const T &xmid = x.mid();
+  const T &ymid = y.mid();
+  const IntervalT<T> I_m = x - IntervalT<T>(xmid);
+  const IntervalT<T> J_m = y - IntervalT<T>(ymid);
+
+  IntervalT<T> f_m = eval<IntervalT<T> >(IntervalT<T>(xmid), IntervalT<T>(ymid));
+  // use eval0 here
+  IntervalT<T> fx_term = fx.eval<IntervalT<T> >(x, y) * I_m;
+  IntervalT<T> fy_term = fy.eval<IntervalT<T> >(x, y) * J_m;
+
+  return (f_m + fx_term + fy_term);
+} // eval1
+
+// eval2 for Interval implementation only
+template <class NT> template <class T>
+IntervalT<T> BiPoly<NT>::eval2 (const IntervalT<T> &x, const IntervalT<T> &y) const {
+  BiPoly<NT> fx(*this), fy(*this);
+  fx.differentiateX();
+  fy.differentiateY();
+
+  const T &xmid = x.mid();
+  const T &ymid = y.mid();
+  const IntervalT<T> I_m = x - IntervalT<T>(xmid);
+  const IntervalT<T> J_m = y - IntervalT<T>(ymid);
+
+  IntervalT<T> f_m = eval<IntervalT<T> >(IntervalT<T>(xmid), IntervalT<T>(ymid));
+  // use eval1 here
+  IntervalT<T> fx_term = fx.eval1(x, y) * I_m;
+  IntervalT<T> fy_term = fy.eval1(x, y) * J_m;
+
+  return (f_m + fx_term + fy_term);
+}
 
   //eval(x,y)
 template <class NT>

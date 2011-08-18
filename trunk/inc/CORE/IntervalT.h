@@ -13,6 +13,12 @@
  * Written by
  *       Narayan Kamath (kamath.narayan@gmail.com), Oxford, June 2010.
  *
+ * TODO: Move evaluation of polynomial to poly.h
+ *       Move evaluation of bipoly to Curves.h
+ *       Remove inclusion of Curves.h
+ *       Curves.h should include this file.
+ *       Shang and Chee (Aug, 2011)
+ *
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
  *****************************************************************/
@@ -20,6 +26,9 @@
 #ifndef CORE_LINEAR_INTERVALT_H
 #define CORE_LINEAR_INTERVALT_H
 
+// This inclusion should be removed
+// Instead, Curves.h should include IntervalT.h
+// Chee and Shang (Aug, 2011)
 #include "poly/Curves.h"
 
 // A namespace used to declare functions used in extended
@@ -104,6 +113,14 @@ public:
     // an abuse rather than a use.
     assert (left_ != I_NEG_INFTY && right_ != I_POS_INFTY);
     return right_ - left_;
+  }
+
+  const NT halfwidth() const {
+    // The same argument as above, if one is using the width
+    // of an infinite interval for something its almost certainly
+    // an abuse rather than a use.
+    assert (left_ != I_NEG_INFTY && right_ != I_POS_INFTY);
+    return (right_ - left_) / 2;
   }
 
   // Equating an interval to a number, this should construct a thin
@@ -295,6 +312,8 @@ IntervalT<NT> EvalPoly(const Polynomial<NT> &p, const IntervalT<NT> &x) {
   return val;
 }
 
+// This should be moved to Curves.h
+// Chee and Shang (Aug, 2011)
 // Evaluate a bi-variate polynomial 'b' over the x-interval
 // x and a y interval y.
 template <typename NT>
