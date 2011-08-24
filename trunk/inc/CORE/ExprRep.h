@@ -41,6 +41,21 @@ enum NODE_NUMTYPE {
   NODE_NT_TRANSCENDENTAL,
 };
 
+enum NODE_OPTYPE {
+  NODE_OP_CONST,
+  NODE_OP_ADD,
+  NODE_OP_SUB,
+  NODE_OP_MUL,
+  NODE_OP_DIV,
+  NODE_OP_NEG,
+
+  NODE_OP_RATIONAL,
+  
+  NODE_OP_ANARY,
+  NODE_OP_ALGEBRAIC,
+  NODE_OP_TRANSCENDENTAL,
+};
+
 #define PREC_MIN        MPFR_PREC_MIN
 #define DEF_INIT_PREC   53UL
 
@@ -689,8 +704,16 @@ public:
 	
   Filter& filter() { return m_filter; }
   const Filter& filter() const { return m_filter; }
+
   NODE_NUMTYPE& numType() { return _numType; }
   const NODE_NUMTYPE& numType() const { return _numType; }
+
+  NODE_OPTYPE& opType() { return _opType; }
+  const NODE_OPTYPE& opType() const { return _opType; }
+
+  virtual BigInt getZTVal() { return 0; }
+  virtual BigFloat getFTVal() { return 0; }
+  virtual BigRat getQTVal() { return 0; }
 public:
   /// node information
   struct NodeInfo {
@@ -705,6 +728,7 @@ public:
   NodeInfo* m_nodeinfo; ///<- node information
   Filter    m_filter;   ///<- filter
   NODE_NUMTYPE _numType; ///<- number type
+  NODE_OPTYPE  _opType; ///<- operator type
 
 public: // reference counting
   void inc_ref() 
@@ -716,6 +740,23 @@ public: // reference counting
 private:
   int m_ref_counter;
 };
+
+/// These 12 functions were introduced to support getZTVal(), getFTVal(), getQTVal()
+///  which are in turn used in getExactVal(), for use in ReduceToRational.
+inline BigInt getBigIntVal(const BigRat& v) { return 0; }
+inline BigInt getBigIntVal(const BigFloat& v) { return 0; }
+inline BigInt getBigIntVal(const BigInt& v) { return v; }
+inline BigInt getBigIntVal(const long& v) { return (BigInt)v; }
+
+inline BigFloat getBigFloatVal(const BigRat& v) { return 0; }
+inline BigFloat getBigFloatVal(const BigFloat& v) { return v; }
+inline BigFloat getBigFloatVal(const BigInt& v) { return (BigFloat)v; }
+inline BigFloat getBigFloatVal(const long& v) { return (BigFloat)v; }
+
+inline BigRat getBigRatVal(const BigRat& v) { return v; }
+inline BigRat getBigRatVal(const BigFloat& v) { return (BigRat)v; }
+inline BigRat getBigRatVal(const BigInt& v) { return (BigRat)v; }
+inline BigRat getBigRatVal(const long& v) { return (BigRat)v; }
 
 /// \class ConstRepT 
 /// \brief constant node
@@ -734,6 +775,7 @@ class ConstRepT : public ExprRepT<RootBd, Filter, Kernel> {
   using ExprRep::init_value;
   using ExprRep::init_nodeinfo;
   using ExprRep::numType;
+  using ExprRep::opType;
 protected:
   T value;
 public:
@@ -741,6 +783,7 @@ public:
   ConstRepT(const V& v, NODE_NUMTYPE t) : value(v) {
     filter().set(v);
     numType() = t;
+    opType() = NODE_OP_CONST;
     init_nodeinfo();
   }  
   virtual ~ConstRepT() 
@@ -761,6 +804,14 @@ protected:
   { rootBd().set(value); }
   virtual bool compute_r_approx(prec_t prec)
   { return appValue().set(value, prec); }
+public:
+  T getValue() const { return value; }
+  /// In the following getBigXXXValue(), if the return type is smaller than
+  /// type T, then it should be an error, but we return 0.  
+  BigInt getZTVal() {return getBigIntVal(value); }
+  BigFloat getFTVal() {return getBigFloatVal(value); }
+  BigRat getQTVal() { return getBigRatVal(value); }
+
 #ifdef CORE_DEBUG
   virtual std::string op()
   { return std::string("Const"); }
@@ -793,6 +844,7 @@ class ConstPolyRepT : public ExprRepT<RootBd, Filter, Kernel> {
   using ExprRep::appValue;
   using ExprRep::rootBd;
   using ExprRep::numType;
+  using ExprRep::opType;
 protected:
   Kernel value;
   Descartes<NT> ss; ///< internal Sturm sequences
@@ -812,6 +864,7 @@ public:
     else value.set(BigFloat2(I.first, I.second), 53);
     filter().set(value);
     numType() = NODE_NT_ALGEBRAIC;
+    opType() = NODE_OP_CONST;
   }
 
   ConstPolyRepT(const Polynomial<NT>& p, const BFInterval& II) : ss(p), I(II) {
@@ -867,10 +920,12 @@ class PiRepT : public ExprRepT<RootBd, Filter, Kernel> {
   using ExprRep::appValue;
   using ExprRep::rootBd;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   PiRepT() {
     compute_filter();
     compute_numtype();
+    opType() = NODE_OP_CONST;
   }
   virtual ~PiRepT() 
   {}
@@ -909,10 +964,12 @@ class ERepT : public ExprRepT<RootBd, Filter, Kernel> {
   using ExprRep::appValue;
   using ExprRep::rootBd;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   ERepT() {
     compute_filter();
     compute_numtype();
+    opType() = NODE_OP_CONST;
   }
   virtual ~ERepT() 
   {}
@@ -975,10 +1032,12 @@ class NegRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::rootBd;
   using ExprRep::abs2rel;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
-  NegRepT(ExprRep* c) : UnaryOpRep(c) {
+  NegRepT(ExprRep* c) : UnaryOpRep(c)  {
     filter().neg(child->filter());
     numType() = child->numType();
+    opType() = NODE_OP_NEG;
   }  
   virtual ~NegRepT() 
   {}
@@ -999,6 +1058,9 @@ protected:
     return this->check_exact(appValue().neg(child->a_approx(prec),
 			    abs2rel(prec)));
   }
+  BigInt getZTVal() { return -child->getZTVal(); }
+  BigFloat getFTVal() { return -child->getFTVal(); }
+  BigRat getQTVal() { return -child->getQTVal(); }
 #ifdef CORE_DEBUG
   virtual std::string op()
   { return std::string("Neg"); }
@@ -1023,10 +1085,12 @@ class SqrtRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;  
   using ExprRep::numType;  
+  using ExprRep::opType;
 public:
   SqrtRepT(ExprRep* c) : UnaryOpRep(c) 
   { filter().sqrt(child->filter()); 
     numType() = (std::max)(NODE_NT_ALGEBRAIC, child->numType());
+    opType() = NODE_OP_ALGEBRAIC;
     if (child->get_sign()<0) 
       core_error("sqrt of negative value", __FILE__, __LINE__, true);
     if (child->get_sign()==0)
@@ -1072,10 +1136,12 @@ class CbrtRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   CbrtRepT(ExprRep* c) : UnaryOpRep(c) 
   { filter().cbrt(child->filter());
     numType() = (std::max)(NODE_NT_ALGEBRAIC, child->numType());
+    opType() = NODE_OP_ALGEBRAIC;
     if (child->get_sign()==0)
       init_value(0);
   }
@@ -1117,9 +1183,11 @@ class SinRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   SinRepT(ExprRep* c) : UnaryOpRep(c) {
     numType() = (std::max)(NODE_NT_TRANSCENDENTAL, child->numType());
+    opType() = NODE_OP_TRANSCENDENTAL;
     if (child->get_sign()==0)
       init_value(0);
   }
@@ -1158,9 +1226,11 @@ class CosRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   CosRepT(ExprRep* c) : UnaryOpRep(c) {
     numType() = (std::max)(NODE_NT_TRANSCENDENTAL, child->numType());
+    opType() = NODE_OP_TRANSCENDENTAL;
     if (child->get_sign()==0)
       init_value(1);
   }
@@ -1199,9 +1269,11 @@ class TanRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   TanRepT(ExprRep* c) : UnaryOpRep(c) {
     numType() = (std::max)(NODE_NT_TRANSCENDENTAL, child->numType());
+    opType() = NODE_OP_TRANSCENDENTAL;
     if (child->get_sign()==0)
       init_value(0);
   }
@@ -1240,9 +1312,11 @@ class CotRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   CotRepT(ExprRep* c) : UnaryOpRep(c) {
     numType() = (std::max)(NODE_NT_TRANSCENDENTAL, child->numType());
+    opType() = NODE_OP_TRANSCENDENTAL;
   }
   virtual ~CotRepT() 
   {}
@@ -1279,9 +1353,11 @@ class ASinRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   ASinRepT(ExprRep* c) : UnaryOpRep(c) {
     numType() = (std::max)(NODE_NT_TRANSCENDENTAL, child->numType());
+    opType() = NODE_OP_TRANSCENDENTAL;
   }
   virtual ~ASinRepT() 
   {}
@@ -1318,9 +1394,11 @@ class ACosRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   ACosRepT(ExprRep* c) : UnaryOpRep(c) {
     numType() = (std::max)(NODE_NT_TRANSCENDENTAL, child->numType());
+    opType() = NODE_OP_TRANSCENDENTAL;
   }
   virtual ~ACosRepT() 
   {}
@@ -1357,9 +1435,11 @@ class ATanRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   ATanRepT(ExprRep* c) : UnaryOpRep(c) {
     numType() = (std::max)(NODE_NT_TRANSCENDENTAL, child->numType());
+    opType() = NODE_OP_TRANSCENDENTAL;
   }
   virtual ~ATanRepT() 
   {}
@@ -1396,9 +1476,11 @@ class ExpRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   ExpRepT(ExprRep* c) : UnaryOpRep(c) {
     numType() = (std::max)(NODE_NT_TRANSCENDENTAL, child->numType());
+    opType() = NODE_OP_TRANSCENDENTAL;
     if (child->get_sign()==0)
       init_value(1);
     child->a_approx(2);
@@ -1453,9 +1535,11 @@ class Exp2RepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   Exp2RepT(ExprRep* c) : UnaryOpRep(c) {
     numType() = (std::max)(NODE_NT_TRANSCENDENTAL, child->numType());
+    opType() = NODE_OP_TRANSCENDENTAL;
     if (child->get_sign()==0)
       init_value(1);
     child->a_approx(2);
@@ -1510,9 +1594,11 @@ class Exp10RepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   Exp10RepT(ExprRep* c) : UnaryOpRep(c) {
     numType() = (std::max)(NODE_NT_TRANSCENDENTAL, child->numType());
+    opType() = NODE_OP_TRANSCENDENTAL;
     if (child->get_sign()==0)
       init_value(1);
     child->a_approx(2);
@@ -1567,9 +1653,11 @@ class Log2RepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   Log2RepT(ExprRep* c) : UnaryOpRep(c) {
     numType() = (std::max)(NODE_NT_TRANSCENDENTAL, child->numType());
+    opType() = NODE_OP_TRANSCENDENTAL;
     if (child->get_sign()<=0)
       core_error("log2 of negative value", __FILE__, __LINE__, true);
     child->a_approx(2);
@@ -1618,9 +1706,11 @@ class LogRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   LogRepT(ExprRep* c) : UnaryOpRep(c) {
     numType() = (std::max)(NODE_NT_TRANSCENDENTAL, child->numType());
+    opType() = NODE_OP_TRANSCENDENTAL;
     if (child->get_sign()<=0)
       core_error("log2 of negative value", __FILE__, __LINE__, true);
     child->a_approx(2);
@@ -1669,9 +1759,11 @@ class Log10RepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   Log10RepT(ExprRep* c) : UnaryOpRep(c) {
     numType() = (std::max)(NODE_NT_TRANSCENDENTAL, child->numType());
+    opType() = NODE_OP_TRANSCENDENTAL;
     if (child->get_sign()<=0)
       core_error("log2 of negative value", __FILE__, __LINE__, true);
     child->a_approx(2);
@@ -1720,6 +1812,7 @@ class RootRepT : public UnaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::init_value;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   RootRepT(ExprRep* c, unsigned long k) : UnaryOpRep(c), m_k(k) 
   { if (k == 0)
@@ -1730,6 +1823,7 @@ public:
     if (child->get_sign()==0)
       init_value(0);
     numType() = (std::max)(NODE_NT_ALGEBRAIC, child->numType());
+    opType() = NODE_OP_ALGEBRAIC;
   }
   virtual ~RootRepT() 
   {}
@@ -1795,12 +1889,14 @@ class AddSubRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::abs2rel;
   using ExprRep::set_flags;
   using ExprRep::numType;
+  using ExprRep::opType;
   
 //  static int debugVariable;
 public:
   AddSubRepT(ExprRep* f, ExprRep* s, bool b = false) : BinaryOpRep(f, s, b) {
     filter().addsub(first->filter(),second->filter(), is_add);
     numType() = (std::max)(first->numType(), second->numType());
+    opType() = is_add ? NODE_OP_ADD : NODE_OP_SUB;
   }
   virtual ~AddSubRepT() 
   {}
@@ -1921,6 +2017,9 @@ protected:
     return this->check_exact(appValue().addsub(first->a_approx(prec+2),
 	  second->a_approx(prec+2), abs2rel(prec+1), is_add)); 
   }
+  BigInt getZTVal() { return first->getZTVal() + second->getZTVal() * (is_add ? 1 : -1); }
+  BigFloat getFTVal() { return first->getFTVal() + second->getFTVal() * (is_add ? 1 : -1); }
+  BigRat getQTVal() { return first->getQTVal() + second->getQTVal() * (is_add ? 1 : -1); }
 #ifdef CORE_DEBUG
   virtual std::string op()
   { return std::string("AddSub"); }
@@ -1943,10 +2042,12 @@ class MulRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::lMSB;
   using ExprRep::appValue;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   MulRepT(ExprRep* f, ExprRep* s, bool b = false) : BinaryOpRep(f, s, b) {
     filter().mul(first->filter(), second->filter()); 
     numType() = (std::max)(first->numType(), second->numType());
+    opType() = NODE_OP_MUL;
   }  
   virtual ~MulRepT() 
   {}
@@ -1963,6 +2064,16 @@ protected:
    return check_exact(appValue().mul(first->r_approx(prec+2),
 			   second->r_approx(prec+2), prec+1));
   }
+  BigInt getZTVal() { return first->getZTVal() * second->getZTVal(); }
+  BigFloat getFTVal() { return first->getFTVal() * second->getFTVal(); }
+  BigRat getQTVal() {
+	  std::cerr << "QTVal=" << (first->getQTVal() * second->getQTVal())
+		  	<< std::endl;
+	  std::cerr << "first=" << first->getQTVal()
+		  	<< std::endl;
+	  std::cerr << "second=" << second->getQTVal()
+		  	<< std::endl;
+	  return first->getQTVal() * second->getQTVal(); }
 #ifdef CORE_DEBUG
   virtual std::string op()
   { return std::string("Mul"); }
@@ -1985,10 +2096,12 @@ class DivRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   using ExprRep::lMSB;
   using ExprRep::appValue;
   using ExprRep::numType;
+  using ExprRep::opType;
 public:
   DivRepT(ExprRep* f, ExprRep* s, bool b = false) : BinaryOpRep(f, s, b)
   { filter().div(first->filter(), second->filter());
     numType() = (std::max)(NODE_NT_RATIONAL, (std::max)(first->numType(), second->numType()));
+    opType() = NODE_OP_DIV;
     if (second->get_sign() == 0)
       core_error("divide by zero", __FILE__, __LINE__, true);
   }
@@ -2007,6 +2120,9 @@ protected:
     return check_exact(appValue().div(first->r_approx(prec+2),
 			    second->r_approx(prec+2), prec+1));
   }
+  BigInt getZTVal() { return first->getZTVal() / second->getZTVal(); }
+  BigFloat getFTVal() { return first->getFTVal() / second->getFTVal(); }
+  BigRat getQTVal() { return first->getQTVal() / second->getQTVal(); }
 #ifdef CORE_DEBUG
   virtual std::string op()
   { return std::string("Div"); }
@@ -2018,10 +2134,12 @@ protected:
 template <typename RootBd, typename Filter, typename Kernel>
 class AnaryOpRepT : public ExprRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
+  using ExprRep::opType;
 public:
   AnaryOpRepT() {}
   AnaryOpRepT(const std::vector<ExprRep*>& c, bool is_self = false) : children(c)
   {
+    opType() = NODE_OP_ANARY;
     for (size_t i=0; i<children.size(); i++) {
       children[i]->inc_ref();
 	}
