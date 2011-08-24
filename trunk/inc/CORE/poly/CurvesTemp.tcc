@@ -621,7 +621,30 @@ T BiPoly<NT>::eval(const T &x, const T &y ) const {
     return res;
   }//eval
 
-
+//////////////////////////////////////////////////
+//  THREE VERSIONS OF EVAL:
+//  	We need this in the work on Modified Miranda.
+//  	-- Chee and Shang (Aug2011)  
+//
+//  (1) eval (really should be called "eval0")
+//  		based on Horner's evaluation of polynomial.
+//  (2) eval1 -- using the mean value form
+//
+//  		f(I,J) = f(mx,my + fx(I,J).I' + fy(I,J).J'
+//
+//  		where m(I)=mx,  m(J)=my, I' = I-mx,  J' = J-my
+//
+//		NOTE: fx(I,J) and fy(I,J) uses eval0 (Horner's rule).
+//
+//  (3) eval2 -- using the second order mean value form
+//
+//  		f(I,J) = f(mx,my + fx(mx,my).I' + fy(mx,my).J'
+//  			 + fxx(I,J).I'^2  + fyy(I,J).J'^2  + 2.fxy(I,J).I'.J'
+//
+//		THIS VERSION HAS QUADRATIC CONVERGENCE!
+//		NOTE: fxx(I,J), fyy(I,J) and fxy(I,J) uses eval0 (Horner's rule).
+//
+//////////////////////////////////////////////////
   //eval(x,y)
 template <class NT>
 Expr BiPoly<NT>::eval(Expr x, Expr y){//Evaluate the polynomial at (x,y)
@@ -640,7 +663,7 @@ Expr BiPoly<NT>::eval(Expr x, Expr y){//Evaluate the polynomial at (x,y)
 //      Shang Wang and Chee implemente this in July 2011.  We need
 //      the quadratic converging version based on centered form
 //       applied to the Jacobian only.
-Interval BiPoly<NT>::eval(const IntervalT<T> &x, const IntervalT<T> &y) const {
+Interval BiPoly<NT>::eval1(const IntervalT<T> &x, const IntervalT<T> &y) const {
      T fm = eval(x.mid(), y.mid());
     BiPoly<NT> fx = this, fy = this;
     fx.differentiateX();  

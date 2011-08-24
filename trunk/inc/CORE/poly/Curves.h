@@ -342,6 +342,8 @@ class BiPoly{
   // sufficient for composition
   template< class T > 
   T eval( const T& x, const T& y ) const; 
+  //T eval1( const T& x, const T& y ) const; 
+  //T eval2( const T& x, const T& y ) const; 
 
   template < class T >
   IntervalT<T> eval1( const IntervalT<T> &x, const IntervalT<T> &y ) const;
@@ -349,6 +351,33 @@ class BiPoly{
   template < class T >
   IntervalT<T> eval2( const IntervalT<T> &x, const IntervalT<T> &y ) const;
   
+//////////////////////////////////////////////////
+// This has been moved from IntervalT.h.
+// Chee and Shang (Aug, 2011)
+// It evaluate a bi-variate polynomial 'b' over the x-interval
+// 	x and a y interval y.
+template <typename NT>
+IntervalT<NT> EvalBipoly(const BiPoly<NT> &b,
+    const IntervalT<NT> &x,
+    const IntervalT<NT> &y) {
+  //Evaluate the polynomial at (x,y);
+  const int deg_y = b.ydeg;
+
+  if ( deg_y == -1 ) {
+    return IntervalT<NT>(0,0);
+  }
+
+  IntervalT<NT> res = EvalPoly<NT>(b.coeffX[deg_y], x);
+  for (int i = deg_y - 1; i >= 0 ; --i){
+    IntervalT<NT> t = (EvalPoly<NT>(b.coeffX[i],x));
+    res *= y;
+    res += t;
+  }
+
+  return res;
+}//EvalBipoly
+
+//////////////////////////////////////////////////
 //////////////////////////////////////////////////
 
   // operator version of eval
