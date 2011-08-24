@@ -29,7 +29,7 @@
 // This inclusion should be removed
 // Instead, Curves.h should include IntervalT.h
 // Chee and Shang (Aug, 2011)
-#include "poly/Curves.h"
+// #include "poly/Curves.h"
 
 // A namespace used to declare functions used in extended
 // interval arithmetic. Please note that though these functions
@@ -291,7 +291,10 @@ inline IntervalT<NT> operator*(const IntervalT<NT> &lhs, const NT &rhs) {
   return IntervalT<NT>(lhs.getL() * rhs, lhs.getR() * rhs);
 }
 
-
+// Chee (Aug'2011): THE FOLLOWING EvalPoly SHOULD BE MOVED to Poly.h,
+// IT DOES NOT BELONG HERE!!!
+//
+//
 // ---------------------------------------------------
 // Overloaded polynomial interval evaluation functions. There
 // seems no better place to put them, than here. Conceptually, these
@@ -302,6 +305,7 @@ inline IntervalT<NT> operator*(const IntervalT<NT> &lhs, const NT &rhs) {
 // Evaluate a monovariate polynomial p over an interval x.
 // This follows the same logic as the function for scalar types,
 // substituting with the corresponding interval operations.
+/* ******************************
 template <typename NT>
 IntervalT<NT> EvalPoly(const Polynomial<NT> &p, const IntervalT<NT> &x) {
   const int deg = p.degree();
@@ -330,12 +334,14 @@ IntervalT<NT> EvalPoly(const Polynomial<NT> &p, const IntervalT<NT> &x) {
   }
 
   return val;
-}
+}//eval
+  ****************************** */
 
 // This should be moved to Curves.h
 // Chee and Shang (Aug, 2011)
 // Evaluate a bi-variate polynomial 'b' over the x-interval
 // x and a y interval y.
+/* ******************************
 template <typename NT>
 IntervalT<NT> EvalBipoly(const BiPoly<NT> &b,
     const IntervalT<NT> &x,
@@ -356,6 +362,8 @@ IntervalT<NT> EvalBipoly(const BiPoly<NT> &b,
 
   return res;
 }
+****************************** */
+
 
 template <typename NT>
 inline std::ostream& operator<<(std::ostream& o, const IntervalT<NT>& v) {
