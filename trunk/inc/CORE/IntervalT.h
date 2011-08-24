@@ -184,6 +184,26 @@ public:
     return *this;
   }
 
+  // This Expand function is initially used in box function, 
+  // to expand, pass desired factor as function parameter
+  // We might not want this function to be self-modified because
+  // we need to keep the initial interval as well
+  // Chee and Shang Wang (Aug 2011)
+  IntervalT<NT> Expand(const NT factor) const {
+    const NT &w = this->width();
+    assert (left_ != I_NEG_INFTY && right_ != I_POS_INFTY);
+    assert (factor >= 1);
+    return IntervalT<NT>((left_-0.5*w*(factor-1)), (right_+0.5*w*(factor-1)));
+  }
+
+  // similar as above
+  IntervalT<NT> Half() const {
+    const NT &w = this->width();
+    assert (left_ != I_NEG_INFTY && right_ != I_POS_INFTY);
+    return IntervalT<NT>((left_+0.25*w), (right_-0.25*w));
+  }
+
+
   // Tests for equality with other intervals, including
   // numbers (the thin case). For now these definitions
   // are not symmetric ie. the number types BigFloat etc.
