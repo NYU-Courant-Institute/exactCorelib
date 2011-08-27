@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
   // specified in Makefile
 
   // This is the maximum number of ambiguous boxes to be printed
-  int max_ambiguous_box = 20;
+  unsigned int max_ambiguous_box = 20;
 
   DoubleWrapper x_min = -2, x_max = 2, y_min = -2, y_max = 2;
   DoubleWrapper min_size = 0.0001;
