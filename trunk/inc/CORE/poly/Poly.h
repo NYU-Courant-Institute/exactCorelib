@@ -1025,59 +1025,6 @@ T eval(const T& x) const {	// evaluation
   return val;
 }//eval
 
-////////////////////////////////////////////////////////////
-// Chee and Shang (Aug'2011): This EvalPoly() method has been moved
-// from IntervalT.h.
-// ---------------------------------------------------
-// Overloaded polynomial interval evaluation functions. There
-// seems no better place to put them, than here. Conceptually, these
-// functions do not really belong in this file and should be
-// separated if possible.
-// ---------------------------------------------------
-
-// Evaluate a monovariate polynomial p over an interval x.
-// The interval type is called IntervalT<T>
-//
-// where T is the type of the endpoints of the interval.  It is not
-// necessarily the same as type NT.
-// Normally, the type of T is more general than NT.
-// E.g., T=BigFloat and NT=BigInt
-// E.g., T=machine_double and NT=machine_int
-//
-// This follows the same logic as the function for scalar types,
-// substituting with the corresponding interval operations.
-template <typename T>
-IntervalT<T> EvalPoly(const Polynomial<NT> &p, const IntervalT<T> &x) {
-  const int deg = p.degree();
-
-  // This is the zero polynomial.
-  if (deg == -1) {
-    return IntervalT<T>(0,0);
-  }
-
-  // The coefficient array of the polynomial.
-  const NT *coeff = p.coeff();
-
-  // A constant.
-  if (deg == 0) {
-    return IntervalT<T>(coeff[0], coeff[0]);
-  }
-
-  // The general case. There are still a decent number
-  // of copy operations happening here, in the construction
-  // of tmp( ) especially.
-  IntervalT<T> val(coeff[deg], coeff[deg]);
-  for (int i = deg - 1; i >= 0; i--) {
-    IntervalT<T> t(coeff[i], coeff[i]);
-    val *= x;
-    val += t;
-  }
-
-  return val;
-}//EvalPoly
-
-////////////////////////////////////////////////////////////
-
 template<typename T>
 int evalSign(const T& f) {
   int deg = getTrueDegree();

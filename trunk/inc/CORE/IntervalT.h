@@ -13,11 +13,12 @@
  * Written by
  *       Narayan Kamath (kamath.narayan@gmail.com), Oxford, June 2010.
  *
- * TODO: Move evaluation of polynomial to poly.h
- *       Move evaluation of bipoly to Curves.h
- *       Remove inclusion of Curves.h
- *       Curves.h should include this file.
- *       Shang and Chee (Aug, 2011)
+ * Updates: Remove evaluation of polynomial (eval() function in Poly.h has done this)
+ *          Remove evaluation of bipoly (eval() function in Curves.h has done this)
+ *          Remove inclusion of Curves.h (IntervalT is a basic class
+ *          and it should know nothing about other classes)
+ *          instead, others should include this file.
+ *          Shang and Chee (Aug, 2011)
  *
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
@@ -291,7 +292,7 @@ inline IntervalT<NT> operator*(const IntervalT<NT> &lhs, const NT &rhs) {
   return IntervalT<NT>(lhs.getL() * rhs, lhs.getR() * rhs);
 }
 
-// Chee (Aug'2011): THE FOLLOWING EvalPoly SHOULD BE MOVED to Poly.h,
+// Chee (Aug'2011): THE FOLLOWING EvalPoly SHOULD BE REMOVED
 // IT DOES NOT BELONG HERE!!!
 //
 //
@@ -337,7 +338,7 @@ IntervalT<NT> EvalPoly(const Polynomial<NT> &p, const IntervalT<NT> &x) {
 }//eval
   ****************************** */
 
-// This should be moved to Curves.h
+// This should be removed
 // Chee and Shang (Aug, 2011)
 // Evaluate a bi-variate polynomial 'b' over the x-interval
 // x and a y interval y.
@@ -367,7 +368,7 @@ IntervalT<NT> EvalBipoly(const BiPoly<NT> &b,
 
 template <typename NT>
 inline std::ostream& operator<<(std::ostream& o, const IntervalT<NT>& v) {
-  o << setprecision(20) << "[ ";
+  o << std::setprecision(20) << "[ ";
   if (v.getL() == IntervalT<NT>::I_NEG_INFTY) {
     o << "-INF";
   } else {
