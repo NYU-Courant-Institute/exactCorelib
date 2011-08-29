@@ -19,10 +19,11 @@ class MKPredicates {
 public:
   // Constructor
   MKPredicates(const Curve<T> &fxy, 
-  const Curve<T> &gxy, const T &min_size, const T &max_size,
-  const unsigned int max_gen_id) : fxy_(fxy), gxy_(gxy),
-  jacobian_(MatrixT<Curve<T> >(2)), min_size_(min_size),
-  max_size_(max_size), max_gen_id_(max_gen_id) {
+	  const Curve<T> &gxy, const T &min_size, const T &max_size,
+	  const unsigned int max_gen_id) : fxy_(fxy), gxy_(gxy),
+	  jacobian_(MatrixT<Curve<T> >(2)), min_size_(min_size),
+	  max_size_(max_size), max_gen_id_(max_gen_id)
+  {
     // differentiate is "self-modified" operator
     Curve<T> temp1 = fxy, temp2 = fxy;
     Curve<T> temp3 = gxy, temp4 = gxy;
@@ -213,7 +214,7 @@ public:
     return true;
   }
 
-  // compute JF(m(B)), m(B) is the center of box
+  // compute JF(m(B)), m(B) is the center of box, and return the sign of det(JF(m(B)))
   int JSign(MatrixT<T> *output,
     const Box *box) const {
     // construct mid point for x and y
@@ -275,7 +276,8 @@ public:
     return ((temp_left>=temp_right) ? temp_left : temp_right);
   }
 
-  // split the box to 4 children
+  /// Split(Box B, Queue Q)
+  /// 	splits B to 4 children, and put them into the queue Q
   void Split(const Box *region,
       vector<const Box*> *queue) const {
     const T &x_start = region->x_range.getL();
@@ -302,8 +304,9 @@ public:
     delete region;
   }
 
-  // call Split() to split a box into 4 children and push a child into queue
-  // only if it fails C0 test
+  /// Split_Exclude(Box B, Queue Q, Queue ExcludeQ)
+  ///   Splits B into 4 children, and push each child into Q if it fails C0 test
+  ///	and push into ExcludeQ if C0 holds.
   void Split_Exclude(const Box *region,
     vector<const Box *> *queue,
     vector<const Box *> *exclude) const {
@@ -325,7 +328,8 @@ public:
     }
   }
 
-  // Cover the box to 9 children
+  /// Cover(Box B, Queue Q)
+  ///   Splits B into 9 regions and push them into Q.
   void Cover(const Box *region,
       vector<const Box*> *queue) const {
     const T &x_start = region->x_range.getL();
@@ -370,8 +374,9 @@ public:
     delete region;
   }
 
-  // call Cover() to cover a box into 9 children and push a child into queue
-  // only if it fails C0 test
+  /// Cover_Exclude(Box B, Queue Q, Queue ExcludeQ)
+  ///   Splits B into 9 regions and push each child into Q (if it fails C0)
+  ///	and push into Exclude Q (if it passes C0)
   void Cover_Exclude(const Box *region,
     vector<const Box *> *queue,
     vector<const Box *> *exclude) const {
@@ -391,43 +396,53 @@ public:
           exclude->push_back(box);
       }
     }
-  }
+  }//Cover_Exclude
 
-  // root refinement, split box if the box is too big, otherwise output the box
-  void Refinement(const Box *region, 
-     vector<const Box *> *output, 
-     vector<const Box *> *ambiguous,
-     vector<const Box *> *exclude) const {
-
-    vector<const Box *> queue;
+  /// Refinement(Box B, Queue Q-exc)
+  ///	Box B is guaranteed to contain a root in its interior (i.e., it is a "root box")
+  /// 	This calls Cover_Exclude repeatedly to generate 9 subboxes.
+  /// 	Root refinement will return another root box BB contained in B.
+  ///		Now, if BB=B, then the refinement has "failed" in some sense.
+  ///		And the only reason it fails it because it has to split boxes
+  ///		smaller than the global Min_size (it is a safe-ty feature).  
+  ///   We can split the annulus region B - BB into 8 subboxes, and these
+  ///		are placed into Q-exc.
+  Box Refinement(const Box *B,
+     vector<const Box *> *Qexclude) const
+  {
+    vector<const Box *> Qtmp;
+    // NOTE: The next statement is commented out because we do not
+    // 		want Max to limit our intention to do refinement here.
+    //
     // if the original already smaller than the max_size, output it
-    if(!Max(region)) {
-      output->push_back(region);
-    }
-    else { 
+    // if(!Max(B)) {
+    //	  output->push_back(B);
+    // }
+      // Return box is called BB:
+      Box *BB = B;    // initialize BB
       // split the box which already passed MK test but too big 
-      Cover_Exclude(region, &queue, exclude);
+      Cover_Exclude(B, &Qtmp, Qexclude);
       // loop started
-      while(!queue.empty()) {
-        const Box *box = queue.back();
-        queue.pop_back();
+      while(true) {
+        const Box *box = Qtmp.back(); 	// this queue can never be empty according to our theory
+        Qtmp.pop_back();
         // too small
         if(Min(box)) {
-//cout << "too small in refinement" << endl;
-          ambiguous->push_back(box);
+          // ambiguous->push_back(box);  // discard this box!  It is wrong to put it into the global ambigous
           continue;
         }
         // if box satisfies MK test, and small enough, put into output
         // else keep splitting
         if(MKTest(box) && !Max(box)) {
-          output->push_back(box);
+          BB= box;
+	  Split_Complement(B, BB, Qexclude)
           break;
         }
         else {
-          Cover_Exclude(box, &queue, exclude);
+          Cover_Exclude(box, &Qtmp, Qexclude);
         }
       }
-    }
+      return BB;
   }
 
  /*
