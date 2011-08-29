@@ -47,7 +47,7 @@ namespace Algorithm {
         jqueue.push_back(current);  // wait for further confirmation
       }
       else {
-        pred.Cover_Exclude(current, &mainq, exclude); // split and test C0
+        pred.Split_Exclude(current, &mainq, exclude); // split and test C0
       }
       delete double_current;
 
@@ -65,14 +65,16 @@ namespace Algorithm {
         if(pred.MKTest(double_box)) {
           // CHECK IF size of sub is larger than max-size,
           // and if so, refine, else put it in output
-          pred.Refinement(box, output, ambiguous, exclude);
+output->push_back(box);
+//          pred.Refinement(box, output, ambiguous, exclude);
+
           jqueue.clear();  // include area already found in region, clean jqueue
           delete double_box;
           break;
         }
         else {
           //cout << endl;
-          pred.Cover_Exclude(box, &jqueue, exclude);
+          pred.Split_Exclude(box, &jqueue, exclude);
           delete double_box;
         }
       }//while (jqueue)

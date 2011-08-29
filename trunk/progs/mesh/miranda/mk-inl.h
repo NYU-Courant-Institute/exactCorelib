@@ -235,6 +235,29 @@ public:
       return -1;
   }
 
+  // check region size and generation, put into ambiguous if too small
+  bool Min(const Box *region) const {
+    if(region->x_range.width() <= min_size_ || 
+        region->y_range.width() <= min_size_)
+      return true;
+    else if(region->generation_id > max_gen_id_)
+      return true;
+    else
+      return false;
+  }
+
+  // return true if output box is too big 
+  bool Max(const Box *region) const {
+    if(((region->x_range.width() >= max_size_) || 
+        (region->y_range.width() >= max_size_)) && 
+        (region->generation_id < max_gen_id_))
+   /* if((region->x_range.width() >= max_size_) || 
+        (region->y_range.width() >= max_size_))*/
+      return true;
+    else
+      return false;
+  }
+
   // get absolute value(not sure if core implements this)
   T absolute(const T &input) const {
     if(input <= 0)
@@ -252,7 +275,102 @@ public:
     return ((temp_left>=temp_right) ? temp_left : temp_right);
   }
 
-  // Cover box into 4(or 9?)children and push a child into queue
+  // split the box to 4 children
+  void Split(const Box *region,
+      vector<const Box*> *queue) const {
+    const T &x_start = region->x_range.getL();
+    const T &x_end   = region->x_range.getR();
+    const T &x_mid   = region->x_range.mid();
+    const T &y_start = region->y_range.getL();
+    const T &y_end   = region->y_range.getR();
+    const T &y_mid   = region->y_range.mid();
+
+    // statistic collection only
+    extern unsigned int largest_gen;
+    const unsigned int gen_id = region->generation_id + 1;
+    if(largest_gen < gen_id)
+      largest_gen = gen_id;
+
+    queue->push_back(new Box(gen_id, 
+      Interval(x_start, x_mid), Interval(y_start, y_mid)));
+    queue->push_back(new Box(gen_id, 
+      Interval(x_mid, x_end), Interval(y_start, y_mid)));
+    queue->push_back(new Box(gen_id, 
+      Interval(x_start, x_mid), Interval(y_mid, y_end)));
+    queue->push_back(new Box(gen_id, 
+      Interval(x_mid, x_end), Interval(y_mid, y_end)));
+    delete region;
+  }
+
+  // call Split() to split a box into 4 children and push a child into queue
+  // only if it fails C0 test
+  void Split_Exclude(const Box *region,
+    vector<const Box *> *queue,
+    vector<const Box *> *exclude) const {
+
+    // temp queue for processing
+    vector<const Box *> temp;
+    // split box into 4 children 
+    Split(region, &temp);
+    // Do C0 test for each box in temp queue
+    while(!temp.empty()) {
+      const Box *box = temp.back();
+      temp.pop_back();
+      if(!Exclude(box)) {  // C0 fails, put back to queue
+        queue->push_back(box);
+      }
+      else {
+          exclude->push_back(box);
+      }
+    }
+  }
+
+  // Cover the box to 9 children
+  void Cover(const Box *region,
+      vector<const Box*> *queue) const {
+    const T &x_start = region->x_range.getL();
+    const T &x_end   = region->x_range.getR();
+    const T &x_mid   = region->x_range.mid();
+    const T &y_start = region->y_range.getL();
+    const T &y_end   = region->y_range.getR();
+    const T &y_mid   = region->y_range.mid();
+
+    // statistic collection only
+    extern unsigned int largest_gen;
+    const unsigned int gen_id = region->generation_id + 1;
+    if(largest_gen < gen_id)
+      largest_gen = gen_id;
+
+    queue->push_back(new Box(gen_id, 
+      Interval(x_start, x_mid), Interval(y_start, y_mid)));
+    queue->push_back(new Box(gen_id, 
+      Interval(x_mid, x_end), Interval(y_start, y_mid)));
+    queue->push_back(new Box(gen_id, 
+      Interval(x_start, x_mid), Interval(y_mid, y_end)));
+    queue->push_back(new Box(gen_id, 
+      Interval(x_mid, x_end), Interval(y_mid, y_end)));
+   
+    // next five subregions:
+
+    const T &x_halfwidth  = region->x_range.width()/4;
+    const T &y_halfwidth  = region->y_range.width()/4;
+
+    queue->push_back(new Box(gen_id,    // q_1/2
+      Interval(x_mid, x_end), Interval(y_mid-y_halfwidth, y_mid+y_halfwidth)));
+    queue->push_back(new Box(gen_id,    // q_5/2
+      Interval(x_start, x_mid), Interval(y_mid-y_halfwidth, y_mid+y_halfwidth)));
+    queue->push_back(new Box(gen_id,    // q_3/2
+      Interval(x_mid-x_halfwidth, x_mid+x_halfwidth), Interval(y_mid, y_end)));
+    queue->push_back(new Box(gen_id,    // q_7/2
+      Interval(x_mid-x_halfwidth, x_mid+x_halfwidth), Interval(y_start, y_mid)));
+    queue->push_back(new Box(gen_id,    // q_0
+      Interval(x_mid-x_halfwidth, x_mid+x_halfwidth),
+      Interval(y_mid-y_halfwidth, y_mid+y_halfwidth)));
+
+    delete region;
+  }
+
+  // call Cover() to cover a box into 9 children and push a child into queue
   // only if it fails C0 test
   void Cover_Exclude(const Box *region,
     vector<const Box *> *queue,
@@ -260,7 +378,7 @@ public:
 
     // temp queue for processing
     vector<const Box *> temp;
-    // split box into 9 children 
+    // cover box into 9 children 
     Cover(region, &temp);
     // Do C0 test for each box in temp queue
     while(!temp.empty()) {
@@ -272,132 +390,45 @@ public:
       else {
           exclude->push_back(box);
       }
-   }
- }
+    }
+  }
 
- /* **************************************************
- void Split(const Box *region,
-     vector<const Box*> *queue) const {
-   const T &x_start = region->x_range.getL();
-   const T &x_end   = region->x_range.getR();
-   const T &x_mid   = region->x_range.mid();
-   const T &y_start = region->y_range.getL();
-   const T &y_end   = region->y_range.getR();
-   const T &y_mid   = region->y_range.mid();
-
-   const unsigned int gen_id = region->generation_id + 1;
-   queue->push_back(new Box(gen_id, 
-     Interval(x_start, x_mid), Interval(y_start, y_mid)));
-   queue->push_back(new Box(gen_id, 
-     Interval(x_mid, x_end), Interval(y_start, y_mid)));
-   queue->push_back(new Box(gen_id, 
-     Interval(x_start, x_mid), Interval(y_mid, y_end)));
-   queue->push_back(new Box(gen_id, 
-     Interval(x_mid, x_end), Interval(y_mid, y_end)));
-   delete region;
- }
- ************************************************** */
-
- // check region size and generation, put into ambiguous if too small
- bool Min(const Box *region) const {
-   if(region->x_range.width() <= min_size_ || 
-       region->y_range.width() <= min_size_)
-     return true;
-   else if(region->generation_id > max_gen_id_)
-     return true;
-   else
-     return false;
- }
-
- // return true if output box is too big 
- bool Max(const Box *region) const {
-   if(((region->x_range.width() >= max_size_) || 
-       (region->y_range.width() >= max_size_)) && 
-       (region->generation_id < max_gen_id_))
-  /* if((region->x_range.width() >= max_size_) || 
-       (region->y_range.width() >= max_size_))*/
-     return true;
-   else
-     return false;
- }
- 
- // Cover the box to 9 children
- void Cover(const Box *region,
-     vector<const Box*> *queue) const {
-   const T &x_start = region->x_range.getL();
-   const T &x_end   = region->x_range.getR();
-   const T &x_mid   = region->x_range.mid();
-   const T &y_start = region->y_range.getL();
-   const T &y_end   = region->y_range.getR();
-   const T &y_mid   = region->y_range.mid();
-//   const T &x_halfwidth  = region->x_range.width()/4;
-//   const T &y_halfwidth  = region->y_range.width()/4;
-   extern unsigned int largest_gen;
-  
-   const unsigned int gen_id = region->generation_id + 1;
-   if(largest_gen < gen_id)
-     largest_gen = gen_id;
-
-   queue->push_back(new Box(gen_id, 
-     Interval(x_start, x_mid), Interval(y_start, y_mid)));
-   queue->push_back(new Box(gen_id, 
-     Interval(x_mid, x_end), Interval(y_start, y_mid)));
-   queue->push_back(new Box(gen_id, 
-     Interval(x_start, x_mid), Interval(y_mid, y_end)));
-   queue->push_back(new Box(gen_id, 
-     Interval(x_mid, x_end), Interval(y_mid, y_end)));
-   
-   // next five subregions:
-/*
-   queue->push_back(new Box(gen_id,    // q_1/2
-     Interval(x_mid, x_end), Interval(y_mid-y_halfwidth, y_mid+y_halfwidth)));
-   queue->push_back(new Box(gen_id,    // q_5/2
-     Interval(x_start, x_mid), Interval(y_mid-y_halfwidth, y_mid+y_halfwidth)));
-   queue->push_back(new Box(gen_id,    // q_3/2
-     Interval(x_mid-x_halfwidth, x_mid+x_halfwidth), Interval(y_mid, y_end)));
-   queue->push_back(new Box(gen_id,    // q_7/2
-     Interval(x_mid-x_halfwidth, x_mid+x_halfwidth), Interval(y_start, y_mid)));
-   queue->push_back(new Box(gen_id,    // q_0
-     Interval(x_mid-x_halfwidth, x_mid+x_halfwidth),
-     Interval(y_mid-y_halfwidth, y_mid+y_halfwidth)));
-*/
-   delete region;
- }
- // root refinement, split box if the box is too big, otherwise output the box
- void Refinement(const Box *region, 
+  // root refinement, split box if the box is too big, otherwise output the box
+  void Refinement(const Box *region, 
      vector<const Box *> *output, 
      vector<const Box *> *ambiguous,
      vector<const Box *> *exclude) const {
 
-   vector<const Box *> queue;
-   // if the original already smaller than the max_size, output it
-   if(!Max(region)) {
-     output->push_back(region);
-   }
-   else { 
-     // split the box which already passed MK test but too big 
-     Cover_Exclude(region, &queue, exclude);
-     // loop started
-     while(!queue.empty()) {
-       const Box *box = queue.back();
-       queue.pop_back();
-       // too small
-       if(Min(box)) {
-         ambiguous->push_back(box);
-         continue;
-       }
-       // if box satisfies MK test, and small enough, put into output
-       // else keep splitting
-       if(MKTest(box) && !Max(box)) {
-         output->push_back(box);
-         break;
-       }
-       else {
-         Cover_Exclude(box, &queue, exclude);
-       }
-     }
-   }
- }
+    vector<const Box *> queue;
+    // if the original already smaller than the max_size, output it
+    if(!Max(region)) {
+      output->push_back(region);
+    }
+    else { 
+      // split the box which already passed MK test but too big 
+      Cover_Exclude(region, &queue, exclude);
+      // loop started
+      while(!queue.empty()) {
+        const Box *box = queue.back();
+        queue.pop_back();
+        // too small
+        if(Min(box)) {
+//cout << "too small in refinement" << endl;
+          ambiguous->push_back(box);
+          continue;
+        }
+        // if box satisfies MK test, and small enough, put into output
+        // else keep splitting
+        if(MKTest(box) && !Max(box)) {
+          output->push_back(box);
+          break;
+        }
+        else {
+          Cover_Exclude(box, &queue, exclude);
+        }
+      }
+    }
+  }
 
  /*
  // eval1

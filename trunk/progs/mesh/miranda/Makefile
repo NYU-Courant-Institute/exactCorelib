@@ -66,47 +66,30 @@ eg6: ${TARGETS}
 	./mk --poly data/laguerre6.pol \
     --x_min -20 --x_max 20 --y_min -20 --y_max 20 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
-# this looks closely at one root:
-eg6a: ${TARGETS}
+eg6b: ${TARGETS}
 	./mk --poly data/laguerre6.pol \
-    --x_min -0.22 --x_max 0.23 --y_min -0.01 --y_max 0.01 --minsize 0.000001 --maxsize ${maxsize} --maxgen 20
-
+    --x_min -20 --x_max 20 --y_min -0.1 --y_max 0.1 --minsize 0.00001 --maxsize ${maxsize} --maxgen 15
 
 eg7: ${TARGETS}
 	./mk --poly data/somepoly6.pol \
     --x_min -8 --x_max 8 --y_min -8 --y_max 8 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
-
 eg8: ${TARGETS}
 	./mk --poly data/nroots10.pol \
     --x_min -2 --x_max 2 --y_min -2 --y_max 2 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
-
 eg9: ${TARGETS}
 	./mk --poly data/nroots20.pol \
-    --x_min -2 --x_max 2 --y_min -2 --y_max 2 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
-
+    --x_min -1.5 --x_max 1.5 --y_min -1.5 --y_max 1.5 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg10: ${TARGETS}
 	./mk --poly data/hermite20.pol \
     --x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
-
 eg11: ${TARGETS}
-	./mk --poly data/wilk20.pol \
-    --x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
-
-eg12: ${TARGETS}
-	./mk --poly data/chrmc23.pol \
-    --x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
-
-eg13: ${TARGETS}
 	./mk --poly data/chebyshev20.pol \
     --x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 	
-eg14: ${TARGETS}
-	./mk --poly data/laguerre20.pol \
-    --x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 
 #=================================================
