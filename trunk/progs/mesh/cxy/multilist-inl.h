@@ -4,9 +4,11 @@
  * Implements a templated priority queue of boxes
  * 	(smaller box sizes have higher priority)
  *
- * The template parameter, P, is a predicate or function.
- *
  * It is used in algorithm_inl.h.
+ *
+ * The template parameter, P, is a predicate or function.
+ * 	Strangely, in algorithm_inl.h, P is given as a number type.
+ * 	What gives?  (Chee/Shang)
  *
  *
  *  Created on: Jun 16, 2010
