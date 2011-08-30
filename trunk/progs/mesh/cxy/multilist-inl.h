@@ -1,6 +1,14 @@
 /*
  * multilist-inl.h
  *
+ * Implements a templated priority queue of boxes
+ * 	(smaller box sizes have higher priority)
+ *
+ * The template parameter, P, is a predicate or function.
+ *
+ * It is used in algorithm_inl.h.
+ *
+ *
  *  Created on: Jun 16, 2010
  *      Author: narayan
  */
@@ -57,6 +65,7 @@ using namespace std;
 //
 // LocalBalance()
 // GlobalBalance() : Refer to function documentation.
+//
 template <typename P> class MultiList {
  public:
   // Needs the minimum and maximum generation id of

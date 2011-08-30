@@ -8,8 +8,8 @@
 # VARIABLES
 #=================================================
 #CHOOSE THE LINKAGE 
-LINKAGE=static
 LINKAGE=shared
+LINKAGE=static
 
 # file extension
 ext= 
