@@ -1,16 +1,36 @@
-/**
+/* ***************************************************
 *
 * mk-inl.h
-* C0 test, C1 test, MK test
 *
-* July 16, 2011
-*/
+*    This file describes one class called MKPredicates.
+*    The class has the following members:
+*    	--fxy, gxy are 2 bivariate polynomials
+*    	--Variable such as
+*    		--max_size
+*    		--min_size
+*    		--max_gen_id
+*
+*    MK stands for Moore-Kioustelides, who gave a modified form of
+*    the Miranda Test for existence of roots.
+*    This class provided predicates for the
+*
+* 	C0 test: C0 is the exclusion predicate and holds if 
+* 	JC test: JC is the Jacobian test, and if it succeeds, there is
+* 		at most one root of fxy=gxy=0.
+* 	MK test: This is performed only if JC holds.
+* 		If it passes, there is a unique root.
+*
+* Author: Shang Wang, July 16, 2011
+*
+* Since Core 2.1.
+************************************************** */
 
 #ifndef MK_MK_INL_H_
 #define MK_MK_INL_H_
 
 #include "mk-defs.h"
 #include "box.h"
+#include "rootbox.h"
 
 using namespace std;
 
@@ -483,7 +503,7 @@ public:
  }
 */
 
-
+// Members:
 private:
   Curve<T>           fxy_;       // f(x, y)
   Curve<T>           gxy_;       // g(x, y)
