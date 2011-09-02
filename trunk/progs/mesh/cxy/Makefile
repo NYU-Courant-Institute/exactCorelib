@@ -92,7 +92,7 @@ xmin=-1.5
 ymin=-1.5
 xmax=1.5
 ymax=1.5
-maxsize=0.1
+maxsize=0.01
 minsize=0.001
 offset=0
 showbox=0
@@ -288,6 +288,7 @@ eg41uv: $(TARGETS)
 		"x(y^3(-2x + 1) + (2x^3 - 3x^2 - x + 1)y)" \
 		 -3 -3 3 3 0.01 0.0001 0 1 &
 
+###################################################
 # eg42 is lehmer's polynomial
 # 	z^10 - z^9 + z^7 - z^6 + z^5 - z^4 + z^3 - z + 1
 ###################################################
@@ -308,6 +309,7 @@ eg42a: $(TARGETS)
 	./cxy$(SUFFIX) "-y^10 + (45x^2 - 9x)y^8 + (-210x^4 + 84x^3 - 7x + 1)y^6 + (210x^6 - 126x^5 + 35x^3 - 15x^2 + 5x - 1)y^4 + (-45x^8 + 36x^7 - 21x^5 + 15x^4 - 10x^3 + 6x^2 - 3x)y^2 + (x^10 - x^9 + x^7 - x^6 + x^5 - x^4 + x^3 - x + 1)"
 		 -3 -3 3 3 0.03 0.001 0 1
 
+###################################################
 # eg43 is 5th root of unity polynomial
 # 	(z-1)^5
 ###################################################
@@ -317,6 +319,20 @@ eg43: $(TARGETS)
 eg43a: $(TARGETS)
 	./cxy$(SUFFIX) "y^3(-2x + 1) + (2x^3 - 3x^2 - x + 1)y" \
 		 -3 -3 3 3 $(maxsize) $(minsize) $(offset) $(showbox)  &
+
+###################################################
+# eg50 is a simple example on the intersection of two curves (illustration of
+# 	curve arrangement paper of Yap and Sharma:
+# 	f= x^2+y^2-1,   and g= y-x^2.
+###################################################
+eg50: $(TARGETS)
+	./cxy$(SUFFIX) "(x^2 + y^2-1)(y- x^2)" \
+		 -3 -3 3 3 \
+		 0.01 0.0001 0 1 &
+eg50a: $(TARGETS)
+	./cxy$(SUFFIX) "(x^2 + y^2-1)(y- x^2)" \
+		$(xmin) $(ymin) $(xmax) $(ymax) \
+		$(maxsize) $(minsize) $(offset) $(showbox) $(display)
 
 # ********************************************************************** 
 
