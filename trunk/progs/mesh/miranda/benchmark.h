@@ -1,3 +1,23 @@
+/*
+ * benchmark.h
+ *
+ * This piece code is originally implemented by
+ *    Narayan to serve his benchmark code. The reason that I 
+ *    "steal" it is because it has the functionality of parsing
+ *    a file that stores a complex uni-variate polynomial with special
+ *    format, and is able to separate it into 2 bi-variate polynomials.
+ *
+ *    For this algorithm we won't deal with above case, but rather,
+ *    we will take 2 explicit bi-variate polynomials as parameters.
+ *    However, it's good to have such a parser that works for special
+ *    requirement. 
+ *
+ *    initial author: Narayan 
+ *    Modified: Shang Wang(Aug, 11)
+ * 
+ * */
+
+
 #include <iostream>
 #include <vector>
 

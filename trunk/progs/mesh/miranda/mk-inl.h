@@ -30,7 +30,6 @@
 
 #include "mk-defs.h"
 #include "box.h"
-#include "rootbox.h"
 
 using namespace std;
 
@@ -348,6 +347,7 @@ public:
     }
   }
 
+  /*
   /// Cover(Box B, Queue Q)
   ///   Splits B into 9 regions and push them into Q.
   void Cover(const Box *region,
@@ -418,6 +418,9 @@ public:
     }
   }//Cover_Exclude
 
+  */
+
+  /*
   /// Refinement(Box B, Queue Q-exc)
   ///	Box B is guaranteed to contain a root in its interior (i.e., it is a "root box")
   /// 	This calls Cover_Exclude repeatedly to generate 9 subboxes.
@@ -464,6 +467,7 @@ public:
       }
       return BB;
   }
+  */
 
  /*
  // eval1

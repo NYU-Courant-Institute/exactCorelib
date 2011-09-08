@@ -29,6 +29,7 @@
 #include <iostream>
 
 #include "mk-inl.h"
+#include "rootbox.h"
 
 using namespace std;
 
@@ -37,27 +38,32 @@ namespace Algorithm {
   template <typename T> void Run(
       const MKPredicates<T> &pred,
       const BoxT<T> *initial,
-      vector<const BoxT<T> *> *output,
-      vector<const BoxT<T> *> *ambiguous,
-      vector<const BoxT<T> *> *exclude) {
+      vector<const BoxT<T> *> *Q_output,
+      vector<const BoxT<T> *> *Q_ambiguous,
+      vector<const BoxT<T> *> *Q_exclude) {
 
     // inner type definition
     typedef BoxT<T> Box;
+    typedef RootBoxT<T> RootBox;
+
     // main process queue
     vector<const Box *> Q_tmp;
     // Jacobian queue
     vector<const Box *> Q_confirm;
-    // Priority Queue 
-    MultiList< MKPredicates<T> >
+    // here we make a final queue for refinement processing
+    // it is only used when we find a box that passes MK test(a.k.a root box)
+    // we will make a Rootbox structure to hold vaious useful information
+    vector<RootBox *> Q_final;
 
     if(!pred.Exclude(initial)) { // current box fails C0
       Q_tmp.push_back(initial);
     }
     else {
-        exclude->push_back(initial);
+        Q_exclude->push_back(initial);
     }
-
-    while(!Q_tmp.empty()) { // main loop
+    
+    // main loop
+    while(!Q_tmp.empty()) { 
       const Box *current = Q_tmp.back();
       Q_tmp.pop_back();
       // (current box)X2 passes the Jacobian test
@@ -66,7 +72,7 @@ namespace Algorithm {
         Q_confirm.push_back(current);  // wait for further confirmation
       }
       else {
-        pred.Split_Exclude(current, &Q_tmp, exclude); // split and test C0
+        pred.Split_Exclude(current, &Q_tmp, Q_exclude); // split and test C0
       }
       delete double_current;
 
@@ -76,28 +82,92 @@ namespace Algorithm {
         Q_confirm.pop_back();
         // box too small
         if(pred.Min(box)) {
-          ambiguous->push_back(box);
+          Q_ambiguous->push_back(box);
           continue;
         }
         // also do MK test on (box)X2
         const Box *double_box = box->Dilate(2);
         if(pred.MKTest(double_box)) {
-          // CHECK IF size of sub is larger than max-size,
-          // and if so, refine, else put it in output
-output->push_back(box);
-//          pred.Refinement(box, output, ambiguous, exclude);
-
+          // already found a root box, put it in Q_final queue for refinement
+          // should convert into RootBox first
+          Q_final.push_back(new RootBox(box));
+          Q_exclude->insert(Q_exclude->end(), Q_confirm.begin(), Q_confirm.end());
           Q_confirm.clear();  // include area already found in region, clean Q_confirm
-          delete double_box;
+          delete double_box;  // again, 2B for only testing, discard
           break;
         }
         else {
-          //cout << endl;
-          pred.Split_Exclude(box, &Q_confirm, exclude);
+          pred.Split_Exclude(box, &Q_confirm, Q_exclude);
           delete double_box;
         }
       }//while (Q_confirm)
     }//while (Q_tmp)
+
+
+
+cout << "Q_final has " << Q_final.size() << " elements" << endl;
+
+
+//int x = 0;
+
+    // by reaching here, the root boxes are all found, and stored in Q_final
+    // the next step would be to refine root boxes until they are strongly isolated 
+    // and place them into Q_output for display, and we are also cleaning
+    // boxes in Q_final. In the end, Q_final should be empty
+    while(!Q_final.empty()) {
+      RootBox *current = Q_final.back();
+      Q_final.pop_back();
+      // fail to make a box strongly isolated,
+      // for now just put it into Q_output????????????????
+      if(!current->StrongIsol(pred)) {
+
+
+
+cout << "fail to make strongly isolated" << endl;
+
+
+cout << "a small box: " << current->innerBox_->x_range << " , " << current->innerBox_->y_range << endl;
+
+
+        Q_output->push_back(current->innerBox_);
+        continue;
+      }
+      else { // succeeded in making the root box strongly isolated
+             // (all boxes in Q_output are the inner boxes for RootBoxes
+             // because the Q_output has type of Box not RootBox)
+
+        // this flag is to check whether a joint case happens. if found = true,
+        // we can discard "current", because all boxes in Q_output are strongly isolated,
+        // thus we can be sure that "current" contains the same root as the joint one, and
+        // we can discard "current"
+        bool found = false;
+
+//cout << "current inner box is: " << current->innerBox_->x_range << " , " << current->innerBox_->y_range << endl;
+
+        for(unsigned int i = 0; i != Q_output->size(); i++) {
+
+//cout << "box in the queue is: " << Q_output->at(i)->x_range << " , " << Q_output->at(i)->y_range << endl;
+
+
+
+          if(!current->Disjoint(Q_output->at(i))) {
+            delete current;
+            found = true;
+            break;
+          }
+        }
+        if(!found) {
+    
+cout << "a big box: " << current->innerBox_->x_range << " , " << current->innerBox_->y_range << endl;
+
+          Q_output->push_back(current->innerBox_);
+        }
+      } // else(StrongIsol)
+    } // while(Q_final)
+
+
+
+
   }//Run
 }  // end of namespace algorithm
 
