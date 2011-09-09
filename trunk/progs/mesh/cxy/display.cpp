@@ -73,10 +73,16 @@ void ClearBackground() {
              (display_params.x_max)*scale + x_delta,
              (display_params.y_min)*scale + y_delta,
              (display_params.y_max)*scale + y_delta);
-  //gluOrtho2D((display_params.x_min + x_delta)*scale,
-  //           (display_params.x_max + x_delta)*scale,
-  //           (display_params.y_min + y_delta)*scale,
-  //           (display_params.y_max + y_delta)*scale);
+  /*
+  gluOrtho2D((display_params.x_min)*scale + x_delta,
+             (display_params.x_max)*scale + x_delta,
+             (display_params.y_min)*scale + y_delta,
+             (display_params.y_max)*scale + y_delta);
+  gluOrtho2D((display_params.x_min + x_delta)*scale,
+             (display_params.x_max + x_delta)*scale,
+             (display_params.y_min + y_delta)*scale,
+             (display_params.y_max + y_delta)*scale);
+*/
   glMatrixMode(GL_MODELVIEW);
   glClearColor(255.0/256.0,192.0/256.0,203.0/256.0,0.0);
 }
@@ -98,16 +104,16 @@ void KeyHandler(const unsigned char key, const int x, const int y) {
       exit(0);
       break;
     case 'w': // pan up
-      display_params.y_delta+=0.5;
+      display_params.y_delta+=0.5*display_params.scale;
       break;
     case 'a': // pan left
-      display_params.x_delta-=0.5;
+      display_params.x_delta-=0.5*display_params.scale;
       break;
     case 's': // pan down
-      display_params.y_delta-=0.5;
+      display_params.y_delta-=0.5*display_params.scale;
       break;
     case 'd': // pan right
-      display_params.x_delta+=0.5;
+      display_params.x_delta+=0.5*display_params.scale;
       break;
     case 'i':  // zoom in
       display_params.scale *= 0.9;
