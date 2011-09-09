@@ -15,10 +15,10 @@ void ClearBackground() {
   const machine_double scale = DISPLAY_PARAMS_INSTANCE.scale;
   const machine_double x_delta = DISPLAY_PARAMS_INSTANCE.x_delta;
   const machine_double y_delta = DISPLAY_PARAMS_INSTANCE.y_delta;
-  gluOrtho2D((DISPLAY_PARAMS_INSTANCE.x_min + x_delta)*scale,
-             (DISPLAY_PARAMS_INSTANCE.x_max + x_delta)*scale,
-             (DISPLAY_PARAMS_INSTANCE.y_min + y_delta)*scale,
-             (DISPLAY_PARAMS_INSTANCE.y_max + y_delta)*scale);
+  gluOrtho2D((DISPLAY_PARAMS_INSTANCE.x_min)*scale + x_delta,
+             (DISPLAY_PARAMS_INSTANCE.x_max)*scale + x_delta,
+             (DISPLAY_PARAMS_INSTANCE.y_min)*scale + y_delta,
+             (DISPLAY_PARAMS_INSTANCE.y_max*scale + y_delta));
   glMatrixMode(GL_MODELVIEW);
   glClearColor(255.0/256.0,192.0/256.0,203.0/256.0,0.0);
 }
@@ -35,31 +35,34 @@ void ReshapeHandler(const GLsizei w,const GLsizei h) {
 void KeyHandler(const unsigned char key, const int x, const int y) {
   switch (key)
     {
+      case 'q':		   // quit
       case 27:             // ESCAPE key
         exit(0);
         break;
       case 'w':
-        DISPLAY_PARAMS_INSTANCE.y_delta+=0.5;
+        DISPLAY_PARAMS_INSTANCE.y_delta+=0.5*DISPLAY_PARAMS_INSTANCE.scale;
         break;
       case 'a':
-        DISPLAY_PARAMS_INSTANCE.x_delta-=0.5;
+        DISPLAY_PARAMS_INSTANCE.x_delta-=0.5*DISPLAY_PARAMS_INSTANCE.scale;
         break;
       case 's':
-        DISPLAY_PARAMS_INSTANCE.y_delta-=0.5;
+        DISPLAY_PARAMS_INSTANCE.y_delta-=0.5*DISPLAY_PARAMS_INSTANCE.scale;
         break;
       case 'd':
-        DISPLAY_PARAMS_INSTANCE.x_delta+=0.5;
+        DISPLAY_PARAMS_INSTANCE.x_delta+=0.5*DISPLAY_PARAMS_INSTANCE.scale;
         break;
       case 'i':
-        DISPLAY_PARAMS_INSTANCE.scale /= 0.9;
-        //DISPLAY_PARAMS_INSTANCE.x_delta = 0;
-        //DISPLAY_PARAMS_INSTANCE.y_delta = 0;
-        break;
-      case 'k':
         DISPLAY_PARAMS_INSTANCE.scale *= 0.9;
         //DISPLAY_PARAMS_INSTANCE.x_delta = 0;
         //DISPLAY_PARAMS_INSTANCE.y_delta = 0;
         break;
+      case 'k':
+      case 'o':
+        DISPLAY_PARAMS_INSTANCE.scale /= 0.9;
+        //DISPLAY_PARAMS_INSTANCE.x_delta = 0;
+        //DISPLAY_PARAMS_INSTANCE.y_delta = 0;
+        break;
+      case 'r': // Reset
       case ' ':
         DISPLAY_PARAMS_INSTANCE.scale = 1;
         DISPLAY_PARAMS_INSTANCE.x_delta = 0;
