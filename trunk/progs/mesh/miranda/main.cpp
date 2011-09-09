@@ -2,6 +2,14 @@
  * main.cpp
  * driving program for modified-miranda algorithm
  * 
+ *
+ *  There are two types of dyadic numbers, 
+ *       DT = is the number type for defining subdivision boxes
+ *       NT = is the number type for for endpoints of intervals used for evaluation.
+ *       We require that DT <= NT (subtype relation).
+ *       Typically, DT = NT = DoubleWrapper.
+ *       But for increased precision, we may use NT = BigFloat.
+ *
  * July 18, 2011
  */
 
@@ -16,6 +24,10 @@
 #include "benchmark.h"
 
 using namespace std;
+
+typedef DoubleWrapper DT;
+typedef DoubleWrapper NT;
+//typedef BigFloat NT;
 
 void startGlutLoop(int argc, char **argv);
 
@@ -42,10 +54,11 @@ TCLAP::ValueArg<string> max_generation("r", "maxgen", "maximum generation", fals
 
 int main(int argc, char **argv) {
 
-  // use DoubleWrapper for arithmetics
-  typedef IntervalT<DoubleWrapper> Interval;
-  typedef BoxT<DoubleWrapper> Box;
-  typedef BiPoly<DoubleWrapper> poly;
+  // use DT for arithmetics
+  typedef IntervalT<DT> IntervalDT;
+  typedef IntervalT<NT> IntervalNT;
+  typedef BoxT<DT> Box;
+  typedef BiPoly<DT> poly;
 
   // queues that used for display
   std::vector<const Box *> output;
@@ -58,9 +71,9 @@ int main(int argc, char **argv) {
   // This is the maximum number of ambiguous boxes to be printed
   unsigned int max_ambiguous_box = 20;
 
-  DoubleWrapper x_min = -2, x_max = 2, y_min = -2, y_max = 2;
-  DoubleWrapper min_size = 0.0001;
-  DoubleWrapper max_size = 0.01;
+  DT x_min = -2, x_max = 2, y_min = -2, y_max = 2;
+  DT min_size = 0.0001;
+  DT max_size = 0.01;
   int max_gen = 15;
   string fxy_str = "y - (x-1)^2 - 1";
   string gxy_str = "x - 1";
@@ -111,8 +124,8 @@ int main(int argc, char **argv) {
   max_size = max_box_size.getValue();
   max_gen = atoi(max_generation.getValue().c_str());
   // initial box construction
-  Interval x_range(x_min, x_max);
-  Interval y_range(y_min, y_max);
+  IntervalDT x_range(x_min, x_max);
+  IntervalDT y_range(y_min, y_max);
   Box *const box = new Box(0, x_range, y_range);
 
 
@@ -122,9 +135,9 @@ int main(int argc, char **argv) {
   gettimeofday(&start, NULL);
   
   // get the algorithm running
-  MKPredicates<DoubleWrapper> *const pred = 
-    new MKPredicates<DoubleWrapper>(fxy, gxy, min_size, max_size, max_gen);
-  Algorithm::Run<DoubleWrapper>(*pred, box, 
+  MKPredicates<DT,NT> *const pred = 
+    new MKPredicates<DT,NT>(fxy, gxy, min_size, max_size, max_gen);
+  Algorithm::Run<DT,NT>(*pred, box, 
       &output, &ambiguous, &exclude);
 
   // end time

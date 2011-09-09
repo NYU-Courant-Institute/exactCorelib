@@ -70,6 +70,11 @@ eg6b: ${TARGETS}
 	./mk --poly data/laguerre6.pol \
     --x_min -20 --x_max 20 --y_min -0.1 --y_max 0.1 --minsize 0.00001 --maxsize ${maxsize} --maxgen 15
 
+eg6c: ${TARGETS}
+	./mk --poly data/laguerre6.pol \
+    --x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} --minsize ${minsize} --maxsize ${maxsize} --maxgen 15
+
+
 eg7: ${TARGETS}
 	./mk --poly data/somepoly6.pol \
     --x_min -8 --x_max 8 --y_min -8 --y_max 8 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}

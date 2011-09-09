@@ -35,16 +35,17 @@ using namespace std;
 
 namespace Algorithm {
 
-  template <typename T> void Run(
-      const MKPredicates<T> &pred,
-      const BoxT<T> *initial,
-      vector<const BoxT<T> *> *Q_output,
-      vector<const BoxT<T> *> *Q_ambiguous,
-      vector<const BoxT<T> *> *Q_exclude) {
+  template <typename DT,typename NT>
+   void Run(
+      const MKPredicates<DT,NT> &pred,
+      const BoxT<DT> *initial,
+      vector<const BoxT<DT> *> *Q_output,
+      vector<const BoxT<DT> *> *Q_ambiguous,
+      vector<const BoxT<DT> *> *Q_exclude) {
 
     // inner type definition
-    typedef BoxT<T> Box;
-    typedef RootBoxT<T> RootBox;
+    typedef BoxT<DT> Box;
+    typedef RootBoxT<DT,NT> RootBox;
 
     // main process queue
     vector<const Box *> Q_tmp;
@@ -105,7 +106,7 @@ namespace Algorithm {
 
 
 
-cout << "Q_final has " << Q_final.size() << " elements" << endl;
+//cout << "Q_final has " << Q_final.size() << " elements" << endl;
 
 
 //int x = 0;
@@ -123,10 +124,10 @@ cout << "Q_final has " << Q_final.size() << " elements" << endl;
 
 
 
-cout << "fail to make strongly isolated" << endl;
+//cout << "fail to make strongly isolated" << endl;
 
 
-cout << "a small box: " << current->innerBox_->x_range << " , " << current->innerBox_->y_range << endl;
+//cout << "a small box: " << current->innerBox_->x_range << " , " << current->innerBox_->y_range << endl;
 
 
         Q_output->push_back(current->innerBox_);
@@ -158,7 +159,7 @@ cout << "a small box: " << current->innerBox_->x_range << " , " << current->inne
         }
         if(!found) {
     
-cout << "a big box: " << current->innerBox_->x_range << " , " << current->innerBox_->y_range << endl;
+//cout << "a big box: " << current->innerBox_->x_range << " , " << current->innerBox_->y_range << endl;
 
           Q_output->push_back(current->innerBox_);
         }
