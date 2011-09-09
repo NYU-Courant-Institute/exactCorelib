@@ -1,6 +1,20 @@
 /*
  * default-functions-inl.h
  *
+ *
+ * Synopsis:
+ *
+ * 	ConstructCentered(xrange, yrange, f, g, S)
+ * 		and sets the structure S 
+ * 		to contain the Jacobian of the functions 
+ *
+ * 		f(x-x0, y-y0), g(x-x0, y-y0)
+ *
+ * 		where (x0,y0) is the mid point of the box (xrange, yrange).
+ *
+ * 	The structure S is of type CenterRepT.
+ *
+ *
  *  Created on: Jun 1, 2010
  *      Author: narayan
  */
