@@ -125,6 +125,10 @@ public:
     while(true) {
       // it might be that all children holds C0 test, queue is empty
       if(Qtmp.empty()) {
+
+
+cout << "queue empty, fail refine" << endl;
+
         return false;
       }
       const Box *box = Qtmp.back();
@@ -134,16 +138,22 @@ public:
         // we cannot go any further, set current box as the most precise one
         delete innerBox_; // release previous
         innerBox_ = box;  // set current
+
+cout << "fail refine" << endl;
+
         return false;
       }
       // keep using MK to test boxes, 
       // if MK holds, we set the new inner box to this one
-      if(pred.MKTest(box)) {
+      Box *double_box = innerBox_->Dilate(2);
+      if(pred.MKTest(double_box)) {
         delete innerBox_; // release previous
+        delete double_box;
         innerBox_ = box;
         return true;
       }
       else {  // cannot pass MK test, split
+        delete double_box;
         Cover_Exclude(pred, box, &Qtmp);
         delete box;
       }
