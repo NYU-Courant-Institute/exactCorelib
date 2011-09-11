@@ -104,13 +104,6 @@ namespace Algorithm {
       }//while (Q_confirm)
     }//while (Q_tmp)
 
-
-
-//cout << "Q_final has " << Q_final.size() << " elements" << endl;
-
-
-//int x = 0;
-
     // by reaching here, the root boxes are all found, and stored in Q_final
     // the next step would be to refine root boxes until they are strongly isolated 
     // and place them into Q_output for display, and we are also cleaning
@@ -118,56 +111,35 @@ namespace Algorithm {
     while(!Q_final.empty()) {
       RootBox *current = Q_final.back();
       Q_final.pop_back();
-      // fail to make a box strongly isolated,
-      // for now just put it into Q_output????????????????
+      // fail to make the inner box strongly isolated
+      // for now just put it back to Q_output???????
       if(!current->StrongIsol(pred)) {
-
-
-
-//cout << "fail to make strongly isolated" << endl;
-
-
-//cout << "a small box: " << current->innerBox_->x_range << " , " << current->innerBox_->y_range << endl;
-
-
         Q_output->push_back(current->innerBox_);
         continue;
       }
-      else { // succeeded in making the root box strongly isolated
-             // (all boxes in Q_output are the inner boxes for RootBoxes
-             // because the Q_output has type of Box not RootBox)
-
+      else {
+        // succeeded in making the root box strongly isolated
+        // (all boxes in Q_output are the inner boxes for RootBoxes
+        // because the Q_output has type of Box not RootBox)
+        
         // this flag is to check whether a joint case happens. if found = true,
         // we can discard "current", because all boxes in Q_output are strongly isolated,
         // thus we can be sure that "current" contains the same root as the joint one, and
         // we can discard "current"
         bool found = false;
-
-//cout << "current inner box is: " << current->innerBox_->x_range << " , " << current->innerBox_->y_range << endl;
-
         for(unsigned int i = 0; i != Q_output->size(); i++) {
-
-//cout << "box in the queue is: " << Q_output->at(i)->x_range << " , " << Q_output->at(i)->y_range << endl;
-
-
-
-          if(!current->Disjoint(Q_output->at(i))) {
+          if(!current->Disjoint(Q_output->at(i))) { // not disjoint, discard current
             delete current;
             found = true;
             break;
           }
         }
-        if(!found) {
-    
-//cout << "a big box: " << current->innerBox_->x_range << " , " << current->innerBox_->y_range << endl;
-
+        if(!found) { // Q_output has ended, still not found
           Q_output->push_back(current->innerBox_);
         }
-      } // else(StrongIsol)
-    } // while(Q_final)
+      }
 
-
-
+    } // (Q_final)
 
   }//Run
 }  // end of namespace algorithm
