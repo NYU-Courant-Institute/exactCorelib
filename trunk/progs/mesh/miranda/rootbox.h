@@ -98,6 +98,15 @@ public:
       Interval(y_mid-y_halfwidth, y_mid+y_halfwidth)));
   }
 
+  void Clear_queue(vector<const Box *> *queue) {
+    while(!queue->empty()) {
+      const Box *b = queue->back();
+      queue->pop_back();
+      delete b;  
+    }
+  }// Clear_queue
+
+
   void Cover_Exclude(const MKPredicates<DT,NT> &pred,
       const Box *box, vector<const Box *> *queue) {
     // temp queue for processing
@@ -126,7 +135,6 @@ public:
       // it might be that all children holds C0 test, queue is empty
       if(Qtmp.empty()) {
 
-
 cout << "queue empty, fail refine" << endl;
 
         return false;
@@ -145,15 +153,13 @@ cout << "fail refine" << endl;
       }
       // keep using MK to test boxes, 
       // if MK holds, we set the new inner box to this one
-      Box *double_box = innerBox_->Dilate(2);
-      if(pred.MKTest(double_box)) {
+      if(pred.MKTest(innerBox_)) {
         delete innerBox_; // release previous
-        delete double_box;
         innerBox_ = box;
+	Clear_queue(&Qtmp);
         return true;
       }
       else {  // cannot pass MK test, split
-        delete double_box;
         Cover_Exclude(pred, box, &Qtmp);
         delete box;
       }

@@ -91,10 +91,10 @@ namespace Algorithm {
         if(pred.MKTest(double_box)) {
           // already found a root box, put it in Q_final queue for refinement
           // should convert into RootBox first
-          Q_final.push_back(new RootBox(box));
+          Q_final.push_back(new RootBox(double_box));
           Q_exclude->insert(Q_exclude->end(), Q_confirm.begin(), Q_confirm.end());
           Q_confirm.clear();  // include area already found in region, clean Q_confirm
-          delete double_box;  // again, 2B for only testing, discard
+          // delete double_box;  // no need to delete since double_box is used by RootBox.
           break;
         }
         else {
