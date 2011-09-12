@@ -15,7 +15,7 @@ namespace display_funcs {
 struct display_params_t {
   const BoxT<DoubleWrapper> *b0;
   vector<const BoxT<DoubleWrapper> *> n_it;
-  vector<const BoxT<DoubleWrapper> *> it;
+  vector< RootBoxT<DoubleWrapper> *> it;
   vector<const BoxT<DoubleWrapper> *> amb;
 
   machine_double x_min, x_max, y_min, y_max;
@@ -51,6 +51,38 @@ void ConvertList(const vector<const BoxT<NT> *> *input,
   // input->clear();
 }
 
+// ConvertRootList( Qin, Qout)
+// 	where Qin is a queue of rootboxes
+// 	and Qout is a queue of boxes.
+// 	For each rootbox in Qin, we output two regular boxes in Qout.
+template <typename NT>
+void ConvertRootList(const vector< RootBoxT<NT> *> *input,
+    vector<const BoxT<DoubleWrapper> *> *output) {
+  for (unsigned int i = 0; i < input->size(); ++i) {
+    const BoxT<NT> *box1 = (*input)[i]->innerBox_;
+    const BoxT<NT> *box2 = (*input)[i]->innerBox_;
+    output->push_back(new BoxT<DoubleWrapper>(
+        0,
+        IntervalT<DoubleWrapper>(
+            box1->x_range.getL().doubleValue(),
+            box1->x_range.getR().doubleValue()),
+        IntervalT<DoubleWrapper>(
+            box1->y_range.getL().doubleValue(),
+            box1->y_range.getR().doubleValue())));
+    delete box1;
+    output->push_back(new BoxT<DoubleWrapper>(
+        0,
+        IntervalT<DoubleWrapper>(
+            box2->x_range.getL().doubleValue(),
+            box2->x_range.getR().doubleValue()),
+        IntervalT<DoubleWrapper>(
+            box2->y_range.getL().doubleValue(),
+            box2->y_range.getR().doubleValue())));
+    delete box2;
+  }
+  // input->clear();
+}
+
 extern display_params_t DISPLAY_PARAMS_INSTANCE;
 
 // Set the display parameters. This HAS to be called before
@@ -65,7 +97,7 @@ void SetDisplayParams(const BoxT<NT> *B0,
   //  display_params.b0 = B0;
 
   ConvertList<NT>(non_intersect, &display_params.n_it);
-  ConvertList<NT>(intersects, &display_params.it);
+  ConvertRootList<NT>(intersects, &display_params.it);
   ConvertList<NT>(ambiguous, &display_params.amb);
 
   // v1 , v2, v3, v4

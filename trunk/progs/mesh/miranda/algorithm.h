@@ -39,7 +39,7 @@ namespace Algorithm {
    void Run(
       const MKPredicates<DT,NT> &pred,
       const BoxT<DT> *initial,
-      vector<const BoxT<DT> *> *Q_output,
+      vector< RootBoxT<DT,NT> *> *Q_output,
       vector<const BoxT<DT> *> *Q_ambiguous,
       vector<const BoxT<DT> *> *Q_exclude) {
 
@@ -114,7 +114,7 @@ namespace Algorithm {
       // fail to make the inner box strongly isolated
       // for now just put it back to Q_output???????
       if(!current->StrongIsol(pred)) {
-        Q_output->push_back(current->innerBox_);
+        Q_output->push_back(current);
         continue;
       }
       else {
@@ -135,7 +135,7 @@ namespace Algorithm {
           }
         }
         if(!found) { // Q_output has ended, still not found
-          Q_output->push_back(current->innerBox_);
+          Q_output->push_back(current);
         }
       }
 

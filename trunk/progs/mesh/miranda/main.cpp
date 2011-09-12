@@ -22,6 +22,7 @@
 #include "algorithm.h"
 #include "tmp-display.h"
 #include "benchmark.h"
+#include "rootbox.h"
 
 using namespace std;
 
@@ -61,7 +62,7 @@ int main(int argc, char **argv) {
   typedef BiPoly<DT> poly;
 
   // queues that used for display
-  std::vector<const Box *> output;
+  std::vector< RootBoxT<DT> *> output;
   std::vector<const Box *> ambiguous;
   std::vector<const Box *> exclude;
 

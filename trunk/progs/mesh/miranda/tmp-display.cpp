@@ -1,3 +1,6 @@
+// file: tmp-display.cpp
+//
+//
 #include <utility>
 #include <vector>
 
@@ -110,7 +113,7 @@ void DisplayHandler() {
     ++it;
   }
 
-  glColor3f(0.0f,1.0f,0.0f);
+  bool odd=true;
   it = DISPLAY_PARAMS_INSTANCE.it.begin();
   //glLineWidth(5.0f);
   while (it != DISPLAY_PARAMS_INSTANCE.it.end()) {
@@ -118,6 +121,14 @@ void DisplayHandler() {
     const double &x_max = (*it)->x_range.getR().doubleValue();
     const double &y_min = (*it)->y_range.getL().doubleValue();
     const double &y_max = (*it)->y_range.getR().doubleValue();
+    // Choose color according to the parity (odd or even) of the iteration:
+    if (odd) {
+        glColor3f(0.0f,1.0f,0.0f);
+	odd = false;}
+    else {
+        glColor3f(1.0f,0.5f,0.0f);
+	odd = true;}
+    }
     glBegin(GL_LINES);
     vertex2fWrapper(x_min, y_min);
     vertex2fWrapper(x_min, y_max);
