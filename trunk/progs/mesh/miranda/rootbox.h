@@ -1,5 +1,5 @@
-/* ***************************************************
-*rootbox.h
+/* *************************************************
+*    rootbox.h
 * 
 *    This file describes the templated class called RootBoxT.
 *
@@ -41,25 +41,31 @@
 template <typename DT>
 inline const bool Overlap(const IntervalT<DT> &s, const IntervalT<DT> &t);
 
+/* rootbox class  */
 template <typename DT, typename NT>
 class RootBoxT {
-
 public:
   // Constructor
   RootBoxT(const BoxT<DT> *B) : 
-    outerBox_(B), innerBox_(B), 
-    strongIsolFlag_(false), 
-    failRefineFlag_(false) { }
+    strongIsolFlag_(false),
+    failRefineFlag_(false) {
+      unsigned int gen_id = B->generation_id;
+      const IntervalT<DT> &xRange = B->x_range;
+      const IntervalT<DT> &yRange = B->y_range;
+      innerBox_ = new BoxT<DT>(gen_id, xRange, yRange);
+      outerBox_ = new BoxT<DT>(gen_id, xRange, yRange);
+  }
 
-  // Destructor
-  ~RootBoxT() { }
+  ~RootBoxT() {
+    delete outerBox_;
+    delete innerBox_;
+  }
 
-  // Inner class type definition
+  // Inner type definition
   typedef BoxT<DT> Box;
   typedef IntervalT<DT> Interval;
 
-
-  /******************** Methods ************************/
+  /***************** methods ***********************/  
   void Cover(const Box *box, 
              vector<const Box*> *queue) {
     const DT &x_start     = box->x_range.getL();
@@ -97,16 +103,17 @@ public:
       Interval(x_mid-x_halfwidth, x_mid+x_halfwidth), 
       Interval(y_mid-y_halfwidth, y_mid+y_halfwidth)));
   }
-
+  // release all pointers that stay in the queue
   void Clear_queue(vector<const Box *> *queue) {
     while(!queue->empty()) {
       const Box *b = queue->back();
       queue->pop_back();
-      delete b;  
+      delete b;
     }
-  }// Clear_queue
+  } // Clear_queue
 
-
+  // Cover_Exclude() calls Cover() to split the box into 9 children
+  // and use C0 to test each of them, put children into queue if it fails C0 test
   void Cover_Exclude(const MKPredicates<DT,NT> &pred,
       const Box *box, vector<const Box *> *queue) {
     // temp queue for processing
@@ -132,42 +139,39 @@ public:
     Cover_Exclude(pred, innerBox_, &Qtmp);
     // loop started
     while(true) {
-      // it might be that all children holds C0 test, queue is empty
+      // it might be that all children holds C0 test, queue empty
       if(Qtmp.empty()) {
-
-cout << "queue empty, fail refine" << endl;
-
+cout << "all passed C0 test, fail refine" << endl;
         return false;
       }
       const Box *box = Qtmp.back();
       Qtmp.pop_back();
       // too small
       if(pred.Min(box)) {
-        // we cannot go any further, set current box as the most precise one
-        delete innerBox_; // release previous
-        innerBox_ = box;  // set current
-
-cout << "fail refine" << endl;
-
+        // we cannot go any further, set this box as the most precise one
+        delete innerBox_;
+        innerBox_ = box;
+cout << "reached the minimum size, fail refine" << endl;
+        Clear_queue(&Qtmp);
         return false;
       }
-      // keep using MK to test boxes, 
-      // if MK holds, we set the new inner box to this one
+      // keep using MK test to test boxes, 
+      // if MK holds, set new inner box to current one
       if(pred.MKTest(innerBox_)) {
-        delete innerBox_; // release previous
+        delete innerBox_;
         innerBox_ = box;
-	Clear_queue(&Qtmp);
+        Clear_queue(&Qtmp);
         return true;
       }
-      else {  // cannot pass MK test, split
+      else {  // cannot pass MK test, use cover to split 9 children
         Cover_Exclude(pred, box, &Qtmp);
         delete box;
       }
     }
   }
 
-  // This routine will make a innerbox as strong rootbox.
-  // return false means that the innerbox cannot refine anymore.
+  // This routine will make an inner box a strong rootbox,
+  // return false means the inner box cannot be refined anymore
   const bool StrongIsol(const MKPredicates<DT,NT> &pred) {
     Box *triple_box = innerBox_->Dilate(3);
     while(!pred.JTest(triple_box)) {
@@ -176,21 +180,21 @@ cout << "fail refine" << endl;
         delete triple_box;
         return false;
       }
-      else {  // can refine, free previous 3B and create a new
-              // one based on the new inner box
+      else {  // can refine, free previous 3B and make another
+              // 3B based on the new inner box created by Refinement()
         delete triple_box;
         triple_box = innerBox_->Dilate(3);
       }
     }
-    // JTest holds
+    // out of loop, which indecates that JTest holds
     delete triple_box;
     strongIsolFlag_ = true;
     return true;
   }
-
+  
   // check if two boxes are disjoint
-  // return true if either innerBox.x_range doesn't overlap with other.x_range
-  // or innerBox.y_range doesn't overlap with other.y_range
+  // return true if either innerBox.x_range isn't overlap with other.x_range
+  // or innerBox.y_range isn't overlap with other.y_range
   const bool Disjoint(const Box *other) {
     const Interval &inner_x = innerBox_->x_range;
     const Interval &inner_y = innerBox_->y_range;
@@ -199,7 +203,7 @@ cout << "fail refine" << endl;
     return (!Overlap(inner_x, other_x) || !Overlap(inner_y, other_y));
   }
 
-  /******************** Members ************************/
+  /**************  members  ***********************/
   const Box *outerBox_;
   const Box *innerBox_;
   bool      strongIsolFlag_;

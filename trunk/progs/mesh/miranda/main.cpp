@@ -62,9 +62,11 @@ int main(int argc, char **argv) {
   typedef BiPoly<DT> poly;
 
   // queues that used for display
-  std::vector< RootBoxT<DT> *> output;
+  std::vector< RootBoxT<DT,NT> *> output;
   std::vector<const Box *> ambiguous;
   std::vector<const Box *> exclude;
+  std::vector<const Box *> outer_output;
+  std::vector<const Box *> inner_output;
 
   // default values for arguments, all arguments can be 
   // specified in Makefile
@@ -147,8 +149,12 @@ int main(int argc, char **argv) {
   unsigned int num_includes = output.size();      // statistic collections
   cout << endl << "Output regions: " << endl;
   for(unsigned int i = 0; i < output.size(); i++) {
-    const Box *b = output[i];
-    cout << "X: " << b->x_range << " , Y: " << b->y_range << endl;
+    RootBoxT<DT,NT> *b = output[i];
+    cout << "X: " << b->innerBox_->x_range << " , Y: " << b->innerBox_->y_range << endl;
+    // we make full use of this loop, while going though each element in output,
+    // also put outer and inner into 2 separate queues for display
+    outer_output.push_back(b->outerBox_);
+    inner_output.push_back(b->innerBox_);
   }
 
   
@@ -176,15 +182,11 @@ int main(int argc, char **argv) {
   cout << "exclusion regions: " << num_excludes << endl; 
   cout << "maximum generation: " << largest_gen << endl;
   cout << endl;
-/*
-  Box *first = new Box(0, Interval(-5, 5), Interval(-3, 3));
-  Box *second = first->Dilate(2);
-  cout << "first box y left: " << first->y_range.getL() << endl;;
-  cout << "second box y left: " << second->y_range.getL() << endl;
-*/
+
   // display preparation
   Box *b_display = new Box(0, x_range, y_range);
-  display_funcs::SetDisplayParams(b_display, &exclude, &output, &ambiguous);
+  display_funcs::SetDisplayParams(b_display, &exclude, &outer_output,
+                                  &inner_output, &ambiguous);
   // draw plot
   startGlutLoop(argc, argv);
   delete b_display;

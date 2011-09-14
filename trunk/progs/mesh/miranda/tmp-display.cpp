@@ -1,6 +1,3 @@
-// file: tmp-display.cpp
-//
-//
 #include <utility>
 #include <vector>
 
@@ -21,7 +18,7 @@ void ClearBackground() {
   gluOrtho2D((DISPLAY_PARAMS_INSTANCE.x_min)*scale + x_delta,
              (DISPLAY_PARAMS_INSTANCE.x_max)*scale + x_delta,
              (DISPLAY_PARAMS_INSTANCE.y_min)*scale + y_delta,
-             (DISPLAY_PARAMS_INSTANCE.y_max*scale + y_delta));
+             (DISPLAY_PARAMS_INSTANCE.y_max)*scale + y_delta);
   glMatrixMode(GL_MODELVIEW);
   glClearColor(255.0/256.0,192.0/256.0,203.0/256.0,0.0);
 }
@@ -38,7 +35,7 @@ void ReshapeHandler(const GLsizei w,const GLsizei h) {
 void KeyHandler(const unsigned char key, const int x, const int y) {
   switch (key)
     {
-      case 'q':		   // quit
+      case 'q':
       case 27:             // ESCAPE key
         exit(0);
         break;
@@ -55,17 +52,17 @@ void KeyHandler(const unsigned char key, const int x, const int y) {
         DISPLAY_PARAMS_INSTANCE.x_delta+=0.5*DISPLAY_PARAMS_INSTANCE.scale;
         break;
       case 'i':
-        DISPLAY_PARAMS_INSTANCE.scale *= 0.9;
+        DISPLAY_PARAMS_INSTANCE.scale /= 0.9;
         //DISPLAY_PARAMS_INSTANCE.x_delta = 0;
         //DISPLAY_PARAMS_INSTANCE.y_delta = 0;
         break;
       case 'k':
       case 'o':
-        DISPLAY_PARAMS_INSTANCE.scale /= 0.9;
+        DISPLAY_PARAMS_INSTANCE.scale *= 0.9;
         //DISPLAY_PARAMS_INSTANCE.x_delta = 0;
         //DISPLAY_PARAMS_INSTANCE.y_delta = 0;
         break;
-      case 'r': // Reset
+      case 'r':
       case ' ':
         DISPLAY_PARAMS_INSTANCE.scale = 1;
         DISPLAY_PARAMS_INSTANCE.x_delta = 0;
@@ -113,22 +110,14 @@ void DisplayHandler() {
     ++it;
   }
 
-  bool odd=true;
-  it = DISPLAY_PARAMS_INSTANCE.it.begin();
+  glColor3f(0.0f,1.0f,0.0f);
+  it = DISPLAY_PARAMS_INSTANCE.outer_it.begin();
   //glLineWidth(5.0f);
-  while (it != DISPLAY_PARAMS_INSTANCE.it.end()) {
+  while (it != DISPLAY_PARAMS_INSTANCE.outer_it.end()) {
     const double &x_min = (*it)->x_range.getL().doubleValue();
     const double &x_max = (*it)->x_range.getR().doubleValue();
     const double &y_min = (*it)->y_range.getL().doubleValue();
     const double &y_max = (*it)->y_range.getR().doubleValue();
-    // Choose color according to the parity (odd or even) of the iteration:
-    if (odd) {
-        glColor3f(0.0f,1.0f,0.0f);
-	odd = false;}
-    else {
-        glColor3f(1.0f,0.5f,0.0f);
-	odd = true;}
-    }
     glBegin(GL_LINES);
     vertex2fWrapper(x_min, y_min);
     vertex2fWrapper(x_min, y_max);
@@ -144,6 +133,32 @@ void DisplayHandler() {
     glEnd();
     ++it;
   }
+
+
+  glColor3f(0.0f,0.0f,0.0f);
+  it = DISPLAY_PARAMS_INSTANCE.inner_it.begin();
+  //glLineWidth(5.0f);
+  while (it != DISPLAY_PARAMS_INSTANCE.inner_it.end()) {
+    const double &x_min = (*it)->x_range.getL().doubleValue();
+    const double &x_max = (*it)->x_range.getR().doubleValue();
+    const double &y_min = (*it)->y_range.getL().doubleValue();
+    const double &y_max = (*it)->y_range.getR().doubleValue();
+    glBegin(GL_LINES);
+    vertex2fWrapper(x_min, y_min);
+    vertex2fWrapper(x_min, y_max);
+
+    vertex2fWrapper(x_min, y_max);
+    vertex2fWrapper(x_max, y_max);
+
+    vertex2fWrapper(x_max, y_max);
+    vertex2fWrapper(x_max, y_min);
+
+    vertex2fWrapper(x_max, y_min);
+    vertex2fWrapper(x_min, y_min);
+    glEnd();
+    ++it;
+  }
+
 
   glColor3f(0.0f,0.0f,1.0f);
   it = DISPLAY_PARAMS_INSTANCE.amb.begin();

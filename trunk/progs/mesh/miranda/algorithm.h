@@ -90,11 +90,14 @@ namespace Algorithm {
         const Box *double_box = box->Dilate(2);
         if(pred.MKTest(double_box)) {
           // already found a root box, put it in Q_final queue for refinement
-          // should convert into RootBox first
-          Q_final.push_back(new RootBox(double_box));
+          // rootbox creation based on double_box's demension
+          Q_final.push_back(new RootBox(double_box)); 
           Q_exclude->insert(Q_exclude->end(), Q_confirm.begin(), Q_confirm.end());
           Q_confirm.clear();  // include area already found in region, clean Q_confirm
-          // delete double_box;  // no need to delete since double_box is used by RootBox.
+          // both box and double_box can be deleted because the constructor of RootBox 
+          // will make new outer and inner box based on double_box's dimension
+          delete box;
+          delete double_box; 
           break;
         }
         else {
@@ -128,13 +131,13 @@ namespace Algorithm {
         // we can discard "current"
         bool found = false;
         for(unsigned int i = 0; i != Q_output->size(); i++) {
-          if(!current->Disjoint(Q_output->at(i))) { // not disjoint, discard current
+          if(!current->Disjoint(Q_output->at(i)->innerBox_)) { // not disjoint, discard current
             delete current;
             found = true;
             break;
           }
         }
-        if(!found) { // Q_output has ended, still not found
+        if(!found) { // gone though all elements in Q_output, still not found
           Q_output->push_back(current);
         }
       }
