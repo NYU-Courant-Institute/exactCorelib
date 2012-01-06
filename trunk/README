@@ -23,7 +23,7 @@ README FILE: TABLE OF CONTENTS
     2) DIRECTORIES AND FILES
     3) DOWNLOAD AND INSTALLATION
     4) NEWS, PLANS AND BUGS
-    5) ACKNOWLEDGEMENT AND HISTORY
+    5) ACKNOWLEDGMENT AND HISTORY
     6) LICENSE INFORMATION
 
 *************************************************************
@@ -283,9 +283,14 @@ README FILE: TABLE OF CONTENTS
         If you pass the test, you may go to STAGE 2.
 
         c) YOU HAVE AN INSTALLED GMP BUT CORE COULD NOT FIND IT:
-        Assuming you have a properly installed GMP in some 
-        directory which cannot be found by the above test, then make a 
-        symbolic link from ${CORE_PATH}/gmp using the following command:
+        Assuming you have a properly installed GMP in some directory, say
+		${your_gmp_install_dir}
+        which was not found by the above "testgmp".  
+	Typically, you will find under ${your_gmp_install_dir} several
+	subdirectories, including the following:
+		lib    include     share
+	Then you can make a symbolic link from ${CORE_PATH}/gmp
+	using the following command:
 
             % cd ${CORE_PATH}
             % ln -s ${your_gmp_install_dir} gmp
@@ -505,7 +510,7 @@ README FILE: TABLE OF CONTENTS
 
           -- Download the file core-X.Y.Z_full.tgz (for version X.Y.Z) from our
              website. (We recommend the Full Distribution since it contains
-             gmp already and you cannot easily link to preinstalled gmp)
+             gmp already and you cannot easily link to pre-installed gmp)
           -- Unpack it into some directory ${CORE_PATH}. 
           -- Unpack ${CORE_PATH}\gmp-xxx.tar.gz into ${CORE_PATH}\win32: this
              creates a subdirectory ${CORE_PATH}\win32\gmp-xxx. Rename this
@@ -654,7 +659,7 @@ README FILE: TABLE OF CONTENTS
       Expr to use a static object.  If you have functions that have local
       Expr variables, this can greatly improve speed (30% improvement in Mann's
       application in the FIST software of Martin Held for triangulation.)
-   -- Acknowledgements:  Thanks for feedback and bug reports from
+   -- Acknowledgments:  Thanks for feedback and bug reports from
           Sven Kohler, Michael Haag, Volmar Klatt, Martin Held,
           Willi Mann, Narayan Kamath.   Nararan contributed the interval
           class, complex number class, and improvements in subdivision algorithms.
@@ -687,7 +692,7 @@ README FILE: TABLE OF CONTENTS
           * Versioning of Core Library is now Core-X.Y.Z (starting with
             X.Y.Z = 2.0.0).  Previously it was "Core_v1.7.0").
           * Upgraded Core Library to be compatible with the latest gmp 4.1.4.
-   -- Acknowledgements:  Thanks for feedback and bug reports from
+   -- Acknowledgments:  Thanks for feedback and bug reports from
             Daniel Russell, Ron Wein, Andreas Fabri, Sylvain Pion.
             
 =============================
@@ -733,7 +738,7 @@ README FILE: TABLE OF CONTENTS
       We compared three versions of Core Library:
            (A) -- old code: version 1.6
            (B) -- new code: some optimization
-           (C) -- new code: optimzation + using gmp C++ class
+           (C) -- new code: optimization + using gmp C++ class
       Here are the running times on two machines:
    
       Test              Pentium III (1G Memory)        Jinai (Solaris)
@@ -745,11 +750,11 @@ README FILE: TABLE OF CONTENTS
     
       Although the use of gmp C++ classes (which use expression template
       to eliminate temporary variables) is faster, it is
-      incompatiable with visual C++ (not sure about Sun CC).
+      incompatible with visual C++ (not sure about Sun CC).
       So we added as an option for compiling the Core Library:
-      to turn on gmp C++ classes, uncomment macro CORE_USE_GMPXX
+      to turn on gmp C++ classes, un-comment macro CORE_USE_GMPXX
       in CoreImpl.h and recompile Core Library; there is no need to compile
-      GMP C++ library since all necessory code are in Core Library already.
+      GMP C++ library since all necessary code are in Core Library already.
 
    -- Updated Core Library Tutorial
    -- Simple openGL display for curves: see CORE_PATH/ext/graphics/
@@ -782,7 +787,7 @@ README FILE: TABLE OF CONTENTS
             we call it Version 1.6x.  Thus "Version 1.6x" refers to any
             number of unofficial releases between 1.6 and 1.7.
             We now have a third number.  E.g., this official release
-            is Wersion 1.7.0.
+            is Version 1.7.0.
           * CORE::core_error() is enhanced to write its results
             into a file "Core_Diagnostics" but also writes errors to
             std::cerr (as before).  
@@ -802,7 +807,7 @@ README FILE: TABLE OF CONTENTS
             If you type "make alloptions", this will also show
             all possible alternatives that you could have chosen.
           * Simple timing facility (see src/Timer.h)
-   -- Acknowledgements:  Thanks for feedback and bug reports from
+   -- Acknowledgments:  Thanks for feedback and bug reports from
             Janos Blazi, Arno Eigenwillig, Ovidiu Daescu,
             Andreas Fabri, Michael Hemmer, Athanasios Kakargias,
             Daniel Russell, Ron Wein.
@@ -854,7 +859,7 @@ README FILE: TABLE OF CONTENTS
 
 
 *************************************************************
-5) ACKNOWLEDGEMENT and BRIEF HISTORY
+5) ACKNOWLEDGMENT and BRIEF HISTORY
 
    This work has been supported by a National Science Foundation
         Grant \#CCR 9402464 and \#CCR 0082056 (an ITR grant).
