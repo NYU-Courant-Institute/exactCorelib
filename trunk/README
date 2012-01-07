@@ -341,19 +341,24 @@ README FILE: TABLE OF CONTENTS
 
    3.5) STAGE 2: INSTALLING MPFR
 
-        As for stage 1, we have three possible scenarios:
+	Stage 2 is very similar to Stage 1.
+        As for Stage 1, we have three possible scenarios:
 
         a) If you have already installed MPFR, you can verify this by
 
                 % cd ${CORE_PATH} 
                 % make testmpfr
 
-         If your screen shows the answer 8.3810205000e8 and 3.1415929208,
+        If your screen shows the answer 8.3810205000e8 and 3.1415929208,
         you have passed the test and may go to STAGE 3.
 
         b) You have installed MPFR, but it could not be found 
-        by the compiler in a).  In this case, we make a 
-        symbolic link from ${CORE_PATH}/gmp using the following command:
+        by the compiler in a).  Suppose your MPFR is installed in
+	the directory called ${your_mpfr_install_dir}.  
+	This might be the same directory as ${your_gmp_install_dir}.
+	For instance, you expect to find the file mpfr.h in 
+	${your_mpfr_install_dir}/include.  In this case, we could make a 
+        symbolic link from ${CORE_PATH}/mpfr using the following command:
 
             % cd ${CORE_PATH}
             % ln -s ${your_mpfr_install_dir} mpfr
