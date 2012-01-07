@@ -40,5 +40,6 @@ Shuxing Lu	Author of Mesh code (Cxy) (2009)
 Narayan Kamath	Author of wrappers for Core Level 1 in Core Library 2,
 		IntervalT.h, ComplexT.h, improved Cxy code, Newton-type
 		solver code (2010)
+Shang Wang	Author of the Miranda code for intersecting a pair of curves (2011)
 ==================================================
 
