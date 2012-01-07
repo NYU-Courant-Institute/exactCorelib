@@ -36,6 +36,11 @@ class Predicates {
       const double &r) const {
     return Calculate(k, m, r, 2);
   }
+
+  inline unsigned int GetDegree() const {
+    return degree_;
+  }
+
   // The 8 point test on the disk centered at m with
   // radius r.
   bool PointTest(const Complex &m, const double &r) const;

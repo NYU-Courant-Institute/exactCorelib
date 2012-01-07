@@ -46,10 +46,11 @@ void ClearBackground() {
   const machine_double scale = display_params.scale;
   const machine_double x_delta = display_params.x_delta;
   const machine_double y_delta = display_params.y_delta;
-  gluOrtho2D((display_params.x_min + x_delta)*scale,
-             (display_params.x_max + x_delta)*scale,
-             (display_params.y_min + y_delta)*scale,
-             (display_params.y_max + y_delta)*scale);
+  // Chee(Feb2011) Made the center of the display invariant under zooming:
+  gluOrtho2D((display_params.x_min)*scale + x_delta,
+             (display_params.x_max)*scale, + x_delta
+             (display_params.y_min)*scale + y_delta,
+             (display_params.y_max)*scale + y_delta);
   glMatrixMode(GL_MODELVIEW);
   glClearColor(255.0/256.0,192.0/256.0,203.0/256.0,0.0);
 }

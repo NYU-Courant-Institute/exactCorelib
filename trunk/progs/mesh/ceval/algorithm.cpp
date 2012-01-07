@@ -1,8 +1,10 @@
 /*
- * ceval-algorithm.cpp
+ * File: ceval-algorithm.cpp
  *
  *  Created on: Jun 22, 2010
  *      Author: narayan
+ *
+ *  $Id: algorithm.cpp,v 1.10 2011/05/04 15:11:16 exact Exp $
  */
 
 #include <list>
@@ -78,6 +80,8 @@ void Algorithm::Run() {
     // Keep the mid and the radius handy.
     const Complex mid = b->mid();
     const double rad = b->radius();
+    const double rad_degree_4 = pred_.GetDegree() * 4 * b->radius();
+    const double rad_degree_2 = pred_.GetDegree() * 2 * b->radius();
 
     if (Size(b)) {
       if (!use_inclusion_) {
@@ -124,6 +128,13 @@ void Algorithm::Run() {
         } else {
           delete b;
         }
+      }
+    } else if (!use_inclusion_ && pred_.Tdash(1.5, mid, rad_degree_4)) {
+      // No inclusion test, but we can try with T'(sqrt{2}, 4*n*r)
+      InsertOutput(mid, rad_degree_2);
+      ++num_includes;
+      if (display_) {
+        output_b_.push_back(b);
       }
     } else {
       // Neither excluded or included, therefore split.

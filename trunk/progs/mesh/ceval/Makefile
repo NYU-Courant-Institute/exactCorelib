@@ -1,8 +1,8 @@
-# Makefile for bareiss 
+# Makefile for mesh/ceval 
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.9 2010/11/01 02:59:47 exact Exp $
+# Core Library, $Id: Makefile,v 1.11 2011/05/05 16:20:23 exact Exp $
 
 CORE_PATH=../../..
 include ../Make.options
@@ -48,8 +48,21 @@ tclap-example: tclap-example.o
 #=================================================
 # Examples
 #=================================================
-eg1:
+eg:
 	./ceval $(p) $(xmin) $(ymin) $(boxwidth)
+
+eg1:
+	./ceval "x^2-x-1" $(xmin) $(ymin) $(boxwidth)
+
+eg2:
+	./ceval "x^3-2x+2" $(xmin) $(ymin) $(boxwidth)
+
+# this is the example of Fig.1 of
+# "Empirical Study of an Evaluation-based Subdivision..."
+# by Kamath, Voiculescu, Yap. (SNC 2011)
+eg3: 
+	./ceval "x(9x^9 + 7x^8 + 8x^7 + 8x^6 + 6x^4 + 5x^3 + 2x^2 + 1)" \
+		$(xmin) $(ymin) $(boxwidth)
 
 #=================================================
 # Rules
