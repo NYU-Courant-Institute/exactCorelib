@@ -29,10 +29,7 @@ TARGETS = mk
 all: $(TARGETS)
 
 test: $(TARGETS)
-	./mk ${fxy} ${gxy} ${xmin} ${xmax} ${ymin} ${ymax} ${minsize}
-
-mytest: $(TARGETS)
-	./mk -f ${fxy} -g ${gxy} 
+	./mk -f ${fxy} -g ${gxy} -x ${xmin} -X ${xmax} -y ${ymin} -Y ${ymax} -m ${minsize}
 
 moretest: $(TARGETS)
 # nothing to do
