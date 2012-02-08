@@ -2,32 +2,42 @@
  * File: mesh/miranda/main.cpp
  *
  * Description:
- * 	driving program for modified-miranda algorithm
+ * 	Driver program for the "modified-miranda" algorithm.
+ *	The modified-miranda test is from Moore-Kioustelides ("mk").
+ *
+ * 	This algorithm uses subdivision of boxes to strongly
+ * 	isolate all the intersections of two real polynomial curves
+ * 	within some given box B.
+ *
+ * 	PRECONDITION:
+ * 	the intersections inside B must be simple (transversal)
  * 
  * Usage:
- *      This program takes the following arguments:
- *       
- *         -f --fxy [first_curve]
- *         -g --gxy [second_curve]
- *         -x --x_min [xval]
- *         -X --x_max [xval2]
- *         -y --y_min [yval]
- *         -Y --y_max [yval2]
- *         -p --poly [input_file_containing_complex_polynomial]
- *         		(this produces 2 real curves, in lieu of fxy and gxy)
- *         -m --minsize [min_size_of_boxes]
- *         -M --maxsize [max_size_of_boxes]
- *         -r --maxgen [maximum_generation]
+ *      This program takes the following arguments (processed via tclap):
+ *      All arguments are optional (default values shown):
+ *
+ *         -f or --fxy [first_curve = "y-x^2"]	
+ *         -g or --gxy [second_curve = "x^2+y^2-1"]
+ *         -p or --poly [input_file_containing_complex_polynomial]
+ *         	        (this produces 2 real curves, in lieu of fxy and gxy)
+ *         -x or --x_min [xval = -2]
+ *         -X or --x_max [xval2 = 2]
+ *         -y or --y_min [yval = -2]
+ *         -Y or --y_max [yval2 = 2]
+ *         -m or --minsize [min_size_of_boxes = 0.0001]
+ *         -M or --maxsize [max_size_of_boxes = 0.1]
+ *         -r or --maxgen [maximum_generation = 15]
  *
  *  It is compiled into "mk" by our Makefile.  
- *  See the makefile for examples of usage.
- *  E.g.,  
+ *  See the Makefile for examples of usage.  E.g.,  
+ *
+ *  		> make		-- to compile
+ *  		> make test	-- basic test
  *  		> make eg1
  *  		> make eg2
- *  		> ...
- *  		> make test
+ *  		> ... many more
  *
- *  NOTES:
+ *  NOTES on Number Types:
  *  There are two types of dyadic numbers, 
  *       DT = is the number type for defining subdivision boxes
  *       NT = is the number type for for endpoints of intervals used for evaluation.
@@ -35,11 +45,11 @@
  *       Typically, DT = NT = DoubleWrapper.
  *       But for increased precision, we may use NT = BigFloat.
  *
- * Author:  Shang Wang 
+ * Author:  Shang Wang (supervised by Chee Yap)
  *
  * Date:    July 18, 2011
  *
- * Since Core Library  Version 2.1
+ * Since Core Library Version 2.1
  *  $Id: $
  */
 
@@ -71,8 +81,8 @@ unsigned int mk_excluded = 0;
 // command line arguments (tclap install required)
 // ValueArg parameters:
 // 1:flag     2: name     3: description  4: required or not  5: default  6: optional visitor
-TCLAP::ValueArg<string> f_xy ("f", "fxy", "first curve of the system", false, "", "string");
-TCLAP::ValueArg<string> g_xy ("g", "gxy", "second curve of the system", false, "", "string");
+TCLAP::ValueArg<string> f_xy ("f", "fxy", "first curve of the system", false, "y-x^2", "string");
+TCLAP::ValueArg<string> g_xy ("g", "gxy", "second curve of the system", false, "x^2+y^2-1", "string");
 TCLAP::ValueArg<string> x_minimum("x", "x_min", "Lower bound of x range", false, "-2", "string");
 TCLAP::ValueArg<string> x_maximum("X", "x_max", "Upper bound of x range", false, " 2", "string");
 TCLAP::ValueArg<string> y_minimum("y", "y_min", "Lower bound of y range", false, "-2", "string");
