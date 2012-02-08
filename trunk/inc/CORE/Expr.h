@@ -187,7 +187,8 @@ public:
   ExprT operator+() const 
   { return ExprT(*this); }
   ExprT operator-() const 
-  { return ExprT(new NegRep(m_rep)); }
+  { if(get_rational_reduce_flag()) return getExactVal(- *this);
+    return ExprT(new NegRep(m_rep)); }
 
   ExprT& operator++()
   { *this += 1; return *this; }
@@ -200,7 +201,13 @@ public:
 
   /// addition
   friend ExprT operator+(const ExprT& e1, const ExprT& e2) 
-  { return ExprT(new AddRep(e1.rep(), e2.rep())); }
+//  { return ExprT(new AddRep(e1.rep(), e2.rep())); }
+  { 
+    ExprT e(new AddRep(e1.rep(), e2.rep())); 
+    if(get_rational_reduce_flag()) return getExactVal(e);
+    return e;
+  }
+
   template <typename T>
   friend ExprT operator+(const ExprT& e1, const T& v)
   { return ExprT(new AddRep(e1.rep(), ExprT(v).rep())); }
@@ -210,7 +217,11 @@ public:
   
   /// subtraction
   friend ExprT operator-(const ExprT& e1, const ExprT& e2)
-  { return ExprT(new SubRep(e1.rep(), e2.rep())); }
+  { 
+    ExprT e(new SubRep(e1.rep(), e2.rep())); 
+    if(get_rational_reduce_flag()) return getExactVal(e);
+    return e;
+  }
   template <typename T>
   friend ExprT operator-(const ExprT& e1, const T& v)
   { return ExprT(new SubRep(e1.rep(), ExprT(v).rep())); }
@@ -220,7 +231,12 @@ public:
 
   /// multiplication
   friend ExprT operator*(const ExprT& e1, const ExprT& e2)
-  { return ExprT(new MulRep(e1.rep(), e2.rep())); }
+  { 
+    ExprT e(new MulRep(e1.rep(), e2.rep())); 
+    if(get_rational_reduce_flag()) return getExactVal(e);
+    return e;
+  }
+//{ return ExprT(new MulRep(e1.rep(), e2.rep())); }
   template <typename T>
   friend ExprT operator*(const ExprT& e1, const T& v)
   { return ExprT(new MulRep(e1.rep(), ExprT(v).rep())); }
@@ -228,9 +244,13 @@ public:
   friend ExprT operator*(const T& v, const ExprT& e2)
   { return ExprT(new MulRep(ExprT(v).rep(), e2.rep())); }
 
-  /// division
+ /// division
   friend ExprT operator/(const ExprT& e1, const ExprT& e2)
-  { return ExprT(new DivRep(e1.rep(), e2.rep())); }
+  { 
+    ExprT e(new DivRep(e1.rep(), e2.rep())); 
+    if(get_rational_reduce_flag()) return getExactVal(e);
+    return e;
+  }
   template <typename T>
   friend ExprT operator/(const ExprT& e1, const T& v)
   { return ExprT(new DivRep(e1.rep(), ExprT(v).rep())); }
@@ -430,6 +450,28 @@ public:
     return ExprT(rep);
   }
 
+  /// GetExactVal(e) returns an expression e' whose value equals Value of e
+  /// but in case the NUMTYPE of e is <= RATIONAL, then e' is a leaf node.
+  /// This function is called when we perform reduceToRational
+  friend ExprT getExactVal(const ExprT& e) {
+    switch(e.rep()->numType()) {
+      case NODE_NT_INTEGER:
+	      std::cout << "getExactVal INT Type" << std::endl;
+	return ExprT(e.rep()->getZTVal());
+        break;
+      case NODE_NT_DYADIC:
+	      std::cout << "getExactVal DYADIC Type" << std::endl;
+	return ExprT(e.rep()->getFTVal());
+        break;
+      case NODE_NT_RATIONAL:
+	      std::cout << "getExactVal RAT Type" << std::endl;
+	return ExprT(e.rep()->getQTVal());
+        break;
+      default:
+	return e;
+    }
+  }
+ 
   /// compare function
   int cmp(const ExprT& e) const
   { return m_rep == e.m_rep ? 0 : SubRep(m_rep, e.m_rep).get_sign(); }

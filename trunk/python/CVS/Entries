@@ -1,9 +1,9 @@
-/BigFloat.sip/1.2/Thu Feb  9 12:45:44 2006//
-/BigInt.sip/1.2/Thu Feb  9 12:45:44 2006//
-/BigRat.sip/1.2/Thu Feb  9 12:45:44 2006//
-/Makefile/1.1.1.1/Thu Feb  9 09:18:13 2006//
-/Mpfr.sip/1.1.1.1/Thu Feb  9 09:18:13 2006//
-/config.py/1.1.1.1/Thu Feb  9 09:18:13 2006//
-/corelib2.sip/1.1.1.1/Thu Feb  9 09:18:13 2006//
-/string.sip/1.1.1.1/Thu Feb  9 09:18:13 2006//
-D
+D/utils////
+/BigFloat.sip/1.2/Tue Nov 23 23:42:00 2010//
+/BigInt.sip/1.2/Tue Nov 23 23:42:00 2010//
+/BigRat.sip/1.2/Tue Nov 23 23:42:00 2010//
+/Makefile/1.1.1.1/Tue Nov 23 23:42:00 2010//
+/Mpfr.sip/1.1.1.1/Tue Nov 23 23:42:00 2010//
+/config.py/1.1.1.1/Tue Nov 23 23:42:00 2010//
+/corelib2.sip/1.1.1.1/Tue Nov 23 23:42:00 2010//
+/string.sip/1.1.1.1/Tue Nov 23 23:42:00 2010//

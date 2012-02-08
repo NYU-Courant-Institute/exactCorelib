@@ -69,9 +69,10 @@ bool coretest_error = false;
 bool coretest_verbose = false;
 
 int  coreErrorFlag = 0;		// This is 0 if no error,
-							// core_error() will increment this whenever it
-							// called with err=true.
-							// Users can reset this and test for this value.
+				// core_error() will increment this whenever it
+				// called with err=true.
+				// Users can reset this and test for this value.
+bool rationalReduceFlag = false; // If true, all rational Expr will be leaves.
 // core Environment code
 coreEnv::coreEnv() {
 

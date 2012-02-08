@@ -1,21 +1,22 @@
-/Curves.cpp/1.1/Tue Mar  7 04:51:25 2006//
-/Makefile/1.12/Wed Jul 21 07:11:25 2010//
-/Newton.h/1.1/Tue Mar  7 04:51:25 2006//
-/README/1.3/Tue Feb  6 22:02:11 2007//
-/descartes.cpp/1.1/Tue Mar  7 04:51:25 2006//
-/parsepoly.cpp/1.1/Tue Mar  7 04:51:25 2006//
-/pisot.cpp/1.1/Tue Mar  7 04:51:25 2006//
-/solve.cpp/1.1/Tue Mar  7 04:51:25 2006//
-/tDescartes.cpp/1.5/Fri Jun 25 10:15:49 2010//
-/tGCD.cpp/1.4/Tue Jul 13 11:36:19 2010//
-/tKameny4.cpp/1.3/Mon May 24 15:58:27 2010//
-/tNewton.cpp/1.4/Mon Apr  9 02:55:28 2007//
 /tPoly.cpp/1.11/Wed Jul 21 21:22:03 2010//
-/tRootOf.cpp/1.1/Tue Mar  7 04:51:25 2006//
-/tSturm.cpp/1.6/Sun Apr  8 01:10:48 2007//
-/tWilk20.cpp/1.2/Mon Aug  7 14:29:04 2006//
-/tWilk20deriv.cpp/1.3/Mon May 24 15:58:27 2010//
-/timeNewton.cpp/1.1/Tue Mar  7 04:51:25 2006//
-/tt.cpp/1.2/Mon Apr 20 20:09:52 2009//
-/wein.cpp/1.3/Thu Aug  5 02:48:12 2010//
-D
+/Curves.cpp/1.1/Tue Nov 23 23:42:01 2010//
+/Makefile/1.12/Tue Nov 23 23:42:01 2010//
+/Newton.h/1.1/Tue Nov 23 23:42:01 2010//
+/README/1.3/Tue Nov 23 23:42:01 2010//
+/descartes.cpp/1.1/Tue Nov 23 23:42:01 2010//
+/parsepoly.cpp/1.1/Tue Nov 23 23:42:01 2010//
+/pisot.cpp/1.1/Tue Nov 23 23:42:01 2010//
+/solve.cpp/1.1/Tue Nov 23 23:42:01 2010//
+/tDescartes.cpp/1.5/Tue Nov 23 23:42:01 2010//
+/tGCD.cpp/1.4/Tue Nov 23 23:42:01 2010//
+/tKameny4.cpp/1.3/Tue Nov 23 23:42:01 2010//
+/tNewton.cpp/1.4/Tue Nov 23 23:42:01 2010//
+/tRootOf.cpp/1.1/Tue Nov 23 23:42:01 2010//
+/tSturm.cpp/1.6/Tue Nov 23 23:42:01 2010//
+/tWilk20.cpp/1.2/Tue Nov 23 23:42:01 2010//
+/tWilk20deriv.cpp/1.3/Tue Nov 23 23:42:01 2010//
+/timeNewton.cpp/1.1/Tue Nov 23 23:42:01 2010//
+/tt.cpp/1.2/Tue Nov 23 23:42:01 2010//
+/wein.cpp/1.3/Tue Nov 23 23:42:01 2010//
+D/inputs////
+D/outputs////

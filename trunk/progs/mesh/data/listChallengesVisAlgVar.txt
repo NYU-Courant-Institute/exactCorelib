@@ -5,10 +5,10 @@ by Oliver Labs (www.OliverLabs.net), October 2008
 
 This list gives some explicit polynomials in low degree 
 from the 20 challenges (each for infinitely many degrees) described in the article 
-Oliver Labs: "A LIST OF CHALLENGES FOR REAL ALGEBRAIC PLANE CURVE VISUALIZATION SOFTWARE"
-p. 137-164 in: Nonlinear Computational Geometry, 
-edited by I. Emiris and F. Sottile and T. Theobald, IMA Volume 151, Springer.
-
+by Oliver Labs:
+	"A LIST OF CHALLENGES FOR REAL ALGEBRAIC PLANE CURVE VISUALIZATION SOFTWARE"
+	p. 137-164 in: Nonlinear Computational Geometry, 
+	edited by I. Emiris and F. Sottile and T. Theobald, IMA Volume 151, Springer.
 
 ----------------
 Challenge 1:

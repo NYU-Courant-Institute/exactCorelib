@@ -31,6 +31,9 @@ all: $(TARGETS)
 test: $(TARGETS)
 	./mk ${fxy} ${gxy} ${xmin} ${xmax} ${ymin} ${ymax} ${minsize}
 
+mytest: $(TARGETS)
+	./mk -f ${fxy} -g ${gxy} 
+
 moretest: $(TARGETS)
 # nothing to do
 

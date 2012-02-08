@@ -33,6 +33,12 @@ badOutputDigits: badOutputDigits.o
 r run: badOutputDigits
 	./badOutputDigits
 
+bug7: bug7.o
+
+bug6: bug6.o
+
+sqfree: sqfree.o
+
 t: t.o
 
 #=================================================

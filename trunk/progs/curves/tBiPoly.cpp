@@ -67,8 +67,8 @@ using namespace std;
 		#elif defined _NT_BIGINT
 		  typedef BigInt NT;
 		#else
-		  //typedef IntWrapper NT;
-		  typedef BigInt NT;
+		  typedef IntWrapper NT;
+		  //typedef BigInt NT;
 		#endif
 	
 		typedef Polynomial<NT>			PolyNT;

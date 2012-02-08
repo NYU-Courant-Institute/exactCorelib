@@ -1,7 +1,64 @@
-/FAQs/1.9/Wed Jul 14 14:41:05 2010//
-/Make.options/1.7/Mon Jul 12 14:02:32 2010//
-/Make.rules/1.4/Mon Jul 12 14:02:32 2010//
-/Makefile/1.14/Fri Jun 25 10:15:48 2010//
-/READFIRST/1.1/Tue Mar 20 14:36:27 2007//
-/README/1.3/Fri Jun 25 10:15:48 2010//
-D
+/FAQs/1.9/Tue Nov 23 23:42:11 2010//
+/Make.options/1.7/Tue Nov 23 23:42:11 2010//
+/Make.rules/1.4/Tue Nov 23 23:42:11 2010//
+/Makefile/1.14/Tue Nov 23 23:42:11 2010//
+/READFIRST/1.1/Tue Nov 23 23:42:11 2010//
+/README/1.3/Tue Nov 23 23:42:11 2010//
+D/agm////
+D/algebraicNum////
+D/bareiss////
+D/benchmark////
+D/bezier////
+D/bounds////
+D/bugs////
+D/cg2009////
+D/cgal////
+D/chull////
+D/chullGraham////
+D/compare////
+D/complex////
+D/core2paper////
+D/curves////
+D/curves3d////
+D/data////
+D/delaunay////
+D/demos////
+D/determinant////
+D/elementary////
+D/fileIO////
+D/fortune////
+D/gauss-iterative////
+D/gaussian////
+D/generic////
+D/geom2d////
+D/geom3d////
+D/heron////
+D/hypergeom////
+D/ieee////
+D/intersect////
+D/interval////
+D/kahan////
+D/manydigits////
+D/mesh////
+D/nestedSqrt////
+D/orientation////
+D/pentagon////
+D/pi////
+D/poly////
+D/prover////
+D/radical////
+D/rootIsol////
+D/rounding////
+D/shortestpath////
+D/sumOfSqrts////
+D/test2////
+D/testFilter////
+D/testIO////
+D/testIdent////
+D/tests////
+D/testsuite////
+D/triangles////
+D/tutorial////
+D/users////
+D/wbigfloat////
+D/wrapper////

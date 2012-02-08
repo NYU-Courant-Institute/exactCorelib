@@ -23,6 +23,7 @@ moretest:
 # nothing to do
 
 t: t.o  
+tt: tt.o  
 
 tDescartes:tDescartes.o
 
