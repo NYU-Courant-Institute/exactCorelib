@@ -1,8 +1,33 @@
 /**
- * main.cpp
- * driving program for modified-miranda algorithm
- * 
+ * File: mesh/miranda/main.cpp
  *
+ * Description:
+ * 	driving program for modified-miranda algorithm
+ * 
+ * Usage:
+ *      This program takes the following arguments:
+ *       
+ *         -f --fxy [first_curve]
+ *         -g --gxy [second_curve]
+ *         -x --x_min [xval]
+ *         -X --x_max [xval2]
+ *         -y --y_min [yval]
+ *         -Y --y_max [yval2]
+ *         -p --poly [input_file_containing_complex_polynomial]
+ *         		(this produces 2 real curves, in lieu of fxy and gxy)
+ *         -m --minsize [min_size_of_boxes]
+ *         -M --maxsize [max_size_of_boxes]
+ *         -r --maxgen [maximum_generation]
+ *
+ *  It is compiled into "mk" by our Makefile.  
+ *  See the makefile for examples of usage.
+ *  E.g.,  
+ *  		> make eg1
+ *  		> make eg2
+ *  		> ...
+ *  		> make test
+ *
+ *  NOTES:
  *  There are two types of dyadic numbers, 
  *       DT = is the number type for defining subdivision boxes
  *       NT = is the number type for for endpoints of intervals used for evaluation.
@@ -10,7 +35,12 @@
  *       Typically, DT = NT = DoubleWrapper.
  *       But for increased precision, we may use NT = BigFloat.
  *
- * July 18, 2011
+ * Author:  Shang Wang 
+ *
+ * Date:    July 18, 2011
+ *
+ * Since Core Library  Version 2.1
+ *  $Id: $
  */
 
 #include <stdio.h>
