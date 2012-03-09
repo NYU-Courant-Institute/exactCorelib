@@ -1,0 +1,32 @@
+============================================================
+README file for $(corelib)/progs/robotics
+
+Core Library (since version 2.1, March 2012)
+============================================================
+
+Description:
+	This directory has various subdirectoris containing algorithms
+	for robotics, especially motion planning.
+
+	(1) Subdirectory 2d-disc:
+	This implements the SSS algorithm for moving a disc amidst polygonal
+	obstacles, using the soft-predicated described in the
+	paper "Numerical Subdivision Methods in Motion Planning" by
+	Y.-J.Chiang and C.Yap (2011).
+
+Author:
+	Y.-J.Chiang, C.Yap, C.Wang (2012).
+
+$Id: README $
+============================================================
+Files:
+	README		-- this file
+	Makefile	-- Type "make" to compile programs in the
+				subdirectories 
+
+Directories:
+	data		-- This directory has various environments for motion planning
+	2d-disc		-- motion planning for a disc in the plane
+
+============================================================
+============================================================
