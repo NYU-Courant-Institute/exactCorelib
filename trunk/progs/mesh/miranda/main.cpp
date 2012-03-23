@@ -114,12 +114,13 @@ int main(int argc, char **argv) {
   // This is the maximum number of ambiguous boxes to be printed
   unsigned int max_ambiguous_box = 20;
 
-  DT x_min = -2, x_max = 2, y_min = -2, y_max = 2;
+  DT x_min = -3, x_max = 3, y_min = -3, y_max = 3;
   DT min_size = 0.0001;
   DT max_size = 0.01;
   int max_gen = 15;
-  string fxy_str = "y - (x-1)^2 - 1";
-  string gxy_str = "x - 1";
+  string fxy_str = "y - (x-1)^2 - 1";	// default fxy
+  // string gxy_str = "x - 1";		// default gxy
+  string gxy_str = "x^2 + y^2 - 4";	// default gxy
   poly fxy;
   poly gxy;
 

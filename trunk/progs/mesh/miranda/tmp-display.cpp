@@ -81,11 +81,9 @@ inline void vertex2fWrapper(const double &x, const double &y) {
 void DisplayHandler() {
   glClear(GL_COLOR_BUFFER_BIT);
 
+  glLineWidth(1.0f); 		// thick line!
   glColor3f(1.0f,0.0f,0.0f);
-
   vector<const BoxT<DoubleWrapper> *>::const_iterator it = DISPLAY_PARAMS_INSTANCE.n_it.begin();
-
-
   // The old mapping for the sake of references
   // v1=a.getX(); v2=b.getX(); v3=a.getY(); v4=b.getY();
   while (it != DISPLAY_PARAMS_INSTANCE.n_it.end()) {
@@ -184,8 +182,8 @@ void DisplayHandler() {
   }
 
   // Chee: Want to draw the X- and Y-axes!  (Mar 2012)
-	  glLineWidth(3.0f); 		// thick line!
-	  glColor3f(0.8f, 0.8f, 0.0f);	// yellow (?)
+	  glLineWidth(2.0f); 		// thick line!
+	  glColor3f(0.0f, 0.8f, 0.8f);	// yellow (?)
 	  glBegin(GL_LINES);
 	  vertex2fWrapper( DISPLAY_PARAMS_INSTANCE.x_min, 0.0f); // X-axis
 	  vertex2fWrapper( DISPLAY_PARAMS_INSTANCE.x_max, 0.0f); // X-axis
