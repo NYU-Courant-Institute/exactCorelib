@@ -64,6 +64,9 @@ eg5: ${TARGETS}
 	./mk --fxy "(-1 + x^5) + (-10*x^3)*y^2 + (5x)* y^4" --gxy "(5*x^4)*y^1 + (-10*x^2)*y^3 + y^5" \
     --x_min -3 --x_max 3 --y_min -3 --y_max 3 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
+# REMARKS: laguerreN should have N real positive roots (for N=6, these roots lie in [0,20])
+# 	The current code seems not to be reading the file or using some other input
+# 	polynomial... CHECK.
 eg6: ${TARGETS}
 	./mk --poly data/laguerre6.pol \
     --x_min -20 --x_max 20 --y_min -20 --y_max 20 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}

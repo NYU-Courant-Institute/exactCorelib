@@ -206,8 +206,6 @@ public:
        (absolute(g_left)  <= Mag(gx_left)*w_y)  || 
        (absolute(g_right) <= Mag(gx_right)*w_y)  )
       return false;
-
-
     return true;
   }
 

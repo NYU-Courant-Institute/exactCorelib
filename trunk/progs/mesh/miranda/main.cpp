@@ -180,14 +180,21 @@ int main(int argc, char **argv) {
   
   // get the algorithm running
   MKPredicates<DT,NT> *const pred = 
-    new MKPredicates<DT,NT>(fxy, gxy, min_size, max_size, max_gen);
+      new MKPredicates<DT,NT>(fxy, gxy, min_size, max_size, max_gen);
+
   Algorithm::Run<DT,NT>(*pred, box, 
       &output, &ambiguous, &exclude);
 
   // end time
   gettimeofday(&end, NULL);
 
+  cout << "------------- Statistics ----------------"<<endl;
+  cout << "Polynomial fxy = " << fxy.toString() << endl;
+  cout << "Polynomial gxy = " << gxy.toString() << endl;
+
   unsigned int num_includes = output.size();      // statistic collections
+  cout << endl << "Output regions: " << endl;
+
   cout << endl << "Output regions: " << endl;
   for(unsigned int i = 0; i < output.size(); i++) {
     RootBoxT<DT,NT> *b = output[i];
@@ -197,10 +204,7 @@ int main(int argc, char **argv) {
     outer_output.push_back(b->outerBox_);
     inner_output.push_back(b->innerBox_);
   }
-
-  
   unsigned int num_ambiguous = ambiguous.size();   // statistic collections
-  
   cout << "Ambiguous regions: " << endl;
   for(unsigned int i = 0; i < ambiguous.size(); i++) {
     if(i > max_ambiguous_box)

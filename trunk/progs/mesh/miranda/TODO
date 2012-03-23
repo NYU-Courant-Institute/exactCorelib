@@ -1,0 +1,14 @@
+Debug:
+
+"make eg6"
+
+	is buggy -- it does not seem to be reading the Laguerre6 polynomial
+
+	(which should have 6 real POSITIVE roots lying in [0,20].
+
+I think the code is not reading the polynomial.
+
+SIMPLE DEBUG:
+	just print out the polynomial fxy, gxy
+	that is being tested...
+
