@@ -42,10 +42,12 @@ mk: main.o tmp-display.o
 # krawczyk examples)
 #=================================================
 
+# Intersecting a parabola and the unit circle:
 eg1: ${TARGETS}
 	./mk --fxy "y-x^2" --gxy "x^2+y^2-1" \
     --x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
+# Intersecting two cubic curves:
 eg2: $(TARGETS)
 	./mk --fxy "x^3-x" --gxy "x^2y-7" \
     --x_min -10 --x_max 10 --y_min -2 --y_max 15 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}

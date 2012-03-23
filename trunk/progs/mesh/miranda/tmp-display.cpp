@@ -51,18 +51,18 @@ void KeyHandler(const unsigned char key, const int x, const int y) {
       case 'd':
         DISPLAY_PARAMS_INSTANCE.x_delta+=0.5*DISPLAY_PARAMS_INSTANCE.scale;
         break;
-      case 'i':
+      case 'o': // zoom out
         DISPLAY_PARAMS_INSTANCE.scale /= 0.9;
         //DISPLAY_PARAMS_INSTANCE.x_delta = 0;
         //DISPLAY_PARAMS_INSTANCE.y_delta = 0;
         break;
       case 'k':
-      case 'o':
+      case 'i': // zoom in
         DISPLAY_PARAMS_INSTANCE.scale *= 0.9;
         //DISPLAY_PARAMS_INSTANCE.x_delta = 0;
         //DISPLAY_PARAMS_INSTANCE.y_delta = 0;
         break;
-      case 'r':
+      case 'r': // reset
       case ' ':
         DISPLAY_PARAMS_INSTANCE.scale = 1;
         DISPLAY_PARAMS_INSTANCE.x_delta = 0;
@@ -182,6 +182,17 @@ void DisplayHandler() {
     glEnd();
     ++it;
   }
+
+  // Chee: Want to draw the X- and Y-axes!  (Mar 2012)
+	  glLineWidth(3.0f); 		// thick line!
+	  glColor3f(0.8f, 0.8f, 0.0f);	// yellow (?)
+	  glBegin(GL_LINES);
+	  vertex2fWrapper( DISPLAY_PARAMS_INSTANCE.x_min, 0.0f); // X-axis
+	  vertex2fWrapper( DISPLAY_PARAMS_INSTANCE.x_max, 0.0f); // X-axis
+	  vertex2fWrapper( 0.0f, DISPLAY_PARAMS_INSTANCE.y_min); // Y-axis
+	  vertex2fWrapper( 0.0f, DISPLAY_PARAMS_INSTANCE.y_max); // Y-axis
+	  glEnd();
+
   glLineWidth(1.0f);
 
   glFlush();
