@@ -146,13 +146,13 @@ int main(int argc, char **argv) {
     return -1;
   }
   
-  if((f_xy.getValue() != "") && (g_xy.getValue() != "")) {
+  if((f_xy.getValue() != 0) && (g_xy.getValue() != 0)) {
     fxy_str = f_xy.getValue();
     gxy_str = g_xy.getValue();
     fxy = fxy.getbipoly(fxy_str);
     gxy = gxy.getbipoly(gxy_str);
   }
-  else if(Poly.getValue() != "") {
+  else if(Poly.getValue() != 0) {
     benchmark::GetBiPoly(Poly.getValue().c_str(), &fxy, &gxy);
   }
   else {
