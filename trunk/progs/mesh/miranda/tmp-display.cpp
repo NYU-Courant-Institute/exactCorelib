@@ -77,12 +77,23 @@ inline void vertex2fWrapper(const double &x, const double &y) {
   glVertex2f(x, y);
 }
 
+// Chee(Mar'12): drawing a circle:
+const float DEG2RAD = 3.14159/180;
+void drawCircle(float radius) {
+   glBegin(GL_LINE_LOOP);
+   	for (int i=0; i < 360; i++) {
+      	   float degInRad = i*DEG2RAD;
+      	   glVertex2f(cos(degInRad)*radius,sin(degInRad)*radius);
+   	}
+   glEnd();
+}//drawCircle
+
 // The main display routine.
 void DisplayHandler() {
   glClear(GL_COLOR_BUFFER_BIT);
 
-  glLineWidth(1.0f); 		// thick line!
-  glColor3f(1.0f,0.0f,0.0f);
+  glLineWidth(1.5f); 		// thick line!
+  glColor3f(1.0f,0.0f,0.0f);	// red
   vector<const BoxT<DoubleWrapper> *>::const_iterator it = DISPLAY_PARAMS_INSTANCE.n_it.begin();
   // The old mapping for the sake of references
   // v1=a.getX(); v2=b.getX(); v3=a.getY(); v4=b.getY();
@@ -108,7 +119,7 @@ void DisplayHandler() {
     ++it;
   }
 
-  glColor3f(0.0f,1.0f,0.0f);
+  glColor3f(0.0f,1.0f,0.0f);	//green
   it = DISPLAY_PARAMS_INSTANCE.outer_it.begin();
   //glLineWidth(5.0f);
   while (it != DISPLAY_PARAMS_INSTANCE.outer_it.end()) {
@@ -133,7 +144,7 @@ void DisplayHandler() {
   }
 
 
-  glColor3f(0.0f,0.0f,0.0f);
+  glColor3f(0.0f,0.0f,0.0f);	//black
   it = DISPLAY_PARAMS_INSTANCE.inner_it.begin();
   //glLineWidth(5.0f);
   while (it != DISPLAY_PARAMS_INSTANCE.inner_it.end()) {
@@ -157,8 +168,7 @@ void DisplayHandler() {
     ++it;
   }
 
-
-  glColor3f(0.0f,0.0f,1.0f);
+  glColor3f(0.0f,0.0f,1.0f);	//blue
   it = DISPLAY_PARAMS_INSTANCE.amb.begin();
   while (it != DISPLAY_PARAMS_INSTANCE.amb.end()) {
     const double &x_min = (*it)->x_range.getL().doubleValue();
@@ -181,14 +191,26 @@ void DisplayHandler() {
     ++it;
   }
 
-  // Chee: Want to draw the X- and Y-axes!  (Mar 2012)
+  // Chee(Mar'12): Draw the X- and Y-axes!  
 	  glLineWidth(2.0f); 		// thick line!
-	  glColor3f(0.0f, 0.8f, 0.8f);	// yellow (?)
+	  glColor3f(0.0f, 0.2f, 0.8f);	// bluish line
 	  glBegin(GL_LINES);
 	  vertex2fWrapper( DISPLAY_PARAMS_INSTANCE.x_min, 0.0f); // X-axis
 	  vertex2fWrapper( DISPLAY_PARAMS_INSTANCE.x_max, 0.0f); // X-axis
 	  vertex2fWrapper( 0.0f, DISPLAY_PARAMS_INSTANCE.y_min); // Y-axis
 	  vertex2fWrapper( 0.0f, DISPLAY_PARAMS_INSTANCE.y_max); // Y-axis
+	  glEnd();
+	// Draw circle around origin:
+	  drawCircle(1.0);
+
+// Chee(Mar'12): Draw the line at unit distance from the axes, to inidicate scale!
+	  glLineWidth(2.0f); 		// thick line!
+	  glColor3f(0.0f, 0.8f, 0.8f);	// bluish-green 
+	  glBegin(GL_LINES);
+	  vertex2fWrapper( DISPLAY_PARAMS_INSTANCE.x_min, 1.0f); // X-axis
+	  vertex2fWrapper( DISPLAY_PARAMS_INSTANCE.x_max, 1.0f); // X-axis
+	  vertex2fWrapper( 1.0f, DISPLAY_PARAMS_INSTANCE.y_min); // Y-axis
+	  vertex2fWrapper( 1.0f, DISPLAY_PARAMS_INSTANCE.y_max); // Y-axis
 	  glEnd();
 
   glLineWidth(1.0f);
