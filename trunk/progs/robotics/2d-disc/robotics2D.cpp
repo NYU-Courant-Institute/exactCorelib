@@ -6,6 +6,14 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+
+#ifdef __CYGWIN32__
+#include "glui.h"
+#endif
+#ifdef _WIN32 || _WIN64
+#include <gl/glui.h>
+#endif
+
 #include <gl/glut.h>
 #include <set>
 
@@ -14,32 +22,90 @@ using namespace std;
 QuadTree* QT;
 double alpha[2] = {50, 312};
 double beta[2] = {256, 62};
-double epsilon = 10;
+double epsilon = 1;
 Box* boxA;
 Box* boxB;
 bool noPath = false;
 double boxWidth = 512;
 double boxHeight = 512;
-double R0 = 50;
+double R0 = 30;
+int windowPosX = 400;
+int windowPosY = 200;
+
+//glui controls
+GLUI_EditText* editRadius;
+GLUI_EditText* editEpsilon;
+GLUI_EditText* editAlphaX;
+GLUI_EditText* editAlphaY;
+GLUI_EditText* editBetaX;
+GLUI_EditText* editBetaY;
 
 void renderScene(void);
 void parseConfigFile(Box*);
+void run();
+void genEmptyTree();
 
 int main(int argc, char* argv[])
+{
+	genEmptyTree();
+
+	glutInit(&argc, argv);
+	glutInitWindowPosition(windowPosX, windowPosY);
+	glutInitWindowSize(boxWidth, boxWidth);
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+	int windowID = glutCreateWindow("Motion Planning");
+	glutDisplayFunc(renderScene);
+	GLUI_Master.set_glutIdleFunc( NULL );
+	GLUI *glui = GLUI_Master.create_glui( "control", 0, windowPosX + boxWidth + 20, windowPosY );
+	double radius = 1.2;
+	
+	editRadius = glui->add_edittext( "Radius:", GLUI_EDITTEXT_FLOAT );
+	editRadius->set_float_val(R0);
+	editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_FLOAT );
+	editEpsilon->set_float_val(epsilon);
+	editAlphaX = glui->add_edittext( "alpha.x:", GLUI_EDITTEXT_FLOAT );
+	editAlphaX->set_float_val(alpha[0]);
+	editAlphaY = glui->add_edittext( "alpha.y:", GLUI_EDITTEXT_FLOAT );
+	editAlphaY->set_float_val(alpha[1]);
+	editBetaX = glui->add_edittext( "Beta.x:", GLUI_EDITTEXT_FLOAT );
+	editBetaX->set_float_val(beta[0]);
+	editBetaY = glui->add_edittext( "Beta.y:", GLUI_EDITTEXT_FLOAT );
+	editBetaY->set_float_val(beta[1]);
+
+	GLUI_Button* buttonRun = glui->add_button( "Run", -1, (GLUI_Update_CB)run);
+
+	glui->set_main_gfx_window( windowID );
+	glutMainLoop();
+
+	return 0;
+}
+
+void genEmptyTree()
 {
 	Box* root = new Box(boxWidth/2, boxHeight/2, boxWidth, boxHeight);
 	Box::r0 = R0;
 
 	parseConfigFile(root);
-
 	root->updateStatus();
 
+	if (QT)
+	{
+		delete(QT);
+	}
 	QT = new QuadTree(root, epsilon);
-	//root->split(0);
-	//root->pChildren[1]->split(0);
-	//root->pChildren[1]->pChildren[3]->split(0);
-	//root->pChildren[1]->pChildren[3]->pChildren[0]->split(0);
-	//root->pChildren[0]->split(0);
+}
+
+void run()
+{
+	//update from glui live variables
+	R0 = editRadius->get_float_val();
+	epsilon = editEpsilon->get_float_val();
+	alpha[0] = editAlphaX->get_float_val();
+	alpha[1] = editAlphaY->get_float_val();
+	beta[0] = editBetaX->get_float_val();
+	beta[1] = editBetaY->get_float_val();
+
+	genEmptyTree();
 
 	noPath = false;
 
@@ -73,21 +139,13 @@ int main(int argc, char* argv[])
 		{
 			noPath = true;
 		}
-		
+
 	}
+
+	glutPostRedisplay();
 
 	cout << "path found is " << !noPath << endl;
 	cout << "expended " << ct << " times" << endl;
-
-	glutInit(&argc, argv);
-	glutInitWindowPosition(400, 200);
-	glutInitWindowSize(boxWidth, boxWidth);
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	glutCreateWindow("Motion Planning");
-	glutDisplayFunc(renderScene);
-	glutMainLoop();
-
-	return 0;
 }
 
 void drawQuad(Box* b)
@@ -144,6 +202,11 @@ void treeTraverse(Box* b)
 {
 	if (!b)
 	{
+		return;
+	}
+	if (b->isLeaf)
+	{
+		drawQuad(b);
 		return;
 	}
 	for (int i = 0; i < 4; ++i)
@@ -254,5 +317,6 @@ void parseConfigFile(Box* b)
 			}
 		}
 	}
+	ifs.close();
 
 }

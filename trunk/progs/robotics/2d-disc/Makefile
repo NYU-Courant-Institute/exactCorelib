@@ -1,7 +1,7 @@
-CC = g++ -g -Wall -ansi
+CC = g++ -I/usr/include/opengl -g -Wall -ansi
 
 all:
-	${CC} *.cpp -lGL -lGLUT -o output.exe
+	${CC} *.cpp  -lglui -lglut32 -lglu32 -lopengl32  -o output.exe
 
 clean:
 	rm *.exe

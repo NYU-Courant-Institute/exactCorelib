@@ -142,19 +142,44 @@ public:
 		
 	}
 
-	//need more thinking here:
-	//p on left of some wall doesn't mean free since p could be in one feature but is on left of another feature's wall
+
+	//find the nearest feature, and check
 	Status checkChildStatus(double x, double y)
 	{
+		assert(walls.size());
+
+		vector<Wall*> nearest;
+		list<Wall*>::iterator iter = walls.begin();
+		double mindist = (*iter)->distance(x, y);
+		nearest.push_back(*iter);
+		++iter;
+		for (; iter != walls.end(); ++iter)
+		{
+			Wall* w = *iter;
+			double dist = w->distance(x, y);
+			if (dist < mindist)
+			{
+				mindist = dist;
+				nearest.clear();
+				nearest.push_back(*iter);
+			}
+			else if (dist == mindist)
+			{
+				nearest.push_back(*iter);
+			}
+		}
+
 		bool isFree = false;
-		for (list<Wall*>::iterator iter = walls.begin(); iter != walls.end(); ++iter)
+		for (vector<Wall*>::iterator iter = nearest.begin(); iter != nearest.end(); ++iter)
 		{
 			Wall* w = *iter;
 			if (w->isRight(x, y))
 			{
 				isFree = true;
+				break;
 			}
-		}
+		}		
+
 		if (isFree)
 		{
 			return FREE;
