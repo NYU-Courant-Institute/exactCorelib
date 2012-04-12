@@ -125,7 +125,7 @@ public:
 		{
 			BoxIter* iter = new BoxIter(b, i);
 			Box* neighbor = iter->First();
-			while(neighbor)
+			while(neighbor && neighbor != iter->End())
 			{
 				if (neighbor->status == Box::FREE)
 				{

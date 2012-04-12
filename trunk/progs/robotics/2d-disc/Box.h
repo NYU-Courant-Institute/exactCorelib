@@ -71,8 +71,15 @@ public:
 	list<Corner*> corners;
 	list<Wall*> walls;
 
+	//for shortest path
+	double dist2Source;
+	int heapId;
+	Box* prev;
+	bool visited;
+
 	Box(double xx, double yy, double w, double h):
-			status(UNKNOWN), x(xx), y(yy), width(w), height(h), depth(1), isLeaf(true), pParent(0), pSet(0)
+			status(UNKNOWN), x(xx), y(yy), width(w), height(h), depth(1), isLeaf(true), 
+				pParent(0), pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(false)
 	{
 		for (int i = 0; i < 4; ++i)
 		{

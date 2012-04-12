@@ -6,11 +6,12 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include "Graph.h"
 
 #ifdef __CYGWIN32__
 #include "glui.h"
 #endif
-#ifdef _WIN32 || _WIN64
+#ifdef _WIN32
 #include <gl/glui.h>
 #endif
 
@@ -25,7 +26,7 @@ double beta[2] = {256, 62};
 double epsilon = 1;
 Box* boxA;
 Box* boxB;
-bool noPath = false;
+bool noPath = true;
 double boxWidth = 512;
 double boxHeight = 512;
 double R0 = 30;
@@ -44,9 +45,27 @@ void renderScene(void);
 void parseConfigFile(Box*);
 void run();
 void genEmptyTree();
+void drawPath(vector<Box*>&);
+
 
 int main(int argc, char* argv[])
 {
+	//vector<Box*> bv;
+	//for (int i = 0; i < 10; ++i)
+	//{
+	//	bv.push_back(new Box(0, 0, 0, 0));
+	//}
+	//for (int i = 0; i < 10; ++i)
+	//{
+	//	bv[i]->dist2Source = 9-i;
+	//}
+	//distHeap::makeHeap(bv);
+	//Box* bbb = distHeap::extractMin(bv);
+	//bbb->dist2Source = 0.5;
+	//distHeap::insert(bv, bbb);
+	//distHeap::decreaseKey(bv, bv[3], 0.5);
+
+
 	genEmptyTree();
 
 	glutInit(&argc, argv);
@@ -57,7 +76,6 @@ int main(int argc, char* argv[])
 	glutDisplayFunc(renderScene);
 	GLUI_Master.set_glutIdleFunc( NULL );
 	GLUI *glui = GLUI_Master.create_glui( "control", 0, windowPosX + boxWidth + 20, windowPosY );
-	double radius = 1.2;
 	
 	editRadius = glui->add_edittext( "Radius:", GLUI_EDITTEXT_FLOAT );
 	editRadius->set_float_val(R0);
@@ -148,6 +166,19 @@ void run()
 	cout << "expended " << ct << " times" << endl;
 }
 
+void drawPath(vector<Box*>& path)
+{
+	glColor3f(1, 0, 0);
+	glBegin(GL_LINE_STRIP);	
+	glVertex2f(beta[0], beta[1]);
+	for (int i = 0; i < path.size(); ++i)
+	{
+		glVertex2f(path[i]->x, path[i]->y);
+	}
+	glVertex2f(alpha[0], alpha[1]);
+	glEnd();
+}
+
 void drawQuad(Box* b)
 {
 	switch(b->status)
@@ -211,15 +242,7 @@ void treeTraverse(Box* b)
 	}
 	for (int i = 0; i < 4; ++i)
 	{
-		if (b->pChildren[i]->isLeaf)
-		{
-			drawQuad(b->pChildren[i]);
-			//cout << b->pChildren[i]->x << b->pChildren[i]->y << endl;
-		}
-		else
-		{
-			treeTraverse(b->pChildren[i]);
-		}
+		treeTraverse(b->pChildren[i]);
 	}
 }
 
@@ -259,6 +282,12 @@ void renderScene(void) {
 	drawCircle(R0, 100, beta[0], beta[1]);
 
 	drawWalls(QT->pRoot);
+
+	if (!noPath)
+	{
+		vector<Box*> path = Graph::findPath(boxA, boxB);
+		drawPath(path);
+	}
 
 	glutSwapBuffers();
 }
