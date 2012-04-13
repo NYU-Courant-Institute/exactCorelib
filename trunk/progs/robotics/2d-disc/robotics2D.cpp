@@ -16,6 +16,8 @@
 #endif
 
 #include <gl/glut.h>
+#include <GL/glui.h>
+#include "GL/glui.h"
 #include <set>
 
 using namespace std;

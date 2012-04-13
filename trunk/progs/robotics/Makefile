@@ -1,5 +1,7 @@
 # Makefile for $(corelib)/progs/robotics 
 #
+# Authors: Cong Wang, Yi-Jen Chiang, Chee Yap (March 2012)
+# 
 # Since Core Library 2.1 (March 2012)
 # 	$Id: $
 
