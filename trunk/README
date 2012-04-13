@@ -139,8 +139,10 @@ README FILE: TABLE OF CONTENTS
                          to delete this directory if you don't need it later)
        gmp/          gmp installation directory (may be a link).  This
                          directory may be missing if you have your own gmp.
+			 From the SVN repository, you can link to ../gmp.
        mpfr/         mpfr installation directory (may be a link).  This
                          directory may be missing if you have your own mpfr.
+			 From the SVN repository, you can link to ../gmp.
 
    The full distribution has these additional files and directories:
 
