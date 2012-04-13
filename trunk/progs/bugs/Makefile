@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.1 2010/04/30 10:10:56 exact Exp $
+# Core Library, $Id: Makefile,v 1.2 2012/04/13 15:23:59 exact Exp $
 
 include ../Make.options
 

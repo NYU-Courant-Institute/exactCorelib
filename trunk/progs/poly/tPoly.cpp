@@ -1,6 +1,6 @@
 /* **************************************
  File: tPoly.cpp
- 	$Id: tPoly.cpp,v 1.11 2010/07/21 21:22:03 exact Exp $
+ 	$Id: tPoly.cpp,v 1.12 2012/04/13 15:24:00 exact Exp $
  Purpose: basic testing of the polynomial class
 
  USAGE:

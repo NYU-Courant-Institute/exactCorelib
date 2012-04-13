@@ -38,7 +38,7 @@
    Date:    Nov 6, 2010
 
    Since Core Library  Version 2.1
-   $Id: tBiPoly.cpp,v 1.7 2010/11/08 16:51:14 exact Exp $
+   $Id: tBiPoly.cpp,v 1.8 2012/04/13 15:24:00 exact Exp $
  ************************************** */
 
 #ifndef CORE_LEVEL
