@@ -2,6 +2,10 @@
 #include "Box.h"
 #include <queue>
 #include <vector>
+#include <list>
+#include <time.h>
+#include <stdlib.h>
+#include <iterator>
 
 using namespace std;
 
@@ -24,18 +28,75 @@ public:
 	}
 };
 
-//class PriorityQueue
-//{
-//private:
-//	priority_queue<Box*, vector<Box*>, PQCmp> q;
-//public:
-//
-//	PriorityQueue(void)
-//	{
-//	}
-//
-//	~PriorityQueue(void)
-//	{
-//	}
-//};
+class BoxQueue
+{
+private:
 
+public:
+
+	BoxQueue(void)
+	{
+	}
+
+	virtual void push(Box* b) = 0;
+
+	virtual Box* extractMax() = 0;
+
+	virtual bool empty() = 0;
+
+	~BoxQueue(void)
+	{
+	}
+};
+
+class seqQueue : public BoxQueue
+{
+private:
+	priority_queue<Box*, vector<Box*>, PQCmp> PQ;
+public:
+	void push(Box* b)
+	{
+		PQ.push(b);
+	}
+
+	Box* extractMax()
+	{
+		Box* r = PQ.top();
+		PQ.pop();
+		return r;
+	}
+
+	bool empty()
+	{
+		return PQ.empty();
+	}
+};
+
+class randQueue : public BoxQueue
+{
+private:
+	list<Box*> L;
+
+public:
+	void push(Box* b)
+	{
+		L.push_back(b);
+	}
+
+	Box* extractMax()
+	{
+		srand( time(0) );
+		int i = rand() % L.size();
+		list<Box*>::iterator iter = L.begin();
+		advance(iter, i);
+		Box* r = *iter;
+		L.erase(iter);
+		return r;
+	}
+
+	bool empty()
+	{
+		return L.empty();
+	}
+
+};

@@ -119,7 +119,7 @@ public:
 		{
 			Wall* w = *it;
 			double distWall = w->distance(this->x, this->y);
-			if (distWall <= innerDomain)
+			if (distWall < innerDomain)
 			{
 				status = STUCK;
 				return;				
@@ -224,6 +224,11 @@ public:
 		if (this->height < epsilon || this->width < epsilon)
 		{
 			return false;
+		}
+
+		if (!this->isLeaf || this->status != MIXED)
+		{
+			return false; 
 		}
 
 		//record the time of this split event, will be used to set priority of children

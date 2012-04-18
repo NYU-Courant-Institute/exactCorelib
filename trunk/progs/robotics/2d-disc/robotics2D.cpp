@@ -23,8 +23,10 @@
 using namespace std;
 
 QuadTree* QT;
-double alpha[2] = {50, 312};
-double beta[2] = {256, 62};
+//double alpha[2] = {50, 312};
+//double beta[2] = {256, 62};
+double alpha[2] = {10, 360};
+double beta[2] = {500, 20};
 double epsilon = 1;
 Box* boxA;
 Box* boxB;
@@ -34,8 +36,11 @@ double boxHeight = 512;
 double R0 = 30;
 int windowPosX = 400;
 int windowPosY = 200;
-
+string fileName("input2.txt"); 
+int QType = 0;
 //glui controls
+GLUI_RadioGroup* radioQType;
+GLUI_EditText* editInput;
 GLUI_EditText* editRadius;
 GLUI_EditText* editEpsilon;
 GLUI_EditText* editAlphaX;
@@ -79,6 +84,8 @@ int main(int argc, char* argv[])
 	GLUI_Master.set_glutIdleFunc( NULL );
 	GLUI *glui = GLUI_Master.create_glui( "control", 0, windowPosX + boxWidth + 20, windowPosY );
 	
+	editInput = glui->add_edittext( "Input file:", GLUI_EDITTEXT_TEXT );
+	editInput->set_text((char*)fileName.c_str());
 	editRadius = glui->add_edittext( "Radius:", GLUI_EDITTEXT_FLOAT );
 	editRadius->set_float_val(R0);
 	editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_FLOAT );
@@ -91,6 +98,12 @@ int main(int argc, char* argv[])
 	editBetaX->set_float_val(beta[0]);
 	editBetaY = glui->add_edittext( "Beta.y:", GLUI_EDITTEXT_FLOAT );
 	editBetaY->set_float_val(beta[1]);
+
+	glui->add_separator();
+	radioQType = glui->add_radiogroup();
+	glui->add_radiobutton_to_group(radioQType, "Sequential");
+	glui->add_radiobutton_to_group(radioQType, "Random");
+	glui->add_separator();
 
 	GLUI_Button* buttonRun = glui->add_button( "Run", -1, (GLUI_Update_CB)run);
 
@@ -112,18 +125,20 @@ void genEmptyTree()
 	{
 		delete(QT);
 	}
-	QT = new QuadTree(root, epsilon);
+	QT = new QuadTree(root, epsilon, QType);
 }
 
 void run()
 {
 	//update from glui live variables
+	fileName = editInput->get_text();
 	R0 = editRadius->get_float_val();
 	epsilon = editEpsilon->get_float_val();
 	alpha[0] = editAlphaX->get_float_val();
 	alpha[1] = editAlphaY->get_float_val();
 	beta[0] = editBetaX->get_float_val();
 	beta[1] = editBetaY->get_float_val();
+    QType = radioQType->get_int_val();
 
 	genEmptyTree();
 
@@ -141,7 +156,7 @@ void run()
 	}
 
 	boxB = QT->getBox(beta[0], beta[1]);
-	while (boxB && !boxB->isFree())
+	while (!noPath && boxB && !boxB->isFree())
 	{
 		if (!QT->expand(boxB))
 		{
@@ -295,8 +310,8 @@ void renderScene(void) {
 }
 
 void parseConfigFile(Box* b)
-{
-	ifstream ifs("input2.txt");
+{	
+	ifstream ifs(fileName.c_str());
 	if (!ifs)
 	{
 		cerr<< "cannot open input file" << endl;

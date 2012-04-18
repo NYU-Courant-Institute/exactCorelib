@@ -2,7 +2,6 @@
 #include "Box.h"
 #include "UnionFind.h"
 #include "PriorityQueue.h"
-#include <queue>
 
 class QuadTree
 {
@@ -18,19 +17,32 @@ private:
 		case Box::STUCK:
 			break;
 		case Box::MIXED:
-			PQ.push(b);
+			PQ->push(b);
 			break;
 		}
 	}
 
 public:
 	UnionFind* pSets;
-	priority_queue<Box*, vector<Box*>, PQCmp> PQ;
+	BoxQueue* PQ;
 	Box* pRoot;
 	double epsilon;
+	int QType;
 
-	QuadTree(Box* root, double e):pRoot(root), epsilon(e)
+	QuadTree(Box* root, double e, int qType):pRoot(root), epsilon(e), QType(qType)
 	{
+		switch (QType)
+		{
+		case 0:
+			PQ = new seqQueue();
+			break;
+		case 1:
+			PQ = new randQueue();
+			break;
+		}
+		
+		//PQ = new randQueue();
+
 		pRoot->updateStatus();
 		insertNode(pRoot);
 	}
@@ -91,10 +103,9 @@ public:
 
 	bool expand()
 	{
-		while(!PQ.empty())
+		while(!PQ->empty())
 		{
-			Box* b = PQ.top();
-			PQ.pop();
+			Box* b = PQ->extractMax();
 			//b might not be a leaf since it could already be split in expand(Box* b), and PQ is not updated there
 			if (b->isLeaf && b->split(epsilon))
 			{
