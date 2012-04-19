@@ -45,8 +45,10 @@ test: $(TARGETS)
 moretest: $(TARGETS)
 # nothing to do
 
-robotics2D: Box.o Corner.o QuadTree.o Wall.o
+XXXrobotics2D: Box.o Corner.o QuadTree.o Wall.o
 	${CXX} $(LDFLAGS) Box.o Corner.o QuadTree.o Wall.o $(CORE_LIB) -o $@
+
+robotics2D: robotics2D.o
 
 #=================================================
 # Examples 
