@@ -62,7 +62,21 @@ ext=.cpp
 	OBJS = $(SRCS:.c=.o)
    else
         ifeq ($(pf),mac)
-	@echo PlAtFoRm = $(pf)
+   MESA_VERSION=7.8.1_1+hw_render
+   MESA_VERSION=7.4.3_0+hw_render
+   MESA_PATH=/opt/local/var/macports/software/mesa/$(MESA_VERSION)
+   MESA_INC_PATH=$(MESA_PATH)/opt/local/include
+   MESA_INC_PATH=/opt/local/include
+   MESA_LIB_PATH=$(MESA_PATH)/opt/local/lib
+   MESA_LIB_PATH=/opt/local/lib
+CORE_LIB=-L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib -L$(CORE_PATH)/gmp/lib \
+	 -L$(MESA_LIB_PATH) -lGL -lGLU -lglut \
+	 -lcore++$(VAR) -lmpfr -lgmp
+CORE_INC=-I. -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
+	 -I$(CORE_PATH)/gmp/include -I/usr/include/ \
+	 -I$(MESA_INC_PATH) 
+
+
 	COMPILERFLAGS = -Wall 
 	LIBS = -L/opt/local/var/macports/software/mesa/7.4.3_0+hw_render/opt/local/lib -lglut -lGLU -lGL -lm -L/usr/X11R6/lib -lXi -lXmu
         else
@@ -141,9 +155,9 @@ poly drawpoly: drawpoly.cc
 drawCurve1: drawCurve.cpp
 	$(CC) $(COMPILERFLAGS) -o $@ $(OBJS) $(LIBS)
 
-curve drawCurve: drawCurve.cpp
-	$(CC) $(COMPILERFLAGS) -g $(INC) drawCurve.cpp \
-	    $(LDFLAGS) $(LIBS) -o drawCurve
+drawCurve: drawCurve.o
+
+curve: drawCurve
 
 draw.orig: draw.orig.cc
 	$(CC) -g $(INC) draw.orig.cc \
@@ -198,6 +212,18 @@ teapot3: teapot3.cpp
 teapot4: teapot4.cpp
 	$(CC) $(COMPILERFLAGS) -g $(INC) teapot4.cpp \
 	    $(LDFLAGS) $(LIBS) -o teapot4
+
+
+#=================================================
+# Rules
+#=================================================
+%: %.o $(DEPEND)
+	${CXX} $(LDFLAGS) $(LOCALLDFLAGS) $< $(CORE_LIB) -o $@
+
+.cpp.o:
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) $< -o $@
+
+
 
 #######################################################
 # housekeeping

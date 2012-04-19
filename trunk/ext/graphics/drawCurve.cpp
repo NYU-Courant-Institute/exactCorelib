@@ -71,6 +71,7 @@
 #include <math.h>
 #include <ctype.h>
 #include <GL/glut.h>
+#include <gl/glut.h>
 using namespace std;
 
 
