@@ -35,20 +35,22 @@ ymax =  10
 #=================================================
 # Define target files (put all your files here)
 #=================================================
-TARGETS = robotics2D
+TARGETS = disc
+
+OBJ_FILES = Box.o Corner.o QuadTree.o Wall.o
 
 all: $(TARGETS)
 
 test: $(TARGETS)
-	./robotics2D 
+
+eg: ./disc
+	./disc  < input2.txt
 
 moretest: $(TARGETS)
 # nothing to do
 
-XXXrobotics2D: Box.o Corner.o QuadTree.o Wall.o
-	${CXX} $(LDFLAGS) Box.o Corner.o QuadTree.o Wall.o $(CORE_LIB) -o $@
 
-robotics2D: robotics2D.o
+disc: $(OBJ_FILES) disc.o
 
 #=================================================
 # Examples 
@@ -63,7 +65,7 @@ eg1: ${TARGETS}
 # Rules
 #=================================================
 %: %.o
-	${CXX} $(LDFLAGS) $< $(CORE_LIB) -o $@
+	${CXX} $(OBJ_FILES) $(LDFLAGS) $< $(CORE_LIB) -o $@
 
 .cpp.o:
 	${CXX} -c -O3 $(CXXFLAGS) $(CORE_INC) $< -o $@

@@ -47,6 +47,7 @@ windowPosX = 200	# initial Window position
 windowPosY = 200	
 
 Qtype = 0		# type of priority queue
+			#	(0 = BFS, 1 = random)
 seed = 1111		# seed for random
 		
 #=================================================
@@ -64,8 +65,10 @@ test: $(TARGETS)
 		$(epsilon)  $(radius)  input2.txt  $(boxWidth) $(boxHt) \
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) 
 
+avoidWarning: avoidWarning.o
+
 #=================================================
-# Examples 
+# Examples of running disc program
 #=================================================
 
 eg:	disc
@@ -74,11 +77,15 @@ eg:	disc
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed) 
 
-eg1: 	disc
-	./disc  
+eg1: disc
+	./disc $(interactive) 10 360 20 20 \
+		$(epsilon) 10 input1.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111
 
-eg2: ./disc
-	./disc  < input.txt
+
+eg2: disc
+	./disc 
 
 moretest: $(TARGETS)
 # nothing to do

@@ -96,6 +96,7 @@ QuadTree* QT;
 	GLUI_EditText* editAlphaY;
 	GLUI_EditText* editBetaX;
 	GLUI_EditText* editBetaY;
+	GLUI_EditText* editSeed;
 
 // External Routines ========================================
 //
@@ -158,19 +159,22 @@ int main(int argc, char* argv[])
 	editAlphaX->set_float_val(alpha[0]);
 	editAlphaY = glui->add_edittext( "alpha.y:", GLUI_EDITTEXT_FLOAT );
 	editAlphaY->set_float_val(alpha[1]);
-	editBetaX = glui->add_edittext( "Beta.x:", GLUI_EDITTEXT_FLOAT );
+	editBetaX = glui->add_edittext( "beta.x:", GLUI_EDITTEXT_FLOAT );
 	editBetaX->set_float_val(beta[0]);
-	editBetaY = glui->add_edittext( "Beta.y:", GLUI_EDITTEXT_FLOAT );
+	editBetaY = glui->add_edittext( "beta.y:", GLUI_EDITTEXT_FLOAT );
 	editBetaY->set_float_val(beta[1]);
+	editSeed = glui->add_edittext( "seed:", GLUI_EDITTEXT_INT );
+	editSeed->set_int_val(seed);
 
 	glui->add_separator();
 	radioQType = glui->add_radiogroup();
 	glui->add_radiobutton_to_group(radioQType, "Sequential");
 	glui->add_radiobutton_to_group(radioQType, "Random");
+	glui->add_radiobutton_to_group(radioQType, "A-star");
 	glui->add_separator();
 
-	// unused warning: comment out (Chee)
 	GLUI_Button* buttonRun = glui->add_button( "Run", -1, (GLUI_Update_CB)run);
+	buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
 
 	glui->set_main_gfx_window( windowID );
 
@@ -220,7 +224,7 @@ void run()
 	alpha[1] = editAlphaY->get_float_val();
 	beta[0] = editBetaX->get_float_val();
 	beta[1] = editBetaY->get_float_val();
-    QType = radioQType->get_int_val();
+        QType = radioQType->get_int_val();
 
 	genEmptyTree();
 
