@@ -149,12 +149,14 @@ int main(int argc, char* argv[])
 	GLUI_Master.set_glutIdleFunc( NULL );
 	GLUI *glui = GLUI_Master.create_glui( "control", 0, windowPosX + boxWidth + 20, windowPosY );
 	
+	// SETTING UP THE CONTROL PANEL:
 	editInput = glui->add_edittext( "Input file:", GLUI_EDITTEXT_TEXT );
 	editInput->set_text((char*)fileName.c_str());
 	editRadius = glui->add_edittext( "Radius:", GLUI_EDITTEXT_FLOAT );
 	editRadius->set_float_val(R0);
 	editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_FLOAT );
 	editEpsilon->set_float_val(epsilon);
+
 	editAlphaX = glui->add_edittext( "alpha.x:", GLUI_EDITTEXT_FLOAT );
 	editAlphaX->set_float_val(alpha[0]);
 	editAlphaY = glui->add_edittext( "alpha.y:", GLUI_EDITTEXT_FLOAT );
@@ -166,6 +168,13 @@ int main(int argc, char* argv[])
 	editSeed = glui->add_edittext( "seed:", GLUI_EDITTEXT_INT );
 	editSeed->set_int_val(seed);
 
+	GLUI_Button* buttonRun = glui->add_button( "Run", -1, (GLUI_Update_CB)run);
+	buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
+
+
+	// New column:
+	glui->add_column(true);
+
 	glui->add_separator();
 	radioQType = glui->add_radiogroup();
 	glui->add_radiobutton_to_group(radioQType, "Sequential");
@@ -173,8 +182,8 @@ int main(int argc, char* argv[])
 	glui->add_radiobutton_to_group(radioQType, "A-star");
 	glui->add_separator();
 
-	GLUI_Button* buttonRun = glui->add_button( "Run", -1, (GLUI_Update_CB)run);
-	buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
+	// Quit button
+	glui->add_button( "Quit", 0, (GLUI_Update_CB)exit );
 
 	glui->set_main_gfx_window( windowID );
 
@@ -362,6 +371,17 @@ void drawCircle( float Radius, int numPoints, double x, double y)
 	glEnd();
 }
 
+void filledCircle( double radius, double x, double y, double r, double g, double b) 
+{
+    glBegin(GL_POINTS);
+    glColor3d(r,g,b);
+    //glEnable(GL_POINT_SMOOTH);
+    //glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+    glPointSize(radius);
+    glVertex2d(x, y); 
+    glEnd();
+}
+
 void renderScene(void) {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -375,14 +395,17 @@ void renderScene(void) {
 	glPolygonMode(GL_FRONT, GL_LINE);
 
 	glColor3f(0, 0, 1);
-	//glPointSize(R0*2);
-	//glEnable( GL_POINT_SMOOTH );
-	//glBegin(GL_POINTS);
-	//glVertex2f(alpha[0], alpha[1]);
-	//glVertex2f(beta[0], beta[1]);
-	//glEnd();
-	drawCircle(R0, 100, alpha[0], alpha[1]);
-	drawCircle(R0, 100, beta[0], beta[1]);
+	drawCircle(R0, 100, alpha[0], alpha[1]);	// start
+	drawCircle(R0, 100, beta[0], beta[1]);		// goal
+
+	// Chee: draw centers of robot: (buggy?  nothing shows)
+	drawCircle(5, 100, alpha[0], alpha[1]);	// start
+	drawCircle(5, 100, beta[0], beta[1]);		// goal
+
+	double r0 = 5;
+	if (r0>R0) r0=R0;
+	filledCircle(r0, alpha[0], alpha[1], 0.2, 0.2, 1.0);	//blue start center
+	filledCircle(r0, beta[0], beta[1], 0.8, 0.8, 0.2);	//yellow goal center
 
 	drawWalls(QT->pRoot);
 
