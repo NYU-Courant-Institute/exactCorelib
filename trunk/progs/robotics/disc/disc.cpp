@@ -15,7 +15,7 @@
 			[fileName = input2.txt] \
 			[boxWidth = 512] [boxHeight = 512] \
 			[windoxPosX = 400] [windowPosY = 200] \
-			[Qtype = 0]
+			[Qtype = 0] [seed = 111]
 		
 	where 
 		interactive 	 	is nature of run
@@ -29,9 +29,9 @@
 		windowPos		is position of window
 		Qtype			is type of the priority queue
 						(sequential=0, random=1)
+		seed			is seed for random number generator
 
-	NOTE: there are several examples of running
-		this program in the Makefile.
+	NOTE: see several examples of running this program in the Makefile.
 	
 	Format of input environment: see README FILE
 
@@ -83,6 +83,7 @@ QuadTree* QT;
 						//    sequential (0) or random (1)
 	int interactive = 0;			// Run interactively?
 						//    Yes (0) or No (1)
+	int seed = 111;				// seed for random number generator
 	bool noPath = true;			// Path Found?
 
 // GLUI controls ========================================
@@ -108,7 +109,6 @@ void drawPath(vector<Box*>&);
 // MAIN PROGRAM: ========================================
 int main(int argc, char* argv[])
 {
-cout << "before args\n";
 	if (argc > 1) interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
 	if (argc > 2) alpha[0] = atof(argv[2]);		// start x
 	if (argc > 3) alpha[1] = atof(argv[3]);		// start y
@@ -122,8 +122,8 @@ cout << "before args\n";
 	if (argc > 11) windowPosX = atoi(argv[11]);	// window X pos
 	if (argc > 12) windowPosY = atoi(argv[12]);	// window Y pos
 	if (argc > 13) QType   = atoi(argv[13]);	// PriorityQ Type (random or no)
+	if (argc > 14) seed   = atoi(argv[14]);		// for random number generator
 
-cout << "after empty tree\n";
 	genEmptyTree();		// Initialize the quadtree
 
 
@@ -174,10 +174,23 @@ cout << "after empty tree\n";
 
 	glui->set_main_gfx_window( windowID );
 
-	// run(); // make it do something interesting from the start!
-cout << "before run\n";
-	run(); // make it do something interesting from the start!!!
-	glutMainLoop();
+	// PERFORM THE INITIAL RUN OF THE ALGORITHM
+	//==========================================
+	run(); 	// make it do something interesting from the start!!!
+
+	// SHOULD WE STOP or GO INTERACTIVE?
+	//==========================================
+	if (interactive > 0) {	// non-interactive
+	    // do something...
+	    cout << "Non Interactive Run of Disc Robot" << endl;
+	    if (noPath)
+	    	cout << "No Path Found!" << endl;
+	    else
+	    	cout << "Path was Found!" << endl;
+	    return 0;
+	}
+	else
+		glutMainLoop();
 
 	return 0;
 }

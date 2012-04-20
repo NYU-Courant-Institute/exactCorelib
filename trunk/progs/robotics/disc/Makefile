@@ -27,11 +27,28 @@ include ../Make.options
 #=================================================
 # User definition (put parameters manually here)
 #=================================================
-xmin = -10
-xmax =  10
-ymin = -10
-ymax =  10
+interactive = 0		# 0=interactive, >0 is non-interactive
 
+startX = 10		# start configuration
+startY = 350
+
+goalX = 500		# goal configuration
+goalY = 20
+
+epsilon = 2		# resolution parameter
+radius = 30		# robot radius
+
+fileName = input2.txt	# input environment file
+
+boxWidth = 512		# initial configuration box size
+boxHt = 512
+
+windowPosX = 200	# initial Window position
+windowPosY = 200	
+
+Qtype = 0		# type of priority queue
+seed = 1111		# seed for random
+		
 #=================================================
 # Define target files (put all your files here)
 #=================================================
@@ -42,8 +59,22 @@ OBJ_FILES = Box.o QuadTree.o Corner.o Wall.o
 all: $(TARGETS)
 
 test: $(TARGETS)
+	./disc 1 \
+		$(startX) $(startY)  $(goalX) $(goalY) \
+		$(epsilon)  $(radius)  input2.txt  $(boxWidth) $(boxHt) \
+       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) 
 
-eg: ./disc
+#=================================================
+# Examples 
+#=================================================
+
+eg:	disc
+	./disc $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
+		$(epsilon) $(radius) $(fileName) \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed) 
+
+eg1: 	disc
 	./disc  
 
 eg2: ./disc
@@ -54,14 +85,6 @@ moretest: $(TARGETS)
 
 disc: $(OBJ_FILES) disc.o
 
-#=================================================
-# Examples 
-#=================================================
-
-# Intersecting a parabola and the unit circle:
-eg1: ${TARGETS}
-	./mk --fxy "y-x^2" --gxy "x^2+y^2-1" \
-    --x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 #=================================================
 # Rules
