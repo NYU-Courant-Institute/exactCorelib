@@ -19,4 +19,5 @@ public:
 		return sqrt( (x-x2)*(x-x2) + (y-y2)*(y-y2) );
 	}
 
+	bool isConvex();
 };

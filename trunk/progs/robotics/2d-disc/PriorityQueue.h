@@ -6,6 +6,8 @@
 #include <time.h>
 #include <stdlib.h>
 #include <iterator>
+#include "Graph.h"
+#include <math.h>
 
 using namespace std;
 
@@ -28,6 +30,7 @@ public:
 	}
 };
 
+
 class BoxQueue
 {
 private:
@@ -40,7 +43,7 @@ public:
 
 	virtual void push(Box* b) = 0;
 
-	virtual Box* extractMax() = 0;
+	virtual Box* extract() = 0;
 
 	virtual bool empty() = 0;
 
@@ -59,7 +62,7 @@ public:
 		PQ.push(b);
 	}
 
-	Box* extractMax()
+	Box* extract()
 	{
 		Box* r = PQ.top();
 		PQ.pop();
@@ -83,7 +86,7 @@ public:
 		L.push_back(b);
 	}
 
-	Box* extractMax()
+	Box* extract()
 	{
 		srand( time(0) );
 		int i = rand() % L.size();
@@ -99,4 +102,28 @@ public:
 		return L.empty();
 	}
 
+};
+
+class dijkstraQueue : public BoxQueue
+{
+private:
+	vector<Box*> bv;
+
+public:
+
+	void push(Box* b)
+	{
+		distHeap<PQCmp3>::insert(bv, b);
+	}
+
+	Box* extract()
+	{
+		Box* current = distHeap<PQCmp3>::extractMin(bv);
+		return current;
+	}
+
+	bool empty()
+	{
+		return bv.empty();
+	}
 };

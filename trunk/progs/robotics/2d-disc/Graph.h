@@ -4,18 +4,58 @@
 #include <algorithm>
 #include <math.h>
 #include "Box.h"
+#include "QuadTree.h"
 
 using namespace std;
 
+extern double beta[2];
+
+class distCmp
+{
+public:
+	bool operator()(Box* a, Box* b)
+	{
+		return a->dist2Source > b->dist2Source;
+	}
+};
+
 
 // min heap
+template <typename CmpFunctor>
 class distHeap
 {
 private:
-	static bool distLess(Box* a, Box* b)
+	static void siftDown(vector<Box*>& bv, int i)
 	{
-		return a->dist2Source < b->dist2Source;
+		CmpFunctor cmp;
+		unsigned int l = 2*i + 1;
+		unsigned int r = 2*i + 2;
+		int smallest;
+		if (l < bv.size() && cmp(bv[i], bv[l]))
+		{
+			smallest = l;
+		}
+		else
+		{
+			smallest = i;
+		}
+		if (r < bv.size() && cmp(bv[smallest], bv[r]))
+		{
+			smallest = r;
+		}
+		if (smallest != i)
+		{
+			Box* tmp = bv[smallest];
+			bv[smallest] = bv[i];
+			bv[i] = tmp;
+			bv[smallest]->heapId = smallest;
+			bv[i]->heapId = i;
+
+			siftDown(bv, smallest);
+		}
+
 	}
+
 public:
 	static void makeHeap(vector<Box*>& bv)
 	{
@@ -33,43 +73,14 @@ public:
 		}
 	}
 
-	static void siftDown(vector<Box*>& bv, int i)
-	{
-		unsigned int l = 2*i + 1;
-		unsigned int r = 2*i + 2;
-		int smallest;
-		if (l < bv.size() && distLess(bv[l], bv[i]))
-		{
-			smallest = l;
-		}
-		else
-		{
-			smallest = i;
-		}
-		if (r < bv.size() && distLess(bv[r], bv[smallest]))
-		{
-			smallest = r;
-		}
-		if (smallest != i)
-		{
-			Box* tmp = bv[smallest];
-			bv[smallest] = bv[i];
-			bv[i] = tmp;
-			bv[smallest]->heapId = smallest;
-			bv[i]->heapId = i;
-
-			siftDown(bv, smallest);
-		}
-
-	}
-
 	static void insert(vector<Box*>& bv, Box* b)
 	{
+		CmpFunctor cmp;
 		bv.push_back(b);
 		int bid = bv.size() - 1;
 		b->heapId = bid;
 		int pid = (bid - 1) / 2;
-		while (bid > 0 && distLess(bv[bid], bv[pid]))
+		while (bid > 0 && cmp(bv[pid], bv[bid]))
 		{
 			Box* tmp = bv[bid];
 			bv[bid] = bv[pid];
@@ -84,13 +95,14 @@ public:
 
 	static void decreaseKey(vector<Box*>& bv, Box* b, double dist)
 	{
+		CmpFunctor cmp;
 		assert(bv[b->heapId] == b);
 		assert(b->dist2Source > dist);
 
 		b->dist2Source = dist;
 		int bid = b->heapId;
 		int pid = (bid - 1) / 2;
-		while (bid > 0 && distLess(bv[bid], bv[pid]))
+		while (bid > 0 && cmp(bv[pid], bv[bid]))
 		{
 			Box* tmp = bv[bid];
 			bv[bid] = bv[pid];
@@ -117,17 +129,35 @@ public:
 
 };
 
+//won't work with std pq, as this comparison is not transitional!
+class PQCmp3
+{
+public:
+	bool operator() (const Box* a, const Box* b)
+	{
+		//if depth diff bigger than 3, use depth as priority
+		//if (abs(a->depth - b->depth) > 8)
+		//{
+		//	return a->depth > b->depth;
+		//}
+		//otherwise expand box closer to beta
+		double distDiff = (a->x - beta[0])*(a->x - beta[0]) + (a->y - beta[1])*(a->y - beta[1]) 
+			- ((b->x - beta[0])*(b->x - beta[0]) + (b->y - beta[1])*(b->y - beta[1]));
+		return distDiff > 0;	
+	}
+};
+
 class Graph
 {
 public:
-	static vector<Box*> findPath(Box* a, Box* b)
+	static vector<Box*> dijketraShortestPath(Box* a, Box* b)
 	{
 		a->dist2Source = 0;
 		vector<Box*> bv;
-		distHeap::insert(bv, a);
+		distHeap<distCmp>::insert(bv, a);
 		while(bv.size())
 		{
-			Box* current = distHeap::extractMin(bv);
+			Box* current = distHeap<distCmp>::extractMin(bv);
 			current->visited = true;
 			if (current == b)
 			{				
@@ -148,14 +178,14 @@ public:
 						{
 							neighbor->prev = current;
 							neighbor->dist2Source = dist2src;
-							distHeap::insert(bv, neighbor);
+							distHeap<distCmp>::insert(bv, neighbor);
 						}
 						else
 						{
 							if (neighbor->dist2Source > dist2src)
 							{
 								neighbor->prev = current;
-								distHeap::decreaseKey(bv, neighbor, dist2src);
+								distHeap<distCmp>::decreaseKey(bv, neighbor, dist2src);
 							}
 						}
 					}
