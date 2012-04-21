@@ -54,7 +54,7 @@ windowPosY = 20
 
 Qtype = 0		# type of priority queue
 			#	(1 = BFS, 0 = random) // funny switch...
-seed = 1111		# seed for random
+seed = 11		# seed for random
 		
 #=================================================
 # Define target files (put all your files here)

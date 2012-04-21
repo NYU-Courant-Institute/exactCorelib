@@ -226,7 +226,8 @@ void genEmptyTree()
 	{
 		delete(QT);
 	}
-	QT = new QuadTree(root, epsilon, QType, seed);
+	QT = new QuadTree(root, epsilon, QType, seed++);  // Note that seed keeps changing!
+
 cout<<"inside genEmpty:  Qtype= " << QType << "\n";
 }
 
@@ -479,7 +480,7 @@ cout<< "x=" << pts[i*2] << ", y=" << pts[i*2+1] << endl;
 
 	skip_comment_line ( ifs );	// again, clear white space
 	ifs >> nFeature;
-	skip_comment_line ( ifs );	// again, clear white space
+	//skip_comment_line ( ifs );	// again, clear white space
 cout<< "nFeature=" << nFeature << endl;
 	string temp;
 	std::getline(ifs, temp);
