@@ -37,6 +37,7 @@ Box* BoxIter::First()
 		n = n->pChildren[next];
 	}
 
+	//int t = 0;
 	while (true)
 	{
 		if (n->pChildren[cross] == b)

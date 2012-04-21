@@ -47,10 +47,10 @@ public:
 	{
 		switch (QType)
 		{
-		case 0:
+		case 1:
 			PQ = new seqQueue();
 			break;
-		case 1:
+		case 0:
 			PQ = new randQueue();
 			break;
 		}

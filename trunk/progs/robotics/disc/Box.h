@@ -32,7 +32,7 @@ public:
 	Box* Next();
 
 	Box* End();
-};//BoxIter
+};
 
 class Box
 {
@@ -78,7 +78,7 @@ public:
 	bool visited;
 
 	Box(double xx, double yy, double w, double h):
-	    	depth(1), x(xx), y(yy), width(w), height(h), isLeaf(true),
+	    	depth(1), x(xx), y(yy), width(w), height(h), isLeaf(true), 
 		pParent(0), status(UNKNOWN),
 		pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(false)
 	{
@@ -154,39 +154,65 @@ public:
 	//find the nearest feature, and check
 	Status checkChildStatus(double x, double y)
 	{
-		assert(walls.size());
+		//assert(walls.size());
 
-		vector<Wall*> nearest;
-		list<Wall*>::iterator iter = walls.begin();
-		double mindist = (*iter)->distance(x, y);
-		nearest.push_back(*iter);
-		++iter;
-		for (; iter != walls.end(); ++iter)
+		Wall* nearestWall;
+		list<Wall*>::iterator iterW = walls.begin();
+		double mindistW = (*iterW)->distance(x, y);
+		nearestWall = *iterW;
+		++iterW;
+		for (; iterW != walls.end(); ++iterW)
 		{
-			Wall* w = *iter;
+			Wall* w = *iterW;
 			double dist = w->distance(x, y);
-			if (dist < mindist)
+			if (dist < mindistW)
 			{
-				mindist = dist;
-				nearest.clear();
-				nearest.push_back(*iter);
+				mindistW = dist;
+				nearestWall = *iterW;
 			}
-			else if (dist == mindist)
+		}
+
+		double mindistC = mindistW +1; //mindistC may not exist, so init to a bigger number
+		Corner* nearestCorner = NULL;
+		if (corners.size())
+		{			
+			list<Corner*>::iterator iterC = corners.begin();
+			mindistC = (*iterC)->distance(x, y);
+			nearestCorner = *iterC;
+			++iterC;
+			for (; iterC != corners.end(); ++iterC)
 			{
-				nearest.push_back(*iter);
+				Corner* c = *iterC;
+				double dist = c->distance(x, y);
+				if (dist < mindistC)
+				{
+					mindistC = dist;
+					nearestCorner = *iterC;
+				}
 			}
 		}
 
 		bool isFree = false;
-		for (vector<Wall*>::iterator iter = nearest.begin(); iter != nearest.end(); ++iter)
+
+		//nearest feature is a wall
+		if (mindistW < mindistC)
 		{
-			Wall* w = *iter;
-			if (w->isRight(x, y))
+			if (nearestWall->isRight(x, y))
 			{
 				isFree = true;
-				break;
 			}
 		}		
+		//otherwise check the corner's convexity
+		//if convex, out; if concave, in
+		//note that if a wall and a corner are the same dist, 
+		//only need to take care of the corner
+		else
+		{
+			if (nearestCorner->isConvex())
+			{
+				isFree = true;
+			}
+		}
 
 		if (isFree)
 		{

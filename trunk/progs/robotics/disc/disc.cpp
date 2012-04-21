@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
 
 	genEmptyTree();		// Initialize the quadtree
 
-//cout<<"before interactive\n";
+cout<<"before interactive, Qtype= " << QType << "\n";
 
 	if (interactive > 0) {	// non-interactive
 	    // do something...
@@ -180,8 +180,8 @@ int main(int argc, char* argv[])
 
 	glui->add_separator();
 	radioQType = glui->add_radiogroup();
-	glui->add_radiobutton_to_group(radioQType, "Sequential");
 	glui->add_radiobutton_to_group(radioQType, "Random");
+	glui->add_radiobutton_to_group(radioQType, "BFS");
 	glui->add_radiobutton_to_group(radioQType, "A-star");
 	glui->add_separator();
 
@@ -226,6 +226,7 @@ void genEmptyTree()
 		delete(QT);
 	}
 	QT = new QuadTree(root, epsilon, QType);
+cout<<"inside genEmpty:  Qtype= " << QType << "\n";
 }
 
 void run()
@@ -426,6 +427,7 @@ void renderScene(void) {
 /* */
 // skip blanks, tabs, line breaks and comment lines,
 // 	leaving us at the beginning of a token (or EOF)
+// 	(This code is taken from core2/src/CoreIo.cpp)
 int skip_comment_line (std::ifstream & in) {
 	  int c;
 	
@@ -459,16 +461,22 @@ void parseConfigFile(Box* b)
 	// First, get to the beginning of the first token:
 	skip_comment_line ( ifs );
 
-	int nPt, nFeature;
+	int nPt, nFeature;	// MISNOMER: nFeature is nPolygons!
 	ifs >> nPt;
+cout<< "nPt=" << nPt << endl;
 
-	//skip_comment_line ( ifs );	// again, clear white space
+	skip_comment_line ( ifs );	// again, clear white space
 	vector<double> pts(nPt*2);
 	for (int i = 0; i < nPt; ++i)
 	{
 		ifs >> pts[i*2] >> pts[i*2+1];
+cout<< "x=" << pts[i*2] << ", y=" << pts[i*2+1] << endl;
 	}
+
+	skip_comment_line ( ifs );	// again, clear white space
 	ifs >> nFeature;
+	skip_comment_line ( ifs );	// again, clear white space
+cout<< "nFeature=" << nFeature << endl;
 	string temp;
 	std::getline(ifs, temp);
 	for (int i = 0; i < nFeature; ++i)

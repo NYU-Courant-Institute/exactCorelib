@@ -1,0 +1,42 @@
+# file input2c.txt
+# this is a sample file format for input
+#     rest-of-line comment character is '#'
+      	# initial space and tabs ignored
+# strange Bug:
+#
+#	Cheeyap@disc[569] make eg fileName=input2c.txt
+#	./disc 0		 10		 350  500		 20 \
+#		2		 30		 input2c.txt \
+#		512		 512 200	 200	 \
+#		0		 1111		 
+#	path found is 1
+#	expended 0 times
+#	Assertion failed: (walls.size()), function checkChildStatus, file Box.h, line 157.
+#	make: *** [eg] Abort trap
+#
+
+16
+
+10 502
+110 502
+110 402
+10 402
+200 312
+250 332
+300 292
+210 162
+220 202
+50 112
+100 162
+150 92
+500 500
+500 10
+490 10
+490 500
+
+4
+
+13 14 15 16 13
+1 4 3 2 1
+5 9 8 7 6 5
+10 12 11 10

@@ -1,14 +1,3 @@
-/* **************************************
-   File: Corner.h
-
-   Description: 
-
-   HISTORY: March, 2012: Cong Wang, Chee Yap and Yi-Jen Chiang
-
-   Since Core Library  Version 2.1
-   $Id: $
- ************************************** */
-
 #pragma once
 #include <math.h>
 class Wall;
@@ -30,4 +19,5 @@ public:
 		return sqrt( (x-x2)*(x-x2) + (y-y2)*(y-y2) );
 	}
 
+	bool isConvex();
 };

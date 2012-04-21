@@ -38,7 +38,9 @@ goalY = 20
 epsilon = 2		# resolution parameter
 radius = 30		# robot radius
 
+fileName = bug0.txt	# input environment file
 fileName = input2.txt	# input environment file
+fileName = input2c.txt	# input environment file
 
 boxWidth = 512		# initial configuration box size
 boxHt = 512
@@ -47,7 +49,7 @@ windowPosX = 200	# initial Window position
 windowPosY = 200	
 
 Qtype = 0		# type of priority queue
-			#	(0 = BFS, 1 = random)
+			#	(1 = BFS, 0 = random) // funny switch...
 seed = 1111		# seed for random
 		
 #=================================================
