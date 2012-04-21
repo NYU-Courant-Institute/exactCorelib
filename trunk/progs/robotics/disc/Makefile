@@ -42,7 +42,7 @@ radius = 40		# robot radius
 
 fileName = bug0.txt	# input environment file
 fileName = input2.txt	# input environment file
-fileName = input2c.txt	# input environment file
+fileName = input2d.txt	# input environment file
 
 boxWidth = 512		# initial configuration box size
 boxHt = 512
@@ -82,6 +82,19 @@ eg:	disc
 		$(epsilon) $(radius) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed) 
+
+eg0 nopath:	disc
+	./disc $(interactive) 400 400  200 200 \
+		10 20 input.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed) 
+
+eg1 bug: disc
+	./disc $(interactive) 30 30 200 200 \
+		$(epsilon) 10 bug0.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111
+
 
 eg1: disc
 	./disc $(interactive) 10 360 20 20 \

@@ -1,21 +1,22 @@
+# file input2x.txt
+#
 # this is a sample file format for input
 #     rest-of-line comment character is '#'
       	# initial space and tabs ignored
-	
-	# so are empty lines
+
+ 
+
 12
-10 10 
-110 10 
-110 110 
-10 110 
-200 200 
-250 180 
-300 220 
-210 350 
-220 310
-50 400 
-100 350 
-150 420
+10 502 110 502 110 402
+10 402
+200 312
+250 332
+300 292
+210 162
+220 202
+50 112
+100 162
+150 92
 3
 1 4 3 2 1
 5 9 8 7 6 5

@@ -86,7 +86,7 @@ QuadTree* QT;
 						//    Yes (0) or No (1)
 	int seed = 111;				// seed for random number generator
 						// (Could also be used for BFS, etc)
-	bool noPath = true;			// Path Found?
+	bool noPath = true;			// True means there is "No path.
 
 // GLUI controls ========================================
 //
@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
 	if (argc > 2) alpha[0] = atof(argv[2]);		// start x
 	if (argc > 3) alpha[1] = atof(argv[3]);		// start y
 	if (argc > 4) beta[0] = atof(argv[4]);		// goal x
-	if (argc > 5) beta[0] = atof(argv[5]);		// goal y
+	if (argc > 5) beta[1] = atof(argv[5]);		// goal y
 	if (argc > 6) epsilon = atof(argv[6]);		// epsilon (resolution)
 	if (argc > 7) R0      = atof(argv[7]);		// robot radius
 	if (argc > 8) fileName = argv[8]; 		// Input file name
@@ -247,14 +247,14 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 
 	genEmptyTree();
 
-	noPath = false;	// MISNOMER!  should be true.
+	noPath = false;	// Confusing use of "noPath"
 
 	boxA = QT->getBox(alpha[0], alpha[1]);
 	while (boxA && !boxA->isFree())
 	{
 		if (!QT->expand(boxA))
 		{
-			noPath = true;
+			noPath = true; // Confusing use of "noPath"
 			break;
 		}
 		boxA = QT->getBox(boxA, alpha[0], alpha[1]);
@@ -285,7 +285,7 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 
 	if (!noPath) cout << "Path found !" << endl;
 	else  cout << "No Path !" << endl;
-	cout << "expanded " << ct << " times" << endl;
+	cout << "Expanded " << ct << " times" << endl;
 }
 
 void drawPath(vector<Box*>& path)
@@ -429,7 +429,7 @@ void renderScene(void) {
 	glutSwapBuffers();
 }
 
-/* */
+/* ********************************************************************** */
 // skip blanks, tabs, line breaks and comment lines,
 // 	leaving us at the beginning of a token (or EOF)
 // 	(This code is taken from core2/src/CoreIo.cpp)
@@ -452,7 +452,26 @@ int skip_comment_line (std::ifstream & in) {
 	  in.putback(c);  // this is non-white and non-comment char!
 	  return c;
 }//skip_comment_line
-/* */
+
+// skips '\' followed by '\n'
+// 	NOTE: this assumes a very special file format (e.g., our BigInt File format)
+// 	in which the only legitimate appearance of '\' is when it is followed
+// 	by '\n' immediately!  
+int skip_backslash_new_line (std::istream & in) {
+	  int c = in.get();
+	
+	  while (c == '\\') {
+	    c = in.get();
+	
+	    if (c == '\n')
+	      c = in.get();
+	    else // assuming the very special file format noted above!
+	      cout<< "continuation line \\ must be immediately followed by new line.\n";
+	  }//while
+	  return c;
+}//skip_backslash_new_line
+
+/* ********************************************************************** */
 
 void parseConfigFile(Box* b)
 {	
@@ -466,7 +485,7 @@ void parseConfigFile(Box* b)
 	// First, get to the beginning of the first token:
 	skip_comment_line ( ifs );
 
-	int nPt, nFeature;	// MISNOMER: nFeature is nPolygons!
+	int nPt, nPolygons;	// previously, nPolygons was misnamed as nFeatures
 	ifs >> nPt;
 cout<< "nPt=" << nPt << endl;
 
@@ -479,12 +498,12 @@ cout<< "x=" << pts[i*2] << ", y=" << pts[i*2+1] << endl;
 	}
 
 	skip_comment_line ( ifs );	// again, clear white space
-	ifs >> nFeature;
+	ifs >> nPolygons;
 	//skip_comment_line ( ifs );	// again, clear white space
-cout<< "nFeature=" << nFeature << endl;
+cout<< "nPolygons=" << nPolygons << endl;
 	string temp;
 	std::getline(ifs, temp);
-	for (int i = 0; i < nFeature; ++i)
+	for (int i = 0; i < nPolygons; ++i)
 	{
 		string s;
 		std::getline(ifs, s);
@@ -494,6 +513,7 @@ cout<< "nFeature=" << nFeature << endl;
 		while (ss)
 		{
 			int pt;
+			/// TODO:
 			ss >> pt;
 			pt -= 1; //1 based array
 			if (ptSet.find(pt) == ptSet.end())

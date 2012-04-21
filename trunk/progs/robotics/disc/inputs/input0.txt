@@ -1,0 +1,45 @@
+# file input2c.txt
+# this is a sample file format for input
+#     rest-of-line comment character is '#'
+      	# initial space and tabs ignored
+# What is this format?
+#	N
+#       x1 y1      x2  y2  ...    xN  yN
+#
+#	M
+#	p11 p12 p13 ...
+#	p21 p22 p23 p24 ...
+#	...
+#	pM1 pM2 ...
+#
+# where
+#	N = number of points
+#		followed by a list of N point coordinates
+#	M = number of closed polygons
+#		followed by M lines, each with a list of the point indices
+#		(the indices are 1, 2, ..., N)
+ 
+
+14
+
+10 502
+110 502
+110 402
+10 402
+200 312
+250 332
+300 292
+210 162
+220 202
+50 112
+100 162
+150 92
+500 500
+500 10
+
+4
+
+13 14 13
+1 4 3 2 1
+5 9 8 7 6 5
+10 12 11 10

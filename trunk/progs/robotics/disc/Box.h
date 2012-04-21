@@ -32,7 +32,7 @@ public:
 	Box* Next();
 
 	Box* End();
-};
+}; //class BoxIter
 
 class Box
 {
@@ -58,10 +58,12 @@ public:
 	static double r0;
 	double rB;
 
-	static int counter;
+	static int counter;	// time of expansion (used in BFS strategy)
 	
-	//also used as neighbor pointer in leaf node
-	//0 NW, 1 EN, 2 SE, 3 WS
+	//Pointers to children, but when no children (i.e., leaf),
+	//	the pointers are used as neighbor pointers
+	// where
+	//	0 = NW, 1 = EN, 2 = SE, 3 = WS
 	Box* pChildren[4]; 
 
 	Box* pParent; //parent in quadtree
@@ -246,6 +248,9 @@ public:
 		return status;
 	}
 
+	// split(eps)
+	// 	returns false if we fail to split for some reason
+	//
 	bool split(double epsilon)
 	{
 		if (this->height < epsilon || this->width < epsilon)
@@ -295,10 +300,12 @@ public:
 			// if neighbor are no smaller
 			if (neighbor->depth <= this->depth)
 			{
-				//after split child 'next' should also point to neighbor in direction i
+			//after split child 'next' should also point to 
+			//neighbor in direction i
 				children[next]->pChildren[i] = neighbor;
 
-				//if neighbor's cross direction point to this, it should instead point to child 'next' after split
+			//if neighbor's cross direction point to this, it should
+			//instead point to child 'next' after split
 				if (neighbor->pChildren[cross] == this)
 				{
 					neighbor->pChildren[cross] = children[next];
@@ -307,26 +314,31 @@ public:
 			}
 
 			Box* prevNeighbor = neighbor;
-			//indicate if we go across the boundary between child 'i' and 'next' the first time
+			//indicate if we go across the boundary between child 'i'
+			//and 'next' the first time
 			bool firstTimeCrossBetweenChildren = true;
 
 			//if neighbor smaller
 			while(neighbor != iter->End())
 			{
-				//assert( abs(abs(neighbor->x - this->x) - (neighbor->width/2 + this->width/2)) < 1e-8 
-				//	||  abs(abs(neighbor->y - this->y) - (neighbor->height/2 + this->height/2)) < 1e-8);
-
-				//within the strip of child next, neighbor's cross direction should point to next
+			//assert( abs(abs(neighbor->x - this->x)
+			//	- (neighbor->width/2 + this->width/2)) < 1e-8 
+			// ||  abs(abs(neighbor->y - this->y)
+			// 	- (neighbor->height/2 + this->height/2)) < 1e-8);
+			//within the strip of child next, neighbor's cross direction
+			//should point to next
 				if (!isOverLimit(children[next], neighbor))
 				{
 					neighbor->pChildren[cross] = children[next];
 				} 
-				//within the strip of child i, neighbor's cross direction should point to i
+				//within the strip of child i, neighbor's cross
+				//direction should point to i
 				else if (!isOverLimit(children[i], neighbor))
 				{
 					neighbor->pChildren[cross] = children[i];
 
-					//fist time cross between child i and next, should update next's i direction pointer
+					//first time cross between child i and next,
+					//should update next's i direction pointer
 					if (firstTimeCrossBetweenChildren)
 					{
 						firstTimeCrossBetweenChildren = false;
@@ -346,13 +358,16 @@ public:
 		{
 			this->pChildren[i] = children[i];
 			this->pChildren[i]->pParent = this;
-			//add all of parent's walls and corners to each child, will be filtered later in updatestatus()
-			this->pChildren[i]->walls.insert(this->pChildren[i]->walls.begin(), this->walls.begin(), this->walls.end());
-			this->pChildren[i]->corners.insert(this->pChildren[i]->corners.begin(), this->corners.begin(), this->corners.end());
+			//add all of parent's walls and corners to each child,
+			//will be filtered later in updatestatus()
+			this->pChildren[i]->walls.insert(this->pChildren[i]->walls.begin(),o				 this->walls.begin(), this->walls.end());
+			this->pChildren[i]->corners.insert(
+				this->pChildren[i]->corners.begin(),
+				this->corners.begin(), this->corners.end());
 		}
 		this->isLeaf = false;
 
 		return true;
 	}
 
-};
+};//class Box
