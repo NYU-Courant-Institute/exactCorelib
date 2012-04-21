@@ -61,6 +61,7 @@
 //#include <GL/glui.h>
 #include "glui.h"
 #include <set>
+//#include "CoreIo.h"
 
 using namespace std;
 
@@ -127,6 +128,7 @@ int main(int argc, char* argv[])
 
 	genEmptyTree();		// Initialize the quadtree
 
+//cout<<"before interactive\n";
 
 	if (interactive > 0) {	// non-interactive
 	    // do something...
@@ -140,6 +142,7 @@ int main(int argc, char* argv[])
 
 	// Else, set up for GLUT/GLUI interactive display:
 	
+//cout<<"before glutInit\n";
 	glutInit(&argc, argv);
 	glutInitWindowPosition(windowPosX, windowPosY);
 	glutInitWindowSize(boxWidth, boxWidth);
@@ -187,12 +190,14 @@ int main(int argc, char* argv[])
 
 	glui->set_main_gfx_window( windowID );
 
+//cout<<"before run\n";
 	// PERFORM THE INITIAL RUN OF THE ALGORITHM
 	//==========================================
 	run(); 	// make it do something interesting from the start!!!
 
 	// SHOULD WE STOP or GO INTERACTIVE?
 	//==========================================
+//cout<<"after run\n";
 	if (interactive > 0) {	// non-interactive
 	    // do something...
 	    cout << "Non Interactive Run of Disc Robot" << endl;
@@ -418,6 +423,30 @@ void renderScene(void) {
 	glutSwapBuffers();
 }
 
+/* */
+// skip blanks, tabs, line breaks and comment lines,
+// 	leaving us at the beginning of a token (or EOF)
+int skip_comment_line (std::ifstream & in) {
+	  int c;
+	
+	  do {
+	    c = in.get();
+	    while ( c == '#' ) {
+	      do {// ignore the rest of this line
+	        c = in.get();
+	      } while ( c != '\n' );
+	      c = in.get(); // now, reach the beginning of the next line
+	    }
+	  } while (c == ' ' || c == '\t' || c == '\n');	//ignore white spaces and newlines
+	
+	  if (c == EOF)
+	    std::cout << "unexpected end of file." << std::endl;
+	
+	  in.putback(c);  // this is non-white and non-comment char!
+	  return c;
+}//skip_comment_line
+/* */
+
 void parseConfigFile(Box* b)
 {	
 	ifstream ifs(fileName.c_str());
@@ -427,8 +456,13 @@ void parseConfigFile(Box* b)
 		exit(1);
 	}
 
+	// First, get to the beginning of the first token:
+	skip_comment_line ( ifs );
+
 	int nPt, nFeature;
 	ifs >> nPt;
+
+	//skip_comment_line ( ifs );	// again, clear white space
 	vector<double> pts(nPt*2);
 	for (int i = 0; i < nPt; ++i)
 	{
