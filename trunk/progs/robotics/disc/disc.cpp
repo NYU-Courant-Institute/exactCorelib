@@ -67,7 +67,7 @@ using namespace std;
 
 QuadTree* QT;
 
-// INPUT Parameters ========================================
+// GLOBAL INPUT Parameters ========================================
 //
 	double alpha[2] = {10, 360};		// start configuration
 	double beta[2] = {500, 20};		// goal configuration
@@ -85,6 +85,7 @@ QuadTree* QT;
 	int interactive = 0;			// Run interactively?
 						//    Yes (0) or No (1)
 	int seed = 111;				// seed for random number generator
+						// (Could also be used for BFS, etc)
 	bool noPath = true;			// Path Found?
 
 // GLUI controls ========================================
@@ -225,7 +226,7 @@ void genEmptyTree()
 	{
 		delete(QT);
 	}
-	QT = new QuadTree(root, epsilon, QType);
+	QT = new QuadTree(root, epsilon, QType, seed);
 cout<<"inside genEmpty:  Qtype= " << QType << "\n";
 }
 
@@ -241,9 +242,11 @@ void run()
 	beta[1] = editBetaY->get_float_val();
         QType = radioQType->get_int_val();
 
+cout<<"inside run:  Qtype= " << QType << "\n";
+
 	genEmptyTree();
 
-	noPath = false;
+	noPath = false;	// MISNOMER!  should be true.
 
 	boxA = QT->getBox(alpha[0], alpha[1]);
 	while (boxA && !boxA->isFree())
@@ -279,8 +282,9 @@ void run()
 
 	glutPostRedisplay();
 
-	cout << "path found is " << !noPath << endl;
-	cout << "expended " << ct << " times" << endl;
+	if (!noPath) cout << "Path found !" << endl;
+	else  cout << "No Path !" << endl;
+	cout << "expanded " << ct << " times" << endl;
 }
 
 void drawPath(vector<Box*>& path)

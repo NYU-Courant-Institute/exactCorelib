@@ -76,8 +76,14 @@ class randQueue : public BoxQueue
 {
 private:
 	list<Box*> L;
+	int seed;
 
 public:
+	randQueue(int s): seed(s) {
+		srand( time(0) );
+		//srand( seed++ ); // change the seed each time
+	}
+
 	void push(Box* b)
 	{
 		L.push_back(b);
@@ -85,7 +91,6 @@ public:
 
 	Box* extractMax()
 	{
-		srand( time(0) );
 		int i = rand() % L.size();
 		list<Box*>::iterator iter = L.begin();
 		advance(iter, i);
