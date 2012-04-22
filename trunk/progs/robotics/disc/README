@@ -12,10 +12,13 @@ Files in this directory:
 	QuadTree.{h,cpp}	-- quad tree data structure
 	Corner.{h,cpp}		-- corner features
 	Wall.{h,cpp}		-- wall features
-	PriorityQueue.h		-- priority queue for quick detection if path found
+	PriorityQueue.h		-- priority queue for search strategy
+	UnionFind.h		-- UnionFind for quick detection of path
+	Graph.h			-- graph searching based on Dijkstra and Astar 
 
+	envGenerator		-- Python script to generate large environments
 Directories:
-	original	-- the original implementation from Long and Shuxing
+	inputs			-- various sample input environment
 ============================================================
 
 OVERVIEW:

@@ -360,7 +360,7 @@ public:
 			this->pChildren[i]->pParent = this;
 			//add all of parent's walls and corners to each child,
 			//will be filtered later in updatestatus()
-			this->pChildren[i]->walls.insert(this->pChildren[i]->walls.begin(),o				 this->walls.begin(), this->walls.end());
+			this->pChildren[i]->walls.insert(this->pChildren[i]->walls.begin(),				 this->walls.begin(), this->walls.end());
 			this->pChildren[i]->corners.insert(
 				this->pChildren[i]->corners.begin(),
 				this->corners.begin(), this->corners.end());

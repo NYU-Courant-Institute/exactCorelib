@@ -7,7 +7,6 @@
 
 using namespace std;
 
-
 // min heap
 class distHeap
 {

@@ -15,8 +15,7 @@
 			[fileName = input2.txt] \
 			[boxWidth = 512] [boxHeight = 512] \
 			[windoxPosX = 400] [windowPosY = 200] \
-			[Qtype = 0] [seed = 111]
-		
+			[Qtype = 0] [seed = 111] [inputDir = inputs]
 	where 
 		interactive 	 	is nature of run
 	       					(0=interactive, >0 is non-interactive)
@@ -30,6 +29,7 @@
 		Qtype			is type of the priority queue
 						(sequential=0, random=1)
 		seed			is seed for random number generator
+		inputDir		is directory for input files
 
 	NOTE: see several examples of running this program in the Makefile.
 	
@@ -40,7 +40,6 @@
    Since Core Library  Version 2.1
    $Id: $
  ************************************** */
-
 
 #include "QuadTree.h"
 #include "PriorityQueue.h"
@@ -80,6 +79,7 @@ QuadTree* QT;
 	int windowPosX = 400;			// X Position of Window
 	int windowPosY = 200;			// Y Position of Window
 	string fileName("input2.txt"); 		// Input file name
+	string inputDir("inputs"); 		// Path for input files 
 	int QType = 0;				// The Priority Queue can be
 						//    sequential (0) or random (1)
 	int interactive = 0;			// Run interactively?
@@ -92,6 +92,7 @@ QuadTree* QT;
 //
 	GLUI_RadioGroup* radioQType;
 	GLUI_EditText* editInput;
+	GLUI_EditText* editDir;
 	GLUI_EditText* editRadius;
 	GLUI_EditText* editEpsilon;
 	GLUI_EditText* editAlphaX;
@@ -126,6 +127,7 @@ int main(int argc, char* argv[])
 	if (argc > 12) windowPosY = atoi(argv[12]);	// window Y pos
 	if (argc > 13) QType   = atoi(argv[13]);	// PriorityQ Type (random or no)
 	if (argc > 14) seed   = atoi(argv[14]);		// for random number generator
+	if (argc > 15) inputDir  = argv[15];		// path for input files
 
 	genEmptyTree();		// Initialize the quadtree
 
@@ -156,6 +158,8 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 	// SETTING UP THE CONTROL PANEL:
 	editInput = glui->add_edittext( "Input file:", GLUI_EDITTEXT_TEXT );
 	editInput->set_text((char*)fileName.c_str());
+	editDir = glui->add_edittext( "Input Directory:", GLUI_EDITTEXT_TEXT );
+	editDir->set_text((char*)inputDir.c_str());
 	editRadius = glui->add_edittext( "Radius:", GLUI_EDITTEXT_FLOAT );
 	editRadius->set_float_val(R0);
 	editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_FLOAT );
@@ -235,6 +239,7 @@ void run()
 {
 	//update from glui live variables
 	fileName = editInput->get_text();
+	inputDir = editDir->get_text();
 	R0 = editRadius->get_float_val();
 	epsilon = editEpsilon->get_float_val();
 	alpha[0] = editAlphaX->get_float_val();
@@ -475,7 +480,16 @@ int skip_backslash_new_line (std::istream & in) {
 
 void parseConfigFile(Box* b)
 {	
-	ifstream ifs(fileName.c_str());
+	std::stringstream ss;
+	ss << inputDir << "/" << fileName;	// create full file name 
+	std::string s = ss.str();
+if (s.compare("inputs/input2.txt") == 0)
+    cout << "Good: inputs/input2.txt and constructed ss are equal\n" ;
+else
+    cout << "Bad: inputs/input2.txt and constructed ss are NOT equal\n" ;
+cout << "file name = " << s << endl;	
+	ifstream ifs( s.c_str() );
+	//ifstream ifs( "inputs/input2.txt" );
 	if (!ifs)
 	{
 		cerr<< "cannot open input file" << endl;
@@ -489,7 +503,7 @@ void parseConfigFile(Box* b)
 	ifs >> nPt;
 cout<< "nPt=" << nPt << endl;
 
-	skip_comment_line ( ifs );	// again, clear white space
+	//skip_comment_line ( ifs );	// again, clear white space
 	vector<double> pts(nPt*2);
 	for (int i = 0; i < nPt; ++i)
 	{
@@ -497,7 +511,7 @@ cout<< "nPt=" << nPt << endl;
 cout<< "x=" << pts[i*2] << ", y=" << pts[i*2+1] << endl;
 	}
 
-	skip_comment_line ( ifs );	// again, clear white space
+	//skip_comment_line ( ifs );	// again, clear white space
 	ifs >> nPolygons;
 	//skip_comment_line ( ifs );	// again, clear white space
 cout<< "nPolygons=" << nPolygons << endl;
