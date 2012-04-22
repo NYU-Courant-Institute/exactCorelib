@@ -483,10 +483,6 @@ void parseConfigFile(Box* b)
 	std::stringstream ss;
 	ss << inputDir << "/" << fileName;	// create full file name 
 	std::string s = ss.str();
-if (s.compare("inputs/input2.txt") == 0)
-    cout << "Good: inputs/input2.txt and constructed ss are equal\n" ;
-else
-    cout << "Bad: inputs/input2.txt and constructed ss are NOT equal\n" ;
 cout << "file name = " << s << endl;	
 	ifstream ifs( s.c_str() );
 	//ifstream ifs( "inputs/input2.txt" );
@@ -508,7 +504,6 @@ cout<< "nPt=" << nPt << endl;
 	for (int i = 0; i < nPt; ++i)
 	{
 		ifs >> pts[i*2] >> pts[i*2+1];
-cout<< "x=" << pts[i*2] << ", y=" << pts[i*2+1] << endl;
 	}
 
 	//skip_comment_line ( ifs );	// again, clear white space

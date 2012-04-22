@@ -12,6 +12,9 @@
 #
 # 	       > make eg	-- compiles and runs "disc" interactively
 #
+# 	The default search-mode is "random".  We encourage you to just
+# 	hit the "Run me" button to see different runs of the program.
+#
 #	This is equivalent to typing:
 #
 #	       > disc $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
@@ -30,7 +33,10 @@
 #
 # (D)	Instead of the target "eg" you can use any of these targets:
 #
-#		ega, egb, egc, eg1, eg1a, eg1b, eg2, eg2a, eg2b, etc
+#		eg, ega, egb,
+#		eg1, eg1a, eg1b,
+#		eg2, eg2a, eg2b,
+#		etc.
 #
 # 	These targets uses different input files, all taken from
 # 	the subdirectory "inputs".   
@@ -124,6 +130,9 @@ eg:	disc
 		$(Qtype) $(seed)  $(inputDir)
 
 # run with default compiled options:
+#	The input file is input2.txt.
+#	There are 3 combinatorially different paths.
+#	Randomized strategy will find all three of them (keep hitting "run").
 #
 ega:	disc
 	@echo "Target 'ega':  runs disc with default compiled options"
@@ -156,7 +165,10 @@ egbug: disc
 		1 1111 $(inputDir)
 
 # RANDOMLY GENERATED ENVIRONMENT:
-#
+#	This one, generated using our Python Generator, has 200 triangles.
+#	Note that these triangles are not disjoint, but our theory remains
+#	valid for such inputs.  This is the power of the SSS approach (over
+#	the exact algorithms.
 # eg1:
 #
 eg1: disc
