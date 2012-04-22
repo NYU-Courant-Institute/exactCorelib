@@ -36,6 +36,7 @@
 #		eg, ega, egb,
 #		eg1, eg1a, eg1b,
 #		eg2, eg2a, eg2b,
+#		egbug, egbuga,
 #		etc.
 #
 # 	These targets uses different input files, all taken from
