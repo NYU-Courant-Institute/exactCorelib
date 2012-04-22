@@ -66,11 +66,11 @@ radius = 40		# robot radius
 radius = 30		# robot radius
 
 inputDir = inputs	# where to find input files
-fileName = bug0.txt	# input environment file
 fileName = input2d.txt	# input environment file
 fileName = input2.txt	# input environment file
 fileName = input0.txt	# input environment file
 fileName = input.txt	# input environment file
+fileName = bugtrap.txt	# input environment file
 
 boxWidth = 512		# initial configuration box size
 boxHt = 512
@@ -157,12 +157,28 @@ nopath eg0:	disc
 		$(Qtype) $(seed)  $(inputDir)
 
 # BUG TRAP:
+# 
+# Bugtrap example -- Non-existence of path, but barely!
 egbug: disc
 	@echo "Target 'egbug':  runs disc for bugtrap input, bugtrap.txt"
-	./disc $(interactive) 30 30 200 200 \
-		$(epsilon) 10 bugtrap0.txt \
+	@echo "--  this examples shows there is NO PATH, but barely so!"
+	@echo "--  you could see a green path that must pass between two green boxes"
+	@echo "--  that are NOT adjacent but shares a corner."
+	./disc $(interactive) 200 350 30 30 \
+		5 10 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 11 $(inputDir)
+
+# Bugtrap example -- Existence of path, but barely!
+egbuga: disc
+	@echo "Target 'egbuga':  runs disc for bugtrap input, bugtrap.txt"
+	@echo "--  this examples shows there is a PATH, but barely so!"
+	@echo "--  the only change from target 'egbug' is that epsilon is now 4, not 5"
+	@echo "--  that are NOT adjacent but shares a corner."
+	./disc $(interactive) 200 350 30 30 \
+		4 10 bugtrap.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 11 $(inputDir)
 
 # RANDOMLY GENERATED ENVIRONMENT:
 #	This one, generated using our Python Generator, has 200 triangles.
