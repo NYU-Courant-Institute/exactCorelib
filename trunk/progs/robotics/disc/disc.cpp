@@ -169,6 +169,11 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct)
 								dijQ.push(current->pChildren[i]);
 								toReset.push_back(current->pChildren[i]);
 								break;
+							case Box::STUCK:
+								cerr << "inside FindPath: STUCK case not treated" << endl;
+								break;
+							case Box::UNKNOWN:
+								cerr << "inside FindPath: UNKNOWN case not treated" << endl;
 						}
 					}
 				}
@@ -208,7 +213,7 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct)
 
 	//these two fields are also used in dijkstraShortestPath
 	// need to reset
-	for (int i = 0; i < toReset.size(); ++i)
+	for (int i = 0; i < (int)toReset.size(); ++i)
 	{
 		toReset[i]->visited = false;
 		toReset[i]->dist2Source = -1;
