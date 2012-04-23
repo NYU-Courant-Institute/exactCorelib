@@ -55,10 +55,10 @@
 #ifdef _WIN32
 #include <gl/glui.h>
 #endif
-
-//#include <gl/glut.h>
-//#include <GL/glui.h>
+#ifdef __APPLE__
 #include "glui.h"
+#endif
+
 #include <set>
 //#include "CoreIo.h"
 
@@ -108,6 +108,111 @@ void parseConfigFile(Box*);
 void run();
 void genEmptyTree();
 void drawPath(vector<Box*>&);
+
+
+//find path using simple heuristic:
+//use distance to beta as key in PQ, see dijkstraQueue
+bool findPath(Box* a, Box* b, QuadTree* QT, int& ct)
+{
+	bool isPath = false;
+	vector<Box*> toReset;
+	a->dist2Source = 0;
+	dijkstraQueue dijQ;
+	dijQ.push(a);
+	toReset.push_back(a);
+	while(!dijQ.empty())
+	{
+		Box* current = dijQ.extract();
+		current->visited = true;
+
+		// if current is MIXED, try expand it and push the children that is
+		// ACTUALLY neighbors of the source set (set containing alpha) into the dijQ again
+		if (current->status == Box::MIXED)
+		{
+			if (QT->expand(current))
+			{
+				++ct;
+				for (int i = 0; i < 4; ++i)
+				{
+					// go through neighbors of each child to see if it's in source set
+					// if yes, this child go into the dijQ
+					bool isNeighborOfSourceSet = false;
+					for (int j = 0; j < 4 && !isNeighborOfSourceSet; ++j)
+					{
+						BoxIter* iter = new BoxIter(current->pChildren[i], j);
+						Box* n = iter->First();
+						while (n && n != iter->End())
+						{
+							if (n->dist2Source == 0)
+							{
+								isNeighborOfSourceSet = true;
+								break;
+							}
+							n = iter->Next();
+						}							
+					}					
+					if (isNeighborOfSourceSet)
+					{
+
+						switch (current->pChildren[i]->getStatus())
+						{
+							//if it's FREE, also insert to source set
+							case Box::FREE:
+								current->pChildren[i]->dist2Source = 0;
+								dijQ.push(current->pChildren[i]);
+								toReset.push_back(current->pChildren[i]);
+								break;
+							case Box::MIXED:
+								dijQ.push(current->pChildren[i]);
+								toReset.push_back(current->pChildren[i]);
+								break;
+						}
+					}
+				}
+			}
+			continue;
+		}
+
+		//found path!
+		if (current == b)
+		{			
+			isPath = true;
+			break;
+		}
+
+		// if current is not MIXED, then must be FREE
+		// go through it's neighbors and add FREE and MIXED ones to dijQ
+		// also add FREE ones to source set 
+		for (int i = 0; i < 4; ++i)
+		{
+			BoxIter* iter = new BoxIter(current, i);
+			Box* neighbor = iter->First();
+			while (neighbor && neighbor != iter->End())
+			{
+				if (!neighbor->visited && neighbor->dist2Source == -1 && (neighbor->status == Box::FREE || neighbor->status == Box::MIXED))
+				{					
+					if (neighbor->status == Box::FREE)
+					{
+						neighbor->dist2Source = 0;
+					}						
+					dijQ.push(neighbor);	
+					toReset.push_back(neighbor);
+				}
+				neighbor = iter->Next();
+			}
+		}
+	}
+
+	//these two fields are also used in dijkstraShortestPath
+	// need to reset
+	for (int i = 0; i < toReset.size(); ++i)
+	{
+		toReset[i]->visited = false;
+		toReset[i]->dist2Source = -1;
+	}
+
+	return isPath;
+}
 
 
 // MAIN PROGRAM: ========================================
@@ -253,38 +358,68 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 	genEmptyTree();
 
 	noPath = false;	// Confusing use of "noPath"
-
-	boxA = QT->getBox(alpha[0], alpha[1]);
-	while (boxA && !boxA->isFree())
-	{
-		if (!QT->expand(boxA))
-		{
-			noPath = true; // Confusing use of "noPath"
-			break;
-		}
-		boxA = QT->getBox(boxA, alpha[0], alpha[1]);
-	}
-
-	boxB = QT->getBox(beta[0], beta[1]);
-	while (!noPath && boxB && !boxB->isFree())
-	{
-		if (!QT->expand(boxB))
-		{
-			noPath = true;
-			break;
-		}
-		boxB = QT->getBox(boxB, beta[0], beta[1]);
-	}
-
 	int ct = 0;
-	while(!noPath && !QT->isConnect(boxA, boxB))
+
+	if (QType == 0 || QType == 1)
 	{
-		++ct;
-		if (!QT->expand())
+		boxA = QT->getBox(alpha[0], alpha[1]);
+		while (boxA && !boxA->isFree())
 		{
-			noPath = true;
+			if (!QT->expand(boxA))
+			{
+				noPath = true; // Confusing use of "noPath"
+				break;
+			}
+			boxA = QT->getBox(boxA, alpha[0], alpha[1]);
 		}
-	}
+
+		boxB = QT->getBox(beta[0], beta[1]);
+		while (!noPath && boxB && !boxB->isFree())
+		{
+			if (!QT->expand(boxB))
+			{
+				noPath = true;
+				break;
+			}
+			boxB = QT->getBox(boxB, beta[0], beta[1]);
+		}
+		
+		while(!noPath && !QT->isConnect(boxA, boxB))
+		{
+			++ct;
+			if (!QT->expand())
+			{
+				noPath = true;
+			}
+		}
+	} 
+	else if(QType == 2)
+	{
+		boxA = QT->getBox(alpha[0], alpha[1]);
+		while (boxA && !boxA->isFree())
+		{
+			if (!QT->expand(boxA))
+			{
+				noPath = true;
+				break;
+			}
+			boxA = QT->getBox(boxA, alpha[0], alpha[1]);
+		}
+
+		boxB = QT->getBox(beta[0], beta[1]);
+		while (!noPath && boxB && !boxB->isFree())
+		{
+			if (!QT->expand(boxB))
+			{
+				noPath = true;
+				break;
+			}
+			boxB = QT->getBox(boxB, beta[0], beta[1]);
+		}
+
+		noPath = !findPath(boxA, boxB, QT, ct);
+	}	
+
 
 	glutPostRedisplay();
 
@@ -427,7 +562,7 @@ void renderScene(void) {
 
 	if (!noPath)
 	{
-		vector<Box*> path = Graph::findPath(boxA, boxB);
+		vector<Box*> path = Graph::dijketraShortestPath(boxA, boxB);
 		drawPath(path);
 	}
 

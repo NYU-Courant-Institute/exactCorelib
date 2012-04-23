@@ -55,6 +55,9 @@ public:
 		case 0:
 			PQ = new randQueue(s);
 			break;
+		case 2:
+			PQ = new dijkstraQueue();
+			break;
 		}
 		
 		//PQ = new randQueue();
@@ -121,7 +124,7 @@ public:
 	{
 		while(!PQ->empty())
 		{
-			Box* b = PQ->extractMax();
+			Box* b = PQ->extract();
 			//b might not be a leaf since it could already be split in expand(Box* b), and PQ is not updated there
 			if (b->isLeaf && b->split(epsilon))
 			{
