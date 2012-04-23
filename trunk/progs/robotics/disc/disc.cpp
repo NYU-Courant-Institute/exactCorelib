@@ -509,9 +509,11 @@ void treeTraverse(Box* b)
 	}
 }
 
-void drawCircle( float Radius, int numPoints, double x, double y)
-{
-	glBegin( GL_LINE_STRIP );
+void drawCircle( float Radius, int numPoints, double x, double y, double r, double g, double b)
+{	
+	glColor3d(r,g,b);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);	
+	glBegin(GL_POLYGON);
 	for( int i = 0; i <= numPoints; ++i )
 	{
 		float Angle = i * (2.0* 3.1415926 / numPoints);  
@@ -524,13 +526,18 @@ void drawCircle( float Radius, int numPoints, double x, double y)
 
 void filledCircle( double radius, double x, double y, double r, double g, double b) 
 {
-    glBegin(GL_POINTS);
-    glColor3d(r,g,b);
-    //glEnable(GL_POINT_SMOOTH);
-    //glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-    glPointSize(radius);
-    glVertex2d(x, y); 
-    glEnd();
+	int numPoints = 100;
+	glColor3d(r,g,b);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBegin(GL_POLYGON);
+	for( int i = 0; i <= numPoints; ++i )
+	{
+		float Angle = i * (2.0* 3.1415926 / numPoints);  
+		float X = cos( Angle )*radius;  
+		float Y = sin( Angle )*radius;
+		glVertex2f( X + x, Y + y);
+	}
+	glEnd();
 }
 
 void renderScene(void) {
@@ -545,13 +552,8 @@ void renderScene(void) {
 
 	glPolygonMode(GL_FRONT, GL_LINE);
 
-	glColor3f(0, 0, 1);
-	drawCircle(R0, 100, alpha[0], alpha[1]);	// start
-	drawCircle(R0, 100, beta[0], beta[1]);		// goal
-
-	// Chee: draw centers of robot: (buggy?  nothing shows)
-	drawCircle(5, 100, alpha[0], alpha[1]);	// start
-	drawCircle(5, 100, beta[0], beta[1]);		// goal
+	drawCircle(R0, 100, alpha[0], alpha[1], 0, 0, 1);	// start
+	drawCircle(R0, 100, beta[0], beta[1], 0, 0, 1);		// goal
 
 	double r0 = 5;
 	if (r0>R0) r0=R0;
