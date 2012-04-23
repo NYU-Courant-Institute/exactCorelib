@@ -111,7 +111,7 @@ void parseConfigFile(Box*);
 void run();
 void genEmptyTree();
 void drawPath(vector<Box*>&);
-
+void fileProcessor(string inputfile);
 
 //find path using simple heuristic:
 //use distance to beta as key in PQ, see dijkstraQueue
@@ -637,9 +637,12 @@ void parseConfigFile(Box* b)
 	std::stringstream ss;
 	ss << inputDir << "/" << fileName;	// create full file name 
 	std::string s = ss.str();
-cout << "file name = " << s << endl;	
-	ifstream ifs( s.c_str() );
-	//ifstream ifs( "inputs/input2.txt" );
+cout << "input file name = " << s << endl;	
+
+	fileProcessor(s);	// this will clean the input and put in
+				// output-tmp.txt
+	
+	ifstream ifs( "output-tmp.txt" );
 	if (!ifs)
 	{
 		cerr<< "cannot open input file" << endl;

@@ -92,7 +92,7 @@ step = 0		# number of steps to run
 #=================================================
 TARGETS = disc
 
-OBJ_FILES = Box.o QuadTree.o Corner.o Wall.o 
+OBJ_FILES = Box.o QuadTree.o Corner.o Wall.o  fileProcessor.o
 
 all: $(TARGETS)
 
@@ -105,6 +105,10 @@ test: $(TARGETS)
 		$(startX) $(startY)  $(goalX) $(goalY) \
 		$(epsilon)  $(radius)  input.txt  $(boxWidth) $(boxHt) \
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir)
+
+testall: $(TARGETS)
+	make ega interactive=1
+	make egb interactive=1
 
 testa: $(TARGETS)
 	./disc 1
@@ -137,7 +141,7 @@ eg:	disc
 #
 ega:	disc
 	@echo "Target 'ega':  runs disc with default compiled options"
-	./disc 
+	./disc $(interactive)
 
 # run with default Makefile options:
 #
@@ -230,12 +234,12 @@ eg2: disc
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 
-
 moretest: $(TARGETS)
 # nothing to do
 
 disc: $(OBJ_FILES) disc.o
 
+fileProcessor.o: fileProcessor.cpp
 
 #=================================================
 # Temp
