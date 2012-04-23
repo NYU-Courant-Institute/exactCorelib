@@ -87,10 +87,13 @@ QuadTree* QT;
 	int seed = 111;				// seed for random number generator
 						// (Could also be used for BFS, etc)
 	bool noPath = true;			// True means there is "No path.
+ 
+	bool hideBoxBoundary = false;  //don't draw box boundary
 
 // GLUI controls ========================================
 //
 	GLUI_RadioGroup* radioQType;
+	GLUI_RadioGroup* radioDrawOption;
 	GLUI_EditText* editInput;
 	GLUI_EditText* editDir;
 	GLUI_EditText* editRadius;
@@ -234,7 +237,6 @@ int main(int argc, char* argv[])
 	if (argc > 14) seed   = atoi(argv[14]);		// for random number generator
 	if (argc > 15) inputDir  = argv[15];		// path for input files
 
-	genEmptyTree();		// Initialize the quadtree
 
 cout<<"before interactive, Qtype= " << QType << "\n";
 
@@ -295,6 +297,11 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 	glui->add_radiobutton_to_group(radioQType, "A-star");
 	glui->add_separator();
 
+	radioDrawOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)renderScene);
+	glui->add_radiobutton_to_group(radioDrawOption, "Show Box Boundary");
+	glui->add_radiobutton_to_group(radioDrawOption, "Hide Box Boundary");
+	glui->add_separator();
+
 	// Quit button
 	glui->add_button( "Quit", 0, (GLUI_Update_CB)exit );
 
@@ -351,7 +358,7 @@ void run()
 	alpha[1] = editAlphaY->get_float_val();
 	beta[0] = editBetaX->get_float_val();
 	beta[1] = editBetaY->get_float_val();
-        QType = radioQType->get_int_val();
+    QType = radioQType->get_int_val();	
 
 cout<<"inside run:  Qtype= " << QType << "\n";
 
@@ -469,19 +476,22 @@ void drawQuad(Box* b)
 	glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
 	glEnd();
 
-	glColor3f(0, 0 , 0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glBegin(GL_POLYGON);
-	glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
-	glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
-	glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
-	glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
-	glEnd();
+	if (!hideBoxBoundary)
+	{
+		glColor3f(0, 0 , 0);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glBegin(GL_POLYGON);
+		glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
+		glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
+		glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
+		glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
+		glEnd();
+	}	
 }
 
 void drawWalls(Box* b)
 {
-	glColor3f(1, 1, 1);
+	glColor3f(153/255.0, 51/255.0, 153/255.0);
 	for (list<Wall*>::iterator iter = b->walls.begin(); iter != b->walls.end(); ++iter)
 	{
 		Wall* w = *iter;
@@ -493,7 +503,7 @@ void drawWalls(Box* b)
 }
 
 void treeTraverse(Box* b)
-{
+{	
 	if (!b)
 	{
 		return;
@@ -540,7 +550,9 @@ void filledCircle( double radius, double x, double y, double r, double g, double
 	glEnd();
 }
 
-void renderScene(void) {
+void renderScene(void) 
+{
+	hideBoxBoundary = radioDrawOption->get_int_val();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
