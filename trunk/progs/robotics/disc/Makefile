@@ -165,7 +165,7 @@ nopath eg0:	disc
 # BUG TRAP:
 ###################################################
 # Bugtrap example -- Non-existence of path, but barely!
-egbug: disc
+egbug bug: disc
 	@echo "Target 'egbug':  runs disc for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
@@ -176,7 +176,7 @@ egbug: disc
 		1 11 $(inputDir)
 
 # Bugtrap example -- Existence of path, but barely!
-egbuga: disc
+egbuga buga: disc
 	@echo "Target 'egbuga':  runs disc for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is a PATH, but barely so!"
 	@echo "--  the only change from target 'egbug' is that epsilon is now 4, not 5"
@@ -189,7 +189,7 @@ egbuga: disc
 # BUG2 TRAP:
 ###################################################
 # Bugtrap example -- Non-existence of path, but barely!
-egbug2: disc
+egbug2 bug2: disc
 	@echo "Target 'egbug2':  runs disc for bugtrap input, bugtrap2.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
@@ -207,7 +207,7 @@ egbug2: disc
 # eg1:
 #
 eg1: disc
-	@echo "Target eg1:  runs disc on randomly generated obstacles"
+	@echo "Target eg1:  runs disc amidst 200 randomly generated triangles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
 	./disc $(interactive) 150 260 20 20 \
@@ -219,7 +219,7 @@ eg1: disc
 # 	lots of time checking elsewhere!
 #
 eg1a: disc
-	@echo "Target eg1a:  runs disc on randomly generated obstacles"
+	@echo "Target eg1a:  runs disc amidst 200 randomly generated triangles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
 	./disc $(interactive) 10 360 20 20 \
@@ -233,7 +233,7 @@ eg1a: disc
 # 	code.   THIS IS A GOOD PLACE TO RUN IN LEVEL 2 to CHECK!!!
 #
 eg1b: disc
-	@echo "Target eg1a:  runs disc on randomly generated obstacles"
+	@echo "Target eg1b:  runs disc amidst 200 randomly generated triangles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
 	./disc $(interactive) 150 260 20 20 \
@@ -241,10 +241,24 @@ eg1b: disc
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
 
-
 eg2: disc
+	@echo "Target eg2:  runs disc on simples obstacles"
 	./disc $(interactive) 10 350  500 20 \
 		10 20 input2.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir)
+
+eg3: disc
+	@echo "Target eg3:  runs disc amidst 100 randomly generated obstacles"
+	./disc $(interactive) 10 350  280 220 \
+		1 10 input3.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir)
+
+eg4: disc
+	@echo "Target eg4:  runs disc amidst 100 randomly generated obstacles"
+	./disc $(interactive) 10 350  280 220 \
+		1 10 input4.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 
