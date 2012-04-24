@@ -37,6 +37,7 @@
 #		eg1, eg1a, eg1b,
 #		eg2, eg2a, eg2b,
 #		egbug, egbuga,
+#		egbug2, egbug2a,
 #		etc.
 #
 # 	These targets uses different input files, all taken from
@@ -70,8 +71,8 @@ inputDir = inputs	# where to find input files
 fileName = input2d.txt	# input environment file
 fileName = input2.txt	# input environment file
 fileName = input0.txt	# input environment file
-fileName = input.txt	# input environment file
 fileName = bugtrap.txt	# input environment file
+fileName = input.txt	# input environment file
 
 boxWidth = 512		# initial configuration box size
 boxHt = 512
@@ -162,7 +163,7 @@ nopath eg0:	disc
 		$(Qtype) $(seed)  $(inputDir)
 
 # BUG TRAP:
-# 
+###################################################
 # Bugtrap example -- Non-existence of path, but barely!
 egbug: disc
 	@echo "Target 'egbug':  runs disc for bugtrap input, bugtrap.txt"
@@ -182,6 +183,19 @@ egbuga: disc
 	@echo "--  that are NOT adjacent but shares a corner."
 	./disc $(interactive) 200 350 30 30 \
 		4 10 bugtrap.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 11 $(inputDir)
+
+# BUG2 TRAP:
+###################################################
+# Bugtrap example -- Non-existence of path, but barely!
+egbug2: disc
+	@echo "Target 'egbug2':  runs disc for bugtrap input, bugtrap2.txt"
+	@echo "--  this examples shows there is NO PATH, but barely so!"
+	@echo "--  you could see a green path that must pass between two green boxes"
+	@echo "--  that are NOT adjacent but shares a corner."
+	./disc $(interactive) 180 220 20 20 \
+		5 10 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
 
@@ -238,8 +252,6 @@ moretest: $(TARGETS)
 # nothing to do
 
 disc: $(OBJ_FILES) disc.o
-
-fileProcessor.o: fileProcessor.cpp
 
 #=================================================
 # Temp

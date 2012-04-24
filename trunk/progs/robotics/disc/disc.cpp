@@ -300,6 +300,7 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 	glui->add_radiobutton_to_group(radioQType, "Random");
 	glui->add_radiobutton_to_group(radioQType, "BFS");
 	glui->add_radiobutton_to_group(radioQType, "A-star");
+	glui->add_radiobutton_to_group(radioQType, "Hybrid");
 	glui->add_separator();
 
 	radioDrawOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)renderScene);
@@ -572,10 +573,10 @@ void renderScene(void)
 	drawCircle(R0, 100, alpha[0], alpha[1], 0, 0, 1);	// start
 	drawCircle(R0, 100, beta[0], beta[1], 0, 0, 1);		// goal
 
-	double r0 = 5;
+	double r0 = 8;
 	if (r0>R0) r0=R0;
 	filledCircle(r0, alpha[0], alpha[1], 0.2, 0.2, 1.0);	//blue start center
-	filledCircle(r0, beta[0], beta[1], 0.8, 0.8, 0.2);	//yellow goal center
+	filledCircle(r0, beta[0], beta[1], 0.4, 0.4, 0.2);	//yellow goal center
 
 	drawWalls(QT->pRoot);
 

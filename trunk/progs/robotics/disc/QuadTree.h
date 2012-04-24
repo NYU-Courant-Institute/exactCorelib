@@ -39,6 +39,7 @@ private:
 public:
 	UnionFind* pSets;
 	BoxQueue* PQ;
+	BoxQueue* PQ2;
 	Box* pRoot;
 	double epsilon;
 	int QType;
@@ -58,6 +59,9 @@ public:
 		case 2:
 			PQ = new dijkstraQueue();
 			break;
+		case 3:
+			PQ = new seqQueue();
+			PQ2 = new dijkstraQueue();
 		}
 		
 		//PQ = new randQueue();
