@@ -111,7 +111,7 @@ void parseConfigFile(Box*);
 void run();
 void genEmptyTree();
 void drawPath(vector<Box*>&);
-void fileProcessor(string inputfile);
+extern int fileProcessor(string inputfile);
 
 //find path using simple heuristic:
 //use distance to beta as key in PQ, see dijkstraQueue
