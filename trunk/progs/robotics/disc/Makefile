@@ -188,14 +188,23 @@ egbuga buga: disc
 
 # BUG2 TRAP:
 ###################################################
-# Bugtrap example -- Non-existence of path, but barely!
+# Bugtrap2 example -- Non-existence of path, but barely!
+egbug2 bug2: disc
+	@echo "Target 'egbug2':  runs disc for bugtrap input, bugtrap2.txt"
+	@echo "--  this examples shows there is NO PATH, but barely so!"
+	./disc $(interactive) 180 220 20 20 \
+		2 8 bugtrap2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 11 $(inputDir)
+
+# Bugtrap2 example -- Existence of path, but barely!
 egbug2 bug2: disc
 	@echo "Target 'egbug2':  runs disc for bugtrap input, bugtrap2.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
 	@echo "--  that are NOT adjacent but shares a corner."
 	./disc $(interactive) 180 220 20 20 \
-		5 10 bugtrap2.txt \
+		1 8 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
 

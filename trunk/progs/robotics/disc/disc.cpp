@@ -651,11 +651,11 @@ cout << "input file name = " << s << endl;
 	}
 
 	// First, get to the beginning of the first token:
-	skip_comment_line ( ifs );
+	//skip_comment_line ( ifs );
 
 	int nPt, nPolygons;	// previously, nPolygons was misnamed as nFeatures
 	ifs >> nPt;
-cout<< "nPt=" << nPt << endl;
+cout<< "nPt=" << nPt << ",   ";
 
 	//skip_comment_line ( ifs );	// again, clear white space
 	vector<double> pts(nPt*2);
