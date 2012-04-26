@@ -15,6 +15,9 @@
 #include "UnionFind.h"
 #include "PriorityQueue.h"
 
+extern int freeCount;
+extern int stuckCount;
+
 class QuadTree
 {
 private:
@@ -25,8 +28,10 @@ private:
 		case Box::FREE:
 			new Set(b);
 			unionAdjacent(b);
+			++freeCount;
 			break;
 		case Box::STUCK:
+			++stuckCount;
 			break;
 		case Box::MIXED:
 			PQ->push(b);

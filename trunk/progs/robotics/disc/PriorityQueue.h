@@ -47,6 +47,8 @@ public:
 
 	virtual bool empty() = 0;
 
+	virtual int size() = 0;
+
 	~BoxQueue(void)
 	{
 	}
@@ -72,6 +74,11 @@ public:
 	bool empty()
 	{
 		return PQ.empty();
+	}
+
+	int size()
+	{
+		return PQ.size();
 	}
 };
 
@@ -107,6 +114,11 @@ public:
 		return L.empty();
 	}
 
+	int size()
+	{
+		return L.size();
+	}
+
 };
 
 class dijkstraQueue : public BoxQueue
@@ -130,5 +142,10 @@ public:
 	bool empty()
 	{
 		return bv.empty();
+	}
+
+	int size()
+	{
+		return bv.size();
 	}
 };

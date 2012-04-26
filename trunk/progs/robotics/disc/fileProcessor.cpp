@@ -120,7 +120,6 @@ int fileProcessor(string infileName){
   string line;			// for getline
   char *tok, *tokNext;
   bool emptyLine = true;	// do not output \n for an empty line...
-  bool noComment = true;	// do not output \n if see #
 
   if (ifile.is_open())			// check if opened
   {
@@ -153,25 +152,16 @@ int fileProcessor(string infileName){
 	      } while (tok == NULL);		// assert(We will find a non-null token)
 	      continue; 			// do not break!
 	  }// if "\\"
-	  if (isComment(tok)==0){
-	      if (!noComment) {
-	        ofile << "\n";
-		noComment = true;
-	      }
+	  if (isComment(tok)==0)
 	      break;
-	  }
 	  ofile << string(tok);
-	  noComment = false;		// if we see # again, can output \n
 	  emptyLine = false;		// we have output SOME token!
 	  if (tokNext != NULL)		// add space only between two tokens
 	      ofile << " ";
 	  tok = tokNext;
 	}// while tok not NULL
-	if (!emptyLine) {
+	if (!emptyLine)
 	    ofile << "\n";
-	    emptyLine = true;
-	    noComment = true;
-	}
     }//while good
     ifile.close();
   }//if

@@ -48,6 +48,7 @@
 #include <sstream>
 #include <string>
 #include "Graph.h"
+#include "Timer.h"
 
 #ifdef __CYGWIN32__
 #include "glui.h"
@@ -89,6 +90,9 @@ QuadTree* QT;
 	bool noPath = true;			// True means there is "No path.
  
 	bool hideBoxBoundary = false;  //don't draw box boundary
+
+	int freeCount = 0;
+	int stuckCount = 0;
 
 // GLUI controls ========================================
 //
@@ -368,6 +372,10 @@ void run()
 
 cout<<"inside run:  Qtype= " << QType << "\n";
 
+	Timer t;
+	// start timer
+	t.start();
+
 	genEmptyTree();
 
 	noPath = false;	// Confusing use of "noPath"
@@ -378,6 +386,7 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 		boxA = QT->getBox(alpha[0], alpha[1]);
 		while (boxA && !boxA->isFree())
 		{
+			++ct;
 			if (!QT->expand(boxA))
 			{
 				noPath = true; // Confusing use of "noPath"
@@ -389,6 +398,7 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 		boxB = QT->getBox(beta[0], beta[1]);
 		while (!noPath && boxB && !boxB->isFree())
 		{
+			++ct;
 			if (!QT->expand(boxB))
 			{
 				noPath = true;
@@ -433,12 +443,20 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 		noPath = !findPath(boxA, boxB, QT, ct);
 	}	
 
+	// stop timer
+	t.stop();
+	// print the elapsed time in millisec
+	cout << "Time used: " << t.getElapsedTimeInMilliSec() << " ms.\n";
 
 	glutPostRedisplay();
 
 	if (!noPath) cout << "Path found !" << endl;
 	else  cout << "No Path !" << endl;
 	cout << "Expanded " << ct << " times" << endl;
+	cout << "total Free boxes: " << freeCount << endl;
+	cout << "total Stuck boxes: " << stuckCount << endl;
+	cout << "total Mixed boxes: " << QT->PQ->size() << endl;
+	freeCount = stuckCount = 0;
 }
 
 void drawPath(vector<Box*>& path)
