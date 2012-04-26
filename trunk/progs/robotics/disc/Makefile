@@ -79,7 +79,7 @@ boxHt = 512
 
 windowPosX = 200	# initial Window position
 windowPosY = 200	
-windowPosX = 700	# initial Window position
+windowPosX = 600	# initial Window position
 windowPosY = 20	
 
 Qtype = 0		# type of priority queue
@@ -188,25 +188,24 @@ egbuga buga: disc
 
 # BUG2 TRAP:
 ###################################################
-# Bugtrap2 example -- Non-existence of path, but barely!
+# Bugtrap2 example -- Existence of path, but barely! (eps=1)
 egbug2 bug2: disc
 	@echo "Target 'egbug2':  runs disc for bugtrap input, bugtrap2.txt"
-	@echo "--  this examples shows there is NO PATH, but barely so!"
+	@echo "--  this example shows a PATH, but barely so!"
+	./disc $(interactive) 180 220 20 20 \
+		1 8 bugtrap2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 11 $(inputDir)
+
+# Bugtrap2 example -- Non-existence of path, but barely! (eps=2)
+egbug2a bug2a: disc
+	@echo "Target 'egbug2':  runs disc for bugtrap input, bugtrap2.txt"
+	@echo "--  this example shows NO PATH, but barely so!"
 	./disc $(interactive) 180 220 20 20 \
 		2 8 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
 
-# Bugtrap2 example -- Existence of path, but barely!
-egbug2 bug2: disc
-	@echo "Target 'egbug2':  runs disc for bugtrap input, bugtrap2.txt"
-	@echo "--  this examples shows there is NO PATH, but barely so!"
-	@echo "--  you could see a green path that must pass between two green boxes"
-	@echo "--  that are NOT adjacent but shares a corner."
-	./disc $(interactive) 180 220 20 20 \
-		1 8 bugtrap2.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir)
 
 # RANDOMLY GENERATED ENVIRONMENT:
 #	This one, generated using our Python Generator, has 200 triangles.
