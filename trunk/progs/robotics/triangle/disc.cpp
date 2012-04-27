@@ -127,6 +127,7 @@ void genEmptyTree();
 void drawPath(vector<Box*>&);
 extern int fileProcessor(string inputfile);
 void drawCircle( float Radius, int numPoints, double x, double y, double r, double g, double b);
+void drawLine();
 
 //find path using simple heuristic:
 //use distance to beta as key in PQ, see dijkstraQueue
@@ -642,6 +643,22 @@ void filledCircle( double radius, double x, double y, double r, double g, double
 	glEnd();
 }
 
+void drawLine()
+{
+	if (noPath)
+	{
+		glColor3f(0, 0, 0);
+	} 
+	else
+	{
+		glColor3f(1, 0, 0);
+	}
+	glBegin(GL_LINES);
+		glVertex2f(alpha[0], alpha[1]);
+		glVertex2f(beta[0], beta[1]);
+	glEnd();
+}
+
 void renderScene(void) 
 {
 	hideBoxBoundary = radioDrawOption->get_int_val();
@@ -669,6 +686,8 @@ void renderScene(void)
 	filledCircle(r0, beta[0], beta[1], 0.8, 0.8, 0.2);	//yellow goal center
 
 	drawWalls(QT->pRoot);
+
+	drawLine();
 
 	if (!noPath)
 	{
