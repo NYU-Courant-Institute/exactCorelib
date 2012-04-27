@@ -99,6 +99,10 @@ double triRobo[2] = {0.833333333, 1.666666667};
 	int mixCount = 0;
 	int mixSmallCount = 0;
 
+	//controls triangle drawing along path
+	const int TRIS_TO_SKIP = 40;
+	const double DIST_TO_SKIP = 32;
+
 // GLUI controls ========================================
 //
 	GLUI_RadioGroup* radioQType;
@@ -475,6 +479,7 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 
 void drawTri(Box* b)
 {
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor3f(1, 0, 0);
 	glBegin(GL_TRIANGLES);	
 
@@ -496,10 +501,31 @@ void drawPath(vector<Box*>& path)
 	}
 	glVertex2f(alpha[0], alpha[1]);
 	glEnd();
+
+	int skipped = 0;
+	double distSkipped = 0;
 	for (int i = 0; i < (int)path.size(); ++i)
 	{
-		drawTri(path[i]);
-		drawCircle(R0, 100, path[i]->x, path[i]->y, 0, 0, 1);
+		if (i > 0)
+		{
+			double dist = sqrt( (path[i]->x - path[i-1]->x)*(path[i]->x - path[i-1]->x) + (path[i]->y - path[i-1]->y)*(path[i]->y - path[i-1]->y) );
+			distSkipped += dist;
+			++skipped;
+			//control triangles drawing:
+			//enable (&& dist>= 1e-9) to hide same spot rotation 
+			if ( (skipped > TRIS_TO_SKIP || distSkipped > DIST_TO_SKIP) )// && dist>= 1e-9 )
+			{
+				drawTri(path[i]);
+				drawCircle(R0, 100, path[i]->x, path[i]->y, 0, 0, 1);
+				skipped = 0;
+				distSkipped = 0;
+			}
+		}
+		else
+		{
+			drawTri(path[i]);
+			drawCircle(R0, 100, path[i]->x, path[i]->y, 0, 0, 1);
+		}
 	}
 }
 

@@ -749,11 +749,8 @@ public:
 		//simple case
 		children[0]->Nhbrs[4].push_back(children[1]);
 		children[1]->Nhbrs[5].push_back(children[0]);
-		children[0]->Nhbrs[5].insert(children[0]->Nhbrs[5].begin(), this->Nhbrs[5].begin(), this->Nhbrs[5].end());
-		children[1]->Nhbrs[4].insert(children[1]->Nhbrs[4].begin(), this->Nhbrs[4].begin(), this->Nhbrs[4].end());
 
-
-		for (int i = 0; i < 4; ++i)
+		for (int i = 0; i < 6; ++i)
 		{
 			for (vector<Box*>::iterator iter = this->Nhbrs[i].begin(); iter != this->Nhbrs[i].end(); ++iter)
 			{
