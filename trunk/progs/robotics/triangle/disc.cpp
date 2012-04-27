@@ -532,7 +532,7 @@ void drawPath(vector<Box*>& path)
 
 void drawQuad(Box* b)
 {
-	if (!b->isLeaf)
+	if (!b->isLeaf || b->status == Box::UNKNOWN)
 	{
 		return;
 	}
