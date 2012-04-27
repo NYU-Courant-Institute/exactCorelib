@@ -543,16 +543,16 @@ void drawQuad(Box* b)
 	switch(b->status)
 	{
 	case Box::FREE:
-		glColor3f(0, 1, 0);
+		glColor4f(0, 1, 0, 0.5);
 		break;
 	case Box::STUCK:
-		glColor3f(1, 0, 0);
+		glColor4f(1, 0, 0, 0.5);
 		break;
 	case Box::MIXED:
-		glColor3f(1, 1, 0);
+		glColor4f(1, 1, 0, 0.1);
 		if (b->height < epsilon || b->width < epsilon)
 		{
-			glColor3f(0.5, 0.5, 0.5);
+			glColor4f(0.5, 0.5, 0.5, 0.1);
 		}
 		break;
 	case Box::UNKNOWN:
@@ -667,6 +667,10 @@ void renderScene(void)
 	glLoadIdentity();
 	glScalef(2.0/boxWidth, 2.0/boxHeight, 0);
 	glTranslatef(-boxWidth/2, -boxHeight/2, 0);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable( GL_BLEND );
+
 
 	//treeTraverse(QT->pRoot);
 	for (vector<Box*>::iterator it = allLeaf.begin(); it != allLeaf.end(); ++it)
