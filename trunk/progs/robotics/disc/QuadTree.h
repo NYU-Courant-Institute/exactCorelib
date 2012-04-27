@@ -17,6 +17,8 @@
 
 extern int freeCount;
 extern int stuckCount;
+extern int mixCount;
+extern int mixSmallCount;
 
 class QuadTree
 {
@@ -34,6 +36,9 @@ private:
 			++stuckCount;
 			break;
 		case Box::MIXED:
+			++mixCount;
+			if (b->height < epsilon || b->width < epsilon)
+				++mixSmallCount;
 			PQ->push(b);
 			break;
 		case Box::UNKNOWN:
@@ -44,7 +49,6 @@ private:
 public:
 	UnionFind* pSets;
 	BoxQueue* PQ;
-	BoxQueue* PQ2;
 	Box* pRoot;
 	double epsilon;
 	int QType;
@@ -64,9 +68,6 @@ public:
 		case 2:
 			PQ = new dijkstraQueue();
 			break;
-		case 3:
-			PQ = new seqQueue();
-			PQ2 = new dijkstraQueue();
 		}
 		
 		//PQ = new randQueue();

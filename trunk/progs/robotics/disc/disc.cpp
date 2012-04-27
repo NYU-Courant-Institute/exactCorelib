@@ -93,6 +93,8 @@ QuadTree* QT;
 
 	int freeCount = 0;
 	int stuckCount = 0;
+	int mixCount = 0;
+	int mixSmallCount = 0;
 
 // GLUI controls ========================================
 //
@@ -304,7 +306,6 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 	glui->add_radiobutton_to_group(radioQType, "Random");
 	glui->add_radiobutton_to_group(radioQType, "BFS");
 	glui->add_radiobutton_to_group(radioQType, "A-star");
-	glui->add_radiobutton_to_group(radioQType, "Hybrid");
 	glui->add_separator();
 
 	radioDrawOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)renderScene);
@@ -386,34 +387,37 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 		boxA = QT->getBox(alpha[0], alpha[1]);
 		while (boxA && !boxA->isFree())
 		{
-			++ct;
+			
 			if (!QT->expand(boxA))
 			{
 				noPath = true; // Confusing use of "noPath"
 				break;
 			}
+			++ct;
 			boxA = QT->getBox(boxA, alpha[0], alpha[1]);
 		}
 
 		boxB = QT->getBox(beta[0], beta[1]);
 		while (!noPath && boxB && !boxB->isFree())
 		{
-			++ct;
+			
 			if (!QT->expand(boxB))
 			{
 				noPath = true;
 				break;
 			}
+			++ct;
 			boxB = QT->getBox(boxB, beta[0], beta[1]);
 		}
 		
 		while(!noPath && !QT->isConnect(boxA, boxB))
 		{
-			++ct;
+			
 			if (!QT->expand())
 			{
 				noPath = true;
 			}
+			++ct;
 		}
 	} 
 	else if(QType == 2)
@@ -455,8 +459,9 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 	cout << "Expanded " << ct << " times" << endl;
 	cout << "total Free boxes: " << freeCount << endl;
 	cout << "total Stuck boxes: " << stuckCount << endl;
-	cout << "total Mixed boxes: " << QT->PQ->size() << endl;
-	freeCount = stuckCount = 0;
+	cout << "total Mixed boxes smaller than epsilon: " << mixSmallCount << endl;
+	cout << "total Mixed boxes bigger than epsilon: " << mixCount - ct - mixSmallCount << endl;
+	freeCount = stuckCount = mixCount = mixSmallCount = 0;
 }
 
 void drawPath(vector<Box*>& path)
@@ -466,7 +471,7 @@ void drawPath(vector<Box*>& path)
 	glVertex2f(beta[0], beta[1]);
 	for (int i = 0; i < (int)path.size(); ++i)
 	{
-		glVertex2f(path[i]->x, path[i]->y);
+		glVertex2f(path[i]->x, path[i]->y);	
 	}
 	glVertex2f(alpha[0], alpha[1]);
 	glEnd();
@@ -591,10 +596,10 @@ void renderScene(void)
 	drawCircle(R0, 100, alpha[0], alpha[1], 0, 0, 1);	// start
 	drawCircle(R0, 100, beta[0], beta[1], 0, 0, 1);		// goal
 
-	double r0 = 8;
+	double r0 = 5;
 	if (r0>R0) r0=R0;
 	filledCircle(r0, alpha[0], alpha[1], 0.2, 0.2, 1.0);	//blue start center
-	filledCircle(r0, beta[0], beta[1], 0.4, 0.4, 0.2);	//yellow goal center
+	filledCircle(r0, beta[0], beta[1], 0.8, 0.8, 0.2);	//yellow goal center
 
 	drawWalls(QT->pRoot);
 
@@ -669,11 +674,11 @@ cout << "input file name = " << s << endl;
 	}
 
 	// First, get to the beginning of the first token:
-	//skip_comment_line ( ifs );
+	skip_comment_line ( ifs );
 
 	int nPt, nPolygons;	// previously, nPolygons was misnamed as nFeatures
 	ifs >> nPt;
-cout<< "nPt=" << nPt << ",   ";
+cout<< "nPt=" << nPt << endl;
 
 	//skip_comment_line ( ifs );	// again, clear white space
 	vector<double> pts(nPt*2);
