@@ -107,7 +107,7 @@ public:
 			return false;
 		}
 
-		for (int i = 0; i < cldrn.size(); ++i)
+		for (int i = 0; i < (int)cldrn.size(); ++i)
 		{
 			cldrn[i]->updateStatus();
 			insertNode(cldrn[i]);
@@ -133,7 +133,7 @@ public:
 			{
 				assert(b->status == Box::MIXED);
 
-				for (int i = 0; i < cldrn.size(); ++i)
+				for (int i = 0; i < (int)cldrn.size(); ++i)
 				{
 					cldrn[i]->updateStatus();
 					insertNode(cldrn[i]);

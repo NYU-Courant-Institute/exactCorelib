@@ -78,7 +78,7 @@ boxHt = 512
 
 windowPosX = 200	# initial Window position
 windowPosY = 200	
-windowPosX = 700	# initial Window position
+windowPosX = 600	# initial Window position
 windowPosY = 20	
 
 Qtype = 0		# type of priority queue
@@ -92,7 +92,7 @@ step = 0		# number of steps to run
 #=================================================
 TARGETS = disc
 
-OBJ_FILES = Box.o QuadTree.o Corner.o Wall.o 
+OBJ_FILES = Box.o QuadTree.o Corner.o Wall.o fileProcessor.o
 
 all: $(TARGETS)
 

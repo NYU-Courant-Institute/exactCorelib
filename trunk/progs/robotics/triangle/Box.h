@@ -36,12 +36,8 @@ private:
 	{
 		double xmin1 = b1->x - b1->width / 2;
 		double xmax1 = b1->x + b1->width / 2;
-		double ymin1 = b1->y - b1->height / 2;
-		double ymax1 = b1->y + b1->height / 2;
 		double xmin2 = b2->x - b2->width / 2;
 		double xmax2 = b2->x + b2->width / 2;
-		double ymin2 = b2->y - b2->height / 2;
-		double ymax2 = b2->y + b2->height / 2;
 
 		if ((xmin1 <= xmin2 && xmax2 <= xmax1)
 			|| (xmin2 <= xmin1 && xmax1 <= xmax2))
@@ -53,12 +49,8 @@ private:
 
 	static bool isOneContainAnotherY(const Box* b1, const Box* b2)
 	{
-		double xmin1 = b1->x - b1->width / 2;
-		double xmax1 = b1->x + b1->width / 2;
 		double ymin1 = b1->y - b1->height / 2;
 		double ymax1 = b1->y + b1->height / 2;
-		double xmin2 = b2->x - b2->width / 2;
-		double xmax2 = b2->x + b2->width / 2;
 		double ymin2 = b2->y - b2->height / 2;
 		double ymax2 = b2->y + b2->height / 2;
 
@@ -383,9 +375,10 @@ public:
 
 	Box(double xx, double yy, double w, double h):
 	    	depth(1), x(xx), y(yy), width(w), height(h), isLeaf(true), 
+		isBig(true), tChildID(-1), rChildID(-1),
 		pParent(0), status(UNKNOWN),
-		pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(false),
-		isBig(true), tChildID(-1), rChildID(-1)
+		pSet(0), dist2Source(-1),
+		heapId(-1), prev(0), visited(false)
 	{
 		for (int i = 0; i < 4; ++i)
 		{
@@ -818,7 +811,7 @@ public:
 		}
 		vector<Box*> bv;
 		splitAngle(epsilon, bv);
-		for (int i = 0; i < bv.size(); ++i)
+		for (int i = 0; i < (int)bv.size(); ++i)
 		{
 			bv[i]->recursiveSplitAngle(epsilon, chldn, n, 2*m);
 		}
