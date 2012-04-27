@@ -646,8 +646,9 @@ void renderScene(void)
 
 	if (!noPath)
 	{
-		vector<Box*> path = Graph::dijkstraShortestPath(boxA, boxB);
+		vector<Box*> path = Graph::dijkstraShortestPath(boxA, boxB);	
 		drawPath(path);
+		//Graph::bfsPath(boxA, boxB);
 	}
 
 	glutSwapBuffers();

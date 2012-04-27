@@ -5,6 +5,8 @@
 #include <math.h>
 #include "Box.h"
 #include "QuadTree.h"
+#include <queue>
+#include <iostream>
 
 using namespace std;
 
@@ -198,6 +200,39 @@ public:
 			path.push_back(path.back()->prev);
 		}
 		return path;
+	}
+
+	static int bfsPath(Box* a, Box* b)
+	{
+		std::queue<Box*> q;
+		q.push(a);
+		bool foundB = false;
+		while(q.size())
+		{
+			Box* current = q.front();
+			q.pop();
+			if (current == b)
+			{
+				foundB = true;
+				break;
+			}
+			for (int i = 0; i < 6; ++i)
+			{
+				for (vector<Box*>::iterator it = current->Nhbrs[i].begin(); it != current->Nhbrs[i].end(); ++it)
+				{
+					Box* neighbor = *it;
+					if (!neighbor->visited && neighbor->status == Box::FREE)
+					{
+						q.push(neighbor);
+					}
+				}
+			}
+			current->visited = true;
+		}
+
+		std::cout<< "bfs found? " << foundB << endl;
+
+		return 0;
 	}
 
 };
