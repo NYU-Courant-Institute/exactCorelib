@@ -177,6 +177,9 @@ private:
 		L1as.expand(-rB);
 		L2as.expand(-rB);
 		L3as.expand(-rB);
+		double x23, y23;
+		L2a.intersection(L3a, x23, y23);
+
 
 		double X12x, X12y;
 		L1.intersection(L2, X12x, X12y);
@@ -223,6 +226,42 @@ private:
 				double srcy = w->src->y - this->y;
 				double dstx = w->dst->x - this->x;
 				double dsty = w->dst->y - this->y;
+
+				////quick stuck detection
+				//if (!L1a.isRight(x23, y23)) //inner triangle (before shrink rB) is not negative
+				//{
+				//	double x23s, y23s;
+				//	L2as.intersection(L3as, x23s, y23s);
+				//	double x13s, y13s;
+				//	L1as.intersection(L3as, x13s, y13s);
+				//	double x12s, y12s;
+				//	L1as.intersection(L2as, x12s, y12s);
+
+				//	if (!L1as.isRight(x23s, y23s)) //inner triangle (after shrink rB) is not negative
+				//	{
+				//		//if src or dst is in triangle
+				//		if ( (!L1as.isRight(srcx, srcy)
+				//			&& !L2as.isRight(srcx, srcy)
+				//			&& !L3as.isRight(srcx, srcy)) ||
+				//			(!L1as.isRight(dstx, dsty)
+				//			&& !L2as.isRight(dstx, dsty)
+				//			&& !L3as.isRight(dstx, dsty))
+				//			)
+				//		{
+				//			status = STUCK;
+				//			return;
+				//		}
+				//		// or line seg (src,dst) intersects any edge of triangle
+				//		else if ( Line2d::lineSegIntsct(x23s, y23s, x13s, y13s, srcx, srcy, dstx, dsty)
+				//			|| Line2d::lineSegIntsct(x13s, y13s, x12s, y12s, srcx, srcy, dstx, dsty)
+				//			|| Line2d::lineSegIntsct(x12s, y12s, x23s, y23s, srcx, srcy, dstx, dsty) )
+				//		{
+				//			status = STUCK;
+				//			return;
+				//		}
+				//	}
+
+				//}
 
 				//if src or dst is in triangle
 				if ( (!Line2d::isRight(X31x, X31y, X12x, X12y, srcx, srcy)

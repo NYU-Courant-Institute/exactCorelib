@@ -17,6 +17,11 @@
 
 extern list<Box*> allLeaf;
 
+extern int freeCount;
+extern int stuckCount;
+extern int mixCount;
+extern int mixSmallCount;
+
 class QuadTree
 {
 private:
@@ -27,10 +32,15 @@ private:
 		case Box::FREE:
 			new Set(b);
 			unionAdjacent(b);
+			++freeCount;
 			break;
 		case Box::STUCK:
+			++stuckCount;
 			break;
 		case Box::MIXED:
+			++mixCount;
+			if (b->height < epsilon || b->width < epsilon)
+				++mixSmallCount;
 			PQ->push(b);
 			break;
 		case Box::UNKNOWN:

@@ -48,6 +48,7 @@
 #include <sstream>
 #include <string>
 #include "Graph.h"
+#include "Timer.h"
 
 #ifdef __CYGWIN32__
 #include "glui.h"
@@ -73,12 +74,12 @@ double triRobo[2] = {0.833333333, 1.666666667};
 //
 	double alpha[2] = {10, 320};		// start configuration
 	double beta[2] = {500, 20};		// goal configuration
-	double epsilon = 10;			// resolution parameter
+	double epsilon = 25;			// resolution parameter
 	Box* boxA;				// start box (containing alpha)
 	Box* boxB;				// goal box (containing beta)
 	double boxWidth = 512;			// Initial box width
 	double boxHeight = 512;			// Initial box height
-	double R0 = 46;				// Robot radius 
+	double R0 = 30;				// Robot radius 
 	int windowPosX = 400;			// X Position of Window
 	int windowPosY = 200;			// Y Position of Window
 	string fileName("input2.txt"); 		// Input file name
@@ -92,6 +93,11 @@ double triRobo[2] = {0.833333333, 1.666666667};
 	bool noPath = true;			// True means there is "No path.
  
 	bool hideBoxBoundary = false;  //don't draw box boundary
+
+	int freeCount = 0;
+	int stuckCount = 0;
+	int mixCount = 0;
+	int mixSmallCount = 0;
 
 // GLUI controls ========================================
 //
@@ -381,6 +387,9 @@ void run()
 
 cout<<"inside run:  Qtype= " << QType << "\n";
 
+	Timer t;
+	t.start();
+
 	genEmptyTree();
 
 	noPath = false;	// Confusing use of "noPath"
@@ -396,6 +405,7 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 				noPath = true; // Confusing use of "noPath"
 				break;
 			}
+			++ct;
 			boxA = QT->getBox(boxA, alpha[0], alpha[1]);
 		}
 
@@ -407,16 +417,17 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 				noPath = true;
 				break;
 			}
+			++ct;
 			boxB = QT->getBox(boxB, beta[0], beta[1]);
 		}
 		
 		while(!noPath && !QT->isConnect(boxA, boxB))
-		{
-			++ct;
+		{			
 			if (!QT->expand())
 			{
 				noPath = true;
 			}
+			++ct;
 		}
 	} 
 	else if(QType == 2)
@@ -446,12 +457,20 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 		//noPath = !findPath(boxA, boxB, QT, ct);
 	}	
 
+	t.stop();
+
 
 	glutPostRedisplay();
 
 	if (!noPath) cout << "Path found !" << endl;
 	else  cout << "No Path !" << endl;
 	cout << "Expanded " << ct << " times" << endl;
+	cout << "Time used: " << t.getElapsedTimeInMilliSec() << " ms" << endl;
+	cout << "total Free boxes: " << freeCount << endl;
+	cout << "total Stuck boxes: " << stuckCount << endl;
+	cout << "total Mixed boxes smaller than epsilon: " << mixSmallCount << endl;
+	cout << "total Mixed boxes bigger than epsilon: " << mixCount - ct - mixSmallCount << endl;
+	freeCount = stuckCount = mixCount = mixSmallCount = 0;
 }
 
 void drawTri(Box* b)
