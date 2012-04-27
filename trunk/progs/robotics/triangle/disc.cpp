@@ -65,7 +65,7 @@
 
 using namespace std;
 
-list<Box*> allLeaf;
+vector<Box*> allLeaf;
 QuadTree* QT;
 //double triRobo[2] = {0.833333333, 1.166666667};
 double triRobo[2] = {0.833333333, 1.666666667};
@@ -387,7 +387,6 @@ void run()
 	beta[0] = editBetaX->get_float_val();
 	beta[1] = editBetaY->get_float_val();
 
-	radioQType->set_int_val(1);
     QType = radioQType->get_int_val();	
 
 cout<<"inside run:  Qtype= " << QType << "\n";
@@ -670,7 +669,7 @@ void renderScene(void)
 	glTranslatef(-boxWidth/2, -boxHeight/2, 0);
 
 	//treeTraverse(QT->pRoot);
-	for (list<Box*>::iterator it = allLeaf.begin(); it != allLeaf.end(); ++it)
+	for (vector<Box*>::iterator it = allLeaf.begin(); it != allLeaf.end(); ++it)
 	{
 		drawQuad(*it);
 	}

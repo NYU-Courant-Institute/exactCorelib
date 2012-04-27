@@ -31,6 +31,47 @@ public:
 		}
 	}
 
+	//expand L1 based on position to L2, L3
+	//we want L1 to "go away" from L2 x L3
+	bool expand(double d, Line2d& l2, Line2d& l3)
+	{
+		double x, y;
+		l2.intersection(l3, x, y);
+		//negative triangle, return
+		if (this->isRight(x, y))
+		{
+			return false;
+		}
+
+		//sc is the c for line parallel but go through intersection of L2 and L3
+		double sc = -this->a * x - this->b * y;
+		
+
+		if (c > sc)
+		{
+			c += d;
+		} 
+		else 
+		{
+			c -= d;
+		}
+
+		return true;
+
+	}
+
+	bool isNegative(Line2d& l2, Line2d& l3)
+	{
+		double x, y;
+		l2.intersection(l3, x, y);
+		if (this->isRight(x, y))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+
 	void intersection(const Line2d& l, double& x, double& y)
 	{
 		double c1 = this->c;

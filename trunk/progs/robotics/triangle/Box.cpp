@@ -8,7 +8,7 @@ double Box::r0 = 0;
 double Box::THETA_MIN = 0;
 int Box::counter = 0;
 
-list<Box*>* Box::pAllLeaf = 0;
+vector<Box*>* Box::pAllLeaf = 0;
 
 int Box::oppositeDir[6] = {2, 3, 0, 1, 5, 4};
 

@@ -15,7 +15,7 @@
 #include "UnionFind.h"
 #include "PriorityQueue.h"
 
-extern list<Box*> allLeaf;
+extern vector<Box*> allLeaf;
 
 extern int freeCount;
 extern int stuckCount;
@@ -89,7 +89,7 @@ public:
 		Box* b = root;
 		while (!b->isLeaf)
 		{
-			list<Box*>::reverse_iterator it = allLeaf.rbegin();
+			vector<Box*>::reverse_iterator it = allLeaf.rbegin();
 			for (;;)
 			{
 				Box* c = *it;

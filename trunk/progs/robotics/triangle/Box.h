@@ -164,19 +164,16 @@ private:
 		Line2d L1(v02x, v02y, v11x, v11y);
 		Line2d L2(v12x, v12y, v21x, v21y);
 		Line2d L3(v22x, v22y, v01x, v01y);
-		L1.expand(rB);
-		L2.expand(rB);
-		L3.expand(rB);
+		bool expandSuccess = L1.expand(rB, L2, L3) && L2.expand(rB, L1, L3) && L3.expand(rB, L1, L2) && !L1.isNegative(L2, L3);
+		assert(expandSuccess);
+
 
 		Line2d L1a(v01x, v01y, v12x, v12y);
 		Line2d L2a(v11x, v11y, v22x, v22y);
 		Line2d L3a(v21x, v21y, v02x, v02y);
-		Line2d L1as(v01x, v01y, v12x, v12y);
-		Line2d L2as(v11x, v11y, v22x, v22y);
-		Line2d L3as(v21x, v21y, v02x, v02y);
-		L1as.expand(-rB);
-		L2as.expand(-rB);
-		L3as.expand(-rB);
+		bool shrinkSuccess = L1a.expand(-rB, L2a, L3a) 
+			&& L2a.expand(-rB, L1a, L3a) && L3a.expand(-rB, L1a, L2a) && !L1a.isNegative(L2a, L3a);
+		
 		double x23, y23;
 		L2a.intersection(L3a, x23, y23);
 
@@ -194,8 +191,7 @@ private:
 			double cx = c->x - this->x;
 			double cy = c->y - this->y;
 
-			if (!L1a.isRight(cx, cy) && !L2a.isRight(cx, cy) && !L3a.isRight(cx, cy)
-				&& !L1as.isRight(cx, cy) && !L2as.isRight(cx, cy) && !L3as.isRight(cx, cy))
+			if (shrinkSuccess && !L1a.isRight(cx, cy) && !L2a.isRight(cx, cy) && !L3a.isRight(cx, cy))
 			{
 				status = STUCK;
 				return;
@@ -227,41 +223,38 @@ private:
 				double dstx = w->dst->x - this->x;
 				double dsty = w->dst->y - this->y;
 
-				////quick stuck detection
-				//if (!L1a.isRight(x23, y23)) //inner triangle (before shrink rB) is not negative
-				//{
-				//	double x23s, y23s;
-				//	L2as.intersection(L3as, x23s, y23s);
-				//	double x13s, y13s;
-				//	L1as.intersection(L3as, x13s, y13s);
-				//	double x12s, y12s;
-				//	L1as.intersection(L2as, x12s, y12s);
+				//quick stuck detection
+				if (shrinkSuccess) //inner triangle (before shrink rB) is not negative
+				{
+					double x23s, y23s;
+					L2a.intersection(L3a, x23s, y23s);
+					double x13s, y13s;
+					L1a.intersection(L3a, x13s, y13s);
+					double x12s, y12s;
+					L1a.intersection(L2a, x12s, y12s);
 
-				//	if (!L1as.isRight(x23s, y23s)) //inner triangle (after shrink rB) is not negative
-				//	{
-				//		//if src or dst is in triangle
-				//		if ( (!L1as.isRight(srcx, srcy)
-				//			&& !L2as.isRight(srcx, srcy)
-				//			&& !L3as.isRight(srcx, srcy)) ||
-				//			(!L1as.isRight(dstx, dsty)
-				//			&& !L2as.isRight(dstx, dsty)
-				//			&& !L3as.isRight(dstx, dsty))
-				//			)
-				//		{
-				//			status = STUCK;
-				//			return;
-				//		}
-				//		// or line seg (src,dst) intersects any edge of triangle
-				//		else if ( Line2d::lineSegIntsct(x23s, y23s, x13s, y13s, srcx, srcy, dstx, dsty)
-				//			|| Line2d::lineSegIntsct(x13s, y13s, x12s, y12s, srcx, srcy, dstx, dsty)
-				//			|| Line2d::lineSegIntsct(x12s, y12s, x23s, y23s, srcx, srcy, dstx, dsty) )
-				//		{
-				//			status = STUCK;
-				//			return;
-				//		}
-				//	}
 
-				//}
+					//if src or dst is in triangle
+					if ( (!L1a.isRight(srcx, srcy)
+						&& !L2a.isRight(srcx, srcy)
+						&& !L3a.isRight(srcx, srcy)) ||
+						(!L1a.isRight(dstx, dsty)
+						&& !L2a.isRight(dstx, dsty)
+						&& !L3a.isRight(dstx, dsty))
+						)
+					{
+						status = STUCK;
+						return;
+					}
+					// or line seg (src,dst) intersects any edge of triangle
+					else if ( Line2d::lineSegIntsct(x23s, y23s, x13s, y13s, srcx, srcy, dstx, dsty)
+						|| Line2d::lineSegIntsct(x13s, y13s, x12s, y12s, srcx, srcy, dstx, dsty)
+						|| Line2d::lineSegIntsct(x12s, y12s, x23s, y23s, srcx, srcy, dstx, dsty) )
+					{
+						status = STUCK;
+						return;
+					}					
+				}
 
 				//if src or dst is in triangle
 				if ( (!Line2d::isRight(X31x, X31y, X12x, X12y, srcx, srcy)
@@ -382,7 +375,7 @@ public:
 	static double THETA_MIN;
 	double rB;
 
-	static list<Box*>* pAllLeaf;
+	static vector<Box*>* pAllLeaf;
 	
 	vector<Box*> Nhbrs[6];
 	bool isBig;
