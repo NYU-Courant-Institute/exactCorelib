@@ -1,13 +1,13 @@
 /* **************************************
-   File: disc.cpp
+   File: tri.cpp
 
    Description: 
 	This is the entry point for the running the SSS algorithm
-	for a disc robot amidst a collection of polygonal obstacles.
+	for a triangle robot amidst a collection of polygonal obstacles.
 
 	To run, call with these positional arguments:
 
-	> ./disc 	[interactive = 0] \
+	> ./tri [interactive = 0] \
 			[alpha-x = 10] [alpha-y = 360] \
 			[beta-x = 500] [beta-y = 20] \
 			[epsilon = 1] \

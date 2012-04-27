@@ -3,6 +3,11 @@
 
    Description: 
 
+   	The main routines here are:
+		expand()  -- this keeps expanding mixed boxes
+				until the priority queue is empty
+				or a path is found
+
    HISTORY: March, 2012: Cong Wang, Chee Yap and Yi-Jen Chiang
 
    Since Core Library  Version 2.1
@@ -56,7 +61,7 @@ public:
 	int QType;
 	int seed;
 
-	QuadTree(Box* root, double e, int qType, int s):
+	QuadTree (Box* root, double e, int qType, int s):
 	    pRoot(root), epsilon(e), QType(qType), seed(s)
 	{
 		switch (QType)
@@ -78,7 +83,7 @@ public:
 		insertNode(pRoot);
 	}
 
-	Box* getBox(Box* root, double x, double y)
+	Box* getBox (Box* root, double x, double y)
 	{
 		if (x > root->x + root->width / 2 || x < root->x - root->width / 2
 			|| y > root->y + root->height / 2 || y < root->y - root->height / 2)
@@ -109,7 +114,7 @@ public:
 		return getBox(pRoot, x, y);
 	}
 
-	bool expand(Box* b)
+	bool expand (Box* b)
 	{
 		vector<Box*> cldrn;
 		if (!b->split(epsilon, cldrn))
@@ -126,7 +131,7 @@ public:
 		return true;
 	}
 
-	bool expand()
+	bool expand ()
 	{
 		while(!PQ->empty())
 		{
@@ -154,7 +159,7 @@ public:
 		return false;
 	}
 
-	bool isConnect(Box* a, Box* b)
+	bool isConnected (Box* a, Box* b)
 	{
 		if (pSets->Find(a) == pSets->Find(b))
 		{
@@ -163,7 +168,7 @@ public:
 		return false;
 	}
 
-	void unionAdjacent(Box* b)
+	void unionAdjacent (Box* b)
 	{
 		for (int i = 0; i < 6; ++i)
 		{
@@ -178,7 +183,7 @@ public:
 		}
 	}
 
-	~QuadTree(void)
+	~QuadTree (void)
 	{
 	}
 };
