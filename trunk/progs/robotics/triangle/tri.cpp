@@ -490,6 +490,7 @@ void drawTri(Box* b)
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor3f(1, 0, 0);
+	glLineWidth(2);
 	glBegin(GL_TRIANGLES);	
 
 	glVertex2f( R0*cos((b->xi[0]) * PI) + b->x, R0*sin((b->xi[0]) * PI) + b->y );
@@ -497,11 +498,13 @@ void drawTri(Box* b)
 	glVertex2f( R0*cos((triRobo[1] + b->xi[0]) * PI) + b->x, R0*sin((triRobo[1] + b->xi[0]) * PI) + b->y );
 
 	glEnd();
+	glLineWidth(1.0);
 }
 
 void drawPath(vector<Box*>& path)
 {
-	glColor3f(1, 0, 0);
+	glColor3f(0.5, 0, 0.25);
+	glLineWidth(3.0);
 	glBegin(GL_LINE_STRIP);	
 	glVertex2f(beta[0], beta[1]);
 	for (int i = 0; i < (int)path.size(); ++i)
@@ -510,6 +513,7 @@ void drawPath(vector<Box*>& path)
 	}
 	glVertex2f(alpha[0], alpha[1]);
 	glEnd();
+	glLineWidth(1.0);
 
 	int skipped = 0;
 	double distSkipped = 0;
@@ -552,13 +556,13 @@ void drawQuad(Box* b)
 	switch(b->status)
 	{
 	case Box::FREE:
-		glColor4f(0, 1, 0, 0.5);
+		glColor4f(0.25, 1, 0.25, 0.5);
 		break;
 	case Box::STUCK:
-		glColor4f(1, 0, 0, 0.5);
+		glColor4f(1, 0.25, 0.25, 0.5);
 		break;
 	case Box::MIXED:
-		glColor4f(1, 1, 0, 0.1);
+		glColor4f(1, 1, 0.25, 0.1);
 		if (b->height < epsilon || b->width < epsilon)
 		{
 			glColor4f(0.5, 0.5, 0.5, 0.1);
@@ -592,7 +596,8 @@ void drawQuad(Box* b)
 
 void drawWalls(Box* b)
 {
-	glColor3f(153/255.0, 51/255.0, 153/255.0);
+	glColor3f(1, 1, 1);
+	glLineWidth(2.0);
 	for (list<Wall*>::iterator iter = b->walls.begin(); iter != b->walls.end(); ++iter)
 	{
 		Wall* w = *iter;
@@ -601,6 +606,7 @@ void drawWalls(Box* b)
 		glVertex2f(w->dst->x, w->dst->y);
 		glEnd();
 	}
+	glLineWidth(1.0);
 }
 
 void treeTraverse(Box* b)
@@ -661,10 +667,12 @@ void drawLine()
 	{
 		glColor3f(1, 0, 0);
 	}
+	glLineWidth(3.0);
 	glBegin(GL_LINES);
 		glVertex2f(alpha[0], alpha[1]);
 		glVertex2f(beta[0], beta[1]);
 	glEnd();
+	glLineWidth(1.0);
 }
 
 void renderScene(void) 
