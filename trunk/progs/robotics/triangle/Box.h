@@ -578,6 +578,32 @@ public:
 		return false;
 	}
 
+	bool contains(double x, double y, double a)
+	{
+		if (this->x + width / 2 >= x && this->x - width / 2 <= x 
+			&& this->y + height / 2 >= y && this->y - height / 2 <= y)
+		{
+			if (xi[1] > xi[0])
+			{
+				if ( xi[1] > a && a >= xi[0] )
+				{
+					return true;
+				}
+			} 
+			else
+			{
+				if ( 2 > a && a >= xi[0] || xi[1] > a && a >= 0 )
+				{
+					return true;
+				}
+			}
+
+			return false;
+		} 
+
+		return false;
+	}
+
 	Status getStatus()
 	{
 		updateStatus();

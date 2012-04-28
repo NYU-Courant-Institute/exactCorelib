@@ -249,10 +249,10 @@ int main(int argc, char* argv[])
 	if (argc > 1) interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
 	if (argc > 2) alpha[0] = atof(argv[2]);		// start x
 	if (argc > 3) alpha[1] = atof(argv[3]);		// start y
-	if (argc > 4) alpha[2] = atof(argv[4])/180.0;		// start theta, convert from degree to radian
+	if (argc > 4) alpha[2] = atof(argv[4]);		// start theta, convert from degree to radian
 	if (argc > 5) beta[0] = atof(argv[5]);		// goal x
 	if (argc > 6) beta[1] = atof(argv[6]);		// goal y
-	if (argc > 7) beta[2] = atof(argv[7])/180.0;		// goal theta, convert from degree to radian
+	if (argc > 7) beta[2] = atof(argv[7]);		// goal theta, convert from degree to radian
 	if (argc > 8) epsilon = atof(argv[8]);		// epsilon (resolution)
 	if (argc > 9) R0      = atof(argv[9]);		// robot radius
 	if (argc > 10) fileName = argv[10]; 		// Input file name
@@ -275,6 +275,9 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 	    	cout << "Path was Found!" << endl;
 	    return 0;
 	}
+
+	alpha[2] /= 180.0;		// start theta, convert from degree to radian
+	beta[2] /= 180.0;		// goal theta, convert from degree to radian
 
 	// Else, set up for GLUT/GLUI interactive display:
 	
@@ -412,30 +415,18 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 
 	if (QType == 0 || QType == 1)
 	{
-		boxA = QT->getBox(alpha[0], alpha[1]);
-		while (boxA && !boxA->isFree())
+		boxA = QT->getBox(alpha[0], alpha[1], alpha[2], ct);
+		if (!boxA)
 		{
-			if (!QT->expand(boxA))
-			{
-				noPath = true;  
-				cout << "Start Configuration is not free\n";
-				break;
-			}
-			++ct;
-			boxA = QT->getBox(boxA, alpha[0], alpha[1]);
+			noPath = true;  
+			cout << "Start Configuration is not free\n";
 		}
 
-		boxB = QT->getBox(beta[0], beta[1]);
-		while (!noPath && boxB && !boxB->isFree())
+		boxB = QT->getBox(beta[0], beta[1], beta[2], ct);
+		if (!boxB)
 		{
-			if (!QT->expand(boxB))
-			{
-				noPath = true;
-				cout << "Goal Configuration is not free\n";
-				break;
-			}
-			++ct;
-			boxB = QT->getBox(boxB, beta[0], beta[1]);
+			noPath = true;  
+			cout << "Goal Configuration is not free\n";
 		}
 		
 		// In the following loop, "noPath" is should really mean "hasPath"
@@ -443,8 +434,6 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 		//	before entering loop...
 		while(!noPath && !QT->isConnected(boxA, boxB))
 		{
-			++ct; // Shouldn't ct be passed into "expand" (in quadtree)? 
-				// better, make it a global variable
 			if (!QT->expand())
 			{
 				noPath = true;

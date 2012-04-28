@@ -83,35 +83,57 @@ public:
 		insertNode(pRoot);
 	}
 
-	Box* getBox (Box* root, double x, double y)
+	//bfs search for alpha/beta
+	Box* getBox (double x, double y, double a, int& ct)
 	{
-		if (x > root->x + root->width / 2 || x < root->x - root->width / 2
-			|| y > root->y + root->height / 2 || y < root->y - root->height / 2)
+		std::queue<Box*> q;
+		
+		for (int i = 0; i < allLeaf.size(); ++i)
 		{
-			return 0;
-		}
-
-		Box* b = root;
-		while (!b->isLeaf)
-		{
-			vector<Box*>::reverse_iterator it = allLeaf.rbegin();
-			for (;;)
+			if ( allLeaf[i]->contains(x, y, a) )
 			{
-				Box* c = *it;
-				if (c->contains(x, y))
-				{
-					b = c;
-					break;
-				}
-				++it;
+				q.push(allLeaf[i]);
 			}
 		}
-		return b;
-	}
 
-	Box* getBox(double x, double y)
-	{
-		return getBox(pRoot, x, y);
+		while (q.size())
+		{
+			Box* b = q.front();
+			q.pop();
+			if (!b->isLeaf)
+			{
+				continue;
+			}
+			if (!b->contains(x, y, a))
+			{
+				return 0;
+			}
+
+			vector<Box*> cldrn;
+			if (!b->split(epsilon, cldrn))
+			{
+				return 0;
+			}
+			++ct;
+			for (int i = 0; i < (int)cldrn.size(); ++i)
+			{
+				cldrn[i]->updateStatus();
+				insertNode(cldrn[i]);
+			}
+			for (int i = 0; i < (int)cldrn.size(); ++i)
+			{
+				if ( cldrn[i]->contains(x, y, a) )
+				{
+					if (cldrn[i]->isFree())
+					{
+						return cldrn[i];
+					}
+					q.push(cldrn[i]);
+				}
+			}
+
+		}
+		return 0;
 	}
 
 	bool expand (Box* b)
