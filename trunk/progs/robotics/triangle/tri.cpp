@@ -249,10 +249,10 @@ int main(int argc, char* argv[])
 	if (argc > 1) interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
 	if (argc > 2) alpha[0] = atof(argv[2]);		// start x
 	if (argc > 3) alpha[1] = atof(argv[3]);		// start y
-	if (argc > 4) alpha[2] = atof(argv[4]);		// start theta
+	if (argc > 4) alpha[2] = atof(argv[4])/180.0;		// start theta, convert from degree to radian
 	if (argc > 5) beta[0] = atof(argv[5]);		// goal x
 	if (argc > 6) beta[1] = atof(argv[6]);		// goal y
-	if (argc > 7) beta[2] = atof(argv[7]);		// goal theta
+	if (argc > 7) beta[2] = atof(argv[7])/180.0;		// goal theta, convert from degree to radian
 	if (argc > 8) epsilon = atof(argv[8]);		// epsilon (resolution)
 	if (argc > 9) R0      = atof(argv[9]);		// robot radius
 	if (argc > 10) fileName = argv[10]; 		// Input file name
