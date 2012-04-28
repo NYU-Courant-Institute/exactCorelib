@@ -88,7 +88,7 @@ public:
 	{
 		std::queue<Box*> q;
 		
-		for (int i = 0; i < allLeaf.size(); ++i)
+		for (int i = 0; i < (int)allLeaf.size(); ++i)
 		{
 			if ( allLeaf[i]->contains(x, y, a) )
 			{

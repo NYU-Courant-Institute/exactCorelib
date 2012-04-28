@@ -17,7 +17,8 @@
 #
 #	This is equivalent to typing:
 #
-#	       > tri $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
+#	       > tri $(interactive) $(startX) $(startY)  $(startTheta) \
+#	       		$(goalX) $(goalY) $(goalTheta) \
 #			$(epsilon) $(radius) $(fileName) \
 #			$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 #			$(Qtype) $(seed)  $(inputDir)
@@ -105,7 +106,7 @@ all: $(TARGETS)
 #
 test: $(TARGETS)
 	./tri 1 \
-		$(startX) $(startY)  $(goalX) $(goalY) \
+		$(startX) $(startY)  $(startTheta) $(goalX) $(goalY) $(startBeta) \
 		$(epsilon)  $(radius)  input.txt  $(boxWidth) $(boxHt) \
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir)
 
@@ -114,7 +115,7 @@ testa: $(TARGETS)
 
 testb: $(TARGETS)
 	./tri 1 \
-		$(startX) $(startY)  $(goalX) $(goalY) \
+		$(startX) $(startY)  $(startTheta) $(goalX) $(goalY) $(startBeta) \
 		$(epsilon)  $(radius)  input2.txt  $(boxWidth) $(boxHt) \
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir)
 
@@ -147,8 +148,8 @@ ega:	tri
 #
 egb:	tri
 	@echo "Target 'egb':  runs tri with default Makefile options for file input.txt"
-	./tri $(interactive) 10 350 300 20 \
-		10 30 input.txt \
+	./tri $(interactive) 10 350 0 300 20 0\
+		10 40 input.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir)
 
@@ -156,8 +157,8 @@ egb:	tri
 nopath eg0:	tri
 	@echo "Target 'eg0':  runs tri with default options for file input0.txt"
 	@echo "--  this example has no path..."
-	./tri $(interactive) 400 400  200 200 \
-		10 20 input0.txt \
+	./tri $(interactive) 400 400 0 200 200 0\
+		20 20 input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 
@@ -169,8 +170,8 @@ egbug: tri
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
 	@echo "--  that are NOT adjacent but shares a corner."
-	./tri $(interactive) 200 350 30 30 \
-		5 10 bugtrap.txt \
+	./tri $(interactive) 200 350 0 30 30 0 \
+		20 10 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
 
@@ -180,8 +181,8 @@ egbuga: tri
 	@echo "--  this examples shows there is a PATH, but barely so!"
 	@echo "--  the only change from target 'egbug' is that epsilon is now 4, not 5"
 	@echo "--  that are NOT adjacent but shares a corner."
-	./tri $(interactive) 200 350 30 30 \
-		4 10 bugtrap.txt \
+	./tri $(interactive) 200 350 0 30 30 0 \
+		10 10 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
 
@@ -196,8 +197,8 @@ eg1: tri
 	@echo "Target eg1:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
-	./tri $(interactive) 150 260 20 20 \
-		2 5 input1.txt \
+	./tri $(interactive) 150 260 0 20 20 0 \
+		5 5 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
 
@@ -208,31 +209,81 @@ eg1a: tri
 	@echo "Target eg1a:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
-	./tri $(interactive) 10 360 20 20 \
+	./tri $(interactive) 10 360 0 20 20 0 \
 		2 10 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
 
 # eg1b: there is no path because eps=10
 #
-# 	The display also shows some current bugs in the
-# 	code.   THIS IS A GOOD PLACE TO RUN IN LEVEL 2 to CHECK!!!
-#
 eg1b: tri
 	@echo "Target eg1a:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
-	./tri $(interactive) 150 260 20 20 \
+	./tri $(interactive) 150 260 0 20 20 0 \
 		10 5 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
 
+# RANDOMLY GENERATED ENVIRONMENT:
 
-eg2: tri
-	./tri $(interactive) 10 350  500 20 \
-		10 20 input2.txt \
-		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
+# eg100:
+#
+eg100: tri
+	@echo "Target eg100:  runs tri amidst 100 randomly generated triangles"
+	./tri $(interactive) 200 270 0 20 20 0\
+		2 5 input100.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir)
+	#
+# eg200:
+#
+eg200: tri
+	@echo "Target eg200:  runs tri amidst 200 randomly generated triangles"
+	@echo "--  This may take a noticeable amount bit of time, "
+	@echo "    depending on the search strategy"
+	./tri $(interactive) 150 260 0 20 20 0 \
+		2 5 input200.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir)
+
+# eg200a: there is an obvious path but probabilistic methods might waste
+# 	lots of time checking elsewhere!
+#
+eg200a: tri
+	@echo "Target eg200a:  runs tri amidst 200 randomly generated triangles"
+	@echo "--  This may take a noticeable amount bit of time, "
+	@echo "    depending on the search strategy"
+	./tri $(interactive) 10 360 0 20 20 0 \
+		2 10 input200.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir)
+
+# eg200b: there is no path because eps=10
+#
+# 	The display seems to show some current bugs in the
+# 	code.   THIS IS A GOOD PLACE TO RUN IN LEVEL 2 to CHECK!!!
+#
+eg200b: tri
+	@echo "Target eg200b:  runs tri amidst 200 randomly generated triangles"
+	@echo "--  This may take a noticeable amount bit of time, "
+	@echo "    depending on the search strategy"
+	./tri $(interactive) 150 260 0 20 20 0 \
+		10 5 input200.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir)
+
+# eg300: 
+#
+eg300: tri
+	@echo "Target eg300:  runs tri amidst 300 randomly generated triangles"
+	@echo "--  This may take a noticeable amount bit of time, "
+	@echo "    depending on the search strategy"
+	./tri $(interactive) 10 400 0 350 20 0\
+		1 3 input300.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir)
+
 
 
 moretest: $(TARGETS)
