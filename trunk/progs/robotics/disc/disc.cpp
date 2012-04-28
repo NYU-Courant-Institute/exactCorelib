@@ -466,7 +466,8 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 
 void drawPath(vector<Box*>& path)
 {
-	glColor3f(1, 0, 0);
+	glColor3f(0.5, 0, 0.25);
+	glLineWidth(3.0);
 	glBegin(GL_LINE_STRIP);	
 	glVertex2f(beta[0], beta[1]);
 	for (int i = 0; i < (int)path.size(); ++i)
@@ -475,6 +476,7 @@ void drawPath(vector<Box*>& path)
 	}
 	glVertex2f(alpha[0], alpha[1]);
 	glEnd();
+	glLineWidth(1.0);
 }
 
 void drawQuad(Box* b)
@@ -482,13 +484,13 @@ void drawQuad(Box* b)
 	switch(b->status)
 	{
 	case Box::FREE:
-		glColor3f(0, 1, 0);
+		glColor3f(0.25, 1, 0.25);
 		break;
 	case Box::STUCK:
-		glColor3f(1, 0, 0);
+		glColor3f(1, 0.25, 0.25);
 		break;
 	case Box::MIXED:
-		glColor3f(1, 1, 0);
+		glColor3f(1, 1, 0.25);
 		if (b->height < epsilon || b->width < epsilon)
 		{
 			glColor3f(0.5, 0.5, 0.5);
@@ -520,7 +522,8 @@ void drawQuad(Box* b)
 
 void drawWalls(Box* b)
 {
-	glColor3f(153/255.0, 51/255.0, 153/255.0);
+	glColor3f(1, 1, 1);
+	glLineWidth(2.0);
 	for (list<Wall*>::iterator iter = b->walls.begin(); iter != b->walls.end(); ++iter)
 	{
 		Wall* w = *iter;
@@ -529,6 +532,7 @@ void drawWalls(Box* b)
 		glVertex2f(w->dst->x, w->dst->y);
 		glEnd();
 	}
+	glLineWidth(1.0);
 }
 
 void treeTraverse(Box* b)
@@ -579,6 +583,25 @@ void filledCircle( double radius, double x, double y, double r, double g, double
 	glEnd();
 }
 
+void drawLine()
+{
+	if (noPath)
+	{
+		glColor3f(0, 0, 0);
+	} 
+	else
+	{
+		glColor3f(1, 0, 0);
+	}
+	glLineWidth(3.0);
+	glBegin(GL_LINES);
+	glVertex2f(alpha[0], alpha[1]);
+	glVertex2f(beta[0], beta[1]);
+	glEnd();
+	glLineWidth(1.0);
+}
+
+
 void renderScene(void) 
 {
 	hideBoxBoundary = radioDrawOption->get_int_val();
@@ -602,6 +625,8 @@ void renderScene(void)
 	filledCircle(r0, beta[0], beta[1], 0.8, 0.8, 0.2);	//yellow goal center
 
 	drawWalls(QT->pRoot);
+
+	drawLine();
 
 	if (!noPath)
 	{
