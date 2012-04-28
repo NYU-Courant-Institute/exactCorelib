@@ -58,8 +58,10 @@ interactive = 0		# 0=interactive, >0 is non-interactive
 
 startX = 10		# start configuration
 startY = 350
+startTheta = 0		# in degrees
 goalX = 300		# goal configuration
 goalY = 20
+goalTheta = 90		# in degrees
 
 epsilon = 10		# resolution parameter
 epsilon = 5		# resolution parameter
@@ -126,7 +128,8 @@ eg:	tri
 	@echo "Target 'eg':  runs tri with the default options of Makefile"
 	@echo "--  You can all of them in you 'make' command line, e.g.,"
 	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
-	./tri $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
+	./tri $(interactive) $(startX) $(startY)  $(startTheta) \
+	    	$(goalX) $(goalY) $(goalTheta) \
 		$(epsilon) $(radius) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)

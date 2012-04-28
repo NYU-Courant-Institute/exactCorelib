@@ -8,8 +8,8 @@
 	To run, call with these positional arguments:
 
 	> ./tri [interactive = 0] \
-			[alpha-x = 10] [alpha-y = 360] \
-			[beta-x = 500] [beta-y = 20] \
+			[alpha-x = 10] [alpha-y = 360] [alpha-theta = 0]\
+			[beta-x = 500] [beta-y = 20][beta-theta = 0] \
 			[epsilon = 1] \
 			[R0 = 30] \
 			[fileName = input2.txt] \
@@ -72,8 +72,8 @@ double triRobo[2] = {0.833333333, 1.666666667};
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////
-	double alpha[2] = {10, 320};		// start configuration
-	double beta[2] = {500, 20};		// goal configuration
+	double alpha[3] = {10, 320, 0};		// start configuration
+	double beta[3] = {500, 20, 0};		// goal configuration
 	double epsilon = 25;			// resolution parameter
 	Box* boxA;				// start box (containing alpha)
 	Box* boxB;				// goal box (containing beta)
@@ -115,8 +115,10 @@ double triRobo[2] = {0.833333333, 1.666666667};
 	GLUI_EditText* editEpsilon;
 	GLUI_EditText* editAlphaX;
 	GLUI_EditText* editAlphaY;
+	GLUI_EditText* editAlphaTheta;
 	GLUI_EditText* editBetaX;
 	GLUI_EditText* editBetaY;
+	GLUI_EditText* editBetaTheta;
 	GLUI_EditText* editSeed;
 
 
@@ -247,19 +249,20 @@ int main(int argc, char* argv[])
 	if (argc > 1) interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
 	if (argc > 2) alpha[0] = atof(argv[2]);		// start x
 	if (argc > 3) alpha[1] = atof(argv[3]);		// start y
-	if (argc > 4) beta[0] = atof(argv[4]);		// goal x
-	if (argc > 5) beta[1] = atof(argv[5]);		// goal y
-	if (argc > 6) epsilon = atof(argv[6]);		// epsilon (resolution)
-	if (argc > 7) R0      = atof(argv[7]);		// robot radius
-	if (argc > 8) fileName = argv[8]; 		// Input file name
-	if (argc > 9) boxWidth = atof(argv[9]);		// boxWidth
-	if (argc > 10) boxHeight = atof(argv[10]);	// boxHeight
-	if (argc > 11) windowPosX = atoi(argv[11]);	// window X pos
-	if (argc > 12) windowPosY = atoi(argv[12]);	// window Y pos
-	if (argc > 13) QType   = atoi(argv[13]);	// PriorityQ Type (random or no)
-	if (argc > 14) seed   = atoi(argv[14]);		// for random number generator
-	if (argc > 15) inputDir  = argv[15];		// path for input files
-
+	if (argc > 4) alpha[2] = atof(argv[4]);		// start theta
+	if (argc > 5) beta[0] = atof(argv[5]);		// goal x
+	if (argc > 6) beta[1] = atof(argv[6]);		// goal y
+	if (argc > 7) beta[2] = atof(argv[7]);		// goal theta
+	if (argc > 8) epsilon = atof(argv[8]);		// epsilon (resolution)
+	if (argc > 9) R0      = atof(argv[9]);		// robot radius
+	if (argc > 10) fileName = argv[10]; 		// Input file name
+	if (argc > 11) boxWidth = atof(argv[11]);		// boxWidth
+	if (argc > 12) boxHeight = atof(argv[12]);	// boxHeight
+	if (argc > 13) windowPosX = atoi(argv[13]);	// window X pos
+	if (argc > 14) windowPosY = atoi(argv[14]);	// window Y pos
+	if (argc > 15) QType   = atoi(argv[15]);	// PriorityQ Type (random or no)
+	if (argc > 16) seed   = atoi(argv[16]);		// for random number generator
+	if (argc > 17) inputDir  = argv[17];		// path for input files
 
 cout<<"before interactive, Qtype= " << QType << "\n";
 
@@ -299,10 +302,16 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 	editAlphaX->set_float_val(alpha[0]);
 	editAlphaY = glui->add_edittext( "alpha.y:", GLUI_EDITTEXT_FLOAT );
 	editAlphaY->set_float_val(alpha[1]);
+	editAlphaTheta = glui->add_edittext( "alpha.theta:", GLUI_EDITTEXT_FLOAT );
+	editAlphaTheta->set_float_val(alpha[2]);
+
 	editBetaX = glui->add_edittext( "beta.x:", GLUI_EDITTEXT_FLOAT );
 	editBetaX->set_float_val(beta[0]);
 	editBetaY = glui->add_edittext( "beta.y:", GLUI_EDITTEXT_FLOAT );
 	editBetaY->set_float_val(beta[1]);
+	editBetaTheta = glui->add_edittext( "beta.theta:", GLUI_EDITTEXT_FLOAT );
+	editBetaTheta->set_float_val(beta[2]);
+
 	editSeed = glui->add_edittext( "seed:", GLUI_EDITTEXT_INT );
 	editSeed->set_int_val(seed);
 

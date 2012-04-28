@@ -10,7 +10,7 @@
 
 using namespace std;
 
-extern double beta[2];
+extern double beta[3];
 
 class distCmp
 {
