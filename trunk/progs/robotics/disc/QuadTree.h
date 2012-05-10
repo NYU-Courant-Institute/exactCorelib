@@ -114,7 +114,7 @@ public:
 		return getBox(pRoot, x, y);
 	}
 
-	bool expand(Box* b)
+	bool expand (Box* b)
 	{
 		if (!b->split(epsilon))
 		{
@@ -130,7 +130,7 @@ public:
 		return true;
 	}
 
-	bool expand()
+	bool expand ()
 	{
 		while(!PQ->empty())
 		{

@@ -232,7 +232,7 @@ eg1b: tri
 eg100: tri
 	@echo "Target eg100:  runs tri amidst 100 randomly generated triangles"
 	./tri $(interactive) 200 270 0 20 20 0\
-		2 5 input100.txt \
+		10 5 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
 	#
@@ -243,7 +243,7 @@ eg200: tri
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
 	./tri $(interactive) 150 260 0 20 20 0 \
-		2 5 input200.txt \
+		10 5 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
 
@@ -255,7 +255,7 @@ eg200a: tri
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
 	./tri $(interactive) 10 360 0 20 20 0 \
-		2 10 input200.txt \
+		10 10 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
 
@@ -280,7 +280,7 @@ eg300: tri
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
 	./tri $(interactive) 10 400 0 350 20 0\
-		1 3 input300.txt \
+		3 3 input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
 

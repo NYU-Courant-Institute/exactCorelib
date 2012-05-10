@@ -413,7 +413,7 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 		while(!noPath && !QT->isConnect(boxA, boxB))
 		{
 			
-			if (!QT->expand())
+			if (!QT->expand()) // should ct be passed to expand?
 			{
 				noPath = true;
 			}
@@ -622,7 +622,7 @@ void renderScene(void)
 	double r0 = 5;
 	if (r0>R0) r0=R0;
 	filledCircle(r0, alpha[0], alpha[1], 0.2, 0.2, 1.0);	//blue start center
-	filledCircle(r0, beta[0], beta[1], 0.8, 0.8, 0.2);	//yellow goal center
+	filledCircle(r0, beta[0], beta[1], 0.4, 0.4, 0.1);	//yellow goal center
 
 	drawWalls(QT->pRoot);
 

@@ -34,6 +34,7 @@
 # (D)	Instead of the target "eg" you can use any of these targets:
 #
 #		eg, ega, egb,
+#		eg0,
 #		eg1, eg1a, eg1b,
 #		eg2, eg2a, eg2b,
 #		egbug, egbuga,
@@ -73,6 +74,10 @@ fileName = input2.txt	# input environment file
 fileName = input0.txt	# input environment file
 fileName = bugtrap.txt	# input environment file
 fileName = input.txt	# input environment file
+fileName = input100.txt	# input environment file
+fileName = input150.txt	# input environment file
+fileName = input200.txt	# input environment file
+fileName = input300.txt	# input environment file
 
 boxWidth = 512		# initial configuration box size
 boxHt = 512
@@ -83,7 +88,7 @@ windowPosX = 600	# initial Window position
 windowPosY = 20	
 
 Qtype = 0		# type of priority queue
-			#	(1 = BFS, 0 = random) // funny switch...
+			#	(0 = random, 1 = BFS, 3 = astar) 
 seed = 11		# seed for random
 step = 0		# number of steps to run
 			#	(step=0 means run to completion)
@@ -93,7 +98,7 @@ step = 0		# number of steps to run
 #=================================================
 TARGETS = disc
 
-OBJ_FILES = Box.o QuadTree.o Corner.o Wall.o  fileProcessor.o
+OBJ_FILES = Box.o QuadTree.o Corner.o Wall.o  fileProcessor.o Timer.o
 
 all: $(TARGETS)
 
@@ -155,12 +160,20 @@ egb:	disc
 
 # Simple NO PATH example:
 nopath eg0:	disc
-	@echo "Target 'eg0':  runs disc with default options for file input0.txt"
+	@echo "Target 'eg0':  runs disc with random strategy for file input0.txt"
 	@echo "--  this example has no path..."
 	./disc $(interactive) 400 400  200 200 \
 		10 20 input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
+		0 $(seed)  $(inputDir)
+
+nopatha eg0a:	disc
+	@echo "Target 'eg0a':  runs disc with astar strategy for file input0.txt"
+	@echo "--  this example has no path..."
+	./disc $(interactive) 400 400  200 200 \
+		10 20 input0.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir)
 
 # BUG TRAP:
 ###################################################
@@ -207,48 +220,6 @@ egbug2a bug2a: disc
 		1 11 $(inputDir)
 
 
-# RANDOMLY GENERATED ENVIRONMENT:
-#	This one, generated using our Python Generator, has 200 triangles.
-#	Note that these triangles are not disjoint, but our theory remains
-#	valid for such inputs.  This is the power of the SSS approach (over
-#	the exact algorithms.
-# eg1:
-#
-eg1: disc
-	@echo "Target eg1:  runs disc amidst 200 randomly generated triangles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
-	./disc $(interactive) 150 260 20 20 \
-		2 5 input1.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
-
-# eg1a: there is an obvious path but probabilistic methods might waste
-# 	lots of time checking elsewhere!
-#
-eg1a: disc
-	@echo "Target eg1a:  runs disc amidst 200 randomly generated triangles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
-	./disc $(interactive) 10 360 20 20 \
-		2 10 input1.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
-
-# eg1b: there is no path because eps=10
-#
-# 	The display also shows some current bugs in the
-# 	code.   THIS IS A GOOD PLACE TO RUN IN LEVEL 2 to CHECK!!!
-#
-eg1b: disc
-	@echo "Target eg1b:  runs disc amidst 200 randomly generated triangles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
-	./disc $(interactive) 150 260 20 20 \
-		10 5 input1.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
-
 eg2: disc
 	@echo "Target eg2:  runs disc on simples obstacles"
 	./disc $(interactive) 10 350  500 20 \
@@ -269,6 +240,92 @@ eg4: disc
 		1 10 input4.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
+
+# RANDOMLY GENERATED ENVIRONMENT:
+
+# eg100:
+#
+eg100: disc
+	@echo "Target eg100:  runs disc amidst 100 randomly generated triangles"
+	./disc $(interactive) 200 270 20 20 \
+		2 5 input100.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir)
+	#
+# eg200:
+#	This one, generated using our Python Generator, has 200 triangles.
+#	Note that these triangles are not disjoint, but our theory remains
+#	valid for such inputs.  This is the power of the SSS approach (over
+#	the exact algorithms. RESULTS:
+#	    			input file name = inputs/input200.txt
+#	    			nPt=600
+#	    			nPolygons=200
+#	    			Time used: 1726.62 ms.
+#	    			Path found !
+#	    			Expanded 13720 times
+#	    			total Free boxes: 9370
+#	    			total Stuck boxes: 16404
+#	    			total Mixed boxes smaller than epsilon: 13599
+#	    			total Mixed boxes bigger than epsilon: 1788
+#
+#
+eg200: disc
+	@echo "Target eg200:  runs disc amidst 200 randomly generated triangles"
+	@echo "--  This may take a noticeable amount bit of time, "
+	@echo "    depending on the search strategy"
+	./disc $(interactive) 150 260 20 20 \
+		2 5 input200.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir)
+
+# eg200a: there is an obvious path but probabilistic methods might waste
+# 	lots of time checking elsewhere!
+#
+eg200a: disc
+	@echo "Target eg200a:  runs disc amidst 200 randomly generated triangles"
+	@echo "--  This may take a noticeable amount bit of time, "
+	@echo "    depending on the search strategy"
+	./disc $(interactive) 10 360 20 20 \
+		2 10 input200.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir)
+
+# eg200b: there is no path because eps=10
+#
+# 	The display seems to show some current bugs in the
+# 	code.   THIS IS A GOOD PLACE TO RUN IN LEVEL 2 to CHECK!!!
+#
+eg200b: disc
+	@echo "Target eg200b:  runs disc amidst 200 randomly generated triangles"
+	@echo "--  This may take a noticeable amount bit of time, "
+	@echo "    depending on the search strategy"
+	./disc $(interactive) 150 260 20 20 \
+		10 5 input200.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir)
+
+# eg300: 
+# 	RESULTS:
+#				input file name = inputs/input300.txt
+#				nPt=900
+#				nPolygons=300
+#				Time used: 28243.1 ms.
+#				Path found !
+#				Expanded 64220 times
+#				total Free boxes: 37999
+#				total Stuck boxes: 87069
+#				total Mixed boxes smaller than epsilon: 67198
+#				total Mixed boxes bigger than epsilon: 395
+#
+eg300: disc
+	@echo "Target eg300:  runs disc amidst 300 randomly generated triangles"
+	@echo "--  This may take a noticeable amount bit of time, "
+	@echo "    depending on the search strategy"
+	./disc $(interactive) 10 400 350 20 \
+		1 3 input300.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir)
+
 
 moretest: $(TARGETS)
 # nothing to do
