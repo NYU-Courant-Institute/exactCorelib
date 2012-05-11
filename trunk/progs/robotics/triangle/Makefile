@@ -165,8 +165,8 @@ nopath eg0:	tri
 # eg1:
 eg1: tri
 	@echo "Target eg1:  runs tri on input2e.txt (which has a bounding box)"
-	./tri $(interactive) 150 260 0 30 30 0 \
-		10 20 input2e.txt \
+	./tri $(interactive) 150 260 0.5 40 40 0 \
+		10 25 input2e.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
 
