@@ -70,7 +70,6 @@ radius = 30		# robot radius
 
 inputDir = inputs	# where to find input files
 fileName = input2d.txt	# input environment file
-fileName = input2.txt	# input environment file
 fileName = input0.txt	# input environment file
 fileName = bugtrap.txt	# input environment file
 fileName = input.txt	# input environment file
@@ -78,6 +77,7 @@ fileName = input100.txt	# input environment file
 fileName = input150.txt	# input environment file
 fileName = input200.txt	# input environment file
 fileName = input300.txt	# input environment file
+fileName = input2.txt	# input environment file
 
 boxWidth = 512		# initial configuration box size
 boxHt = 512
@@ -227,6 +227,7 @@ eg2: disc
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 
+# This environment is a maze
 eg3: disc
 	@echo "Target eg3:  runs disc amidst 100 randomly generated obstacles"
 	./disc $(interactive) 10 350  280 220 \
@@ -234,10 +235,11 @@ eg3: disc
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 
+# This environment is a maze
 eg4: disc
-	@echo "Target eg4:  runs disc amidst 100 randomly generated obstacles"
-	./disc $(interactive) 10 350  280 220 \
-		1 10 input4.txt \
+	@echo "Target eg4:  runs disc in a randomly generated maze "
+	./disc $(interactive) 10 350  280 205 \
+		3 5 input4.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 
