@@ -68,7 +68,8 @@ using namespace std;
 vector<Box*> allLeaf;
 QuadTree* QT;
 //double triRobo[2] = {0.833333333, 1.166666667};
-double triRobo[2] = {0.833333333, 1.666666667};
+//double triRobo[2] = {0.833333333, 1.666666667};
+double triRobo[2] = {0.833333333, 1.00000};
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////

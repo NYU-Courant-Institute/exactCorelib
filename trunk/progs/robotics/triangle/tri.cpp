@@ -67,8 +67,42 @@ using namespace std;
 
 vector<Box*> allLeaf;
 QuadTree* QT;
-//double triRobo[2] = {0.833333333, 1.166666667};
+
+// SHAPE OF TRIANGULAR ROBOT:
+// 	It is a triangle inscribed in a disc centered at the origin.
+// 	The radius of the disc is R0, which the user can specify below.
+//
+// 	The triangle is determined by two angles 
+//
+//		0 < theta_1 < theta_2 < 2
+//
+//	There is an implicit third angle, which is theta_0 = 0.
+//
+//      The angles values are in multiples of Pi radians
+//	(so theta_1 = 1.0 corresponds to Pi radians or 180 degrees)
+//
+//     	E.g., an equilateral robot would be 
+//		theta_1 = 0.6667, theta_2 = 1.3333.
+//
+// CHOOSE ONE OF THESE:
+//
+// (a) Acute Triangle Robot:  THIS IS THE DEFAULT -- most examples
+// 	in the Makefile are designed to give interesting results with this robot.
+//
 double triRobo[2] = {0.833333333, 1.666666667};
+//
+// (b) Equilateral Triangle Robot:
+// double triRobo[2] = {0.666666667, 1.333333333};
+//
+// (c) Stick Robot (very thin)
+//  double triRobo[2] = {0.95, 1.05};
+//
+// (d) Right-Angle Isosceles Robot 
+// double triRobo[2] = {0.5, 1.0};
+//
+// (e) Off-Center Robot 
+// double triRobo[2] = {0.3, 0.6};
+
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////

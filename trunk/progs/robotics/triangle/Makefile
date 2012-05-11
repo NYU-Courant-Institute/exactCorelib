@@ -82,7 +82,7 @@ boxHt = 512
 
 windowPosX = 200	# initial Window position
 windowPosY = 200	
-windowPosX = 600	# initial Window position
+windowPosX = 500	# initial Window position
 windowPosY = 20	
 
 Qtype = 0		# type of priority queue
@@ -162,6 +162,22 @@ nopath eg0:	tri
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 
+# eg1:
+eg1: tri
+	@echo "Target eg1:  runs tri on input2e.txt (which has a bounding box)"
+	./tri $(interactive) 150 260 0 30 30 0 \
+		10 20 input2e.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir)
+
+# eg2:
+eg2: tri
+	@echo "Target eg2e:  runs tri on input2.txt"
+	./tri $(interactive) 150 260 0 20 20 0 \
+		10 10 input2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir)
+
 # BUG TRAP:
 # 
 # Bugtrap example -- Non-existence of path, but barely!
@@ -179,7 +195,7 @@ egbug: tri
 egbuga: tri
 	@echo "Target 'egbuga':  runs tri for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is a PATH, but barely so!"
-	@echo "--  the only change from target 'egbug' is that epsilon is now 4, not 5"
+	@echo "--  the only change from target 'egbug' is that epsilon is now 10, not 20"
 	@echo "--  that are NOT adjacent but shares a corner."
 	./tri $(interactive) 200 350 0 30 30 0 \
 		10 10 bugtrap.txt \
@@ -191,59 +207,30 @@ egbuga: tri
 #	Note that these triangles are not disjoint, but our theory remains
 #	valid for such inputs.  This is the power of the SSS approach (over
 #	the exact algorithms.
-# eg1:
-#
-eg1: tri
-	@echo "Target eg1:  runs tri on randomly generated obstacles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
-	./tri $(interactive) 150 260 0 20 20 0 \
-		5 5 input1.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
 
-# eg1a: there is an obvious path but probabilistic methods might waste
-# 	lots of time checking elsewhere!
-#
-eg1a: tri
-	@echo "Target eg1a:  runs tri on randomly generated obstacles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
-	./tri $(interactive) 10 360 0 20 20 0 \
-		2 10 input1.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
-
-# eg1b: there is no path because eps=10
-#
-eg1b: tri
-	@echo "Target eg1a:  runs tri on randomly generated obstacles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
-	./tri $(interactive) 150 260 0 20 20 0 \
-		10 5 input1.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
-
-# RANDOMLY GENERATED ENVIRONMENT:
-
-# eg100:
-#
+# eg100: 100 triangles
 eg100: tri
 	@echo "Target eg100:  runs tri amidst 100 randomly generated triangles"
 	./tri $(interactive) 200 270 0 20 20 0\
 		10 5 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
-	#
-# eg200:
-#
+
+# eg100a: 100 triangles
+eg100a: tri
+	@echo "Target eg100a:  runs tri amidst 100 randomly generated triangles"
+	@echo "This one is a bit harder than eg100 (with radius 8 instead of 5)"
+	./tri $(interactive) 200 270 0 20 20 0\
+		10 8 input100.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir)
+
+# eg200: 200 triangles
 eg200: tri
-	@echo "Target eg200:  runs tri amidst 200 randomly generated triangles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
+	@echo "Target eg200:  runs tri on randomly generated obstacles"
+	@echo "--  This may take a noticeable amount bit of time!!!"
 	./tri $(interactive) 150 260 0 20 20 0 \
-		10 5 input200.txt \
+		5 2 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
 
@@ -251,25 +238,22 @@ eg200: tri
 # 	lots of time checking elsewhere!
 #
 eg200a: tri
-	@echo "Target eg200a:  runs tri amidst 200 randomly generated triangles"
+	@echo "Target eg200a:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
 	./tri $(interactive) 10 360 0 20 20 0 \
-		10 10 input200.txt \
+		2 10 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
 
 # eg200b: there is no path because eps=10
 #
-# 	The display seems to show some current bugs in the
-# 	code.   THIS IS A GOOD PLACE TO RUN IN LEVEL 2 to CHECK!!!
-#
 eg200b: tri
-	@echo "Target eg200b:  runs tri amidst 200 randomly generated triangles"
+	@echo "Target eg200b:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
 	./tri $(interactive) 150 260 0 20 20 0 \
-		10 5 input200.txt \
+		10 5 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
 
@@ -277,13 +261,11 @@ eg200b: tri
 #
 eg300: tri
 	@echo "Target eg300:  runs tri amidst 300 randomly generated triangles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
+	@echo "--  This may take a noticeable amount bit of time!!! "
 	./tri $(interactive) 10 400 0 350 20 0\
 		3 3 input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
-
 
 
 moretest: $(TARGETS)
