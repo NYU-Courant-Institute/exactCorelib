@@ -84,7 +84,7 @@ boxHt = 512
 
 windowPosX = 200	# initial Window position
 windowPosY = 200	
-windowPosX = 600	# initial Window position
+windowPosX = 450	# initial Window position
 windowPosY = 20	
 
 Qtype = 0		# type of priority queue
