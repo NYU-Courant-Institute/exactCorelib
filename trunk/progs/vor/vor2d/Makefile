@@ -1,28 +1,28 @@
-# Makefile for progs/robotics/2d-disc
+# Makefile for progs/robotics/2d-vor2d
 #
 #  HOW TO USE THIS Makefile:
 #
 # (A)	To compile run this demo, you can use this Makefile and just have to type:
 #
-# 	       > make 		-- compiles the main program into "disc"
-# 	       > make test	-- compiles and runs "disc" non-interactively
+# 	       > make 		-- compiles the main program into "vor2d"
+# 	       > make test	-- compiles and runs "vor2d" non-interactively
 # 	       			   (this is Core Library's automatic self-test)
 #
 # (B)	But you probably want to try the various interactive demos of this program:
 #
-# 	       > make eg	-- compiles and runs "disc" interactively
+# 	       > make eg	-- compiles and runs "vor2d" interactively
 #
 # 	The default search-mode is "random".  We encourage you to just
 # 	hit the "Run me" button to see different runs of the program.
 #
 #	This is equivalent to typing:
 #
-#	       > disc $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
+#	       > vor2d $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
 #			$(epsilon) $(radius) $(fileName) \
 #			$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 #			$(Qtype) $(seed)  $(inputDir)
 #
-#	where the arguments to disc correspond to the values $(var) of
+#	where the arguments to vor2d correspond to the values $(var) of
 #	various Makefile variables.   
 #
 # (C)	You can override any of these values at the command line.
@@ -50,6 +50,7 @@
 # Since Core Library 2.1
 # $Id:$
 
+
 CORE_PATH=../../..
 include ../Make.options
 
@@ -70,20 +71,21 @@ radius = 30		# robot radius
 
 inputDir = inputs	# where to find input files
 fileName = input2d.txt	# input environment file
+fileName = input2.txt	# input environment file
 fileName = input0.txt	# input environment file
 fileName = input.txt	# input environment file
 fileName = input100.txt	# input environment file
 fileName = input150.txt	# input environment file
 fileName = input200.txt	# input environment file
 fileName = input300.txt	# input environment file
-fileName = input2.txt	# input environment file
+fileName = bugtrap.txt	# input environment file
 
 boxWidth = 512		# initial configuration box size
 boxHt = 512
 
 windowPosX = 200	# initial Window position
 windowPosY = 200	
-windowPosX = 450	# initial Window position
+windowPosX = 600	# initial Window position
 windowPosY = 20	
 
 Qtype = 0		# type of priority queue
@@ -95,7 +97,7 @@ step = 0		# number of steps to run
 #=================================================
 # Define target files (put all your files here)
 #=================================================
-TARGETS = disc
+TARGETS = vor2d
 
 OBJ_FILES = Box.o QuadTree.o Corner.o Wall.o  fileProcessor.o Timer.o
 
@@ -103,10 +105,10 @@ all: $(TARGETS)
 
 # note: this target is the standard target that Core Library uses
 #       to test its subdirectories.   So the program must run in a
-#       non-interactive mode (i.e., the first argument to "disc" is "1").
+#       non-interactive mode (i.e., the first argument to "vor2d" is "1").
 #
 test: $(TARGETS)
-	./disc 1 \
+	./vor2d 1 \
 		$(startX) $(startY)  $(goalX) $(goalY) \
 		$(epsilon)  $(radius)  input.txt  $(boxWidth) $(boxHt) \
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir)
@@ -116,25 +118,25 @@ testall: $(TARGETS)
 	make egb interactive=1
 
 testa: $(TARGETS)
-	./disc 1
+	./vor2d 1
 
 testb: $(TARGETS)
-	./disc 1 \
+	./vor2d 1 \
 		$(startX) $(startY)  $(goalX) $(goalY) \
 		$(epsilon)  $(radius)  input2.txt  $(boxWidth) $(boxHt) \
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir)
 
 #=================================================
-# Examples of running disc program
+# Examples of running vor2d program
 #=================================================
 #
 # this is default, but every option may be changed at command line:
 #
-eg:	disc
-	@echo "Target 'eg':  runs disc with the default options of Makefile"
+eg:	vor2d
+	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
 	@echo "--  You can all of them in you 'make' command line, e.g.,"
 	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
-	./disc $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
+	./vor2d $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
 		$(epsilon) $(radius) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
@@ -144,32 +146,32 @@ eg:	disc
 #	There are 3 combinatorially different paths.
 #	Randomized strategy will find all three of them (keep hitting "run").
 #
-ega:	disc
-	@echo "Target 'ega':  runs disc with default compiled options"
-	./disc $(interactive)
+ega:	vor2d
+	@echo "Target 'ega':  runs vor2d with default compiled options"
+	./vor2d $(interactive)
 
 # run with default Makefile options:
 #
-egb:	disc
-	@echo "Target 'egb':  runs disc with default Makefile options for file input.txt"
-	./disc $(interactive) 10 350 300 20 \
+egb:	vor2d
+	@echo "Target 'egb':  runs vor2d with default Makefile options for file input.txt"
+	./vor2d $(interactive) 10 350 300 20 \
 		10 30 input.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir)
 
 # Simple NO PATH example:
-nopath eg0:	disc
-	@echo "Target 'eg0':  runs disc with random strategy for file input0.txt"
+nopath eg0:	vor2d
+	@echo "Target 'eg0':  runs vor2d with random strategy for file input0.txt"
 	@echo "--  this example has no path..."
-	./disc $(interactive) 400 400  200 200 \
+	./vor2d $(interactive) 400 400  200 200 \
 		10 20 input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		0 $(seed)  $(inputDir)
 
-nopatha eg0a:	disc
-	@echo "Target 'eg0a':  runs disc with astar strategy for file input0.txt"
+nopatha eg0a:	vor2d
+	@echo "Target 'eg0a':  runs vor2d with astar strategy for file input0.txt"
 	@echo "--  this example has no path..."
-	./disc $(interactive) 400 400  200 200 \
+	./vor2d $(interactive) 400 400  200 200 \
 		10 20 input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir)
@@ -177,23 +179,23 @@ nopatha eg0a:	disc
 # BUG TRAP:
 ###################################################
 # Bugtrap example -- Non-existence of path, but barely!
-egbug bug: disc
-	@echo "Target 'egbug':  runs disc for bugtrap input, bugtrap.txt"
+egbug bug: vor2d
+	@echo "Target 'egbug':  runs vor2d for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
 	@echo "--  that are NOT adjacent but shares a corner."
-	./disc $(interactive) 200 350 30 30 \
+	./vor2d $(interactive) 200 350 30 30 \
 		5 10 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
 
 # Bugtrap example -- Existence of path, but barely!
-egbuga buga: disc
-	@echo "Target 'egbuga':  runs disc for bugtrap input, bugtrap.txt"
+egbuga buga: vor2d
+	@echo "Target 'egbuga':  runs vor2d for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is a PATH, but barely so!"
 	@echo "--  the only change from target 'egbug' is that epsilon is now 4, not 5"
 	@echo "--  that are NOT adjacent but shares a corner."
-	./disc $(interactive) 200 350 30 30 \
+	./vor2d $(interactive) 200 350 30 30 \
 		4 10 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
@@ -201,44 +203,42 @@ egbuga buga: disc
 # BUG2 TRAP:
 ###################################################
 # Bugtrap2 example -- Existence of path, but barely! (eps=1)
-egbug2 bug2: disc
-	@echo "Target 'egbug2':  runs disc for bugtrap input, bugtrap2.txt"
+egbug2 bug2: vor2d
+	@echo "Target 'egbug2':  runs vor2d for bugtrap input, bugtrap2.txt"
 	@echo "--  this example shows a PATH, but barely so!"
-	./disc $(interactive) 180 220 20 20 \
+	./vor2d $(interactive) 180 220 20 20 \
 		1 8 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
 
 # Bugtrap2 example -- Non-existence of path, but barely! (eps=2)
-egbug2a bug2a: disc
-	@echo "Target 'egbug2':  runs disc for bugtrap input, bugtrap2.txt"
+egbug2a bug2a: vor2d
+	@echo "Target 'egbug2':  runs vor2d for bugtrap input, bugtrap2.txt"
 	@echo "--  this example shows NO PATH, but barely so!"
-	./disc $(interactive) 180 220 20 20 \
+	./vor2d $(interactive) 180 220 20 20 \
 		2 8 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
 
 
-eg2: disc
-	@echo "Target eg2:  runs disc on simples obstacles"
-	./disc $(interactive) 10 350  500 20 \
+eg2: vor2d
+	@echo "Target eg2:  runs vor2d on simples obstacles"
+	./vor2d $(interactive) 10 350  500 20 \
 		10 20 input2.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 
-# This environment is a maze
-eg3: disc
-	@echo "Target eg3:  runs disc amidst 100 randomly generated obstacles"
-	./disc $(interactive) 10 350  280 220 \
+eg3: vor2d
+	@echo "Target eg3:  runs vor2d amidst 100 randomly generated obstacles"
+	./vor2d $(interactive) 10 350  280 220 \
 		1 10 input3.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 
-# This environment is a maze
-eg4: disc
-	@echo "Target eg4:  runs disc in a randomly generated maze "
-	./disc $(interactive) 10 350  280 205 \
-		3 5 input4.txt \
+eg4: vor2d
+	@echo "Target eg4:  runs vor2d amidst 100 randomly generated obstacles"
+	./vor2d $(interactive) 10 350  280 220 \
+		1 10 input4.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 
@@ -246,9 +246,9 @@ eg4: disc
 
 # eg100:
 #
-eg100: disc
-	@echo "Target eg100:  runs disc amidst 100 randomly generated triangles"
-	./disc $(interactive) 200 270 20 20 \
+eg100: vor2d
+	@echo "Target eg100:  runs vor2d amidst 100 randomly generated triangles"
+	./vor2d $(interactive) 200 270 20 20 \
 		2 5 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
@@ -270,11 +270,11 @@ eg100: disc
 #	    			total Mixed boxes bigger than epsilon: 1788
 #
 #
-eg200: disc
-	@echo "Target eg200:  runs disc amidst 200 randomly generated triangles"
+eg200: vor2d
+	@echo "Target eg200:  runs vor2d amidst 200 randomly generated triangles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
-	./disc $(interactive) 150 260 20 20 \
+	./vor2d $(interactive) 150 260 20 20 \
 		2 5 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
@@ -282,11 +282,11 @@ eg200: disc
 # eg200a: there is an obvious path but probabilistic methods might waste
 # 	lots of time checking elsewhere!
 #
-eg200a: disc
-	@echo "Target eg200a:  runs disc amidst 200 randomly generated triangles"
+eg200a: vor2d
+	@echo "Target eg200a:  runs vor2d amidst 200 randomly generated triangles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
-	./disc $(interactive) 10 360 20 20 \
+	./vor2d $(interactive) 10 360 20 20 \
 		2 10 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
@@ -296,11 +296,11 @@ eg200a: disc
 # 	The display seems to show some current bugs in the
 # 	code.   THIS IS A GOOD PLACE TO RUN IN LEVEL 2 to CHECK!!!
 #
-eg200b: disc
-	@echo "Target eg200b:  runs disc amidst 200 randomly generated triangles"
+eg200b: vor2d
+	@echo "Target eg200b:  runs vor2d amidst 200 randomly generated triangles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
-	./disc $(interactive) 150 260 20 20 \
+	./vor2d $(interactive) 150 260 20 20 \
 		10 5 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
@@ -318,11 +318,11 @@ eg200b: disc
 #				total Mixed boxes smaller than epsilon: 67198
 #				total Mixed boxes bigger than epsilon: 395
 #
-eg300: disc
-	@echo "Target eg300:  runs disc amidst 300 randomly generated triangles"
+eg300: vor2d
+	@echo "Target eg300:  runs vor2d amidst 300 randomly generated triangles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
-	./disc $(interactive) 10 400 350 20 \
+	./vor2d $(interactive) 10 400 350 20 \
 		1 3 input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
@@ -331,7 +331,7 @@ eg300: disc
 moretest: $(TARGETS)
 # nothing to do
 
-disc: $(OBJ_FILES) disc.o
+vor2d: $(OBJ_FILES) vor2d.o
 
 #=================================================
 # Temp
@@ -339,7 +339,7 @@ disc: $(OBJ_FILES) disc.o
 m:
 	gvim Makefile
 vi:
-	gvim disc.cpp
+	gvim vor2d.cpp
 
 #=================================================
 # Rules
@@ -348,7 +348,7 @@ vi:
 	${CXX} $(OBJ_FILES) $(LDFLAGS) $< $(CORE_LIB) -o $@
 
 .cpp.o:
-	${CXX} -c -O3 $(CXXFLAGS) $(CORE_INC) $< -o $@
+	${CXX} -c $(CXXFLAGS) $(CORE_INC) $< -o $@
 
 #=================================================
 # Clean object files
