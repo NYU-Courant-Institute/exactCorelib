@@ -69,25 +69,23 @@ QuadTree* QT;
 
 // GLOBAL INPUT Parameters ========================================
 //
-	double alpha[2] = {10, 360};		// start configuration
-	double beta[2] = {500, 20};		// goal configuration
-	double epsilon = 1;			// resolution parameter
-	Box* boxA;				// start box (containing alpha)
-	Box* boxB;				// goal box (containing beta)
+
+	double epsilon = 10;			// resolution parameter
 	double boxWidth = 512;			// Initial box width
 	double boxHeight = 512;			// Initial box height
-	double R0 = 30;				// Robot radius 
 	int windowPosX = 400;			// X Position of Window
 	int windowPosY = 200;			// Y Position of Window
 	string fileName("input2.txt"); 		// Input file name
 	string inputDir("inputs"); 		// Path for input files 
 	int QType = 0;				// The Priority Queue can be
-						//    sequential (0) or random (1)
-	int interactive = 0;			// Run interactively?
-						//    Yes (0) or No (1)
+						        //    sequential (0) or random (1)
+	int interactive = 0;		// Run interactively?
+						        //    Yes (0) or No (1)
 	int seed = 111;				// seed for random number generator
 						// (Could also be used for BFS, etc)
-	bool noPath = true;			// True means there is "No path.
+
+	bool pseudo = false;   // show pseudo Voronoi vertices/curves
+	bool interior = false; // show Voronoi interior to the polygons
  
 	bool hideBoxBoundary = false;  //don't draw box boundary
 
@@ -131,20 +129,16 @@ void Mouse(int button, int state, int x, int y);
 int main(int argc, char* argv[])
 {
 	if (argc > 1) interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
-	if (argc > 2) alpha[0] = atof(argv[2]);		// start x
-	if (argc > 3) alpha[1] = atof(argv[3]);		// start y
-	if (argc > 4) beta[0] = atof(argv[4]);		// goal x
-	if (argc > 5) beta[1] = atof(argv[5]);		// goal y
-	if (argc > 6) epsilon = atof(argv[6]);		// epsilon (resolution)
-	if (argc > 7) R0      = atof(argv[7]);		// robot radius
-	if (argc > 8) fileName = argv[8]; 		// Input file name
-	if (argc > 9) boxWidth = atof(argv[9]);		// boxWidth
-	if (argc > 10) boxHeight = atof(argv[10]);	// boxHeight
-	if (argc > 11) windowPosX = atoi(argv[11]);	// window X pos
-	if (argc > 12) windowPosY = atoi(argv[12]);	// window Y pos
-	if (argc > 13) QType   = atoi(argv[13]);	// PriorityQ Type (random or no)
-	if (argc > 14) seed   = atoi(argv[14]);		// for random number generator
-	if (argc > 15) inputDir  = argv[15];		// path for input files
+	if (argc > 2) epsilon = atof(argv[2]);		// show pseudo Voronoi vertices/curves
+	if (argc > 3) pseudo = atoi(argv[3]);      // show Voronoi interior to the polygons
+	if (argc > 4) interior = atoi(argv[4]);      // epsilon (resolution)
+	if (argc > 5) fileName = argv[5]; 		// Input file name
+	if (argc > 6) boxWidth = atof(argv[6]);		// boxWidth
+	if (argc > 7) boxHeight = atof(argv[7]);	// boxHeight
+	if (argc > 8) windowPosX = atoi(argv[8]);	// window X pos
+	if (argc > 9) windowPosY = atoi(argv[9]);	// window Y pos
+	if (argc > 10) QType   = atoi(argv[10]);	// PriorityQ Type (random or no)
+	if (argc > 11) inputDir  = argv[11];		// path for input files
 
 	// Else, set up for GLUT/GLUI interactive display:
 	glutInit(&argc, argv);
@@ -198,11 +192,6 @@ int main(int argc, char* argv[])
 	//==========================================
 	if (interactive > 0) {	// non-interactive
 	    // do something...
-	    cout << "Non Interactive Run of Disc Robot" << endl;
-	    if (noPath)
-	    	cout << "No Path Found!" << endl;
-	    else
-	    	cout << "Path was Found!" << endl;
 	    return 0;
 	}
 	else
@@ -214,7 +203,6 @@ int main(int argc, char* argv[])
 void genEmptyTree()
 {
 	Box* root = new Box(boxWidth/2, boxHeight/2, boxWidth, boxHeight);
-	Box::r0 = R0;
 
 	parseConfigFile(root);
 	root->updateStatus();
@@ -242,14 +230,14 @@ void run()
 
 	genEmptyTree();
 
-	noPath = false;	// Confusing use of "noPath"
-	int ct = 0;
+	//subdivison phase
+	 QT->subdividePhase();
 
-    while(QT->PQ->empty()==false)
-    {
-        QT->expand();
-        ct++;
-    }
+    //balance
+    QT->balancePhase();
+
+    //construct
+    QT->constructPhase();
 
 	// stop timer
 	t.stop();
@@ -259,28 +247,28 @@ void run()
 	glutPostRedisplay();
 
 
-	cout << "Expanded " << ct << " times" << endl;
-	cout << "total Free boxes: " << freeCount << endl;
-	cout << "total Stuck boxes: " << stuckCount << endl;
-	cout << "total Mixed boxes smaller than epsilon: " << mixSmallCount << endl;
-	cout << "total Mixed boxes bigger than epsilon: " << mixCount - ct - mixSmallCount << endl;
+	//cout << "Expanded " << ct << " times" << endl;
+//	cout << "total Free boxes: " << freeCount << endl;
+//	cout << "total Stuck boxes: " << stuckCount << endl;
+//	cout << "total Mixed boxes smaller than epsilon: " << mixSmallCount << endl;
+	//cout << "total Mixed boxes bigger than epsilon: " << mixCount - ct - mixSmallCount << endl;
 	freeCount = stuckCount = mixCount = mixSmallCount = 0;
 }
 
-void drawPath(vector<Box*>& path)
-{
-	glColor3f(0.5, 0, 0.25);
-	glLineWidth(3.0);
-	glBegin(GL_LINE_STRIP);	
-	glVertex2f(beta[0], beta[1]);
-	for (int i = 0; i < (int)path.size(); ++i)
-	{
-		glVertex2f(path[i]->x, path[i]->y);	
-	}
-	glVertex2f(alpha[0], alpha[1]);
-	glEnd();
-	glLineWidth(1.0);
-}
+//void drawPath(vector<Box*>& path)
+//{
+//	glColor3f(0.5, 0, 0.25);
+//	glLineWidth(3.0);
+//	glBegin(GL_LINE_STRIP);
+//	glVertex2f(beta[0], beta[1]);
+//	for (int i = 0; i < (int)path.size(); ++i)
+//	{
+//		glVertex2f(path[i]->x, path[i]->y);
+//	}
+//	glVertex2f(alpha[0], alpha[1]);
+//	glEnd();
+//	glLineWidth(1.0);
+//}
 
 
 void drawQuad(Box* b)

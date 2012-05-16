@@ -13,6 +13,15 @@
 #include <float.h>
 #include "UnionFind.h"
 
+
+
+//
+// keep these as options
+//
+// (1) pseudo ( cl(m)>r_B && inseparable )
+// (2) internal medial axis
+//
+
 class Set;
 class Box;
 
@@ -209,17 +218,20 @@ public:
             Wall * w1=*wallset.begin();
             Wall * w2=*(++wallset.begin());
             bool opposing=false;
-            if(w1->dst==w2->src && w1->dst->isConvex()){
+            if(w1->dst==w2->src && w1->dst->isConvex())
+            {
                 opposing=true;
             }
             else if(w2->dst==w1->src && w2->dst->isConvex()){
                 opposing=true;
             }
             else{ //no shared vertex
+
                 bool r1=w1->isRight(w2->src->x,w2->src->y);
                 bool r2=w1->isRight(w2->dst->x,w2->dst->y);
                 bool r3=w2->isRight(w1->src->x,w1->src->y);
                 bool r4=w2->isRight(w1->dst->x,w1->dst->y);
+
                 if(!r2 && !r2 && !r3 && !r4){
                     opposing=true;
                 }
@@ -653,6 +665,16 @@ public:
 	    }
 
 	    return NULL;
+	}
+
+	void getLeaves(list<Box*>& leaves)
+	{
+	    if(isLeaf){
+	        leaves.push_back(this);
+	        return;
+	    }
+
+        for(int i=0;i<4;i++) pChildren[i]->getLeaves(leaves);
 	}
 
 };//class Box

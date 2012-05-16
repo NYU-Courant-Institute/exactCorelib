@@ -60,15 +60,11 @@ include ../Make.options
 #=================================================
 interactive = 0		# 0=interactive, >0 is non-interactive
 
-startX = 10		# start configuration
-startY = 350
-goalX = 300		# goal configuration
-goalY = 20
-
 epsilon = 2		# resolution parameter
 epsilon = 10		# resolution parameter
-radius = 40		# robot radius
-radius = 30		# robot radius
+
+pseudo = 0		# boolean: true => show pseudo Vor objects
+interior = 0	# boolean: true => show interior Vor objects
 
 inputDir = inputs	# where to find input files
 fileName = input2d.txt	# input environment file
@@ -86,7 +82,7 @@ boxHt = 512
 
 windowPosX = 200	# initial Window position
 windowPosY = 200	
-windowPosX = 600	# initial Window position
+windowPosX = 450	# initial Window position
 windowPosY = 20	
 
 Qtype = 0		# type of priority queue
@@ -138,12 +134,10 @@ testb: $(TARGETS)
 #
 eg:	vor2d
 	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
-	@echo "--  You can all of them in you 'make' command line, e.g.,"
-	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
-	./vor2d $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
-		$(epsilon) $(radius) $(fileName) \
+	./vor2d $(interactive) \
+		$(epsilon) $(pseudo) $(interior)$(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
+		$(inputDir)
 
 star:	vor2d
 	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
@@ -163,6 +157,14 @@ dog:	vor2d
 		1000 1000 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 		
+line:	vor2d
+	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
+	@echo "--  You can all of them in you 'make' command line, e.g.,"
+	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
+	./vor2d $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
+		0.1 $(radius) line.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir)
 		
 # run with default compiled options:
 #	The input file is input2.txt.
@@ -275,10 +277,10 @@ eg6: vor2d
 # RANDOMLY GENERATED ENVIRONMENT:
 
 eg10: vor2d
-	./vor2d $(interactive) 10 350  280 220 \
-		1 10 input10.txt \
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) input10.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
+		$(inputDir)
 
 # eg100:
 #

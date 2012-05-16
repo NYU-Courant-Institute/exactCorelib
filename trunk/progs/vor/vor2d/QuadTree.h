@@ -87,6 +87,80 @@ public:
 		insertNode(pRoot);
 	}
 
+	void subdividePhase()
+	{
+	    int ct = 0;
+	    while(PQ->empty()==false)
+	    {
+	        expand();
+	        ct++;
+	    }
+	}
+
+	void balancePhase()
+	{
+	    list<Box*> leaves;
+	    pRoot->getLeaves(leaves);
+
+	    vector< pair<int,Box*> > box_pq;
+	    for(list<Box*>::iterator i=leaves.begin();i!=leaves.end();i++)
+	    {
+	        Box * box=*i;
+	        pair<int,Box*> tmp(box->depth,box);
+	        box_pq.push_back(tmp);
+	        push_heap(box_pq.begin(),box_pq.end());
+	    }
+
+
+	    while(box_pq.empty()==false)
+	    {
+
+	        pair<int,Box*> tmp=box_pq.front();
+	        Box * box=tmp.second;
+	        pop_heap(box_pq.begin(),box_pq.end());
+	        box_pq.pop_back();
+
+
+	        //
+	        for(int i=0;i<4;i++){
+
+                Box * nei=box->pChildren[i];
+
+	            if(nei==NULL) continue;
+
+	            //visiting all neighbors
+	            if(nei->depth < box->depth-1)
+	            {
+
+	                nei->status=Box::IN;
+	                bool results=nei->split(epsilon); //ask the neighbor to slip
+
+	                if(results)
+	                {
+                        for(int k=0;k<4;k++){ //enqueue neighbors' kid
+                            Box * nei_kid=nei->pChildren[k];
+                            //
+                            nei_kid->updateStatus();
+                            //
+
+                            pair<int,Box*> tmp(nei_kid->depth,nei_kid);
+                            box_pq.push_back(tmp);
+                            push_heap(box_pq.begin(),box_pq.end());
+                        }//end for k
+	                }
+	                else{
+	                    cout<<"Split failed"<<endl;
+	                }
+	            }
+	        }//end for i
+	    }//end while
+	}
+
+	void constructPhase()
+	{
+
+	}
+
 	Box* getBox(Box* root, double x, double y)
 	{
 		if (x > root->x + root->width / 2 || x < root->x - root->width / 2
