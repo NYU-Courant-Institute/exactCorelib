@@ -17,6 +17,7 @@
 
 extern int freeCount;
 extern int stuckCount;
+extern int trickyCount;
 extern int mixCount;
 extern int mixSmallCount;
 
@@ -38,6 +39,9 @@ private:
 		case Box::ON:
 			++stuckCount;
 			break;
+        case Box::TRICKY:
+            ++trickyCount;
+            break;
 		case Box::IN:
 			++mixCount;
 			if (b->height < epsilon || b->width < epsilon)

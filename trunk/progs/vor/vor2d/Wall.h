@@ -23,6 +23,7 @@ public:
 	Wall(Corner* s, Corner* d);
 
 	double distance(double x, double y);
+	double distance_star(double x, double y);
 
 	bool isRight(double x, double y);
 

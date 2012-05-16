@@ -50,6 +50,7 @@
 # Since Core Library 2.1
 # $Id:$
 
+VAR=Debug
 
 CORE_PATH=../../..
 include ../Make.options
@@ -98,8 +99,11 @@ step = 0		# number of steps to run
 # Define target files (put all your files here)
 #=================================================
 TARGETS = vor2d
-
-OBJ_FILES = Box.o QuadTree.o Corner.o Wall.o  fileProcessor.o Timer.o
+SUBDIRS = . 
+SRCS=$(wildcard $(addsuffix /*.cpp,$(SUBDIRS)))
+OBJS=${SRCS:.cpp=.o}
+OBJ_FILES = $(OBJS)
+CXXFLAGS += -MMD
 
 all: $(TARGETS)
 
@@ -141,6 +145,25 @@ eg:	vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 
+star:	vor2d
+	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
+	@echo "--  You can all of them in you 'make' command line, e.g.,"
+	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
+	./vor2d $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
+		0.1 $(radius) star.poly \
+		10 10 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir)
+
+dog:	vor2d
+	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
+	@echo "--  You can all of them in you 'make' command line, e.g.,"
+	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
+	./vor2d $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
+		0.1 $(radius) dog.poly \
+		1000 1000 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir)
+		
+		
 # run with default compiled options:
 #	The input file is input2.txt.
 #	There are 3 combinatorially different paths.
@@ -164,7 +187,7 @@ nopath eg0:	vor2d
 	@echo "Target 'eg0':  runs vor2d with random strategy for file input0.txt"
 	@echo "--  this example has no path..."
 	./vor2d $(interactive) 400 400  200 200 \
-		10 20 input0.txt \
+		1 20 input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		0 $(seed)  $(inputDir)
 
@@ -172,7 +195,7 @@ nopatha eg0a:	vor2d
 	@echo "Target 'eg0a':  runs vor2d with astar strategy for file input0.txt"
 	@echo "--  this example has no path..."
 	./vor2d $(interactive) 400 400  200 200 \
-		10 20 input0.txt \
+		1 20 input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir)
 
@@ -243,6 +266,12 @@ eg4: vor2d
 		$(Qtype) $(seed)  $(inputDir)
 
 # RANDOMLY GENERATED ENVIRONMENT:
+
+eg10: vor2d
+	./vor2d $(interactive) 10 350  280 220 \
+		1 10 input10.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir)
 
 # eg100:
 #
@@ -331,7 +360,7 @@ eg300: vor2d
 moretest: $(TARGETS)
 # nothing to do
 
-vor2d: $(OBJ_FILES) vor2d.o
+$(TARGETS): $(OBJ_FILES)
 
 #=================================================
 # Temp
@@ -344,17 +373,27 @@ vi:
 #=================================================
 # Rules
 #=================================================
+
+.SUFFIXES: .cpp
+
 %: %.o
-	${CXX} $(OBJ_FILES) $(LDFLAGS) $< $(CORE_LIB) -o $@
+	${CXX} $(OBJ_FILES) $(LDFLAGS) $(CORE_LIB) -o $@
 
 .cpp.o:
-	${CXX} -c $(CXXFLAGS) $(CORE_INC) $< -o $@
+	${CXX} $(CXXFLAGS) $(CORE_INC) -c $< -o $@
+	cat $*.d >> Dependencies
+	rm -f $*.d 
+
+Dependencies:
+	touch Dependencies
+
+include Dependencies
 
 #=================================================
 # Clean object files
 #=================================================
 clean:
-	-@test -z "*.o" || rm -f *.o
+	-@test -z "*.o" || rm -f *.o Dependencies
 
 #=================================================
 # Remove executable files
@@ -362,7 +401,7 @@ clean:
 EXEPROGS=$(TARGETS:=$(EXETYPE))
 
 vclean veryclean: clean
-	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
+	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS) Dependencies
 
 #=================================================
 # END Makefile 

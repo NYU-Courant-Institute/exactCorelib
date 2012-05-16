@@ -93,6 +93,7 @@ QuadTree* QT;
 
 	int freeCount = 0;
 	int stuckCount = 0;
+	int trickyCount = 0;
 	int mixCount = 0;
 	int mixSmallCount = 0;
 

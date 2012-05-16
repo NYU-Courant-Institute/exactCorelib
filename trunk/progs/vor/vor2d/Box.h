@@ -9,6 +9,7 @@
 #include <vector>
 #include <list>
 #include <set>
+#include <float.h>
 #include "UnionFind.h"
 
 class Set;
@@ -134,8 +135,11 @@ public:
 			return;
 		}
 		
-		int total_feature_size=corners.size()+walls.size();
+        //
+		//int total_feature_size=corners.size()+walls.size();
+        int total_feature_size= corners.size()+ walls.size(); //cornerset.size()+wallset.size();
 
+		//C_0
 		if(total_feature_size>3){
 		    status = IN; //need more split
 		    return;
@@ -146,36 +150,44 @@ public:
 		    return;
 		}
 
-		bool separable=are_features_separable();
+		bool separable=are_features_separable(); //wallset,cornerset);
 
+		//C_1
 		if( (cl_m<rB) && separable ){
             status = IN; //need more split
             return;
         }
 
-		BoxNode UL, LL, UR, LR; //upper left, lower left, upper right, lower right
-		UL.x=x-width/2; UL.y=y+height/2;
-		LL.x=x-width/2; LL.y=y-height/2;
-		UR.x=x+width/2; UR.y=y+height/2;
-		LR.x=x+width/2; LR.y=y-height/2;
+		//C_2
+		if( (cl_m<rB*rB) ){
+            status = IN; //need more split
+            return;
+        }
 
-		determine_clearance(UL);
-		determine_clearance(LL);
-		determine_clearance(UR);
-		determine_clearance(LR);
+        //find actual features of the box nodes
+        BoxNode UL, LL, UR, LR; //upper left, lower left, upper right, lower right
+        UL.x=x-width/2; UL.y=y+height/2;
+        LL.x=x-width/2; LL.y=y-height/2;
+        UR.x=x+width/2; UR.y=y+height/2;
+        LR.x=x+width/2; LR.y=y-height/2;
 
-		//either off or on or tricky
-		set<Wall*>   wallset;
-		set<Corner*> cornerset;
-		wallset.insert(UL.walls.begin(),UL.walls.end());
-		wallset.insert(LL.walls.begin(),LL.walls.end());
-		wallset.insert(UR.walls.begin(),UR.walls.end());
-		wallset.insert(LR.walls.begin(),LR.walls.end());
+        determine_clearance(UL);
+        determine_clearance(LL);
+        determine_clearance(UR);
+        determine_clearance(LR);
 
-		cornerset.insert(UL.corners.begin(),UL.corners.end());
-		cornerset.insert(LL.corners.begin(),LL.corners.end());
-		cornerset.insert(UR.corners.begin(),UR.corners.end());
-		cornerset.insert(LR.corners.begin(),LR.corners.end());
+        //determine the status: either OFF or ON or Tricky
+        set<Wall*>   wallset;
+        set<Corner*> cornerset;
+        wallset.insert(UL.walls.begin(),UL.walls.end());
+        wallset.insert(LL.walls.begin(),LL.walls.end());
+        wallset.insert(UR.walls.begin(),UR.walls.end());
+        wallset.insert(LR.walls.begin(),LR.walls.end());
+
+        cornerset.insert(UL.corners.begin(),UL.corners.end());
+        cornerset.insert(LL.corners.begin(),LL.corners.end());
+        cornerset.insert(UR.corners.begin(),UR.corners.end());
+        cornerset.insert(LR.corners.begin(),LR.corners.end());
 
 		if(!separable)
 		{
@@ -223,7 +235,7 @@ public:
         for (WIT iterW=walls.begin(); iterW != walls.end(); ++iterW)
         {
             Wall* w = *iterW;
-            double dist = w->distance(x, y);
+            double dist = w->distance_star(x, y); //w->distance_star(x, y); //w->distance(x, y);
             if (dist < cl2r)
             {
                 child->walls.push_back(w);
@@ -243,24 +255,22 @@ public:
 	}
 
 	//
-	// find the nearest feature thus the clearance
+	// find the nearest feature and the clearance
+	// results are stored in "node"
 	//
 	void determine_clearance(BoxNode& node)
 	{
-		//assert(walls.size());
+
 	    double x=node.x;
 	    double y=node.y;
 
 	    //compute the closest wall
-		Wall* nearestWall;
-		list<Wall*>::iterator iterW = walls.begin();
-		double mindistW = (*iterW)->distance(x, y);
-		nearestWall = *iterW;
-		++iterW;
-		for (; iterW != walls.end(); ++iterW)
+		Wall* nearestWall=NULL;
+		double mindistW=FLT_MAX;
+		for (list<Wall*>::iterator iterW = walls.begin(); iterW != walls.end(); ++iterW)
 		{
 			Wall* w = *iterW;
-			double dist = w->distance(x, y);
+			double dist = w->distance(x, y); //w->distance_star(x, y); //w->distance(x, y);
 			if (dist < mindistW)
 			{
 				mindistW = dist;
@@ -271,7 +281,7 @@ public:
 		//
 		// compute a closest corner that is closer than  (mindistW +1) (?? why +1)
 		//
-		double mindistC = mindistW + .1; //mindistC may not exist, so init to a bigger number
+		double mindistC = mindistW; //mindistC may not exist, so init to a bigger number
 		Corner* nearestCorner = NULL;
 		if (corners.size())
 		{			
@@ -471,15 +481,24 @@ public:
 	// return true if separable
 	// otherwise return false
 	//
-	bool are_features_separable()
+	bool are_features_separable() //(set<Wall*>& wallset, set<Corner*>& cornerset)
 	{
+	    //list<Wall*> walls(wallset.begin(),wallset.end());
+	    //list<Corner*> corners(cornerset.begin(),cornerset.end());
+
 	    int feature_size=walls.size()+corners.size();
 
 	    assert(feature_size<=3);
 
 	    if(feature_size<=1) return false; //nothing to separate
-        if(walls.empty()) return true;   //multiple disjoint corners
-        if(corners.empty()) return true; //multiple disjoint walls
+
+	    //so, there are 2 or 3 features now...
+        if(walls.empty()){
+            return true;   //multiple disjoint corners
+        }
+        if(corners.empty()){
+            return true; //multiple disjoint walls
+        }
 
         bool separable=true;
 	    if(feature_size==3)
