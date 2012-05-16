@@ -265,6 +265,13 @@ eg4: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 
+eg6: vor2d
+	@echo "Target eg6:  runs vor2d amidst 100 randomly generated obstacles"
+	./vor2d $(interactive) 10 350  280 220 \
+		1 10 input6.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir)
+
 # RANDOMLY GENERATED ENVIRONMENT:
 
 eg10: vor2d

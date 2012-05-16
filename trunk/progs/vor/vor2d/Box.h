@@ -2,6 +2,7 @@
 
 #include <time.h>
 #include <stdlib.h>
+#include <iostream>
 #include <assert.h>
 #include <math.h>
 #include "Wall.h"
@@ -104,6 +105,9 @@ public:
 	list<Wall*> walls;
 
 
+    list<Corner*> node_corners;
+    list<Wall*> node_walls;
+
 	//for shortest path
 	double dist2Source;
 	int heapId;
@@ -159,10 +163,10 @@ public:
         }
 
 		//C_2
-		if( (cl_m<rB*rB) ){
-            status = IN; //need more split
-            return;
-        }
+//		if( (cl_m<rB*rB) ){
+//            status = IN; //need more split
+//            return;
+//        }
 
         //find actual features of the box nodes
         BoxNode UL, LL, UR, LR; //upper left, lower left, upper right, lower right
@@ -189,32 +193,46 @@ public:
         cornerset.insert(UR.corners.begin(),UR.corners.end());
         cornerset.insert(LR.corners.begin(),LR.corners.end());
 
-		if(!separable)
-		{
-		    //if(cl_m<rB)  status = ON;
-		    //else
-		        status=OFF;
-		    return;
-		}
-		else //separable
-		{
-            //
-            if( (cornerset.size()+wallset.size())>1 ){ //there is (some) change of features
-                status = ON;
-                return;
-            }
+        //remember
+        node_walls.insert(node_walls.end(),wallset.begin(),wallset.end());
+        node_corners.insert(node_corners.end(),cornerset.begin(),cornerset.end());
+        //done remembering
 
-            //
-            // tricky if all nodes have the same wall feature and
-            // there is a corner feature in this box
-            //
-            if(wallset.size()==1 && corners.empty()==false){
-                status = TRICKY;
-                return;
-            }
-
+        if(are_features_separable(wallset,cornerset)==false)
+        {
             status = OFF;
-		}
+            return;
+        }
+
+        if(wallset.size()==2 && cornerset.empty())
+        {
+            Wall * w1=*wallset.begin();
+            Wall * w2=*(++wallset.begin());
+            bool opposing=false;
+            if(w1->dst==w2->src && w1->dst->isConvex()){
+                opposing=true;
+            }
+            else if(w2->dst==w1->src && w2->dst->isConvex()){
+                opposing=true;
+            }
+            else{ //no shared vertex
+                bool r1=w1->isRight(w2->src->x,w2->src->y);
+                bool r2=w1->isRight(w2->dst->x,w2->dst->y);
+                bool r3=w2->isRight(w1->src->x,w1->src->y);
+                bool r4=w2->isRight(w1->dst->x,w1->dst->y);
+                if(!r2 && !r2 && !r3 && !r4){
+                    opposing=true;
+                }
+            }
+
+            if(opposing)
+            {
+                status = OFF;
+                return;
+            }
+        }
+
+        status = ON;
 
         return;
 	}
@@ -228,17 +246,44 @@ public:
 	    //center x,y
 	    double x=child->x;
 	    double y=child->y;
-	    double cl2r=child->rB*2+child->cl_m;
+	    double w2=child->width/2;  //half of width
+	    double h2=child->height/2; //half of height
+
+	    double corner1[2]={x-w2,y-h2};
+	    double corner2[2]={x+w2,y-h2};
+	    double corner3[2]={x+w2,y+h2};
+	    double corner4[2]={x-w2,y+h2};
+
+	    double cl2r=child->rB*2+child->cl_m; //clearance + 2*rB
 	    //
 
         //compute the separation to walls
         for (WIT iterW=walls.begin(); iterW != walls.end(); ++iterW)
         {
             Wall* w = *iterW;
-            double dist = w->distance_star(x, y); //w->distance_star(x, y); //w->distance(x, y);
-            if (dist < cl2r)
+            double dist = w->distance(x, y); //w->distance_star(x, y); //w->distance(x, y);
+
+            if (dist < cl2r) //within the distance range
             {
-                child->walls.push_back(w);
+
+                //check with the Zone of the wall
+                short s1=w->distance_sign(corner1[0],corner1[1]);
+                short s2=w->distance_sign(corner2[0],corner2[1]);
+                short s3=w->distance_sign(corner3[0],corner3[1]);
+                short s4=w->distance_sign(corner4[0],corner4[1]);
+
+                if(s1!=s2 || s2!=s3 || s3!=s4 || s4!=s1 || s1==0)
+                {
+
+                    //check the side of the wall
+                    bool r1=w->isRight(corner1[0],corner1[1]);
+                    bool r2=w->isRight(corner2[0],corner2[1]);
+                    bool r3=w->isRight(corner3[0],corner3[1]);
+                    bool r4=w->isRight(corner4[0],corner4[1]);
+
+                    if(r1 ||r2 ||r3 ||r4)
+                        child->walls.push_back(w);
+                }
             }
         }
 
@@ -270,45 +315,52 @@ public:
 		for (list<Wall*>::iterator iterW = walls.begin(); iterW != walls.end(); ++iterW)
 		{
 			Wall* w = *iterW;
-			double dist = w->distance(x, y); //w->distance_star(x, y); //w->distance(x, y);
-			if (dist < mindistW)
+			double dist = w->distance_star(x, y); //w->distance_star(x, y); //w->distance(x, y);
+			if (dist < mindistW) //shorter distance
 			{
-				mindistW = dist;
-				nearestWall = *iterW;
+			    mindistW = dist;
+			    nearestWall=NULL;
+
+			    if(w->isRight(x,y)){ //on the right size of the wall
+			        nearestWall = *iterW;
+			    }
 			}
 		}
 
 		//
 		// compute a closest corner that is closer than  (mindistW +1) (?? why +1)
 		//
-		double mindistC = mindistW; //mindistC may not exist, so init to a bigger number
+		double mindistC = FLT_MAX; //mindistC may not exist, so init to a bigger number
 		Corner* nearestCorner = NULL;
-		if (corners.size())
-		{			
-			list<Corner*>::iterator iterC = corners.begin();
-			mindistC = (*iterC)->distance(x, y);
-			nearestCorner = *iterC;
-			++iterC;
-			for (; iterC != corners.end(); ++iterC)
-			{
-				Corner* c = *iterC;
-				double dist = c->distance(x, y);
-				if (dist < mindistC)
-				{
-					mindistC = dist;
-					nearestCorner = *iterC;
-				}
-			}
-		}
+        for (list<Corner*>::iterator iterC = corners.begin(); iterC != corners.end(); ++iterC)
+        {
+            Corner* c = *iterC;
+            double dist = c->distance(x, y);
+            if (dist < mindistC)  //shorter distance
+            {
+                mindistC = dist;
+                nearestCorner=NULL;
 
-		if (mindistW < mindistC)
+                if(c->isConvex()) //reflect vertex has no Vor (outside the polygon)
+                {
+                    //check if (x,y) is in the zone of this convex vertex
+                    if( c->preWall->distance_sign(x,y)==1 && c->nextWall->distance_sign(x,y)==-1 )
+                    {
+                        nearestCorner = *iterC;
+                    }
+                }
+            }
+        }
+
+		if (mindistW<mindistC)
 		{
 		    node.clearance=mindistW;
-		    node.walls.push_back(nearestWall);
+		    if(nearestWall!=NULL) node.walls.push_back(nearestWall);
 		}
-		else{
+		else
+		{
 		    node.clearance=mindistC;
-		    node.corners.push_back(nearestCorner);
+		    if(nearestCorner!=NULL) node.corners.push_back(nearestCorner);
 		}
 	}
 
@@ -481,11 +533,21 @@ public:
 	// return true if separable
 	// otherwise return false
 	//
-	bool are_features_separable() //(set<Wall*>& wallset, set<Corner*>& cornerset)
+	bool are_features_separable(set<Wall*>& wallset, set<Corner*>& cornerset)
 	{
-	    //list<Wall*> walls(wallset.begin(),wallset.end());
-	    //list<Corner*> corners(cornerset.begin(),cornerset.end());
+	    list<Wall*> walls(wallset.begin(),wallset.end());
+	    list<Corner*> corners(cornerset.begin(),cornerset.end());
+	    return are_features_separable(walls,corners);
+	}
 
+
+    bool are_features_separable()
+    {
+        return are_features_separable(walls,corners);
+    }
+
+	bool are_features_separable(list<Wall*>& walls, list<Corner*>& corners)
+	{
 	    int feature_size=walls.size()+corners.size();
 
 	    assert(feature_size<=3);
@@ -572,6 +634,25 @@ public:
 //
 //        //done
 //        return false; //there is only one set, so unseparable!
+	}
+
+	bool in(double qx, double qy)
+	{
+	    if( qx<x-width/2 || qx>x+width/2 ) return false;
+	    if( qy<y-height/2 || qy>y+height/2) return false;
+	    return true;
+	}
+
+	Box * find(double qx, double qy)
+	{
+	    if(isLeaf) return this;
+
+	    for(int i=0;i<4;i++){
+	        if(pChildren[i]->in(qx,qy))
+	            return pChildren[i]->find(qx,qy);
+	    }
+
+	    return NULL;
 	}
 
 };//class Box

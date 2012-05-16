@@ -97,6 +97,8 @@ QuadTree* QT;
 	int mixCount = 0;
 	int mixSmallCount = 0;
 
+	Box * g_selected_PM=NULL;
+
 // GLUI controls ========================================
 //
 	GLUI_RadioGroup* radioQType;
@@ -118,9 +120,12 @@ void parseConfigFile(Box*);
 void run();
 void genEmptyTree();
 void drawPath(vector<Box*>&);
+void drawCircle( float Radius, int numPoints, double x, double y, double r, double g, double b);
+void filledCircle( double radius, double x, double y, double r, double g, double b);
+
 extern int fileProcessor(string inputfile);
 void Keyboard( unsigned char key, int x, int y );
-
+void Mouse(int button, int state, int x, int y);
 
 // MAIN PROGRAM: ========================================
 int main(int argc, char* argv[])
@@ -147,13 +152,18 @@ int main(int argc, char* argv[])
 	glutInitWindowSize(boxWidth, boxWidth);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 
-
 	int windowID = glutCreateWindow("Voronoi 2D");
 	glutDisplayFunc(renderScene);
 	GLUI_Master.set_glutIdleFunc( NULL );
 	GLUI_Master.set_glutKeyboardFunc(Keyboard);
+	GLUI_Master.set_glutMouseFunc(Mouse);
 	GLUI *glui = GLUI_Master.create_glui( "control", 0, windowPosX + boxWidth + 20, windowPosY );
-	
+
+    // *Antialias*
+    glEnable( GL_LINE_SMOOTH );
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 	// SETTING UP THE CONTROL PANEL:
 	editInput = glui->add_edittext( "Input file:", GLUI_EDITTEXT_TEXT );
 	editInput->set_text((char*)fileName.c_str());
@@ -272,6 +282,7 @@ void drawPath(vector<Box*>& path)
 	glLineWidth(1.0);
 }
 
+
 void drawQuad(Box* b)
 {
 	switch(b->status)
@@ -296,13 +307,14 @@ void drawQuad(Box* b)
 		std::cout << "UNKNOWN in drawQuad" << std::endl;
 		break;
 	}
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glBegin(GL_POLYGON);
-	glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
-	glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
-	glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
-	glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
-	glEnd();
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glBegin(GL_POLYGON);
+    glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
+    glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
+    glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
+    glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
+    glEnd();
 
 	if (!hideBoxBoundary)
 	{
@@ -315,6 +327,54 @@ void drawQuad(Box* b)
 		glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
 		glEnd();
 	}	
+}
+
+void drawQuad_selected(Box* b)
+{
+    glLineWidth(3);
+    glColor3f(1, 0 , 0);
+    double w2=(b->width/2)*0.9;
+    double h2=(b->height/2)*0.9;
+
+
+    //draw a highlight box
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(b->x - w2, b->y - h2);
+    glVertex2f(b->x + w2, b->y - h2);
+    glVertex2f(b->x + w2, b->y + h2);
+    glVertex2f(b->x - w2, b->y + h2);
+    glEnd();
+
+
+
+    //draw circle with radius (clearance+2*Rb)
+    drawCircle( b->rB*2+b->cl_m, 100, b->x, b->y, 1,1,0);
+    //filledCircle( b->rB*2+b->cl_m, b->x, b->y, 1,1,0);
+
+
+
+    //draw features in blue
+    typedef list<Corner*>::iterator CIT;
+    typedef list<Wall*>::iterator WIT;
+
+    glLineWidth(2);
+    glBegin(GL_LINES);
+    glColor3d(0,0,1);
+    for(WIT i=b->walls.begin();i!=b->walls.end();i++){
+        Wall * w=*i;
+        glVertex2d(w->src->x,w->src->y);
+        glVertex2d(w->dst->x,w->dst->y);
+    }
+    glEnd();
+
+    glLineWidth(1);
+    for(CIT i=b->corners.begin();i!=b->corners.end();i++){
+        Corner*c=*i;
+        filledCircle(5,c->x,c->y,0.75,0.75,1);
+        drawCircle(5,36, c->x,c->y,0,0,1);
+    }
+
+    glLineWidth(1);
 }
 
 void drawWalls(Box* b)
@@ -352,8 +412,8 @@ void treeTraverse(Box* b)
 void drawCircle( float Radius, int numPoints, double x, double y, double r, double g, double b)
 {	
 	glColor3d(r,g,b);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);	
-	glBegin(GL_POLYGON);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glBegin(GL_LINE_LOOP);
 	for( int i = 0; i <= numPoints; ++i )
 	{
 		float Angle = i * (2.0* 3.1415926 / numPoints);  
@@ -412,9 +472,15 @@ void renderScene(void)
 	//draw quad tree
 	treeTraverse(QT->pRoot);
 
-	//draw obstacles
-	glPolygonMode(GL_FRONT, GL_LINE);
-	drawWalls(QT->pRoot);
+
+    //draw obstacles
+    glPolygonMode(GL_FRONT, GL_LINE);
+    drawWalls(QT->pRoot);
+
+    //draw selected feature
+	if(g_selected_PM!=NULL)
+	    drawQuad_selected(g_selected_PM);
+
 
 	glutSwapBuffers();
 }
@@ -547,3 +613,43 @@ void Keyboard( unsigned char key, int x, int y )
         case 27: exit(0);
     }
 }
+
+
+
+//
+//
+// selecting a pocket minimum...
+//
+//
+
+void Mouse(int button, int state, int x, int y)
+{
+    //control needs to be pressed to selelect nodes
+    if( state == GLUT_UP )
+    {
+        g_selected_PM=NULL;
+        if( glutGetModifiers()==GLUT_ACTIVE_CTRL )
+        {
+            int viewport[4];
+            glGetIntegerv(GL_VIEWPORT,viewport);
+            double m_x=x;
+            double m_y=viewport[3]-y;
+
+            g_selected_PM = QT->pRoot->find(m_x,m_y);
+
+            if(g_selected_PM!=NULL){
+
+                cout<<"Selected box has "<<g_selected_PM->corners.size()<<" corner features and "
+                    <<g_selected_PM->walls.size()<<" wall features; Its Nodes have "
+                    <<g_selected_PM->node_corners.size()<<" corner features and "
+                    <<g_selected_PM->node_walls.size()<<" wall features"<<endl;
+            }//end g_selected_PM
+
+        }
+
+        glutPostRedisplay();
+    }//if pressed the right key/button
+
+}
+
+

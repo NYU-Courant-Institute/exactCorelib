@@ -24,6 +24,7 @@ public:
 
 	double distance(double x, double y);
 	double distance_star(double x, double y);
+	short distance_sign(double x, double y);
 
 	bool isRight(double x, double y);
 

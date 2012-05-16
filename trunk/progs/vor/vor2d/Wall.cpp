@@ -53,6 +53,22 @@ double Wall::distance_star(double x, double y)
     return FLT_MAX;
 }
 
+short Wall::distance_sign(double x, double y)
+{
+    double x1 = src->x;
+    double x2 = dst->x;
+    double y1 = src->y;
+    double y2 = dst->y;
+    double u = ( (x-x1)*(x2-x1) + (y-y1)*(y2-y1) ) / ( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
+
+    if(u>0 && u<1){
+        return 0;
+    }
+
+    if(u>=0) return 1;
+    return -1;
+}
+
 bool Wall::isRight(double x, double y)
 {
 	double x1 = src->x;
