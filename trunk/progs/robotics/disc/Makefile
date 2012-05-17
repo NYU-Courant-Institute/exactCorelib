@@ -226,7 +226,17 @@ eg2: disc
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 
-# This environment is a maze
+# eg2e:	In this variation, the input environment has a bounding box!
+#
+eg2e: disc
+	@echo "Target eg2e:  runs disc on input2e.txt which has a bounding box"
+	./disc $(interactive) 150 260 20 20 \
+		4 15 input2e.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir)
+
+
+# This environment has 100 randomly generated obstacles
 eg3: disc
 	@echo "Target eg3:  runs disc amidst 100 randomly generated obstacles"
 	./disc $(interactive) 10 350  280 220 \
@@ -238,7 +248,7 @@ eg3: disc
 eg4: disc
 	@echo "Target eg4:  runs disc in a randomly generated maze "
 	./disc $(interactive) 10 350  280 205 \
-		3 5 input4.txt \
+		5 5 input4.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir)
 
