@@ -51,7 +51,11 @@
 #include "Timer.h"
 
 #ifdef __CYGWIN32__
-#include "glui.h"
+#include "GL/glui.h"
+#endif
+#ifdef __linux__
+#include <GL/glut.h>
+#include "GL/glui.h"
 #endif
 #ifdef _WIN32
 #include <gl/glui.h>
@@ -66,7 +70,9 @@
 using namespace std;
 
 vector<Box*> allLeaf;
+vector<Set*> allSet;
 QuadTree* QT;
+
 
 // SHAPE OF TRIANGULAR ROBOT:
 // 	It is a triangle inscribed in a disc centered at the origin.
@@ -408,8 +414,17 @@ void genEmptyTree()
 
 	Box::pAllLeaf = &allLeaf;
 
+	for (vector<Box*>::iterator it = allLeaf.begin(); it != allLeaf.end(); ++it)
+	{
+		delete *it;
+	}
+	for (vector<Set*>::iterator it = allSet.begin(); it != allSet.end(); ++it)
+	{
+		delete *it;
+	}
 	allLeaf.clear();
 	allLeaf.push_back(root);
+	allSet.clear();
 
 	parseConfigFile(root);
 	root->updateStatus();
@@ -641,23 +656,6 @@ void drawWalls(Box* b)
 	glLineWidth(1.0);
 }
 
-void treeTraverse(Box* b)
-{	
-	if (!b)
-	{
-		return;
-	}
-	if (b->isLeaf)
-	{
-		drawQuad(b);
-		return;
-	}
-	for (int i = 0; i < 4; ++i)
-	{
-		treeTraverse(b->pChildren[i]);
-	}
-}
-
 void drawCircle( float Radius, int numPoints, double x, double y, double r, double g, double b)
 {	
 	glColor3d(r,g,b);
@@ -720,8 +718,6 @@ void renderScene(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable( GL_BLEND );
 
-
-	//treeTraverse(QT->pRoot);
 	for (vector<Box*>::iterator it = allLeaf.begin(); it != allLeaf.end(); ++it)
 	{
 		drawQuad(*it);

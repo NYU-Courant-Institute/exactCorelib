@@ -21,6 +21,7 @@
 #include "PriorityQueue.h"
 
 extern vector<Box*> allLeaf;
+extern vector<Set*> allSet;
 
 extern int freeCount;
 extern int stuckCount;
@@ -35,7 +36,10 @@ private:
 		switch (b->getStatus())
 		{
 		case Box::FREE:
-			new Set(b);
+			{
+				Set* st = new Set(b);
+				allSet.push_back(st);
+			}
 			unionAdjacent(b);
 			++freeCount;
 			break;

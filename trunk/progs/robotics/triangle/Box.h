@@ -386,12 +386,6 @@ public:
 
 	static int counter;	// time of expansion (used in BFS strategy)
 	
-	//Pointers to children, but when no children (i.e., leaf),
-	//	the pointers are used as neighbor pointers
-	// where
-	//	0 = NW, 1 = EN, 2 = SE, 3 = WS
-	Box* pChildren[4]; 
-
 	Box* pParent; //parent in quadtree
 	enum Status { FREE, STUCK, MIXED, UNKNOWN };
 	Status status;
@@ -412,10 +406,6 @@ public:
 		pSet(0), dist2Source(-1),
 		heapId(-1), prev(0), visited(false)
 	{
-		for (int i = 0; i < 4; ++i)
-		{
-			pChildren[i] = 0;
-		}
 		rB = sqrt(width*width + height*height)/2;
 		priority = Box::counter; 
 
