@@ -1,4 +1,4 @@
-# Makefile for progs/robotics/2d-vor2d
+# Makefile for progs/robotics/vor/vor2d
 #
 #  HOW TO USE THIS Makefile:
 #
@@ -135,7 +135,7 @@ testb: $(TARGETS)
 eg:	vor2d
 	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
 	./vor2d $(interactive) \
-		$(epsilon) $(pseudo) $(interior)$(fileName) \
+		$(epsilon) $(pseudo) $(interior) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir)
 
@@ -147,23 +147,19 @@ star:	vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir)
 
-dog:	vor2d
-	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
-	@echo "--  You can all of them in you 'make' command line, e.g.,"
-	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
-	./vor2d $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
-		0.1 $(radius) dog.poly \
+eg2 dog:	vor2d
+	@echo "Target 'eg2' or 'dog': "
+	./vor2d $(interactive) \
+		0.1 $(pseudo) $(interior) dog.poly \
 		1000 1000 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
+		$(inputDir)
 		
-line:	vor2d
-	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
-	@echo "--  You can all of them in you 'make' command line, e.g.,"
-	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
-	./vor2d $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
-		0.1 $(radius) line.txt \
+eg3 line:	vor2d
+	@echo "Target 'eg3' or 'line': "
+	./vor2d $(interactive) \
+		0.5 $(pseudo) $(interior) line.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
+		$(inputDir)
 		
 # run with default compiled options:
 #	The input file is input2.txt.
@@ -213,17 +209,6 @@ egbug bug: vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
 
-# Bugtrap example -- Existence of path, but barely!
-egbuga buga: vor2d
-	@echo "Target 'egbuga':  runs vor2d for bugtrap input, bugtrap.txt"
-	@echo "--  this examples shows there is a PATH, but barely so!"
-	@echo "--  the only change from target 'egbug' is that epsilon is now 4, not 5"
-	@echo "--  that are NOT adjacent but shares a corner."
-	./vor2d $(interactive) 200 350 30 30 \
-		4 10 bugtrap.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir)
-
 # BUG2 TRAP:
 ###################################################
 # Bugtrap2 example -- Existence of path, but barely! (eps=1)
@@ -244,20 +229,6 @@ egbug2a bug2a: vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
 
-
-eg2: vor2d
-	@echo "Target eg2:  runs vor2d on simples obstacles"
-	./vor2d $(interactive) 10 350  500 20 \
-		10 20 input2.txt \
-		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
-
-eg3: vor2d
-	@echo "Target eg3:  runs vor2d amidst 100 randomly generated obstacles"
-	./vor2d $(interactive) 10 350  280 220 \
-		1 10 input3.txt \
-		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
 
 eg4: vor2d
 	@echo "Target eg4:  runs vor2d amidst 100 randomly generated obstacles"
