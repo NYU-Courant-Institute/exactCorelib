@@ -289,8 +289,8 @@ void drawQuad(Box* b)
 		{
 			glColor3f(0.5, 0.5, 0.5);
 		}
-		else
-		    cout<<"WHAT?"<<endl;
+//		else
+//		    cout<<"WHAT?"<<endl;
 
 		break;
     case Box::TRICKY:
