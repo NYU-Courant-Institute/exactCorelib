@@ -207,7 +207,8 @@ public:
         node_corners.insert(node_corners.end(),cornerset.begin(),cornerset.end());
         //done remembering
 
-        if(are_features_separable(wallset,cornerset)==false)
+//        if()
+        if(separable==false || are_features_separable(wallset,cornerset)==false )
         {
             status = OFF;
             return;
@@ -278,23 +279,9 @@ public:
             if (dist < cl2r) //within the distance range
             {
 
-                //check with the Zone of the wall
-                short s1=w->distance_sign(corner1[0],corner1[1]);
-                short s2=w->distance_sign(corner2[0],corner2[1]);
-                short s3=w->distance_sign(corner3[0],corner3[1]);
-                short s4=w->distance_sign(corner4[0],corner4[1]);
-
-                if(s1!=s2 || s2!=s3 || s3!=s4 || s4!=s1 || s1==0)
+                if( w->inZone_star(child) )
                 {
-
-                    //check the side of the wall
-                    bool r1=w->isRight(corner1[0],corner1[1]);
-                    bool r2=w->isRight(corner2[0],corner2[1]);
-                    bool r3=w->isRight(corner3[0],corner3[1]);
-                    bool r4=w->isRight(corner4[0],corner4[1]);
-
-                    if(r1 ||r2 ||r3 ||r4)
-                        child->walls.push_back(w);
+                    child->walls.push_back(w);
                 }
             }
         }
@@ -304,11 +291,68 @@ public:
         {
             Corner* c = *iterC;
             double dist = c->distance(x, y);
+            if(c->isConvex()==false) continue; //reflex vertex is never a feature
+            //OK, close enough
             if (dist < cl2r)
             {
-                child->corners.push_back(c);
-            }
-        }
+
+
+                //check with the Zone of the previous wall
+                short ps1=c->preWall->distance_sign(corner1[0],corner1[1]);
+                short ps2=c->preWall->distance_sign(corner2[0],corner2[1]);
+                short ps3=c->preWall->distance_sign(corner3[0],corner3[1]);
+                short ps4=c->preWall->distance_sign(corner4[0],corner4[1]);
+
+                //check with the Zone of the next wall
+                short ns1=c->nextWall->distance_sign(corner1[0],corner1[1]);
+                short ns2=c->nextWall->distance_sign(corner2[0],corner2[1]);
+                short ns3=c->nextWall->distance_sign(corner3[0],corner3[1]);
+                short ns4=c->nextWall->distance_sign(corner4[0],corner4[1]);
+
+                //bool zone=false;
+
+                if( ( ps1==1 || ps2==1 || ps3==1 || ps4==1) && ( ns1==-1 || ns2==-1 || ns3==-1 || ns4==-1) )
+                {
+                    //zone=true;
+                    child->corners.push_back(c);
+                }
+//
+//                //this means one of the nodes of the box is in the zone of this vertex
+//                if( (ps1==1 && ns1==-1) || (ps2==1 && ns2==-1) || (ps3==1 && ns3==-1) || (ps4==1 && ns4==-1) ){
+//                    zone=true;
+//                }
+//                //
+//                else{ //the box can still cross the zone without any vertices in it
+//                    if( (ps1==0 && ns2==0) || (ps2==0 && ns3==0) || (ps3==0 && ns4==0) || (ps4==0 && ns1==0) ){
+//                        zone=true;
+//                    }
+//                }
+//
+//                //in the zone, but is it the right size?
+//                if(zone)
+//                {
+//                    bool side=false;
+//
+//                    //check the side of the wall
+//                    bool pr1=c->preWall->isRight(corner1[0],corner1[1]);
+//                    bool pr2=c->preWall->isRight(corner2[0],corner2[1]);
+//                    bool pr3=c->preWall->isRight(corner3[0],corner3[1]);
+//                    bool pr4=c->preWall->isRight(corner4[0],corner4[1]);
+//
+//                    bool nr1=c->nextWall->isRight(corner1[0],corner1[1]);
+//                    bool nr2=c->nextWall->isRight(corner2[0],corner2[1]);
+//                    bool nr3=c->nextWall->isRight(corner3[0],corner3[1]);
+//                    bool nr4=c->nextWall->isRight(corner4[0],corner4[1]);
+//
+//                    if( (pr1 && nr1) || (pr2 && nr2) || (pr3 && nr3) || (pr4 && nr4) )
+//                    {
+//                        side=true;
+//                    }
+//
+//                    child->corners.push_back(c);
+//                }
+            }//end if
+        }//end for
 	}
 
 	//

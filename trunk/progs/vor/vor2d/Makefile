@@ -143,10 +143,9 @@ star:	vor2d
 	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
 	@echo "--  You can all of them in you 'make' command line, e.g.,"
 	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
-	./vor2d $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
-		0.1 $(radius) star.poly \
-		10 10 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
+	./vor2d $(interactive) 1 $(pseudo) $(interior) star.poly \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir)
 
 dog:	vor2d
 	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
@@ -269,11 +268,11 @@ eg4: vor2d
 
 eg6: vor2d
 	@echo "Target eg6:  runs vor2d amidst 100 randomly generated obstacles"
-	./vor2d $(interactive) 10 350  280 220 \
-		1 10 input6.txt \
+	./vor2d $(interactive)\
+		1 $(pseudo) $(interior) input6.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
-
+		$(inputDir)
+		
 # RANDOMLY GENERATED ENVIRONMENT:
 
 eg10: vor2d
@@ -357,13 +356,10 @@ eg200b: vor2d
 #				total Mixed boxes bigger than epsilon: 395
 #
 eg300: vor2d
-	@echo "Target eg300:  runs vor2d amidst 300 randomly generated triangles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
-	./vor2d $(interactive) 10 400 350 20 \
-		1 3 input300.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) input300.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir)
 
 
 moretest: $(TARGETS)

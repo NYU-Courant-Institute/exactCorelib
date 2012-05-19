@@ -95,7 +95,7 @@ QuadTree* QT;
 	int mixCount = 0;
 	int mixSmallCount = 0;
 
-	Box * g_selected_PM=NULL;
+	list<Box*> g_selected_PM;
 
 // GLUI controls ========================================
 //
@@ -123,6 +123,7 @@ void filledCircle( double radius, double x, double y, double r, double g, double
 
 extern int fileProcessor(string inputfile);
 void Keyboard( unsigned char key, int x, int y );
+void SpecialKey( int key, int x, int y );
 void Mouse(int button, int state, int x, int y);
 
 // MAIN PROGRAM: ========================================
@@ -151,6 +152,7 @@ int main(int argc, char* argv[])
 	GLUI_Master.set_glutIdleFunc( NULL );
 	GLUI_Master.set_glutKeyboardFunc(Keyboard);
 	GLUI_Master.set_glutMouseFunc(Mouse);
+	GLUI_Master.set_glutSpecialFunc(SpecialKey);
 	GLUI *glui = GLUI_Master.create_glui( "control", 0, windowPosX + boxWidth + 20, windowPosY );
 
     // *Antialias*
@@ -317,29 +319,42 @@ void drawQuad(Box* b)
 	}	
 }
 
-void drawQuad_selected(Box* b)
+void drawQuad_selected(list<Box*> boxes)
 {
-    glLineWidth(3);
-    glColor3f(1, 0 , 0);
-    double w2=(b->width/2)*0.9;
-    double h2=(b->height/2)*0.9;
+    for(list<Box*>::iterator i=boxes.begin();i!=boxes.end();i++)
+    {
+        Box * b=*i;
+
+        if(b==boxes.back())
+        {
+            glLineWidth(3);
+            glColor3f(1, 0 , 0);
+        }
+        else
+        {
+            glLineWidth(1);
+            glColor3f(.5, 0 , 0);
+        }
+
+        double w2=(b->width/2)*0.9;
+        double h2=(b->height/2)*0.9;
 
 
-    //draw a highlight box
-    glBegin(GL_LINE_LOOP);
-    glVertex2f(b->x - w2, b->y - h2);
-    glVertex2f(b->x + w2, b->y - h2);
-    glVertex2f(b->x + w2, b->y + h2);
-    glVertex2f(b->x - w2, b->y + h2);
-    glEnd();
+        //draw a highlight box
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(b->x - w2, b->y - h2);
+        glVertex2f(b->x + w2, b->y - h2);
+        glVertex2f(b->x + w2, b->y + h2);
+        glVertex2f(b->x - w2, b->y + h2);
+        glEnd();
 
+    }
 
+    Box * b=boxes.back();
 
     //draw circle with radius (clearance+2*Rb)
     drawCircle( b->rB*2+b->cl_m, 100, b->x, b->y, 1,1,0);
     //filledCircle( b->rB*2+b->cl_m, b->x, b->y, 1,1,0);
-
-
 
     //draw features in blue
     typedef list<Corner*>::iterator CIT;
@@ -466,8 +481,8 @@ void renderScene(void)
     drawWalls(QT->pRoot);
 
     //draw selected feature
-	if(g_selected_PM!=NULL)
-	    drawQuad_selected(g_selected_PM);
+    if(g_selected_PM.empty()==false)
+        drawQuad_selected(g_selected_PM);
 
 
 	glutSwapBuffers();
@@ -606,6 +621,35 @@ void Keyboard( unsigned char key, int x, int y )
 
 //
 //
+// move up and down the Qtree hierarchy
+//
+//
+
+void SpecialKey(int key, int x, int y)
+{
+    // find closest colorPt3D if ctrl is pressed...
+    switch( key ){
+        case GLUT_KEY_UP:
+            if(g_selected_PM.empty()==false){//not empty
+                Box * last=g_selected_PM.back();
+                if(last!=QT->pRoot){
+                    g_selected_PM.push_back(last->pParent);
+                }
+            }
+            break;
+
+        case GLUT_KEY_DOWN:
+            if(g_selected_PM.size()>1)
+                g_selected_PM.pop_back();
+            break;
+        default: return;
+    }
+
+    glutPostRedisplay();
+}
+
+//
+//
 // selecting a pocket minimum...
 //
 //
@@ -615,7 +659,7 @@ void Mouse(int button, int state, int x, int y)
     //control needs to be pressed to selelect nodes
     if( state == GLUT_UP )
     {
-        g_selected_PM=NULL;
+        g_selected_PM.clear();
         if( glutGetModifiers()==GLUT_ACTIVE_CTRL )
         {
             int viewport[4];
@@ -623,15 +667,19 @@ void Mouse(int button, int state, int x, int y)
             double m_x=x;
             double m_y=viewport[3]-y;
 
-            g_selected_PM = QT->pRoot->find(m_x,m_y);
+            Box * selected = QT->pRoot->find(m_x,m_y);
 
-            if(g_selected_PM!=NULL){
 
-                cout<<"Selected box has "<<g_selected_PM->corners.size()<<" corner features and "
-                    <<g_selected_PM->walls.size()<<" wall features; Its Nodes have "
-                    <<g_selected_PM->node_corners.size()<<" corner features and "
-                    <<g_selected_PM->node_walls.size()<<" wall features"<<endl;
-            }//end g_selected_PM
+            if(selected!=NULL){
+
+                cout<<"Selected box has "<<selected->corners.size()<<" corner features and "
+                    <<selected->walls.size()<<" wall features; Its Nodes have "
+                    <<selected->node_corners.size()<<" corner features and "
+                    <<selected->node_walls.size()<<" wall features"<<endl;
+
+                g_selected_PM.push_back(selected);
+
+            }//end selected
 
         }
 
@@ -639,5 +687,3 @@ void Mouse(int button, int state, int x, int y)
     }//if pressed the right key/button
 
 }
-
-

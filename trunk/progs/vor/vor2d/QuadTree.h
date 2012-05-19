@@ -120,7 +120,6 @@ public:
 	        pop_heap(box_pq.begin(),box_pq.end());
 	        box_pq.pop_back();
 
-
 	        //
 	        for(int i=0;i<4;i++){
 

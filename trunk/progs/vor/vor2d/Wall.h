@@ -13,6 +13,7 @@
 #include <math.h>
 
 class Corner;
+class Box;
 
 class Wall
 {
@@ -25,6 +26,10 @@ public:
 	double distance(double x, double y);
 	double distance_star(double x, double y);
 	short distance_sign(double x, double y);
+
+	//
+	bool inZone(Box * b);
+	bool inZone_star(Box * b);
 
 	bool isRight(double x, double y);
 
