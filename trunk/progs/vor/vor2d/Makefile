@@ -44,14 +44,18 @@
 # 	These targets uses different input files, all taken from
 # 	the subdirectory "inputs".   
 #
+#  (E)	Other useful targets:
 #
-# April 13, 2012
+#		params:  this shows all the default paramaters
 #
+# May 20, 2012
 # Since Core Library 2.1
 # $Id:$
+################################################################################
 
+# Corelib compiling options:
+#
 VAR=Debug
-
 CORE_PATH=../../..
 include ../Make.options
 
@@ -364,6 +368,27 @@ Dependencies:
 	touch Dependencies
 
 include Dependencies
+
+#=================================================
+# Misc
+#=================================================
+
+params:
+	@echo "================ Parameters =================="
+	@echo "    interactive = " ${interactive}
+	@echo "    epsilon = " ${epsilon}
+	@echo "    pseudo = " ${pseudo}
+	@echo "    interior = " ${interior}
+	@echo "    inputDir = " ${inputDir}
+	@echo "    fileName = " ${fileName}
+	@echo "    boxWidth = " ${boxWidth}
+	@echo "    boxHt = " ${boxHt}
+	@echo "    windowPosX = " ${windowPosX}
+	@echo "    windowPosY = " ${windowPosY}
+	@echo "    Qtype = " ${Qtype}
+	@echo "    seed = " {seed}
+	@echo "    step = " {step}
+	@echo "=============================================="
 
 #=================================================
 # Clean object files
