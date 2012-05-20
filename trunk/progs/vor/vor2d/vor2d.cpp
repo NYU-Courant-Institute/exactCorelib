@@ -359,6 +359,9 @@ void drawQuad(Box* b)
 	glBegin(GL_LINES);
 	glLineWidth(3);
 	glColor3d(1,0,0);
+//	if(b->vor_segments.empty()==false && b->status!=b->ON)
+//	    cout<<"WHY?"<<endl;
+
 	for(list<VorSegment>::iterator i=b->vor_segments.begin();i!=b->vor_segments.end();i++){
 	    glVertex2f(i->p[0],i->p[1]);
 	    glVertex2f(i->q[0],i->q[1]);
@@ -740,11 +743,11 @@ void Mouse(int button, int state, int x, int y)
                 cout<<"SFC="<<selected->separable_features_count()<<endl;
                 cout<<"X="<<selected->x<<" Y="<<selected->y<<endl;
                 g_selected_PM.push_back(selected);
-                for(int i=0;i<4;i++)
-                    if(selected->pChildren[i]!=NULL)
-                    cout<<"kid["<<i<<"]="<<selected->pChildren[i]->x<<", "<<selected->pChildren[i]->y<<endl;
-                    else
-                        cout<<"NULL"<<endl;
+//                for(int i=0;i<4;i++)
+//                    if(selected->pChildren[i]!=NULL)
+//                    cout<<"kid["<<i<<"]="<<selected->pChildren[i]->x<<", "<<selected->pChildren[i]->y<<endl;
+//                    else
+//                        cout<<"NULL"<<endl;
             }//end selected
 
         }

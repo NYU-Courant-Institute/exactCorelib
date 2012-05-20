@@ -158,6 +158,12 @@ public:
 			return;
 		}
 		
+		if(x==218 && y==198)
+		{
+		    Corner * c=corners.front();
+		    Wall * w=walls.front();
+		    cout<<"OUT"<<endl;
+		}
 
         //
 		//int total_feature_size=corners.size()+walls.size();
@@ -279,6 +285,10 @@ public:
 	    //center x,y
 	    double x=child->x;
 	    double y=child->y;
+
+	    if(x==336 && y==240)
+	        cout<<"Debug"<<endl;
+
 //	    double w2=child->width/2;  //half of width
 //	    double h2=child->height/2; //half of height
 //
@@ -324,6 +334,77 @@ public:
                 }
             }//end if
         }//end for
+
+//        return;
+
+        //check the closest features of the box corners
+        {
+
+            BoxNode mid;
+            mid.x=x;
+            mid.y=y;
+            determine_clearance(mid);
+
+            list<Feature*> features;
+            features.insert(features.end(),child->corners.begin(), child->corners.end());
+            features.insert(features.end(),child->walls.begin(), child->walls.end());
+            if( std::find(features.begin(), features.end(), mid.nearest_feature)==features.end() )
+            {
+                //some closest feature is lost....
+                //this means the box is not in the zone of the closest feature....
+                child->corners.clear();
+                child->walls.clear();
+                return;
+            }
+
+            /*
+            //find actual features of the box nodes
+            BoxNode UL, LL, UR, LR; //upper left, lower left, upper right, lower right
+            UL.x=x-width/2; UL.y=y+height/2;
+            LL.x=x-width/2; LL.y=y-height/2;
+            UR.x=x+width/2; UR.y=y+height/2;
+            LR.x=x+width/2; LR.y=y-height/2;
+
+            determine_clearance(UL);
+            determine_clearance(LL);
+            determine_clearance(UR);
+            determine_clearance(LR);
+
+            list<Feature*> features;
+            features.insert(features.end(),child->corners.begin(), child->corners.end());
+            features.insert(features.end(),child->walls.begin(), child->walls.end());
+
+            bool cloest_feature_found[4]={true,true,true,true};
+            if( std::find(features.begin(), features.end(), UL.nearest_feature)==features.end() )
+            {
+                cloest_feature_found[0]=false;
+            }
+
+            if( std::find(features.begin(), features.end(), LL.nearest_feature)==features.end() )
+            {
+                cloest_feature_found[1]=false;
+            }
+
+            if( std::find(features.begin(), features.end(), UR.nearest_feature)==features.end() )
+            {
+                cloest_feature_found[2]=false;
+            }
+
+            if( std::find(features.begin(), features.end(), LR.nearest_feature)==features.end() )
+            {
+                cloest_feature_found[3]=false;
+            }
+
+            if(cloest_feature_found[0]==false && cloest_feature_found[1]==false && cloest_feature_found[2]==false && cloest_feature_found[3]==false){
+                //some closest feature is lost....
+                //this means the box is not in the zone of the closest feature....
+                child->corners.clear();
+                child->walls.clear();
+                return;
+            }
+            */
+
+        }
 	}
 
 	//
@@ -343,10 +424,15 @@ public:
 		{
 			Wall* w = *iterW;
 			double dist = w->distance_star(x, y); //w->distance_star(x, y); //w->distance(x, y);
-			if (dist < mindistW) //shorter distance
+			if( fabs(dist-mindistW)<1e-10 )
+            {
+                if( w->distance_sign(x,y)==0 && w->isRight(x,y) )
+                    nearestWall = *iterW;
+            }
+			else if (dist < mindistW) //shorter distance
 			{
 			    mindistW = dist;
-			    nearestWall=NULL;
+			    //nearestWall=NULL;
 
 			    //if(w->isRight(x,y)){ //on the right size of the wall
 			        nearestWall = *iterW;
@@ -363,10 +449,16 @@ public:
         {
             Corner* c = *iterC;
             double dist = c->distance(x, y);
-            if (dist < mindistC)  //shorter distance
+
+            if( fabs(dist-mindistC)<1e-5 ) //if(dist == mindistC)
+            {
+                if( c->isConvex() && c->preWall->distance_sign(x,y)==1 && c->nextWall->distance_sign(x,y)==-1 )
+                    nearestCorner = *iterC;
+            }
+            else if (dist < mindistC)  //shorter distance
             {
                 mindistC = dist;
-                nearestCorner=NULL;
+                //nearestCorner=NULL;
 
                 //if(c->isConvex()) //reflect vertex has no Vor (outside the polygon)
                 {
@@ -377,9 +469,11 @@ public:
                     }
                 }
             }
+
+
         }
 
-		if (mindistW<mindistC)
+		if (mindistW<=mindistC)
 		{
 		    node.clearance=mindistW;
 		    if(nearestWall!=NULL){
@@ -797,6 +891,7 @@ public:
                     }
                     else{
                         cout<<"More complicated case"<<endl;
+                        return;
                     }
                 }
                 else{
@@ -826,6 +921,7 @@ public:
                     }
                     else{
                         cout<<"More complicated case"<<endl;
+                        return;
                     }
                 }
                 else{
@@ -855,6 +951,7 @@ public:
                     }
                     else{
                         cout<<"More complicated case"<<endl;
+                        return;
                     }
                 }
                 else{
@@ -885,6 +982,7 @@ public:
                     }
                     else{
                         cout<<"More complicated case"<<endl;
+                        return;
                     }
                 }
                 else{
@@ -955,6 +1053,14 @@ public:
             seg.q[1]=mids[2].y;
             vor_segments.push_back(seg);
         }
+
+//        for(list<VorSegment>::iterator i=vor_segments.begin();i!=vor_segments.end();i++){
+//            if(this->in(i->p[0],i->p[1])==false)
+//                cout<<"! Vor is not in box"<<endl;
+//            if(this->in(i->q[0],i->q[1])==false)
+//                cout<<"! Vor is not in box"<<endl;
+//        }
+
 	}
 
 };//class Box
