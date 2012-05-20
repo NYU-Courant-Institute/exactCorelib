@@ -94,6 +94,7 @@ QuadTree* QT;
 	int trickyCount = 0;
 	int mixCount = 0;
 	int mixSmallCount = 0;
+	double timeused=0;
 
 	list<Box*> g_selected_PM;
 
@@ -110,6 +111,10 @@ QuadTree* QT;
 	GLUI_EditText* editBetaX;
 	GLUI_EditText* editBetaY;
 	GLUI_EditText* editSeed;
+
+	//information display
+	GLUI_StaticText * selectedBoxInfo; //information about selected box
+	GLUI_StaticText * vorInfo;
 
 // External Routines ========================================
 //
@@ -160,29 +165,37 @@ int main(int argc, char* argv[])
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+
 	// SETTING UP THE CONTROL PANEL:
-	editInput = glui->add_edittext( "Input file:", GLUI_EDITTEXT_TEXT );
+    GLUI_Panel * top_panel=glui->add_panel("VOR2D control");
+	editInput = glui->add_edittext_to_panel(top_panel, "Input file:", GLUI_EDITTEXT_TEXT );
 	editInput->set_text((char*)fileName.c_str());
-	editDir = glui->add_edittext( "Input Directory:", GLUI_EDITTEXT_TEXT );
+	editDir = glui->add_edittext_to_panel(top_panel, "Input Directory:", GLUI_EDITTEXT_TEXT );
 	editDir->set_text((char*)inputDir.c_str());
-	editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_FLOAT );
+	editEpsilon = glui->add_edittext_to_panel(top_panel, "Epsilon:", GLUI_EDITTEXT_FLOAT );
 	editEpsilon->set_float_val(epsilon);
 
-	GLUI_Button* buttonRun = glui->add_button( "Run", -1, (GLUI_Update_CB)run);
+	GLUI_Button* buttonRun = glui->add_button_to_panel(top_panel, "Run", -1, (GLUI_Update_CB)run);
 	buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
 
 
 	// New column:
-	glui->add_column(true);
+	glui->add_column_to_panel(top_panel,true);
 
-	glui->add_separator();
-	radioDrawOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)renderScene);
-	glui->add_radiobutton_to_group(radioDrawOption, "Show Box Boundary");
-	glui->add_radiobutton_to_group(radioDrawOption, "Hide Box Boundary");
-	glui->add_separator();
+	glui->add_separator_to_panel(top_panel);
+	radioDrawOption = glui->add_radiogroup_to_panel(top_panel, 0, -1, (GLUI_Update_CB)renderScene);
+	glui->add_radiobutton_to_group( radioDrawOption, "Show Box Boundary");
+	glui->add_radiobutton_to_group( radioDrawOption, "Hide Box Boundary");
+	glui->add_separator_to_panel(top_panel);
 
 	// Quit button
-	glui->add_button( "Quit", 0, (GLUI_Update_CB)exit );
+	glui->add_button_to_panel(top_panel, "Quit", 0, (GLUI_Update_CB)exit );
+
+
+    //add some display
+	vorInfo=glui->add_statictext("var \n info"); //
+	selectedBoxInfo=glui->add_statictext("no selected box"); //information about selected box
+
 
 	glui->set_main_gfx_window( windowID );
 
@@ -218,6 +231,22 @@ void genEmptyTree()
 cout<<"inside genEmpty:  Qtype= " << QType << "\n";
 }
 
+void updateVARinfo()
+{
+    char info[1024];
+
+    static int leave_size=-1;
+    if(leave_size<0)
+    {
+        list<Box*> leaves;
+        QT->pRoot->getLeaves(leaves);
+        leave_size=leaves.size();
+    }
+
+    sprintf(info,"Time used: %.2f ms; # of leaves=%d",timeused,leave_size);
+    vorInfo->set_text(info);
+}
+
 void run()
 {
 	//update from glui live variables
@@ -232,19 +261,24 @@ void run()
 
 	genEmptyTree();
 
-	//subdivison phase
-	 QT->subdividePhase();
+	do
+	{
+	    //subdivison phase
+	    QT->subdividePhase();
 
-    //balance
-    QT->balancePhase();
+	    //balance
+	    QT->balancePhase();
+	}
+	while(QT->PQ->empty()==false);
 
     //construct
     QT->constructPhase();
 
 	// stop timer
 	t.stop();
-	// print the elapsed time in millisec
-	cout << "Time used: " << t.getElapsedTimeInMilliSec() << " ms.\n";
+	timeused=t.getElapsedTimeInMilliSec();
+
+	updateVARinfo();
 
 	glutPostRedisplay();
 
@@ -320,6 +354,17 @@ void drawQuad(Box* b)
 		glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
 		glEnd();
 	}	
+
+	//draw segments
+	glBegin(GL_LINES);
+	glLineWidth(3);
+	glColor3d(1,0,0);
+	for(list<VorSegment>::iterator i=b->vor_segments.begin();i!=b->vor_segments.end();i++){
+	    glVertex2f(i->p[0],i->p[1]);
+	    glVertex2f(i->q[0],i->q[1]);
+	}
+	glEnd();
+	glLineWidth(1);
 }
 
 void drawQuad_selected(list<Box*> boxes)
@@ -612,6 +657,22 @@ cout<< "nPolygons=" << nPolygons << endl;
 
 }
 
+
+
+void updateSelectedBoxInfo()
+{
+    if(g_selected_PM.empty())
+    {
+        selectedBoxInfo->set_text("no selected box");
+        return;
+    }
+
+    Box * selected=g_selected_PM.back();
+    char info[1024];
+    sprintf(info,"Selected box has %d corner and %d wall features",selected->corners.size(),selected->walls.size());
+    selectedBoxInfo->set_text(info);
+}
+
 void Keyboard( unsigned char key, int x, int y )
 {
     // find closest colorPt3D if ctrl is pressed...
@@ -648,8 +709,10 @@ void SpecialKey(int key, int x, int y)
         default: return;
     }
 
+    updateSelectedBoxInfo();
     glutPostRedisplay();
 }
+
 
 //
 //
@@ -674,18 +737,19 @@ void Mouse(int button, int state, int x, int y)
 
 
             if(selected!=NULL){
-
-                cout<<"Selected box has "<<selected->corners.size()<<" corner features and "
-                    <<selected->walls.size()<<" wall features; Its Nodes have "
-                    <<selected->node_corners.size()<<" corner features and "
-                    <<selected->node_walls.size()<<" wall features"<<endl;
-
+                cout<<"SFC="<<selected->separable_features_count()<<endl;
+                cout<<"X="<<selected->x<<" Y="<<selected->y<<endl;
                 g_selected_PM.push_back(selected);
-
+                for(int i=0;i<4;i++)
+                    if(selected->pChildren[i]!=NULL)
+                    cout<<"kid["<<i<<"]="<<selected->pChildren[i]->x<<", "<<selected->pChildren[i]->y<<endl;
+                    else
+                        cout<<"NULL"<<endl;
             }//end selected
 
         }
 
+        updateSelectedBoxInfo();
         glutPostRedisplay();
     }//if pressed the right key/button
 

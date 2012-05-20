@@ -50,11 +50,18 @@ public:
 class BoxNode
 {
 public:
-    BoxNode(){ x=y=clearance=0; }
-    list<Corner*> corners;
-    list<Wall*> walls;
+    BoxNode(){ x=y=clearance=0; nearest_feature=NULL; }
+    //list<Corner*> corners;
+    //list<Wall*> walls;
+    Feature* nearest_feature;
     double clearance;
     double x, y;
+};
+
+class VorSegment
+{
+public:
+    double p[2], q[2];
 };
 
 class Box
@@ -91,8 +98,11 @@ public:
 	//Pointers to children, but when no children (i.e., leaf),
 	//	the pointers are used as neighbor pointers
 	// where
-	//	0 = NW, 1 = EN, 2 = SE, 3 = WS
+	//	0 = NW, 1 = EN, 2 = SE, 3 = WS (if pChildren are kids)
+	//  0 = N, 1=E, 2=S, 3=3 (for neighbors)
 	Box* pChildren[4]; 
+
+	list<VorSegment> vor_segments;
 
 //	// box nodes are the 4 corners of the box
 //	// the order of the corners are the same as the order of children
@@ -114,8 +124,8 @@ public:
 	list<Wall*> walls;
 
 
-    list<Corner*> node_corners;
-    list<Wall*> node_walls;
+    //list<Corner*> node_corners;
+    //list<Wall*> node_walls;
 
 	//for shortest path
 	double dist2Source;
@@ -148,9 +158,17 @@ public:
 			return;
 		}
 		
+
         //
 		//int total_feature_size=corners.size()+walls.size();
-        int total_feature_size= corners.size()+ walls.size(); //cornerset.size()+wallset.size();
+        //int total_feature_size= corners.size()+ walls.size(); //cornerset.size()+wallset.size();
+
+		int total_feature_size=corners.size()+walls.size();
+
+		int sfc=separable_features_count();
+		bool separable=(sfc>1);
+		if(total_feature_size<6)
+		    total_feature_size=sfc;
 
 		//C_0
 		if(total_feature_size>3){
@@ -158,12 +176,10 @@ public:
 		    return;
 		}
 
-		if(total_feature_size==1){
+		if(total_feature_size<=1){
 		    status = OFF;
 		    return;
 		}
-
-		bool separable=are_features_separable(); //wallset,cornerset);
 
 		//C_1
 		if( (cl_m<rB) && separable ){
@@ -176,6 +192,7 @@ public:
 //            status = IN; //need more split
 //            return;
 //        }
+
 
         //find actual features of the box nodes
         BoxNode UL, LL, UR, LR; //upper left, lower left, upper right, lower right
@@ -190,30 +207,32 @@ public:
         determine_clearance(LR);
 
         //determine the status: either OFF or ON or Tricky
-        set<Wall*>   wallset;
-        set<Corner*> cornerset;
-        wallset.insert(UL.walls.begin(),UL.walls.end());
-        wallset.insert(LL.walls.begin(),LL.walls.end());
-        wallset.insert(UR.walls.begin(),UR.walls.end());
-        wallset.insert(LR.walls.begin(),LR.walls.end());
+        set<Feature*>   feature_groups;
 
-        cornerset.insert(UL.corners.begin(),UL.corners.end());
-        cornerset.insert(LL.corners.begin(),LL.corners.end());
-        cornerset.insert(UR.corners.begin(),UR.corners.end());
-        cornerset.insert(LR.corners.begin(),LR.corners.end());
+        if(UL.nearest_feature)
+            feature_groups.insert(UnionFind().Find(UL.nearest_feature));
+
+        if(LL.nearest_feature)
+            feature_groups.insert(UnionFind().Find(LL.nearest_feature));
+
+        if(UR.nearest_feature)
+            feature_groups.insert(UnionFind().Find(UR.nearest_feature));
+
+        if(LR.nearest_feature)
+            feature_groups.insert(UnionFind().Find(LR.nearest_feature));
 
         //remember
-        node_walls.insert(node_walls.end(),wallset.begin(),wallset.end());
-        node_corners.insert(node_corners.end(),cornerset.begin(),cornerset.end());
+        //node_walls.insert(node_walls.end(),wallset.begin(),wallset.end());
+        //node_corners.insert(node_corners.end(),cornerset.begin(),cornerset.end());
         //done remembering
 
-//        if()
-        if(separable==false || are_features_separable(wallset,cornerset)==false )
+        if(separable==false || feature_groups.size()<=1 )
         {
             status = OFF;
             return;
         }
 
+        /*
         if(wallset.size()==2 && cornerset.empty())
         {
             Wall * w1=*wallset.begin();
@@ -244,6 +263,7 @@ public:
                 return;
             }
         }
+        */
 
         status = ON;
 
@@ -251,7 +271,7 @@ public:
 	}
 
 	//
-	void distribute_features2child(Box * child)
+	void distribute_features2box(Box * child)
 	{
 	    typedef list<Wall*>::iterator   WIT;
 	    typedef list<Corner*>::iterator CIT;
@@ -259,16 +279,18 @@ public:
 	    //center x,y
 	    double x=child->x;
 	    double y=child->y;
-	    double w2=child->width/2;  //half of width
-	    double h2=child->height/2; //half of height
-
-	    double corner1[2]={x-w2,y-h2};
-	    double corner2[2]={x+w2,y-h2};
-	    double corner3[2]={x+w2,y+h2};
-	    double corner4[2]={x-w2,y+h2};
+//	    double w2=child->width/2;  //half of width
+//	    double h2=child->height/2; //half of height
+//
+//	    double corner1[2]={x-w2,y-h2};
+//	    double corner2[2]={x+w2,y-h2};
+//	    double corner3[2]={x+w2,y+h2};
+//	    double corner4[2]={x-w2,y+h2};
 
 	    double cl2r=child->rB*2+child->cl_m; //clearance + 2*rB
 	    //
+
+	    int total_feature_size=walls.size()+corners.size();
 
         //compute the separation to walls
         for (WIT iterW=walls.begin(); iterW != walls.end(); ++iterW)
@@ -278,79 +300,28 @@ public:
 
             if (dist < cl2r) //within the distance range
             {
-
-                if( w->inZone_star(child) )
                 {
-                    child->walls.push_back(w);
+                    bool zone=w->inZone_star(child);
+                    if(zone)
+                        child->walls.push_back(w);
                 }
-            }
-        }
+            }//end if
+        }//end for
 
         //compute the separation to corners
         for (CIT iterC=corners.begin(); iterC != corners.end(); ++iterC)
         {
             Corner* c = *iterC;
             double dist = c->distance(x, y);
-            if(c->isConvex()==false) continue; //reflex vertex is never a feature
             //OK, close enough
             if (dist < cl2r)
             {
-
-
-                //check with the Zone of the previous wall
-                short ps1=c->preWall->distance_sign(corner1[0],corner1[1]);
-                short ps2=c->preWall->distance_sign(corner2[0],corner2[1]);
-                short ps3=c->preWall->distance_sign(corner3[0],corner3[1]);
-                short ps4=c->preWall->distance_sign(corner4[0],corner4[1]);
-
-                //check with the Zone of the next wall
-                short ns1=c->nextWall->distance_sign(corner1[0],corner1[1]);
-                short ns2=c->nextWall->distance_sign(corner2[0],corner2[1]);
-                short ns3=c->nextWall->distance_sign(corner3[0],corner3[1]);
-                short ns4=c->nextWall->distance_sign(corner4[0],corner4[1]);
-
-                //bool zone=false;
-
-                if( ( ps1==1 || ps2==1 || ps3==1 || ps4==1) && ( ns1==-1 || ns2==-1 || ns3==-1 || ns4==-1) )
                 {
-                    //zone=true;
-                    child->corners.push_back(c);
+                    //check with the Zone of the previous wall
+                    bool zone=c->inZone_star(child);
+                    if(zone)
+                        child->corners.push_back(c);
                 }
-//
-//                //this means one of the nodes of the box is in the zone of this vertex
-//                if( (ps1==1 && ns1==-1) || (ps2==1 && ns2==-1) || (ps3==1 && ns3==-1) || (ps4==1 && ns4==-1) ){
-//                    zone=true;
-//                }
-//                //
-//                else{ //the box can still cross the zone without any vertices in it
-//                    if( (ps1==0 && ns2==0) || (ps2==0 && ns3==0) || (ps3==0 && ns4==0) || (ps4==0 && ns1==0) ){
-//                        zone=true;
-//                    }
-//                }
-//
-//                //in the zone, but is it the right size?
-//                if(zone)
-//                {
-//                    bool side=false;
-//
-//                    //check the side of the wall
-//                    bool pr1=c->preWall->isRight(corner1[0],corner1[1]);
-//                    bool pr2=c->preWall->isRight(corner2[0],corner2[1]);
-//                    bool pr3=c->preWall->isRight(corner3[0],corner3[1]);
-//                    bool pr4=c->preWall->isRight(corner4[0],corner4[1]);
-//
-//                    bool nr1=c->nextWall->isRight(corner1[0],corner1[1]);
-//                    bool nr2=c->nextWall->isRight(corner2[0],corner2[1]);
-//                    bool nr3=c->nextWall->isRight(corner3[0],corner3[1]);
-//                    bool nr4=c->nextWall->isRight(corner4[0],corner4[1]);
-//
-//                    if( (pr1 && nr1) || (pr2 && nr2) || (pr3 && nr3) || (pr4 && nr4) )
-//                    {
-//                        side=true;
-//                    }
-//
-//                    child->corners.push_back(c);
-//                }
             }//end if
         }//end for
 	}
@@ -377,9 +348,9 @@ public:
 			    mindistW = dist;
 			    nearestWall=NULL;
 
-			    if(w->isRight(x,y)){ //on the right size of the wall
+			    //if(w->isRight(x,y)){ //on the right size of the wall
 			        nearestWall = *iterW;
-			    }
+			    //}
 			}
 		}
 
@@ -397,10 +368,10 @@ public:
                 mindistC = dist;
                 nearestCorner=NULL;
 
-                if(c->isConvex()) //reflect vertex has no Vor (outside the polygon)
+                //if(c->isConvex()) //reflect vertex has no Vor (outside the polygon)
                 {
                     //check if (x,y) is in the zone of this convex vertex
-                    if( c->preWall->distance_sign(x,y)==1 && c->nextWall->distance_sign(x,y)==-1 )
+                    //if( c->preWall->distance_sign(x,y)==1 && c->nextWall->distance_sign(x,y)==-1 )
                     {
                         nearestCorner = *iterC;
                     }
@@ -411,12 +382,16 @@ public:
 		if (mindistW<mindistC)
 		{
 		    node.clearance=mindistW;
-		    if(nearestWall!=NULL) node.walls.push_back(nearestWall);
+		    if(nearestWall!=NULL){
+		        node.nearest_feature=nearestWall;
+		    }
 		}
 		else
 		{
 		    node.clearance=mindistC;
-		    if(nearestCorner!=NULL) node.corners.push_back(nearestCorner);
+		    if(nearestCorner!=NULL){
+		        node.nearest_feature=nearestCorner;
+		    }
 		}
 	}
 
@@ -478,7 +453,7 @@ public:
 			children[i]->cl_m=node.clearance;
 
 			//distribute the feature
-			distribute_features2child(children[i]);
+			distribute_features2box(children[i]);
 		}
 
 		//
@@ -589,107 +564,154 @@ public:
 	// return true if separable
 	// otherwise return false
 	//
-	bool are_features_separable(set<Wall*>& wallset, set<Corner*>& cornerset)
+	int separable_features_count(set<Wall*>& wallset, set<Corner*>& cornerset)
 	{
 	    list<Wall*> walls(wallset.begin(),wallset.end());
 	    list<Corner*> corners(cornerset.begin(),cornerset.end());
-	    return are_features_separable(walls,corners);
+	    return separable_features_count(walls,corners);
 	}
 
 
-    bool are_features_separable()
+    int separable_features_count()
     {
-        return are_features_separable(walls,corners);
+        return separable_features_count(walls,corners);
     }
 
-	bool are_features_separable(list<Wall*>& walls, list<Corner*>& corners)
+	int separable_features_count(list<Wall*>& walls, list<Corner*>& corners)
 	{
-	    int feature_size=walls.size()+corners.size();
+//	    int feature_size=walls.size()+corners.size();
 
-	    assert(feature_size<=3);
+	    //assert(feature_size<=3);
 
-	    if(feature_size<=1) return false; //nothing to separate
+	    //
+	    // In the case of 3 features or less
+	    //
 
-	    //so, there are 2 or 3 features now...
-        if(walls.empty()){
-            return true;   //multiple disjoint corners
-        }
-        if(corners.empty()){
-            return true; //multiple disjoint walls
-        }
-
-        bool separable=true;
-	    if(feature_size==3)
+//	    if(feature_size<=3)
+//	    {
+//            if(feature_size<=1) return feature_size; //nothing to separate
+//
+//            //so, there are 2 or 3 features now...
+//            if(walls.empty()){
+//                return corners.size();   //multiple disjoint corners
+//            }
+//            if(corners.empty()){
+//                return walls.size(); //multiple disjoint walls
+//            }
+//
+//            bool separable=true;
+//            if(feature_size==3)
+//            {
+//                if(walls.size()==2) //two walls and one corner
+//                {
+//                    Corner* c=corners.front();
+//                    Wall* w1=walls.front();
+//                    Wall* w2=walls.back();
+//                    if( (c->nextWall==w1 || c->preWall==w1) &&  (c->nextWall==w2 || c->preWall==w2) )
+//                        return 1;
+//                    if( (c->nextWall==w1 || c->preWall==w1) ||  (c->nextWall==w2 || c->preWall==w2) )
+//                        return 2; //c is incident to w1 or w2
+//                    return 3;
+//                }
+//                else{ //two conrners and one wall
+//                    Corner* c1=corners.front();
+//                    Corner* c2=corners.back();
+//                    Wall* w=walls.front();
+//                    if( (c1->nextWall==w || c1->preWall==w) &&  (c2->nextWall==w || c2->preWall==w) )
+//                        return 1;
+//                    if( (c1->nextWall==w || c1->preWall==w) ||  (c2->nextWall==w || c2->preWall==w) )
+//                        return 2; //w is incident to c1 or c2
+//                    return 3;
+//                }
+//            }
+//            else{ //feature_size==2
+//                Corner* c=corners.front();
+//                Wall* w=walls.front();
+//                if(c->nextWall==w || c->preWall==w)
+//                    return 1;
+//                else
+//                    return 2;
+//            }
+//
+//            return feature_size;
+//	    }
+//        //
+//        // In the case of more than 3 features
+//        //
+//	    else
 	    {
-	        if(walls.size()==2) //two walls and one corner
-	        {
-	            Corner* c=corners.front();
-	            Wall* w1=walls.front();
-	            Wall* w2=walls.back();
-	            if( (c->nextWall==w1 || c->preWall==w1) &&  (c->nextWall==w2 || c->preWall==w2) )
-	                separable=false; //adjacent, so inseparable
-	        }
-	        else{ //two conrners and one wall
-                Corner* c1=corners.front();
-                Corner* c2=corners.back();
-                Wall* w=walls.front();
-                if( (c1->nextWall==w || c1->preWall==w) &&  (c2->nextWall==w || c2->preWall==w) )
-                    separable=false; //adjacent, so inseparable
-	        }
+	        list<Feature*> insep_features;
+	        getInseparableFeatures(walls,corners,insep_features);
+
+            //done
+            return insep_features.size();
 	    }
-	    else{ //feature_size==2
-	        Corner* c=corners.front();
-	        Wall* w=walls.front();
-	        if(c->nextWall==w || c->preWall==w)
-	            separable=false; //adjacent, so inseparable
-	    }
+	}
 
-	    return separable;
+	//
+	// given a set of features (both corner and wall)
+	// determine a set of inseparable features
+	//
+	void getInseparableFeatures(list<Wall*>& walls, list<Corner*>& corners, list<Feature*>& insep)
+	{
+         static list<Set*> features;
 
+         //previously used sets, remove and clean them
+         if(features.empty()==false)
+         {
+             for(list<Set*>::iterator i=features.begin();i!=features.end();i++)
+             {
+                 Set * s=*i;
+                 s->pFeature->pSet=NULL;
+                 delete s;
+             }//end for i
+             features.clear();
+         }
 
-//	    list<Set*> features;
-//	    typedef list<Wall*>::iterator WIT;
-//	    typedef list<Corner*>::iterator CIT;
-//
-//	    for (WIT it = walls.begin(); it != walls.end(); it++){
-//	        Set* set=new Set((Feature*)*it);
-//	        assert(set);
-//	        features.push_back(set);
-//	    }//end for
-//
-//        for (CIT it = corners.begin(); it != corners.end(); it++){
-//            Set* set=new Set((Feature*)*it);
-//            assert(set);
-//            features.push_back(set);
-//        }//end for
-//
-//        UnionFind UF;
-//
-//        //merge
-//        for (WIT it = walls.begin(); it != walls.end(); it++){
-//            Wall* w=*it;
-//            if(w->dst->pSet!=NULL) UF.Union(w,w->dst);
-//            if(w->src->pSet!=NULL) UF.Union(w,w->src);
-//        }//end for
-//
-//        for (CIT it = corners.begin(); it != corners.end(); it++){
-//            Corner* c=*it;
-//            if(c->preWall->pSet!=NULL) UF.Union(c,c->preWall);
-//            if(c->nextWall->pSet!=NULL) UF.Union(c,c->nextWall);
-//        }//end for
-//
-//        //now check the number of Sets
-//        Set * firstSet=walls.front()->pSet;
-//        for (WIT it = walls.begin(); it != walls.end(); it++){
-//            if( (*it)->pSet!=firstSet ) return true; //more than one set, so separable
-//        }//end for
-//
-//        for (CIT it = corners.begin(); it != corners.end(); it++){
-//            if( (*it)->pSet!=firstSet ) return true; //more than one set, so separable
-//        }//end for
-//
-//        //done
-//        return false; //there is only one set, so unseparable!
+         //now start building the new sets
+         typedef list<Wall*>::iterator WIT;
+         typedef list<Corner*>::iterator CIT;
+
+         for (WIT it = walls.begin(); it != walls.end(); it++){
+             Set* set=new Set((Feature*)*it);
+             assert(set);
+             features.push_back(set);
+         }//end for
+
+         for (CIT it = corners.begin(); it != corners.end(); it++){
+             Set* set=new Set((Feature*)*it);
+             assert(set);
+             features.push_back(set);
+         }//end for
+
+         UnionFind UF;
+
+         //merge
+         for (WIT it = walls.begin(); it != walls.end(); it++){
+             Wall* w=*it;
+             if(w->dst->pSet!=NULL) UF.Union(w,w->dst);
+             if(w->src->pSet!=NULL) UF.Union(w,w->src);
+         }//end for
+
+         for (CIT it = corners.begin(); it != corners.end(); it++){
+             Corner* c=*it;
+             if(c->preWall->pSet!=NULL) UF.Union(c,c->preWall);
+             if(c->nextWall->pSet!=NULL) UF.Union(c,c->nextWall);
+         }//end for
+
+         //now check the number of Sets
+         set<Feature*> featureset;
+         for (WIT it = walls.begin(); it != walls.end(); it++){
+             featureset.insert(UF.Find(*it));
+         }//end for
+
+         for (CIT it = corners.begin(); it != corners.end(); it++){
+             featureset.insert(UF.Find(*it));
+         }//end for
+
+         //remember the result
+         insep.clear();
+         insep.insert(insep.end(),featureset.begin(),featureset.end());
 	}
 
 	bool in(double qx, double qy)
@@ -719,6 +741,220 @@ public:
 	    }
 
         for(int i=0;i<4;i++) pChildren[i]->getLeaves(leaves);
+	}
+
+
+	void buildVor()
+	{
+	    if(status!=Box::ON) return;
+
+	    UnionFind UF;
+
+	    //this build sets of inseparable features
+	    separable_features_count();
+
+        //find actual features of the box nodes
+        BoxNode UL, LL, UR, LR; //upper left, lower left, upper right, lower right
+        UL.x=x-width/2; UL.y=y+height/2;
+        LL.x=x-width/2; LL.y=y-height/2;
+        UR.x=x+width/2; UR.y=y+height/2;
+        LR.x=x+width/2; LR.y=y-height/2;
+
+        determine_clearance(UL);
+        determine_clearance(LL);
+        determine_clearance(UR);
+        determine_clearance(LR);
+
+        Feature * ulf=(UL.nearest_feature==NULL)?NULL:UF.Find(UL.nearest_feature);
+        Feature * llf=(LL.nearest_feature==NULL)?NULL:UF.Find(LL.nearest_feature);
+        Feature * urf=(UR.nearest_feature==NULL)?NULL:UF.Find(UR.nearest_feature);
+        Feature * lrf=(LR.nearest_feature==NULL)?NULL:UF.Find(LR.nearest_feature);
+
+        if(lrf==NULL || llf==NULL || urf==NULL || lrf==NULL)
+            return;
+
+        BoxNode mids[4];
+
+        //north edge
+        if(ulf!=urf && ulf!=NULL && urf!=NULL)
+        {
+            BoxNode mid;
+            mid.x=x;
+            mid.y=y+height/2;
+            if(pChildren[0]==NULL)
+                mids[0]=mid;
+            else{
+                if(pChildren[0]->depth>depth){
+                    determine_clearance(mid);
+                    Feature * mf=(mid.nearest_feature==NULL)?NULL:UF.Find(mid.nearest_feature);
+                    if(ulf==mf && mf!=urf){
+                        mid.x=x+width/4;
+                        mids[0]=mid;
+                    }
+                    else if(ulf!=mf && mf==urf){
+                        mid.x=x-width/4;
+                        mids[0]=mid;
+                    }
+                    else{
+                        cout<<"More complicated case"<<endl;
+                    }
+                }
+                else{
+                    mids[0]=mid;
+                }
+            }
+        }
+
+        if(urf!=lrf && urf!=NULL && lrf!=NULL)
+        {
+            BoxNode mid;
+            mid.x=x+width/2;
+            mid.y=y;
+            if(pChildren[1]==NULL)
+                mids[1]=mid;
+            else{
+                if(pChildren[1]->depth>depth){
+                    determine_clearance(mid);
+                    Feature * mf=(mid.nearest_feature==NULL)?NULL:UF.Find(mid.nearest_feature);
+                    if(urf==mf && mf!=lrf){
+                        mid.y=y-height/4;
+                        mids[1]=mid;
+                    }
+                    else if(urf!=mf && mf==lrf){
+                        mid.y=y+height/4;
+                        mids[1]=mid;
+                    }
+                    else{
+                        cout<<"More complicated case"<<endl;
+                    }
+                }
+                else{
+                    mids[1]=mid;
+                }
+            }
+        }
+
+        if(lrf!=llf && lrf!=NULL && llf!=NULL)
+        {
+            BoxNode mid;
+            mid.x=x;
+            mid.y=y-height/2;
+            if(pChildren[2]==NULL)
+                mids[2]=mid;
+            else{
+                if(pChildren[2]->depth>depth){
+                    determine_clearance(mid);
+                    Feature * mf=(mid.nearest_feature==NULL)?NULL:UF.Find(mid.nearest_feature);
+                    if(lrf==mf && mf!=llf){
+                        mid.x=x-width/4;
+                        mids[2]=mid;
+                    }
+                    else if(lrf!=mf && mf==llf){
+                        mid.x=x+width/4;
+                        mids[2]=mid;
+                    }
+                    else{
+                        cout<<"More complicated case"<<endl;
+                    }
+                }
+                else{
+                    mids[2]=mid;
+                }
+            }
+
+        }
+
+        if(llf!=ulf && llf!=NULL && ulf!=NULL)
+        {
+            BoxNode mid;
+            mid.x=x-width/2;
+            mid.y=y;
+            if(pChildren[3]==NULL)
+                mids[3]=mid;
+            else{
+                if(pChildren[3]->depth>depth){
+                    determine_clearance(mid);
+                    Feature * mf=(mid.nearest_feature==NULL)?NULL:UF.Find(mid.nearest_feature);
+                    if(llf==mf && mf!=ulf){
+                        mid.y=y+height/4;
+                        mids[3]=mid;
+                    }
+                    else if(llf!=mf && mf==ulf){
+                        mid.y=y-height/4;
+                        mids[3]=mid;
+                    }
+                    else{
+                        cout<<"More complicated case"<<endl;
+                    }
+                }
+                else{
+                    mids[3]=mid;
+                }
+            }//end if
+
+        }
+
+        //connect the points
+        if( ulf!=urf &&  ulf!=llf && ulf!=NULL){
+            VorSegment seg;
+            seg.p[0]=mids[0].x;
+            seg.p[1]=mids[0].y;
+            seg.q[0]=mids[3].x;
+            seg.q[1]=mids[3].y;
+            vor_segments.push_back(seg);
+        }
+
+        //connect the points
+        if( ulf!=urf &&  urf!=lrf && urf!=NULL){
+            VorSegment seg;
+            seg.p[0]=mids[0].x;
+            seg.p[1]=mids[0].y;
+            seg.q[0]=mids[1].x;
+            seg.q[1]=mids[1].y;
+            vor_segments.push_back(seg);
+        }
+
+        //connect the points
+        if( lrf!=urf &&  lrf!=llf && lrf!=NULL ){
+            VorSegment seg;
+            seg.p[0]=mids[1].x;
+            seg.p[1]=mids[1].y;
+            seg.q[0]=mids[2].x;
+            seg.q[1]=mids[2].y;
+            vor_segments.push_back(seg);
+        }
+
+        //connect the points
+        if( llf!=lrf &&  llf!=ulf && llf!=NULL){
+            VorSegment seg;
+            seg.p[0]=mids[2].x;
+            seg.p[1]=mids[2].y;
+            seg.q[0]=mids[3].x;
+            seg.q[1]=mids[3].y;
+            vor_segments.push_back(seg);
+        }
+
+        if( ulf!=llf &&  urf!=lrf &&
+                ulf==urf && llf==lrf)
+        {
+            VorSegment seg;
+            seg.p[0]=mids[1].x;
+            seg.p[1]=mids[1].y;
+            seg.q[0]=mids[3].x;
+            seg.q[1]=mids[3].y;
+            vor_segments.push_back(seg);
+        }
+
+        if( ulf==llf &&  urf==lrf &&
+                ulf!=urf && llf!=lrf)
+        {
+            VorSegment seg;
+            seg.p[0]=mids[0].x;
+            seg.p[1]=mids[0].y;
+            seg.q[0]=mids[2].x;
+            seg.q[1]=mids[2].y;
+            vor_segments.push_back(seg);
+        }
 	}
 
 };//class Box

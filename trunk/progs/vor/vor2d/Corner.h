@@ -1,9 +1,11 @@
 #pragma once
 #include <math.h>
+#include "Feature.h"
 
 class Wall;
+class Box;
 
-class Corner
+class Corner : public Feature
 {
 public:
 	double x, y;
@@ -19,6 +21,9 @@ public:
 	{
 		return sqrt( (x-x2)*(x-x2) + (y-y2)*(y-y2) );
 	}
+
+	bool inZone(Box * box);
+	bool inZone_star(Box * box);
 
 	bool isConvex();
 };

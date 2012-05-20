@@ -97,6 +97,7 @@ public:
 	    }
 	}
 
+	//
 	void balancePhase()
 	{
 	    list<Box*> leaves;
@@ -130,16 +131,23 @@ public:
 	            //visiting all neighbors
 	            if(nei->depth < box->depth-1)
 	            {
-
-	                nei->status=Box::IN;
+	                Box::Status backup_nei_status=nei->status;
+	                nei->status=Box::IN; //force to split
 	                bool results=nei->split(epsilon); //ask the neighbor to slip
+	                nei->status=backup_nei_status;
 
 	                if(results)
 	                {
                         for(int k=0;k<4;k++){ //enqueue neighbors' kid
                             Box * nei_kid=nei->pChildren[k];
+
                             //
                             nei_kid->updateStatus();
+                            if(nei_kid->status==Box::IN)
+                            {
+                                PQ->push(nei_kid);
+                            }
+                            //    nei_kid->status=nei->status;
                             //
 
                             pair<int,Box*> tmp(nei_kid->depth,nei_kid);
@@ -157,7 +165,14 @@ public:
 
 	void constructPhase()
 	{
+        list<Box*> leaves;
+        pRoot->getLeaves(leaves);
 
+        for(list<Box*>::iterator i=leaves.begin();i!=leaves.end();i++)
+        {
+            Box * box=*i;
+            box->buildVor();
+        }
 	}
 
 	Box* getBox(Box* root, double x, double y)

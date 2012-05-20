@@ -53,8 +53,7 @@
 # $Id:$
 ################################################################################
 
-# Corelib compiling options:
-#
+VAR=Opt
 VAR=Debug
 CORE_PATH=../../..
 include ../Make.options
@@ -139,10 +138,25 @@ testb: $(TARGETS)
 eg:	vor2d
 	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
 	./vor2d $(interactive) \
-		$(epsilon) $(pseudo) $(interior) $(fileName) \
+		1 $(pseudo) $(interior) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir)
 
+# Simple NO PATH example:
+nopath eg0:	vor2d
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) input0.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir)
+		
+# run with default Makefile options:
+#
+eg1:	vor2d
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) input.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir)
+		
 star:	vor2d
 	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
 	@echo "--  You can all of them in you 'make' command line, e.g.,"
@@ -165,177 +179,44 @@ eg3 line:	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir)
 		
-# run with default compiled options:
-#	The input file is input2.txt.
-#	There are 3 combinatorially different paths.
-#	Randomized strategy will find all three of them (keep hitting "run").
-#
-ega:	vor2d
-	@echo "Target 'ega':  runs vor2d with default compiled options"
-	./vor2d $(interactive)
-
-# run with default Makefile options:
-#
-egb:	vor2d
-	@echo "Target 'egb':  runs vor2d with default Makefile options for file input.txt"
-	./vor2d $(interactive) 10 350 300 20 \
-		10 30 input.txt \
-		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) 1111 $(inputDir)
-
-# Simple NO PATH example:
-nopath eg0:	vor2d
-	@echo "Target 'eg0':  runs vor2d with random strategy for file input0.txt"
-	@echo "--  this example has no path..."
-	./vor2d $(interactive) 400 400  200 200 \
-		1 20 input0.txt \
-		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		0 $(seed)  $(inputDir)
-
-nopatha eg0a:	vor2d
-	@echo "Target 'eg0a':  runs vor2d with astar strategy for file input0.txt"
-	@echo "--  this example has no path..."
-	./vor2d $(interactive) 400 400  200 200 \
-		1 20 input0.txt \
-		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		2 $(seed)  $(inputDir)
-
-# BUG TRAP:
-###################################################
-# Bugtrap example -- Non-existence of path, but barely!
-egbug bug: vor2d
-	@echo "Target 'egbug':  runs vor2d for bugtrap input, bugtrap.txt"
-	@echo "--  this examples shows there is NO PATH, but barely so!"
-	@echo "--  you could see a green path that must pass between two green boxes"
-	@echo "--  that are NOT adjacent but shares a corner."
-	./vor2d $(interactive) 200 350 30 30 \
-		5 10 bugtrap.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir)
-
-# BUG2 TRAP:
-###################################################
-# Bugtrap2 example -- Existence of path, but barely! (eps=1)
-egbug2 bug2: vor2d
-	@echo "Target 'egbug2':  runs vor2d for bugtrap input, bugtrap2.txt"
-	@echo "--  this example shows a PATH, but barely so!"
-	./vor2d $(interactive) 180 220 20 20 \
-		1 8 bugtrap2.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir)
-
-# Bugtrap2 example -- Non-existence of path, but barely! (eps=2)
-egbug2a bug2a: vor2d
-	@echo "Target 'egbug2':  runs vor2d for bugtrap input, bugtrap2.txt"
-	@echo "--  this example shows NO PATH, but barely so!"
-	./vor2d $(interactive) 180 220 20 20 \
-		2 8 bugtrap2.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir)
-
-
 eg4: vor2d
-	@echo "Target eg4:  runs vor2d amidst 100 randomly generated obstacles"
-	./vor2d $(interactive) 10 350  280 220 \
-		1 10 input4.txt \
+	./vor2d $(interactive)\
+		1 $(pseudo) $(interior) input2.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
-
+		$(inputDir)
+	
+eg5: vor2d
+	./vor2d $(interactive)\
+		1 $(pseudo) $(interior) boxes.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir)
+		
 eg6: vor2d
-	@echo "Target eg6:  runs vor2d amidst 100 randomly generated obstacles"
 	./vor2d $(interactive)\
 		1 $(pseudo) $(interior) input6.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir)
-		
-# RANDOMLY GENERATED ENVIRONMENT:
+
+eg7: vor2d
+	./vor2d $(interactive)\
+		1 $(pseudo) $(interior) input5.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir)
 
 eg10: vor2d
 	./vor2d $(interactive) \
 		1 $(pseudo) $(interior) input10.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir)
-
-# eg100:
-#
-eg100: vor2d
-	@echo "Target eg100:  runs vor2d amidst 100 randomly generated triangles"
-	./vor2d $(interactive) 200 270 20 20 \
-		2 5 input100.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
-	#
-# eg200:
-#	This one, generated using our Python Generator, has 200 triangles.
-#	Note that these triangles are not disjoint, but our theory remains
-#	valid for such inputs.  This is the power of the SSS approach (over
-#	the exact algorithms. RESULTS:
-#	    			input file name = inputs/input200.txt
-#	    			nPt=600
-#	    			nPolygons=200
-#	    			Time used: 1726.62 ms.
-#	    			Path found !
-#	    			Expanded 13720 times
-#	    			total Free boxes: 9370
-#	    			total Stuck boxes: 16404
-#	    			total Mixed boxes smaller than epsilon: 13599
-#	    			total Mixed boxes bigger than epsilon: 1788
-#
-#
-eg200: vor2d
-	@echo "Target eg200:  runs vor2d amidst 200 randomly generated triangles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
-	./vor2d $(interactive) 150 260 20 20 \
-		2 5 input200.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
-
-# eg200a: there is an obvious path but probabilistic methods might waste
-# 	lots of time checking elsewhere!
-#
-eg200a: vor2d
-	@echo "Target eg200a:  runs vor2d amidst 200 randomly generated triangles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
-	./vor2d $(interactive) 10 360 20 20 \
-		2 10 input200.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
-
-# eg200b: there is no path because eps=10
-#
-# 	The display seems to show some current bugs in the
-# 	code.   THIS IS A GOOD PLACE TO RUN IN LEVEL 2 to CHECK!!!
-#
-eg200b: vor2d
-	@echo "Target eg200b:  runs vor2d amidst 200 randomly generated triangles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
-	./vor2d $(interactive) 150 260 20 20 \
-		10 5 input200.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
-
-# eg300: 
-# 	RESULTS:
-#				input file name = inputs/input300.txt
-#				nPt=900
-#				nPolygons=300
-#				Time used: 28243.1 ms.
-#				Path found !
-#				Expanded 64220 times
-#				total Free boxes: 37999
-#				total Stuck boxes: 87069
-#				total Mixed boxes smaller than epsilon: 67198
-#				total Mixed boxes bigger than epsilon: 395
-#
-eg300: vor2d
+		
+# BUG TRAP:
+###################################################
+# Bugtrap example -- Non-existence of path, but barely!
+egbug bug: vor2d
 	./vor2d $(interactive) \
-		1 $(pseudo) $(interior) input300.txt \
+		1 $(pseudo) $(interior) bugtrap.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir)
-
 
 moretest: $(TARGETS)
 # nothing to do

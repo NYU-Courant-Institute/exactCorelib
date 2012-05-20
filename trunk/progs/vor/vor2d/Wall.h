@@ -11,11 +11,12 @@
 
 #pragma once
 #include <math.h>
+#include "Feature.h"
 
 class Corner;
 class Box;
 
-class Wall
+class Wall : public Feature
 {
 public:
 	Corner* src;
