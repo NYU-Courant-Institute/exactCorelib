@@ -40,14 +40,14 @@
 #		eg1 (simple)
 #		eg2 (simple2)
 #		eg3 (dog)
-#		eg4 (line)
-#		eg5 (boxes)
+#		eg4 (line)	-- or eg4a (linea) for a variant of open polygons
+#		eg5 (boxes)	-- or eg5a (boxesa) for a various with no translation
 #		eg6 (boundedstar)
-#		eg7 (bug)
+#		eg7 (bug)	-- a bug trap
 #		eg8 (overlap)
 # 		eg10 (2tri)
-# 		eg11 (star)
-# 		eg12 (star2)
+# 		eg11 (star) 	-- or eg11a (stara) for variant
+# 		eg12 (bug2) 	-- a double bug trap
 # 		eg150		-- 150 random overlapping triangles 
 # 		eg200		-- 200 random overlapping triangles 
 #
@@ -260,6 +260,7 @@ eg11 star:	vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		100 100 10
+	#
 # Eg11a: with pseudo=1(false) and interior=1(false)
 eg11a stara:	vor2d
 	./vor2d $(interactive) 1 1 1 star.poly \
