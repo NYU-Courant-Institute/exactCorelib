@@ -201,10 +201,27 @@ public:
 		            //we only need to look at walls
 		            if(corners.empty() && walls.size()==2)
 		            {
+		                //overlapping wall
 		                if(walls.front()->src==walls.back()->dst && walls.front()->dst==walls.back()->src)
 		                    status = OFF;
 		                else
-		                    status = ON;
+		                {
+		                    //check if walls are facing the opposing directions
+		                    Wall * w1=walls.front();
+		                    Wall * w2=walls.back();
+
+		                    //check if the lines are opposing...
+		                    bool r1=w1->isRight(w2->src->x,w2->src->y);
+		                    bool r2=w1->isRight(w2->dst->x,w2->dst->y);
+		                    bool r3=w2->isRight(w1->src->x,w1->src->y);
+		                    bool r4=w2->isRight(w1->dst->x,w1->dst->y);
+
+		                    if(!r1 && !r2 && !r3 && !r4){ //opposing
+		                        status = OFF;
+		                    }
+		                    else //facing each other
+		                        status = ON;
+		                }
 		            }
 		            else
 		                status = IN; //need more split
