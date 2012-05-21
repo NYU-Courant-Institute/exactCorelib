@@ -17,8 +17,9 @@
 #		> ./vor2d $(interactive) \
 #			$(pseudo) $(interior) $(fileName) \
 #			$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-#			$(inputDir)
-#			$(xtrans) $(ytrans) $(scale)
+#			$(inputDir) \
+#			$(xtrans) $(ytrans) $(scale) \
+#			$(closePoly)
 #
 #	where the meaning of these arguments are described below when we
 #	define these parameters.
@@ -107,6 +108,7 @@ step = 0		# number of steps to run
 xtrans = 5		# x-translation of the input data 
 ytrans = 5		# y-translation of the input data
 scale  = 1		# scaling of input data 
+closePoly  = 1		# if true (non zero) then do not attempt to close input polygons.
 
 #=================================================
 # Define target files (put all your files here)
@@ -129,7 +131,7 @@ test: $(TARGETS)
 		1 $(pseudo) $(interior) input.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) $(closePoly)
 
 testall: $(TARGETS)
 	make eg0 interactive=1
@@ -150,7 +152,7 @@ eg:	vor2d
 		1 $(pseudo) $(interior) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $( scale) $(closePoly)
 
 # Eg0: Simple NO PATH example (an triangular annulus region)
 nopath eg0:	vor2d
@@ -158,7 +160,7 @@ nopath eg0:	vor2d
 		1 $(pseudo) $(interior) input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $( scale) $(closePoly)
 
 # Eg1: Simple example with 3 obstacles (2 Voronoi vertices, one concave verteix)
 # 	REMARK: input.txt and input2.txt are really the same.
@@ -168,7 +170,7 @@ simple eg1:	vor2d
 		1 $(pseudo) $(interior) input.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $( scale) $(closePoly)
 
 # Eg2: Same as simple, but with bounding box
 simple2 eg2: vor2d
@@ -176,7 +178,7 @@ simple2 eg2: vor2d
 		1 $(pseudo) $(interior) input5.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $( scale) $(closePoly)
 
 # Eg3: dog example
 eg3 dog:	vor2d
@@ -185,23 +187,32 @@ eg3 dog:	vor2d
 		0.1 $(pseudo) $(interior) dog.poly \
 		1000 1000 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $( scale) $(closePoly)
 
-# Eg4: Example of a non-regularized input (set of 4 lines)
+# Eg4: Example of a non-regularized input (set of 4 lines) with closed polygons
 eg4 line:	vor2d
 	@echo "Target 'eg4' or 'line': "
 	./vor2d $(interactive) \
 		0.5 $(pseudo) $(interior) line.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $( scale) 1
+	
+# Eg4a: Example of a non-regularized input (set of 4 lines) but open polygons 
+eg4a linea:	vor2d
+	@echo "Target 'eg4' or 'line': "
+	./vor2d $(interactive) \
+		0.5 $(pseudo) $(interior) line.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtrans) $(ytrans) $( scale) 0
 	
 # Eg5: A degenerate input with 5 boxes
 eg5 boxes: vor2d
 	./vor2d $(interactive)\
 		1 $(pseudo) $(interior) boxes.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir) 100 100 $(scale)
+		$(inputDir) 100 100 $( scale) $(closePoly)
 		
 # Eg5a: A degenerate input with 5 boxes (but with no translations, our current
 # 	code shows some discontinuous curves)
@@ -209,7 +220,7 @@ eg5a boxesa: vor2d
 	./vor2d $(interactive)\
 		1 $(pseudo) $(interior) boxes.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir) 0 0 $(scale)
+		$(inputDir) 0 0 $( scale) $(closePoly)
 		
 # Eg6: A triangular star within a bounding frame
 eg6 boundedstar: vor2d
@@ -217,7 +228,7 @@ eg6 boundedstar: vor2d
 		1 $(pseudo) $(interior) input6.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $( scale) $(closePoly)
 
 # Eg7: bugtrap
 eg7 bug: vor2d
@@ -225,7 +236,7 @@ eg7 bug: vor2d
 		1 $(pseudo) $(interior) bugtrap.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $( scale) $(closePoly)
 
 # Eg8: Two overlapping triangles
 eg8 overlap: vor2d
@@ -233,7 +244,7 @@ eg8 overlap: vor2d
 		1 $(pseudo) $(interior) overlap.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $( scale) $(closePoly)
 		
 # Eg10: Two triangles generating a Voronoi curve
 eg10 2tri: vor2d
@@ -241,14 +252,14 @@ eg10 2tri: vor2d
 		1 $(pseudo) $(interior) input10.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $( scale) $(closePoly)
 		
 # Eg11: Star example
 eg11 star:	vor2d
 	./vor2d $(interactive) 1 $(pseudo) $(interior) star.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		100 100 4
+		100 100 10
 # Eg11a: with pseudo=1(false) and interior=1(false)
 eg11a stara:	vor2d
 	./vor2d $(interactive) 1 1 1 star.poly \
@@ -264,7 +275,7 @@ eg12 bug2: vor2d
 		1 $(pseudo) $(interior) bugtrap2x.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $( scale) $(closePoly)
 
 # Eg150: Example with 150 randomly generated, overlapping triangles
 eg150: vor2d
@@ -272,14 +283,14 @@ eg150: vor2d
 		4 $(pseudo) $(interior) input150.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $( scale) $(closePoly)
 		
 eg200: vor2d
 	./vor2d $(interactive) \
 		4 $(pseudo) $(interior) input200.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $( scale) $(closePoly)
 		
 moretest: $(TARGETS)
 # nothing to do
@@ -334,6 +345,7 @@ params:
 	@echo "    xtrans = " ${xtrans}
 	@echo "    ytrans = " ${ytrans}
 	@echo "    scale = " ${scale}
+	@echo "    closePoly = " ${closePoly}
 	@echo "=============================================="
 
 #=================================================
