@@ -106,6 +106,7 @@ step = 0		# number of steps to run
 		
 xtrans = 5		# x-translation of the input data 
 ytrans = 5		# y-translation of the input data
+scale  = 1		# scaling of input data 
 
 #=================================================
 # Define target files (put all your files here)
@@ -200,7 +201,15 @@ eg5 boxes: vor2d
 	./vor2d $(interactive)\
 		1 $(pseudo) $(interior) boxes.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir) 100 100 
+		$(inputDir) 100 100 $(scale)
+		
+# Eg5a: A degenerate input with 5 boxes (but with no translations, our current
+# 	code shows some discontinuous curves)
+eg5a boxesa: vor2d
+	./vor2d $(interactive)\
+		1 $(pseudo) $(interior) boxes.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) 0 0 $(scale)
 		
 # Eg6: A triangular star within a bounding frame
 eg6 boundedstar: vor2d
@@ -215,7 +224,8 @@ eg7 bug: vor2d
 	./vor2d $(interactive) \
 		1 $(pseudo) $(interior) bugtrap.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir)
+		$(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 # Eg8: Two overlapping triangles
 eg8 overlap: vor2d
@@ -253,7 +263,8 @@ eg12 bug2: vor2d
 	./vor2d $(interactive) \
 		1 $(pseudo) $(interior) bugtrap2x.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir)
+		$(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 # Eg150: Example with 150 randomly generated, overlapping triangles
 eg150: vor2d
@@ -318,10 +329,11 @@ params:
 	@echo "    boxHt = " ${boxHt}
 	@echo "    windowPosX = " ${windowPosX}
 	@echo "    windowPosY = " ${windowPosY}
-	@echo "    seed = " {seed}
-	@echo "    step = " {step}
-	@echo "    xtrans = " {xtrans}
-	@echo "    ytrans = " {ytrans}
+	@echo "    seed = " ${seed}
+	@echo "    step = " ${step}
+	@echo "    xtrans = " ${xtrans}
+	@echo "    ytrans = " ${ytrans}
+	@echo "    scale = " ${scale}
 	@echo "=============================================="
 
 #=================================================
