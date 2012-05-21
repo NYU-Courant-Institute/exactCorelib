@@ -76,6 +76,7 @@ QuadTree* QT;
 	double deltaX=0;
 	double deltaY=0;
 	double uscale=1;
+
 	int windowPosX = 400;			// X Position of Window
 	int windowPosY = 200;			// Y Position of Window
 	string fileName("input2.txt"); 		// Input file name
@@ -89,7 +90,7 @@ QuadTree* QT;
 
 	bool pseudo = false;   // show pseudo Voronoi vertices/curves
 	bool interior = false; // show Voronoi interior to the polygons
- 
+	bool closing_poly=true;
 	bool hideBoxBoundary = false;  //don't draw box boundary
 
 	int freeCount = 0;
@@ -150,6 +151,7 @@ int main(int argc, char* argv[])
 	if (argc > 11) deltaX  = atof(argv[11]);        // translate x
 	if (argc > 12) deltaY  = atof(argv[12]);        // translate y
 	if (argc > 13) uscale  = atof(argv[13]);        // translate y
+	if (argc > 14) closing_poly= atoi(argv[14]);    // control closing polygons
 
 	// Else, set up for GLUT/GLUI interactive display:
 	glutInit(&argc, argv);
@@ -652,12 +654,15 @@ cout<< "nPolygons=" << nPolygons << endl;
 			//new pt already appeared, a loop is formed. should only happen on first and last pt
 			else
 			{
-				if (ptVec.size() > 1)
-				{
-					Wall* w = new Wall(ptVec[ptVec.size()-1], ptVec[0]);
-					b->addWall(w);
-					break;
-				}	
+			    if(closing_poly)
+			    {
+                    if (ptVec.size() > 1)
+                    {
+                        Wall* w = new Wall(ptVec[ptVec.size()-1], ptVec[0]);
+                        b->addWall(w);
+                        break;
+                    }
+			    }//end closing_poly
 			}
 		}
 	}

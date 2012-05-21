@@ -4,6 +4,8 @@
 
 bool Corner::isConvex()
 {
+    if(isDangling()) return true;
+
 	Corner* c = this->nextWall->dst;
 	return !this->preWall->isRight(c->x, c->y);
 }
@@ -22,20 +24,46 @@ bool Corner::inZone(Box * box)
     double corner4[2]={x-w2,y+h2};
 
     //check with the Zone of the previous wall
-    short ps1=preWall->distance_sign(corner1[0],corner1[1]);
-    short ps2=preWall->distance_sign(corner2[0],corner2[1]);
-    short ps3=preWall->distance_sign(corner3[0],corner3[1]);
-    short ps4=preWall->distance_sign(corner4[0],corner4[1]);
+    short ps1, ps2, ps3, ps4;
+
+    if(preWall!=NULL)
+    {
+        ps1=preWall->distance_sign(corner1[0],corner1[1]);
+        ps2=preWall->distance_sign(corner2[0],corner2[1]);
+        ps3=preWall->distance_sign(corner3[0],corner3[1]);
+        ps4=preWall->distance_sign(corner4[0],corner4[1]);
+    }
 
     //check with the Zone of the next wall
-    short ns1=nextWall->distance_sign(corner1[0],corner1[1]);
-    short ns2=nextWall->distance_sign(corner2[0],corner2[1]);
-    short ns3=nextWall->distance_sign(corner3[0],corner3[1]);
-    short ns4=nextWall->distance_sign(corner4[0],corner4[1]);
+    short ns1, ns2, ns3, ns4;
+    if(nextWall!=NULL)
+    {
+        ns1=nextWall->distance_sign(corner1[0],corner1[1]);
+        ns2=nextWall->distance_sign(corner2[0],corner2[1]);
+        ns3=nextWall->distance_sign(corner3[0],corner3[1]);
+        ns4=nextWall->distance_sign(corner4[0],corner4[1]);
+    }
 
-    if( ( ps1==1 || ps2==1 || ps3==1 || ps4==1) && ( ns1==-1 || ns2==-1 || ns3==-1 || ns4==-1) )
-        return true;
-    return false;
+    if(preWall!=NULL && nextWall==NULL)
+    {
+        if( ps1==1 || ps2==1 || ps3==1 || ps4==1)
+            return true;
+        else
+            return false;
+    }
+    else if(preWall==NULL && nextWall!=NULL)
+    {
+        if(ns1==-1 || ns2==-1 || ns3==-1 || ns4==-1)
+            return true;
+        else
+            return false;
+    }
+    else
+    {
+        if( ( ps1==1 || ps2==1 || ps3==1 || ps4==1) && ( ns1==-1 || ns2==-1 || ns3==-1 || ns4==-1) )
+            return true;
+        return false;
+    }
 }
 
 bool Corner::inZone_star(Box * box)

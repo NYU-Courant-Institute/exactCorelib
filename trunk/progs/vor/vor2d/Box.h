@@ -452,8 +452,16 @@ public:
 
             if( fabs(dist-mindistC)<1e-5 ) //if(dist == mindistC)
             {
-                if( c->isConvex() && c->preWall->distance_sign(x,y)==1 && c->nextWall->distance_sign(x,y)==-1 )
+                if( c->isConvex() )
+                {
+                    //check if in the zone
+                    if(c->preWall!=NULL) if(c->preWall->distance_sign(x,y)!=1) continue;
+                    if(c->nextWall!=NULL) if(c->nextWall->distance_sign(x,y)!=-1 ) continue;
+
+                    //in the zone
                     nearestCorner = *iterC;
+                }
+
             }
             else if (dist < mindistC)  //shorter distance
             {
@@ -789,8 +797,8 @@ public:
 
          for (CIT it = corners.begin(); it != corners.end(); it++){
              Corner* c=*it;
-             if(c->preWall->pSet!=NULL) UF.Union(c,c->preWall);
-             if(c->nextWall->pSet!=NULL) UF.Union(c,c->nextWall);
+             if(c->preWall)  if(c->preWall->pSet!=NULL) UF.Union(c,c->preWall);
+             if(c->nextWall) if(c->nextWall->pSet!=NULL) UF.Union(c,c->nextWall);
          }//end for
 
          //now check the number of Sets

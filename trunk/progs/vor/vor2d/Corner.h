@@ -1,5 +1,6 @@
 #pragma once
 #include <math.h>
+#include <stdlib.h>
 #include "Feature.h"
 
 class Wall;
@@ -14,7 +15,7 @@ public:
 
 	Corner(double xx, double yy):x(xx), y(yy)
 	{
-
+	    preWall=nextWall=NULL;
 	}
 
 	double distance(double x2, double y2)
@@ -26,4 +27,9 @@ public:
 	bool inZone_star(Box * box);
 
 	bool isConvex();
+
+	bool isIsolated(){ return preWall==NULL && nextWall==NULL; }
+
+	bool isDangling(){ return preWall==NULL || nextWall==NULL; }
+
 };
