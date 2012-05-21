@@ -286,8 +286,8 @@ public:
 	    double x=child->x;
 	    double y=child->y;
 
-	    if(x==336 && y==240)
-	        cout<<"Debug"<<endl;
+//	    if(x==336 && y==240)
+//	        cout<<"Debug"<<endl;
 
 //	    double w2=child->width/2;  //half of width
 //	    double h2=child->height/2; //half of height
@@ -842,6 +842,11 @@ public:
 	{
 	    if(status!=Box::ON) return;
 
+	    if(x==288 && y==352)
+	    {
+	        cout<<"Debug"<<endl;
+	    }
+
 	    UnionFind UF;
 
 	    //this build sets of inseparable features
@@ -867,7 +872,7 @@ public:
         if(lrf==NULL || llf==NULL || urf==NULL || lrf==NULL)
             return;
 
-        BoxNode mids[4];
+        list<BoxNode> mids[4];
 
         //north edge
         if(ulf!=urf && ulf!=NULL && urf!=NULL)
@@ -876,26 +881,30 @@ public:
             mid.x=x;
             mid.y=y+height/2;
             if(pChildren[0]==NULL)
-                mids[0]=mid;
+                mids[0].push_back(mid);
             else{
                 if(pChildren[0]->depth>depth){
                     determine_clearance(mid);
                     Feature * mf=(mid.nearest_feature==NULL)?NULL:UF.Find(mid.nearest_feature);
                     if(ulf==mf && mf!=urf){
                         mid.x=x+width/4;
-                        mids[0]=mid;
+                        mids[0].push_back(mid);
                     }
                     else if(ulf!=mf && mf==urf){
                         mid.x=x-width/4;
-                        mids[0]=mid;
+                        mids[0].push_back(mid);
                     }
                     else{
-                        cout<<"More complicated case"<<endl;
+                        //cout<<"More complicated case"<<endl;
+                        mid.x=x-width/4;
+                        mids[0].push_back(mid);
+                        mid.x=x+width/4;
+                        mids[0].push_back(mid);
                         return;
                     }
                 }
                 else{
-                    mids[0]=mid;
+                    mids[0].push_back(mid);
                 }
             }
         }
@@ -906,26 +915,30 @@ public:
             mid.x=x+width/2;
             mid.y=y;
             if(pChildren[1]==NULL)
-                mids[1]=mid;
+                mids[1].push_back(mid);
             else{
                 if(pChildren[1]->depth>depth){
                     determine_clearance(mid);
                     Feature * mf=(mid.nearest_feature==NULL)?NULL:UF.Find(mid.nearest_feature);
                     if(urf==mf && mf!=lrf){
                         mid.y=y-height/4;
-                        mids[1]=mid;
+                        mids[1].push_back(mid);
                     }
                     else if(urf!=mf && mf==lrf){
                         mid.y=y+height/4;
-                        mids[1]=mid;
+                        mids[1].push_back(mid);
                     }
                     else{
-                        cout<<"More complicated case"<<endl;
+                        //cout<<"More complicated case"<<endl;
+                        mid.y=y+height/4;
+                        mids[1].push_back(mid);
+                        mid.y=y-height/4;
+                        mids[1].push_back(mid);
                         return;
                     }
                 }
                 else{
-                    mids[1]=mid;
+                    mids[1].push_back(mid);
                 }
             }
         }
@@ -936,26 +949,29 @@ public:
             mid.x=x;
             mid.y=y-height/2;
             if(pChildren[2]==NULL)
-                mids[2]=mid;
+                mids[2].push_back(mid);
             else{
                 if(pChildren[2]->depth>depth){
                     determine_clearance(mid);
                     Feature * mf=(mid.nearest_feature==NULL)?NULL:UF.Find(mid.nearest_feature);
                     if(lrf==mf && mf!=llf){
                         mid.x=x-width/4;
-                        mids[2]=mid;
+                        mids[2].push_back(mid);
                     }
                     else if(lrf!=mf && mf==llf){
                         mid.x=x+width/4;
-                        mids[2]=mid;
+                        mids[2].push_back(mid);
                     }
                     else{
-                        cout<<"More complicated case"<<endl;
+                        mid.x=x+width/4;
+                        mids[2].push_back(mid);
+                        mid.x=x-width/4;
+                        mids[2].push_back(mid);
                         return;
                     }
                 }
                 else{
-                    mids[2]=mid;
+                    mids[2].push_back(mid);
                 }
             }
 
@@ -967,26 +983,29 @@ public:
             mid.x=x-width/2;
             mid.y=y;
             if(pChildren[3]==NULL)
-                mids[3]=mid;
+                mids[3].push_back(mid);
             else{
                 if(pChildren[3]->depth>depth){
                     determine_clearance(mid);
                     Feature * mf=(mid.nearest_feature==NULL)?NULL:UF.Find(mid.nearest_feature);
                     if(llf==mf && mf!=ulf){
                         mid.y=y+height/4;
-                        mids[3]=mid;
+                        mids[3].push_back(mid);
                     }
                     else if(llf!=mf && mf==ulf){
                         mid.y=y-height/4;
-                        mids[3]=mid;
+                        mids[3].push_back(mid);
                     }
                     else{
-                        cout<<"More complicated case"<<endl;
+                        mid.y=y-height/4;
+                        mids[3].push_back(mid);
+                        mid.y=y+height/4;
+                        mids[3].push_back(mid);
                         return;
                     }
                 }
                 else{
-                    mids[3]=mid;
+                    mids[3].push_back(mid);
                 }
             }//end if
 
@@ -995,40 +1014,40 @@ public:
         //connect the points
         if( ulf!=urf &&  ulf!=llf && ulf!=NULL){
             VorSegment seg;
-            seg.p[0]=mids[0].x;
-            seg.p[1]=mids[0].y;
-            seg.q[0]=mids[3].x;
-            seg.q[1]=mids[3].y;
+            seg.p[0]=mids[0].front().x;
+            seg.p[1]=mids[0].front().y;
+            seg.q[0]=mids[3].back().x;
+            seg.q[1]=mids[3].back().y;
             vor_segments.push_back(seg);
         }
 
         //connect the points
         if( ulf!=urf &&  urf!=lrf && urf!=NULL){
             VorSegment seg;
-            seg.p[0]=mids[0].x;
-            seg.p[1]=mids[0].y;
-            seg.q[0]=mids[1].x;
-            seg.q[1]=mids[1].y;
+            seg.p[0]=mids[0].back().x;
+            seg.p[1]=mids[0].back().y;
+            seg.q[0]=mids[1].front().x;
+            seg.q[1]=mids[1].front().y;
             vor_segments.push_back(seg);
         }
 
         //connect the points
         if( lrf!=urf &&  lrf!=llf && lrf!=NULL ){
             VorSegment seg;
-            seg.p[0]=mids[1].x;
-            seg.p[1]=mids[1].y;
-            seg.q[0]=mids[2].x;
-            seg.q[1]=mids[2].y;
+            seg.p[0]=mids[1].back().x;
+            seg.p[1]=mids[1].back().y;
+            seg.q[0]=mids[2].front().x;
+            seg.q[1]=mids[2].front().y;
             vor_segments.push_back(seg);
         }
 
         //connect the points
         if( llf!=lrf &&  llf!=ulf && llf!=NULL){
             VorSegment seg;
-            seg.p[0]=mids[2].x;
-            seg.p[1]=mids[2].y;
-            seg.q[0]=mids[3].x;
-            seg.q[1]=mids[3].y;
+            seg.p[0]=mids[2].back().x;
+            seg.p[1]=mids[2].back().y;
+            seg.q[0]=mids[3].front().x;
+            seg.q[1]=mids[3].front().y;
             vor_segments.push_back(seg);
         }
 
@@ -1036,10 +1055,10 @@ public:
                 ulf==urf && llf==lrf)
         {
             VorSegment seg;
-            seg.p[0]=mids[1].x;
-            seg.p[1]=mids[1].y;
-            seg.q[0]=mids[3].x;
-            seg.q[1]=mids[3].y;
+            seg.p[0]=mids[1].front().x;
+            seg.p[1]=mids[1].front().y;
+            seg.q[0]=mids[3].front().x;
+            seg.q[1]=mids[3].front().y;
             vor_segments.push_back(seg);
         }
 
@@ -1047,19 +1066,13 @@ public:
                 ulf!=urf && llf!=lrf)
         {
             VorSegment seg;
-            seg.p[0]=mids[0].x;
-            seg.p[1]=mids[0].y;
-            seg.q[0]=mids[2].x;
-            seg.q[1]=mids[2].y;
+            seg.p[0]=mids[0].front().x;
+            seg.p[1]=mids[0].front().y;
+            seg.q[0]=mids[2].front().x;
+            seg.q[1]=mids[2].front().y;
             vor_segments.push_back(seg);
         }
 
-//        for(list<VorSegment>::iterator i=vor_segments.begin();i!=vor_segments.end();i++){
-//            if(this->in(i->p[0],i->p[1])==false)
-//                cout<<"! Vor is not in box"<<endl;
-//            if(this->in(i->q[0],i->q[1])==false)
-//                cout<<"! Vor is not in box"<<endl;
-//        }
 
 	}
 
