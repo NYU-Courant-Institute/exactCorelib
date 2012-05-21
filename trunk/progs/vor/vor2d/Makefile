@@ -209,6 +209,12 @@ eg10: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir)
 		
+eg150: vor2d
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) input150.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir)
+		
 # BUG TRAP:
 ###################################################
 # Bugtrap example -- Non-existence of path, but barely!
