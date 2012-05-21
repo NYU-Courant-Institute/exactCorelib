@@ -189,7 +189,7 @@ eg5: vor2d
 	./vor2d $(interactive)\
 		1 $(pseudo) $(interior) boxes.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir)
+		$(inputDir) 100 100 
 		
 eg6: vor2d
 	./vor2d $(interactive)\
