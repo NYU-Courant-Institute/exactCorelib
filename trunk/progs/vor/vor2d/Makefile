@@ -12,24 +12,25 @@
 #
 # 	       > make eg	-- compiles and runs "vor2d" interactively
 #
-# 	The default search-mode is "random".  We encourage you to just
-# 	hit the "Run me" button to see different runs of the program.
-#
 #	This is equivalent to typing:
 #
-#	       > vor2d $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
-#			$(epsilon) $(radius) $(fileName) \
+#		> ./vor2d $(interactive) \
+#			$(pseudo) $(interior) $(fileName) \
 #			$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-#			$(Qtype) $(seed)  $(inputDir)
+#			$(inputDir)
+#			$(xtranslate) $(ytranslate)
 #
-#	where the arguments to vor2d correspond to the values $(var) of
-#	various Makefile variables.   
+#	where the meaning of these arguments are described below when we
+#	define these parameters.
+#
+#	To see what these default parameters are, you can type
+#
+#		> make params
 #
 # (C)	You can override any of these values at the command line.
-#	For instance, to change the radius of the robot
-#	to 55, and to change the start position of the robot to (20,200), you can type:
+#	For instance, to change the input file to "input2.txt", you may type:
 #
-#		> make eg radius=55 startY=200 startX=20
+#		> make eg fineName=input2.txt
 #
 # (D)	Instead of the target "eg" you can use any of these targets:
 #
@@ -88,8 +89,9 @@ windowPosY = 200
 windowPosX = 450	# initial Window position
 windowPosY = 20	
 
-Qtype = 0		# type of priority queue
-			#	(0 = random, 1 = BFS, 3 = astar) 
+xtranslate = 10		# x-translation of the input data 
+ytranslate = 10		# y-translation of the input data
+
 seed = 11		# seed for random
 step = 0		# number of steps to run
 			#	(step=0 means run to completion)
@@ -140,14 +142,16 @@ eg:	vor2d
 	./vor2d $(interactive) \
 		1 $(pseudo) $(interior) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir)
+		$(inputDir) \
+		$(xtranslate) $(ytranslate)
 
 # Simple NO PATH example:
 nopath eg0:	vor2d
 	./vor2d $(interactive) \
 		1 $(pseudo) $(interior) input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir)
+		$(inputDir) \
+		$(xtranslate) $(ytranslate)
 		
 # run with default Makefile options:
 #
@@ -155,7 +159,8 @@ eg1:	vor2d
 	./vor2d $(interactive) \
 		1 $(pseudo) $(interior) input.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir)
+		$(inputDir) \
+		$(xtranslate) $(ytranslate)
 		
 star:	vor2d
 	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
@@ -163,27 +168,31 @@ star:	vor2d
 	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
 	./vor2d $(interactive) 1 $(pseudo) $(interior) star.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir)
+		$(inputDir) \
+		$(xtranslate) $(ytranslate)
 
 eg2 dog:	vor2d
 	@echo "Target 'eg2' or 'dog': "
 	./vor2d $(interactive) \
 		0.1 $(pseudo) $(interior) dog.poly \
 		1000 1000 $(windowPosX) $(windowPosY) \
-		$(inputDir)
+		$(inputDir) \
+		$(xtranslate) $(ytranslate)
 		
 eg3 line:	vor2d
 	@echo "Target 'eg3' or 'line': "
 	./vor2d $(interactive) \
 		0.5 $(pseudo) $(interior) line.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(inputDir)
+		$(inputDir) \
+		$(xtranslate) $(ytranslate)
 		
 eg4: vor2d
 	./vor2d $(interactive)\
 		1 $(pseudo) $(interior) input2.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir)
+		$(inputDir) \
+		$(xtranslate) $(ytranslate)
 	
 eg5: vor2d
 	./vor2d $(interactive)\
@@ -195,25 +204,36 @@ eg6: vor2d
 	./vor2d $(interactive)\
 		1 $(pseudo) $(interior) input6.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir)
+		$(inputDir) \
+		$(xtranslate) $(ytranslate)
 
 eg7: vor2d
 	./vor2d $(interactive)\
 		1 $(pseudo) $(interior) input5.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir)
+		$(inputDir) \
+		$(xtranslate) $(ytranslate)
 
 eg10: vor2d
 	./vor2d $(interactive) \
 		1 $(pseudo) $(interior) input10.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir)
+		$(inputDir) \
+		$(xtranslate) $(ytranslate)
 		
 eg150: vor2d
 	./vor2d $(interactive) \
-		1 $(pseudo) $(interior) input150.txt \
+		4 $(pseudo) $(interior) input150.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir)
+		$(inputDir) \
+		$(xtranslate) $(ytranslate)
+		
+eg200: vor2d
+	./vor2d $(interactive) \
+		4 $(pseudo) $(interior) input200.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtranslate) $(ytranslate)
 		
 # BUG TRAP:
 ###################################################
@@ -272,9 +292,10 @@ params:
 	@echo "    boxHt = " ${boxHt}
 	@echo "    windowPosX = " ${windowPosX}
 	@echo "    windowPosY = " ${windowPosY}
-	@echo "    Qtype = " ${Qtype}
 	@echo "    seed = " {seed}
 	@echo "    step = " {step}
+	@echo "    xtranslate = " {xtranslate}
+	@echo "    ytranslate = " {ytranslate}
 	@echo "=============================================="
 
 #=================================================
