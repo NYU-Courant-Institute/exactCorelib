@@ -271,25 +271,6 @@ eg10 2tri: vor2d
 		$(c1) $(c2)
 		
 # Eg11: Star example
-# Eg8: Two overlapping triangles
-eg8 overlap: vor2d
-	./vor2d $(interactive) \
-		1 $(pseudo) $(interior) overlap.poly \
-		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2)
-		
-# Eg10: Two triangles generating a Voronoi curve
-eg10 2tri: vor2d
-	./vor2d $(interactive) \
-		1 $(pseudo) $(interior) input10.txt \
-		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2)
-		
-# Eg11: Star example
 eg11 star:	vor2d
 	./vor2d $(interactive) 1 $(pseudo) $(interior) star.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
