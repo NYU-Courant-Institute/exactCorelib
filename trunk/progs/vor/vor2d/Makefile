@@ -196,7 +196,7 @@ eg4 line:	vor2d
 		0.5 $(pseudo) $(interior) line.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $( scale) 1
+		$(xtrans) $(ytrans) $(scale) 1
 	
 # Eg4a: Example of a non-regularized input (set of 4 lines) but open polygons 
 eg4a linea:	vor2d
@@ -205,7 +205,7 @@ eg4a linea:	vor2d
 		0.5 $(pseudo) $(interior) line.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $( scale) 0
+		$(xtrans) $(ytrans) $(scale) 0
 	
 # Eg5: A degenerate input with 5 boxes
 eg5 boxes: vor2d
@@ -238,6 +238,23 @@ eg7 bug: vor2d
 		$(inputDir) \
 		$(xtrans) $(ytrans) $( scale) $(closePoly)
 
+# Eg8: Two overlapping triangles
+eg8 overlap: vor2d
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) overlap.poly \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtrans) $(ytrans) $( scale) $(closePoly)
+		
+# Eg10: Two triangles generating a Voronoi curve
+eg10 2tri: vor2d
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) input10.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtrans) $(ytrans) $( scale) $(closePoly)
+		
+# Eg11: Star example
 # Eg8: Two overlapping triangles
 eg8 overlap: vor2d
 	./vor2d $(interactive) \
