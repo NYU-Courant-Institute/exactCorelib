@@ -200,7 +200,12 @@ public:
 		        {
 		            //we only need to look at walls
 		            if(corners.empty() && walls.size()==2)
-		                status = ON;
+		            {
+		                if(walls.front()->src==walls.back()->dst && walls.front()->dst==walls.back()->src)
+		                    status = OFF;
+		                else
+		                    status = ON;
+		            }
 		            else
 		                status = IN; //need more split
 		        }
