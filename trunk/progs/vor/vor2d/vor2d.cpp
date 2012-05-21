@@ -92,6 +92,8 @@ QuadTree* QT;
 	bool interior = false; // show Voronoi interior to the polygons
 	bool closing_poly=true;
 	bool hideBoxBoundary = false;  //don't draw box boundary
+	bool c1=true; //c1 predicate (true is the new version and false is the old version)
+	bool c2=false; //c2 predicate
 
 	int freeCount = 0;
 	int stuckCount = 0;
@@ -152,6 +154,8 @@ int main(int argc, char* argv[])
 	if (argc > 12) deltaY  = atof(argv[12]);        // translate y
 	if (argc > 13) uscale  = atof(argv[13]);        // translate y
 	if (argc > 14) closing_poly= atoi(argv[14]);    // control closing polygons
+	if (argc > 15) c1=atoi(argv[15]);               // control c1 predicate
+	if (argc > 16) c2=atoi(argv[16]);               // control c2 predicate
 
 	// Else, set up for GLUT/GLUI interactive display:
 	glutInit(&argc, argv);

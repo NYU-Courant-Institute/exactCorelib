@@ -13,7 +13,8 @@
 #include <float.h>
 #include "UnionFind.h"
 
-
+extern bool c1; //c1 predicate (true is the new version and false is the old version)
+extern bool c2; //c2 predicate
 
 //
 // keep these as options
@@ -188,16 +189,25 @@ public:
 		}
 
 		//C_1
-		if( (cl_m<rB) && separable ){
-            status = IN; //need more split
-            return;
-        }
-
-		//C_2
-//		if( (cl_m<rB*rB) ){
-//            status = IN; //need more split
-//            return;
-//        }
+		if(c1){ //new definition
+		    if(cl_m<rB)
+		    {
+		        //then the feature is either inseparable
+		        if( separable==false ){
+		            status = OFF;
+		        }
+		        else //or has segments that may split the cell
+		        {
+		            status = ON;
+		        }
+		    }
+		}
+		else {//old definition
+            if( (cl_m<rB) && separable ){
+                status = IN; //need more split
+                return;
+            }
+		}
 
 
         //find actual features of the box nodes
@@ -226,6 +236,23 @@ public:
 
         if(LR.nearest_feature)
             feature_groups.insert(UnionFind().Find(LR.nearest_feature));
+
+
+        //C_2
+        if(c2) //if c2 predicate flag is on
+        {
+            //check if the condition is special or not
+            if(feature_groups.size()==1 && total_feature_size>1)
+            {
+                Wall * wall=dynamic_cast<Wall*>(*feature_groups.begin());
+
+                if( wall!=NULL && corners.empty()==false && (cl_m<rB*rB) )
+                {
+                    status = IN; //need more split
+                    return;
+                }
+            }
+        }
 
         //remember
         //node_walls.insert(node_walls.end(),wallset.begin(),wallset.end());

@@ -6,5 +6,6 @@ class Feature
 {
 public:
 
+    virtual void dummy(){}
 	Set* pSet;   //?
 };
