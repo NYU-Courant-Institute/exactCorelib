@@ -18,7 +18,7 @@
 #			$(pseudo) $(interior) $(fileName) \
 #			$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 #			$(inputDir)
-#			$(xtrans) $(ytrans)
+#			$(xtrans) $(ytrans) $(scale)
 #
 #	where the meaning of these arguments are described below when we
 #	define these parameters.
@@ -32,28 +32,37 @@
 #
 #		> make eg fineName=input2.txt
 #
-# (D)	Instead of the target "eg" you can use any of these targets:
+# (D)	Instead of the target "eg" you can try these targets (alternative
+# 	names are in parenthesis):
 #
-#		eg, ega, egb,
-#		eg0,
-#		eg1, eg1a, eg1b,
-#		eg2, eg2a, eg2b,
-#		egbug, egbuga,
-#		egbug2, egbug2a,
-#		etc.
+#		eg0 (annulus)
+#		eg1 (simple)
+#		eg2 (simple2)
+#		eg3 (dog)
+#		eg4 (line)
+#		eg5 (boxes)
+#		eg6 (boundedstar)
+#		eg7 (bug)
+#		eg8 (overlap)
+# 		eg10 (2tri)
+# 		eg11 (star)
+# 		eg12 (star2)
+# 		eg150		-- 150 random overlapping triangles 
+# 		eg200		-- 200 random overlapping triangles 
 #
 # 	These targets uses different input files, all taken from
 # 	the subdirectory "inputs".   
 #
-#  (E)	Other useful targets:
-#
-#		params:  this shows all the default paramaters
-#
-# May 20, 2012
-# Since Core Library 2.1
-# $Id:$
+################################################################################
+# 	Chee Yap, Jyh-Ming Lien, Vikram Sharma
+# 	May 20, 2012
+# 	Since Core Library 2.1
+# 	$Id:$
 ################################################################################
 
+#=================================================
+#	Core Library Options
+#=================================================
 VAR=Opt
 VAR=Debug
 CORE_PATH=../../..
@@ -67,8 +76,10 @@ interactive = 0		# 0=interactive, >0 is non-interactive
 epsilon = 2		# resolution parameter
 epsilon = 10		# resolution parameter
 
-pseudo = 0		# boolean: true => show pseudo Vor objects
-interior = 0	# boolean: true => show interior Vor objects
+pseudo = 0		# boolean: 0 or true => show pseudo Vor objects
+pseudo = 1		# boolean: 1 or false => do not show pseudo Vor objects
+interior = 0		# boolean: 0 or true => show interior Vor objects
+interior = 1		# boolean: 1 or false => do not show interior Vor objects
 
 inputDir = inputs	# where to find input files
 fileName = input2d.txt	# input environment file
@@ -89,13 +100,13 @@ windowPosY = 200
 windowPosX = 450	# initial Window position
 windowPosY = 20	
 
-xtrans = 5		# x-translation of the input data 
-ytrans = 5		# y-translation of the input data
-
 seed = 11		# seed for random
 step = 0		# number of steps to run
 			#	(step=0 means run to completion)
 		
+xtrans = 5		# x-translation of the input data 
+ytrans = 5		# y-translation of the input data
+
 #=================================================
 # Define target files (put all your files here)
 #=================================================
@@ -114,28 +125,23 @@ all: $(TARGETS)
 #
 test: $(TARGETS)
 	./vor2d 1 \
-		$(startX) $(startY)  $(goalX) $(goalY) \
-		$(epsilon)  $(radius)  input.txt  $(boxWidth) $(boxHt) \
-       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir)
+		1 $(pseudo) $(interior) input.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 testall: $(TARGETS)
-	make ega interactive=1
-	make egb interactive=1
+	make eg0 interactive=1
+	make eg1 interactive=1
 
 testa: $(TARGETS)
 	./vor2d 1
-
-testb: $(TARGETS)
-	./vor2d 1 \
-		$(startX) $(startY)  $(goalX) $(goalY) \
-		$(epsilon)  $(radius)  input2.txt  $(boxWidth) $(boxHt) \
-       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir)
 
 #=================================================
 # Examples of running vor2d program
 #=================================================
 #
-# this is default, but every option may be changed at command line:
+# This is default, but every option may be changed at command line:
 #
 eg:	vor2d
 	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
@@ -143,107 +149,127 @@ eg:	vor2d
 		1 $(pseudo) $(interior) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans)
+		$(xtrans) $(ytrans) $(scale)
 
-# Simple NO PATH example:
+# Eg0: Simple NO PATH example (an triangular annulus region)
 nopath eg0:	vor2d
 	./vor2d $(interactive) \
 		1 $(pseudo) $(interior) input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans)
-		
-# run with default Makefile options:
-#
-eg1:	vor2d
+		$(xtrans) $(ytrans) $(scale)
+
+# Eg1: Simple example with 3 obstacles (2 Voronoi vertices, one concave verteix)
+# 	REMARK: input.txt and input2.txt are really the same.
+# 		But input2.txt has comments in it.
+simple eg1:	vor2d
 	./vor2d $(interactive) \
 		1 $(pseudo) $(interior) input.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans)
-		
-star:	vor2d
-	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
-	@echo "--  You can all of them in you 'make' command line, e.g.,"
-	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
-	./vor2d $(interactive) 1 $(pseudo) $(interior) star.poly \
+		$(xtrans) $(ytrans) $(scale)
+
+# Eg2: Same as simple, but with bounding box
+simple2 eg2: vor2d
+	./vor2d $(interactive)\
+		1 $(pseudo) $(interior) input5.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans)
+		$(xtrans) $(ytrans) $(scale)
 
-eg2 dog:	vor2d
-	@echo "Target 'eg2' or 'dog': "
+# Eg3: dog example
+eg3 dog:	vor2d
+	@echo "Target 'eg3' or 'dog': "
 	./vor2d $(interactive) \
 		0.1 $(pseudo) $(interior) dog.poly \
 		1000 1000 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans)
-		
-eg3 line:	vor2d
-	@echo "Target 'eg3' or 'line': "
+		$(xtrans) $(ytrans) $(scale)
+
+# Eg4: Example of a non-regularized input (set of 4 lines)
+eg4 line:	vor2d
+	@echo "Target 'eg4' or 'line': "
 	./vor2d $(interactive) \
 		0.5 $(pseudo) $(interior) line.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans)
-		
-eg4: vor2d
-	./vor2d $(interactive)\
-		1 $(pseudo) $(interior) input2.txt \
-		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir) \
-		$(xtrans) $(ytrans)
+		$(xtrans) $(ytrans) $(scale)
 	
-eg5: vor2d
+# Eg5: A degenerate input with 5 boxes
+eg5 boxes: vor2d
 	./vor2d $(interactive)\
 		1 $(pseudo) $(interior) boxes.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) 100 100 
 		
-eg6: vor2d
+# Eg6: A triangular star within a bounding frame
+eg6 boundedstar: vor2d
 	./vor2d $(interactive)\
 		1 $(pseudo) $(interior) input6.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans)
+		$(xtrans) $(ytrans) $(scale)
 
-eg7: vor2d
-	./vor2d $(interactive)\
-		1 $(pseudo) $(interior) input5.txt \
+# Eg7: bugtrap
+eg7 bug: vor2d
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) bugtrap.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir)
+
+# Eg8: Two overlapping triangles
+eg8 overlap: vor2d
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) overlap.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans)
-
-eg10: vor2d
+		$(xtrans) $(ytrans) $(scale)
+		
+# Eg10: Two triangles generating a Voronoi curve
+eg10 2tri: vor2d
 	./vor2d $(interactive) \
 		1 $(pseudo) $(interior) input10.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans)
+		$(xtrans) $(ytrans) $(scale)
 		
+# Eg11: Star example
+eg11 star:	vor2d
+	./vor2d $(interactive) 1 $(pseudo) $(interior) star.poly \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		100 100 4
+# Eg11a: with pseudo=1(false) and interior=1(false)
+eg11a stara:	vor2d
+	./vor2d $(interactive) 1 1 1 star.poly \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		100 100 4
+
+# Eg12: bugtrap2  NOTE: our parser is buggy, and we cannot use the file "bugtrap2.txt"
+# 		because it has interspersed comments!
+# 		So we use the humanly incomprehensible "bugtrap2x.txt" file instead:
+eg12 bug2: vor2d
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) bugtrap2x.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir)
+
+# Eg150: Example with 150 randomly generated, overlapping triangles
 eg150: vor2d
 	./vor2d $(interactive) \
 		4 $(pseudo) $(interior) input150.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans)
+		$(xtrans) $(ytrans) $(scale)
 		
 eg200: vor2d
 	./vor2d $(interactive) \
 		4 $(pseudo) $(interior) input200.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans)
+		$(xtrans) $(ytrans) $(scale)
 		
-# BUG TRAP:
-###################################################
-# Bugtrap example -- Non-existence of path, but barely!
-egbug bug: vor2d
-	./vor2d $(interactive) \
-		1 $(pseudo) $(interior) bugtrap.txt \
-		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(inputDir)
-
 moretest: $(TARGETS)
 # nothing to do
 
