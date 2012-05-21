@@ -850,7 +850,7 @@ public:
 	    UnionFind UF;
 
 	    //this build sets of inseparable features
-	    separable_features_count();
+	    int sfc=separable_features_count();
 
         //find actual features of the box nodes
         BoxNode UL, LL, UR, LR; //upper left, lower left, upper right, lower right
@@ -1010,6 +1010,9 @@ public:
             }//end if
 
         }
+
+//        if()
+//        {
 
         //connect the points
         if( ulf!=urf &&  ulf!=llf && ulf!=NULL){

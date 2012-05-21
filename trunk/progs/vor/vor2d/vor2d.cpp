@@ -75,6 +75,7 @@ QuadTree* QT;
 	double boxHeight = 512;			// Initial box height
 	double deltaX=0;
 	double deltaY=0;
+	double uscale=1;
 	int windowPosX = 400;			// X Position of Window
 	int windowPosY = 200;			// Y Position of Window
 	string fileName("input2.txt"); 		// Input file name
@@ -148,6 +149,7 @@ int main(int argc, char* argv[])
 	if (argc > 10) inputDir  = argv[10];		// path for input files
 	if (argc > 11) deltaX  = atof(argv[11]);        // translate x
 	if (argc > 12) deltaY  = atof(argv[12]);        // translate y
+	if (argc > 13) uscale  = atof(argv[13]);        // translate y
 
 	// Else, set up for GLUT/GLUI interactive display:
 	glutInit(&argc, argv);
@@ -638,7 +640,7 @@ cout<< "nPolygons=" << nPolygons << endl;
 			pt -= 1; //1 based array
 			if (ptSet.find(pt) == ptSet.end())
 			{
-				ptVec.push_back(new Corner(pts[pt*2]+deltaX, pts[pt*2+1]+deltaY));
+				ptVec.push_back(new Corner(pts[pt*2]*uscale+deltaX, pts[pt*2+1]*uscale+deltaY));
 				b->addCorner(ptVec.back());
 				ptSet.insert(pt);
 				if (ptVec.size() > 1)
