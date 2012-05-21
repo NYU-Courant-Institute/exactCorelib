@@ -131,6 +131,8 @@ public:
 	            //visiting all neighbors
 	            if(nei->depth < box->depth-1)
 	            {
+	                if(nei->status==Box::OFF) continue; //no need to split
+
 	                Box::Status backup_nei_status=nei->status;
 	                nei->status=Box::IN; //force to split
 	                bool results=nei->split(epsilon); //ask the neighbor to slip
