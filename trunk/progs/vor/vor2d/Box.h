@@ -198,8 +198,13 @@ public:
 		        }
 		        else //or has segments that may split the cell
 		        {
-		            status = ON;
+		            //we only need to look at walls
+		            if(corners.empty() && walls.size()==2)
+		                status = ON;
+		            else
+		                status = IN; //need more split
 		        }
+		        return;
 		    }
 		}
 		else {//old definition
@@ -1046,71 +1051,79 @@ public:
 
         }
 
-//        if()
+//        if(sfc==3)
 //        {
-
-        //connect the points
-        if( ulf!=urf &&  ulf!=llf && ulf!=NULL){
-            VorSegment seg;
-            seg.p[0]=mids[0].front().x;
-            seg.p[1]=mids[0].front().y;
-            seg.q[0]=mids[3].back().x;
-            seg.q[1]=mids[3].back().y;
-            vor_segments.push_back(seg);
-        }
-
-        //connect the points
-        if( ulf!=urf &&  urf!=lrf && urf!=NULL){
-            VorSegment seg;
-            seg.p[0]=mids[0].back().x;
-            seg.p[1]=mids[0].back().y;
-            seg.q[0]=mids[1].front().x;
-            seg.q[1]=mids[1].front().y;
-            vor_segments.push_back(seg);
-        }
-
-        //connect the points
-        if( lrf!=urf &&  lrf!=llf && lrf!=NULL ){
-            VorSegment seg;
-            seg.p[0]=mids[1].back().x;
-            seg.p[1]=mids[1].back().y;
-            seg.q[0]=mids[2].front().x;
-            seg.q[1]=mids[2].front().y;
-            vor_segments.push_back(seg);
-        }
-
-        //connect the points
-        if( llf!=lrf &&  llf!=ulf && llf!=NULL){
-            VorSegment seg;
-            seg.p[0]=mids[2].back().x;
-            seg.p[1]=mids[2].back().y;
-            seg.q[0]=mids[3].front().x;
-            seg.q[1]=mids[3].front().y;
-            vor_segments.push_back(seg);
-        }
-
-        if( ulf!=llf &&  urf!=lrf &&
-                ulf==urf && llf==lrf)
+//            VorSegment seg;
+//            seg.p[0]=mids[0].front().x;
+//            seg.p[1]=mids[0].front().y;
+//            seg.q[0]=x;
+//            seg.q[1]=y;
+//            vor_segments.push_back(seg);
+//        }
+//        else
         {
-            VorSegment seg;
-            seg.p[0]=mids[1].front().x;
-            seg.p[1]=mids[1].front().y;
-            seg.q[0]=mids[3].front().x;
-            seg.q[1]=mids[3].front().y;
-            vor_segments.push_back(seg);
-        }
+            //connect the points
+            if( ulf!=urf &&  ulf!=llf && ulf!=NULL){
+                VorSegment seg;
+                seg.p[0]=mids[0].front().x;
+                seg.p[1]=mids[0].front().y;
+                seg.q[0]=mids[3].back().x;
+                seg.q[1]=mids[3].back().y;
+                vor_segments.push_back(seg);
+            }
 
-        if( ulf==llf &&  urf==lrf &&
-                ulf!=urf && llf!=lrf)
-        {
-            VorSegment seg;
-            seg.p[0]=mids[0].front().x;
-            seg.p[1]=mids[0].front().y;
-            seg.q[0]=mids[2].front().x;
-            seg.q[1]=mids[2].front().y;
-            vor_segments.push_back(seg);
-        }
+            //connect the points
+            if( ulf!=urf &&  urf!=lrf && urf!=NULL){
+                VorSegment seg;
+                seg.p[0]=mids[0].back().x;
+                seg.p[1]=mids[0].back().y;
+                seg.q[0]=mids[1].front().x;
+                seg.q[1]=mids[1].front().y;
+                vor_segments.push_back(seg);
+            }
 
+            //connect the points
+            if( lrf!=urf &&  lrf!=llf && lrf!=NULL ){
+                VorSegment seg;
+                seg.p[0]=mids[1].back().x;
+                seg.p[1]=mids[1].back().y;
+                seg.q[0]=mids[2].front().x;
+                seg.q[1]=mids[2].front().y;
+                vor_segments.push_back(seg);
+            }
+
+            //connect the points
+            if( llf!=lrf &&  llf!=ulf && llf!=NULL){
+                VorSegment seg;
+                seg.p[0]=mids[2].back().x;
+                seg.p[1]=mids[2].back().y;
+                seg.q[0]=mids[3].front().x;
+                seg.q[1]=mids[3].front().y;
+                vor_segments.push_back(seg);
+            }
+
+            if( ulf!=llf &&  urf!=lrf &&
+                    ulf==urf && llf==lrf)
+            {
+                VorSegment seg;
+                seg.p[0]=mids[1].front().x;
+                seg.p[1]=mids[1].front().y;
+                seg.q[0]=mids[3].front().x;
+                seg.q[1]=mids[3].front().y;
+                vor_segments.push_back(seg);
+            }
+
+            if( ulf==llf &&  urf==lrf &&
+                    ulf!=urf && llf!=lrf)
+            {
+                VorSegment seg;
+                seg.p[0]=mids[0].front().x;
+                seg.p[1]=mids[0].front().y;
+                seg.q[0]=mids[2].front().x;
+                seg.q[1]=mids[2].front().y;
+                vor_segments.push_back(seg);
+            }
+        }//end if(sfc!=3)
 
 	}
 
