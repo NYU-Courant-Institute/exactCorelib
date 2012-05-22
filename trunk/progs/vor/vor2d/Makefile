@@ -40,11 +40,12 @@
 #		eg1 (simple)
 #		eg2 (simple2)
 #		eg3 (dog)
-#		eg4 (line)	-- or eg4a (linea) for a variant of open polygons
+#		eg4 (line)	-- or eg4a, eg4b (linea, lineb) for variants
 #		eg5 (boxes)	-- or eg5a (boxesa) for a various with no translation
 #		eg6 (boundedstar)
 #		eg7 (bug)	-- a bug trap
 #		eg8 (overlap)
+# 		eg9 (2color)	-- or eg9a, eg9b
 # 		eg10 (2tri)
 # 		eg11 (star) 	-- or eg11a (stara) for variant
 # 		eg12 (bug2) 	-- a double bug trap
@@ -205,17 +206,27 @@ eg4 line:	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) 1 \
-		$(c1) $(c2)
+		0 $(c2)
+	
+# Eg4a: Example of a non-regularized input (set of 4 lines) but using C1 filter
+eg4a linea:	vor2d
+	@echo "Target 'eg4a' or 'linea': "
+	./vor2d $(interactive) \
+		0.5 $(pseudo) $(interior) line.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtrans) $(ytrans) $(scale) 1 \
+		1 $(c2)
 	
 # Eg4a: Example of a non-regularized input (set of 4 lines) but open polygons 
-eg4a linea:	vor2d
-	@echo "Target 'eg4' or 'line': "
+eg4b lineb:	vor2d
+	@echo "Target 'eg4b' or 'lineb': "
 	./vor2d $(interactive) \
 		0.5 $(pseudo) $(interior) line.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) 0 \
-		$(c1) $(c2)
+		0 $(c2)
 	
 # Eg5: A degenerate input with 5 boxes
 eg5 boxes: vor2d
@@ -252,13 +263,40 @@ eg7 bug: vor2d
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
 		$(c1) $(c2)
 
-# Eg8: Two overlapping triangles
+# Eg8: Overlapping polygons: 2 triangles + 2 concentric squares (with funny orientation)
 eg8 overlap: vor2d
 	./vor2d $(interactive) \
 		1 $(pseudo) $(interior) overlap.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
+		$(c1) $(c2)
+		
+# Eg9: Box containing Voronoi Vertex whose vertices has only two colors
+eg9 2color: vor2d
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) vorBoxWith2color.poly \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		-360 -150 0.1 $(closePoly) \
+		$(c1) $(c2)
+		
+# Eg9a: Box containing Voronoi Vertex whose vertices has only two colors
+eg9a 2colora: vor2d
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) vorBoxWith2color.poly \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		-350 -150 0.1 $(closePoly) \
+		$(c1) $(c2)
+		
+# Eg9b: Box containing Voronoi Vertex whose vertices has only two colors
+eg9b 2colorb: vor2d
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) vorBoxWith2color.poly \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		-340 -150 0.1 $(closePoly) \
 		$(c1) $(c2)
 		
 # Eg10: Two triangles generating a Voronoi curve

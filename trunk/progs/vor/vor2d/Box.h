@@ -864,6 +864,7 @@ public:
 	    UnionFind UF;
 
 	    //this build sets of inseparable features
+// Chee commented out next line because compiler issued warning that 'sfc' is unused:
 	    int sfc=separable_features_count();
 
         //find actual features of the box nodes
