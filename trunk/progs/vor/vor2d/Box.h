@@ -365,7 +365,7 @@ public:
             if (dist < cl2r) //within the distance range
             {
                 {
-                    bool zone=w->inZone(child); //true; //w->inZone(child); //w->inZone_star(child);
+                    bool zone=w->inZone_star(child); //true; //w->inZone(child); //w->inZone_star(child);
                     if(zone)
                         child->walls.push_back(w);
                 }
@@ -382,14 +382,14 @@ public:
             {
                 {
                     //check with the Zone of the previous wall
-                    bool zone=c->inZone(child); //true; //c->inZone(child); //c->inZone_star(child);
+                    bool zone=c->inZone_star(child); //true; //c->inZone(child); //c->inZone_star(child);
                     if(zone)
                         child->corners.push_back(c);
                 }
             }//end if
         }//end for
 
-        return;
+//        return;
 
         //check the closest features of the box corners
         {
@@ -856,15 +856,15 @@ public:
 	{
 	    if(status!=Box::ON) return;
 
-	    if(x==224 && y==416)
-	    {
-	        cout<<"Debug"<<endl;
-	    }
+//	    if(x==224 && y==416)
+//	    {
+//	        cout<<"Debug"<<endl;
+//	    }
 
 	    UnionFind UF;
 
 	    //this build sets of inseparable features
-//	    int sfc=separable_features_count();
+	    int sfc=separable_features_count();
 
         //find actual features of the box nodes
         BoxNode UL, LL, UR, LR; //upper left, lower left, upper right, lower right

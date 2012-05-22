@@ -192,9 +192,9 @@ eg3 dog:	vor2d
 	@echo "Target 'eg3' or 'dog': "
 	./vor2d $(interactive) \
 		0.1 $(pseudo) $(interior) dog.poly \
-		1000 1000 $(windowPosX) $(windowPosY) \
+		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		$(xtrans) $(ytrans) $(scale) $(closePoly) \
+		100 256 1.4 $(closePoly) \
 		$(c1) $(c2)
 
 # Eg4: Example of a non-regularized input (set of 4 lines) with closed polygons
