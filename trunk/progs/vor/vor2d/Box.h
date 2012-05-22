@@ -158,7 +158,7 @@ public:
 		{
 			return;
 		}
-		
+
 		if(x==218 && y==198)
 		{
 		    Corner * c=corners.front();
@@ -354,7 +354,7 @@ public:
 	    double cl2r=child->rB*2+child->cl_m; //clearance + 2*rB
 	    //
 
-	    int total_feature_size=walls.size()+corners.size();
+	    //int total_feature_size=walls.size()+corners.size();
 
         //compute the separation to walls
         for (WIT iterW=walls.begin(); iterW != walls.end(); ++iterW)
@@ -365,7 +365,7 @@ public:
             if (dist < cl2r) //within the distance range
             {
                 {
-                    bool zone=w->inZone_star(child);
+                    bool zone=w->inZone(child); //true; //w->inZone(child); //w->inZone_star(child);
                     if(zone)
                         child->walls.push_back(w);
                 }
@@ -382,14 +382,14 @@ public:
             {
                 {
                     //check with the Zone of the previous wall
-                    bool zone=c->inZone_star(child);
+                    bool zone=c->inZone(child); //true; //c->inZone(child); //c->inZone_star(child);
                     if(zone)
                         child->corners.push_back(c);
                 }
             }//end if
         }//end for
 
-//        return;
+        return;
 
         //check the closest features of the box corners
         {
@@ -410,54 +410,6 @@ public:
                 child->walls.clear();
                 return;
             }
-
-            /*
-            //find actual features of the box nodes
-            BoxNode UL, LL, UR, LR; //upper left, lower left, upper right, lower right
-            UL.x=x-width/2; UL.y=y+height/2;
-            LL.x=x-width/2; LL.y=y-height/2;
-            UR.x=x+width/2; UR.y=y+height/2;
-            LR.x=x+width/2; LR.y=y-height/2;
-
-            determine_clearance(UL);
-            determine_clearance(LL);
-            determine_clearance(UR);
-            determine_clearance(LR);
-
-            list<Feature*> features;
-            features.insert(features.end(),child->corners.begin(), child->corners.end());
-            features.insert(features.end(),child->walls.begin(), child->walls.end());
-
-            bool cloest_feature_found[4]={true,true,true,true};
-            if( std::find(features.begin(), features.end(), UL.nearest_feature)==features.end() )
-            {
-                cloest_feature_found[0]=false;
-            }
-
-            if( std::find(features.begin(), features.end(), LL.nearest_feature)==features.end() )
-            {
-                cloest_feature_found[1]=false;
-            }
-
-            if( std::find(features.begin(), features.end(), UR.nearest_feature)==features.end() )
-            {
-                cloest_feature_found[2]=false;
-            }
-
-            if( std::find(features.begin(), features.end(), LR.nearest_feature)==features.end() )
-            {
-                cloest_feature_found[3]=false;
-            }
-
-            if(cloest_feature_found[0]==false && cloest_feature_found[1]==false && cloest_feature_found[2]==false && cloest_feature_found[3]==false){
-                //some closest feature is lost....
-                //this means the box is not in the zone of the closest feature....
-                child->corners.clear();
-                child->walls.clear();
-                return;
-            }
-            */
-
         }
 	}
 
@@ -904,7 +856,7 @@ public:
 	{
 	    if(status!=Box::ON) return;
 
-	    if(x==288 && y==352)
+	    if(x==224 && y==416)
 	    {
 	        cout<<"Debug"<<endl;
 	    }
@@ -962,7 +914,6 @@ public:
                         mids[0].push_back(mid);
                         mid.x=x+width/4;
                         mids[0].push_back(mid);
-                        return;
                     }
                 }
                 else{
@@ -996,7 +947,6 @@ public:
                         mids[1].push_back(mid);
                         mid.y=y-height/4;
                         mids[1].push_back(mid);
-                        return;
                     }
                 }
                 else{
@@ -1029,7 +979,6 @@ public:
                         mids[2].push_back(mid);
                         mid.x=x-width/4;
                         mids[2].push_back(mid);
-                        return;
                     }
                 }
                 else{
@@ -1063,7 +1012,6 @@ public:
                         mids[3].push_back(mid);
                         mid.y=y+height/4;
                         mids[3].push_back(mid);
-                        return;
                     }
                 }
                 else{
@@ -1073,16 +1021,24 @@ public:
 
         }
 
-//        if(sfc==3)
-//        {
-//            VorSegment seg;
-//            seg.p[0]=mids[0].front().x;
-//            seg.p[1]=mids[0].front().y;
-//            seg.q[0]=x;
-//            seg.q[1]=y;
-//            vor_segments.push_back(seg);
-//        }
-//        else
+        int degree=mids[0].size()+mids[1].size()+mids[2].size()+mids[3].size();
+
+        if(degree==3)
+        {
+            for(int i=0;i<4;i++)
+            {
+                for(list<BoxNode>::iterator j=mids[i].begin();j!=mids[i].end();j++)
+                {
+                    VorSegment seg;
+                    seg.p[0]=j->x;
+                    seg.p[1]=j->y;
+                    seg.q[0]=x;
+                    seg.q[1]=y;
+                    vor_segments.push_back(seg);
+                }//end for j
+            }//end for i
+        }
+        else
         {
             //connect the points
             if( ulf!=urf &&  ulf!=llf && ulf!=NULL){

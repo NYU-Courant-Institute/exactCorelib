@@ -60,6 +60,8 @@
 #include "glui.h"
 #endif
 
+#include "gliDump.h"
+
 #include <set>
 //#include "CoreIo.h"
 
@@ -92,8 +94,10 @@ QuadTree* QT;
 	bool interior = false; // show Voronoi interior to the polygons
 	bool closing_poly=true;
 	bool hideBoxBoundary = false;  //don't draw box boundary
-	bool c1=true; //c1 predicate (true is the new version and false is the old version)
+	bool c1=false; //c1 predicate (true is the new version and false is the old version)
 	bool c2=false; //c2 predicate
+
+	bool saveImage=false;
 
 	int freeCount = 0;
 	int stuckCount = 0;
@@ -323,24 +327,21 @@ void drawQuad(Box* b)
 	switch(b->status)
 	{
 	case Box::OFF:
-		glColor3f(0.25, 1, 0.25);
+		glColor3f(1, 1, 1);
 		break;
 	case Box::ON:
 	    glColor3f(0.85, 0.85, 0.85);
 		break;
 	case Box::IN:
-		glColor3f(1, 1, 0.25);
+
+	    glColor3f(1, 1, 0.25);
+
 		if (b->height < epsilon || b->width < epsilon)
 		{
 			glColor3f(0.5, 0.5, 0.5);
 		}
-//		else
-//		    cout<<"WHAT?"<<endl;
 
 		break;
-    case Box::TRICKY:
-        glColor3f(1, 0.25, 0.25);
-        break;
 	case Box::UNKNOWN:
 		std::cout << "UNKNOWN in drawQuad" << std::endl;
 		break;
@@ -356,7 +357,7 @@ void drawQuad(Box* b)
 
 	if (!hideBoxBoundary)
 	{
-		glColor3f(0, 0 , 0);
+		glColor3f(0.5, 0.5 , 0.5);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glBegin(GL_POLYGON);
 		glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
@@ -369,7 +370,7 @@ void drawQuad(Box* b)
 	//draw segments
 	glBegin(GL_LINES);
 	glLineWidth(3);
-	glColor3d(1,0,0);
+	glColor3d(.75,0,0);
 //	if(b->vor_segments.empty()==false && b->status!=b->ON)
 //	    cout<<"WHY?"<<endl;
 
@@ -444,7 +445,7 @@ void drawQuad_selected(list<Box*> boxes)
 
 void drawWalls(Box* b)
 {
-	glColor3f(1, 1, 1);
+	glColor3f(0, 0, 0);
 	glLineWidth(2.0);
 	for (list<Wall*>::iterator iter = b->walls.begin(); iter != b->walls.end(); ++iter)
 	{
@@ -546,6 +547,14 @@ void renderScene(void)
     if(g_selected_PM.empty()==false)
         drawQuad_selected(g_selected_PM);
 
+    if(saveImage)
+    {
+        saveImage=false;
+        GLint viewport[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        dump("vor2d_screen_dump.ppm",viewport[2],viewport[3]);
+        cout<<"- Save the screen dump to file: vor2d_screen_dump.ppm"<<endl;
+    }
 
 	glutSwapBuffers();
 }
@@ -695,7 +704,11 @@ void Keyboard( unsigned char key, int x, int y )
     // find closest colorPt3D if ctrl is pressed...
     switch( key ){
         case 27: exit(0);
+        case '0': saveImage=true; break;
+        default: return;
     }
+
+    glutPostRedisplay();
 }
 
 
