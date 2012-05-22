@@ -326,7 +326,7 @@ void drawQuad(Box* b)
 {
 	switch(b->status)
 	{
-	case Box::OFF:
+	case Box::OUT:
 		glColor3f(1, 1, 1);
 		break;
 	case Box::ON:
@@ -695,7 +695,7 @@ void updateSelectedBoxInfo()
 
     Box * selected=g_selected_PM.back();
     char info[1024];
-    sprintf(info,"Selected box has %d corner and %d wall features",selected->corners.size(),selected->walls.size());
+    sprintf(info,"Selected box has %d corner and %d wall features", (int)selected->corners.size(), (int)selected->walls.size());
     selectedBoxInfo->set_text(info);
 }
 

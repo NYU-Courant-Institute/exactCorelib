@@ -17,7 +17,6 @@
 
 extern int freeCount;
 extern int stuckCount;
-extern int trickyCount;
 extern int mixCount;
 extern int mixSmallCount;
 
@@ -31,7 +30,7 @@ private:
 	{
 		switch (b->getStatus())
 		{
-		case Box::OFF:
+		case Box::OUT:
 			//new Set(b);
 			//unionAdjacent(b);
 			++freeCount;
@@ -39,9 +38,6 @@ private:
 		case Box::ON:
 			++stuckCount;
 			break;
-        case Box::TRICKY:
-            ++trickyCount;
-            break;
 		case Box::IN:
 			++mixCount;
 			if (b->height < epsilon || b->width < epsilon)
@@ -131,7 +127,7 @@ public:
 	            //visiting all neighbors
 	            if(nei->depth < box->depth-1)
 	            {
-	                if(nei->status==Box::OFF) continue; //no need to split
+	                if(nei->status==Box::OUT) continue; //no need to split
 
 	                Box::Status backup_nei_status=nei->status;
 	                nei->status=Box::IN; //force to split

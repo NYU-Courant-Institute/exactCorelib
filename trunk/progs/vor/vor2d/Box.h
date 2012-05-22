@@ -112,9 +112,9 @@ public:
 //	BoxNode * pMid; // the mid point of the box
 
 	Box* pParent; //parent in quadtree
-	enum Status { IN, OFF, ON, TRICKY, UNKNOWN };
+	enum Status { IN, OUT, ON, UNKNOWN };
 	                                      // IN: the VOR is inside the box but does not intersect the border of the box
-	                                      // OFF: the VOR is outside
+	                                      // OUT: the VOR is outside
 	                                      // ON: the VOR is cross the border
 	                                      // TRICKY: tricky case (see def below)
 	Status status;
@@ -159,12 +159,12 @@ public:
 			return;
 		}
 
-		if(x==218 && y==198)
-		{
-		    Corner * c=corners.front();
-		    Wall * w=walls.front();
-		    cout<<"OUT"<<endl;
-		}
+//		if(x==218 && y==198)
+//		{
+//		    Corner * c=corners.front();
+//		    Wall * w=walls.front();
+//		    cout<<"OUT"<<endl;
+//		}
 
         //
 		//int total_feature_size=corners.size()+walls.size();
@@ -184,7 +184,7 @@ public:
 		}
 
 		if(total_feature_size<=1){
-		    status = OFF;
+		    status = OUT;
 		    return;
 		}
 
@@ -194,7 +194,7 @@ public:
 		    {
 		        //then the feature is either inseparable
 		        if( separable==false ){
-		            status = OFF;
+		            status = OUT;
 		        }
 		        else //or has segments that may split the cell
 		        {
@@ -203,7 +203,7 @@ public:
 		            {
 		                //overlapping wall
 		                if(walls.front()->src==walls.back()->dst && walls.front()->dst==walls.back()->src)
-		                    status = OFF;
+		                    status = OUT;
 		                else
 		                {
 		                    //check if walls are facing the opposing directions
@@ -217,7 +217,7 @@ public:
 		                    bool r4=w2->isRight(w1->dst->x,w1->dst->y);
 
 		                    if(!r1 && !r2 && !r3 && !r4){ //opposing
-		                        status = OFF;
+		                        status = OUT;
 		                    }
 		                    else //facing each other
 		                        status = ON;
@@ -249,7 +249,7 @@ public:
         determine_clearance(UR);
         determine_clearance(LR);
 
-        //determine the status: either OFF or ON or Tricky
+        //determine the status: either OUT or ON or Tricky
         set<Feature*>   feature_groups;
 
         if(UL.nearest_feature)
@@ -288,7 +288,7 @@ public:
 
         if(separable==false || feature_groups.size()<=1 )
         {
-            status = OFF;
+            status = OUT;
             return;
         }
 
@@ -319,7 +319,7 @@ public:
 
             if(opposing)
             {
-                status = OFF;
+                status = OUT;
                 return;
             }
         }
@@ -864,7 +864,7 @@ public:
 	    UnionFind UF;
 
 	    //this build sets of inseparable features
-	    int sfc=separable_features_count();
+//	    int sfc=separable_features_count();
 
         //find actual features of the box nodes
         BoxNode UL, LL, UR, LR; //upper left, lower left, upper right, lower right

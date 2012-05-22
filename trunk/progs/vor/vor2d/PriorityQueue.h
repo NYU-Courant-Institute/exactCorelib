@@ -121,31 +121,31 @@ public:
 
 };
 
-class dijkstraQueue : public BoxQueue
-{
-private:
-	vector<Box*> bv;
-
-public:
-
-	void push(Box* b)
-	{
-		distHeap<PQCmp3>::insert(bv, b);
-	}
-
-	Box* extract()
-	{
-		Box* current = distHeap<PQCmp3>::extractMin(bv);
-		return current;
-	}
-
-	bool empty()
-	{
-		return bv.empty();
-	}
-
-	int size()
-	{
-		return bv.size();
-	}
-};
+//class dijkstraQueue : public BoxQueue
+//{
+//private:
+//	vector<Box*> bv;
+//
+//public:
+//
+//	void push(Box* b)
+//	{
+//		distHeap<PQCmp3>::insert(bv, b);
+//	}
+//
+//	Box* extract()
+//	{
+//		Box* current = distHeap<PQCmp3>::extractMin(bv);
+//		return current;
+//	}
+//
+//	bool empty()
+//	{
+//		return bv.empty();
+//	}
+//
+//	int size()
+//	{
+//		return bv.size();
+//	}
+//};
