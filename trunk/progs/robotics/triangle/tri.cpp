@@ -435,7 +435,7 @@ void genEmptyTree()
 	}
 	QT = new QuadTree(root, epsilon, QType, seed++);  // Note that seed keeps changing!
 
-cout<<"inside genEmpty:  Qtype= " << QType << "\n";
+cout<<"done genEmptyTree \n";
 }
 
 void run()
@@ -522,8 +522,8 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 
 	glutPostRedisplay();
 
-	if (!noPath) cout << "Path found !" << endl;
-	else  cout << "No Path !" << endl;
+	if (!noPath) cout << "          --------------------->>  PATH FOUND !" << endl;
+	else  cout << "          --------------------->>  NO PATH !" << endl;
 	cout << "Expanded " << ct << " times" << endl;
 	cout << "Time used: " << t.getElapsedTimeInMilliSec() << " ms" << endl;
 	cout << "total Free boxes: " << freeCount << endl;
@@ -531,7 +531,8 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 	cout << "total Mixed boxes smaller than epsilon: " << mixSmallCount << endl;
 	cout << "total Mixed boxes bigger than epsilon: " << mixCount - ct - mixSmallCount << endl;
 	freeCount = stuckCount = mixCount = mixSmallCount = 0;
-}
+	cout << "####################### END of RUN ######################\n";
+}//run
 
 void drawTri(Box* b)
 {

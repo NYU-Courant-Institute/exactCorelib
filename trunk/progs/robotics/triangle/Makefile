@@ -57,18 +57,18 @@ include ../Make.options
 #=================================================
 interactive = 0		# 0=interactive, >0 is non-interactive
 
-startX = 10		# start configuration
+startX = 60		# start configuration
 startY = 350
 startTheta = 0		# in degrees
 goalX = 300		# goal configuration
-goalY = 20
+goalY = 60
 goalTheta = 90		# in degrees
 
 epsilon = 10		# resolution parameter
 epsilon = 5		# resolution parameter
 
-radius = 40		# robot radius
 radius = 70		# robot radius
+radius = 40		# robot radius
 
 inputDir = inputs	# where to find input files
 fileName = input2d.txt	# input environment file
