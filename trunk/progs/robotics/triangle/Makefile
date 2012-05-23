@@ -34,10 +34,11 @@
 #
 # (D)	Instead of the target "eg" you can use any of these targets:
 #
-#		eg, ega, egb,
+#		ega, egb,
 #		eg1, eg1a, eg1b,
 #		eg2, eg2a, eg2b,
-#		egbug, egbuga,
+#		egbug (bug), egbuga (buga),
+#		egbug2 (bug2), egbug2a (bug2a),
 #		etc.
 #
 # 	These targets uses different input files, all taken from
@@ -178,10 +179,10 @@ eg2: tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
 
-# BUG TRAP:
+# BUG TRAPS:
 # 
 # Bugtrap example -- Non-existence of path, but barely!
-egbug: tri
+egbug bug: tri
 	@echo "Target 'egbug':  runs tri for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
@@ -192,13 +193,24 @@ egbug: tri
 		1 11 $(inputDir)
 
 # Bugtrap example -- Existence of path, but barely!
-egbuga: tri
+egbuga buga: tri
 	@echo "Target 'egbuga':  runs tri for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is a PATH, but barely so!"
 	@echo "--  the only change from target 'egbug' is that epsilon is now 10, not 20"
 	@echo "--  that are NOT adjacent but shares a corner."
 	./tri $(interactive) 200 350 0 30 30 0 \
 		10 10 bugtrap.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 11 $(inputDir)
+
+# Bugtrap example -- Non-existence of path, but barely!
+egbug2 bug2: tri
+	@echo "Target 'egbug':  runs tri for bugtrap input, bugtrap.txt"
+	@echo "--  this examples shows there is NO PATH, but barely so!"
+	@echo "--  you could see a green path that must pass between two green boxes"
+	@echo "--  that are NOT adjacent but shares a corner."
+	./tri $(interactive) 200 350 0 30 30 0 \
+		20 10 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
 
