@@ -157,7 +157,8 @@ eg:	vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 
 # Eg0: Simple NO PATH example (an triangular annulus region)
 nopath eg0:	vor2d
@@ -177,7 +178,8 @@ simple eg1:	vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 
 # Eg2: Same as simple, but with bounding box
 simple2 eg2: vor2d
@@ -186,7 +188,8 @@ simple2 eg2: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 
 # Eg3: dog example
 eg3 dog:	vor2d
@@ -196,7 +199,8 @@ eg3 dog:	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		100 256 1.4 $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 
 # Eg4: Example of a non-regularized input (set of 4 lines) with closed polygons
 eg4 line:	vor2d
@@ -206,7 +210,8 @@ eg4 line:	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) 1 \
-		0 $(c2)
+		0 $(c2) \
+		&
 	
 # Eg4a: Example of a non-regularized input (set of 4 lines) but using C1 filter
 eg4a linea:	vor2d
@@ -216,7 +221,8 @@ eg4a linea:	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) 1 \
-		1 $(c2)
+		1 $(c2) \
+		&
 	
 # Eg4a: Example of a non-regularized input (set of 4 lines) but open polygons 
 eg4b lineb:	vor2d
@@ -226,7 +232,8 @@ eg4b lineb:	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) 0 \
-		0 $(c2)
+		0 $(c2) \
+		&
 	
 # Eg5: A degenerate input with 5 boxes
 eg5 boxes: vor2d
@@ -234,7 +241,8 @@ eg5 boxes: vor2d
 		1 $(pseudo) $(interior) boxes.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) 100 100 $(scale) $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 		
 # Eg5a: A degenerate input with 5 boxes (but with no translations, our current
 # 	code shows some discontinuous curves)
@@ -243,7 +251,8 @@ eg5a boxesa: vor2d
 		1 $(pseudo) $(interior) boxes.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) 0 0 $(scale) $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 		
 # Eg6: A triangular star within a bounding frame
 eg6 boundedstar: vor2d
@@ -252,7 +261,8 @@ eg6 boundedstar: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 
 # Eg7: bugtrap
 eg7 bug: vor2d
@@ -261,7 +271,8 @@ eg7 bug: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 
 # Eg8: Overlapping polygons: 2 triangles + 2 concentric squares (with funny orientation)
 eg8 overlap: vor2d
@@ -270,7 +281,8 @@ eg8 overlap: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 		
 # Eg9x: Box containing Voronoi Vertex whose vertices has only two colors
 # 	CORRECT trans/scale params:   xtrans=-50  ytrans=80,   scale = 0.1
@@ -280,7 +292,8 @@ eg9x 2colorx: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		-50 80 0.1 $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 		
 # Eg9: Box containing Voronoi Vertex whose vertices has only two colors
 eg9 2color: vor2d
@@ -289,7 +302,8 @@ eg9 2color: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		-360 -150 0.1 $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 		
 # Eg9a: Box containing Voronoi Vertex whose vertices has only two colors
 eg9a 2colora: vor2d
@@ -298,7 +312,8 @@ eg9a 2colora: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		-350 -150 0.1 $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 		
 # Eg9b: Box containing Voronoi Vertex whose vertices has only two colors
 eg9b 2colorb: vor2d
@@ -307,7 +322,8 @@ eg9b 2colorb: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		-340 -150 0.1 $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 		
 # Eg10: Two triangles generating a Voronoi curve
 eg10 2tri: vor2d
@@ -316,7 +332,8 @@ eg10 2tri: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 		
 # Eg11: Star example
 eg11 star:	vor2d
@@ -324,7 +341,8 @@ eg11 star:	vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		100 100 10 \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 	#
 # Eg11a: with pseudo=1(false) and interior=1(false)
 eg11a stara:	vor2d
@@ -332,7 +350,8 @@ eg11a stara:	vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		100 100 4 \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 
 # Eg12: bugtrap2  (one bug trap inside another)
 eg12 bug2: vor2d
@@ -341,7 +360,8 @@ eg12 bug2: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 
 # Eg150: Example with 150 randomly generated, overlapping triangles
 eg150: vor2d
@@ -350,7 +370,8 @@ eg150: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 		
 eg200: vor2d
 	./vor2d $(interactive) \
@@ -358,7 +379,8 @@ eg200: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 		
 moretest: $(TARGETS)
 # nothing to do
