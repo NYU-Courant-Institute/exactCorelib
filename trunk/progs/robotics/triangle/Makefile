@@ -203,14 +203,34 @@ egbuga buga: tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
 
-# Bugtrap example -- Non-existence of path, but barely!
+# Bugtrap2 example -- Non-existence of path.
+# 	THIS IS TOO SLOW, SO MORE WORK NEEDED.
+# 	FOR NOW, WE USE big values for epsilon, etc...
+# 	SAMPLE values: Epsilon=18, radius=1 takes 835 ms to report NO PATH.
+# 	SAMPLE values: Epsilon=17, radius=2 takes 2800 ms to report NO PATH.
 egbug2 bug2: tri
 	@echo "Target 'egbug':  runs tri for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
 	@echo "--  that are NOT adjacent but shares a corner."
 	./tri $(interactive) 200 350 0 30 30 0 \
-		20 10 bugtrap2.txt \
+		18 2 bugtrap2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 11 $(inputDir)
+
+# Bugtrap2 example -- Existence of path.
+# 	THIS IS TOO SLOW, SO MORE WORK NEEDED.
+# 	FOR NOW, WE USE small values for radius, etc...
+# 	SAMPLE values: Epsilon=16, radius=1 takes 5700 ms to report PATH.
+# 	SAMPLE values: Epsilon=16, radius=2 takes 18000 ms to report PATH.
+# 	SAMPLE values: Epsilon=12, radius=2 takes 41000 ms to report PATH.
+egbug2 bug2: tri
+	@echo "Target 'egbug':  runs tri for bugtrap input, bugtrap.txt"
+	@echo "--  this examples shows there is NO PATH, but barely so!"
+	@echo "--  you could see a green path that must pass between two green boxes"
+	@echo "--  that are NOT adjacent but shares a corner."
+	./tri $(interactive) 200 350 0 30 30 0 \
+		16 1 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
 
