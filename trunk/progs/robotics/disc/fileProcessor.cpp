@@ -135,8 +135,8 @@ int fileProcessor(string infileName){
 	}
 	
 	tok = strtok (lineBuffer, " \t"); 	// whitespaces is \t or space
+	emptyLine = true;
 	while (tok != NULL) {
-	  emptyLine = true;
 	  tokNext = strtok(NULL, " \t");
 	  if ((isContinue(tok)==0)  && (tokNext == NULL)) {	// if tok is "\\",
 	      do {
