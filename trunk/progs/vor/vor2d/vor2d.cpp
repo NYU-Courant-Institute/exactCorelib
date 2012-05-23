@@ -75,9 +75,9 @@ QuadTree* QT;
 	double epsilon = 10;			// resolution parameter
 	double boxWidth = 512;			// Initial box width
 	double boxHeight = 512;			// Initial box height
-	double deltaX=0;
-	double deltaY=0;
-	double uscale=1;
+	double deltaX=0;			// Translate input file in x-direction
+	double deltaY=0;			// Translate input file in y-direction
+	double uscale=1;			// Scale the input file 
 
 	int windowPosX = 400;			// X Position of Window
 	int windowPosY = 200;			// Y Position of Window
@@ -85,7 +85,7 @@ QuadTree* QT;
 	string inputDir("inputs"); 		// Path for input files 
 	int QType = 0;				// The Priority Queue can be
 						        //    sequential (0) or random (1)
-	int interactive = 0;		// Run interactively?
+	int interactive = 0;			// Run interactively?
 						        //    Yes (0) or No (1)
 	int seed = 111;				// seed for random number generator
 						// (Could also be used for BFS, etc)
@@ -94,8 +94,11 @@ QuadTree* QT;
 	bool interior = false; // show Voronoi interior to the polygons
 	bool closing_poly=true;
 	bool hideBoxBoundary = false;  //don't draw box boundary
-	bool c1=false; //c1 predicate (true is the new version and false is the old version)
+	bool c1=false; //c1 predicate (true is new version, false is old version)
 	bool c2=false; //c2 predicate
+
+	string title="Subdivision Voronoi 2D";	// display title
+	double cutoff = 10;			// cutoff value (or "delta") for expansion
 
 	bool saveImage=false;
 
@@ -157,9 +160,11 @@ int main(int argc, char* argv[])
 	if (argc > 11) deltaX  = atof(argv[11]);        // translate x
 	if (argc > 12) deltaY  = atof(argv[12]);        // translate y
 	if (argc > 13) uscale  = atof(argv[13]);        // translate y
-	if (argc > 14) closing_poly= atoi(argv[14]);    // control closing polygons
-	if (argc > 15) c1=atoi(argv[15]);               // control c1 predicate
-	if (argc > 16) c2=atoi(argv[16]);               // control c2 predicate
+	if (argc > 14) closing_poly = atoi(argv[14]);    // control closing polygons
+	if (argc > 15) c1 = atoi(argv[15]);             // control c1 predicate
+	if (argc > 16) c2 = atoi(argv[16]);             // control c2 predicate
+	if (argc > 17) title = argv[17];               	// title of this demo
+	if (argc > 18) cutoff = atof(argv[18]);        	// cutoff for subdivision
 
 	// Else, set up for GLUT/GLUI interactive display:
 	glutInit(&argc, argv);
@@ -167,13 +172,14 @@ int main(int argc, char* argv[])
 	glutInitWindowSize(boxWidth, boxWidth);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 
-	int windowID = glutCreateWindow("Voronoi 2D");
+	int windowID = glutCreateWindow((char*)title.c_str());
 	glutDisplayFunc(renderScene);
 	GLUI_Master.set_glutIdleFunc( NULL );
 	GLUI_Master.set_glutKeyboardFunc(Keyboard);
 	GLUI_Master.set_glutMouseFunc(Mouse);
 	GLUI_Master.set_glutSpecialFunc(SpecialKey);
-	GLUI *glui = GLUI_Master.create_glui( "control", 0, windowPosX + boxWidth + 20, windowPosY );
+	GLUI *glui = GLUI_Master.create_glui( "Control",
+		0, windowPosX + boxWidth + 20, windowPosY );
 
     // *Antialias*
     glEnable( GL_LINE_SMOOTH );
@@ -182,7 +188,7 @@ int main(int argc, char* argv[])
     glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 
 	// SETTING UP THE CONTROL PANEL:
-    GLUI_Panel * top_panel=glui->add_panel("VOR2D control");
+    GLUI_Panel * top_panel=glui->add_panel("VOR2D Controls");
 	editInput = glui->add_edittext_to_panel(top_panel, "Input file:", GLUI_EDITTEXT_TEXT );
 	editInput->set_text((char*)fileName.c_str());
 	editDir = glui->add_edittext_to_panel(top_panel, "Input Directory:", GLUI_EDITTEXT_TEXT );

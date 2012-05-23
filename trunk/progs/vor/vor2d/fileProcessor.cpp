@@ -9,37 +9,37 @@
  *	By definition, tokens are non-whitespaces that are separated
  *	by one or more white-spaces.   A white-space is either a space or a tab.
  *
- *	There are two special tokens:
- *		"#" is the comment line token
- *		"\\" is the continuation line token
+ *	Special tokens
+ *		"#" is the comment line token 
+ *		"\" is the continuation line token 
  *
- * 	Then we will "clean up" these lines by:
+ *	NOTE: these are not special "chars" but tokens.
+ *
+ * 	Then we will "clean up" these lines in this order:
  *
  * 		-- eliminating initial white-spaces
  * 		-- eliminating terminal white-spaces
  * 		-- replacing multiple white-spaces to one space
  * 		-- eliminating the "#" token and rest of line
  * 			CAREFUL:
- * 			This "#" char must be separated by white-spaces from other tokens!
+ * 			This "#" char must be separated by white-spaces from other chars!
  * 			E.g., "abc# xyz" and "abc #xyz" and "abc#xyz" do not count.
- * 		-- removing the continuation-line token "\\" PROVIDED it is the
+ * 		-- removing the continuation-line token "\" PROVIDED it is the
  * 			last token in the current line, and join
  * 			the following line to the current line (this is recursive).
  * 			CAREFUL:
- * 			The "\\" char must be separated by white-spaces from other token!
- * 			E.g., "abc\\" does not count because "\\" is not separated.
- * 			E.g., "abc \\ xyz" doesn't count because "\\" is not the last token
+ * 			The "\" char must be separated by white-spaces from other chars!
+ * 			E.g., "abc\" does not count because "\" is not separated.
+ * 			E.g., "abc \ xyz" doesn't count because "\" is not the last token
  * 	
  * 	The result is written to the "outputFileName".
  *
  * 	KNOWN BUG:
- * 		If the last token is not "\\", we will output an empty last line.
+ * 		If the last token is not "\", we will output an empty last line.
  * 		Otherwise, we do not output any empty last line.
  *
  * 		The BUFFERSIZE is currently fixed.  Should be ease
  * 		to automatically increase its size if necessary.
- *
- * REFERENCES:
  *
  * 	Author: Chee Yap (April 2012)
  *
@@ -54,7 +54,7 @@ using namespace std;
 
 // GLOBAL VARIABLES
 
-unsigned int BUFFERSIZE = 102400;	
+unsigned int BUFFERSIZE = 102400;
 char * lineBuffer = new char[BUFFERSIZE];	
 
 ifstream ifile;
@@ -85,7 +85,7 @@ int isComment(char *tok){
 }
 
 // fill the lineBuffer
-//     THIS NEVER WORKED UNLESS INLINED... WHY?
+//     THIS DOES NOT WORK UNLESS INLINED... WHY?
 int getLineBuffer(){
     string line;
     getline (ifile,line);		// NOTICE that getline() is a global method!
@@ -126,7 +126,7 @@ int fileProcessor(string infileName){
     while ( ifile.good() )		// while it is good
     {
 	//getLineBuffer();
-	getline (ifile,line);		// NOTICE that getline() is a global method!
+	getline (ifile,line);		// getline() is a global method!
 	if (line.size()< BUFFERSIZE)
 	      	strcpy (lineBuffer, line.c_str());	// need to copy 
 	else{
@@ -135,8 +135,8 @@ int fileProcessor(string infileName){
 	}
 	
 	tok = strtok (lineBuffer, " \t"); 	// whitespaces is \t or space
+	emptyLine = true;
 	while (tok != NULL) {
-	  emptyLine = true;
 	  tokNext = strtok(NULL, " \t");
 	  if ((isContinue(tok)==0)  && (tokNext == NULL)) {	// if tok is "\\",
 	      do {

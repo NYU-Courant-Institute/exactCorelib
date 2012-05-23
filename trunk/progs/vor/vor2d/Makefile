@@ -272,6 +272,16 @@ eg8 overlap: vor2d
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
 		$(c1) $(c2)
 		
+# Eg9x: Box containing Voronoi Vertex whose vertices has only two colors
+# 	CORRECT trans/scale params:   xtrans=-50  ytrans=80,   scale = 0.1
+eg9x 2colorx: vor2d
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) vorBoxWith2colorX.poly \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		-50 80 0.1 $(closePoly) \
+		$(c1) $(c2)
+		
 # Eg9: Box containing Voronoi Vertex whose vertices has only two colors
 eg9 2color: vor2d
 	./vor2d $(interactive) \
@@ -324,12 +334,10 @@ eg11a stara:	vor2d
 		100 100 4 \
 		$(c1) $(c2)
 
-# Eg12: bugtrap2  NOTE: our parser is buggy, and we cannot use the file "bugtrap2.txt"
-# 		because it has interspersed comments!
-# 		So we use the humanly incomprehensible "bugtrap2x.txt" file instead:
+# Eg12: bugtrap2  (one bug trap inside another)
 eg12 bug2: vor2d
 	./vor2d $(interactive) \
-		1 $(pseudo) $(interior) bugtrap2x.txt \
+		1 $(pseudo) $(interior) bugtrap2.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
