@@ -1,19 +1,18 @@
-README:
-	Triangle Robot Planner.
-	Since Corelib 2.1 (March 2012)
-    	$Id:$
+README 
+#	Triangle Robot Planner.
+#	Since Corelib 2.1 (March 2012)
+#    	$Id:$
+# ################################################################################
 
-Please read the Makefile for various pre-arranged demos
-
+Please read the Makefile for various pre-arranged demos.
 	E.g.,
 		> make eg1
-	
+		> make eg1a
+		> make eg2
 		> make egbug
+		> make egbug2
 
-
-
-You can change the shape of the robot in the file tri.cpp
-by recompiling:
+You can change the shape of the robot in the file tri.cpp by recompiling:
 	
 	// SHAPE OF TRIANGULAR ROBOT:
 	// 	It is a triangle inscribed in a disc centered at the origin.
@@ -48,5 +47,7 @@ by recompiling:
 	//
 	// (e) Off-Center Robot 
 	// double triRobo[2] = {0.3, 0.6};
+
+The COLOR SCHEME:
 
 
