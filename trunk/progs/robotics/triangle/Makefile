@@ -21,7 +21,8 @@
 #	       		$(goalX) $(goalY) $(goalTheta) \
 #			$(epsilon) $(radius) $(fileName) \
 #			$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-#			$(Qtype) $(seed)  $(inputDir)
+#			$(Qtype) $(seed)  $(inputDir) \
+#			$(xtrans) $(ytrans) $(scale)
 #
 #	where the arguments to tri correspond to the values $(var) of
 #	various Makefile variables.   
@@ -91,7 +92,9 @@ Qtype = 0		# type of priority queue
 seed = 11		# seed for random
 step = 0		# number of steps to run
 			#	(step=0 means run to completion)
-		
+xtrans = 0		# x-translation of input file
+ytrans = 0		# y-translation of input file
+scale = 1		# scaling of input file
 #=================================================
 # Define target files (put all your files here)
 #=================================================
@@ -109,7 +112,8 @@ test: $(TARGETS)
 	./tri 1 \
 		$(startX) $(startY)  $(startTheta) $(goalX) $(goalY) $(startBeta) \
 		$(epsilon)  $(radius)  input.txt  $(boxWidth) $(boxHt) \
-       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir)
+       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 testa: $(TARGETS)
 	./tri 1
@@ -118,7 +122,8 @@ testb: $(TARGETS)
 	./tri 1 \
 		$(startX) $(startY)  $(startTheta) $(goalX) $(goalY) $(startBeta) \
 		$(epsilon)  $(radius)  input2.txt  $(boxWidth) $(boxHt) \
-       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir)
+       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 #=================================================
 # Examples of running tri program
@@ -134,7 +139,8 @@ eg:	tri
 	    	$(goalX) $(goalY) $(goalTheta) \
 		$(epsilon) $(radius) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
+		$(Qtype) $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 # run with default compiled options:
 #	The input file is input2.txt.
@@ -152,7 +158,8 @@ egb:	tri
 	./tri $(interactive) 10 350 0 300 20 0\
 		10 40 input.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) 1111 $(inputDir)
+		$(Qtype) 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 # Simple NO PATH example:
 nopath eg0:	tri
@@ -161,7 +168,8 @@ nopath eg0:	tri
 	./tri $(interactive) 400 400 0 200 200 0\
 		20 20 input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
+		$(Qtype) $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 # eg1:
 eg1: tri
@@ -177,7 +185,8 @@ eg2: tri
 	./tri $(interactive) 150 260 0 20 20 0 \
 		10 10 input2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 # BUG TRAPS:
 # 
@@ -190,7 +199,8 @@ egbug bug: tri
 	./tri $(interactive) 200 350 0 30 30 0 \
 		20 10 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir)
+		1 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 # Bugtrap example -- Existence of path, but barely!
 egbuga buga: tri
@@ -201,7 +211,8 @@ egbuga buga: tri
 	./tri $(interactive) 200 350 0 30 30 0 \
 		10 10 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir)
+		1 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 # Bugtrap2 example -- Non-existence of path.
 # 	THIS IS TOO SLOW, SO MORE WORK NEEDED.
@@ -216,7 +227,8 @@ egbug2 bug2: tri
 	./tri $(interactive) 200 350 0 30 30 0 \
 		18 2 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir)
+		1 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 # Bugtrap2 example -- Existence of path.
 # 	THIS IS TOO SLOW, SO MORE WORK NEEDED.
@@ -224,7 +236,7 @@ egbug2 bug2: tri
 # 	SAMPLE values: Epsilon=16, radius=1 takes 5700 ms to report PATH.
 # 	SAMPLE values: Epsilon=16, radius=2 takes 18000 ms to report PATH.
 # 	SAMPLE values: Epsilon=12, radius=2 takes 41000 ms to report PATH.
-egbug2 bug2: tri
+egbug2a bug2a: tri
 	@echo "Target 'egbug':  runs tri for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
@@ -232,7 +244,51 @@ egbug2 bug2: tri
 	./tri $(interactive) 200 350 0 30 30 0 \
 		16 1 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir)
+		1 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
+
+# egtunnel:  tunnel example from Salzman et al.
+# 	NOTE that the current search strategy seems to miss the direct path!!
+# 	TODO: develop a better search (e.g. Best First Search)
+egtunnel tunnel: tri
+	./tri $(interactive) 200 280 0 450 300 0\
+		10 15 tunnel.poly \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		100 200 0.05
+
+# egtunnelx:  tunnelx (variant of tunnel).  We introduce a confining box to force 
+# 	the robot to go through the tunnel.
+#
+#	CAREFUL, THIS FOLLOWING DEMO (eps=10, rad=15)
+#	TAKES A LONG TIME (It will eventually find a path):
+#	If you give rad=10, it is reasonably fast.
+#
+	#	./tri 0		 200 280 0 450 300 0\
+	#		10 15 tunnelx.poly \
+	#		512 512 500	20 \
+	#		1 1111 inputs	 \
+	#		100 200 0.05
+	#	before interactive, Qtype= 1
+	#	inside run:  Qtype= 0
+	#	input file name = inputs/tunnelx.poly
+	#	nPt=36
+	#	nPolygons=11
+	#	done genEmptyTree 
+	#	          --------------------->>  PATH FOUND !
+	#	Expanded 48769 times
+	#	Time used: 1.39074e+06 ms
+	#	total Free boxes: 78886
+	#	total Stuck boxes: 2757
+	#	total Mixed boxes smaller than epsilon: 250988
+	#	total Mixed boxes bigger than epsilon: 8781
+	#	####################### END of RUN ######################
+egtunnelx tunnelx: tri
+	./tri $(interactive) 200 280 0 450 300 0\
+		10 15 tunnelx.poly \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		100 200 0.05
 
 # RANDOMLY GENERATED ENVIRONMENT:
 #	This one, generated using our Python Generator, has 200 triangles.
@@ -246,7 +302,8 @@ eg100: tri
 	./tri $(interactive) 200 270 0 20 20 0\
 		10 5 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 # eg100a: 100 triangles
 eg100a: tri
@@ -255,7 +312,8 @@ eg100a: tri
 	./tri $(interactive) 200 270 0 20 20 0\
 		10 8 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 # eg200: 200 triangles
 eg200: tri
@@ -264,7 +322,8 @@ eg200: tri
 	./tri $(interactive) 150 260 0 20 20 0 \
 		5 2 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 # eg200a: there is an obvious path but probabilistic methods might waste
 # 	lots of time checking elsewhere!
@@ -276,7 +335,8 @@ eg200a: tri
 	./tri $(interactive) 10 360 0 20 20 0 \
 		2 10 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 # eg200b: there is no path because eps=10
 #
@@ -287,7 +347,8 @@ eg200b: tri
 	./tri $(interactive) 150 260 0 20 20 0 \
 		10 5 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 # eg300: 
 #
@@ -297,7 +358,8 @@ eg300: tri
 	./tri $(interactive) 10 400 0 350 20 0\
 		3 3 input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
 
 
 moretest: $(TARGETS)

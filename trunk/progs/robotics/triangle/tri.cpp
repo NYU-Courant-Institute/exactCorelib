@@ -15,7 +15,8 @@
 			[fileName = input2.txt] \
 			[boxWidth = 512] [boxHeight = 512] \
 			[windoxPosX = 400] [windowPosY = 200] \
-			[Qtype = 0] [seed = 111] [inputDir = inputs]
+			[Qtype = 0] [seed = 111] [inputDir = inputs] \
+			[deltaX = 0] [deltaY = 0] [scale = 1] \
 	where 
 		interactive 	 	is nature of run
 	       					(0=interactive, >0 is non-interactive)
@@ -30,6 +31,7 @@
 						(sequential=0, random=1)
 		seed			is seed for random number generator
 		inputDir		is directory for input files
+		deltaX, deltaY, scale	is the translation and scaling of input environment
 
 	NOTE: see several examples of running this program in the Makefile.
 	
@@ -130,6 +132,9 @@ double triRobo[2] = {0.833333333, 1.0};
 						//    Yes (0) or No (1)
 	int seed = 111;				// seed for random number generator
 						// (Could also be used for BFS, etc)
+	double deltaX=0;			// x-translation of input environment
+	double deltaY=0;			// y-translation of input environment
+	double scale=1;				// scaling of input environment
 	bool noPath = true;			// True means there is "No path.
  
 	bool hideBoxBoundary = false;  //don't draw box boundary
@@ -303,6 +308,9 @@ int main(int argc, char* argv[])
 	if (argc > 15) QType   = atoi(argv[15]);	// PriorityQ Type (random or no)
 	if (argc > 16) seed   = atoi(argv[16]);		// for random number generator
 	if (argc > 17) inputDir  = argv[17];		// path for input files
+	if (argc > 18) deltaX  = atof(argv[18]);	// x-translation of input file
+	if (argc > 19) deltaY  = atof(argv[19]);	// y-translation of input file
+	if (argc > 20) scale  = atof(argv[20]);		// scaling of input file
 
 cout<<"before interactive, Qtype= " << QType << "\n";
 
@@ -844,7 +852,8 @@ cout<< "nPolygons=" << nPolygons << endl;
 			pt -= 1; //1 based array
 			if (ptSet.find(pt) == ptSet.end())
 			{
-				ptVec.push_back(new Corner(pts[pt*2], pts[pt*2+1]));
+				ptVec.push_back(new Corner(pts[pt*2]*scale+deltaX,
+					    pts[pt*2+1]*scale+deltaY));
 				b->addCorner(ptVec.back());
 				ptSet.insert(pt);
 				if (ptVec.size() > 1)
