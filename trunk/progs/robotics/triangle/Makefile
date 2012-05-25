@@ -40,6 +40,7 @@
 #		eg2, eg2a, eg2b,
 #		egbug (bug), egbuga (buga),
 #		egbug2 (bug2), egbug2a (bug2a),
+#		tunnel, tunnelX, tunnelXa
 #		etc.
 #
 # 	These targets uses different input files, all taken from
@@ -257,12 +258,20 @@ egtunnel tunnel: tri
 		1 1111 $(inputDir) \
 		100 200 0.05
 
-# egtunnelx:  tunnelx (variant of tunnel).  We introduce a confining box to force 
-# 	the robot to go through the tunnel.
-#
-#	CAREFUL, THIS FOLLOWING DEMO (eps=10, rad=15)
-#	TAKES A LONG TIME (It will eventually find a path):
-#	If you give rad=10, it is reasonably fast.
+# egtunnelX or tunnelX:  Variant of tunnel.  We introduce a confining box to force 
+# 	the robot to go through the tunnel.  This one is reasonably fast
+# 	(radius=10, epsilon=10).  Path is found.  See tunnelXa for a much harder instance.
+egtunnelX tunnelX: tri
+	./tri $(interactive) 200 280 0 450 300 0\
+		10 10 tunnelx.poly \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		100 200 0.05
+
+# egtunnelXa or tunnelXa:  Variant of tunnel.  We introduce a confining box to force 
+# 	the robot to go through the tunnel.  
+#	CAREFUL, THIS DEMO (with epsilon=10, radius=15)
+#	TAKES A LONG TIME BUT WILL EVENTUALLY FIND A PATH (takes about 25 minutes)
 #
 	#	./tri 0		 200 280 0 450 300 0\
 	#		10 15 tunnelx.poly \
@@ -283,7 +292,7 @@ egtunnel tunnel: tri
 	#	total Mixed boxes smaller than epsilon: 250988
 	#	total Mixed boxes bigger than epsilon: 8781
 	#	####################### END of RUN ######################
-egtunnelx tunnelx: tri
+egtunnelXa tunnelXa: tri
 	./tri $(interactive) 200 280 0 450 300 0\
 		10 15 tunnelx.poly \
 		512 512 $(windowPosX) $(windowPosY) \
@@ -296,8 +305,8 @@ egtunnelx tunnelx: tri
 #	valid for such inputs.  This is the power of the SSS approach (over
 #	the exact algorithms.
 
-# eg100: 100 triangles
-eg100: tri
+# eg100 100: 100 random triangles
+eg100 100: tri
 	@echo "Target eg100:  runs tri amidst 100 randomly generated triangles"
 	./tri $(interactive) 200 270 0 20 20 0\
 		10 5 input100.txt \
@@ -305,8 +314,8 @@ eg100: tri
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale)
 
-# eg100a: 100 triangles
-eg100a: tri
+# eg100a: 100 random triangles
+eg100a 100a: tri
 	@echo "Target eg100a:  runs tri amidst 100 randomly generated triangles"
 	@echo "This one is a bit harder than eg100 (with radius 8 instead of 5)"
 	./tri $(interactive) 200 270 0 20 20 0\
@@ -315,8 +324,17 @@ eg100a: tri
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale)
 
-# eg200: 200 triangles
-eg200: tri
+# eg150: 150 random triangles (use radius=1)
+eg150 150: tri
+	@echo "Target eg150:  runs tri amidst 100 randomly generated triangles"
+	./tri $(interactive) 200 270 0 20 20 0\
+		10 1 input150.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
+
+# eg200: 200 random triangles
+eg200 200: tri
 	@echo "Target eg200:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time!!!"
 	./tri $(interactive) 150 260 0 20 20 0 \
@@ -328,7 +346,7 @@ eg200: tri
 # eg200a: there is an obvious path but probabilistic methods might waste
 # 	lots of time checking elsewhere!
 #
-eg200a: tri
+eg200a 200a: tri
 	@echo "Target eg200a:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"

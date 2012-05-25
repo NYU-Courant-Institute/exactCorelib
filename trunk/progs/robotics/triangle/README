@@ -4,50 +4,75 @@ README
 #    	$Id:$
 # ################################################################################
 
-Please read the Makefile for various pre-arranged demos.
+# ################################################################################
+#	Please read the Makefile for various pre-arranged demos.
+# ################################################################################
 	E.g.,
 		> make eg1
 		> make eg1a
 		> make eg2
 		> make egbug
 		> make egbug2
+		> make tunnel
+		> make eg100
 
-You can change the shape of the robot in the file tri.cpp by recompiling:
+# ################################################################################
+#	Changing the shape of the robot
+# ################################################################################
+	Currently, you need to modify the file tri.cpp and recompile.
 	
-	// SHAPE OF TRIANGULAR ROBOT:
-	// 	It is a triangle inscribed in a disc centered at the origin.
-	// 	The radius of the disc is R0, which the user can specify below.
-	//
-	// 	The triangle is determined by two angles 
-	//
-	//		0 < theta_1 < theta_2 < 2
-	//
-	//	There is an implicit third angle, which is theta_0 = 0.
-	//
-	//      The angles values are in multiples of Pi radians
-	//	(so theta_1 = 1.0 corresponds to Pi radians or 180 degrees)
-	//
-	//     	E.g., an equilateral robot would be 
-	//		theta_1 = 0.6667, theta_2 = 1.3333.
-	//
-	//	Most of our examples in Makefile have parameters
-	//	chosen to work nicely with the Acute Angle Robot below.
-	//
-	// (a) Acute Angle Triangle Robot (DEFAULT): 
-	// double triRobo[2] = {0.833333333, 1.666666667};
-	//
-	// (b) Equilateral Triangle Robot:
-	// double triRobo[2] = {0.666666667, 1.333333333};
-	//
-	// (c) Stick Robot (very thin)
-	//  double triRobo[2] = {0.95, 1.05};
-	//
-	// (d) Right-Angle Isosceles Robot 
-	// double triRobo[2] = {0.5, 1.0};
-	//
-	// (e) Off-Center Robot 
-	// double triRobo[2] = {0.3, 0.6};
+	SHAPE OF TRIANGULAR ROBOT:
+		It is a triangle inscribed in a disc centered at the origin.
+		The radius of the disc is R0, which the user can specify below.
+	
+		The triangle is determined by two angles 
+	
+			0 < theta_1 < theta_2 < 2
+	
+		There is an implicit third angle, which is theta_0 = 0.
+	
+       The angles values are in multiples of Pi radians
+		(so theta_1 = 1.0 corresponds to Pi radians or 180 degrees)
+	
+	    	E.g., an equilateral robot would be 
+			theta_1 = 0.6667, theta_2 = 1.3333.
+	
+	Most of our examples in Makefile have parameters
+	chosen to work nicely with the Acute Angle Robot below.
+	
+	(a) Acute Angle Triangle Robot (DEFAULT): 
+		double triRobo[2] = {0.833333333, 1.666666667};
+	
+	(b) Equilateral Triangle Robot:
+		double triRobo[2] = {0.666666667, 1.333333333};
+	
+	(c) Stick Robot (very thin)
+	 	double triRobo[2] = {0.95, 1.05};
+	
+	(d) Right-Angle Isosceles Robot 
+		double triRobo[2] = {0.5, 1.0};
+	
+	(e) Off-Center Robot 
+		double triRobo[2] = {0.3, 0.6};
 
-The COLOR SCHEME:
+# ################################################################################
+# 	The COLOR SCHEME:
+# ################################################################################
+	... to be provided...
 
+# ################################################################################
+#	TODO:
+# ################################################################################
+	(0) Convert to use Core Library to verify the correctness of
+		the IEEE arithmetic in Level 1.
+	(1) Improve method to find the actual path (e.g., Dijkstra)
+	(2) Implement a thread to simultaneously check for no path
+		-- this should speed up no-path examples, but what is
+		its impact on yes-path examples?
+	(3) Hybrid search strategies
+	(4) Implement Astar
+	(5) Compare to PRM
+
+# ################################################################################
+# ################################################################################
 
