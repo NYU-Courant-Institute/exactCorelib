@@ -1,42 +1,44 @@
 /* **************************************
-   File: disc.cpp
+   File: vor2d.cpp
 
    Description: 
-	This is the entry point for the running the SSS algorithm
-	for a disc robot amidst a collection of polygonal obstacles.
+	This is the entry point for our Subdivision Algorithm for
+	computing a Voronoi complex of a polygonal set.
 
 	To run, call with these positional arguments:
+               > ./vor2d $(interactive) \
+                       $(pseudo) $(interior) $(fileName) \
+                       $(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+                       $(inputDir) \
+                       $(xtrans) $(ytrans) $(scale) \
+                       $(closePoly) $(c1) $(c2) 
 
-	> ./disc 	[interactive = 0] \
-			[alpha-x = 10] [alpha-y = 360] \
-			[beta-x = 500] [beta-y = 20] \
-			[epsilon = 1] \
-			[R0 = 30] \
-			[fileName = input2.txt] \
-			[boxWidth = 512] [boxHeight = 512] \
-			[windoxPosX = 400] [windowPosY = 200] \
-			[Qtype = 0] [seed = 111] [inputDir = inputs]
-	where 
-		interactive 	 	is nature of run
-	       					(0=interactive, >0 is non-interactive)
-		alpha			is start configuration
-		beta			is goal configuration
-		epsilon			is resolution parameter
-		R0			is robot radius
-		fileName		is input file describing the environment
-		box Width/Height	is initial box dimensions
-		windowPos		is position of window
-		Qtype			is type of the priority queue
-						(sequential=0, random=1)
-		seed			is seed for random number generator
-		inputDir		is directory for input files
+	where these arguments (some representative values are shown) 
+		interactive = 0		# 0=interactive, >0 is non-interactive
+		epsilon = 2		# resolution parameter
+		pseudo = 0		# boolean: 0 or true => show pseudo Vor objects
+					# boolean: 1 or false => don't show pseudo Vor obj
+		interior = 0		# boolean: 0 or true => show interior Vor objects
+					# boolean: 1 or false => don't show 
+		inputDir = inputs	# directory to find input files
+		fileName = bugtrap.txt	# input environment file
+		boxWidth = 512		# initial configuration box size
+		boxHt = 512
+		windowPosX = 200	# initial Window position
+		windowPosY = 200	
+		seed = 11		# ransom seed 
+		step = 0		# number of steps to run
+					#	(step=0 means run to completion)
+		xtrans = 5		# x-translation of the input data 
+		ytrans = 5		# y-translation of the input data
+		scale  = 1		# scaling of input data 
+		closePoly  = 1  	# if true (non zero), don't close input polygons
+		c1  = 0			# if 0 (false) then do not use c1 filter
+		c2  = 0			# if 0 (false) then do not use c2 filter
 
-	NOTE: see several examples of running this program in the Makefile.
-	
 	Format of input environment: see README FILE
 
-   HISTORY: March, 2012: Cong Wang, Chee Yap and Yi-Jen Chiang
-
+   HISTORY: May, 2012: Jyh-Ming adapted this from the disc.cpp code of Wang/Chiang/Yap.
    Since Core Library  Version 2.1
    $Id: $
  ************************************** */
