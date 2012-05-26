@@ -172,7 +172,7 @@ nopath eg0:	tri
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale)
 
-# eg1:
+# eg1:	input2e.txt is like input2, but there is a bounding box
 eg1: tri
 	@echo "Target eg1:  runs tri on input2e.txt (which has a bounding box)"
 	./tri $(interactive) 150 260 0.5 40 40 0 \
@@ -185,6 +185,15 @@ eg2: tri
 	@echo "Target eg2e:  runs tri on input2.txt"
 	./tri $(interactive) 150 260 0 20 20 0 \
 		10 10 input2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale)
+
+# eg3: input3.txt is line input2e, but there is a narrow door
+eg3: tri
+	@echo "Target eg2e:  runs tri on input2.txt"
+	./tri $(interactive) 150 260 0 450 450 0 \
+		10 30 input3.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale)
