@@ -79,11 +79,14 @@ public:
 class randQueue : public BoxQueue
 {
 private:
-	list<Box*> L;
+	vector<Box*> L;
 	int Qseed;
+	vector<bool> dirty;
+	int dirtyCt;
 
 public:
-	randQueue(int s): Qseed(s) {
+	randQueue(int s): Qseed(s), dirtyCt(0)
+	{
 		//srand( time(0) );
 		srand( Qseed ); 
 	}
@@ -91,15 +94,31 @@ public:
 	void push(Box* b)
 	{
 		L.push_back(b);
+		dirty.push_back(false);
 	}
 
 	Box* extract()
 	{
 		int i = rand() % L.size();
-		list<Box*>::iterator iter = L.begin();
-		advance(iter, i);
-		Box* r = *iter;
-		L.erase(iter);
+		Box* r = L[i];
+		dirty[i] = true;
+		++dirtyCt;
+		if (dirtyCt >= dirty.size() / 2)
+		{
+			vector<Box*> L2;
+			vector<bool> dirty2;
+			for (i = 0; i < L.size(); ++i)
+			{
+				if (!dirty[i])
+				{
+					L2.push_back(L[i]);
+					dirty2.push_back(false);
+				}
+			}
+			L.swap(L2);
+			dirty.swap(dirty2);
+			dirtyCt = 0;
+		}
 		return r;
 	}
 
