@@ -455,8 +455,10 @@ void run()
 	epsilon = editEpsilon->get_float_val();
 	alpha[0] = editAlphaX->get_float_val();
 	alpha[1] = editAlphaY->get_float_val();
+	alpha[2] = editAlphaTheta->get_float_val() / PI;	
 	beta[0] = editBetaX->get_float_val();
 	beta[1] = editBetaY->get_float_val();
+	beta[2] = editBetaTheta->get_float_val() / PI;
 
     QType = radioQType->get_int_val();	
 

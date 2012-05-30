@@ -99,7 +99,13 @@ public:
 
 	Box* extract()
 	{
-		int i = rand() % L.size();
+		int i;
+		do 
+		{
+			i = rand() % L.size();
+		} 
+		while (dirty[i]);
+		
 		Box* r = L[i];
 		dirty[i] = true;
 		++dirtyCt;
