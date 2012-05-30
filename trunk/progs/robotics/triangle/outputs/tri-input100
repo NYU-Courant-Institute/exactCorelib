@@ -2,8 +2,10 @@ This image is the output of
 
 	> make eg100
 
-Screen output:
+This takes time about 1.1 seconds.
 
+Screen output:
+	cheeyap@triangle[533] make eg100
 	Target eg100:  runs tri amidst 100 randomly generated triangles
 	./tri 0		 200 270 0 20 20 0\
 		10 5 input100.txt \
@@ -17,12 +19,10 @@ Screen output:
 	nPolygons=100
 	done genEmptyTree 
 	          --------------------->>  PATH FOUND !
-	Expanded 23819 times
-	Time used: 216260 ms
-	total Free boxes: 50582
-	total Stuck boxes: 139
-	total Mixed boxes smaller than epsilon: 100472
-	total Mixed boxes bigger than epsilon: 15625
+	Expanded 14207 times
+	Time used: 1124.89 ms
+	total Free boxes: 30445
+	total Stuck boxes: 65
+	total Mixed boxes smaller than epsilon: 54305
+	total Mixed boxes bigger than epsilon: 14735
 	####################### END of RUN ######################
-
-
