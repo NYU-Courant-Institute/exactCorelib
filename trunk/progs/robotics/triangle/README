@@ -61,6 +61,25 @@ README
 	... to be provided...
 
 # ################################################################################
+# 	SAMPLE TIMINGS: May 30, 2012:
+# ################################################################################
+#  make bug:
+	./tri 0		 200 350 0 30 30 0 \
+		20 10 bugtrap.txt \
+		512 512 500	 20	 \
+		1 11 inputs	 \
+		0		 0		 1		
+#  	This determines "NO Path" in less than 3 secongs
+#  make buga: 
+	./tri 0		 200 350 0 30 30 0 \
+		10 10 bugtrap.txt \
+		512 512 500	 20	 \
+		1 11 inputs	 \
+		0		 0		 1		
+#  	This finds a Path in less than 3.7 seconds
+
+
+# ################################################################################
 #	TODO:
 # ################################################################################
 	(0) Convert to use Core Library to verify the correctness of

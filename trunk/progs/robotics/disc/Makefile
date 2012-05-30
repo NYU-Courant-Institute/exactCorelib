@@ -37,8 +37,8 @@
 #		eg0,
 #		eg1, eg1a, eg1b,
 #		eg2, eg2a, eg2b,
-#		egbug, egbuga,
-#		egbug2, egbug2a,
+#		egbug (bug), egbuga (buga),
+#		egbug2 (bug2), egbug2a (bug2a),
 #		etc.
 #
 # 	These targets uses different input files, all taken from
@@ -198,7 +198,7 @@ egbuga buga: disc
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir)
 
-# BUG2 TRAP:
+# BUG2 TRAP: (one trap inside another)
 ###################################################
 # Bugtrap2 example -- Existence of path, but barely! (eps=1)
 egbug2 bug2: disc
