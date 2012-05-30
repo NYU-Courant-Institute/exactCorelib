@@ -1,0 +1,28 @@
+This image is the output of
+
+	> make eg100
+
+Screen output:
+
+	Target eg100:  runs tri amidst 100 randomly generated triangles
+	./tri 0		 200 270 0 20 20 0\
+		10 5 input100.txt \
+		512 512 500	 20	 \
+		1 1111 inputs	 \
+		0		 0		 1		
+	before interactive, Qtype= 1
+	inside run:  Qtype= 0
+	input file name = inputs/input100.txt
+	nPt=300
+	nPolygons=100
+	done genEmptyTree 
+	          --------------------->>  PATH FOUND !
+	Expanded 23819 times
+	Time used: 216260 ms
+	total Free boxes: 50582
+	total Stuck boxes: 139
+	total Mixed boxes smaller than epsilon: 100472
+	total Mixed boxes bigger than epsilon: 15625
+	####################### END of RUN ######################
+
+
