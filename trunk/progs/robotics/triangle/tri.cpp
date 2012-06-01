@@ -730,50 +730,33 @@ void renderScene(void)
 
 	//render top level leaves w/o blending to avoid "black" boxes
 	//just a hack
-	if (allLeaf.size() > 5)
+	glDisable( GL_BLEND );
+	//note here we render even if b is not a leaf
+	Box* b = allLeaf[0];
+	switch(b->status)
 	{
-		glDisable( GL_BLEND );
-		for (int i = 0; i < 5; ++i)
-		{
-			//note here we render even if b is not a leaf
-			Box* b = allLeaf[i];
-			switch(b->status)
+		case Box::FREE:
+			glColor4f(0.25, 1, 0.25, 0.5);
+			break;
+		case Box::STUCK:
+			glColor4f(1, 0.25, 0.25, 0.5);
+			break;
+		case Box::MIXED:
+			glColor4f(1, 1, 0.25, 0.1);
+			if (b->height < epsilon || b->width < epsilon)
 			{
-				case Box::FREE:
-					glColor4f(0.25, 1, 0.25, 0.5);
-					break;
-				case Box::STUCK:
-					glColor4f(1, 0.25, 0.25, 0.5);
-					break;
-				case Box::MIXED:
-					glColor4f(1, 1, 0.25, 0.1);
-					if (b->height < epsilon || b->width < epsilon)
-					{
-						glColor4f(0.5, 0.5, 0.5, 0.1);
-					}
-					break;
+				glColor4f(0.5, 0.5, 0.5, 0.1);
 			}
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glBegin(GL_POLYGON);
-			glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
-			glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
-			glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
-			glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
-			glEnd();
-
-			if (!hideBoxBoundary)
-			{
-				glColor3f(0, 0 , 0);
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-				glBegin(GL_POLYGON);
-				glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
-				glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
-				glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
-				glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
-				glEnd();
-			}	
-		}
+			break;
 	}
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBegin(GL_POLYGON);
+	glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
+	glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
+	glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
+	glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
+	glEnd();
+	
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable( GL_BLEND );
