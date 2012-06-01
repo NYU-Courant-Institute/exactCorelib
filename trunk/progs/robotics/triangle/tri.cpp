@@ -760,6 +760,18 @@ void renderScene(void)
 			glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
 			glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
 			glEnd();
+
+			if (!hideBoxBoundary)
+			{
+				glColor3f(0, 0 , 0);
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				glBegin(GL_POLYGON);
+				glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
+				glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
+				glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
+				glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
+				glEnd();
+			}	
 		}
 	}
 
