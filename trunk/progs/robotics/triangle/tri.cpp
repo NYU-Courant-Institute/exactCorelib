@@ -114,29 +114,29 @@ double triRobo[2] = {0.833333333, 1.0};
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////
-	double alpha[3] = {10, 320, 0};		// start configuration
-	double beta[3] = {500, 20, 0};		// goal configuration
-	double epsilon = 25;			// resolution parameter
+	double alpha[3] = {200, 350, 0};		// start configuration
+	double beta[3] = {30, 30, 0};		// goal configuration
+	double epsilon = 20;			// resolution parameter
 	Box* boxA;				// start box (containing alpha)
 	Box* boxB;				// goal box (containing beta)
 	double boxWidth = 512;			// Initial box width
 	double boxHeight = 512;			// Initial box height
-	double R0 = 30;				// Robot radius 
+	double R0 = 10;				// Robot radius 
 	int windowPosX = 400;			// X Position of Window
 	int windowPosY = 200;			// Y Position of Window
-	string fileName("input2.txt"); 		// Input file name
+	string fileName("input.txt"); 		// Input file name
 	string inputDir("inputs"); 		// Path for input files 
 	int QType = 0;				// The Priority Queue can be
-						//    sequential (0) or random (1)
+	//    sequential (0) or random (1)
 	int interactive = 0;			// Run interactively?
-						//    Yes (0) or No (1)
+	//    Yes (0) or No (1)
 	int seed = 111;				// seed for random number generator
-						// (Could also be used for BFS, etc)
+	// (Could also be used for BFS, etc)
 	double deltaX=0;			// x-translation of input environment
 	double deltaY=0;			// y-translation of input environment
 	double scale=1;				// scaling of input environment
 	bool noPath = true;			// True means there is "No path.
- 
+
 	bool hideBoxBoundary = false;  //don't draw box boundary
 
 // GLOBAL VARIABLES ========================================
@@ -727,6 +727,16 @@ void renderScene(void)
 	glLoadIdentity();
 	glScalef(2.0/boxWidth, 2.0/boxHeight, 0);
 	glTranslatef(-boxWidth/2, -boxHeight/2, 0);
+
+	//render top level leaves w/o blending to avoid "black" boxes
+	if (allLeaf.size() > 5)
+	{
+		glDisable( GL_BLEND );
+		for (int i = 0; i < 5; ++i)
+		{
+			drawQuad(allLeaf[i]);
+		}
+	}
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable( GL_BLEND );
