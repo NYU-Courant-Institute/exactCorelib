@@ -109,11 +109,11 @@ public:
 		Box* r = L[i];
 		dirty[i] = true;
 		++dirtyCt;
-		if (dirtyCt >= dirty.size() / 2)
+		if ((unsigned) dirtyCt >= dirty.size() / 2)
 		{
 			vector<Box*> L2;
 			vector<bool> dirty2;
-			for (i = 0; i < L.size(); ++i)
+			for (i = 0; (unsigned)i < L.size(); ++i)
 			{
 				if (!dirty[i])
 				{
