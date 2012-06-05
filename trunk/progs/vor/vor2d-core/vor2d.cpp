@@ -65,10 +65,11 @@
 double boxWidth = 512;          // Initial box width
 double boxHeight = 512;         // Initial box height
 
+#include "Timer.h"
 #include "gliDump.h"
 #include "QuadTree.h"
 #include "PriorityQueue.h"
-#include "Timer.h"
+
 
 #include <set>
 using namespace std;
@@ -116,21 +117,21 @@ QuadTree* QT;
 
 // GLUI controls ========================================
 //
-	GLUI_RadioGroup* radioQType;
-	GLUI_RadioGroup* radioDrawOption;
-	GLUI_EditText* editInput;
-	GLUI_EditText* editDir;
-	GLUI_EditText* editRadius;
-	GLUI_EditText* editEpsilon;
-	GLUI_EditText* editAlphaX;
-	GLUI_EditText* editAlphaY;
-	GLUI_EditText* editBetaX;
-	GLUI_EditText* editBetaY;
-	GLUI_EditText* editSeed;
+//	GLUI_RadioGroup* radioQType;
+//	GLUI_RadioGroup* radioDrawOption;
+//	GLUI_EditText* editInput;
+//	GLUI_EditText* editDir;
+//	GLUI_EditText* editRadius;
+//	GLUI_EditText* editEpsilon;
+//	GLUI_EditText* editAlphaX;
+//	GLUI_EditText* editAlphaY;
+//	GLUI_EditText* editBetaX;
+//	GLUI_EditText* editBetaY;
+//	GLUI_EditText* editSeed;
 
 	//information display
-	GLUI_StaticText * selectedBoxInfo; //information about selected box
-	GLUI_StaticText * vorInfo;
+//	GLUI_StaticText * selectedBoxInfo; //information about selected box
+//	GLUI_StaticText * vorInfo;
 
 // External Routines ========================================
 //
@@ -139,11 +140,11 @@ void run();
 void genEmptyTree();
 
 //IO
-void renderScene(void);
 void parseConfigFile(Box*);
 extern int fileProcessor(string inputfile);
 
 //GL
+void renderScene(void);
 void drawPath(vector<Box*>&);
 void drawCircle( double Radius, int numPoints, double x, double y, double r, double g, double b);
 void filledCircle( double radius, double x, double y, double r, double g, double b);
@@ -151,13 +152,13 @@ void Keyboard( unsigned char key, int x, int y );
 void SpecialKey( int key, int x, int y );
 void Mouse(int button, int state, int x, int y);
 
-inline void glVertex2f_core(double x, double y){ glVertex2f_core(CORE::Todouble(x),CORE::Todouble(y));}
-inline void glColor3d_core(double r, double g,double b){ glColor3d(CORE::Todouble(r),CORE::Todouble(g),CORE::Todouble(b));}
+void glVertex2f_core(double x, double y){ glVertex2f_core(CORE::Todouble(x),CORE::Todouble(y));}
+void glColor3d_core(double r, double g,double b){ glColor3d(CORE::Todouble(r),CORE::Todouble(g),CORE::Todouble(b));}
 
 
 //GUI related functions
-void updateVARinfo();
-void updateSelectedBoxInfo();
+//void updateVARinfo();
+//void updateSelectedBoxInfo();
 
 // MAIN PROGRAM: ========================================
 int main(int argc, char* argv[])
@@ -181,62 +182,11 @@ int main(int argc, char* argv[])
 	if (argc > 17) title = argv[17];               	// title of this demo
 	if (argc > 18) cutoff = atof(argv[18]);        	// cutoff for subdivision
 
-	// Else, set up for GLUT/GLUI interactive display:
-	glutInit(&argc, argv);
-	glutInitWindowPosition(windowPosX, windowPosY);
-	glutInitWindowSize(boxWidth, boxWidth);
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    // PERFORM THE INITIAL RUN OF THE ALGORITHM
+    //==========================================
+    run();  // make it do something interesting from the start!!!
 
-	int windowID = glutCreateWindow((char*)title.c_str());
-	glutDisplayFunc(renderScene);
-	GLUI_Master.set_glutIdleFunc( NULL );
-	GLUI_Master.set_glutKeyboardFunc(Keyboard);
-	GLUI_Master.set_glutMouseFunc(Mouse);
-	GLUI_Master.set_glutSpecialFunc(SpecialKey);
-	GLUI *glui = GLUI_Master.create_glui( "Control",
-		0, windowPosX + boxWidth + 20, windowPosY );
-
-    // *Antialias*
-    glEnable( GL_LINE_SMOOTH );
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-
-	// SETTING UP THE CONTROL PANEL:
-    GLUI_Panel * top_panel=glui->add_panel("VOR2D Controls");
-	editInput = glui->add_edittext_to_panel(top_panel, "Input file:", GLUI_EDITTEXT_TEXT );
-	editInput->set_text((char*)fileName.c_str());
-	editDir = glui->add_edittext_to_panel(top_panel, "Input Directory:", GLUI_EDITTEXT_TEXT );
-	editDir->set_text((char*)inputDir.c_str());
-	editEpsilon = glui->add_edittext_to_panel(top_panel, "Epsilon:", GLUI_EDITTEXT_FLOAT );
-	editEpsilon->set_float_val(CORE::Todouble(epsilon));
-
-	GLUI_Button* buttonRun = glui->add_button_to_panel(top_panel, "Run", -1, (GLUI_Update_CB)run);
-	buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
-
-	// New column:
-	glui->add_column_to_panel(top_panel,true);
-
-	glui->add_separator_to_panel(top_panel);
-	radioDrawOption = glui->add_radiogroup_to_panel(top_panel, 0, -1, (GLUI_Update_CB)renderScene);
-	glui->add_radiobutton_to_group( radioDrawOption, "Show Box Boundary");
-	glui->add_radiobutton_to_group( radioDrawOption, "Hide Box Boundary");
-	glui->add_separator_to_panel(top_panel);
-
-	// Quit button
-	glui->add_button_to_panel(top_panel, "Quit", 0, (GLUI_Update_CB)exit );
-
-
-    //add some display
-	vorInfo=glui->add_statictext("var \n info"); //
-	selectedBoxInfo=glui->add_statictext("no selected box"); //information about selected box
-
-
-	glui->set_main_gfx_window( windowID );
-
-	// PERFORM THE INITIAL RUN OF THE ALGORITHM
-	//==========================================
-	run(); 	// make it do something interesting from the start!!!
+//	return 0;
 
 	// SHOULD WE STOP or GO INTERACTIVE?
 	//==========================================
@@ -244,8 +194,33 @@ int main(int argc, char* argv[])
 	    // do something...
 	    return 0;
 	}
-	else
+	else{
+
+	    // Else, set up for GLUT/GLUI interactive display:
+	    glutInit(&argc, argv);
+	    glutInitWindowPosition(windowPosX, windowPosY);
+	    glutInitWindowSize(boxWidth, boxWidth);
+	    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+
+	    int windowID = glutCreateWindow((char*)title.c_str());
+	    glutDisplayFunc(renderScene);
+	    GLUI_Master.set_glutIdleFunc( NULL );
+	    GLUI_Master.set_glutKeyboardFunc(Keyboard);
+	    GLUI_Master.set_glutMouseFunc(Mouse);
+	    GLUI_Master.set_glutSpecialFunc(SpecialKey);
+	    GLUI *glui = GLUI_Master.create_glui( "Control",
+	        0, windowPosX + boxWidth + 20, windowPosY );
+
+	    // *Antialias*
+	    glEnable( GL_LINE_SMOOTH );
+	    glEnable( GL_BLEND );
+	    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+
+	    glui->set_main_gfx_window( windowID );
+
 		glutMainLoop();
+	}
 
 	return 0;
 }
@@ -269,11 +244,11 @@ void genEmptyTree()
 void run()
 {
 	//update from glui live variables
-	fileName = editInput->get_text();
-	inputDir = editDir->get_text();
-	epsilon = editEpsilon->get_float_val();
+	//fileName = editInput->get_text();
+	//inputDir = editDir->get_text();
+	//epsilon = editEpsilon->get_float_val();
 
-	::Timer t;
+	myTimer t;
 
 	// start timer
 	t.start();
@@ -297,9 +272,11 @@ void run()
 	t.stop();
 	timeused=t.getElapsedTimeInMilliSec();
 
-	updateVARinfo();
+	//updateVARinfo();
 
-	glutPostRedisplay();
+    cout<<"Time used: "<<timeused<<"ms"<<endl;
+
+	//glutPostRedisplay();
 
 	freeCount = stuckCount = mixCount = mixSmallCount = 0;
 }
@@ -511,7 +488,7 @@ void filledCircle( double radius, double x, double y, double r, double g, double
 
 void renderScene(void) 
 {
-	hideBoxBoundary = radioDrawOption->get_int_val();
+	//hideBoxBoundary = radioDrawOption->get_int_val();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -667,41 +644,41 @@ void parseConfigFile(Box* b)
 	ifs.close();
 
 }
-
-// gather information and show it on the GUI diagram
-void updateVARinfo()
-{
-    char info[1024];
-
-    static int leave_size=-1;
-    if(leave_size<0)
-    {
-        list<Box*> leaves;
-        QT->pRoot->getLeaves(leaves);
-        leave_size=leaves.size();
-    }
-
-    sprintf(info,"Time used: %.2f ms; # of leaves=%d",timeused,leave_size);
-    vorInfo->set_text(info);
-}
-
 //
-// call this function when the selected box is changed
-// show related information on GUI diagram
+//// gather information and show it on the GUI diagram
+//void updateVARinfo()
+//{
+//    char info[1024];
 //
-void updateSelectedBoxInfo()
-{
-    if(g_selected_PM.empty())
-    {
-        selectedBoxInfo->set_text("no selected box");
-        return;
-    }
+//    static int leave_size=-1;
+//    if(leave_size<0)
+//    {
+//        list<Box*> leaves;
+//        QT->pRoot->getLeaves(leaves);
+//        leave_size=leaves.size();
+//    }
+//
+//    sprintf(info,"Time used: %.2f ms; # of leaves=%d",timeused,leave_size);
+//    vorInfo->set_text(info);
+//}
 
-    Box * selected=g_selected_PM.back();
-    char info[1024];
-    sprintf(info,"Selected box has %d corner and %d wall features", (int)selected->corners.size(), (int)selected->walls.size());
-    selectedBoxInfo->set_text(info);
-}
+////
+//// call this function when the selected box is changed
+//// show related information on GUI diagram
+////
+//void updateSelectedBoxInfo()
+//{
+//    if(g_selected_PM.empty())
+//    {
+//        selectedBoxInfo->set_text("no selected box");
+//        return;
+//    }
+//
+//    Box * selected=g_selected_PM.back();
+//    char info[1024];
+//    sprintf(info,"Selected box has %d corner and %d wall features", (int)selected->corners.size(), (int)selected->walls.size());
+//    selectedBoxInfo->set_text(info);
+//}
 
 
 //
@@ -747,7 +724,7 @@ void SpecialKey(int key, int x, int y)
         default: return;
     }
 
-    updateSelectedBoxInfo();
+    //updateSelectedBoxInfo();
     glutPostRedisplay();
 }
 
@@ -781,7 +758,7 @@ void Mouse(int button, int state, int x, int y)
 
         }
 
-        updateSelectedBoxInfo();
+        //updateSelectedBoxInfo();
         glutPostRedisplay();
     }//if pressed the right key/button
 
