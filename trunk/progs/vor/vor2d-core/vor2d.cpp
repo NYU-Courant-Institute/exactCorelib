@@ -152,7 +152,7 @@ void Keyboard( unsigned char key, int x, int y );
 void SpecialKey( int key, int x, int y );
 void Mouse(int button, int state, int x, int y);
 
-void glVertex2f_core(double x, double y){ glVertex2f_core(CORE::Todouble(x),CORE::Todouble(y));}
+void glVertex2f_core(double x, double y){ glVertex2f(CORE::Todouble(x),CORE::Todouble(y));}
 void glColor3d_core(double r, double g,double b){ glColor3d(CORE::Todouble(r),CORE::Todouble(g),CORE::Todouble(b));}
 
 
@@ -274,7 +274,7 @@ void run()
 
 	//updateVARinfo();
 
-    cout<<"Time used: "<<timeused<<"ms"<<endl;
+    cout<<"- Time used: "<<timeused<<"ms"<<endl;
 
 	//glutPostRedisplay();
 
