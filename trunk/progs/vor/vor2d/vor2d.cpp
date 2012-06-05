@@ -40,7 +40,7 @@
 
    HISTORY: May, 2012: Jyh-Ming adapted this from the disc.cpp code of Wang/Chiang/Yap.
    Since Core Library  Version 2.1
-   $Id: $
+   $Id$
  ************************************** */
 
 #include "QuadTree.h"

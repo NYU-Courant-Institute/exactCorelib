@@ -1,12 +1,15 @@
 /* **************************************
+
    File: QuadTree.h
 
    Description: 
 
-   HISTORY: March, 2012: Cong Wang, Chee Yap and Yi-Jen Chiang
+   HISTORY: March, 2012: Created by Cong Wang, Chee Yap and Yi-Jen Chiang
+            May, 2012: Updated by Jyh-Ming Lien for Voronoi diagram
 
    Since Core Library  Version 2.1
-   $Id: $
+   $Id$
+
  ************************************** */
 
 #pragma once
