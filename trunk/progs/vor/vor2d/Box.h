@@ -1,3 +1,10 @@
+
+//
+// Box in Quadtree
+//
+// $Id$
+//
+
 #pragma once
 
 #include <time.h>
@@ -105,12 +112,6 @@ public:
 
 	list<VorSegment> vor_segments;
 
-//	// box nodes are the 4 corners of the box
-//	// the order of the corners are the same as the order of children
-//	//    0 = NW, 1 = EN, 2 = SE, 3 = WS
-//	BoxNode * pNodes[4];
-//	BoxNode * pMid; // the mid point of the box
-
 	Box* pParent; //parent in quadtree
 	enum Status { IN, OUT, ON, UNKNOWN };
 	                                      // IN: the VOR is inside the box but does not intersect the border of the box
@@ -118,7 +119,6 @@ public:
 	                                      // ON: the VOR is cross the border
 	                                      // TRICKY: tricky case (see def below)
 	Status status;
-	Set* pSet;   //?
 
 	//these are the features contained in this box
 	list<Corner*> corners;
@@ -135,9 +135,9 @@ public:
 	bool visited;
 
 	Box(double xx, double yy, double w, double h):
-	    	depth(1), x(xx), y(yy), width(w), height(h), isLeaf(true), 
+	    depth(1), x(xx), y(yy), width(w), height(h), isLeaf(true),
 		pParent(0), status(UNKNOWN),
-		pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(false)
+		dist2Source(-1), heapId(-1), prev(0), visited(false)
 	{
 		for (int i = 0; i < 4; ++i)
 		{
@@ -147,10 +147,9 @@ public:
 		priority = Box::counter; 
 	}
 	
+
 	//
-	// change this
-	//   (1) need clearance
-	//   (2) closest feature of m_b and four corners
+	// determine the status of the box: UNKNOWN, IN, OUT, ON
 	//
 	void updateStatus()
 	{
@@ -158,17 +157,6 @@ public:
 		{
 			return;
 		}
-
-//		if(x==218 && y==198)
-//		{
-//		    Corner * c=corners.front();
-//		    Wall * w=walls.front();
-//		    cout<<"OUT"<<endl;
-//		}
-
-        //
-		//int total_feature_size=corners.size()+walls.size();
-        //int total_feature_size= corners.size()+ walls.size(); //cornerset.size()+wallset.size();
 
 		int total_feature_size=corners.size()+walls.size();
 
@@ -281,49 +269,11 @@ public:
             }
         }
 
-        //remember
-        //node_walls.insert(node_walls.end(),wallset.begin(),wallset.end());
-        //node_corners.insert(node_corners.end(),cornerset.begin(),cornerset.end());
-        //done remembering
-
         if(separable==false || feature_groups.size()<=1 )
         {
             status = OUT;
             return;
         }
-
-        /*
-        if(wallset.size()==2 && cornerset.empty())
-        {
-            Wall * w1=*wallset.begin();
-            Wall * w2=*(++wallset.begin());
-            bool opposing=false;
-            if(w1->dst==w2->src && w1->dst->isConvex())
-            {
-                opposing=true;
-            }
-            else if(w2->dst==w1->src && w2->dst->isConvex()){
-                opposing=true;
-            }
-            else{ //no shared vertex
-
-                bool r1=w1->isRight(w2->src->x,w2->src->y);
-                bool r2=w1->isRight(w2->dst->x,w2->dst->y);
-                bool r3=w2->isRight(w1->src->x,w1->src->y);
-                bool r4=w2->isRight(w1->dst->x,w1->dst->y);
-
-                if(!r2 && !r2 && !r3 && !r4){
-                    opposing=true;
-                }
-            }
-
-            if(opposing)
-            {
-                status = OUT;
-                return;
-            }
-        }
-        */
 
         status = ON;
 
@@ -340,23 +290,11 @@ public:
 	    double x=child->x;
 	    double y=child->y;
 
-//	    if(x==336 && y==240)
-//	        cout<<"Debug"<<endl;
-
-//	    double w2=child->width/2;  //half of width
-//	    double h2=child->height/2; //half of height
-//
-//	    double corner1[2]={x-w2,y-h2};
-//	    double corner2[2]={x+w2,y-h2};
-//	    double corner3[2]={x+w2,y+h2};
-//	    double corner4[2]={x-w2,y+h2};
-
+	    //clearance+2*radius of the box
 	    double cl2r=child->rB*2+child->cl_m; //clearance + 2*rB
+
 	    //
-
-	    //int total_feature_size=walls.size()+corners.size();
-
-        //compute the separation to walls
+	    //compute the separation to walls
         for (WIT iterW=walls.begin(); iterW != walls.end(); ++iterW)
         {
             Wall* w = *iterW;
@@ -513,22 +451,13 @@ public:
 		walls.push_back(w);
 	}
 
-//	bool isFree()
-//	{
-//		if (status == FREE)
-//		{
-//			return true;
-//		}
-//		return false;
-//	}
-
 	Status getStatus()
 	{
 		updateStatus();
 		return status;
 	}
 
-	// split (eps)
+	//  split (eps)
 	// 	returns false if we fail to split for some reason
 	//
 	bool split(double epsilon)
@@ -551,8 +480,15 @@ public:
 		children[1] = new Box(x + width / 4, y + height / 4, width / 2, height / 2);
 		children[2] = new Box(x + width / 4, y - height / 4, width / 2, height / 2);
 		children[3] = new Box(x - width / 4, y - height / 4, width / 2, height / 2);
+
 		for (int i = 0; i < 4; ++i)
 		{
+		    if(children[i]==NULL)
+		    {
+		        cerr<<"! Error: Box::split: Not enough memory"<<endl;
+		        return false;
+		    }
+
 			children[i]->depth = this->depth + 1;
 			BoxNode node;
 			node.x=children[i]->x;
@@ -614,10 +550,6 @@ public:
 			//if neighbor smaller
 			while(neighbor != iter->End())
 			{
-                //assert( abs(abs(neighbor->x - this->x)
-                //	- (neighbor->width/2 + this->width/2)) < 1e-8
-                // ||  abs(abs(neighbor->y - this->y)
-                // 	- (neighbor->height/2 + this->height/2)) < 1e-8);
                 //within the strip of child next, neighbor's cross direction
                 //should point to next
 				if (!isOverLimit(children[next], neighbor))
@@ -649,17 +581,11 @@ public:
 		}
 
 
+		//setup the children/parent relation
 		for (int i = 0; i < 4; ++i)
 		{
 			this->pChildren[i] = children[i];
 			this->pChildren[i]->pParent = this;
-			
-//			//add all of parent's walls and corners to each child,
-//			//will be filtered later in updatestatus()
-//			this->pChildren[i]->walls.insert(this->pChildren[i]->walls.begin(), this->walls.begin(), this->walls.end());
-//			this->pChildren[i]->corners.insert(
-//				this->pChildren[i]->corners.begin(),
-//				this->corners.begin(), this->corners.end());
 		}
 
 		this->isLeaf = false;
@@ -672,93 +598,25 @@ public:
 	// return true if separable
 	// otherwise return false
 	//
-	int separable_features_count(set<Wall*>& wallset, set<Corner*>& cornerset)
+	int separable_features_count(list<Wall*>& walls, list<Corner*>& corners)
 	{
-	    list<Wall*> walls(wallset.begin(),wallset.end());
-	    list<Corner*> corners(cornerset.begin(),cornerset.end());
-	    return separable_features_count(walls,corners);
-	}
+        list<Feature*> insep_features;
+        getInseparableFeatures(walls,corners,insep_features);
 
+        //done
+        return insep_features.size();
+	}
 
     int separable_features_count()
     {
         return separable_features_count(walls,corners);
     }
 
-	int separable_features_count(list<Wall*>& walls, list<Corner*>& corners)
-	{
-//	    int feature_size=walls.size()+corners.size();
-
-	    //assert(feature_size<=3);
-
-	    //
-	    // In the case of 3 features or less
-	    //
-
-//	    if(feature_size<=3)
-//	    {
-//            if(feature_size<=1) return feature_size; //nothing to separate
-//
-//            //so, there are 2 or 3 features now...
-//            if(walls.empty()){
-//                return corners.size();   //multiple disjoint corners
-//            }
-//            if(corners.empty()){
-//                return walls.size(); //multiple disjoint walls
-//            }
-//
-//            bool separable=true;
-//            if(feature_size==3)
-//            {
-//                if(walls.size()==2) //two walls and one corner
-//                {
-//                    Corner* c=corners.front();
-//                    Wall* w1=walls.front();
-//                    Wall* w2=walls.back();
-//                    if( (c->nextWall==w1 || c->preWall==w1) &&  (c->nextWall==w2 || c->preWall==w2) )
-//                        return 1;
-//                    if( (c->nextWall==w1 || c->preWall==w1) ||  (c->nextWall==w2 || c->preWall==w2) )
-//                        return 2; //c is incident to w1 or w2
-//                    return 3;
-//                }
-//                else{ //two conrners and one wall
-//                    Corner* c1=corners.front();
-//                    Corner* c2=corners.back();
-//                    Wall* w=walls.front();
-//                    if( (c1->nextWall==w || c1->preWall==w) &&  (c2->nextWall==w || c2->preWall==w) )
-//                        return 1;
-//                    if( (c1->nextWall==w || c1->preWall==w) ||  (c2->nextWall==w || c2->preWall==w) )
-//                        return 2; //w is incident to c1 or c2
-//                    return 3;
-//                }
-//            }
-//            else{ //feature_size==2
-//                Corner* c=corners.front();
-//                Wall* w=walls.front();
-//                if(c->nextWall==w || c->preWall==w)
-//                    return 1;
-//                else
-//                    return 2;
-//            }
-//
-//            return feature_size;
-//	    }
-//        //
-//        // In the case of more than 3 features
-//        //
-//	    else
-	    {
-	        list<Feature*> insep_features;
-	        getInseparableFeatures(walls,corners,insep_features);
-
-            //done
-            return insep_features.size();
-	    }
-	}
-
 	//
 	// given a set of features (both corner and wall)
 	// determine a set of inseparable features
+    //
+    // Note: after this call, pSet of features (Wall or Corner) will point to the root of the set
 	//
 	void getInseparableFeatures(list<Wall*>& walls, list<Corner*>& corners, list<Feature*>& insep)
 	{
@@ -841,6 +699,7 @@ public:
 	    return NULL;
 	}
 
+	//recursively obtain all leaves of this box
 	void getLeaves(list<Box*>& leaves)
 	{
 	    if(isLeaf){
@@ -856,17 +715,10 @@ public:
 	{
 	    if(status!=Box::ON) return;
 
-//	    if(x==224 && y==416)
-//	    {
-//	        cout<<"Debug"<<endl;
-//	    }
-
 	    UnionFind UF;
 
 	    //this build sets of inseparable features
-// Chee: the next line caused many compiler warnings of 'sfc' unused.
-// But commenting it out causes segment fault...
-	    int sfc=separable_features_count();
+	    separable_features_count();
 
         //find actual features of the box nodes
         BoxNode UL, LL, UR, LR; //upper left, lower left, upper right, lower right

@@ -31,8 +31,6 @@ private:
 		switch (b->getStatus())
 		{
 		case Box::OUT:
-			//new Set(b);
-			//unionAdjacent(b);
 			++freeCount;
 			break;
 		case Box::ON:
@@ -52,7 +50,6 @@ private:
 
 public:
 
-	//UnionFind* pSets;
 	BoxQueue* PQ;
 	Box* pRoot;
 	double epsilon;
@@ -62,21 +59,6 @@ public:
 	QuadTree(Box* root, double e, int qType, int s):
 	    pRoot(root), epsilon(e), QType(qType), seed(s)
 	{
-	/*
-		switch (QType)
-		{
-		case 1:
-			PQ = new seqQueue();
-			break;
-		case 0:
-			PQ = new randQueue(s);
-			break;
-		case 2:
-			PQ = new dijkstraQueue();
-			break;
-		}
-		*/
-		
 		PQ = new seqQueue();
 
 		pRoot->updateStatus();
@@ -94,11 +76,15 @@ public:
 	}
 
 	//
+	// balance the quadtree so that the depth difference of leaves
+	// is at most 1
+	//
 	void balancePhase()
 	{
 	    list<Box*> leaves;
 	    pRoot->getLeaves(leaves);
 
+	    //we use a heap here to retrieve the deepest leaves
 	    vector< pair<int,Box*> > box_pq;
 	    for(list<Box*>::iterator i=leaves.begin();i!=leaves.end();i++)
 	    {
@@ -109,6 +95,7 @@ public:
 	    }
 
 
+	    //loop until the heap is empty
 	    while(box_pq.empty()==false)
 	    {
 
@@ -117,10 +104,10 @@ public:
 	        pop_heap(box_pq.begin(),box_pq.end());
 	        box_pq.pop_back();
 
-	        //
+	        //check the neighbors
 	        for(int i=0;i<4;i++){
 
-                Box * nei=box->pChildren[i];
+                Box * nei=box->pChildren[i]; //for leaves, neighbors are stored in pChildren
 
 	            if(nei==NULL) continue;
 
@@ -134,9 +121,10 @@ public:
 	                bool results=nei->split(epsilon); //ask the neighbor to slip
 	                nei->status=backup_nei_status;
 
-	                if(results)
+	                if(results) //the neighbor did split
 	                {
                         for(int k=0;k<4;k++){ //enqueue neighbors' kid
+
                             Box * nei_kid=nei->pChildren[k];
 
                             //
@@ -145,8 +133,6 @@ public:
                             {
                                 PQ->push(nei_kid);
                             }
-                            //    nei_kid->status=nei->status;
-                            //
 
                             pair<int,Box*> tmp(nei_kid->depth,nei_kid);
                             box_pq.push_back(tmp);
@@ -154,13 +140,16 @@ public:
                         }//end for k
 	                }
 	                else{
-	                    cout<<"Split failed"<<endl;
+	                    cout<<"! Warning: QuadTree::balancePhase: split failed"<<endl;
 	                }
 	            }
 	        }//end for i
 	    }//end while
 	}
 
+	//
+	// call each box to construct itself
+	//
 	void constructPhase()
 	{
         list<Box*> leaves;
@@ -246,35 +235,6 @@ public:
 		}
 		return false;
 	}
-
-	/*
-	bool isConnect(Box* a, Box* b)
-	{
-		if (pSets->Find(a) == pSets->Find(b))
-		{
-			return true;
-		}
-		return false;
-	}
-
-
-	void unionAdjacent(Box* b)
-	{
-		for (int i = 0; i < 4; ++i)
-		{
-			BoxIter* iter = new BoxIter(b, i);
-			Box* neighbor = iter->First();
-			while(neighbor && neighbor != iter->End())
-			{
-				if (neighbor->status == Box::FREE)
-				{
-					pSets->Union(b, neighbor);
-				}
-				neighbor = iter->Next();
-			}
-		}
-	}
-	*/
 	
 	~QuadTree(void)
 	{

@@ -106,7 +106,6 @@ QuadTree* QT;
 
 	int freeCount = 0;
 	int stuckCount = 0;
-	int trickyCount = 0;
 	int mixCount = 0;
 	int mixSmallCount = 0;
 	double timeused=0;
@@ -305,12 +304,6 @@ void run()
 
 	glutPostRedisplay();
 
-
-	//cout << "Expanded " << ct << " times" << endl;
-//	cout << "total Free boxes: " << freeCount << endl;
-//	cout << "total Stuck boxes: " << stuckCount << endl;
-//	cout << "total Mixed boxes smaller than epsilon: " << mixSmallCount << endl;
-	//cout << "total Mixed boxes bigger than epsilon: " << mixCount - ct - mixSmallCount << endl;
 	freeCount = stuckCount = mixCount = mixSmallCount = 0;
 }
 
