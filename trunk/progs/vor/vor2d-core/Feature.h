@@ -1,7 +1,7 @@
 
 #pragma once
 
-//#include "core.h"
+#include "core.h"
 
 class Set; //defined in "UnionFind.h"
 

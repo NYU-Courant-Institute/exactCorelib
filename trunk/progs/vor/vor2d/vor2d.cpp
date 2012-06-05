@@ -1,5 +1,6 @@
 /* **************************************
    File: vor2d.cpp
+   $Id$
 
    Description: 
 	This is the entry point for our Subdivision Algorithm for
@@ -40,17 +41,14 @@
 
    HISTORY: May, 2012: Jyh-Ming adapted this from the disc.cpp code of Wang/Chiang/Yap.
    Since Core Library  Version 2.1
-   $Id$
+
  ************************************** */
 
-#include "QuadTree.h"
-#include "PriorityQueue.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "Graph.h"
-#include "Timer.h"
 
 #ifdef __CYGWIN32__
 #include "glui.h"
@@ -67,7 +65,13 @@
 #include <set>
 //#include "CoreIo.h"
 
+
+
 using namespace std;
+
+#include "QuadTree.h"
+#include "PriorityQueue.h"
+#include "Timer.h"
 
 QuadTree* QT;
 
@@ -85,8 +89,7 @@ QuadTree* QT;
 	int windowPosY = 200;			// Y Position of Window
 	string fileName("input2.txt"); 		// Input file name
 	string inputDir("inputs"); 		// Path for input files 
-	int QType = 0;				// The Priority Queue can be
-						        //    sequential (0) or random (1)
+
 	int interactive = 0;			// Run interactively?
 						        //    Yes (0) or No (1)
 	int seed = 111;				// seed for random number generator
@@ -132,18 +135,26 @@ QuadTree* QT;
 
 // External Routines ========================================
 //
-void renderScene(void);
-void parseConfigFile(Box*);
+
 void run();
 void genEmptyTree();
+
+//IO
+void renderScene(void);
+void parseConfigFile(Box*);
+extern int fileProcessor(string inputfile);
+
+//GL
 void drawPath(vector<Box*>&);
 void drawCircle( float Radius, int numPoints, double x, double y, double r, double g, double b);
 void filledCircle( double radius, double x, double y, double r, double g, double b);
-
-extern int fileProcessor(string inputfile);
 void Keyboard( unsigned char key, int x, int y );
 void SpecialKey( int key, int x, int y );
 void Mouse(int button, int state, int x, int y);
+
+//GUI related functions
+void updateVARinfo();
+void updateSelectedBoxInfo();
 
 // MAIN PROGRAM: ========================================
 int main(int argc, char* argv[])
@@ -200,7 +211,6 @@ int main(int argc, char* argv[])
 	GLUI_Button* buttonRun = glui->add_button_to_panel(top_panel, "Run", -1, (GLUI_Update_CB)run);
 	buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
 
-
 	// New column:
 	glui->add_column_to_panel(top_panel,true);
 
@@ -237,6 +247,7 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+//create an empty quadtree
 void genEmptyTree()
 {
 	Box* root = new Box(boxWidth/2, boxHeight/2, boxWidth, boxHeight);
@@ -248,25 +259,8 @@ void genEmptyTree()
 	{
 		delete(QT);
 	}
-	QT = new QuadTree(root, epsilon, QType, seed++);  // Note that seed keeps changing!
+	QT = new QuadTree(root, epsilon);
 
-cout<<"inside genEmpty:  Qtype= " << QType << "\n";
-}
-
-void updateVARinfo()
-{
-    char info[1024];
-
-    static int leave_size=-1;
-    if(leave_size<0)
-    {
-        list<Box*> leaves;
-        QT->pRoot->getLeaves(leaves);
-        leave_size=leaves.size();
-    }
-
-    sprintf(info,"Time used: %.2f ms; # of leaves=%d",timeused,leave_size);
-    vorInfo->set_text(info);
 }
 
 void run()
@@ -327,25 +321,31 @@ void drawQuad(Box* b)
 {
 	switch(b->status)
 	{
-	case Box::OUT:
-		glColor3f(1, 1, 1);
-		break;
-	case Box::ON:
-	    glColor3f(0.85, 0.85, 0.85);
-		break;
-	case Box::IN:
+        case Box::OUT:
 
-	    glColor3f(1, 1, 0.25);
+            glColor3f(1, 1, 1); //White
+            break;
 
-		if (b->height < epsilon || b->width < epsilon)
-		{
-			glColor3f(0.5, 0.5, 0.5);
-		}
+        case Box::ON:
 
-		break;
-	case Box::UNKNOWN:
-		std::cout << "UNKNOWN in drawQuad" << std::endl;
-		break;
+            glColor3f(0.85, 0.85, 0.85);
+            break;
+
+        case Box::IN:
+
+            glColor3f(1, 1, 0.25);
+
+            if (b->height < epsilon || b->width < epsilon)
+            {
+                glColor3f(0.5, 0.5, 0.5);
+            }
+
+            break;
+
+        case Box::UNKNOWN:
+
+            std::cout << "! Error: found UNKNOWN box in drawQuad" << std::endl;
+            break;
 	}
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -372,8 +372,6 @@ void drawQuad(Box* b)
 	glBegin(GL_LINES);
 	glLineWidth(3);
 	glColor3d(.75,0,0);
-//	if(b->vor_segments.empty()==false && b->status!=b->ON)
-//	    cout<<"WHY?"<<endl;
 
 	for(list<VorSegment>::iterator i=b->vor_segments.begin();i!=b->vor_segments.end();i++){
 	    glVertex2f(i->p[0],i->p[1]);
@@ -507,24 +505,6 @@ void filledCircle( double radius, double x, double y, double r, double g, double
 	glEnd();
 }
 
-//void drawLine()
-//{
-//	if (noPath)
-//	{
-//		glColor3f(0, 0, 0);
-//	}
-//	else
-//	{
-//		glColor3f(1, 0, 0);
-//	}
-//	glLineWidth(3.0);
-//	glBegin(GL_LINES);
-//	glVertex2f(alpha[0], alpha[1]);
-//	glVertex2f(beta[0], beta[1]);
-//	glEnd();
-//	glLineWidth(1.0);
-//}
-
 
 void renderScene(void) 
 {
@@ -609,7 +589,7 @@ void parseConfigFile(Box* b)
 	std::stringstream ss;
 	ss << inputDir << "/" << fileName;	// create full file name 
 	std::string s = ss.str();
-cout << "input file name = " << s << endl;	
+	cout << "- Input file name = " << s << endl;
 
 	fileProcessor(s);	// this will clean the input and put in
 				// output-tmp.txt
@@ -626,7 +606,7 @@ cout << "input file name = " << s << endl;
 
 	int nPt, nPolygons;	// previously, nPolygons was misnamed as nFeatures
 	ifs >> nPt;
-cout<< "nPt=" << nPt << endl;
+	cout<< "- nPt=" << nPt << endl;
 
 	//skip_comment_line ( ifs );	// again, clear white space
 	vector<double> pts(nPt*2);
@@ -638,7 +618,9 @@ cout<< "nPt=" << nPt << endl;
 	//skip_comment_line ( ifs );	// again, clear white space
 	ifs >> nPolygons;
 	//skip_comment_line ( ifs );	// again, clear white space
-cout<< "nPolygons=" << nPolygons << endl;
+
+	cout<< "- nPolygons=" << nPolygons << endl;
+
 	string temp;
 	std::getline(ifs, temp);
 	for (int i = 0; i < nPolygons; ++i)
@@ -651,7 +633,6 @@ cout<< "nPolygons=" << nPolygons << endl;
 		while (ss)
 		{
 			int pt;
-			/// TODO:
 			ss >> pt;
 			pt -= 1; //1 based array
 			if (ptSet.find(pt) == ptSet.end())
@@ -684,8 +665,27 @@ cout<< "nPolygons=" << nPolygons << endl;
 
 }
 
+// gather information and show it on the GUI diagram
+void updateVARinfo()
+{
+    char info[1024];
 
+    static int leave_size=-1;
+    if(leave_size<0)
+    {
+        list<Box*> leaves;
+        QT->pRoot->getLeaves(leaves);
+        leave_size=leaves.size();
+    }
 
+    sprintf(info,"Time used: %.2f ms; # of leaves=%d",timeused,leave_size);
+    vorInfo->set_text(info);
+}
+
+//
+// call this function when the selected box is changed
+// show related information on GUI diagram
+//
 void updateSelectedBoxInfo()
 {
     if(g_selected_PM.empty())
@@ -700,6 +700,10 @@ void updateSelectedBoxInfo()
     selectedBoxInfo->set_text(info);
 }
 
+
+//
+// handle keyboard events
+//
 void Keyboard( unsigned char key, int x, int y )
 {
     // find closest colorPt3D if ctrl is pressed...
@@ -716,7 +720,7 @@ void Keyboard( unsigned char key, int x, int y )
 
 //
 //
-// move up and down the Qtree hierarchy
+// move up and down in the Qtree hierarchy
 //
 //
 
@@ -767,15 +771,9 @@ void Mouse(int button, int state, int x, int y)
             Box * selected = QT->pRoot->find(m_x,m_y);
 
 
-            if(selected!=NULL){
-                cout<<"SFC="<<selected->separable_features_count()<<endl;
-                cout<<"X="<<selected->x<<" Y="<<selected->y<<endl;
+            if(selected!=NULL)
+            {
                 g_selected_PM.push_back(selected);
-//                for(int i=0;i<4;i++)
-//                    if(selected->pChildren[i]!=NULL)
-//                    cout<<"kid["<<i<<"]="<<selected->pChildren[i]->x<<", "<<selected->pChildren[i]->y<<endl;
-//                    else
-//                        cout<<"NULL"<<endl;
             }//end selected
 
         }

@@ -1,6 +1,7 @@
 /* **************************************
 
    File: QuadTree.h
+   $Id$
 
    Description: 
 
@@ -8,7 +9,7 @@
             May, 2012: Updated by Jyh-Ming Lien for Voronoi diagram
 
    Since Core Library  Version 2.1
-   $Id$
+
 
  ************************************** */
 
@@ -56,13 +57,12 @@ public:
 	BoxQueue* PQ;
 	Box* pRoot;
 	double epsilon;
-	int QType;
-	int seed;
 
-	QuadTree(Box* root, double e, int qType, int s):
-	    pRoot(root), epsilon(e), QType(qType), seed(s)
+	QuadTree(Box* root, double e):
+	    pRoot(root), epsilon(e)
 	{
 		PQ = new seqQueue();
+		assert(PQ);
 
 		pRoot->updateStatus();
 		insertNode(pRoot);

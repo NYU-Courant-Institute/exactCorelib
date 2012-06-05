@@ -2,7 +2,7 @@
 //
 // Box in Quadtree
 //
-// $Id$
+// $Id: Box.h 978 2012-06-05 12:10:36Z jmlien $
 //
 
 #pragma once
