@@ -1,5 +1,4 @@
 #include <iostream>
-using namespace std;
 #include "Polyhedron.h"
 /*return values and misc constants*/
 #define ERROR -1
@@ -28,9 +27,9 @@ using namespace std;
 #define mate(he) (((he)==(he)->edg->he1)?(he)->edg->edg->he2:(he)->edg->he1)
 #define max(x,y) (((x)>(y))?(x):(y))
 #define abs(x) (((x)>0.0)?(x):-(x))
+using namespace std;
 
 /*global variables*/
-vector<int> v(3);/*set of solids*/
 extern Id maxs; /*largest solid no*/ 
 extern Id maxf;/*largest face no*/
 extern Id maxv;/*largest vertext no*/
