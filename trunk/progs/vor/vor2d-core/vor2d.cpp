@@ -1,6 +1,6 @@
 /* **************************************
    File: vor2d.cpp
-   $Id: vor2d.cpp 979 2012-06-05 12:14:16Z jmlien $
+   $Id: vor2d.cpp 981 2012-06-05 14:46:06Z jmlien $
 
    Description: 
 	This is the entry point for our Subdivision Algorithm for
@@ -50,6 +50,7 @@
 #include <sstream>
 #include <string>
 
+
 #ifdef __CYGWIN32__
 #include "glui.h"
 #endif
@@ -60,18 +61,17 @@
 #include "glui.h"
 #endif
 
+
+double boxWidth = 512;          // Initial box width
+double boxHeight = 512;         // Initial box height
+
 #include "gliDump.h"
-
-#include <set>
-//#include "CoreIo.h"
-
-
-
-using namespace std;
-
 #include "QuadTree.h"
 #include "PriorityQueue.h"
 #include "Timer.h"
+
+#include <set>
+using namespace std;
 
 QuadTree* QT;
 
@@ -79,8 +79,7 @@ QuadTree* QT;
 //
 
 	double epsilon = 10;			// resolution parameter
-	double boxWidth = 512;			// Initial box width
-	double boxHeight = 512;			// Initial box height
+
 	double deltaX=0;			// Translate input file in x-direction
 	double deltaY=0;			// Translate input file in y-direction
 	double uscale=1;			// Scale the input file 
@@ -146,11 +145,15 @@ extern int fileProcessor(string inputfile);
 
 //GL
 void drawPath(vector<Box*>&);
-void drawCircle( float Radius, int numPoints, double x, double y, double r, double g, double b);
+void drawCircle( double Radius, int numPoints, double x, double y, double r, double g, double b);
 void filledCircle( double radius, double x, double y, double r, double g, double b);
 void Keyboard( unsigned char key, int x, int y );
 void SpecialKey( int key, int x, int y );
 void Mouse(int button, int state, int x, int y);
+
+inline void glVertex2f_core(double x, double y){ glVertex2f_core(CORE::Todouble(x),CORE::Todouble(y));}
+inline void glColor3d_core(double r, double g,double b){ glColor3d(CORE::Todouble(r),CORE::Todouble(g),CORE::Todouble(b));}
+
 
 //GUI related functions
 void updateVARinfo();
@@ -206,7 +209,7 @@ int main(int argc, char* argv[])
 	editDir = glui->add_edittext_to_panel(top_panel, "Input Directory:", GLUI_EDITTEXT_TEXT );
 	editDir->set_text((char*)inputDir.c_str());
 	editEpsilon = glui->add_edittext_to_panel(top_panel, "Epsilon:", GLUI_EDITTEXT_FLOAT );
-	editEpsilon->set_float_val(epsilon);
+	editEpsilon->set_float_val(CORE::Todouble(epsilon));
 
 	GLUI_Button* buttonRun = glui->add_button_to_panel(top_panel, "Run", -1, (GLUI_Update_CB)run);
 	buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
@@ -270,7 +273,7 @@ void run()
 	inputDir = editDir->get_text();
 	epsilon = editEpsilon->get_float_val();
 
-	Timer t;
+	::Timer t;
 
 	// start timer
 	t.start();
@@ -306,12 +309,12 @@ void run()
 //	glColor3f(0.5, 0, 0.25);
 //	glLineWidth(3.0);
 //	glBegin(GL_LINE_STRIP);
-//	glVertex2f(beta[0], beta[1]);
+//	glVertex2f_core(beta[0], beta[1]);
 //	for (int i = 0; i < (int)path.size(); ++i)
 //	{
-//		glVertex2f(path[i]->x, path[i]->y);
+//		glVertex2f_core(path[i]->x, path[i]->y);
 //	}
-//	glVertex2f(alpha[0], alpha[1]);
+//	glVertex2f_core(alpha[0], alpha[1]);
 //	glEnd();
 //	glLineWidth(1.0);
 //}
@@ -350,10 +353,10 @@ void drawQuad(Box* b)
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_POLYGON);
-    glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
-    glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
-    glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
-    glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
+    glVertex2f_core( b->x - b->width / 2, b->y - b->height / 2);
+    glVertex2f_core( b->x + b->width / 2, b->y - b->height / 2);
+    glVertex2f_core( b->x + b->width / 2, b->y + b->height / 2);
+    glVertex2f_core( b->x - b->width / 2, b->y + b->height / 2);
     glEnd();
 
 	if (!hideBoxBoundary)
@@ -361,10 +364,10 @@ void drawQuad(Box* b)
 		glColor3f(0.5, 0.5 , 0.5);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glBegin(GL_POLYGON);
-		glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
-		glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
-		glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
-		glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
+		glVertex2f_core( b->x - b->width / 2, b->y - b->height / 2);
+		glVertex2f_core( b->x + b->width / 2, b->y - b->height / 2);
+		glVertex2f_core( b->x + b->width / 2, b->y + b->height / 2);
+		glVertex2f_core( b->x - b->width / 2, b->y + b->height / 2);
 		glEnd();
 	}	
 
@@ -374,8 +377,8 @@ void drawQuad(Box* b)
 	glColor3d(.75,0,0);
 
 	for(list<VorSegment>::iterator i=b->vor_segments.begin();i!=b->vor_segments.end();i++){
-	    glVertex2f(i->p[0],i->p[1]);
-	    glVertex2f(i->q[0],i->q[1]);
+	    glVertex2f_core(i->p[0], i->p[1]);
+	    glVertex2f_core(i->q[0], i->q[1]);
 	}
 	glEnd();
 	glLineWidth(1);
@@ -404,10 +407,10 @@ void drawQuad_selected(list<Box*> boxes)
 
         //draw a highlight box
         glBegin(GL_LINE_LOOP);
-        glVertex2f(b->x - w2, b->y - h2);
-        glVertex2f(b->x + w2, b->y - h2);
-        glVertex2f(b->x + w2, b->y + h2);
-        glVertex2f(b->x - w2, b->y + h2);
+        glVertex2f_core( b->x - w2, b->y - h2);
+        glVertex2f_core( b->x + w2, b->y - h2);
+        glVertex2f_core( b->x + w2, b->y + h2);
+        glVertex2f_core( b->x - w2, b->y + h2);
         glEnd();
 
     }
@@ -427,8 +430,8 @@ void drawQuad_selected(list<Box*> boxes)
     glColor3d(0,0,1);
     for(WIT i=b->walls.begin();i!=b->walls.end();i++){
         Wall * w=*i;
-        glVertex2d(w->src->x,w->src->y);
-        glVertex2d(w->dst->x,w->dst->y);
+        glVertex2f_core( w->src->x, w->src->y);
+        glVertex2f_core( w->dst->x, w->dst->y);
     }
     glEnd();
 
@@ -450,8 +453,8 @@ void drawWalls(Box* b)
 	{
 		Wall* w = *iter;
 		glBegin(GL_LINES);
-		glVertex2f(w->src->x, w->src->y);
-		glVertex2f(w->dst->x, w->dst->y);
+		glVertex2f_core(w->src->x, w->src->y);
+		glVertex2f_core(w->dst->x, w->dst->y);
 		glEnd();
 	}
 	glLineWidth(1.0);
@@ -474,17 +477,17 @@ void treeTraverse(Box* b)
 	}
 }
 
-void drawCircle( float Radius, int numPoints, double x, double y, double r, double g, double b)
+void drawCircle( double Radius, int numPoints, double x, double y, double r, double g, double b)
 {	
-	glColor3d(r,g,b);
+    glColor3d_core(r,g,b);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glBegin(GL_LINE_LOOP);
 	for( int i = 0; i <= numPoints; ++i )
 	{
-		float Angle = i * (2.0* 3.1415926 / numPoints);  
-		float X = cos( Angle )*Radius;  
-		float Y = sin( Angle )*Radius;
-		glVertex2f( X + x, Y + y);
+		double Angle = i * (2.0* 3.1415926 / numPoints);
+		double X = cos( Angle )*Radius;
+		double Y = sin( Angle )*Radius;
+		glVertex2f_core( X + x, Y + y);
 	}
 	glEnd();
 }
@@ -492,15 +495,15 @@ void drawCircle( float Radius, int numPoints, double x, double y, double r, doub
 void filledCircle( double radius, double x, double y, double r, double g, double b) 
 {
 	int numPoints = 100;
-	glColor3d(r,g,b);
+	glColor3d_core(r,g,b);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBegin(GL_POLYGON);
 	for( int i = 0; i <= numPoints; ++i )
 	{
-		float Angle = i * (2.0* 3.1415926 / numPoints);  
-		float X = cos( Angle )*radius;  
-		float Y = sin( Angle )*radius;
-		glVertex2f( X + x, Y + y);
+		double Angle = i * (2.0* 3.1415926 / numPoints);
+		double X = cos( Angle )*radius;
+		double Y = sin( Angle )*radius;
+		glVertex2f_core( X + x, Y + y);
 	}
 	glEnd();
 }

@@ -442,7 +442,7 @@ params:
 # Clean object files
 #=================================================
 clean:
-	-@test -z "*.o" || rm -f *.o Dependencies
+	-@test -z "*.o" || rm -f *.o Dependencies $(TARGETS)
 
 #=================================================
 # Remove executable files

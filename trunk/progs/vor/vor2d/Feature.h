@@ -1,8 +1,6 @@
 
 #pragma once
 
-//#include "core.h"
-
 class Set; //defined in "UnionFind.h"
 
 class Feature
