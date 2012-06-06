@@ -49,6 +49,8 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <set>
+using namespace std;
 
 #ifdef __CYGWIN32__
 #include "glui.h"
@@ -60,18 +62,12 @@
 #include "glui.h"
 #endif
 
-#include "gliDump.h"
-
-#include <set>
-//#include "CoreIo.h"
 
 
-
-using namespace std;
-
-#include "QuadTree.h"
-#include "PriorityQueue.h"
+#include "SimplePSinC.h"
 #include "Timer.h"
+#include "QuadTree.h"
+
 
 QuadTree* QT;
 
@@ -98,14 +94,12 @@ QuadTree* QT;
 	bool pseudo = false;   // show pseudo Voronoi vertices/curves
 	bool interior = false; // show Voronoi interior to the polygons
 	bool closing_poly=true;
-	bool hideBoxBoundary = false;  //don't draw box boundary
+	int  showBoxBoundary = 1;  //draw box boundary
 	bool c1=false; //c1 predicate (true is new version, false is old version)
 	bool c2=false; //c2 predicate
 
 	string title="Subdivision Voronoi 2D";	// display title
 	double cutoff = 10;			// cutoff value (or "delta") for expansion
-
-	bool saveImage=false;
 
 	int freeCount = 0;
 	int stuckCount = 0;
@@ -140,17 +134,24 @@ void run();
 void genEmptyTree();
 
 //IO
-void renderScene(void);
 void parseConfigFile(Box*);
 extern int fileProcessor(string inputfile);
 
 //GL
+void renderScene(void);
 void drawPath(vector<Box*>&);
 void drawCircle( float Radius, int numPoints, double x, double y, double r, double g, double b);
 void filledCircle( double radius, double x, double y, double r, double g, double b);
 void Keyboard( unsigned char key, int x, int y );
 void SpecialKey( int key, int x, int y );
 void Mouse(int button, int state, int x, int y);
+
+//Postscript
+void renderScenePS();
+void treeTraversePS(SimplePSinC& PS, Box* b);
+void drawVorPS(SimplePSinC& PS, Box* b);
+void drawQuadPS(SimplePSinC& PS, Box* b);
+void drawWallsPS(SimplePSinC& PS, Box* b);
 
 //GUI related functions
 void updateVARinfo();
@@ -215,10 +216,14 @@ int main(int argc, char* argv[])
 	glui->add_column_to_panel(top_panel,true);
 
 	glui->add_separator_to_panel(top_panel);
-	radioDrawOption = glui->add_radiogroup_to_panel(top_panel, 0, -1, (GLUI_Update_CB)renderScene);
-	glui->add_radiobutton_to_group( radioDrawOption, "Show Box Boundary");
-	glui->add_radiobutton_to_group( radioDrawOption, "Hide Box Boundary");
+	glui->add_checkbox_to_panel(top_panel,"Box Boundary", &showBoxBoundary, -1, (GLUI_Update_CB)renderScene)->set_int_val(1);
+	//radioDrawOption = glui->add_radiogroup_to_panel(top_panel, 0, -1, (GLUI_Update_CB)renderScene);
+	//glui->add_radiobutton_to_group( radioDrawOption, "Show Box Boundary");
+	//glui->add_radiobutton_to_group( radioDrawOption, "Hide Box Boundary");
 	glui->add_separator_to_panel(top_panel);
+
+	// Save image button
+    glui->add_button_to_panel(top_panel, "Save Image", 0, (GLUI_Update_CB)renderScenePS );
 
 	// Quit button
 	glui->add_button_to_panel(top_panel, "Quit", 0, (GLUI_Update_CB)exit );
@@ -356,7 +361,7 @@ void drawQuad(Box* b)
     glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
     glEnd();
 
-	if (!hideBoxBoundary)
+	if (showBoxBoundary)
 	{
 		glColor3f(0.5, 0.5 , 0.5);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -508,8 +513,6 @@ void filledCircle( double radius, double x, double y, double r, double g, double
 
 void renderScene(void) 
 {
-	hideBoxBoundary = radioDrawOption->get_int_val();
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glLoadIdentity();
@@ -527,15 +530,6 @@ void renderScene(void)
     //draw selected feature
     if(g_selected_PM.empty()==false)
         drawQuad_selected(g_selected_PM);
-
-    if(saveImage)
-    {
-        saveImage=false;
-        GLint viewport[4];
-        glGetIntegerv(GL_VIEWPORT, viewport);
-        dump("vor2d_screen_dump.ppm",viewport[2],viewport[3]);
-        cout<<"- Save the screen dump to file: vor2d_screen_dump.ppm"<<endl;
-    }
 
 	glutSwapBuffers();
 }
@@ -709,7 +703,6 @@ void Keyboard( unsigned char key, int x, int y )
     // find closest colorPt3D if ctrl is pressed...
     switch( key ){
         case 27: exit(0);
-        case '0': saveImage=true; break;
         default: return;
     }
 
@@ -783,3 +776,113 @@ void Mouse(int button, int state, int x, int y)
     }//if pressed the right key/button
 
 }
+
+
+//Postscript
+void renderScenePS()
+{
+    string ps_filename="vor2d_screen_dump.ps"; //fileName+".ps";
+
+    SimplePSinC PS;
+    PS.open(ps_filename,0,0,boxWidth,boxHeight);
+    PS.setlinejoin(1);
+
+    //draw tree
+    treeTraversePS(PS,QT->pRoot);
+
+    //draw obstacles
+    drawWallsPS(PS,QT->pRoot);
+
+    //draw selected item(s)
+
+    PS.close();
+
+    cout<<"- Saved screen to "<<ps_filename<<endl;
+}
+
+void treeTraversePS(SimplePSinC& PS, Box* b)
+{
+    if (!b)
+    {
+        return;
+    }
+    if (b->isLeaf)
+    {
+        drawQuadPS(PS, b);
+        drawVorPS(PS,b);
+        return;
+    }
+    for (int i = 0; i < 4; ++i)
+    {
+        treeTraversePS(PS, b->pChildren[i]);
+    }
+}
+
+void drawQuadPS(SimplePSinC& PS, Box* b)
+{
+    switch(b->status)
+    {
+        case Box::OUT:
+            PS.setfilledrgb(1,1,1);
+            break;
+
+        case Box::ON:
+            PS.setfilledrgb(0.85, 0.85, 0.85);
+            break;
+
+        case Box::IN:
+
+            PS.setfilledrgb(1, 1, 0.25);
+
+            if (b->height < epsilon || b->width < epsilon)
+            {
+                PS.setfilledrgb(0.5, 0.5, 0.5);
+            }
+            break;
+
+        case Box::UNKNOWN:
+
+            std::cout << "! Error: found UNKNOWN box in drawQuad" << std::endl;
+
+            break;
+    }
+
+    PS.setlinewidth(1);
+    PS.rect(b->x-b->width / 2,b->y - b->height / 2, b->x + b->width / 2, b->y + b->height / 2);
+    PS.setstrokegray(0.5);
+
+    if (showBoxBoundary)
+        PS.fillstroke();
+    else
+        PS.fill();
+}
+
+
+void drawVorPS(SimplePSinC& PS, Box* b)
+{
+
+    PS.setlinewidth(2);
+    PS.setstrokergb(1,0,0);
+
+    for(list<VorSegment>::iterator i=b->vor_segments.begin();i!=b->vor_segments.end();i++)
+    {
+        PS.line(i->p[0],i->p[1],i->q[0],i->q[1]);
+    }
+
+    PS.stroke();
+}
+
+void drawWallsPS(SimplePSinC& PS, Box* b)
+{
+    PS.setlinewidth(2);
+    PS.setstrokergb(0,0,0);
+
+    for (list<Wall*>::iterator iter = b->walls.begin(); iter != b->walls.end(); ++iter)
+    {
+        Wall* w = *iter;
+        PS.line(w->src->x, w->src->y,w->dst->x, w->dst->y);
+    }
+
+    PS.stroke();
+}
+
