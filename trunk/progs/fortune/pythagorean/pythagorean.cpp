@@ -24,8 +24,8 @@ Date: April, 2002
 Since Core Library Version 1.5.
 
  ***************************************************** */
-#ifndef Level
-#   define Level 3
+#ifndef CORE_LEVEL
+#   define CORE_LEVEL 3
 #endif
 #include <ctime>
 #include "CORE.h"
@@ -85,7 +85,9 @@ void generatePoints(int n, int m, int p, int howmany, int option, int prec=100) 
 void generatePoints3(int u) {
 //	triples=new Ptriple[u];
 	for (int n=1;n<=u;n++) {
-		long t=floor((3+sqrt(8*n-7))/2);
+	        long tmp = 8*n - 7; 		// to avoid the ambiguity of calling
+						// "sqrt(8*n - 7)"
+		long t=floor((3+sqrt(tmp))/2);
 		long s=n-(power(t,2)-3*t+2)/2;
 		long x=2*s*t;
 		long y=power(t,2)-power(s,2);
