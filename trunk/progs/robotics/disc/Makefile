@@ -14,6 +14,7 @@
 #
 # 	The default search-mode is "random".  We encourage you to just
 # 	hit the "Run me" button to see different runs of the program.
+# 	NOTE: if you try enough times, ALL 3 homotopy paths will be discovered!
 #
 #	This is equivalent to typing:
 #
@@ -33,13 +34,15 @@
 #
 # (D)	Instead of the target "eg" you can use any of these targets:
 #
-#		eg, ega, egb,
-#		eg0,
-#		eg1, eg1a, eg1b,
-#		eg2, eg2a, eg2b,
-#		egbug (bug), egbuga (buga),
-#		egbug2 (bug2), egbug2a (bug2a),
-#		etc.
+#		ega, egb, egc
+#		eg0,				-- no path example
+#		eg1, eg1a, (bug, buga)		-- bugtrap
+#		eg2, eg2a			-- like input2.txt, but with bounding box
+#		eg3, eg3a, eg3b			-- 100 random triangles
+#		eg4				-- maze
+#		eg5, eg5a (bug2, bug2a)		-- double bugtrap
+#		eg200, eg200a			-- 200 random triangles
+#		eg300				-- 300 random triangles
 #
 # 	These targets uses different input files, all taken from
 # 	the subdirectory "inputs".   
@@ -108,7 +111,8 @@ all: $(TARGETS)
 test: $(TARGETS)
 	./disc 1 \
 		$(startX) $(startY)  $(goalX) $(goalY) \
-		$(epsilon)  $(radius)  input.txt  $(boxWidth) $(boxHt) \
+	
+	make $(epsilon)  $(radius)  input.txt  $(boxWidth) $(boxHt) \
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir)
 
 testall: $(TARGETS)
@@ -137,7 +141,8 @@ eg:	disc
 	./disc $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
 		$(epsilon) $(radius) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
+		$(Qtype) $(seed)  $(inputDir) \
+		&
 
 # run with default compiled options:
 #	The input file is input2.txt.
@@ -146,7 +151,8 @@ eg:	disc
 #
 ega:	disc
 	@echo "Target 'ega':  runs disc with default compiled options"
-	./disc $(interactive)
+	./disc $(interactive) \
+	    &
 
 # run with default Makefile options:
 #
@@ -155,7 +161,19 @@ egb:	disc
 	./disc $(interactive) 10 350 300 20 \
 		10 30 input.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) 1111 $(inputDir)
+		$(Qtype) 1111 $(inputDir) \
+		&
+
+# Using input2.txt: using the "random strategy", if you "hit run" enough times
+# 	the random strategy will eventually find all three distinct homotopy paths!!
+#
+egc:	disc
+	@echo "Target 'egb':  runs disc with default Makefile options for file input.txt"
+	./disc $(interactive) 10 350 300 20 \
+		10 30 input2.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) 1111 $(inputDir) \
+		&
 
 # Simple NO PATH example:
 nopath eg0:	disc
@@ -164,7 +182,8 @@ nopath eg0:	disc
 	./disc $(interactive) 400 400  200 200 \
 		10 20 input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		0 $(seed)  $(inputDir)
+		0 $(seed)  $(inputDir) \
+		&
 
 nopatha eg0a:	disc
 	@echo "Target 'eg0a':  runs disc with astar strategy for file input0.txt"
@@ -172,12 +191,13 @@ nopatha eg0a:	disc
 	./disc $(interactive) 400 400  200 200 \
 		10 20 input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		2 $(seed)  $(inputDir)
+		2 $(seed)  $(inputDir) \
+		&
 
 # BUG TRAP:
 ###################################################
 # Bugtrap example -- Non-existence of path, but barely!
-egbug bug: disc
+eg1 egbug bug: disc
 	@echo "Target 'egbug':  runs disc for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
@@ -185,10 +205,11 @@ egbug bug: disc
 	./disc $(interactive) 200 350 30 30 \
 		5 10 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir)
+		1 11 $(inputDir) \
+		&
 
 # Bugtrap example -- Existence of path, but barely!
-egbuga buga: disc
+eg1a egbuga buga: disc
 	@echo "Target 'egbuga':  runs disc for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is a PATH, but barely so!"
 	@echo "--  the only change from target 'egbug' is that epsilon is now 4, not 5"
@@ -196,61 +217,85 @@ egbuga buga: disc
 	./disc $(interactive) 200 350 30 30 \
 		4 10 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir)
+		1 11 $(inputDir) \
+		&
 
 # BUG2 TRAP: (one trap inside another)
 ###################################################
 # Bugtrap2 example -- Existence of path, but barely! (eps=1)
-egbug2 bug2: disc
+eg5 egbug2 bug2: disc
 	@echo "Target 'egbug2':  runs disc for bugtrap input, bugtrap2.txt"
 	@echo "--  this example shows a PATH, but barely so!"
 	./disc $(interactive) 180 220 20 20 \
 		1 8 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir)
+		1 11 $(inputDir) \
+		&
 
 # Bugtrap2 example -- Non-existence of path, but barely! (eps=2)
-egbug2a bug2a: disc
+eg5a egbug2a bug2a: disc
 	@echo "Target 'egbug2':  runs disc for bugtrap input, bugtrap2.txt"
 	@echo "--  this example shows NO PATH, but barely so!"
 	./disc $(interactive) 180 220 20 20 \
 		2 8 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir)
+		1 11 $(inputDir) \
+		&
 
 
-eg2: disc
-	@echo "Target eg2:  runs disc on simples obstacles"
-	./disc $(interactive) 10 350  500 20 \
-		10 20 input2.txt \
-		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
-
-# eg2e:	In this variation, the input environment has a bounding box!
+# eg2:	the input environment is "input2.txt" but has a bounding box 
 #
-eg2e: disc
-	@echo "Target eg2e:  runs disc on input2e.txt which has a bounding box"
+eg2: disc
+	@echo "Target eg2:  runs disc on input2e.txt which has a bounding box"
 	./disc $(interactive) 150 260 20 20 \
 		4 15 input2e.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 1111 $(inputDir) \
+		&
 
+eg2a: disc
+	@echo "Target eg2a: runs disc on input2e.txt which has a bounding box"
+	./disc $(interactive) 10 350  500 20 \
+		10 20 input2e.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		&
 
-# This environment has 100 randomly generated obstacles
-eg3: disc
-	@echo "Target eg3:  runs disc amidst 100 randomly generated obstacles"
+# This environment has 100 randomly generated triangles (this has a path)
+eg3 eg100: disc
+	@echo "Target eg3:  100 randomly generated triangles (path exists)"
 	./disc $(interactive) 10 350  280 220 \
 		1 10 input3.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
+		$(Qtype) $(seed)  $(inputDir) \
+		&
 
+# This environment has 100 randomly generated triangles (this has NO PATH)
+eg3a eg100a: disc
+	@echo "Target eg3a:  100 randomly generated triangles (NO PATH)"
+	./disc $(interactive) 10 350  280 220 \
+		1 15 input3.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		&
+
+# This environment has 100 randomly generated triangles (this has NO PATH)
+eg3b eg100b: disc
+	@echo "Target eg100:  runs disc amidst 100 randomly generated triangles"
+	./disc $(interactive) 200 270 20 20 \
+		2 5 input100.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		&
+	
 # This environment is a maze
 eg4: disc
 	@echo "Target eg4:  runs disc in a randomly generated maze "
 	./disc $(interactive) 10 350  280 205 \
 		5 5 input4.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir)
+		$(Qtype) $(seed)  $(inputDir) \
+		&
 
 # RANDOMLY GENERATED ENVIRONMENT:
 
@@ -261,7 +306,8 @@ eg100: disc
 	./disc $(interactive) 200 270 20 20 \
 		2 5 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 1111 $(inputDir) \
+		&
 	#
 # eg200:
 #	This one, generated using our Python Generator, has 200 triangles.
@@ -287,7 +333,8 @@ eg200: disc
 	./disc $(interactive) 150 260 20 20 \
 		2 5 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 1111 $(inputDir) \
+		&
 
 # eg200a: there is an obvious path but probabilistic methods might waste
 # 	lots of time checking elsewhere!
@@ -299,7 +346,8 @@ eg200a: disc
 	./disc $(interactive) 10 360 20 20 \
 		2 10 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 1111 $(inputDir) \
+		&
 
 # eg200b: there is no path because eps=10
 #
@@ -313,7 +361,8 @@ eg200b: disc
 	./disc $(interactive) 150 260 20 20 \
 		10 5 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 1111 $(inputDir) \
+		&
 
 # eg300: 
 # 	RESULTS:
@@ -335,7 +384,8 @@ eg300: disc
 	./disc $(interactive) 10 400 350 20 \
 		1 3 input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 1111 $(inputDir) \
+		&
 
 
 moretest: $(TARGETS)
