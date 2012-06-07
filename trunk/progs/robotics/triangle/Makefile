@@ -141,7 +141,8 @@ eg:	tri
 		$(epsilon) $(radius) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # run with default compiled options:
 #	The input file is input2.txt.
@@ -150,7 +151,7 @@ eg:	tri
 #
 ega:	tri
 	@echo "Target 'ega':  runs tri with default compiled options"
-	./tri 
+	./tri &
 
 # run with default Makefile options:
 #
@@ -160,7 +161,8 @@ egb:	tri
 		10 40 input.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # Simple NO PATH example:
 nopath eg0:	tri
@@ -170,7 +172,8 @@ nopath eg0:	tri
 		20 20 input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # eg1:	input2e.txt is like input2, but there is a bounding box
 eg1: tri
@@ -187,16 +190,18 @@ eg2: tri
 		10 10 input2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # eg3: input3.txt is line input2e, but there is a narrow door
 eg3: tri
-	@echo "Target eg2e:  runs tri on input2.txt"
+	@echo "Target eg3:  runs tri on input3.txt"
 	./tri $(interactive) 150 260 0 450 450 0 \
 		10 30 input3.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # BUG TRAPS:
 # 
@@ -210,7 +215,8 @@ egbug bug: tri
 		20 10 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # Bugtrap example -- Existence of path, but barely!
 egbuga buga: tri
@@ -222,7 +228,8 @@ egbuga buga: tri
 		10 10 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # Bugtrap2 example -- Non-existence of path.
 # 	THIS IS TOO SLOW, SO MORE WORK NEEDED.
@@ -238,7 +245,8 @@ egbug2 bug2: tri
 		18 2 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # Bugtrap2 example -- Existence of path.
 # 	THIS IS TOO SLOW, SO MORE WORK NEEDED.
@@ -255,7 +263,8 @@ egbug2a bug2a: tri
 		16 1 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # egtunnel:  tunnel example from Salzman et al.
 # 	NOTE that the current search strategy seems to miss the direct path!!
@@ -321,7 +330,8 @@ eg100 100: tri
 		10 5 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # eg100a: 100 random triangles
 eg100a 100a: tri
@@ -331,7 +341,8 @@ eg100a 100a: tri
 		10 8 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # eg150: 150 random triangles (use radius=1)
 eg150 150: tri
@@ -340,7 +351,8 @@ eg150 150: tri
 		10 1 input150.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # eg200: 200 random triangles
 eg200 200: tri
@@ -350,7 +362,8 @@ eg200 200: tri
 		5 2 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # eg200a: there is an obvious path but probabilistic methods might waste
 # 	lots of time checking elsewhere!
@@ -363,7 +376,8 @@ eg200a 200a: tri
 		2 10 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # eg200b: there is no path because eps=10
 #
@@ -375,7 +389,8 @@ eg200b: tri
 		10 5 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 # eg300: 
 #
@@ -386,7 +401,8 @@ eg300: tri
 		3 3 input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 
 moretest: $(TARGETS)
