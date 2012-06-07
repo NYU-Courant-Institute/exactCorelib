@@ -30,7 +30,14 @@ OVERVIEW:
 	The boundary of Omega is assumed to be decomposed into a set Phi(Omega)
 	of "features", either corners (points) or edges (open line segments).
 
-	THEORY:
+SOFTWARE:
+	Details for using the code can be found in the Makefile
+	(with lots of prepared examples).
+
+	The code can be run in interactive or non-interactive mode.
+	You can dump the subdivision image into a postscript file.
+
+THEORY:
 	The "Voronoi complex" of Omega is a 1-dimensional complex
 			Vor(Omega) 
 	is a set comprising Voronoi vertices and curves connecting

@@ -142,7 +142,7 @@ testall: $(TARGETS)
 	make eg1 interactive=1
 
 testa: $(TARGETS)
-	./vor2d 1
+	./vor2d 1 &
 
 #=================================================
 # Examples of running vor2d program
@@ -167,7 +167,8 @@ nopath eg0:	vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) \
+		&
 
 # Eg1: Simple example with 3 obstacles (2 Voronoi vertices, one concave verteix)
 # 	REMARK: input.txt and input2.txt are really the same.
