@@ -1,5 +1,11 @@
 TODO List:
 
+6/8/2012:
+1. vor/vor2d cannot compile in Level 2:   cos(BigFloat) did not seem
+	to be defined...  Just write a wrapper around the cos(...) found
+	in inc/CORE/BigFloat.h
+
+
 (low priority)
 1. finish BigFloat back-compatiable functions
 2. implement Mpfr auto version
