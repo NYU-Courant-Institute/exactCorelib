@@ -1,4 +1,4 @@
-============================================================
+===========================================================
 README file for $(CORELIB)/progs/vor/vor2d
 Since Core Library Version 2.2.
 	$Id$
@@ -36,6 +36,17 @@ SOFTWARE:
 
 	The code can be run in interactive or non-interactive mode.
 	You can dump the subdivision image into a postscript file.
+
+	EXPLORATION in the interactive mode:
+
+	(1) Point your mouse at any box in the display window, and press Control-Click.  
+	This box will be high-lighted (in red), and all the features
+	belonging to this box will also be high-lighted (in blue).
+	Note that the Disk of Influence of the box (clearance + 2*radius of box)
+	will also be drawn!
+	(2) Next, if you press Control-uparrow or Control-downarrow,
+	you can move to the parent or child box in the subdivision tree.
+
 
 THEORY:
 	The "Voronoi complex" of Omega is a 1-dimensional complex
