@@ -61,13 +61,13 @@ void generatePoints(int n, int m, int p, int howmany, int option, int prec=100) 
 	for (int i=0; i<howmany; i++) {
 	  switch(option){
 	    case 0: //output points
-		  cout << tri.n/tri.p << " " << tri.m/tri.p << endl;
+		  cout << (BigFloat)tri.n/tri.p << " " << (BigFloat)tri.m/tri.p << endl;
 		  break;
 	    case 1: //output triples
 		  cout << tri.n << " " << tri.m << " " << tri.p << endl;
 		  break;
-	    case 2: //make positive points
-		  cout << (tri.n/tri.p)+1.0 << " " << (tri.m/tri.p)+1.0 << endl;
+	    case 2: //make positive points WHY ARE WE DOING THIS?
+		  cout << (BigFloat)(tri.n/tri.p)+1.0 << " " << (BigFloat)(tri.m/tri.p)+1.0 << endl;
 		  break;
 	    default: //debug
 		  if (tri.n*tri.n + tri.m*tri.m == tri.p*tri.p)
@@ -85,7 +85,7 @@ void generatePoints(int n, int m, int p, int howmany, int option, int prec=100) 
 void generatePoints3(int u) {
 //	triples=new Ptriple[u];
 	for (int n=1;n<=u;n++) {
-	        long tmp = 8*n - 7; 		// to avoid the ambiguity of calling
+		long tmp = 8*n - 7; 		// to avoid the ambiguity of calling
 						// "sqrt(8*n - 7)"
 		long t=floor((3+sqrt(tmp))/2);
 		long s=n-(power(t,2)-3*t+2)/2;
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 	   Y=atoi(argv[3]);
 	   Z=atoi(argv[4]);
    }
-   int OPTION=0;
+   int OPTION=3;
    if (argc >5) 
 	   OPTION=atoi(argv[5]);
 
