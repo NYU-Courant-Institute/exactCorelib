@@ -4,12 +4,13 @@
 */
 #include <iostream>
 #include <vector>
-#include <set>
 using namespace std;
-//typedef float vector<double>[4];
+typedef float coords[4];
 typedef float matrix[4][4];
 typedef short Id;
+typedef vector Vec; 
 
+/*Declaration*/
 class Vertex;
 class HalfEdge;
 class Edge;
@@ -18,7 +19,7 @@ class Face;
 class Solid;
 
 
-
+/*********************Vertex with coordinates*********************/
 class Vertex
 {
 public:
@@ -26,37 +27,152 @@ public:
   Id vertexno;/*vertex identifier*/
   HalfEdge *vedge;/*pointer to halfedge*/
   vector<double> *vcoord;/*vertext coordinates*/
-  Solid *s;
+  Solid *s;/*pointer to the solid*/
+
+  /*Getters and Setters*/
+  Id getId(){
+    return vertexno;
+  }
+  /*Getter and Setter for the half edge*/
+  HalfEdge *getHe(){
+    return vedge;
+  }
+
+  void vectorHe(HalfEdge *he){
+    vedge=he;
+  }
+
+
+  /*Getter and Setter for the coordinates*/
+  vector<double> *getCoord(){
+    return vcoord;
+  }
+
+  void vectorCoord(vector<double> *cod){
+    vcoord=cod;
+  }
+  /*Get coordinates seperately*/
+  double getX(){
+    return (*vcoord)[0];
+  }
+
+  void vectorX(double x){
+    (*vcoord)[0]=x;
+  }
+
+  double getY(){
+    return (*vcoord)[1];
+  }
+
+  void vectorY(double y){
+    (*vcoord)[1]=y;
+  }
+
+  double getZ(){
+    return (*vcoord)[2];
+  }
+
+  void vectorZ(double z){
+    (*vcoord)[2]=z;
+  }
+
+  /*Solid Getters and Setters*/
+  Solid *getSolid(){
+    return s;
+  }
+
+  void setSolid(Solid *s){
+    this->s=s;
+  }
+  /*Constructors*/
   Vertex(Id no,double x,double y,double z,Solid *s);
   Vertex(double x, double y,double z,Solid *s);
-  Vertex();
+  /*If we just have a pointer to s, the vcoords should be initialize all 0*/
   Vertex(Solid *s);
+  Vertex();
+  void print(); /*Print the coordinates of the vertex*/
+
 };
+
+/*************HalfEdge with a start point and a mate funciton*******/
 class HalfEdge
 {
 public:
+
   Edge *edg;  /*pointer to parent edge*/
   Vertex *start;  /*pointer to starting vertex */
-  Vertex *end;  /*pointer to the end vertex*/
   Loop *wloop;  /*back pointer to loop*/
+
+  /*This is important for the loop, and actually it is a sequence*/
   HalfEdge *nxthe;  /*pointer to next halfedge*/
   HalfEdge *prvhe;/*pointer to previous halfedge*/
+
+  /*Getters and Setters*/
+  /*edg*/
+  Edge *getEdge(){
+    return edg;
+  }
+  void vectorEdge(Edge *e){
+    edg=e;
+  }
+
+  /*start*/
+  Vertex *getStart(){
+    return start;
+  }
+  void vectorStart(Vertex *v){
+    start=v;
+  }
+
+  /*wloop*/
+  Loop *getLoop(){
+    return wloop;
+  }
+  void getLoop(Loop *l){
+    wloop=l;
+  }
+ 
+  /*previous and next HalfEdge*/
+  HalfEdge *getnxthe(){
+    return nxthe;
+  }
+  void setNxthe(HalfEdge *he){
+    nxthe=he;
+  }
+  HalfEdge *getprvhe(){
+    return prvhe;
+  }
+  void setPrvhe(HalfEdge *he){
+    prvhe=he;
+  }
+
+
   HalfEdge();/*Default constructor*/
-  HalfEdge(Vertex *start, Vertex *end);/*HalfEdge from start to end*/
-  HalfEdge *mate(int a);/*Find its mate*/
-  Vertex *x();
+  HalfEdge(Vertex *start);/*HalfEdge from start vertex*/
+  HalfEdge(Edge *e,Vertex *v,Loop *wloop,HalfEdge *prv,HalfEdge *nxt);/*Initiate all members*/
+
+
+  HalfEdge *mate();/*Find its mate*/
+  void print();/*Print start -> end*/
 };
 
+
+/*****************Edge with two half edges***********************/
 class Edge
 {
 public:
   HalfEdge *he1;/*pointer to right halfedge*/
   HalfEdge *he2;/*pointer to left halfedge*/
-  Edge *nxte;/*pointer to next edge*/
-  Edge *prve;/*pointer to previous edge*/
+
+  /*Constructors*/
   Edge();
   Edge(Solid *s);
+
+  void print(); /*print the start end end point*/
 };
+
+
+/******************Loop with leading Edge*************************/
 class Loop
 {
 public:
@@ -64,8 +180,10 @@ public:
   Face *lface;/*back to pointer to face*/
   Loop(Face *f);
   Loop();
+  void print();/*print the loop points in a circle*/
 };
 
+/*********************Loop and a inner loop vector********************/
 class Face
 {
 public:
@@ -73,22 +191,29 @@ public:
   Id faceno;/*face identifier*/
   Solid *fsolid;/*back pointer to solid*/
   Loop *flout;/*pointer to outer loop*/
-  set<Loop *> *floops;/*pointer to list of loops*/
-  vector<double> *feq;/*face equation*/
+  Vec<Loop *> *floops;/*pointer to list of loops*/
+  coords *feq;/*face equation*/
 
   Face(Solid* s);
-  Face(set<Loop *> *floops, Loop *flout,Solid * s, double a,double b,double c,double d);
+  Face(vector<Loop *> *floops, Loop *flout,Solid * s, double a,double b,double c,double d);
   Face();
+
+  void print();
 };
+
+/*******************Solid with vertices,edges and faces**********************/
 class Solid
 {
 public:
   Id solidno;/*solid identifer*/
-  set<Face *> *sfaces;/*pointer to list of faces*/
-  set<Edge *> *sedges;/*pointer to list of edges*/
-  set<Vertex *> *sverts;/*pointer to list of vertices*/
+  Vec<Face *> *sfaces;/*pointer to list of faces*/
+  Vec<Edge *> *sedges;/*pointer to list of edges*/
+  Vec<Vertex *> *sverts;/*pointer to list of vertices*/
 
-  Solid(set<Face *> *sfaces, set<Edge *> sedges,set<Vertex *> *sverts);
+  Solid(vector<Face *> *sfaces, vector<Edge *> sedges,vector<Vertex *> *sverts);
   Solid();
+
+  void print();
+
 };
 

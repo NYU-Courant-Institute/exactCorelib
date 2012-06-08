@@ -24,7 +24,7 @@
 #define MINUS 1
 
 /*macros*/
-#define mate(he) (((he)==(he)->edg->he1)?(he)->edg->edg->he2:(he)->edg->he1)
+//#define mate(he) (((he)==(he)->edg->he1)?(he)->edg->edg->he2:(he)->edg->he1)
 #define max(x,y) (((x)>(y))?(x):(y))
 #define abs(x) (((x)>0.0)?(x):-(x))
 using namespace std;

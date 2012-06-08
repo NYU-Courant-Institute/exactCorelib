@@ -2,6 +2,11 @@
 #include "Constants.h"
 using namespace std;
 class Euler_Ops{
+public:
+  set<Solid *> *solids;
+  /*Constructors*/
+  Euler_Ops();
+  Euler_Ops(set<Solid *> *solids);
   /**********Operations on HalfEdge************/
   HalfEdge *addhe(Edge *e, Vertex *v,HalfEdge *he,int sign);
   HalfEdge *delhe(HalfEdge* he);
@@ -16,4 +21,22 @@ class Euler_Ops{
   void  lkemr(HalfEdge *h1,HalfEdge *h2);
   /*Kill Face make Ring Hole*/
   void lkfmrh(Face *fac1,Face *fac2);
+
+  /*************Higher Leve Opeartions**************/
+  /*In higher level,we need some search for objects*/
+  /*Get solid we want*/
+  Solid *getsolid(Id sn);
+  /*Get face*/
+  Face *fface(Solid *s,Id fn);
+  /*Get HalfEdge*/
+  HalfEdge *fhe(Face *f,Id vn1,Id vn2);
+
+  /*Actural higher level Euler Operators*/
+  /*Higher Level make edge vertex*/
+  int mev(Id s,Id f1,Id f2,Id v1,Id v2,Id v3,Id v4,double x,double y,double z);
+  int smev(Id s,Id f1,Id v1,Id v4,double x,double y,double z);
+
+  /*Higher level make edge face*/
+  int mef(Id s,Id f1,Id v1,Id v2,Id v3,Id v4,Id f2);
+  int smev(Id s,Id f1,Id v1,Id v3,Id f2);
 };
