@@ -48,6 +48,7 @@ public:
    Vector();
    Vector(double, double);
    Vector(double, double, double);
+   Vector(double, double, double,double);
    Vector(const Vector&);
    Vector(int, double *);
    ~Vector();

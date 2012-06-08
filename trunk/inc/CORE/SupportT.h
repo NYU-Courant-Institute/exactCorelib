@@ -2,7 +2,8 @@
  * File: SupportT.h
  * Synopsis:
  *      Support functions to provide a uniform API over trignometric
- *      functions so they can be used  by the complex classes. Note that
+ *      functions so they can be used  by the complex (i.e., complex numbers)
+ *      classes. Note that
  *      at level 2 the precision is determined by DEFAULT_PREC.
  *
  * Written by
