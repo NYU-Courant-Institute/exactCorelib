@@ -462,8 +462,8 @@ void drawCircle( double Radius, int numPoints, double x, double y, double r, dou
 	for( int i = 0; i <= numPoints; ++i )
 	{
 		double Angle = i * (2.0* 3.1415926 / numPoints);
-		double X = cos( Angle )*Radius;
-		double Y = sin( Angle )*Radius;
+		double X = cos( CORE::Todouble(Angle) )*Radius;
+		double Y = sin( CORE::Todouble(Angle) )*Radius;
 		glVertex2f_core( X + x, Y + y);
 	}
 	glEnd();
@@ -478,8 +478,8 @@ void filledCircle( double radius, double x, double y, double r, double g, double
 	for( int i = 0; i <= numPoints; ++i )
 	{
 		double Angle = i * (2.0* 3.1415926 / numPoints);
-		double X = cos( Angle )*radius;
-		double Y = sin( Angle )*radius;
+		double X = cos( CORE::Todouble(Angle) )*radius;
+		double Y = sin( CORE::Todouble(Angle) )*radius;
 		glVertex2f_core( X + x, Y + y);
 	}
 	glEnd();
