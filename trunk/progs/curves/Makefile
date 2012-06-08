@@ -2,7 +2,7 @@
 #
 # (template Makefile for simple targets)
 #
-# Core Library, $Id: Makefile,v 1.7 2010/11/08 16:51:14 exact Exp $
+# Core Library, $Id: Makefile,v 1.8 2012/06/08 18:04:49 exact Exp $
 
 #=================================================
 # VARIABLES
@@ -162,7 +162,7 @@ d debug:
 #=================================================
 clean:
 	-@test -z "*.o" || rm -f *.o
-	-@rm *~
+	-@test -z "*~" || rm -f *~
 
 #=================================================
 # Remove executable files
