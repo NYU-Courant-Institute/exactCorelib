@@ -9,7 +9,7 @@
 	in the complex plane, using the cxy algorithm.
 
    Usage:
-        > ./convertPoly  [curve="x^2-x-1"]   [ofile="data/out"] [verbose=0]
+        > ./convertPoly  [curve="x^2-x-1"]   [ofile="output/out"] [verbose=0]
 
 	The input is a univariate polynomial p(z).
 	The output is written to the four files:
@@ -53,7 +53,7 @@ using namespace std;
 	// 1
 	PolyNT p = PolyNT("(x-1)^4");	// default input polynomial 
 	// 2
-	string ofile = "data/out"; 	// output file (to be appended with u,v,uv)
+	string ofile = "output/out"; 	// output file (to be appended with u,v,uv)
 	// 3
 	int verbose = 0;		// verbose mode
 
@@ -66,11 +66,12 @@ using namespace std;
 
 	// write to file in std monomial format
 	template <typename T>
-	bool write_poly(Polynomial<T>& p, const char* filename = "data/out");
+	bool write_poly(Polynomial<T>& p, const char* filename = "output/out");
 	
 	// read from file in std monomial format
 	template <typename T>
 	bool read_poly(Polynomial<T>& p, const char* ifilename = "data/in");
+	//wrong: bool read_poly(const char* ifilename = "data/in", Polynomial<T>& p);
 
 	// read from frisco file
 	template <typename T>
@@ -303,7 +304,8 @@ void read_poly_frisco(FILE *instr, Polynomial<T>& p) {
 //	is stored in a single line.  Comment lines
 //	preceding this line are indicated by first char of '#'
 template <typename T>
-bool read_poly(const char* ifilename, Polynomial<T>& p) {
+//bool read_poly(const char* ifilename, Polynomial<T>& p) {
+bool read_poly(Polynomial<T>& p, const char* ifilename) {
 	ifstream ifs(ifilename);
 	if (!ifs.is_open()) {
 	    std::cerr << "error reading " << ifilename << std::endl;
@@ -336,7 +338,7 @@ bool read_poly_frisco(const char* filename, Polynomial<T>& p) {
 
 /// Write a templated polynomial to a filename, in std monomial format:
 template <typename T>
-bool write_poly(Polynomial<T>& p, const char* filename = "data/out.poly") {
+bool write_poly(Polynomial<T>& p, const char* filename = "output/out.poly") {
 	  ofstream ofs;
 	  ofs.open(filename);
 	  if (ofs.is_open()) {

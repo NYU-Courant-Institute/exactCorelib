@@ -112,7 +112,7 @@ cvX:	experimentalConvertPoly.o
 	${CXX} $(LDFLAGS) experimentalConvertPoly.o $(CORE_LIB) -o $@
 
 cvX1:	experimentalConvertPoly
-	./experimantalConvertPoly "(x-1)^5" "data/fifthRootUnity" 1
+	./experimantalConvertPoly "(x-1)^5" "data2/fifthRootUnity" 1
 	cp data/fifthRootUnity* ../../data/complexCurve
 
 t:	t.o
