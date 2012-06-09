@@ -45,7 +45,7 @@ using namespace std;
 // ##################################################
 	//typedef double NT; // does not work -- Curves.tcc:: getnumber cannot convert
 	typedef BigInt NT; 
-	typedef ComplexT<double> Complex;
+	//typedef ComplexT<double> Complex;
 	typedef Polynomial<NT> PolyNT;
 	typedef BiPoly<NT> BiPolyNT;
 

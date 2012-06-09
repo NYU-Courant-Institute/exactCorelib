@@ -93,8 +93,10 @@ c5:	complexCurves
 c6:	complexCurves
 	complexCurves --poly $(DATA)/simplePolynomials/rootsOfUnity3.pol $(VERB)
 
-cv convertPoly:	convertPoly.o 
-	${CXX} $(LDFLAGS) convert.o $(CORE_LIB) -o $@
+converPoly: convertPoly.o
+
+cv:	convertPoly.o 
+	${CXX} $(LDFLAGS) convertPoly.o $(CORE_LIB) -o $@
 
 cv1:	convertPoly
 	./convertPoly "(x-1)^5" "data/fifthRootUnity" 1
@@ -104,6 +106,15 @@ cv2:	convertPoly
 	./convertPoly "1-x+x^3-x^4+x^5-x^6+x^7-x^9+x^10" "data/lehmer" 1
 	cp data/lehmer* ../../data/complexCurve
 	
+experimentalConvertPoly:	experimentalConvertPoly.o 
+
+cvX:	experimentalConvertPoly.o
+	${CXX} $(LDFLAGS) experimentalConvertPoly.o $(CORE_LIB) -o $@
+
+cvX1:	experimentalConvertPoly
+	./experimantalConvertPoly "(x-1)^5" "data/fifthRootUnity" 1
+	cp data/fifthRootUnity* ../../data/complexCurve
+
 t:	t.o
 	${CXX} $(LDFLAGS) t.o $(CORE_LIB) -o $@
 	
@@ -136,6 +147,9 @@ clean:
 	-@test -z "../ceval/*.o" || rm -f ../ceval/*.o
 	-@test -z "../krawczyk/*.o" || rm -f ../krawczyk/*.o
 	-@test -z "t.o" || rm -f t.o
+
+m:
+	gvim Makefile
 
 #=================================================
 # Remove executable files

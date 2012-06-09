@@ -35,7 +35,7 @@ def main():
         if operator == "ceval_ni":
           args.append("--no_use_inclusion")
         print args
-        output=subprocess.check_output(args, stderr=subprocess.STDOUT)
+	output=subprocess.check_output(args, stderr=subprocess.STDOUT)
         output.strip(" \n")
         stats = output.split(",")
         stats_map = {}
@@ -69,7 +69,7 @@ def main():
         args.append("--seed %d" % seed)
         if operator == "ceval_ni":
           args.append("--no_use_inclusion")
-        output=subprocess.check_output(args, stderr=subprocess.STDOUT)
+	output=subprocess.check_output(args, stderr=subprocess.STDOUT)
         output.strip(" \n")
         stats = output.split(",")
         for stat in stats:

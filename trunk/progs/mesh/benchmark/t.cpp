@@ -9,7 +9,7 @@
 	in the complex plane, using the cxy algorithm.
 
    Usage:
-        > ./convertPoly  [curve="x^2-x-1"]   [ofile="data/out"] [verbose=0]
+        > ./convertPoly  [curve="x^2-x-1"]   [ofile="outdir/out"] [verbose=0]
 
 	The input is a univariate polynomial p(z).
 	The output is written to the four files:
@@ -53,7 +53,7 @@ using namespace std;
 	// 1
 	PolyNT p = PolyNT("(x-1)^4");	// default input polynomial 
 	// 2
-	string ofile = "data/out"; 	// output file (to be appended with u,v,uv)
+	string ofile = "outdir/out"; 	// output file (to be appended with u,v,uv)
 	// 3
 	int verbose = 0;		// verbose mode
 
@@ -69,11 +69,11 @@ using namespace std;
 
 	// write to file in std monomial format
 	template <typename T>
-	bool write_poly(Polynomial<T>& p, const char* filename = "data/out");
+	bool write_poly(Polynomial<T>& p, const char* filename = "outdir/out");
 	
 	// read from file in std monomial format
 	template <typename T>
-	bool read_poly(Polynomial<T>& p, const char* ifilename = "data/in");
+	bool read_poly(Polynomial<T>& p, const char* ifilename = "outdir/in");
 
 	// read from frisco file
 	template <typename T>
@@ -126,6 +126,9 @@ int main(int argc, char **argv) {
 	string names[] = {
 		"golden ratio", "5th roots of unity" "multiple roots" };
 	*/
+    	  if (argc == 1) 
+	      cout << "Usage: ./t  [curve=\"x^2-x-1\"]   [ofile=\"outdir/out\"] [verbose=0]";
+	      cout << "\n Try 'make t1' or 'make t2' " << endl;
 	  if (argc > 1) p = PolyNT(argv[1]);
 	  if (argc > 2) ofile= string(argv[2]);
 	  if (argc > 3) verbose=atoi(argv[3]);
@@ -313,7 +316,7 @@ bool read_poly_frisco(const char* filename, Polynomial<T>& p) {
 
 /// Write a templated polynomial to a filename, in std monomial format:
 template <typename T>
-bool write_poly(Polynomial<T>& p, const char* filename = "data/out.poly") {
+bool write_poly(Polynomial<T>& p, const char* filename = "outdir/out.poly") {
 	  ofstream ofs;
 	  ofs.open(filename);
 	  if (ofs.is_open()) {
