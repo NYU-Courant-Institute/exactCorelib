@@ -320,6 +320,7 @@ bool read_poly(Polynomial<T>& p, const char* ifilename = "data/in") {
 	  	getline (ifs,line);
 		if (line.at(0) != '#') found=true;
 	}
+cout << "\n\n\n line = " << line << endl<< endl;
 	p = Polynomial<T>(line);
 	ifs.close();
 	return true;
