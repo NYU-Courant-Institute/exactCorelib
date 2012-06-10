@@ -115,6 +115,14 @@ cvX1:	experimentalConvertPoly
 	./experimentalConvertPoly "data2/fifthRootUnity.poly" "output/fifthRootUnity" 1
 	cp output/fifthRootUnity* ../../data/complexCurve
 
+cvX2:	experimentalConvertPoly
+	./experimentalConvertPoly "data2/lehmer.poly" "output/lehmer" 1
+	cp output/lehmer* ../../data/complexCurve
+
+cvX3:	experimentalConvertPoly
+	./experimentalConvertPoly "data2/golden.poly" "output/golden" 1
+	cp output/golden* ../../data/complexCurve
+
 t:	t.o
 	${CXX} $(LDFLAGS) t.o $(CORE_LIB) -o $@
 	
