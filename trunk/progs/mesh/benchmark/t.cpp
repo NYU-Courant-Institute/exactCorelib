@@ -102,16 +102,40 @@ using namespace std;
 	void show(string msg);
 
 	// writeout(string ofile, string ext, string poly)	
-	bool writeout(string ofile, string ext, string poly){
-	  string ofilename = ofile + "_u.poly";
+	bool writeout(string ofile, string ext, string poly)
+	{
+          string ofilename = ofile + ".poly";
+	  ofs.open(ofilename.c_str());		// open "out.poly"
+	  if (!ofs.is_open()) {
+		std::cerr << "error opening " << ofilename << std::endl;
+		return false;
+	  } else {
+	    ofs << "# original polynomial from convertPoly for " << ofile << endl;
+	    ofs << p.toString('z') << endl;
+	    ofs.close();
+	  }
+
+	  ofilename = ofile + "_u.poly";
 	  ofs.open(ofilename.c_str());		// open "out_u.poly"
 	  if (!ofs.is_open()) {
-	    std::cerr << "error reading " << ofilename << std::endl;
+	    std::cerr << "error opening " << ofilename << std::endl;
 	    return false;
-  	  } 
+  	  } else {
 	  ofs << "# output u-polynomial from convertPoly for " << ofile << endl;
 	  ofs << poly << endl;
 	  ofs.close();
+	  }
+
+	  ofilename = ofile + "_v.poly";
+	  ofs.open(ofilename.c_str());		// open "out_v.poly"
+	  if (!ofs.is_open()) {
+	    std::cerr << "error opening " << ofilename << std::endl;
+	    return false;
+  	  } else {
+	  ofs << "# output v-polynomial from convertPoly for " << ofile << endl;
+	  ofs << poly << endl;
+	  ofs.close();
+	  }
 	  return true;
 	}
 
@@ -126,16 +150,16 @@ int main(int argc, char **argv) {
 	string names[] = {
 		"golden ratio", "5th roots of unity" "multiple roots" };
 	*/
-    	  if (argc == 1) 
+    	  if (argc == 1) {
 	      cout << "Usage: ./t  [curve=\"x^2-x-1\"]   [ofile=\"outdir/out\"] [verbose=0]";
 	      cout << "\n Try 'make t1' or 'make t2' " << endl;
+	  }
 	  if (argc > 1) p = PolyNT(argv[1]);
 	  if (argc > 2) ofile= string(argv[2]);
 	  if (argc > 3) verbose=atoi(argv[3]);
 
 	  show("Input Polynomial is: " + p.toString('z'));
 	  show("ofile = " + ofile);
-	  show("verbose = " + verbose);
 
   // Convert input polynomial to the real and complex parts, u, v (and uv):
 	BiPoly<NT> u, v;

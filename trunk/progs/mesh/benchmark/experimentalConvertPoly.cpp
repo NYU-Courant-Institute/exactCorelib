@@ -118,7 +118,6 @@ int main(int argc, char **argv) {
 
 	  show("Input Polynomial is: " + p.toString('z'));
 	  show("ofile = " + ofile);
-	  show("verbose = " + verbose);
 
   // Convert input polynomial to the real and complex parts, u, v (and uv):
 	BiPoly<NT> u, v;

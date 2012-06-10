@@ -99,12 +99,12 @@ cv:	convertPoly.o
 	${CXX} $(LDFLAGS) convertPoly.o $(CORE_LIB) -o $@
 
 cv1:	convertPoly
-	./convertPoly "(x-1)^5" "data/fifthRootUnity" 1
-	cp data/fifthRootUnity* ../../data/complexCurve
+	./convertPoly "(x-1)^5" "output/fifthRootUnity" 1
+	cp output/fifthRootUnity* ../../data/complexCurve
 	
 cv2:	convertPoly
-	./convertPoly "1-x+x^3-x^4+x^5-x^6+x^7-x^9+x^10" "data/lehmer" 1
-	cp data/lehmer* ../../data/complexCurve
+	./convertPoly "1-x+x^3-x^4+x^5-x^6+x^7-x^9+x^10" "output/lehmer" 1
+	cp output/lehmer* ../../data/complexCurve
 	
 experimentalConvertPoly:	experimentalConvertPoly.o 
 
@@ -113,18 +113,18 @@ cvX:	experimentalConvertPoly.o
 
 cvX1:	experimentalConvertPoly
 	./experimantalConvertPoly "(x-1)^5" "data2/fifthRootUnity" 1
-	cp data/fifthRootUnity* ../../data/complexCurve
+	cp output/fifthRootUnity* ../../data/complexCurve
 
 t:	t.o
 	${CXX} $(LDFLAGS) t.o $(CORE_LIB) -o $@
 	
 t1:	t
-	./t "(x-1)^5" "data/fifthRootUnity" 1
-	cp data/fifthRootUnity* ../../data/complexCurve
+	./t "(x-1)^5" "output/fifthRootUnity" 1
+	cp output/fifthRootUnity* ../../data/complexCurve
 
 t2:	t
-	./t "3x^3 -2 + 2x^2"  "data/cubic1" 1
-	cp data/cubic1* ../../data/complexCurve
+	./t "3x^3 -2 + 2x^2"  "output/cubic1" 1
+	cp output/cubic1* ../../data/complexCurve
 
 t3:	t
 	./t "1-x+x^3-x^4+x^5-x^6+x^7-x^9+x^10" "data/lehmer" 1
@@ -159,5 +159,9 @@ EXEPROGS=$(TARGETS:=$(EXETYPE))
 vclean veryclean: clean
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
 	-@test -z "t" || rm -f t
+	-@test -z "convertPoly" || rm -f convertPoly
+	-@test -z "experimentalConvertPoly" || rm -f experimentalConvertPoly
+	-@test -z "cv" || rm -f cv
+	-@test -z "cvX" || rm -f cvX
 
 
