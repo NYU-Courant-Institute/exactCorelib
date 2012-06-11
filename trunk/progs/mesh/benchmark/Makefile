@@ -99,11 +99,11 @@ cv:	convertPoly.o
 	${CXX} $(LDFLAGS) convertPoly.o $(CORE_LIB) -o $@
 
 cv1:	convertPoly
-	./convertPoly "(x-1)^5" "output/fifthRootUnity" 1
+	./convertPoly "D" "(x-1)^5" "output/fifthRootUnity" 1
 	cp output/fifthRootUnity* ../../data/complexCurve
 
 cv2:	convertPoly
-	./convertPoly "1-x+x^3-x^4+x^5-x^6+x^7-x^9+x^10" "output/lehmer" 1
+	./convertPoly "D" "1-x+x^3-x^4+x^5-x^6+x^7-x^9+x^10" "output/lehmer" 1
 	cp output/lehmer* ../../data/complexCurve
 
 experimentalConvertPoly:	experimentalConvertPoly.o 
@@ -115,20 +115,20 @@ cvX1:	experimentalConvertPoly
 	./experimentalConvertPoly "H" "data2/fifthRootUnity.poly" "output/fifthRootUnity" 1
 	cp output/fifthRootUnity* ../../data/complexCurve
 
-cvX2:	experimentalConvertPoly
-	./experimentalConvertPoly "H" "data2/lehmer.poly" "output/lehmer" 1
+cv4:	convertPoly
+	./convertPoly "H" "data2/lehmer.poly" "output/lehmer" 1
 	cp output/lehmer* ../../data/complexCurve
 
-cvX3:	experimentalConvertPoly
-	./experimentalConvertPoly "H" "data2/golden.poly" "output/golden" 1
+cv5:	convertPoly
+	./convertPoly "H" "data2/golden.poly" "output/golden" 1
 	cp output/golden* ../../data/complexCurve
 
-cvX4:	experimentalConvertPoly
-	./experimentalConvertPoly "F" "data/somepoly6.pol" "output/somepoly6.pol" 1
+cv6:	convertPoly
+	./convertPoly "F" "data/somepoly6.pol" "output/somepoly6.pol" 1
 	cp output/somepoly6* ../../data/complexCurve
 
-cvX5:	experimentalConvertPoly
-	./experimentalConvertPoly "F" "data/hermite20.pol" "output/hermite20.pol" 1
+cv7:	convertPoly
+	./convertPoly "F" "data/hermite20.pol" "output/hermite20.pol" 1
 	cp output/hermite20* ../../data/complexCurve
 
 t:	t.o

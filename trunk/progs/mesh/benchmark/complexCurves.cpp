@@ -20,6 +20,8 @@
    $Id: complexCurves.cpp,v 1.3 2010/11/08 21:14:16 exact Exp $
  ************************************** */
 
+#define CORE_LEVEL 4
+
 #include <list>
 
 #include "tclap/CmdLine.h"
@@ -45,7 +47,6 @@
 // Note that this does not include "benchmark.h" (nope)
 #include "benchmark.h"
 
-#define CORE_LEVEL 4
 
 using namespace std;
 
