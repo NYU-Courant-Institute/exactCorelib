@@ -30,6 +30,8 @@ test: $(TARGETS)
 	python ./run_tests.py
 
 moretest: $(TARGETS)
+	python ./run_moretests.py
+
 # nothing to do
 
 # The following is for visualization and interactive mode:
