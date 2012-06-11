@@ -108,7 +108,7 @@ cv2:	convertPoly
 
 experimentalConvertPoly:	experimentalConvertPoly.o 
 
-cv:	experimentalConvertPoly.o
+cvX:	experimentalConvertPoly.o
 	${CXX} $(LDFLAGS) experimentalConvertPoly.o $(CORE_LIB) -o $@
 
 cvX1:	experimentalConvertPoly

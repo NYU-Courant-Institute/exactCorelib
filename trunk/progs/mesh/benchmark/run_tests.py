@@ -16,8 +16,8 @@ OPERATORS = ["ceval", "ceval_ni"]
 def main():
   global_stats = {}
   for operator in OPERATORS:
-    for f in os.listdir("./data"):
-      file_name = os.path.join("./data", f);
+    for f in os.listdir("./data2"):
+      file_name = os.path.join("./data2", f);
       if os.path.isfile(file_name):
         file = open(file_name)
         poly_name = file.readline().strip("! \n")
