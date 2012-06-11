@@ -116,27 +116,34 @@ int main(int argc, char **argv) {
   
   PolyNT p="x^3-1";
 
+  // If only one command line argument then use default polynomial above
   if (argc==1) 
     cout << "Using default arguments; see output under output/out*" << endl;
+
+  // First argument starts with F/H/D for FRISCO, human-readable or directly-given
   if (argc > 1) {
-    
-    if (!string(argv[1]).compare("F") || !string(argv[1]).compare("f")) {  // polynomial in FRISCO form
+    // Select first character of first argument
+    char firstchar = argv[1][0]; 
+    firstchar = toupper(firstchar);
+
+    if (firstchar=='F') { // FRISCO format polynomial
       if (argc > 2) read_poly_frisco (p, argv[2]);
     }
     else   
-      if (!string(argv[1]).compare("H") || !string(argv[1]).compare("h")) {  // human readable form
+      if (firstchar=='H') {  // human-readable polynomial
 	if (argc > 2) read_poly(p, argv[2]); 
       }
       else 
-	if (!string(argv[1]).compare("D") || !string(argv[1]).compare("d")) {  // direct command line polynomial 
+	if (firstchar=='D') {  // polynomial given directly at command line
+	  cerr << "HORRAY" <<endl;
 	  p = string(argv[2]);
 	}
 	else  // neither human readable nor FRISCO
 	  cerr << "First command line argument should indicate FRISCO or human-readable polynoamial" << endl;
   }
   
-  if (argc > 3) ofile= string(argv[3]);
-  if (argc > 4) verbose=atoi(argv[4]);
+  if (argc > 3) ofile= string(argv[3]); // name of output file
+  if (argc > 4) verbose=atoi(argv[4]);  // verbose (1) or not (0)
   
   show("Input Polynomial is: " + p.toString('z'));
   show("ofile = " + ofile);

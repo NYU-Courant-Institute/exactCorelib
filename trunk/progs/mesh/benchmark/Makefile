@@ -106,11 +106,11 @@ cv1:	convertPoly
 	cp output/fifthRootUnity* ../../data/complexCurve
 
 cv2:	convertPoly
-	./convertPoly "D" "1-x+x^3-x^4+x^5-x^6+x^7-x^9+x^10" "output/lehmer" 1
+	./convertPoly "DIRECT" "1-x+x^3-x^4+x^5-x^6+x^7-x^9+x^10" "output/lehmer" 1
 	cp output/lehmer* ../../data/complexCurve
 
 cv3:	convertPoly
-	./convertPoly "H" "data2/fifthRootUnity.poly" "output/fifthRootUnity" 1
+	./convertPoly "HUMAN_READABLE" "data2/fifthRootUnity.poly" "output/fifthRootUnity" 1
 	cp output/fifthRootUnity* ../../data/complexCurve
 
 cv4:	convertPoly
@@ -118,7 +118,7 @@ cv4:	convertPoly
 	cp output/lehmer* ../../data/complexCurve
 
 cv5:	convertPoly
-	./convertPoly "H" "data2/golden.poly" "output/golden" 1
+	./convertPoly "HUMAN_READABLE" "data2/golden.poly" "output/golden" 1
 	cp output/golden* ../../data/complexCurve
 
 cv6:	convertPoly
@@ -126,7 +126,7 @@ cv6:	convertPoly
 	cp output/somepoly6* ../../data/complexCurve
 
 cv7:	convertPoly
-	./convertPoly "F" "data/hermite20.pol" "output/hermite20.pol" 1
+	./convertPoly "FRISCO" "data/hermite20.pol" "output/hermite20.pol" 1
 	cp output/hermite20* ../../data/complexCurve
 
 t:	t.o
