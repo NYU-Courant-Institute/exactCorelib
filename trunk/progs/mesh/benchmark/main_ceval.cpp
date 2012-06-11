@@ -1,3 +1,22 @@
+/* **************************************
+   File: progs/mesh/benchmark/main_ceval.cpp
+
+   Description: 
+		This program is a GLUT based visualization of the CEVAL Algorithm
+		of Sagralloff and Yap.
+
+		The actual implementation of CEVAL is found in
+		        progs/mesh/ceval/ceval.cpp
+
+   Usage:
+
+   Author:  Narayan Kamath
+   Date:    2010
+
+   Since Core Library  Version 2.1
+   $Id: CXY.cpp,v 1.3 2010/06/10 16:51:46 exact Exp $
+ ************************************** */
+
 #include <list>
 
 #include "tclap/CmdLine.h"
