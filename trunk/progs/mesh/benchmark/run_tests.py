@@ -7,7 +7,7 @@ Y_MIN = -2
 Y_MAX = 2
 # OPERATORS = ["C_EVAL", "C_EVAL_NI" ]
 # THRESH = [0, 2, 4, 8, 16, 32 , 64]
-SEEDS = [691449, 506392, 562483, 16542] # 807751, 951739, 321581, 912418, 817699, 358692] # 872163, 291968, 675539, 722352, 189574, 455151, 355363, 478596, 808554, 381391, 400176, 548797, 60258, 745216, 145657, 761106, 287266, 108960, 220125, 384086, 109161, 173962, 488178, 970842, 178685, 118314, 265996, 473102, 195901, 980052, 761282, 918795, 799626, 102547, 913412, 348659, 154643, 125547, 666754]
+SEEDS = [691449, 506392, 562483] # 16542,  807751, 951739, 321581, 912418, 817699, 358692] # 872163, 291968, 675539, 722352, 189574, 455151, 355363, 478596, 808554, 381391, 400176, 548797, 60258, 745216, 145657, 761106, 287266, 108960, 220125, 384086, 109161, 173962, 488178, 970842, 178685, 118314, 265996, 473102, 195901, 980052, 761282, 918795, 799626, 102547, 913412, 348659, 154643, 125547, 666754]
 
 COLLECT_STATS ={"iters" : 1, "time":1, "ambiguous":1}
 OPERATORS = ["ceval", "ceval_ni"]
@@ -31,7 +31,8 @@ def main():
         #args.append("--y_min %s" % Y_MIN)
         #args.append("--y_max %s" % Y_MAX)
         args.append("--use_root_bounds")
-        args.append("--min_box_size 0.0001")
+        #args.append("--min_box_size 0.0001")
+        args.append("--min_box_size 0.01")
         if operator == "ceval_ni":
           args.append("--no_use_inclusion")
         print args
@@ -53,7 +54,7 @@ def main():
     print "Processing random polynomials :"
     
     #for degree in [10,20,30,40,50,60,70,80,90]:
-    for degree in [10,20,30,40,50]:
+    for degree in [10,20,40]:
       stats_map = {}
       for seed in SEEDS:
         args = []  
@@ -63,7 +64,8 @@ def main():
         #args.append("--y_min %s" % Y_MIN)
         #args.append("--y_max %s" % Y_MAX)
         args.append("--use_root_bounds")
-        args.append("--min_box_size 0.0001")
+        args.append("--min_box_size 0.01")
+        #args.append("--min_box_size 0.0001")
         #args.append("-%s" % operator)
         args.append("--random")
         args.append("--degree %d" % degree)
