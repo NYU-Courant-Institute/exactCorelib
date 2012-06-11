@@ -114,7 +114,10 @@ int main(int argc, char **argv) {
     "golden ratio", "5th roots of unity" "multiple roots" };
   */
   
-  PolyNT p;
+  PolyNT p="x^3-1";
+
+  if (argc==1) 
+    cout << "Using default arguments; see output under output/out*" << endl;
   if (argc > 1) {
     
     if (!string(argv[1]).compare("F") || !string(argv[1]).compare("f")) {  // polynomial in FRISCO form
@@ -125,7 +128,7 @@ int main(int argc, char **argv) {
 	if (argc > 2) read_poly(p, argv[2]); 
       }
       else // neither human readable nor FRISCO
-	std::cerr << "First command line argument should indicate FRISCO or human-readable polynoamial" << std::endl;
+	cerr << "First command line argument should indicate FRISCO or human-readable polynoamial" << endl;
   }
   
   if (argc > 3) ofile= string(argv[3]);
@@ -147,7 +150,7 @@ int main(int argc, char **argv) {
 	ofilename = ofile + "_u.poly";
 	ofs.open(ofilename.c_str());		// open "out_u.poly"
 	if (!ofs.is_open()) {
-	    std::cerr << "error reading " << ofilename << std::endl;
+	    cerr << "error reading " << ofilename << endl;
 	    return 1;
   	} else {
 	    ofs << "# output u-polynomial from convertPoly for " << ofile << endl;
@@ -158,7 +161,7 @@ int main(int argc, char **argv) {
 	ofilename = ofile + "_v.poly";
 	ofs.open(ofilename.c_str());	// open "out_v.poly"
 	if (!ofs.is_open()) {
-	    std::cerr << "error reading " << ofilename << std::endl;
+	    cerr << "error reading " << ofilename << endl;
 	    return 1;
   	} else {
 	    ofs << "# output v-polynomial from convertPoly for " << ofile << endl;
@@ -169,7 +172,7 @@ int main(int argc, char **argv) {
 	ofilename = ofile + "_uv.poly";
 	ofs.open(ofilename.c_str());	// open "out_uv.poly"
 	if (!ofs.is_open()) {
-	    std::cerr << "error reading " << ofilename << std::endl;
+	    cerr << "error reading " << ofilename << endl;
 	    return 1;
   	} else {
 	    ofs << "# output uv-polynomial from convertPoly for " << ofile << endl;
@@ -180,7 +183,7 @@ int main(int argc, char **argv) {
 	ofilename = ofile + ".poly";
 	ofs.open(ofilename.c_str());	// open "out.poly"
 	if (!ofs.is_open()) {
-	    std::cerr << "error reading " << ofilename << std::endl;
+	    cerr << "error reading " << ofilename << endl;
 	    return 1;
   	} else {
 	    ofs << "# original polynomial from convertPoly for " << ofile << endl;
@@ -327,7 +330,7 @@ template <typename T>
 bool read_poly(Polynomial<T>& p, const char* ifilename = "data2/golden.poly") {
 	ifstream ifs(ifilename);
 	if (!ifs.is_open()) {
-	    std::cerr << "error reading " << ifilename << std::endl;
+	    cerr << "error reading " << ifilename << endl;
 	    return false;
 	}
 	string line;
@@ -348,7 +351,7 @@ template <typename T>
 bool read_poly_frisco(Polynomial<T>& p, const char* filename) {
 	  FILE* f;
 	  if ((f = fopen(filename, "r")) == NULL) {
-	    std::cerr << "error reading " << filename << std::endl;
+	    cerr << "error reading " << filename << endl;
 	    return false;
 	  }
 	  read_poly_frisco(p,f);
@@ -365,7 +368,7 @@ bool write_poly(Polynomial<T>& p, const char* filename = "output/out.poly") {
 	  if (ofs.is_open()) {
 		  ofs << p.toString() << endl;
 	  } else {
-	    std::cerr << "error writing " << filename << std::endl;
+	    cerr << "error writing " << filename << endl;
 	    return false;
 	  }
 	  ofs.close();
