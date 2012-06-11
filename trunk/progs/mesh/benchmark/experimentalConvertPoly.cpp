@@ -39,6 +39,7 @@
 
 using namespace std;
 
+
 // ##################################################
 // typedefs
 // ##################################################
@@ -74,7 +75,12 @@ using namespace std;
 
 	// read from frisco file
 	template <typename T>
-	void read_poly_frisco(FILE *instr, Polynomial<T>& p);
+	//	void read_poly_frisco(FILE *instr, Polynomial<T>& p);
+	void read_poly_frisco(Polynomial<T>& p, FILE *instr);
+
+	// read from frisco file
+	template <typename T>
+	bool read_poly_frisco(Polynomial<T>& p, const char* filename);
 
 	// Generate random polynomials.
 	void GenerateRandom(Polynomial<double> *d, const unsigned int degree,
@@ -84,8 +90,7 @@ using namespace std;
                     const unsigned int seed);
 
 	// read files
-	void GetPoly(const char *file_name,
-             Polynomial<double> *d);
+void GetPoly(Polynomial<double> *d, const char *file_name);
 	void GetBiPoly(const char *filename,
                BiPoly<double> *u,
                BiPoly<double> *v);
@@ -102,23 +107,33 @@ using namespace std;
 int main(int argc, char **argv) {
 
   // Get the input polynomial a (from file or randomly generated)
-	/*
-	Polynomial<NT> polys[] ={
-		PolyNT("x^2 -x -1"), PolyNT("(x-1)^5"), PolyNT("(x-1)^2 (x+1)^2") };
-	string names[] = {
-		"golden ratio", "5th roots of unity" "multiple roots" };
-	*/
-	  if (argc > 1) {
-		   PolyNT p;
-//                   read_poly_frisco (argv[1], *p);
-                   read_poly(p, argv[1]);
-	  }
-	  if (argc > 2) ofile= string(argv[2]);
-	  if (argc > 3) verbose=atoi(argv[3]);
-
-	  show("Input Polynomial is: " + p.toString('z'));
-	  show("ofile = " + ofile);
-
+  /*
+    Polynomial<NT> polys[] ={
+    PolyNT("x^2 -x -1"), PolyNT("(x-1)^5"), PolyNT("(x-1)^2 (x+1)^2") };
+    string names[] = {
+    "golden ratio", "5th roots of unity" "multiple roots" };
+  */
+  
+  PolyNT p;
+  if (argc > 1) {
+    
+    if (!string(argv[1]).compare("F") || !string(argv[1]).compare("f")) {  // polynomial in FRISCO form
+      if (argc > 2) read_poly_frisco (p, argv[2]);
+    }
+    else   
+      if (!string(argv[1]).compare("H") || !string(argv[1]).compare("h")) {  // human readable form
+	if (argc > 2) read_poly(p, argv[2]); 
+      }
+      else // neither human readable nor FRISCO
+	std::cerr << "First command line argument should indicate FRISCO or human-readable polynoamial" << std::endl;
+  }
+  
+  if (argc > 3) ofile= string(argv[3]);
+  if (argc > 4) verbose=atoi(argv[4]);
+  
+  show("Input Polynomial is: " + p.toString('z'));
+  show("ofile = " + ofile);
+  
   // Convert input polynomial to the real and complex parts, u, v (and uv):
 	BiPoly<NT> u, v;
   	ConvertPoly(p,&u,&v); 
@@ -224,7 +239,8 @@ void ConvertPoly(const Polynomial<T> &p,
 
 /// Reads a polynomial from file, in FRISCO format
 template <typename T>
-void read_poly_frisco(FILE *instr, Polynomial<T>& p) {
+//void read_poly_frisco(FILE *instr, Polynomial<T>& p) {
+void read_poly_frisco(Polynomial<T>& p, FILE *instr) {
 	  int indx, num_coeff, i;
 	
 	  /* skip blank or comment lines */
@@ -307,7 +323,8 @@ void read_poly_frisco(FILE *instr, Polynomial<T>& p) {
 //	preceding this line are indicated by first char of '#'
 template <typename T>
 //bool read_poly(const char* ifilename, Polynomial<T>& p) {
-bool read_poly(Polynomial<T>& p, const char* ifilename = "data/in") {
+//bool read_poly(Polynomial<T>& p, const char* ifilename = "data/in") {
+bool read_poly(Polynomial<T>& p, const char* ifilename = "data2/golden.poly") {
 	ifstream ifs(ifilename);
 	if (!ifs.is_open()) {
 	    std::cerr << "error reading " << ifilename << std::endl;
@@ -328,20 +345,21 @@ cout << "\n\n\n line = " << line << endl<< endl;
 
 /// Reads a templated polynomial from a filename, in FRISCO format
 template <typename T>
-bool read_poly_frisco(const char* filename, Polynomial<T>& p) {
+bool read_poly_frisco(Polynomial<T>& p, const char* filename) {
 	  FILE* f;
 	  if ((f = fopen(filename, "r")) == NULL) {
 	    std::cerr << "error reading " << filename << std::endl;
 	    return false;
 	  }
-	  read_poly_frisco(f, p);
+	  read_poly_frisco(p,f);
 	  fclose(f);
 	  return true;
 	}
 
 /// Write a templated polynomial to a filename, in std monomial format:
 template <typename T>
-bool write_poly(Polynomial<T>& p, const char* filename = "data/out.poly") {
+//bool write_poly(Polynomial<T>& p, const char* filename = "data/out.poly") {
+bool write_poly(Polynomial<T>& p, const char* filename = "output/out.poly") {
 	  ofstream ofs;
 	  ofs.open(filename);
 	  if (ofs.is_open()) {
@@ -355,20 +373,17 @@ bool write_poly(Polynomial<T>& p, const char* filename = "data/out.poly") {
 	}
 
 /// Reads a BigInt polynomial from a filename
-void GetPoly(const char *filename,
-             Polynomial<BigInt> *poly) {
-	  read_poly_frisco<BigInt>(filename, *poly);
-	}
+void GetPoly(Polynomial<BigInt> *poly, const char *filename) {
+  read_poly_frisco<BigInt>(*poly, filename);
+}
 
 /// Reads a BigFloat polynomial from a filename
-void GetPoly(const char *filename,
-             Polynomial<BigFloat> *poly) {
-	  read_poly_frisco<BigFloat>(filename, *poly);
-	}
+void GetPoly(Polynomial<BigFloat> *poly, const char *filename) {
+  read_poly_frisco<BigFloat>(*poly, filename);
+}
 
 /// Reads a DoubleWrapper polynomial from a file name
-void GetPoly(const char *filename,
-	             Polynomial<DoubleWrapper> *poly) {
+void GetPoly(Polynomial<DoubleWrapper> *poly, const char *filename) {
 	 // cout << "********************************************************************" << endl;
 	 // cout << "WARNING : You might lose precision in the polynomial coefficients " << endl
 	 //     << "while operating at this core level. The polynomial you are operating " << endl
@@ -376,7 +391,7 @@ void GetPoly(const char *filename,
 	 // cout << "********************************************************************" << endl;
 	
 	  Polynomial<BigInt> p_bi;
-	  GetPoly(filename, &p_bi);
+	  GetPoly(&p_bi, filename);
 	  const int deg = p_bi.getDegree();
 	  DoubleWrapper *dr = new DoubleWrapper[deg + 1];
 	  for (int i = 0; i <= deg; ++i) {
@@ -386,9 +401,8 @@ void GetPoly(const char *filename,
 	  delete[] dr;
 	}
 
-void GetPoly(const char *filename,
-             Polynomial<Expr> *poly) {
-  read_poly_frisco<Expr>(filename, *poly);
+void GetPoly(Polynomial<Expr> *poly, const char *filename) {
+  read_poly_frisco<Expr>(*poly, filename);
 }
 
 /// Reads a complex valued polynomial p(z) from file name, and returns
@@ -397,7 +411,7 @@ void GetBiPoly(const char *filename,
                BiPoly<BigInt> *u,
                BiPoly<BigInt> *v) {
 	  Polynomial<BigInt> poly;
-	  GetPoly(filename, &poly);
+	  GetPoly(&poly, filename);
 	  ConvertPoly<BigInt>(poly, u, v);
 	}
 
@@ -407,7 +421,7 @@ void GetBiPoly(const char *filename,
                BiPoly<BigFloat> *u,
                BiPoly<BigFloat> *v) {
 	  Polynomial<BigFloat> poly;
-	  GetPoly(filename, &poly);
+	  GetPoly(&poly,filename);
 	  ConvertPoly<BigFloat>(poly, u, v);
 	}
 
@@ -417,7 +431,7 @@ void GetBiPoly(const char *filename,
                BiPoly<DoubleWrapper> *u,
                BiPoly<DoubleWrapper> *v) {
 	  Polynomial<DoubleWrapper> poly;
-	  GetPoly(filename, &poly);
+	  GetPoly(&poly,filename);
 	  ConvertPoly<DoubleWrapper>(poly, u, v);
 	}
 
@@ -427,7 +441,7 @@ void GetBiPoly(const char *filename,
                BiPoly<Expr> *u,
                BiPoly<Expr> *v) {
 	  Polynomial<Expr> poly;
-	  GetPoly(filename, &poly);
+	  GetPoly(&poly, filename);
 	  ConvertPoly<Expr>(poly, u, v);
 	}
 
