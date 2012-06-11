@@ -127,8 +127,12 @@ int main(int argc, char **argv) {
       if (!string(argv[1]).compare("H") || !string(argv[1]).compare("h")) {  // human readable form
 	if (argc > 2) read_poly(p, argv[2]); 
       }
-      else // neither human readable nor FRISCO
-	cerr << "First command line argument should indicate FRISCO or human-readable polynoamial" << endl;
+      else 
+	if (!string(argv[1]).compare("D") || !string(argv[1]).compare("d")) {  // direct command line polynomial 
+	  p = string(argv[2]);
+	}
+	else  // neither human readable nor FRISCO
+	  cerr << "First command line argument should indicate FRISCO or human-readable polynoamial" << endl;
   }
   
   if (argc > 3) ofile= string(argv[3]);
