@@ -1,6 +1,10 @@
 /* **************************************
    File: mesh/ceval/ceval.cpp
    Description: 
+   		This is the toplevel entry point for the CEVAL algorithm.
+		It depends on the 
+			algorithms.{h,cpp}
+			predicates.{h.cpp}
 
    Usage:
 
@@ -26,22 +30,22 @@ int main(int argc, char **argv) {
   
   //Polynomial<PolyType> p = "x^5-1";
 
-  string sp="x^5-1";
-  
-  if (argc>1) sp=argv[1];
-
-  Polynomial<PolyType> p = sp;
-
-  cout << "Input Polynomial is \n     ";
-  p.dump(); cout << endl;
-
+  // DEFAULT INPUT PARAMETERS:
+  string sp="x^5-1";		// input polynomial as string
   double xmin=-10.0;
   double ymin=-10.0;
   double boxwidth=20;
 
+  // PROCESS INPUT PARAMETERS:
+  if (argc>1) sp=argv[1];
   if (argc>2) xmin=atof(argv[2]);
   if (argc>3) ymin=atof(argv[3]);
   if (argc>4) boxwidth=atof(argv[4]);
+
+  Polynomial<PolyType> p = sp;		// convert string to polynomial
+  cout << "Input Polynomial is:  " << p.toString() << endl;
+  cout << "(xmin, ymin) = (" << xmin << ", " << ymin << ")\n";
+  cout << "boxwidth = " << boxwidth << endl;
 
   // ymin and ymax are computed (because ceval only works with square boxes)
   double xmax=xmin+boxwidth;
@@ -52,7 +56,6 @@ int main(int argc, char **argv) {
   struct timeval end;
 
   double min_box_size_d = 0.0001;
-
   
   // Start Computation:
 
