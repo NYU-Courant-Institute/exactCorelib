@@ -106,13 +106,8 @@ cv2:	convertPoly
 	./convertPoly "D" "1-x+x^3-x^4+x^5-x^6+x^7-x^9+x^10" "output/lehmer" 1
 	cp output/lehmer* ../../data/complexCurve
 
-experimentalConvertPoly:	experimentalConvertPoly.o 
-
-cvX:	experimentalConvertPoly.o
-	${CXX} $(LDFLAGS) experimentalConvertPoly.o $(CORE_LIB) -o $@
-
-cvX1:	experimentalConvertPoly
-	./experimentalConvertPoly "H" "data2/fifthRootUnity.poly" "output/fifthRootUnity" 1
+cv3:	convertPoly
+	./convertPoly "H" "data2/fifthRootUnity.poly" "output/fifthRootUnity" 1
 	cp output/fifthRootUnity* ../../data/complexCurve
 
 cv4:	convertPoly
@@ -176,8 +171,6 @@ vclean veryclean: clean
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
 	-@test -z "t" || rm -f t
 	-@test -z "convertPoly" || rm -f convertPoly
-	-@test -z "experimentalConvertPoly" || rm -f experimentalConvertPoly
 	-@test -z "cv" || rm -f cv
-	-@test -z "cvX" || rm -f cvX
 
 
