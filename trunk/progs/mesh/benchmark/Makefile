@@ -93,13 +93,11 @@ c5:	complexCurves
 c6:	complexCurves
 	complexCurves --poly $(DATA)/simplePolynomials/rootsOfUnity3.pol $(VERB)
 
-converPoly: convertPoly.o
-
 cv:	convertPoly.o 
 	${CXX} $(LDFLAGS) convertPoly.o $(CORE_LIB) -o $@
 
 cv1:	convertPoly
-	./convertPoly "D" "(x-1)^5" "output/fifthRootUnity" 1
+	./convertPoly "DIRECT" "(x-1)^5" "output/fifthRootUnity" 1
 	cp output/fifthRootUnity* ../../data/complexCurve
 
 cv2:	convertPoly
@@ -111,7 +109,7 @@ cv3:	convertPoly
 	cp output/fifthRootUnity* ../../data/complexCurve
 
 cv4:	convertPoly
-	./convertPoly "H" "data2/lehmer.poly" "output/lehmer" 1
+	./convertPoly "HUMAN_READABLE" "data2/lehmer.poly" "output/lehmer" 1
 	cp output/lehmer* ../../data/complexCurve
 
 cv5:	convertPoly
@@ -119,7 +117,7 @@ cv5:	convertPoly
 	cp output/golden* ../../data/complexCurve
 
 cv6:	convertPoly
-	./convertPoly "F" "data/somepoly6.pol" "output/somepoly6.pol" 1
+	./convertPoly "FRISCO" "data/somepoly6.pol" "output/somepoly6.pol" 1
 	cp output/somepoly6* ../../data/complexCurve
 
 cv7:	convertPoly
