@@ -239,7 +239,6 @@ TABLE OF CONTENTS:
 	   then invoke the eclipse target.  That is the next exercise.
 
 --8. Exercise 4: Creating eclipse targets and building them
-
 	-- First create an "Eclipse targets" corresponding to "myrun"
 	   in Makefile:
 
@@ -299,7 +298,6 @@ TABLE OF CONTENTS:
 		"Automate discovery of paths and symbols".  Check this and click OK.
 
 --10. How to get eclipse to recognize some CORE files as C++ files?
-
 	E.g., if you browse the file $(CORE)/inc/CORE/poly/Curves.tcc, you
 	see that Eclipse does not recognize "*.tcc" to be form of "*.h" file.
 	So it will not display the classes, functions, variables, etc, for
@@ -315,6 +313,10 @@ TABLE OF CONTENTS:
 	  say that this new pattern is a "C++ header".  Click "OK".
 	  Do the same for "*.inl".
 	
+--11. Useful HINTS 
+	On the Mac, command-click on a function or variable will jump to the
+	definition of the function or variable.
+
 --1000. END
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Since Core Library 2.0

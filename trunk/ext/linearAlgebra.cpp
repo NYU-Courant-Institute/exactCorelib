@@ -6,10 +6,15 @@
 //  REMARK: in Core2, we implemented a templated linearAlgebra class
 //      in $(COREPATH)/inc/CORE/linearAlgebraT.h.
 //
+//  TODO:
+//  	This should introduce namespace.
+//
 //  Linear Algebra Extension of the CORE library, ver. 1.0
 //
 //    Copyright (c) 1998, 1999, 2000 Exact Computation Project
 //    written by Igor Pechtchanski (pechtcha@cs.nyu.edu)
+//
+//
 //  $Id: linearAlgebra.cpp,v 1.5 2010/06/16 15:27:54 exact Exp $
 //
 
@@ -52,6 +57,15 @@ Vector::Vector(double x, double y, double z) : dim(3) {
    _rep[0] = x;
    _rep[1] = y;
    _rep[2] = z;
+}
+
+// four dimensional points:
+Vector::Vector(double x, double y, double z, double w) : dim(4) {
+   _rep = new double[dim];
+   _rep[0] = x;
+   _rep[1] = y;
+   _rep[2] = z;
+   _rep[3] = w;
 }
 
 Vector::Vector(int d, double *element) : dim(d) {

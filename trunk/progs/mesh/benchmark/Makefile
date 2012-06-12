@@ -19,8 +19,12 @@ VERB=-v
 VERB=
 v=1
 verbose=$(v)
+
 #=================================================
-# Define target files (put all your files here)
+# Targets:
+#=================================================
+#=================================================
+# Standard CORE targets:
 #=================================================
 TARGETS = main_ceval main_newt
 
@@ -35,36 +39,43 @@ test2: $(TARGETS)
 moretest: $(TARGETS)
 	python ./run_moretests.py
 
-# nothing to do
-
+help: main_ceval
+	./main_ceval --help
+	
+#=================================================
+# Demo Targets:
+#=================================================
 # The following is for visualization and interactive mode:
-#
-#  NOTE that you can zoom-in (i) or zoom-out (k), pan (w,a,s,d) to
-#  view the display.
-#
+#  NOTE that you can
+#  	zoom-in (i) or zoom-out (k or o), pan (w,a,s,d) 
+#  in viewing the display.
+
+# eg
+eg: main_ceval
+	./main_ceval --poly ./data/nroots20.pol --display --use_root_bounds
+
 # eg1 (20 roots of unity)
 eg1: main_ceval
-	main_ceval --poly ./data/nroots20.pol --display --use_root_bounds
+	./main_ceval --poly ./data/nroots20.pol --display --use_root_bounds
 
 # eg2
 #
 eg2 : main_ceval
-	main_ceval --poly ./data/somepoly6.pol --display --use_root_bounds
+	./main_ceval --poly ./data/somepoly6.pol --display --use_root_bounds
 
 # 
 # eg3 (laguerre20 polynomial) gives explicit bounding box to search for roots:
 eg3 : main_ceval
-	main_ceval --poly ./data/laguerre20.pol --display \
+	./main_ceval --poly ./data/laguerre20.pol --display \
 		--x_max 70 --x_min 0 --y_min -1 --y_max 1
 
 # eg4 (laguerre20 polynomial) uses root bound calculations that
 # ensure that all roots are found:
 eg4 : main_ceval
-	main_ceval --poly ./data/laguerre20.pol --display --use_root_bounds
+	./main_ceval --poly ./data/laguerre20.pol --display --use_root_bounds
 
-# eg
-
-
+##################################################
+##################################################
 main_ceval : main_ceval.o benchmark.o ../ceval/algorithm.o \
 		../ceval/predicates.o ../ceval/tmp-display.o 
 	${CXX} $(LDFLAGS) benchmark.o main_ceval.o ../ceval/algorithm.o \
@@ -160,7 +171,6 @@ clean:
 	-@test -z "*.o" || rm -f *.o
 	-@test -z "../ceval/*.o" || rm -f ../ceval/*.o
 	-@test -z "../krawczyk/*.o" || rm -f ../krawczyk/*.o
-	-@test -z "t.o" || rm -f t.o
 
 m:
 	gvim Makefile
@@ -176,4 +186,7 @@ vclean veryclean: clean
 	-@test -z "convertPoly" || rm -f convertPoly
 	-@test -z "cv" || rm -f cv
 
+#=================================================
+# End
+#=================================================
 

@@ -4,9 +4,9 @@ $Id: README,v 1.3 2010/06/25 10:15:48 exact Exp $
 ************************************************************
 
 Files in this subdirectory, $(CORE_PATH)/progs:
-  README	-- this file
-  Makefile	-- to make all examples
-  Make.sh	-- shell script called by Makefile
+	  README	-- this file
+	  Makefile	-- to make all examples
+	  Make.sh	-- shell script called by Makefile
 
 Subdirectories in $(CORE_PATH)/progs contain sample
 programs that use the Core library, testing and
@@ -49,29 +49,36 @@ take a look at the sample files in the "generic" subdirectory.
   prover/	-- probabilistic geometric theorem proving for ruler-and-
 		   compass constructions, based on a generalization of
 		   Schwartz's Lemma for polynomial zero testing.
+  mesh/		-- we have several subdirectories here of our work on
+  		   subdivision methods to approximate curves and surfaces,
+		   to isolate complex roots, and solving bivariate systems
+		   (PV, CXY, Krawcyzk, etc)
+  robotics/	-- subdivision algorithms for motion planning
+  		   (disc, triange)
   sumOfSqrts/	-- examples of Graham and O'Rourke comparing sums of sqrts 
   testFilter/	-- testing our filter implementation 
   testIdent/	-- various identity tests of arithmetic expressions
   testIO/	-- tests a critical function of CORE: the various numerical
 		   input and output routines as well as precision mechanism
   tutorial/	-- programs used in the Core Library Tutorial
+  vor/		-- subdivision algorithms for Voronoi diagrams (vor2d, vor3d)
 
 Standards for these directories:
 ================================
-Basically, the Makefile found in each directory tells you how
-to compile and run the programs.  The following targets are
-always supported:
-	% make all	-- default make for the directory
-	% make		-- MUST be equivalent to "make all"
-	% make test	-- tests the programs compiled by "make all"
-	% make more	-- compiles additional programs 
-	% make moretest	-- runs the additional programs 
-	% make clean	-- remove the object files 
-	% make veryclean -- includes make clean, and removes executables
-The following are sometimes available:
-
-The output often contains self-valided results, and according to the
-outcome, the words "CORRECT" or "ERROR" will be printed.
+	Basically, the Makefile found in each directory tells you how
+	to compile and run the programs.  The following targets are
+	always supported:
+		% make all	-- default make for the directory
+		% make		-- MUST be equivalent to "make all"
+		% make test	-- tests the programs compiled by "make all"
+		% make more	-- compiles additional programs 
+		% make moretest	-- runs the additional programs 
+		% make clean	-- remove the object files 
+		% make veryclean -- includes make clean, and removes executables
+	The following are sometimes available:
+	
+	The output often contains self-valided results, and according to the
+	outcome, the words "CORRECT" or "ERROR" will be printed.
 
 ================================
 We welcome your contributions or improvements to this subdirectory.
@@ -82,4 +89,5 @@ We welcome your contributions or improvements to this subdirectory.
    Zilin Du (zilin@cs.nyu.edu)
    Vikram Sharma (sharma@cs.nyu.edu)
    Jihun Yu (jihun@cs.nyu.edu)
+   Long Lin (llin@cs.nyu.edu)
 ================================

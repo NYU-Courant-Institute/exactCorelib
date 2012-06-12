@@ -8,7 +8,62 @@
 		The actual implementation of CEVAL is found in
 		        progs/mesh/ceval/ceval.cpp
 
-   Usage:
+		Arguments to main_ceval are all optional:
+
+		E.g., To find the roots of the polynomial in input file "nroots20.pol"
+
+		> ./main_ceval --poly ./data/nroots20.pol --display --use_root_bounds
+
+		or equivalently
+
+		> ./main_ceval --d --r --p ./data/nroots20.pol
+
+		The flag --poly gives a file name containing a polynomial in frisco format
+		The flag --display is a switch to turn on the display of subdivision boxes
+		The flag --use_root_bounds is a switch to automatically
+			determining a bounding box containing all complex roots.
+			Otherwise, you may give explicit specification of the box using
+
+				--x_min, --y_min, --x_max, --y_max.
+			or
+				--x, --y, --c, --u
+		
+		We use the TCLAP package to process command line arguments.
+		Each of these flags have default values.
+		To learn more, type:
+
+		> ./main_ceval --help
+
+	TCLAP::ValueArg<string> poly("p", "poly", "Input polynomial file name",
+		false, "", "string");
+	TCLAP::ValueArg<string> x_min("x", "x_min", "Minimum x range (default -2)",
+		false, "-2", "string");
+	TCLAP::ValueArg<string> x_max("c", "x_max", "Maximum x range (default 2)",
+		false, "2", "string");
+	TCLAP::ValueArg<string> y_min("y", "y_min", "Minimum y range (default -0.05)",
+		false, "-0.05", "string");
+	TCLAP::ValueArg<string> y_max("u", "y_max", "Maximum y range (default 0.05)",
+		false, "0.05", "string");
+	TCLAP::ValueArg<string> min_box_size("m", "min_box_size",
+		"Minimum box size (default 0.00001)",
+		false, "0.00001", "string");
+	TCLAP::ValueArg<string> max_box_size("M", "max_box_size",
+		"Maximum box size (default 0.1)",
+		false, "0.1", "string");
+	TCLAP::ValueArg<unsigned int> rand_degree("g", "degree",
+		"Degree of random poly (default 10)",
+		false, 10, "unsigned int");
+	TCLAP::ValueArg<unsigned int> rand_seed("f", "seed", "Seed (default 10)",
+		false, 10, "unsigned int");
+	TCLAP::SwitchArg use_rb("r", "use_root_bounds",
+		"Use Cauchy Bounds", false);
+	TCLAP::SwitchArg display("d", "display",
+		"Display subdivision tree", false);
+	TCLAP::SwitchArg no_use_inclusion("i", "no_use_inclusion",
+		"Do not use the inclusion pred", false);
+	TCLAP::SwitchArg random_poly("a", "random",
+		"Use a random polynomial", false);
+
 
    Author:  Narayan Kamath
    Date:    2010
@@ -162,9 +217,9 @@ int main(int argc, char **argv) {
 
   if (display.getValue()) {
     cout << "Operated on Bounding box : " << min << "," << max << endl;
-    cout << "With polynomial : " << endl;
+    cout << "With polynomial : " << a.toString() << endl; 
 
-    //a.dump();
+    //a.dump(); 	// a.toString() is much better than a.dump().
     cout << endl;
     cout << "--------------------------" << endl;
     cout << "Number of roots:" << algo.output()->size() << endl;

@@ -1,8 +1,25 @@
 /*
- * predicates.h
+ * file:  predicates.h
+ *
+ * DESCRIPTION:
+ *	 The predicates required for the CEVAL algorithm.
+ *	 There are three predicates.
+ *	 	(i) 	Tk(r,m)
+ * 		(ii) 	T'k(r,m)
+ *		(iii) 8-point-test on disk Dr(m)
+ *	These predicates are implicitly dependent on the polynomial
+ *	f whose roots are being isolated. This polynomial is the input
+ *	parameter for the constructor.
+ *
+ *	Tk(r,m) and T'k(r,m) are computed using a common function
+ *
+ *			Calculate(k, r, m, i)
+ *
+ *	where i=1 gives Tk, i=2 gives T'k.
  *
  *  Created on: Jun 21, 2010
- *      Author: narayan
+ *      Author: Narayan Kamath
+ *      Since Core 2.1.
  */
 
 #ifndef PREDICATES_H_
@@ -13,16 +30,6 @@
 #include "ceval-defs.h"
 #include "CORE/poly/Poly.h"
 
-// The predicates required for the CEval algorithm. There
-// are three predicates.
-//
-// (i) Tk(r,m)
-// (ii) T'k(r,m)
-// (iii) 8-point-test on  Dr(m)
-//
-// These predicates are implicitly dependent on the polynomial
-// f whose roots are being isolated. This polynomial is the input
-// parameter for the constructor.
 class Predicates {
  public:
   Predicates(const Polynomial<PolyType> &poly);

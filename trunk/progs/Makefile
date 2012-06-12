@@ -70,12 +70,6 @@ allprogs= ${basicprogs} ${moreprogs} ${extraprogs}
 ############################################################
 default: makebasic
 
-x:
-	@for p in ${basicprogs}; do \
-	      echo "Inside subdir " $$p ": ===>"; \
-	      cd $$p; mv CVS x; svn remove CVS;  \
-	 done
-
 # only make the programs but do not test them
 basic makebasic:
 	@for p in ${basicprogs}; do \

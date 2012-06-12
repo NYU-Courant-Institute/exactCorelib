@@ -1,11 +1,17 @@
 /* **************************************
-   File: mesh/ceval/ceval.cpp
+   File: progs/mesh/ceval/ceval.cpp
    Description: 
-   		This is the toplevel entry point for the CEVAL algorithm.
-		It depends on the 
+   		This is the toplevel entry point for our implementation of
+		the CEVAL algorithm of Sagraloff and Yap.
+
+		It depends on the files:
 			algorithms.{h,cpp}
 			predicates.{h.cpp}
 
+		For visualization of the subdivision boxes produced by CEVAL,
+		you must use the program
+		        progs/mesh/benchmark/ceval_main.cpp 
+		that calls the current ceval program.
    Usage:
 
    Author:  Narayan Kamath
@@ -43,9 +49,10 @@ int main(int argc, char **argv) {
   if (argc>4) boxwidth=atof(argv[4]);
 
   Polynomial<PolyType> p = sp;		// convert string to polynomial
-  cout << "Input Polynomial is:  " << p.toString() << endl;
-  cout << "(xmin, ymin) = (" << xmin << ", " << ymin << ")\n";
-  cout << "boxwidth = " << boxwidth << endl;
+  cout << "\nINPUT: --------------------------" << endl;
+  cout << "    Polynomial:  " << p.toString() << endl;
+  cout << "    (xmin, ymin) = (" << xmin << ", " << ymin << ")\n";
+  cout << "    boxwidth = " << boxwidth << endl;
 
   // ymin and ymax are computed (because ceval only works with square boxes)
   double xmax=xmin+boxwidth;
@@ -69,15 +76,16 @@ int main(int argc, char **argv) {
   gettimeofday(&end, NULL);
   // End run
 
-  cout << "Total time : "
+  cout << "\nTotal time: "
 	<< (end.tv_sec - start.tv_sec)*1000000 + (end.tv_usec - start.tv_usec)
 	<< " micro seconds" << endl;
-
-  cout << "--------------------------" << endl;
-  cout << "TOTAL NUMBER :" << algo.output()->size() << endl;
+  cout << "NUMBER OF COMPLEX ROOTS FOUND:  " << algo.output()->size() << endl;
   list<const Disk *>::const_iterator it = algo.output()->begin();
+  int i=0;
   while (it != algo.output()->end()) {
-    cout << "m= " << (*it)->centre << ", r= " << (*it)->radius << endl;
+    cout << "   Root " << ++i 
+	 << ": center = " << (*it)->centre << ", radius = " << (*it)->radius << endl;
     ++it;
   }
+  cout << "\n --------------------------" << endl;
 }

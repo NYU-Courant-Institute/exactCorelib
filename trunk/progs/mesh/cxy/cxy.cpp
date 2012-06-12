@@ -74,11 +74,7 @@
 	  subsequent viewing and analysis.
 
    Since Core Library  Version 2.0
-<<<<<<< .mine
    $Id: cxy.cpp,v 1.12 2011/02/09 22:41:14 exact Exp $
-=======
-   $Id: cxy.cpp,v 1.11 2011/02/09 22:16:07 exact Exp $
->>>>>>> .r381
  ************************************** */
 
 #include <iostream>

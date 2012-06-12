@@ -16,13 +16,15 @@ ymin=-2.0
 boxwidth=4.0
 
 #=================================================
-# Define target files (put all your files here)
+# TARGETS
 #=================================================
 TARGETS = ceval
 
 all: $(TARGETS)
 
 test: $(TARGETS)
+	@echo "\n Test: runnng 'ceval' with all default arguments"
+	@echo " ==============================================="
 	./ceval
 
 moretest: $(TARGETS)
@@ -34,35 +36,40 @@ ceval: ceval.o algorithm.o predicates.o
 #=================================================
 # TCLAP:
 #=================================================
-tclap: tclap-example
+tclap: ./tclap-example
 	./tclap-example --help
 
-tclap1: tclap-example
+tclap1: ./tclap-example
 	./tclap-example -n Yap
 
-tclap2: tclap-example
+tclap2: ./tclap-example
 	./tclap-example -n Yap -r
 
 tclap-example: tclap-example.o
 
 #=================================================
-# Examples
+# EXAMPLES
 #=================================================
-eg:
+eg: ./ceval
+	@echo "\n============== USING Makefile DEFAULTS ============="
 	./ceval $(p) $(xmin) $(ymin) $(boxwidth)
 
-eg1:
+eg1: ./ceval
+	@echo "\n============== THE GOLDEN RATIO POLYNOMIAL ============="
 	./ceval "x^2-x-1" $(xmin) $(ymin) $(boxwidth)
 
-eg2:
-	./ceval "x^3-2x+2" $(xmin) $(ymin) $(boxwidth)
-
-# this is the example of Fig.1 of
-# "Empirical Study of an Evaluation-based Subdivision..."
-# by Kamath, Voiculescu, Yap. (SNC 2011)
-eg3: 
+eg2: ./ceval
+	@echo "\n============== A DEGREE 10 POLYNOMIAL ============="
+	@echo "     This is example of Fig.1 in the paper"
+	@echo "     'Empirical Study of an Evaluation-based Subdivision...'"
+	@echo "     by Kamath, Voiculescu, Yap (SNC 2011) "
+	@echo "====================================================\n"
 	./ceval "x(9x^9 + 7x^8 + 8x^7 + 8x^6 + 6x^4 + 5x^3 + 2x^2 + 1)" \
 		$(xmin) $(ymin) $(boxwidth)
+
+eg3: ./ceval
+	@echo "\n============== 7th ROOTS OF UNITY ============="
+	./ceval "x^7-1" $(xmin) $(ymin) $(boxwidth)
 
 #=================================================
 # Rules
@@ -78,13 +85,20 @@ eg3:
 #=================================================
 clean:
 	-@test -z "*.o" || rm -f *.o
+	-@test -z "*~" || rm -f *~
 
+m:
+	gvim Makefile
 #=================================================
 # Remove executable files
 #=================================================
 EXEPROGS=$(TARGETS:=$(EXETYPE))
 
-veryclean: clean
+vclean veryclean: clean
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
 	-@test -z "tclap-example" || rm -f tclap-example
+
+#=================================================
+# End
+#=================================================
 

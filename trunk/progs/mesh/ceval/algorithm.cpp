@@ -150,9 +150,13 @@ void Algorithm::Run() {
     }
   }
 
-  cout << "iters="<< num_iterations << ",includes=" << num_includes << ",splits="
-       << num_splits <<  ",ambiguous=" << ambiguous_.size() <<  ",exc_c0="
-       << num_excludes_T1 << ",exc_c1=" << num_excludes_8P;
+  cout << "BOX STATISTICS: \n"
+      << "   iters="<< num_iterations
+      << ",   includes=" << num_includes
+      << ",   splits=" << num_splits
+      << ",\n   ambiguous=" << ambiguous_.size()
+      << ",   exc_c0=" << num_excludes_T1
+      << ",   exc_c1=" << num_excludes_8P;
   /*
   cout << "Total iterations : " << num_iterations << endl;
   cout << "Included boxes : " << num_includes << endl;

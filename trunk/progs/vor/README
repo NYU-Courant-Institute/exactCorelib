@@ -15,7 +15,7 @@ Description:
 	Y.-J.Chiang and C.Yap (2011).
 
 Author:
-	Y.-J.Chiang, C.Yap, C.Wang (2012).
+	J-M. Lien, C.Yap, V.Sharma (2012).
 
 $Id: README $
 ============================================================
@@ -25,8 +25,12 @@ Files:
 				subdirectories 
 
 Directories:
-	data		-- This directory has various environments for motion planning
-	2d-disc		-- motion planning for a disc in the plane
+	data		-- This directory has various data files
+	vor2d		-- a numerical subdivision-based algorithm for the Voronoi complex
+			   of a polygonal set
+	vor3d		-- a numerical subdivision-based algorithm for the Voronoi complex
+			   of a polyhedral set
+
 
 ============================================================
 ============================================================

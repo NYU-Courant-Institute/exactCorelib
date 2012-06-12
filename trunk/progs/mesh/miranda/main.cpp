@@ -145,20 +145,26 @@ int main(int argc, char **argv) {
     cerr << "Processing arg : " << e.argId() << endl;
     return -1;
   }
-  
+cout << "after tclap" << endl;
+
   if((f_xy.getValue() != 0) && (g_xy.getValue() != 0)) {
+cout << "inside getValue !=0 " << endl;
     fxy_str = f_xy.getValue();
     gxy_str = g_xy.getValue();
     fxy = fxy.getbipoly(fxy_str);
     gxy = gxy.getbipoly(gxy_str);
   }
   else if(Poly.getValue() != 0) {
+cout << "before GetBiPoly.Poly.getValue " << endl;
     benchmark::GetBiPoly(Poly.getValue().c_str(), &fxy, &gxy);
+cout << "after GetBiPoly.Poly.getValue " << endl;
   }
   else {
     cout << "you should either specify a file name or provide 2 bipolynomials!" << endl;
     return -1;
   }
+
+cout << "after fxy" << endl;
 
   x_min = x_minimum.getValue();
   x_max = x_maximum.getValue();

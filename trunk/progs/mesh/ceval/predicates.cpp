@@ -1,8 +1,9 @@
 /*
- * predicates.cpp
+ * file:  predicates.cpp
  *
  *  Created on: Jun 22, 2010
- *      Author: narayan
+ *      Author: Narayan Kamath
+ *      Since Core 2.1.
  */
 
 #include <fenv.h>
@@ -145,6 +146,7 @@ template <> void EvaluateOrdinals(
   }
 }
 
+// 
 void CalculateFactTerms(const int degree,
     vector<BigFloat> *terms_u,
     vector<BigFloat> *terms_d) {
@@ -256,15 +258,23 @@ bool Predicates::Calculate(const double &k, const Complex &m, const double &r,
   double r_term = r;
   // The overall RHS
   double R = 0;
-
+cout << "CALCULATE (k, m, r, start)\n "
+    << "   ===================\n k: " << k
+    << ", m: " << m << ", r: " << r << ", start: " << start
+    << "\n   =================== " << endl;
   unsigned int fact_ctr = start - 1;
 
   for (unsigned int i = start; i < degree_ + 1; ++i) {
     // Terms on the RHS are rounded towards +inf.
     double term = RoundedMod<double>(series_[i].eval<Complex>(m), false);
 
-    term = (term * r_term *fact_terms_u_[fact_ctr]);
+double correctTerm = term;
 
+    // Chee (June 2011) asks:
+    // 		Shouldn't we divide by fact_terms_u instead?)
+    //		How do we automatically check that CEVAL is computing
+    //		the correct roots?
+    term = (term * r_term *fact_terms_u_[degree_ - fact_ctr]);
     R +=term;
     r_term *= r;
     ++fact_ctr;

@@ -17,6 +17,14 @@
  *
  * File: CoreIO.cpp
  *
+ * 	Mainly to do input and output for CoreLib's
+ * 	"Big Number" File format.
+ *
+ * 	The file format supports
+ * 		rest-of-line-comment char ( '#' )
+ * 		limited continuation line char ( '\' )
+ * 		white spaces ( ' ' or '\t' or '\n' )
+ *
  * Written by 
  *       Zilin Du <zilin@cs.nyu.edu>
  *       Chee Yap <yap@cs.nyu.edu>
@@ -68,11 +76,13 @@ void allocate (char * &s, int old_size, int new_size) {
 	  s = t;
 }//allocate
 
-// appends c to s at position pos. (MISNOMER: this is just "insert" at pos)
+// inserts c to s at position pos.
 // 	sz is the size of s;  but this could be doubled and buffer expanded!
-void append_char (char * &s, int & sz, int pos, char c) {
+// Chee: MISNOMER to call it "append_char" :
+// 	void append_char (char * &s, int & sz, int pos, char c) {
+void insert_char (char * &s, int & sz, int pos, char c) {
 	  if (pos > sz)
-	    core_io_error_handler("CoreIO", "append_char::invalid argument");
+	    core_io_error_handler("CoreIO", "insert_char::invalid argument");
 	
 	  if (pos == sz) {
 	    allocate(s, sz, 2*sz);
@@ -80,9 +90,10 @@ void append_char (char * &s, int & sz, int pos, char c) {
 	  }
 	
 	  s[pos] = c;
-}//append_char
+}//insert_char
 
-// skip blanks, tabs, line breaks and comment lines
+// skip blanks, tabs, line breaks and comment lines,
+// 	leaving us at the beginning of a token (or EOF)
 int skip_comment_line (std::istream & in) {
 	  int c;
 	
@@ -92,14 +103,14 @@ int skip_comment_line (std::istream & in) {
 	      do {// ignore the rest of this line
 	        c = in.get();
 	      } while ( c != '\n' );
-	      c = in.get(); // begin next line
+	      c = in.get(); // now, reach the beginning of the next line
 	    }
 	  } while (c == ' ' || c == '\t' || c == '\n');	//ignore white spaces and newlines
 	
 	  if (c == EOF)
 	    core_io_error_handler("CoreIO::read_from_file()","unexpected end of file.");
 	
-	  in.putback(c);
+	  in.putback(c);  // this is non-white and non-comment char!
 	  return c;
 }//skip_comment_line
 
@@ -122,22 +133,30 @@ int skip_backslash_new_line (std::istream & in) {
 	  return c;
 }//skip_backslash_new_line
 
-// read the input stream into a buffer, skipping white spaces and comment lines
-// 	NOTE: this routine is useful in processing general
-// 	text files where we allow "rest of current line comment char"
+// read a "token" from the input stream into the buffer, while:
+// 	(1) skipping over initial white spaces and comment lines
+// 	(2) terminating at the first white space or comment char!
+// NOTE: this routine is useful processing txt files
+// 	where we allow "rest of current line comment char"
 // 	and arbitrary white spaces and blank lines!
-void read_string(std::istream& in, char* &buffer, int sz) {
+// Chee: Misnomer to call it "read_string" 
+// void read_string(std::istream& in, char* &buffer, int sz) {
+void read_next_token(std::istream& in, char* &buffer, int sz) {
 	  int c, pos=0;
 	  skip_comment_line(in);
-	  // Now we are the beginning of a non-blank:
+	  // 	skip_comment_line puts us at the beginning
+	  // 	of non-white char or EOF
 	  while ( (c = in.get()) != EOF ) {
-	    if ( c == ' ' || c == '\t' || c == '\n' || c == '#')
-	      break;
+	      // in the first iteration of this while loop, the if condition
+	      // will surely fail, so we are sure to append at least one non-white char.
+	    if ( c == ' ' || c == '\t' || c == '\n' || c == '#') 
+	      break;	// thus, we break out of this while-loop when 
+	    		// we meet a white space or a comment!
 	    else
-	      append_char(buffer, sz, pos++, c);
+	      insert_char(buffer, sz, pos++, c);
 	  }
-	  append_char(buffer, sz, pos, '\0');
-}//read_string
+	  insert_char(buffer, sz, pos, '\0');
+}//read_next_token
 
 void read_base_number(std::istream& in, BigInt& m, long length, long maxBits) {
 	  char *buffer;
@@ -187,13 +206,13 @@ void read_base_number(std::istream& in, BigInt& m, long length, long maxBits) {
 	  // read digits
 	  for (int i=0; (i<size)&&((c=skip_backslash_new_line(in)) != EOF ); i++) {
 	    if (c != ' ' && c != '\t' && c != '\n')
-	      append_char(buffer, size, pos++, c);
+	      insert_char(buffer, size, pos++, c);
 	  }
 	  if (base == 10) {
 	    for(int j=0; j<offset; j++)
-	      append_char(buffer, size, pos++, '0');
+	      insert_char(buffer, size, pos++, '0');
 	  }
-	  append_char(buffer, size, pos, '\0');
+	  insert_char(buffer, size, pos, '\0');
 	
 	  // convert string to bigint.
 	  if (m.set_str(buffer, base) < 0)
@@ -243,14 +262,14 @@ void readFromFile(BigInt& z, std::istream& in, long maxLength) {
 	
 	  // check type name whether it is Integer or not.
 	  buffer = new char[8];
-	  read_string(in, buffer, sizeof(buffer));
+	  read_next_token(in, buffer, sizeof(buffer)); //this seems to read to EOF?
 	  if ( strcmp(buffer, "Integer") != 0)
 	    core_io_error_handler("BigInt::read_from_file()","type name expected.");
 	  delete[] buffer;
 	
 	  // read the bit length field.
 	  buffer = new char[100];
-	  read_string(in, buffer, sizeof(buffer));
+	  read_next_token(in, buffer, sizeof(buffer));
 	  length = atol(buffer);
 	  delete[] buffer;
 	
@@ -288,27 +307,27 @@ void readFromFile(BigFloat& bf, std::istream& in, long maxLength) {
 	
 	  // check type name whether it is Float
 	  buffer = new char[6];
-	  read_string(in, buffer, sizeof(buffer));
+	  read_next_token(in, buffer, sizeof(buffer));
 	  if (strcmp(buffer, "Float") != 0)
 	    core_io_error_handler("BigFloat::read_from_file()", "type name expected");
 	  delete[] buffer;
 	
 	  // read base (default is 16384)
 	  buffer = new char[8];
-	  read_string(in, buffer, sizeof(buffer));
+	  read_next_token(in, buffer, sizeof(buffer));
 	  if (strcmp(buffer, "(16384)") != 0)
 	    core_io_error_handler("BigFloat::read_from_file()", "base expected");
 	  delete[] buffer;
 	
 	  // read the bit length field.
 	  buffer = new char[100];
-	  read_string(in, buffer, sizeof(buffer));
+	  read_next_token(in, buffer, sizeof(buffer));
 	  length = atol(buffer);
 	  delete[] buffer;
 	
 	  // read exponent
 	  buffer = new char[100];
-	  read_string(in, buffer, sizeof(buffer));
+	  read_next_token(in, buffer, sizeof(buffer));
 	  exponent = atol(buffer);
 	  delete[] buffer;
 	

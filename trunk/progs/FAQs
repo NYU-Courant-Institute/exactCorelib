@@ -198,39 +198,51 @@ TABLE OF CONTENTS:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 --16: Examples for compiling a program into different accuracy levels?
 	A:
-	Suppose you have a program you want to be compiled into
-	levels 1, 2 and 3.  Of course you can do this by hand, but it
-	would be nice to automate this in the Makefile.  
+	Suppose you have a program you want to be compiled into different
+	CORE LEVELS (1, 2 and 3).  Of course you can do this by hand, but it
+	would be nice to automate this in the Makefile.   This exploits
+	CORE's philosophy of "write once, compile to desired accuracy".
 
-	Note also that if your program calls the Core Extension Library
+	Note that if your program calls the Core Extension Library
 	(corex), you need to make sure that you link to the extension
 	library that has the correct level.
 
-	There are several different ways to accomplish this.
-	Look at the Makefiles under:
+	There are several different ways to accomplish this, and examples
+	of each of these ways are found in various folders under $(CORE)/progs.
 
-	   progs/gaussian -- make all three levels simultaneously
-		E.g., the program "gaussian" will be compiled into 
+	METHOD 1: Automatically compile at 3 LEVELs
+
+	   See the Makefile under progs/gaussian where the
+		program "gaussian" is compiled into 
 	  	three versions, "gaussian_1", "gaussian_2", "gaussian_3".
+	   To accomplish this, provide suitable rules for each
+		level in the Makefile.
 		
-	   progs/bareiss/inverse.cpp.
-		Here we do not use the Makefile in any special
-	  	way, but compile the program in Level 4.  In
-		inverse.cpp, we wrote a templated function called
-		run<NT>() which performs the desired tests
-		using different number types (NT).  
-		E.g., we can call this function in different ways:
+	METHOD 2: Choose LEVEL at command line when calling the Make program.
+	   Under progs/demos, you can invoke make with desired LEVEL:
 
-		  run<Expr>(), run<BigFloat>(), run<machine_double>, etc.
-		
-	   progs/demos  -- To compile the programs in any chosen level,
-		you type "make LEV=n " (where n=1,2,3).
+		> make LEV=n " (where n=1,2,3)
 
-	   progs/mesh/CXY.  Again, we use the Makefile to accomplish
-		the task.  Try "make all" or "make testall"
+	METHOD 3:
+	   Under progs/mesh/CXY, we wrote the Makefile so that you can
+		type "make all" or "make testall"
 		to compile and test different versions of the
 		meshing program "cxy.cpp".
 	
+	METHOD 4: This last method does not use Makefiles but writing templated
+		methods.   E.g., write a templated method "RUN<NT>" that is compiled
+		at LEVEL 4, then call RUN<NT> with different number types for NT.
+
+	   Look under progs/bareiss for this approach.  In the program
+		inverse.cpp, we wrote a templated function called
+		run<NT>() which performs the desired tests
+		using different number types (NT). Now we can call this function:
+
+		  run<Expr>(); run<BigFloat>(); run<machine_double>; etc.
+		
+	METHOD 5: Compiling library files in different CORE LEVELS.
+		Look under $(CORELIB)/ext/Makefile.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 --17: Examples of compiling with different number kernels?
 	A:
