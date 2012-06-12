@@ -25,7 +25,7 @@ Euler_Ops::Euler_Ops(){
 
 HalfEdge *Euler_Ops::addhe(Edge *e, Vertex *v,HalfEdge *followhe,int sign){
  HalfEdge *he; 
- if(!followhe->edg)
+ if(followhe->edg==NULL)
   he=followhe;
  else{
   he=new HalfEdge();
@@ -128,15 +128,15 @@ void Euler_Ops::lmev(HalfEdge *he1,HalfEdge *he2,Id v,double x,double y,double z
     he=he->mate()->nxthe;
   }
 
-  addhe(newedge,newvertex,he2,PLUS);
   addhe(newedge,he2->start,he1,MINUS);
+  addhe(newedge,newvertex,he2,PLUS);
 
   newvertex->vedge=he2->prvhe;
   he2->start->vedge=he2; 
-  cout<<newedge->he1<<endl;
+  /*cout<<newedge->he1<<endl;
   cout<<newedge->he2<<endl;
   cout<<he1<<endl;
-  cout<<he2<<endl;
+  cout<<he2<<endl;*/
   
 }
 
@@ -147,6 +147,7 @@ Face *Euler_Ops::lmef(HalfEdge *he1, HalfEdge *he2,Id f){
   Edge *newedge=new Edge(he1->wloop->lface->fsolid);
   newface->faceno=f;
   newface->flout=newloop;
+  newface->floops->push_back(newloop);
 
   /*The HalfEdges in [he1,he2) is in the newloop*/
   HalfEdge *he=he1;
@@ -168,6 +169,10 @@ Face *Euler_Ops::lmef(HalfEdge *he1, HalfEdge *he2,Id f){
 
   newloop->ledg=nhe1;
   he2->wloop->ledg=nhe2;
+
+  /*cout<<"In the MEF"<<endl;
+  newedge->print();
+  cout<<endl;*/
 
 
   return(newface);
@@ -257,7 +262,7 @@ int Euler_Ops::mev(Id s,Id f1,Id f2,Id v1,Id v2,Id v3,Id v4,double x,double y,do
     return(ERROR);
   }
 
-  cout<<"Solid "<<oldsolid->solidno<<endl;
+  /*cout<<"Solid "<<oldsolid->solidno<<endl;
   oldsolid->print();
   cout<<"oldface1 "<<oldface1->faceno<<endl;
   oldface1->print();
@@ -267,7 +272,7 @@ int Euler_Ops::mev(Id s,Id f1,Id f2,Id v1,Id v2,Id v3,Id v4,double x,double y,do
   he1->print();
   cout<<"he2 "<<endl;
   he2->print();
-  cout<<endl<<endl;
+  cout<<endl<<endl;*/
 
   lmev(he1,he2,v4,x,y,z);
   return SUCCESS;

@@ -2,29 +2,61 @@
 
 int main(){
   Euler_Ops *eo=new Euler_Ops();
+  /**********************First Step New a Solid with single Face&Vertex, add vertex 1:(0,0,0)*************************************/
+  cout<<"**********************First Step New a Solid with single Face&Vertex, add vertex 1:(0,0,0)******************************"<<endl;
   Solid * s=eo->mvfs(1,1,1,0.0,0.0,0.0);
 
   Vec<Solid *> *ss=eo->solids;
-  cout<<ss->size()<<endl;
+  /*cout<<ss->size()<<endl;
   cout<<(*ss)[0]<<endl;
-  cout<<s<<endl;
+  cout<<s<<endl;*/
   Vec<Face *> *fs=s->sfaces;
   Vec<Edge *> *es=s->sedges;
   Vec<Vertex *> *vs=s->sverts;
   Vec<Loop *> *ls=(*fs)[0]->floops;
   Loop *l=(*fs)[0]->flout;
 
-  
+  s->showInfo();
   s->print();
 
-  int check=eo->mev(1,1,1,1,1,1,1,1,0,0);
+  /***********************2nd step : make edge&vertex,add vertex 2(1,0,0)************************************/
+  cout<<"***********************2nd step : make edge&vertex,add vertex 2(1,0,0)************************************"<<endl;
+  int check=eo->mev(1,1,1,1,1,1,2,1,0,0);/*Solidno, faceno1,faceno2,v1,v2,v3...newV,coordinates*/
 
   if(check!=SUCCESS)
     cout<<"We cannot build the point 1,0,0 and the edge."<<endl;
 
+  s->showInfo();
   s->print();
 
-  cout<<"Solid no"<<s->solidno<<endl;
+  /************************3rd step: make edge &vertex,add vertex 3(0,1,0)***********************************/
+  cout<<"***********************3rd step : make edge&vertex,add vertex 3(0,1,0)************************************"<<endl;
+  check=eo->mev(1,1,1,1,2,2,3,0,1,0);
+  if (check!=SUCCESS)
+    cout<<"We cannot build the point 0,1,0 and the edge."<<endl;
+  s->showInfo();
+  s->print();
+    
+  /************************4th step: make edge &vertex,add vertex 4(1,1,0)***********************************/
+  cout<<"************************4th step: make edge &vertex,add vertex 4(1,1,0)***********************************"<<endl;
+  check=eo->mev(1,1,1,3,1,1,4,1,1,0);
+  if (check!=SUCCESS)
+    cout<<"We cannot build the point 0,1,0 and the edge."<<endl;
+  s->showInfo();
+  s->print();
+
+  /************************5th step: make edge &face,add edge (1,0,0) - (1,1,0)***********************************/
+  cout<<"************************5th step: make edge &face,add edge (1,0,0) - (1,1,0)***********************************"<<endl;
+  check=eo->mef(1,1,2,1,4,3,2);
+  if (check!=SUCCESS)
+    cout<<"We cannot build the point 0,1,0 and the edge."<<endl;
+  s->showInfo();
+  s->print();
+
+  /************************5th step: make edge &face,add edge (1,0,0) - (1,1,0)***********************************/
+
+
+  /*cout<<"Solid no"<<s->solidno<<endl;
 
   cout<<"sfaces ="<<fs<<endl;
   cout<<"sfaces size="<<fs->size()<<endl;
@@ -51,7 +83,7 @@ int main(){
   cout<<"nxthe= "<<he->nxthe<<endl;
   cout<<"prvhe= "<<he->prvhe<<endl;
   cout<<"he start vertex"<<he->start<<endl;
-  cout<<"nxthe start vertex"<<he->nxthe->start<<endl;
+  cout<<"nxthe start vertex"<<he->nxthe->start<<endl;*/
   
   
   

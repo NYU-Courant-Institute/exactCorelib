@@ -230,6 +230,31 @@ public:
 
 
   void print();
+  void showInfo(){
+    cout<<"Solid Id="<<solidno<<endl;
+    cout<<"sfaces="<<sfaces<<endl;
+    for (int i=0;i<sfaces->size();i++)
+      cout<<"faceno="<<(*sfaces)[i]->faceno<<endl;
+    cout<<endl;
+
+    cout<<"sedges="<<sedges<<endl;
+    for (int i=0;i<sedges->size();i++){
+      Edge *e=(*sedges)[i];
+      e->he1->print();
+      e->he2->print();
+      cout<<endl;
+    }
+    cout<<endl;
+
+    cout<<"sverts="<<sverts<<endl;
+    for (int i=0;i<sverts->size();i++){
+      Vertex *v=(*sverts)[i];
+      cout<<"fverts="<<v->vertexno<<" ";
+      v->print();
+    }
+
+    cout<<endl;
+  }
 
 };
 

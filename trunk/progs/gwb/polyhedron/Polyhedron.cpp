@@ -12,8 +12,10 @@ Vertex::Vertex(Id no,double x, double y, double z, Solid *s){
   (*vcoord)[1]=y;
   (*vcoord)[2]=z;
   (*vcoord)[3]=1.0;
-  vertexno=counter++;
+  vertexno=no;
+  counter++;
   this->s=s;
+  s->sverts->push_back(this);
 }
 
 Vertex::Vertex(double x,double y,double z,Solid* s){
@@ -118,12 +120,14 @@ Edge::Edge(Solid *solid){
   s=solid;
   he1=new HalfEdge();
   he2=new HalfEdge();
+  s->sedges->push_back(this);
 
 }
 Edge::Edge(HalfEdge *half1,HalfEdge *half2,Solid *solid){
   he1=half1;
   he2=half2;
   s=solid;
+  s->sedges->push_back(this);
 }
 /*********************Loop*********************/
 
@@ -147,7 +151,7 @@ void Loop::print(){
 Face::Face(){
   floops=new Vec<Loop *>();
   flout=new Loop(this);
-  fsolid->sfaces->push_back(this);
+  //fsolid->sfaces->push_back(this);
 
 }
 
