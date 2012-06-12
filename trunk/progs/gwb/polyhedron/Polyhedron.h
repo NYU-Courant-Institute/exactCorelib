@@ -232,12 +232,12 @@ public:
   void print();
   void showInfo(){
     cout<<"Solid Id="<<solidno<<endl;
-    cout<<"sfaces="<<sfaces<<endl;
+    cout<<"sfaces: size="<<sfaces->size()<<endl;
     for (int i=0;i<sfaces->size();i++)
       cout<<"faceno="<<(*sfaces)[i]->faceno<<endl;
     cout<<endl;
 
-    cout<<"sedges="<<sedges<<endl;
+    cout<<"sedges: size="<<sedges->size()<<endl;
     for (int i=0;i<sedges->size();i++){
       Edge *e=(*sedges)[i];
       e->he1->print();
@@ -246,10 +246,9 @@ public:
     }
     cout<<endl;
 
-    cout<<"sverts="<<sverts<<endl;
+    cout<<"sverts: size="<<sverts->size()<<endl;
     for (int i=0;i<sverts->size();i++){
       Vertex *v=(*sverts)[i];
-      cout<<"fverts="<<v->vertexno<<" ";
       v->print();
     }
 

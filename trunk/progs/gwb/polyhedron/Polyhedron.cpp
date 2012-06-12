@@ -54,7 +54,7 @@ Vertex::Vertex(){
 /*Print coordinates*/
 
 void Vertex::print(){
-  cout<<"("<<(*vcoord)[0]<<","<<(*vcoord)[1]<<","<<(*vcoord)[2]<<")"<<endl;
+  cout<<vertexno<<"("<<(*vcoord)[0]<<","<<(*vcoord)[1]<<","<<(*vcoord)[2]<<")"<<endl;
 }
 
 /******************************************/
@@ -107,8 +107,8 @@ void HalfEdge::print(){
     return;
   }
 
-  cout<<"("<<start->getX()<<","<<start->getY()<<","<<start->getZ()<<")"
-  <<" -> ("<<nxthe->getStart()->getX()<<","<<nxthe->getStart()->getY()<<","<<nxthe->getStart()->getZ()<<")"<<endl;
+  cout<<(start->vertexno)<<"("<<start->getX()<<","<<start->getY()<<","<<start->getZ()<<")"
+  <<" -> "<<(nxthe->getStart()->getId())<<"("<<nxthe->getStart()->getX()<<","<<nxthe->getStart()->getY()<<","<<nxthe->getStart()->getZ()<<")"<<endl;
 
 }
 /********************Edge***************************/
@@ -140,7 +140,7 @@ void Loop::print(){
     cout<<"No Half Edge!"<<endl;
   else do{
     Vertex *v=he->getStart();
-    cout<<"("<<v->getX()<<","<<v->getY()<<","<<v->getZ()<<") -> ";
+    cout<<v->getId()<<"("<<v->getX()<<","<<v->getY()<<","<<v->getZ()<<") -> ";
     he=he->nxthe;
   }while(he!=ledg);
   cout<<endl;
