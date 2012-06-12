@@ -215,6 +215,13 @@ void Predicates::EvaluateAtCompassPoints(Complex *results,
 //      terms_u[ k ] =  d! / (d-k+1)!   
 //            for k=0,...,d-2     
 //
+// d = degree                                                                        
+// term[k] = d * (d-1) * ... * (d-k+2)                                               
+//         = d! / (d-k+1)!                                                           
+// k ranges from 0 to d-2 inclusive                                                  
+// for both the upper and lower series                                               
+// see loop for i from 1 to d-1                                                      
+// term[d-1]=1 
 void CalculateFactTerms(const int degree,
 		                vector<DoubleWrapper> *terms_u,
 		                vector<DoubleWrapper> *terms_d) {
