@@ -3,10 +3,10 @@
 using namespace std;
 class Euler_Ops{
 public:
-  set<Solid *> *solids;
+  Vec<Solid *> *solids;
   /*Constructors*/
   Euler_Ops();
-  Euler_Ops(set<Solid *> *solids);
+  Euler_Ops(Vec<Solid *> *solids);
   /**********Operations on HalfEdge************/
   HalfEdge *addhe(Edge *e, Vertex *v,HalfEdge *he,int sign);
   HalfEdge *delhe(HalfEdge* he);

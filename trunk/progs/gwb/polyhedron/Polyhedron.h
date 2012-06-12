@@ -5,10 +5,10 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-typedef float coords[4];
+typedef double coords[4];
 typedef float matrix[4][4];
 typedef short Id;
-typedef vector Vec; 
+#define Vec vector 
 
 /*Declaration*/
 class Vertex;
@@ -38,7 +38,7 @@ public:
     return vedge;
   }
 
-  void vectorHe(HalfEdge *he){
+  void setHe(HalfEdge *he){
     vedge=he;
   }
 
@@ -48,7 +48,7 @@ public:
     return vcoord;
   }
 
-  void vectorCoord(vector<double> *cod){
+  void setCoord(vector<double> *cod){
     vcoord=cod;
   }
   /*Get coordinates seperately*/
@@ -56,7 +56,7 @@ public:
     return (*vcoord)[0];
   }
 
-  void vectorX(double x){
+  void setX(double x){
     (*vcoord)[0]=x;
   }
 
@@ -64,7 +64,7 @@ public:
     return (*vcoord)[1];
   }
 
-  void vectorY(double y){
+  void setY(double y){
     (*vcoord)[1]=y;
   }
 
@@ -72,7 +72,7 @@ public:
     return (*vcoord)[2];
   }
 
-  void vectorZ(double z){
+  void setZ(double z){
     (*vcoord)[2]=z;
   }
 
@@ -133,13 +133,13 @@ public:
   }
  
   /*previous and next HalfEdge*/
-  HalfEdge *getnxthe(){
+  HalfEdge *getNxthe(){
     return nxthe;
   }
   void setNxthe(HalfEdge *he){
     nxthe=he;
   }
-  HalfEdge *getprvhe(){
+  HalfEdge *getPrvhe(){
     return prvhe;
   }
   void setPrvhe(HalfEdge *he){
@@ -149,6 +149,7 @@ public:
 
   HalfEdge();/*Default constructor*/
   HalfEdge(Vertex *start);/*HalfEdge from start vertex*/
+  HalfEdge(Loop *l);
   HalfEdge(Edge *e,Vertex *v,Loop *wloop,HalfEdge *prv,HalfEdge *nxt);/*Initiate all members*/
 
 
@@ -163,12 +164,21 @@ class Edge
 public:
   HalfEdge *he1;/*pointer to right halfedge*/
   HalfEdge *he2;/*pointer to left halfedge*/
+  Solid *s;
+
+  HalfEdge *getHe1(){return he1;}
+  void setHe1(HalfEdge *he){he1=he;}
+  HalfEdge *getHe2(){return he2;}
+  void setHe2(HalfEdge *he){he2=he;}
+  Solid *getSolid(){return s;}
+  void setSolid(Solid *solid){s=solid;}
 
   /*Constructors*/
   Edge();
   Edge(Solid *s);
+  Edge(HalfEdge *he1,HalfEdge *he2,Solid *s);
 
-  void print(); /*print the start end end point*/
+  void print(){ if(he1) he1->print(); else if(he2) he2->print(); else cout<<"empty edge without halfedges"<<endl;}; /*print the start end end point*/
 };
 
 
@@ -178,8 +188,9 @@ class Loop
 public:
   HalfEdge *ledg;/*Pointer to ring of half edges*/
   Face *lface;/*back to pointer to face*/
-  Loop(Face *f);
-  Loop();
+  Loop();/*Default constructor*/
+  Loop(Face *f);/*Constructor with a face*/
+  Loop(HalfEdge *he,Face *f);/*Constructor wigh face and leading edge*/
   void print();/*print the loop points in a circle*/
 };
 
@@ -192,11 +203,12 @@ public:
   Solid *fsolid;/*back pointer to solid*/
   Loop *flout;/*pointer to outer loop*/
   Vec<Loop *> *floops;/*pointer to list of loops*/
-  coords *feq;/*face equation*/
+  coords feq;/*face equation*/
 
-  Face(Solid* s);
-  Face(vector<Loop *> *floops, Loop *flout,Solid * s, double a,double b,double c,double d);
   Face();
+  Face(Solid* s);
+  Face(Vec<Loop *> *floops, Loop *flout,Solid * s, double a,double b,double c,double d);
+  Face(Id faceno,Vec<Loop *> *floops, Loop *flout,Solid * s, double a,double b,double c,double d);
 
   void print();
 };
@@ -209,9 +221,13 @@ public:
   Vec<Face *> *sfaces;/*pointer to list of faces*/
   Vec<Edge *> *sedges;/*pointer to list of edges*/
   Vec<Vertex *> *sverts;/*pointer to list of vertices*/
+  Vec<Solid *> *solids;
 
-  Solid(vector<Face *> *sfaces, vector<Edge *> sedges,vector<Vertex *> *sverts);
   Solid();
+  Solid(Vec<Solid *> *solids);
+  Solid(vector<Face *> *sfaces, vector<Edge *> *sedges,vector<Vertex *> *sverts,Vec<Solid *> *solids);
+  Solid(Id solidno,vector<Face *> *sfaces, vector<Edge *> *sedges,vector<Vertex *> *sverts,Vec<Solid *> *solids);
+
 
   void print();
 

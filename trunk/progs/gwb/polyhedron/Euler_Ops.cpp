@@ -1,14 +1,25 @@
+/*
+ * file: Euler_Ops.cpp
+ *
+ *  This is an implementation of Geometric Work Bench from Mantyla's book.
+ *
+ * Author: Kai Cao
+ * June 2012
+ * Since Core 2.1.
+ *
+ ***************************************************/
+
 #include <iostream>
 #include "Euler_Ops.h"
 using namespace std;
 
 /*Constructors*/
-Euler_Ops::Euler_Ops(set<Solid *> *solids){
+Euler_Ops::Euler_Ops(Vec<Solid *> *solids){
   this->solids=solids;
 }
 
 Euler_Ops::Euler_Ops(){
- solids=new set<Solid *>();
+ solids=new Vec<Solid *>();
 }
 
 
@@ -58,56 +69,48 @@ HalfEdge *Euler_Ops::delhe(HalfEdge *he){
 
 /*Higher level make vertex face solid*/
 Solid *Euler_Ops::mvfs(Id s,Id f,Id v,double x,double y,double z){
-  cout<<"begin mvfs"<<endl;
+
 /*Initialize*/
   Solid *newsolid;
   Face *newface;
   Vertex *newvertex;
   HalfEdge *newhe;
   Loop *newloop;
-  newsolid=new Solid();
-  newface=new Face;
-  newloop=new Loop;
-  cout<<"successfully before vertex"<<endl;
-  newvertex=new Vertex();
-  cout<<"successfully after vertex"<<endl;
-  cout<<"solid sverts"<<(newsolid->sverts)<<endl;
-  cout<<"solid sedges"<<(newsolid->sedges)<<endl;
-  cout<<"solid sfaces"<<(newsolid->sfaces)<<endl;
-  newhe=new HalfEdge;
-  cout<<"successfully new all objects needed"<<endl;
+  /*Initialize all objects*/
+  newsolid=new Solid(solids);
+  newface=new Face(newsolid);
+  newloop=new Loop(newface);
+  newhe=new HalfEdge(newloop);
+  newvertex=new Vertex(newsolid);
 
+  /*Assign all values*/
   newsolid->solidno=s;
   newface->faceno=f;
-  newface->flout=newloop;
-  cout<<"1/4"<<endl;
-  cout<<"newloop="<<newloop<<endl;
-  cout<<"newloop->ledg"<<endl;
-  cout<<newloop->ledg<<endl;
-  cout<<"newhe"<<endl;
-  cout<<newhe<<endl;
-  cout<<"after newloop->ledg"<<endl;
-  newloop->ledg=newhe;
-  cout<<"3/8"<<endl;
-  newhe->wloop=newloop;
-  cout<<"1/2"<<endl;
-  
-  newhe->nxthe=newhe->prvhe=newhe;
-  cout<<"3/4"<<endl;
-  newhe->start=newvertex;
-  cout<<"7/8"<<endl;
-  newhe->edg=NULL;
-  cout<<"successfully set up all members"<<endl;
-
-
   newvertex->vertexno=v;
-  cout<<"newvertex->vertexno"<<endl;
-  (*(newvertex->vcoord))[0]=x;
-  cout<<"vcoord"<<endl;
-  (*(newvertex->vcoord))[1]=y; 
-  (*(newvertex->vcoord))[2]=z; 
-  (*(newvertex->vcoord))[3]=1.0;
+  newvertex->setX(x);
+  newvertex->setY(y);
+  newvertex->setZ(z);
 
+  /*Assign all pointers*/
+  /*Connection between vertices and halfedges*/
+  newhe->start=newvertex;
+  newvertex->vedge=newhe;
+  /*Connection between halfedges and Loops*/
+  newhe->wloop=newloop;
+  newloop->ledg=newhe;
+  newhe->nxthe=newhe->prvhe=newhe;
+  /*Connection between loops and and faces*/
+  newface->flout=newloop;
+  newface->floops->push_back(newloop);
+
+  /*We have a half edge but no edge*/  
+  newhe->edg=NULL;
+
+  /*newvertex->print();
+  newhe->print();
+  newloop->print();
+  newface->print();
+  newsolid->print();*/
 
   return(newsolid);
 }
@@ -120,6 +123,7 @@ void Euler_Ops::lmev(HalfEdge *he1,HalfEdge *he2,Id v,double x,double y,double z
   /*Seperate all points before you reach he2*/
   he=he1;
   while(he!=he2){
+    cout<<"In the HalfEdge Loop"<<endl;
     he->start=newvertex;
     he=he->mate()->nxthe;
   }
@@ -129,6 +133,10 @@ void Euler_Ops::lmev(HalfEdge *he1,HalfEdge *he2,Id v,double x,double y,double z
 
   newvertex->vedge=he2->prvhe;
   he2->start->vedge=he2; 
+  cout<<newedge->he1<<endl;
+  cout<<newedge->he2<<endl;
+  cout<<he1<<endl;
+  cout<<he2<<endl;
   
 }
 
@@ -161,30 +169,29 @@ Face *Euler_Ops::lmef(HalfEdge *he1, HalfEdge *he2,Id f){
   newloop->ledg=nhe1;
   he2->wloop->ledg=nhe2;
 
+
   return(newface);
   
 }
 
 /*Get solid*/
 Solid *Euler_Ops::getsolid(Id sn){
-  cout<<"begin get solid"<<endl;
-  set<Solid *>::iterator it;
+  /*cout<<"begin get solid"<<endl;
   cout<<"solids=NLLL?"<<(solids==NULL)<<endl;
   cout<<"solids size="<<(solids->size())<<endl;
   cout<<"solids before begin"<<solids<<endl;
-  solids->begin();
-  cout<<"it points to begin";
-  for (;it!=solids->end();it++){
-    cout<<"in the loop";
-    if((*it)->solidno==sn)
-      return *it;
+  cout<<"it points to begin"<<endl;*/
+  for (int i=0;i<solids->size();i++){
+    Solid *s=(*solids)[i];
+    if(s->solidno==sn)
+      return s;
   }//for
   return NULL;
 }
 
 /*Get face*/
 Face *Euler_Ops::fface(Solid *s,Id fn){
-  set<Face *>::iterator it;
+  Vec<Face *>::iterator it;
   for (it=s->sfaces->begin();it!=s->sfaces->end();it++){
     if((*it)->faceno==fn)
       return *it;
@@ -194,14 +201,19 @@ Face *Euler_Ops::fface(Solid *s,Id fn){
 
 /*Get HalfEdge*/
 HalfEdge *Euler_Ops::fhe(Face *f,Id vn1,Id vn2){  
-  set<Loop *>::iterator it;
-  for (it=f->floops->begin();it!=f->floops->end();it++){
-    HalfEdge *he=(*it)->ledg;
+
+  Vec<Loop *> *ls=f->floops;
+
+  /*Look through all loops*/
+  for (int i=0;i<ls->size();i++){
+    HalfEdge *he=(*ls)[i]->ledg;
+
+    /*Look through all half edges*/
     do{
       if(he->start->vertexno==vn1&&he->nxthe->start->vertexno==vn2)
         return he;
        he=he->nxthe;
-    }while(he!=(*it)->ledg);
+    }while(he!=(*ls)[i]->ledg);
    }//for
 
    return NULL;
@@ -209,44 +221,53 @@ HalfEdge *Euler_Ops::fhe(Face *f,Id vn1,Id vn2){
 
 /*Higher level make edge vertex*/
 int Euler_Ops::mev(Id s,Id f1,Id f2,Id v1,Id v2,Id v3,Id v4,double x,double y,double z){
-  cout<<"begin mev"<<endl;
+
   Solid *oldsolid;
   Face *oldface1,*oldface2;
   HalfEdge *he1,*he2;
   
-  cout<<"check mev 1: before getsolid"<<endl;
   /*Get solid*/
-  cout<<"solids before get solid:"<<solids<<endl;
   oldsolid=getsolid(s);
   if(oldsolid==NULL){
     cout<<"mev: solid "<<s<<"not found\n";
     return(ERROR);
   }
-  cout<<"check mev 2: after getsolid"<<endl;
 
   oldface1=fface(oldsolid,f1);
   if(oldface1==NULL){
-    cout<<"mev: face "<<f1<<"not found in solid "<<s;
+    cout<<"mev: face "<<f1<<"not found in solid "<<s<<endl;
     return(ERROR);
   }
 
   oldface2=fface(oldsolid,f2);
   if(oldface2==NULL){
-    cout<<"mev: face "<<f2<<"not found in solid "<<s;
+    cout<<"mev: face "<<f2<<"not found in solid "<<s<<endl;
     return(ERROR);
   }
 
   he1=fhe(oldface1,v1,v2);
   if(he1==NULL){
-    cout<<"mev: HalfEdge"<<v1<<"->"<<v2<<"not found in face"<<f1;
+    cout<<"mev: HalfEdge"<<v1<<"->"<<v2<<"not found in face"<<f1<<endl;
     return(ERROR);
   }
 
   he2=fhe(oldface2,v1,v3);
   if(he2==NULL){
-    cout<<"mev: HalfEdge"<<v1<<"->"<<v3<<"not found in face"<<f2;
+    cout<<"mev: HalfEdge"<<v1<<"->"<<v3<<"not found in face"<<f2<<endl;
     return(ERROR);
   }
+
+  cout<<"Solid "<<oldsolid->solidno<<endl;
+  oldsolid->print();
+  cout<<"oldface1 "<<oldface1->faceno<<endl;
+  oldface1->print();
+  cout<<"oldface2 "<<oldface2->faceno<<endl;
+  oldface2->print();
+  cout<<"he1 "<<endl;
+  he1->print();
+  cout<<"he2 "<<endl;
+  he2->print();
+  cout<<endl<<endl;
 
   lmev(he1,he2,v4,x,y,z);
   return SUCCESS;
