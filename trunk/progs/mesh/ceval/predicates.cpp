@@ -146,7 +146,7 @@ template <> void EvaluateOrdinals(
   }
 }
 
-// 
+// NOTE: this is the BigFloat version of CalculateFactTerms
 void CalculateFactTerms(const int degree,
     vector<BigFloat> *terms_u,
     vector<BigFloat> *terms_d) {
@@ -208,6 +208,13 @@ void Predicates::EvaluateAtCompassPoints(Complex *results,
 }
 
 
+// NOTE: this is the machine float version of CalculateFactTerms
+//
+// Invariant: 
+//
+//      terms_u[ k ] =  d! / (d-k+1)!   
+//            for k=0,...,d-2     
+//
 void CalculateFactTerms(const int degree,
 		                vector<DoubleWrapper> *terms_u,
 		                vector<DoubleWrapper> *terms_d) {
@@ -258,22 +265,28 @@ bool Predicates::Calculate(const double &k, const Complex &m, const double &r,
   double r_term = r;
   // The overall RHS
   double R = 0;
-cout << "CALCULATE (k, m, r, start)\n "
-    << "   ===================\n k: " << k
-    << ", m: " << m << ", r: " << r << ", start: " << start
-    << "\n   =================== " << endl;
   unsigned int fact_ctr = start - 1;
 
   for (unsigned int i = start; i < degree_ + 1; ++i) {
     // Terms on the RHS are rounded towards +inf.
     double term = RoundedMod<double>(series_[i].eval<Complex>(m), false);
 
-double correctTerm = term;
-
-    // Chee (June 2011) asks:
-    // 		Shouldn't we divide by fact_terms_u instead?)
-    //		How do we automatically check that CEVAL is computing
-    //		the correct roots?
+    // Chee (June 2011):
+    // ORIGINAL:
+    // 		term = (term * r_term *fact_terms_u_[fact_ctr]);
+    //
+    // 		This multiplies the i-th Taylor coefficient by d!/(d-i+1)! .
+    // 		After normalization (dividing by d!), the i-th Taylor coefficient
+    // 		is divided by  (d-i+1)!   which seems wrong.   We want to
+    // 		divide by i! instead.
+    //
+    // CORRECTION?  (NOT CONFIRMED)
+    // 		term = (term * r_term *fact_terms_u_[degree_ - fact_ctr + 1]);
+    //
+    //		This multiplie the i-th Taylor coefficient by d!/(i+1)! .
+    //		After normalization (dividing by d!), the i-th Taylor coefficient
+    // 		is divided by  (i+1)! .   This is still slightly off.
+    //
     term = (term * r_term *fact_terms_u_[degree_ - fact_ctr]);
     R +=term;
     r_term *= r;
