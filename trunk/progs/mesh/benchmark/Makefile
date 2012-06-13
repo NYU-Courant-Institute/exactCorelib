@@ -15,8 +15,8 @@ PROFILE=
 DATA=../../data/polynomials
 FRISCO=../../data/frisco
 
-VERB=-v
 VERB=
+VERB=-v
 v=1
 verbose=$(v)
 
