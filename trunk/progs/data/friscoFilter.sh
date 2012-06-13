@@ -3,10 +3,10 @@
 # echo "                                           START"
 
 # check command line argument
-if [ $1 = r ]; then
+if [[ $1 = r ]]; then
     echo "Printing names of real polynomials" $1
     decide=r
-elif  [ $1 = c ]; then
+elif  [[ $1 = c ]]; then
     echo "Printing names of complex polynomials" $1
     decide=c
 else
@@ -15,8 +15,9 @@ else
 fi
 
 
-# process every FRISCO polynomial in the current directory
-for x in ./frisco/*pol  ;
+# process every FRISCO polynomial in the frisco subdirectory
+cd frisco
+for x in *pol  ;
    { 
     # echo "Processing polynomial" $x "..."; 
 	
@@ -31,5 +32,6 @@ for x in ./frisco/*pol  ;
     fi
    } 
 
+cd ..
 
 # echo "                                           END"
