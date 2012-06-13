@@ -88,4 +88,9 @@ int main(int argc, char **argv) {
     ++it;
   }
   cout << "\n --------------------------" << endl;
+#if (ORIGINAL==0)
+    cout << "original version of Calculate used!" << endl;
+#else
+    cout << "new version of Calculate used!" << endl;
+#endif
 }

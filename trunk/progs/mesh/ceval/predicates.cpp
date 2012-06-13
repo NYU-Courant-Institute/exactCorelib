@@ -38,8 +38,8 @@ bool Predicates::PointTest(const Complex &m, const double &r) const {
     if (start.im() == 0 || start.im() * end.im() < 0) {
       v_crossings.push_back(i);
     }
-  }
-
+  } 
+ 
   // There must be exactly two u crossings and two v crossings.
   if (u_crossings.size() != 2 || v_crossings.size() != 2) {
     return false;
@@ -294,7 +294,11 @@ bool Predicates::Calculate(const double &k, const Complex &m, const double &r,
     //		After normalization (dividing by d!), the i-th Taylor coefficient
     // 		is divided by  (i+1)! .   This is still slightly off.
     //
+#if (ORIGINAL==0)
+    term = (term * r_term *fact_terms_u_[fact_ctr]);
+#else
     term = (term * r_term *fact_terms_u_[degree_ - fact_ctr]);
+#endif
     R +=term;
     r_term *= r;
     ++fact_ctr;

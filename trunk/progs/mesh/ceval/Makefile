@@ -1,6 +1,15 @@
 # Makefile for mesh/ceval 
 #
-# (template Makefile for simple targets)
+# 	This directory contains the main implementation of the
+# 	CEVAL Algorithm of Sagraloff and Yap.
+# 	The implementation is part of Narayan Kamath's MSc Thesis
+# 	at Oxford, supervised by Irina Voiculescu and Chee Yap.
+#
+# 	The visualation and benchmarking of CEVAL is implemented
+# 	in the parallel directory mesh/benchmark.
+#
+# Chee Yap (June 2012)
+# Since CORE 2.1
 #
 # Core Library, $Id: Makefile,v 1.11 2011/05/05 16:20:23 exact Exp $
 
@@ -15,10 +24,13 @@ xmin=-2.0
 ymin=-2.0
 boxwidth=4.0
 
+# compiling the two versions of predicates.cpp:
+ORIG=0
 #=================================================
 # TARGETS
 #=================================================
 TARGETS = ceval
+DEPENDS = algorithm.o predicates.o ceval.o
 
 all: $(TARGETS)
 
@@ -30,9 +42,15 @@ test: $(TARGETS)
 moretest: $(TARGETS)
 # nothing to do
 
-ceval: ceval.o algorithm.o predicates.o
-	${CXX} $(LDFLAGS) ceval.o algorithm.o predicates.o $(CORE_LIB) -o $@
+ceval: $(DEPENDS)
+	${CXX} $(LDFLAGS) $(CORE_LIB) $(DEPENDS) -o $@
+#	${CXX} $(LDFLAGS) ceval.o algorithm.o predicates.o $(CORE_LIB) -o $@
 
+#ceval.o:
+#	${CXX} -c -O3 -DORIGINAL=$(ORIG) $(CXXFLAGS) $(CORE_INC) $< -o $@
+
+#predicate.o:
+#	${CXX} -c -O3 -DORIGINAL=$(ORIG) $(CXXFLAGS) $(CORE_INC) $< -o $@
 #=================================================
 # TCLAP:
 #=================================================
@@ -77,8 +95,11 @@ eg3: ./ceval
 %: %.o
 	${CXX} $(LDFLAGS) $< $(CORE_LIB) -o $@
 
+#ceval.o:
+#	${CXX} -c -O3 -DORIGINAL=$(ORIG) $(CXXFLAGS) $(CORE_INC) $< -o $@
+
 .cpp.o:
-	${CXX} -c -O3 $(CXXFLAGS) $(CORE_INC) $< -o $@
+	${CXX} -c -DORIGINAL=$(ORIG) -O3 $(CXXFLAGS) $(CORE_INC) $< -o $@
 
 #=================================================
 # Clean object files
@@ -89,6 +110,10 @@ clean:
 
 m:
 	gvim Makefile
+
+options:
+	cd ../../../; make options
+
 #=================================================
 # Remove executable files
 #=================================================
