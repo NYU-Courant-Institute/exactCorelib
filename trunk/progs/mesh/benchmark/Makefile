@@ -34,7 +34,7 @@ test: $(TARGETS)
 	python ./run_tests.py
 
 test2: $(TARGETS)
-	python ./run_tests_crash.py
+	python ./run_frisco.py
 
 moretest: $(TARGETS)
 	python ./run_moretests.py
