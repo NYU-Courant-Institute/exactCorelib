@@ -21,7 +21,6 @@ MORETARGETS= gaussianX_level3 gaussianX_level2 gaussianX_level1
 
 default: $(TARGETS)
 
-
 test: $(TARGETS)
 	./gaussian_level3 inputs/MatHilbert6 3
 	./gaussian_level2 inputs/MatHilbert6 3

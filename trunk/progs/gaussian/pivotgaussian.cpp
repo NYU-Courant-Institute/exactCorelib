@@ -1,13 +1,11 @@
 /* **************************************
-   File: gaussian.cc
+   File: pivotgaussian.cc
 
-   Purpose: This is a simple example using the straightforward
+   Purpose: This is the pivoting version of  
 	Gaussian elimination to compute matrix determinants.
-	It does not do pivoting -- so the input matrices
-	must have non-zero principal minors! 
 
    Usage:
-	gaussian <input_file> <number of iterations>
+	pivotgaussian <input_file> <number of iterations>
 
 	where <input_file> contains the matrix
 	  and <number_of_iterations> is the number of times
