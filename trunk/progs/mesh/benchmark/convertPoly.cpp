@@ -309,17 +309,22 @@ void read_poly_frisco(Polynomial<T>& p, FILE *instr) {
 	    }
 	
 	    if (data_type[1] == 'r') {
-	      if (data_type[2] == 'i') {
-	        BigInt temp;
-	        if (!mpz_inp_str(temp.mp(), instr, 10)) {
-	          // Exit if something happens.
-	          assert(false);
-	        }
-	        coeffs[indx]=T(temp);
-	      } else {
-	        // We support only integer coefficients at this point.
-	        assert(false);
-	      }
+		switch( data_type[2] ) {
+		    case 'i': {
+			BigInt temp;
+		        if (!mpz_inp_str(temp.mp(), instr, 10)) {
+		          // Exit if something happens.
+		          assert(false);
+		        }
+		        coeffs[indx]=T(temp);
+			break;
+			}
+		    case 'f':
+			      // to be provided...
+			break;
+		    default: // We support only integer/float coeffs at this point.
+	        	assert(false);
+		}//switch
 	    } else {
 	      // We support only polynomials with real coefficients
 	      // at this point.
