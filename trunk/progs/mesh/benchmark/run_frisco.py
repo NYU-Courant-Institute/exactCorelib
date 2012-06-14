@@ -1,5 +1,6 @@
 import os;
 import subprocess;
+import sys;
 
 X_MIN = -2
 X_MAX = 2
@@ -15,8 +16,14 @@ OPERATORS = ["ceval", "ceval_ni"]
 def main():
   global_stats = {}
   for operator in OPERATORS:
+    collection="../../data/Collections/friscoRealMini"
+    if len(sys.argv)==1:
+       print 'Usage run_frisco polynomialCollection'
+    else:
+       collection=sys.argv[1]
+
     #for f in os.listdir("./data"):
-    for line in open("../../data/Collections/friscoRealMini"):
+    for line in open(collection):
       li = line.strip()
       if not li.startswith("#"):
           print line.rstrip()
@@ -25,7 +32,7 @@ def main():
             file = open(file_name)
             poly_name = file.readline().strip("! \n")
             file.close()
-#
+
             args = []
             args.append("./main_ceval")
             #args.append("-%s" % operator)
@@ -40,6 +47,7 @@ def main():
             if operator == "ceval_ni":
               args.append("--no_use_inclusion")
             print args
+
             output=subprocess.check_output(args, stderr=subprocess.STDOUT)
             output.strip(" \n")
             stats = output.split(",")
@@ -49,6 +57,7 @@ def main():
               print kv
               stats_map[kv[0]] = {}
               stats_map[kv[0]][operator] = int(kv[1])
+
             if poly_name in global_stats:
               for k,v in stats_map.iteritems():
                 global_stats[poly_name][k].update(v)
@@ -56,7 +65,7 @@ def main():
               global_stats[poly_name] = stats_map
 
        
-    #print global_stats
+  #print global_stats
 
   len_seeds = len(SEEDS)
     
