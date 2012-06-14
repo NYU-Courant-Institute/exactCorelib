@@ -41,7 +41,7 @@ moretest: $(TARGETS)
 
 help: main_ceval
 	./main_ceval --help
-	
+
 #=================================================
 # Demo Targets:
 #=================================================
@@ -139,6 +139,10 @@ cv6:	convertPoly
 cv7:	convertPoly
 	./convertPoly "FRISCO" "data/hermite20.pol" "output/hermite20.pol" 1
 	cp output/hermite20* ../../data/complexCurve
+
+cv8:	convertPoly
+	./convertPoly "FRISCO" "../../data/frisco/lar1.pol" "output/lar1.pol" 1
+
 
 t:	t.o
 	${CXX} $(LDFLAGS) t.o $(CORE_LIB) -o $@
