@@ -1,17 +1,43 @@
 # !/bin/sh
 
-# echo "                                           START"
+############################################################
+#
+# Filter FRISCO format polynomials according to type
+#
+# They can be
+#  dense or sparse  [d|s]
+#  real or complex  [r|c]
+#  integer or rational coefficients [i|q]
+#
+#
+# Irina Voiculescu
+# 13 June 2012, NYU
+#
+############################################################
 
-# check command line argument
+
+# check first command line argument (complex or real)
 if [[ $1 = r ]]; then
     echo "Printing names of real polynomials" $1
-    decide=r
+    decidecr=r
 elif  [[ $1 = c ]]; then
     echo "Printing names of complex polynomials" $1
-    decide=c
+    decidecr=c
 else
-    echo "Usage " $0 "[c|r]  defaulting to r"
-    decide=r
+    echo "Usage " $0 "[c|r]  defaulting to r" "[i|q] defaulting to i"
+    decidecr=r
+fi
+
+# check second command line argument (integer or rational)
+if [[ $2 = i ]]; then
+    echo "with integer coefficients" $2
+    decideiq=i
+elif  [[ $2 = q ]]; then
+    echo "with rational coefficients" $2
+    decideiq=q
+else
+    echo "Usage " $0 "[c|r] defaulting to r" "[i|q] defaulting to i"
+    decideiq=i
 fi
 
 
@@ -24,14 +50,15 @@ for x in *pol  ;
     # Select first few lines of the polynomial file
     # ignore those that are comments
     # look for "c" in complex and for "r" in real polynomials
-    # head -5 $x | grep -v "!" | grep -c "c" 
+    # count (-c) whether "c" features in the current polynomial
+    # head -5 $x | grep -v "\!" | grep -c "c"
 
-    if [[ `head -5 $x | grep -v "!" | grep -c $decide` -ne 0 ]]; then
-           # real polynomial
-           echo $x
+    if [[ `head -5 $x | grep -v "\!" | grep -c $decidecr` -ne 0 ]]; then
+	if [[ `head -5 $x | grep -v "\!" | grep -c $decideiq` -ne 0 ]]; then
+            echo $x
+	fi
     fi
    } 
 
 cd ..
 
-# echo "                                           END"
