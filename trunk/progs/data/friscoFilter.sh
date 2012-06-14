@@ -7,7 +7,7 @@
 # They can be
 #  dense or sparse  [d|s]
 #  real or complex  [r|c]
-#  integer or rational coefficients [i|q]
+#  integer or float or rational coefficients [i|f|q]
 #
 #
 # Irina Voiculescu
@@ -24,20 +24,23 @@ elif  [[ $1 = c ]]; then
     echo "Printing names of complex polynomials" $1
     decidecr=c
 else
-    echo "Usage " $0 "[c|r]  defaulting to r" "[i|q] defaulting to i"
+    echo "Usage " $0 "[c|r]  defaulting to r" "[i|f|q] defaulting to i"
     decidecr=r
 fi
 
 # check second command line argument (integer or rational)
 if [[ $2 = i ]]; then
     echo "with integer coefficients" $2
-    decideiq=i
+    decideifq=i
+elif  [[ $2 = f ]]; then
+    echo "with floating point coefficients" $2
+    decideifq=f
 elif  [[ $2 = q ]]; then
     echo "with rational coefficients" $2
-    decideiq=q
+    decideifq=q
 else
-    echo "Usage " $0 "[c|r] defaulting to r" "[i|q] defaulting to i"
-    decideiq=i
+    echo "Usage " $0 "[c|r] defaulting to r" "[i|f|q] defaulting to i"
+    decideifq=i
 fi
 
 
@@ -54,7 +57,7 @@ for x in *pol  ;
     # head -5 $x | grep -v "\!" | grep -c "c"
 
     if [[ `head -5 $x | grep -v "\!" | grep -c $decidecr` -ne 0 ]]; then
-	if [[ `head -5 $x | grep -v "\!" | grep -c $decideiq` -ne 0 ]]; then
+	if [[ `head -5 $x | grep -v "\!" | grep -c $decideifq` -ne 0 ]]; then
             echo $x
 	fi
     fi
