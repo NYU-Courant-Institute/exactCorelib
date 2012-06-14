@@ -91,6 +91,16 @@ eg3: ./ceval
 	@echo "\n============== 7th ROOTS OF UNITY ============="
 	./ceval "x^7-1" $(xmin) $(ymin) $(boxwidth)
 
+# This is a high degree polynomial and CEVAL at level 1 may be expected have errors
+eg4: ./ceval
+	@echo "\n========== DEGREE 50 POLYNOMIAL (Almost Roots of Unity) ============"
+	./ceval "x^50 + x^10 -1" $(xmin) $(ymin) $(boxwidth)
+
+# This is a high degree polynomial and CEVAL at level 1 may be expected have errors
+eg5: ./ceval
+	@echo "\n============== HIGH DEGREE POLYNOMIAL ============="
+	./ceval "x^70-1" $(xmin) $(ymin) $(boxwidth)
+
 #=================================================
 # Rules
 #=================================================
