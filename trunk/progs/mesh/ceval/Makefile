@@ -42,6 +42,8 @@ test: $(TARGETS)
 moretest: $(TARGETS)
 # nothing to do
 
+all_lev: ceval_level1 ceval_level2
+
 ceval: $(DEPENDS)
 	${CXX} $(LDFLAGS) $(CORE_LIB) $(DEPENDS) -o $@
 #	${CXX} $(LDFLAGS) ceval.o algorithm.o predicates.o $(CORE_LIB) -o $@
@@ -100,6 +102,28 @@ eg3: ./ceval
 
 .cpp.o:
 	${CXX} -c -DORIGINAL=$(ORIG) -O3 $(CXXFLAGS) $(CORE_INC) $< -o $@
+
+#=================================================
+# Rules for CORE_LEVEL 1, 2, and 3 (taken from Gaussian)
+#=================================================
+%_level1: %_level1.o algorithm.o predicates.o
+	${CXX} $(LDFLAGS) $? $(CORE_LIB) $(COREX_LIB_LEVEL1) -o $@
+
+%_level2: %_level2.o algorithm.o predicates.o
+	${CXX} $(LDFLAGS) $? $(CORE_LIB) $(COREX_LIB_LEVEL1) -o $@
+
+%_level3: %_level3.o algorithm.o predicates.o
+	${CXX} $(LDFLAGS) $? $(CORE_LIB) $(COREX_LIB_LEVEL1) -o $@
+
+%_level1.o: %.cpp algorithm.o predicates.o
+	${CXX} -c -DCORE_LEVEL=1 $(CXXFLAGS) $(CORE_INC) $< -o $@
+
+%_level2.o: %.cpp algorithm.o predicates.o
+	${CXX} -c -DCORE_LEVEL=2 $(CXXFLAGS) $(CORE_INC) $< -o $@
+
+%_level3.o: %.cpp
+	${CXX} -c -DCORE_LEVEL=3 $(CXXFLAGS) $(CORE_INC) $< -o $@
+
 
 #=================================================
 # Clean object files
