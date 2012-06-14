@@ -20,6 +20,8 @@ VERB=-v
 v=1
 verbose=$(v)
 
+friscofile=../../data/Collections/friscoRealIntegerMini
+
 #=================================================
 # Targets:
 #=================================================
@@ -33,8 +35,14 @@ all: $(TARGETS)
 test: $(TARGETS)
 	python ./run_tests.py
 
-test2: $(TARGETS)
-	python ./run_frisco.py
+tf test_frisco: $(TARGETS)
+	python ./run_frisco.py $(friscofile)
+
+tf1 test_frisco1: $(TARGETS)
+	python ./run_frisco.py ../../data/Collections/friscoRealIntegerMini
+
+tf2 test_frisco2: $(TARGETS)
+	python ./run_frisco.py ../../data/Collections/friscoRealFloatMini
 
 moretest: $(TARGETS)
 	python ./run_moretests.py
@@ -73,6 +81,10 @@ eg3 : main_ceval
 # ensure that all roots are found:
 eg4 : main_ceval
 	./main_ceval --poly ./data/laguerre20.pol --display --use_root_bounds
+
+# eg5 
+eg5 : main_ceval
+	./main_ceval --poly ./data/chrma22.pol --display --use_root_bounds
 
 ##################################################
 ##################################################
