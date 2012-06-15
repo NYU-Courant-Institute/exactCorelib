@@ -22,7 +22,8 @@ TABLE OF CONTENTS:
 	   For the current example, we assume that the Core2 to be
 	   used by eclipse is actually in ~/core/mycore2.
 	-- You can get Core2 either from our webpage or directly
-	   from CVS.  If from CVS, eclipse can interface with CVS.
+	   from SVN.  If from SVN, eclipse can interface with SVN.
+	   Our website is http://cs.nyu.edu/exact/.
 	-- Make sure that you have set up gmp and mpfr correctly
 	   by doing the following two tests:
 	      > cd ~/core/mycore2
