@@ -5,6 +5,7 @@
 # (A)	To compile run this demo, you can use this Makefile and just have to type:
 #
 # 	       > make 		-- compiles the main program into "disc"
+# 	       > make help	-- usage help
 # 	       > make test	-- compiles and runs "disc" non-interactively
 # 	       			   (this is Core Library's automatic self-test)
 #
@@ -43,6 +44,7 @@
 #		eg3, eg3a, eg3b			-- 100 random triangles
 #		eg4				-- maze
 #		eg5, eg5a (bug2, bug2a)		-- double bugtrap
+#		eg6, eg6a 			-- example from Kavraki's OOPSMP
 #		eg200, eg200a			-- 200 random triangles
 #		eg300				-- 300 random triangles
 #
@@ -137,6 +139,13 @@ testb: $(TARGETS)
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
+help:
+	@echo "USAGE:  The main program is called disc.  Demos can be invoked thus:"
+	@echo "         > make eg"
+	@echo "         > make egX"
+	@echo "     where X is replaced by 0,1,2,3,4,5,6,100,200,300, etc."
+	@echo "     Some demos have variants, such as egXa, egXb or egXc."
+
 #=================================================
 # Examples of running disc program
 #=================================================
@@ -188,7 +197,7 @@ egc:	disc
 		&
 
 # Simple NO PATH example:
-nopath eg0:	disc
+eg0 nopath:	disc
 	@echo "Target 'eg0':  runs disc with random strategy for file input0.txt"
 	@echo "--  this example has no path..."
 	./disc $(interactive) 400 400  200 200 \
@@ -198,7 +207,7 @@ nopath eg0:	disc
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
-nopatha eg0a:	disc
+eg0a nopatha:	disc
 	@echo "Target 'eg0a':  runs disc with astar strategy for file input0.txt"
 	@echo "--  this example has no path..."
 	./disc $(interactive) 400 400  200 200 \
@@ -325,13 +334,25 @@ eg4: disc
 # eg5 egbug2 bug2: 
 # eg5a egbug2a bug2a: 
 
-# This environment is taken from Kavraki's groups Demo for OOPSMP:
+# eg6: This environment is taken from Kavraki's groups Demo for OOPSMP:
 #  NOTE: we must do scaling of the input
 #  	(because dimensions came from xfig)
 eg6: disc
 	@echo "Target DemoSE2_PRM (from Kavraki's group)"
 	./disc $(interactive) 75 350  380 205 \
 		5 20 DemoSE2_PRM.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		250 250 0.04 \
+		&
+
+# eg6a:  Variant of eg6 where their "robot" is shown.
+eg6a: disc
+	@echo "Target DemoSE2_PRM (from Kavraki's group) -- their robot is shown"
+	@echo "	There is a narrow path... when radius=15, epsilon=2"
+	@echo " 	There is No Path... when radius=15, epsilon=3"
+	./disc $(interactive) 75 350  380 205 \
+		2 15 DemoSE2_PRMa.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		250 250 0.04 \

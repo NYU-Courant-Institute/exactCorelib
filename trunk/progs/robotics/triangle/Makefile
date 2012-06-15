@@ -137,8 +137,10 @@ testb: $(TARGETS)
 help:
 	@echo "USAGE:  The main program is called tri.  Demos can be invoked thus:"
 	@echo "         > make egX"
-	@echo "     where X may be 1,2,3,4,5,6,100,150,200,300"
-	@echo "     Some demos have variants, such as egXa, egXb or egXc"
+	@echo "     where X is replaced by 1, 2, 3, 4, 5, 6, 100, 150, 200, 300,  etc."
+	@echo "     Some demos have variants, such as egXa, egXb or egXc."
+	@echo "     You may also try"
+	@echo "         > make eg [...optional parameters...]"
 
 #=================================================
 # Examples of running tri program
