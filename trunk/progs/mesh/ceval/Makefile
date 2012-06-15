@@ -26,6 +26,10 @@ boxwidth=4.0
 
 # compiling the two versions of predicates.cpp:
 ORIG=0
+
+DEBUG=
+DEBUG=-DDEBUG
+
 #=================================================
 # TARGETS
 #=================================================
@@ -111,7 +115,7 @@ eg5: ./ceval
 #	${CXX} -c -O3 -DORIGINAL=$(ORIG) $(CXXFLAGS) $(CORE_INC) $< -o $@
 
 .cpp.o:
-	${CXX} -c -DORIGINAL=$(ORIG) -O3 $(CXXFLAGS) $(CORE_INC) $< -o $@
+	${CXX} -c -DORIGINAL=$(ORIG) $(DEBUG) -O3 $(CXXFLAGS) $(CORE_INC) $< -o $@
 
 #=================================================
 # Rules for CORE_LEVEL 1, 2, and 3 (taken from Gaussian)
@@ -126,13 +130,13 @@ eg5: ./ceval
 	${CXX} $(LDFLAGS) $? $(CORE_LIB) $(COREX_LIB_LEVEL1) -o $@
 
 %_level1.o: %.cpp algorithm.o predicates.o
-	${CXX} -c -DCORE_LEVEL=1 $(CXXFLAGS) $(CORE_INC) $< -o $@
+	${CXX} -c -DCORE_LEVEL=1 $(DEBUG) $(CXXFLAGS) $(CORE_INC) $< -o $@
 
 %_level2.o: %.cpp algorithm.o predicates.o
-	${CXX} -c -DCORE_LEVEL=2 $(CXXFLAGS) $(CORE_INC) $< -o $@
+	${CXX} -c -DCORE_LEVEL=2 $(DEBUG) $(CXXFLAGS) $(CORE_INC) $< -o $@
 
 %_level3.o: %.cpp
-	${CXX} -c -DCORE_LEVEL=3 $(CXXFLAGS) $(CORE_INC) $< -o $@
+	${CXX} -c -DCORE_LEVEL=3 $(DEBUG) $(CXXFLAGS) $(CORE_INC) $< -o $@
 
 
 #=================================================

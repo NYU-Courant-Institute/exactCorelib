@@ -362,10 +362,11 @@ void Predicates::Init(const Polynomial<PolyType> &poly) {
 
   CalculateFactTerms(degree_, &fact_terms_u_, &fact_terms_d_);
  
-  // CHECKing factTerms:
+// CHECKing factTerms: (set this DEBUG flag in Makefile)
+#ifdef DEBUG
   cout << "Checking FactTerms" << endl;
   for (unsigned int i = 0; i < degree_ ; i++)
       cout << setprecision(20) << "i = " << i << ": " << fact_terms_u_[i]
 	  << ", " << fact_terms_d_[i] << endl;
-
+#endif
 }

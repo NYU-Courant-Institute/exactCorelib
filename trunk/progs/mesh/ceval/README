@@ -13,3 +13,11 @@ TODO:
 
     -- modify predicates.cpp so that whenever the polynomials get read in,
          it will call the appropriate version of GetPoly (from above)
+
+    -- In predicates:
+    	the repeated switching to RoundUp and RoundDown is expensive.
+
+    	Should do the trick to only RoundUp:
+	Then lower bound should be computed as the RoundUp of the negation.
+
+	DO SOME TESTS.
