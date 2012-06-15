@@ -5,10 +5,13 @@
 # (A)	To compile run this demo, you can use this Makefile and just have to type:
 #
 # 	       > make 		-- compiles the main program into "tri"
+# 	       > make help	-- help message
 # 	       > make test	-- compiles and runs "tri" non-interactively
 # 	       			   (this is Core Library's automatic self-test)
+# 	       > make [target]	-- where [target] has the form egX
+# 	                     	   and X=1,2,3,4,5,6,100,150,200,300, etc.
 #
-# (B)	But you probably want to try the various interactive demos of this program:
+# (B)	But you may try the various interactive demos of this program:
 #
 # 	       > make eg	-- compiles and runs "tri" interactively
 #
@@ -38,10 +41,15 @@
 #		ega, egb,
 #		eg1, eg1a, eg1b,
 #		eg2, eg2a, eg2b,
-#		egbug (bug), egbuga (buga),
-#		egbug2 (bug2), egbug2a (bug2a),
-#		tunnel, tunnelX, tunnelXa
-#		etc.
+#		eg3
+#		eg4 (= egbug, bug), eg4a (= egbuga, buga),
+#		eg5 (= egbug2, bug2), eg5a (= egbug2a, bug2a),
+#		eg6 (= kavraki), eg6a (= kavrakia),
+#		eg7 (= tunnel), eg7a (= tunnela), eg7b (= tunnelb)
+#		eg100, eg100a
+#		eg150
+#		eg200, eg200a, eg200b
+#		eg300
 #
 # 	These targets uses different input files, all taken from
 # 	the subdirectory "inputs".   
@@ -126,13 +134,19 @@ testb: $(TARGETS)
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
 		$(xtrans) $(ytrans) $(scale)
 
+help:
+	@echo "USAGE:  The main program is called tri.  Demos can be invoked thus:"
+	@echo "         > make egX"
+	@echo "     where X may be 1,2,3,4,5,6,100,150,200,300"
+	@echo "     Some demos have variants, such as egXa, egXb or egXc"
+
 #=================================================
 # Examples of running tri program
 #=================================================
 #
 # this is default, but every option may be changed at command line:
 #
-eg:	tri
+eg:	./tri
 	@echo "Target 'eg':  runs tri with the default options of Makefile"
 	@echo "--  You can all of them in you 'make' command line, e.g.,"
 	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
@@ -149,13 +163,13 @@ eg:	tri
 #	There are 3 combinatorially different paths.
 #	Randomized strategy will find all three of them (keep hitting "run").
 #
-ega:	tri
+ega:	./tri
 	@echo "Target 'ega':  runs tri with default compiled options"
 	./tri &
 
 # run with default Makefile options:
 #
-egb:	tri
+egb:	./tri
 	@echo "Target 'egb':  runs tri with default Makefile options for file input.txt"
 	./tri $(interactive) 10 350 0 300 20 0\
 		10 40 input.txt \
@@ -165,7 +179,7 @@ egb:	tri
 		&
 
 # Simple NO PATH example:
-nopath eg0:	tri
+nopath eg0:	./tri
 	@echo "Target 'eg0':  runs tri with default options for file input0.txt"
 	@echo "--  this example has no path..."
 	./tri $(interactive) 400 400 0 200 200 0\
@@ -176,7 +190,7 @@ nopath eg0:	tri
 		&
 
 # eg1:	input2e.txt is like input2, but there is a bounding box
-eg1: tri
+eg1: ./tri
 	@echo "Target eg1:  runs tri on input2e.txt (which has a bounding box)"
 	./tri $(interactive) 150 260 0.5 40 40 0 \
 		10 25 input2e.txt \
@@ -184,7 +198,7 @@ eg1: tri
 		1 1111 $(inputDir)
 
 # eg2:
-eg2: tri
+eg2: ./tri
 	@echo "Target eg2e:  runs tri on input2.txt"
 	./tri $(interactive) 150 260 0 20 20 0 \
 		10 10 input2.txt \
@@ -194,7 +208,7 @@ eg2: tri
 		&
 
 # eg3: input3.txt is line input2e, but there is a narrow door
-eg3: tri
+eg3: ./tri
 	@echo "Target eg3:  runs tri on input3.txt"
 	./tri $(interactive) 150 260 0 450 450 0 \
 		10 30 input3.txt \
@@ -206,7 +220,7 @@ eg3: tri
 # BUG TRAPS:
 # 
 # Bugtrap example -- Non-existence of path, but barely!
-egbug bug: tri
+eg4 egbug bug: ./tri
 	@echo "Target 'egbug':  runs tri for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
@@ -219,7 +233,7 @@ egbug bug: tri
 		&
 
 # Bugtrap example -- Existence of path, but barely!
-egbuga buga: tri
+eg4a egbuga buga: ./tri
 	@echo "Target 'egbuga':  runs tri for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is a PATH, but barely so!"
 	@echo "--  the only change from target 'egbug' is that epsilon is now 10, not 20"
@@ -236,7 +250,7 @@ egbuga buga: tri
 # 	FOR NOW, WE USE big values for epsilon, etc...
 # 	SAMPLE values: Epsilon=18, radius=1 takes 835 ms to report NO PATH.
 # 	SAMPLE values: Epsilon=17, radius=2 takes 2800 ms to report NO PATH.
-egbug2 bug2: tri
+eg5 egbug2 bug2: ./tri
 	@echo "Target 'egbug':  runs tri for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
@@ -254,7 +268,7 @@ egbug2 bug2: tri
 # 	SAMPLE values: Epsilon=16, radius=1 takes 5700 ms to report PATH.
 # 	SAMPLE values: Epsilon=16, radius=2 takes 18000 ms to report PATH.
 # 	SAMPLE values: Epsilon=12, radius=2 takes 41000 ms to report PATH.
-egbug2a bug2a: tri
+eg5a egbug2a bug2a: ./tri
 	@echo "Target 'egbug':  runs tri for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
@@ -266,27 +280,51 @@ egbug2a bug2a: tri
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
-# egtunnel:  tunnel example from Salzman et al.
+# eg6: This environment is taken from Kavraki's groups Demo for OOPSMP:
+#  NOTE: we must do scaling of the input
+#  	(because dimensions came from xfig)
+eg6: ./tri
+	@echo "Target DemoSE2_PRM (from Kavraki's group)"
+	./tri $(interactive) 75 350 0 380 205 0\
+		5 15 DemoSE2_PRM.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		250 250 0.04 \
+		&
+
+# eg6a:  Variant of eg6a where their "robot" is shown.
+eg6a: ./tri
+	@echo "Target DemoSE2_PRM (from Kavraki's group) -- their robot is shown"
+	@echo "	There is a narrow path... when radius=15, epsilon=2"
+	@echo " 	There is No Path... when radius=15, epsilon=3"
+	./tri $(interactive) 75 350 0 380 205 0\
+		2 15 DemoSE2_PRMa.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		250 250 0.04 \
+		&
+
+# eg7, egtunnel:  tunnel example from Salzman et al.
 # 	NOTE that the current search strategy seems to miss the direct path!!
 # 	TODO: develop a better search (e.g. Best First Search)
-egtunnel tunnel: tri
+eg7 egtunnel tunnel: ./tri
 	./tri $(interactive) 200 280 0 450 300 0\
 		10 15 tunnel.poly \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		100 200 0.05
 
-# egtunnelX or tunnelX:  Variant of tunnel.  We introduce a confining box to force 
+# eg7a or tunnela:  Variant of tunnel.  We introduce a confining box to force 
 # 	the robot to go through the tunnel.  This one is reasonably fast
 # 	(radius=10, epsilon=10).  Path is found.  See tunnelXa for a much harder instance.
-egtunnelX tunnelX: tri
+eg7a egtunnela tunnela: ./tri
 	./tri $(interactive) 200 280 0 450 300 0\
 		10 10 tunnelx.poly \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		100 200 0.05
 
-# egtunnelXa or tunnelXa:  Variant of tunnel.  We introduce a confining box to force 
+# eg7b or tunnelb:  Variant of tunnel.  We introduce a confining box to force 
 # 	the robot to go through the tunnel.  
 #	CAREFUL, THIS DEMO (with epsilon=10, radius=15)
 #	TAKES A LONG TIME BUT WILL EVENTUALLY FIND A PATH (takes about 25 minutes)
@@ -310,7 +348,7 @@ egtunnelX tunnelX: tri
 	#	total Mixed boxes smaller than epsilon: 250988
 	#	total Mixed boxes bigger than epsilon: 8781
 	#	####################### END of RUN ######################
-egtunnelXa tunnelXa: tri
+eg7b tunnelb: ./tri
 	./tri $(interactive) 200 280 0 450 300 0\
 		10 15 tunnelx.poly \
 		512 512 $(windowPosX) $(windowPosY) \
@@ -324,7 +362,7 @@ egtunnelXa tunnelXa: tri
 #	the exact algorithms.
 
 # eg100 100: 100 random triangles
-eg100 100: tri
+eg100 100: ./tri
 	@echo "Target eg100:  runs tri amidst 100 randomly generated triangles"
 	./tri $(interactive) 200 270 0 20 20 0\
 		10 5 input100.txt \
@@ -334,7 +372,7 @@ eg100 100: tri
 		&
 
 # eg100a: 100 random triangles
-eg100a 100a: tri
+eg100a 100a: ./tri
 	@echo "Target eg100a:  runs tri amidst 100 randomly generated triangles"
 	@echo "This one is a bit harder than eg100 (with radius 8 instead of 5)"
 	./tri $(interactive) 200 270 0 20 20 0\
@@ -345,7 +383,7 @@ eg100a 100a: tri
 		&
 
 # eg150: 150 random triangles (use radius=1)
-eg150 150: tri
+eg150 150: ./tri
 	@echo "Target eg150:  runs tri amidst 100 randomly generated triangles"
 	./tri $(interactive) 200 270 0 20 20 0\
 		10 1 input150.txt \
@@ -355,7 +393,7 @@ eg150 150: tri
 		&
 
 # eg200: 200 random triangles
-eg200 200: tri
+eg200 200: ./tri
 	@echo "Target eg200:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time!!!"
 	./tri $(interactive) 150 260 0 20 20 0 \
@@ -368,7 +406,7 @@ eg200 200: tri
 # eg200a: there is an obvious path but probabilistic methods might waste
 # 	lots of time checking elsewhere!
 #
-eg200a 200a: tri
+eg200a 200a: ./tri
 	@echo "Target eg200a:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
@@ -381,7 +419,7 @@ eg200a 200a: tri
 
 # eg200b: there is no path because eps=10
 #
-eg200b: tri
+eg200b: ./tri
 	@echo "Target eg200b:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
@@ -394,7 +432,7 @@ eg200b: tri
 
 # eg300: 
 #
-eg300: tri
+eg300: ./tri
 	@echo "Target eg300:  runs tri amidst 300 randomly generated triangles"
 	@echo "--  This may take a noticeable amount bit of time!!! "
 	./tri $(interactive) 10 400 0 350 20 0\
