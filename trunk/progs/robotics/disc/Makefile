@@ -21,7 +21,9 @@
 #	       > disc $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
 #			$(epsilon) $(radius) $(fileName) \
 #			$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-#			$(Qtype) $(seed)  $(inputDir)
+#			$(Qtype) $(seed)  $(inputDir) \
+#			$(xtrans) $(ytrans) $(scale) \
+#			&
 #
 #	where the arguments to disc correspond to the values $(var) of
 #	various Makefile variables.   
@@ -94,6 +96,9 @@ Qtype = 0		# type of priority queue
 seed = 11		# seed for random
 step = 0		# number of steps to run
 			#	(step=0 means run to completion)
+xtrans = 0		# x-translation of input file
+ytrans = 0		# y-translation of input file
+scale = 1		# scaling of input file
 		
 #=================================================
 # Define target files (put all your files here)
@@ -113,7 +118,9 @@ test: $(TARGETS)
 		$(startX) $(startY)  $(goalX) $(goalY) \
 	
 	make $(epsilon)  $(radius)  input.txt  $(boxWidth) $(boxHt) \
-       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir)
+       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 testall: $(TARGETS)
 	make ega interactive=1
@@ -126,7 +133,9 @@ testb: $(TARGETS)
 	./disc 1 \
 		$(startX) $(startY)  $(goalX) $(goalY) \
 		$(epsilon)  $(radius)  input2.txt  $(boxWidth) $(boxHt) \
-       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir)
+       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 #=================================================
 # Examples of running disc program
@@ -142,6 +151,7 @@ eg:	disc
 		$(epsilon) $(radius) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # run with default compiled options:
@@ -162,6 +172,7 @@ egb:	disc
 		10 30 input.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # Using input2.txt: using the "random strategy", if you "hit run" enough times
@@ -173,6 +184,7 @@ egc:	disc
 		10 30 input2.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # Simple NO PATH example:
@@ -183,6 +195,7 @@ nopath eg0:	disc
 		10 20 input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		0 $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 nopatha eg0a:	disc
@@ -192,6 +205,7 @@ nopatha eg0a:	disc
 		10 20 input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # BUG TRAP:
@@ -206,6 +220,7 @@ eg1 egbug bug: disc
 		5 10 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # Bugtrap example -- Existence of path, but barely!
@@ -218,6 +233,7 @@ eg1a egbuga buga: disc
 		4 10 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # BUG2 TRAP: (one trap inside another)
@@ -230,6 +246,7 @@ eg5 egbug2 bug2: disc
 		1 8 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # Bugtrap2 example -- Non-existence of path, but barely! (eps=2)
@@ -240,6 +257,7 @@ eg5a egbug2a bug2a: disc
 		2 8 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 
@@ -251,6 +269,7 @@ eg2: disc
 		4 15 input2e.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 eg2a: disc
@@ -259,6 +278,7 @@ eg2a: disc
 		10 20 input2e.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # This environment has 100 randomly generated triangles (this has a path)
@@ -268,6 +288,7 @@ eg3 eg100: disc
 		1 10 input3.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # This environment has 100 randomly generated triangles (this has NO PATH)
@@ -277,6 +298,7 @@ eg3a eg100a: disc
 		1 15 input3.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # This environment has 100 randomly generated triangles (this has NO PATH)
@@ -286,6 +308,7 @@ eg3b eg100b: disc
 		2 5 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 	
 # This environment is a maze
@@ -295,20 +318,29 @@ eg4: disc
 		5 5 input4.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
+	
+# Bugtrap2 example (see above)
+# eg5 egbug2 bug2: 
+# eg5a egbug2a bug2a: 
+
+# This environment is taken from Kavraki's groups Demo for OOPSMP:
+#  NOTE: we must do scaling of the input
+#  	(because dimensions came from xfig)
+eg6: disc
+	@echo "Target DemoSE2_PRM (from Kavraki's group)"
+	./disc $(interactive) 75 350  380 205 \
+		5 20 DemoSE2_PRM.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		250 250 0.04 \
+		&
+
 
 # RANDOMLY GENERATED ENVIRONMENT:
-
-# eg100:
-#
-eg100: disc
-	@echo "Target eg100:  runs disc amidst 100 randomly generated triangles"
-	./disc $(interactive) 200 270 20 20 \
-		2 5 input100.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		&
-	#
+# eg100 (similar to eg3 above)
+	
 # eg200:
 #	This one, generated using our Python Generator, has 200 triangles.
 #	Note that these triangles are not disjoint, but our theory remains
@@ -334,6 +366,7 @@ eg200: disc
 		2 5 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # eg200a: there is an obvious path but probabilistic methods might waste
@@ -347,6 +380,7 @@ eg200a: disc
 		2 10 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # eg200b: there is no path because eps=10
@@ -362,6 +396,7 @@ eg200b: disc
 		10 5 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # eg300: 
@@ -385,6 +420,7 @@ eg300: disc
 		1 3 input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
 		&
 
 
