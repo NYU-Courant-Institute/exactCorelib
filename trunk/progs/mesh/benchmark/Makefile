@@ -20,7 +20,10 @@ VERB=-v
 v=1
 verbose=$(v)
 
-friscofile=../../data/Collections/friscoRealIntegerMini
+friscoCollection=../../data/Collections/friscoRealIntegerMini
+friscoDir=../../data/frisco/
+friscoFile=kam4.pol	# real sparse int
+friscoFile=lar1.pol
 
 #=================================================
 # Targets:
@@ -36,7 +39,7 @@ test: $(TARGETS)
 	python ./run_tests.py
 
 tf test_frisco: $(TARGETS)
-	python ./run_frisco.py $(friscofile)
+	python ./run_frisco.py $(friscoCollection)
 
 tf1 test_frisco1: $(TARGETS)
 	python ./run_frisco.py ../../data/Collections/friscoRealIntegerMini
@@ -123,6 +126,9 @@ c6:	complexCurves
 
 cv:	convertPoly.o 
 	${CXX} $(LDFLAGS) convertPoly.o $(CORE_LIB) -o $@
+
+cv0:	convertPoly
+	./convertPoly "FRISCO" "$(friscoDir)$(friscoFile)" "output/friscoOutput" 1
 
 cv1:	convertPoly
 	./convertPoly "DIRECT" "(x-1)^5" "output/fifthRootUnity" 1

@@ -120,26 +120,30 @@ int main(int argc, char **argv) {
   if (argc==1) 
     cout << "Using default arguments; see output under output/out*" << endl;
 
-  // First argument starts with F/H/D for FRISCO, human-readable or directly-given
+  // First argument indicates the format of input:  only the first letter of the
+  // argument string is used:
+  // F or f = FRISCO file format (next arg is a file name)
+  // H or h = human-readable file format (next arg is a file name)
+  // D or d = directly-given human-readable format (next arg is a string)
+  //
   if (argc > 1) {
     // Select first character of first argument
+    assert(argc > 2);
     char firstchar = argv[1][0]; 
     firstchar = toupper(firstchar);
 
-    if (firstchar=='F') { // FRISCO format polynomial
-      if (argc > 2) read_poly_frisco (p, argv[2]);
+    if ((firstchar=='F') | (firstchar=='f')) { // FRISCO file format polynomial
+      read_poly_frisco (p, argv[2]);
+    } else   
+      if ((firstchar=='H') | (firstchar=='h')) {  // human-readable polynomial in a file
+      if (argc > 2) read_poly(p, argv[2]); 
+    } else 
+      if ((firstchar=='D') | (firstchar=='d')) {  // human-readable poly given directly 
+      p = string(argv[2]);
+    } else  { // neither human readable nor FRISCO
+      cerr << "First command line argument should begin with one of "
+           << " F, f, H, h, D, d (indicating input polynomial format)" << endl;
     }
-    else   
-      if (firstchar=='H') {  // human-readable polynomial
-	if (argc > 2) read_poly(p, argv[2]); 
-      }
-      else 
-	if (firstchar=='D') {  // polynomial given directly at command line
-	  cerr << "HORRAY" <<endl;
-	  p = string(argv[2]);
-	}
-	else  // neither human readable nor FRISCO
-	  cerr << "First command line argument should indicate FRISCO or human-readable polynoamial" << endl;
   }
   
   if (argc > 3) ofile= string(argv[3]); // name of output file
@@ -310,7 +314,7 @@ void read_poly_frisco(Polynomial<T>& p, FILE *instr) {
 	
 	    if (data_type[1] == 'r') {
 		switch( data_type[2] ) {
-		    case 'i': {
+		    case 'i': { // integer coefficient
 			BigInt temp;
 		        if (!mpz_inp_str(temp.mp(), instr, 10)) {
 		          // Exit if something happens.
@@ -319,25 +323,22 @@ void read_poly_frisco(Polynomial<T>& p, FILE *instr) {
 		        coeffs[indx]=T(temp);
 			break;
 			}
-		    case 'f': { // to be provided...
+		    case 'f': { // float coefficient
 			BigFloat temp; 
 			char f[80];	  
 			fscanf(instr, "%s", f);
-cerr << "sparse float = " << f << endl;		    
 			temp = BigFloat(string(f));
-		        //if (!mpfr_inp_str(temp.mp(), instr, 10, GMP_RNDD)) {
-		          // Exit if something happens.
-		        //  assert(false);
-cerr << "temp = " << temp.get_str() << endl;		    
+			// cerr << "input float string = " << f << endl;
+			// cerr << "converted float = " << temp.get_str() << endl;
 		        coeffs[indx]=temp.doubleValue();
 			break;
 			}
-		    default: // We support only integer/float coeffs at this point.
+		    default: 
+			cerr << "We support only integer/float coeffs currently" << endl;
 	        	assert(false);
 		}//switch
 	    } else {
-	      // We support only polynomials with real coefficients
-	      // at this point.
+	      cerr << "We support only real coefficients currently" << endl;
 	      assert(false);
 	    }
 	  }
