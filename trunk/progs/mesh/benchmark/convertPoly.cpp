@@ -319,9 +319,19 @@ void read_poly_frisco(Polynomial<T>& p, FILE *instr) {
 		        coeffs[indx]=T(temp);
 			break;
 			}
-		    case 'f':
-			      // to be provided...
+		    case 'f': { // to be provided...
+			BigFloat temp; 
+			char f[80];	  
+			fscanf(instr, "%s", f);
+cerr << "sparse float = " << f << endl;		    
+			temp = BigFloat(string(f));
+		        //if (!mpfr_inp_str(temp.mp(), instr, 10, GMP_RNDD)) {
+		          // Exit if something happens.
+		        //  assert(false);
+cerr << "temp = " << temp.get_str() << endl;		    
+		        coeffs[indx]=temp.doubleValue();
 			break;
+			}
 		    default: // We support only integer/float coeffs at this point.
 	        	assert(false);
 		}//switch

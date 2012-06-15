@@ -151,7 +151,8 @@ cv6:	convertPoly
 cv7:	convertPoly
 	./convertPoly "FRISCO" "data/hermite20.pol" "output/hermite20.pol" 1
 	cp output/hermite20* ../../data/complexCurve
-
+	#
+# this reads in a sparse polynomial with floating point coefficients
 cv8:	convertPoly
 	./convertPoly "FRISCO" "../../data/frisco/lar1.pol" "output/lar1.pol" 1
 
