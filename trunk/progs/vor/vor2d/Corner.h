@@ -24,7 +24,12 @@ public:
 	}
 
 	bool inZone(Box * box);
+
+	bool inZone(double x2, double y2);
+
 	bool inZone_star(Box * box);
+
+	bool inZone_star(double x2, double y2);
 
 	bool isConvex();
 

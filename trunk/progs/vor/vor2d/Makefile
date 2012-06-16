@@ -341,7 +341,7 @@ eg11 star:	vor2d
 	./vor2d $(interactive) 1 $(pseudo) $(interior) star.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		100 100 10 \
+		100 100 10 $(closePoly) \
 		$(c1) $(c2) \
 		&
 	#
@@ -350,7 +350,7 @@ eg11a stara:	vor2d
 	./vor2d $(interactive) 1 1 1 star.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
-		100 100 4 \
+		100 100 4 $(closePoly) \
 		$(c1) $(c2) \
 		&
 
@@ -364,6 +364,18 @@ eg12 bug2: vor2d
 		$(c1) $(c2) \
 		&
 
+
+# Eg3: dog example
+eg13 monkey:	vor2d
+	@echo "Target 'eg3' or 'dog': "
+	./vor2d $(interactive) \
+		0.1 $(pseudo) $(interior) nazca_monkey.poly \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		220 220 2 $(closePoly) \
+		$(c1) $(c2) \
+		&
+		
 # Eg150: Example with 150 randomly generated, overlapping triangles
 eg150: vor2d
 	./vor2d $(interactive) \

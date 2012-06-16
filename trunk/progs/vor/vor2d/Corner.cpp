@@ -13,8 +13,11 @@ bool Corner::isConvex()
 
 bool Corner::inZone(Box * box)
 {
+    if(box->in(this->x,this->y)) return true;
+
     double x=box->x;
     double y=box->y;
+
     double w2=box->width/2;  //half of width
     double h2=box->height/2; //half of height
 
@@ -60,8 +63,37 @@ bool Corner::inZone(Box * box)
     }
     else
     {
+        if( ( ps1==1 && ns1==-1) ) return true;
+        if( ( ps2==1 && ns2==-1) ) return true;
+        if( ( ps3==1 && ns3==-1) ) return true;
+        if( ( ps4==1 && ns4==-1) ) return true;
+
         if( ( ps1==1 || ps2==1 || ps3==1 || ps4==1) && ( ns1==-1 || ns2==-1 || ns3==-1 || ns4==-1) )
-            return true;
+        {
+            //now we have a box crossing the zone from either above or below...
+            //need to make sure the box is crossing from above.
+            double dx_pre=preWall->dst->x-preWall->src->x;
+            double dy_pre=preWall->dst->y-preWall->src->y;
+            double dx_nex=nextWall->dst->x-nextWall->src->x;
+            double dy_nex=nextWall->dst->y-nextWall->src->y;
+
+            double nx_pre=dy_pre;
+            double ny_pre=-dx_pre;
+            double nx_nex=dy_nex;
+            double ny_nex=-dx_nex;
+            double vx=x-this->x;
+            double vy=y-this->y;
+            double dot_x=(nx_pre+nx_nex)*vx;
+            double dot_y=(ny_pre+ny_nex)*vy;
+            double dot=dot_x+dot_y;
+            if(isConvex()==false) dot=-dot;
+
+            if(dot>0){
+                return true;
+            }
+
+            return false;
+        }
         return false;
     }
 }
@@ -71,3 +103,17 @@ bool Corner::inZone_star(Box * box)
     if(isConvex()==false) return false;
     return inZone(box);
 }
+
+bool Corner::inZone(double x2, double y2)
+{
+    if(preWall!=NULL) if(preWall->distance_sign(x2,y2)!=1) return false;
+    if(nextWall!=NULL) if(nextWall->distance_sign(x2,y2)!=-1 ) return false;
+    return true;
+}
+
+bool Corner::inZone_star(double x2, double y2)
+{
+    if(isConvex()==false) return false;
+    return inZone(x2,y2);
+}
+

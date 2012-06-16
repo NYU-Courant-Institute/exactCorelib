@@ -19,11 +19,10 @@
 #include <set>
 #include <float.h>
 #include "UnionFind.h"
+#include "Intersection.h"
 
 extern bool c1; //c1 predicate (true is the new version and false is the old version)
 extern bool c2; //c2 predicate
-
-#define SMALLNUMBER 1e-10
 
 //
 // keep these as options
@@ -164,7 +163,7 @@ public:
 
 		int sfc=separable_features_count();
 		bool separable=(sfc>1);
-		if(total_feature_size<6)
+		if(total_feature_size<=6)
 		    total_feature_size=sfc;
 
 		//C_0
@@ -331,13 +330,19 @@ public:
 
 //        return;
 
-        //check the closest features of the box corners
+        //
+        //check the closest features of the box corner
+        //
+        //the closest feature of the box corner should be inside the features
+        //of this box
+        //
         {
 
             BoxNode mid;
             mid.x=x;
             mid.y=y;
             determine_clearance(mid);
+            if(mid.nearest_feature==NULL) return;
 
             list<Feature*> features;
             features.insert(features.end(),child->corners.begin(), child->corners.end());
@@ -353,6 +358,100 @@ public:
         }
 	}
 
+
+	void determine_clearance(BoxNode& node)
+	{
+        double x=node.x;
+        double y=node.y;
+
+        //compute the closest wall
+        Wall* nearestWall=NULL;
+        double mindistW=FLT_MAX;
+        for (list<Wall*>::iterator iterW = walls.begin(); iterW != walls.end(); ++iterW)
+        {
+            Wall* w = *iterW;
+
+            double dist = w->distance(x, y);
+
+            if( fabs(dist-mindistW)<1e-10 )
+            {
+                if( w->distance_sign(x,y)==0 && w->isRight(x,y) ) //in zone
+                    nearestWall = *iterW;
+            }
+            else if (dist < mindistW) //shorter distance
+            {
+                mindistW = dist;
+                nearestWall = *iterW;
+            }
+        }
+
+        //
+        // compute a closest corner that is closer than  (mindistW +1) (?? why +1)
+        //
+        double mindistC = FLT_MAX; //mindistC may not exist, so init to a bigger number
+        Corner* nearestCorner = NULL;
+        for (list<Corner*>::iterator iterC = corners.begin(); iterC != corners.end(); ++iterC)
+        {
+            Corner* c = *iterC;
+            double dist = c->distance(x, y);
+
+            if( fabs(dist-mindistC)<1e-5 ) //if(dist == mindistC)
+            {
+                if( c->inZone_star(x,y) ) //in the zone
+                {
+                    nearestCorner = *iterC;
+                }
+
+            }
+            else if (dist < mindistC)  //shorter distance
+            {
+                mindistC = dist;
+                nearestCorner = *iterC;
+            }
+        }
+
+        //
+        // determine the feature and shortest
+        //
+
+        bool in_zone_w=false;
+        bool in_zone_c=false;
+
+        if(nearestWall!=NULL) in_zone_w=nearestWall->inZone_star(x,y);
+        if(nearestCorner!=NULL) in_zone_c=nearestCorner->inZone_star(x,y);
+
+        if( fabs(mindistW-mindistC)<1e-5 )
+        {
+            if(in_zone_w){
+                node.clearance=mindistW;
+                node.nearest_feature=nearestWall;
+            }
+
+            if(in_zone_c){
+                node.clearance=mindistC;
+                node.nearest_feature=nearestCorner;
+            }
+        }
+        else if (mindistW < mindistC)
+        {
+            node.clearance=mindistW;
+            if(nearestWall!=NULL){
+                node.nearest_feature=nearestWall;
+            }
+        }
+        else //mindistW > mindistC
+        {
+            node.clearance=mindistC;
+            if(nearestCorner!=NULL){
+                node.nearest_feature=nearestCorner;
+            }
+        }
+        //
+        //-----------------------------------
+        //
+	}
+
+	/*
 	//
 	// find the nearest feature and the clearance
 	// results are stored in "node"
@@ -378,11 +477,7 @@ public:
 			else if (dist < mindistW) //shorter distance
 			{
 			    mindistW = dist;
-			    //nearestWall=NULL;
-
-			    //if(w->isRight(x,y)){ //on the right size of the wall
-			        nearestWall = *iterW;
-			    //}
+			    nearestWall = *iterW;
 			}
 		}
 
@@ -398,12 +493,8 @@ public:
 
             if( fabs(dist-mindistC)<1e-5 ) //if(dist == mindistC)
             {
-                if( c->isConvex() )
+                if( c->inZone_star(x,y) )
                 {
-                    //check if in the zone
-                    if(c->preWall!=NULL) if(c->preWall->distance_sign(x,y)!=1) continue;
-                    if(c->nextWall!=NULL) if(c->nextWall->distance_sign(x,y)!=-1 ) continue;
-
                     //in the zone
                     nearestCorner = *iterC;
                 }
@@ -412,19 +503,8 @@ public:
             else if (dist < mindistC)  //shorter distance
             {
                 mindistC = dist;
-                //nearestCorner=NULL;
-
-                //if(c->isConvex()) //reflect vertex has no Vor (outside the polygon)
-                {
-                    //check if (x,y) is in the zone of this convex vertex
-                    //if( c->preWall->distance_sign(x,y)==1 && c->nextWall->distance_sign(x,y)==-1 )
-                    {
-                        nearestCorner = *iterC;
-                    }
-                }
+                nearestCorner = *iterC;
             }
-
-
         }
 
 		if (mindistW<=mindistC)
@@ -442,6 +522,8 @@ public:
 		    }
 		}
 	}
+	*/
+
 
 	void addCorner(Corner* c)
 	{
@@ -640,12 +722,14 @@ public:
          typedef list<Wall*>::iterator WIT;
          typedef list<Corner*>::iterator CIT;
 
+         //create a set for each wall
          for (WIT it = walls.begin(); it != walls.end(); it++){
              Set* set=new Set((Feature*)*it);
              assert(set);
              features.push_back(set);
          }//end for
 
+         //create a set for each corner
          for (CIT it = corners.begin(); it != corners.end(); it++){
              Set* set=new Set((Feature*)*it);
              assert(set);
@@ -654,7 +738,7 @@ public:
 
          UnionFind UF;
 
-         //merge
+         //start to merge
          for (WIT it = walls.begin(); it != walls.end(); it++){
              Wall* w=*it;
              if(w->dst->pSet!=NULL) UF.Union(w,w->dst);
@@ -1113,170 +1197,5 @@ public:
 	    }
 	    //done
 	}
-
-	inline double Area(const double a[2], const double b[2], const double c[2])
-	{
-	    return ( b[0] - a[0] ) * ( c[1] - a[1] ) -
-	           ( c[0] - a[0] ) * ( b[1] - a[1] );
-	}
-
-	inline int AreaSign(const double a[2], const double b[2], const double c[2])
-	{
-	    double area=Area(a,b,c);
-	    if      ( area >  SMALLNUMBER ) return  1;
-	    else if ( area < -SMALLNUMBER ) return -1;
-	    else     return  0;
-	}
-
-	inline int Collinear(const double a[2], const double b[2], const double c[2])
-	{
-	   return AreaSign( a, b, c ) == 0;
-	}
-
-	inline bool AlmostEqual(const double a[2], const double b[2])
-	{
-	    return (fabs(a[0]-b[0])<SMALLNUMBER &&fabs(a[1]-b[1])<SMALLNUMBER);
-	}
-
-
-	/*---------------------------------------------------------------------
-	Returns TRUE iff point c lies on the closed segement ab.
-	Assumes it is already known that abc are collinear.
-	---------------------------------------------------------------------*/
-	inline bool Between(const double a[2], const double b[2], const double c[2])
-	{
-	   // If ab not vertical, check betweenness on x; else on y.
-	   if ( fabs(a[0]-b[0])>fabs(a[1]-b[1]) )
-	      return ((a[0] <= c[0]) && (c[0] <= b[0])) ||
-	             ((a[0] >= c[0]) && (c[0] >= b[0]));
-	   else
-	      return ((a[1] <= c[1]) && (c[1] <= b[1])) ||
-	             ((a[1] >= c[1]) && (c[1] >= b[1]));
-	}
-
-
-	//
-	inline char ParallelInt
-	( const double a[2], const double b[2], const double c[2], const double d[2], double p[2])
-	{
-	   if(!Collinear(a, b, c)) return '0';
-
-	   //check if they overlap..
-	   if(Between(a,b,c)) return 'e';
-	   if(Between(a,b,d)) return 'e';
-	   if(Between(c,d,a)) return 'e';
-	   if(Between(c,d,b)) return 'e';
-
-	   //they don't overlap but the end points may..
-	   //check if the end points overlap
-	   if(AlmostEqual(a,c)){ p[0]=a[0]; p[1]=a[1]; return 'v';}
-	   if(AlmostEqual(b,c)){ p[0]=b[0]; p[1]=b[1]; return 'v';}
-	   if(AlmostEqual(a,d)){ p[0]=a[0]; p[1]=a[1]; return 'v';}
-	   if(AlmostEqual(b,d)){ p[0]=b[0]; p[1]=b[1]; return 'v';}
-
-	   return '0';
-	}
-
-	/*---------------------------------------------------------------------
-	SegSegInt: Finds the point of intersection p between two closed
-	segments ab and cd.  Returns p and a char with the following meaning:
-	   'e': The segments collinearly overlap, sharing a point.
-	   'v': An endpoint (vertex) of one segment is on the other segment,
-	        but 'e' doesn't hold.
-	   '1': The segments intersect properly (i.e., they share a point and
-	        neither 'v' nor 'e' holds).
-	   '0': The segments do not intersect (i.e., they share no points).
-	Note that two collinear segments that share just one point, an endpoint
-	of each, returns 'e' rather than 'v' as one might expect.
-	---------------------------------------------------------------------*/
-	inline char SegSegInt( const double a[2], const double b[2], const double c[2], const double d[2], double p[2] )
-	{
-	   double  s, t;        // The two parameters of the parametric eqns.
-	   double  num_s, num_t, denom;   // Numerator and denoninator of equations.
-	   char    code = '?';    // Return char characterizing intersection.
-	   const double TINYNUMBER=SMALLNUMBER;
-
-	   denom = a[0] * ( d[1] - c[1] ) +
-	           b[0] * ( c[1] - d[1] ) +
-	           d[0] * ( b[1] - a[1] ) +
-	           c[0] * ( a[1] - b[1] );
-
-	   // If denom is zero, then segments are parallel: handle separately.
-	   //if (fabs(denom)<SMALLNUMBER) denom=0;
-	   if (fabs(denom)<TINYNUMBER) return  ParallelInt(a, b, c, d, p);
-
-
-	   if(AlmostEqual(a,c)){ p[0]=a[0]; p[1]=a[1]; return 'v';}
-	   if(AlmostEqual(b,c)){ p[0]=b[0]; p[1]=b[1]; return 'v';}
-	   if(AlmostEqual(a,d)){ p[0]=a[0]; p[1]=a[1]; return 'v';}
-	   if(AlmostEqual(b,d)){ p[0]=b[0]; p[1]=b[1]; return 'v';}
-
-	   //compute s
-	   num_s =    a[0] * ( d[1] - c[1] ) +
-	              c[0] * ( a[1] - d[1] ) +
-	              d[0] * ( c[1] - a[1] );
-
-
-	   s = num_s / denom;
-
-	   if( fabs(s)<TINYNUMBER ) s=0;
-	   else if( fabs(1-s)<TINYNUMBER ) s=1;
-
-
-	   //compute t
-	   num_t = -( a[0] * ( c[1] - b[1] ) +
-	              b[0] * ( a[1] - c[1] ) +
-	              c[0] * ( b[1] - a[1] ) );
-
-
-
-	   t = num_t / denom;
-
-	   if( fabs(t)<TINYNUMBER ) t=0;
-	   else if( fabs(1-t)<TINYNUMBER) t=1;
-
-	   //decide the code
-	//   if(s==0 || s==1 || t==0 || t==1)
-	//        code = 'v';
-	   if( (0.0<s) && (s< 1.0) && (0.0< t) && (t< 1.0) )
-	        code = '1';
-	   else if ( (0.0>s) || (s>1.0) || (0.0>t) || (t>1.0) )
-	        return '0';
-	   else
-	       code= 'v';
-
-	   if(code!='v'){
-	       p[0] = (a[0] + s*(b[0]-a[0]));
-	       p[1] = (a[1] + s*(b[1]-a[1]));
-	   }
-	   else{
-	      if(s==0){ p[0]=a[0]; p[1]=a[1]; }
-	      else if(s==1){p[0]=b[0]; p[1]=b[1]; }
-	      else if(t==0){p[0]=c[0]; p[1]=c[1]; }
-	      else if(t==1){p[0]=d[0]; p[1]=d[1]; }
-	      else{
-	          cout<<"s="<<s<<" t="<<t<<endl;
-	          cout<<"a="<<a[0]<<","<<a[1]<<endl;
-	          cout<<"b="<<b[0]<<","<<b[1]<<endl;
-	          cout<<"c="<<c[0]<<","<<c[1]<<endl;
-	          cout<<"d="<<d[0]<<","<<d[1]<<endl;
-	          assert(false);
-	      }
-	   }
-
-	   //double check...
-	//   if(code=='v'){
-	//       double q[2];
-	//       q[0] = (c[0] + t*(d[0]-c[0]));
-	//       q[1] = (c[1] + t*(d[1]-c[1]));
-	//       if(AlmostEqual(p,q)==false){
-	//           //cout<<"SHOOT: "<<code<<" points:"<<p[0]<<","<<p[1]<<"  "<<q[0]<<","<<q[1]<<endl;
-	//           return '0';
-	//       }
-	//   }
-
-	   return code;
-	}
-
 
 };//class Box

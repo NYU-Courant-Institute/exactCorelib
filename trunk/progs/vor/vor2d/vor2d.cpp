@@ -79,7 +79,11 @@ QuadTree* QT;
 	double boxHeight = 512;			// Initial box height
 	double deltaX=0;			// Translate input file in x-direction
 	double deltaY=0;			// Translate input file in y-direction
-	double uscale=1;			// Scale the input file 
+	double uscale=1;			// Scale the input file
+
+    double deltaX_Render=0;            // Translate display in x-direction
+    double deltaY_Render=0;            // Translate display in y-direction
+    double uscale_Render=1;            // Scale the display
 
 	int windowPosX = 400;			// X Position of Window
 	int windowPosY = 200;			// Y Position of Window
@@ -157,6 +161,10 @@ void drawWallsPS(SimplePSinC& PS, Box* b);
 void updateVARinfo();
 void updateSelectedBoxInfo();
 
+//tmp
+Wall * closest_wall=NULL;
+Corner * closest_corner=NULL;
+
 // MAIN PROGRAM: ========================================
 int main(int argc, char* argv[])
 {
@@ -194,6 +202,8 @@ int main(int argc, char* argv[])
 	GLUI *glui = GLUI_Master.create_glui( "Control",
 		0, windowPosX + boxWidth + 20, windowPosY );
 
+	glClearColor(0.5,0,0,0);
+
     // *Antialias*
     glEnable( GL_LINE_SMOOTH );
     glEnable( GL_BLEND );
@@ -217,9 +227,6 @@ int main(int argc, char* argv[])
 
 	glui->add_separator_to_panel(top_panel);
 	glui->add_checkbox_to_panel(top_panel,"Box Boundary", &showBoxBoundary, -1, (GLUI_Update_CB)renderScene)->set_int_val(1);
-	//radioDrawOption = glui->add_radiogroup_to_panel(top_panel, 0, -1, (GLUI_Update_CB)renderScene);
-	//glui->add_radiobutton_to_group( radioDrawOption, "Show Box Boundary");
-	//glui->add_radiobutton_to_group( radioDrawOption, "Hide Box Boundary");
 	glui->add_separator_to_panel(top_panel);
 
 	// Save image button
@@ -437,11 +444,31 @@ void drawQuad_selected(list<Box*> boxes)
     }
     glEnd();
 
+    //------------------------
+    //tmp
+    glLineWidth(2);
+    glBegin(GL_LINES);
+    glColor3d(0,1,0);
+    if(closest_wall!=NULL)
+    {
+        Wall * w=closest_wall;
+        glVertex2d(w->src->x,w->src->y);
+        glVertex2d(w->dst->x,w->dst->y);
+    }
+    glEnd();
+
+    if(closest_corner!=NULL)
+    {
+        drawCircle(5/uscale_Render,36, closest_corner->x,closest_corner->y,0,1,0);
+    }
+    //------------------------
+
+
     glLineWidth(1);
     for(CIT i=b->corners.begin();i!=b->corners.end();i++){
         Corner*c=*i;
-        filledCircle(5,c->x,c->y,0.75,0.75,1);
-        drawCircle(5,36, c->x,c->y,0,0,1);
+        filledCircle(5/uscale_Render,c->x,c->y,0.75,0.75,1);
+        drawCircle(5/uscale_Render,36, c->x,c->y,0,0,1);
     }
 
     glLineWidth(1);
@@ -516,12 +543,11 @@ void renderScene(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glLoadIdentity();
-	glScalef(2.0/boxWidth, 2.0/boxHeight, 0);
-	glTranslatef(-boxWidth/2, -boxHeight/2, 0);
+	glScalef(2.0*uscale_Render/boxWidth, 2.0*uscale_Render/boxHeight, 0);
+	glTranslatef(-boxWidth/2+deltaX_Render, -boxHeight/2+deltaY_Render, 0);
 
 	//draw quad tree
 	treeTraverse(QT->pRoot);
-
 
     //draw obstacles
     glPolygonMode(GL_FRONT, GL_LINE);
@@ -703,6 +729,13 @@ void Keyboard( unsigned char key, int x, int y )
     // find closest colorPt3D if ctrl is pressed...
     switch( key ){
         case 27: exit(0);
+        case 'w': deltaY_Render+=boxHeight/(uscale_Render*100); break;
+        case 's': deltaY_Render-=boxHeight/(uscale_Render*100); break;
+        case 'd': deltaX_Render+=boxWidth/(uscale_Render*100); break;
+        case 'a': deltaX_Render-=boxWidth/(uscale_Render*100); break;
+        case '=': uscale_Render*=1.5; break;
+        case '-': uscale_Render/=1.5; break;
+        case 'r': uscale_Render=1; deltaX_Render=deltaY_Render=0; break;
         default: return;
     }
 
@@ -758,14 +791,31 @@ void Mouse(int button, int state, int x, int y)
         {
             int viewport[4];
             glGetIntegerv(GL_VIEWPORT,viewport);
-            double m_x=x;
-            double m_y=viewport[3]-y;
+            double m_x=(x-boxWidth/2)/uscale_Render-deltaX_Render+boxWidth/2;
+            double m_y=(viewport[3]-y-boxHeight/2)/uscale_Render-deltaY_Render+boxHeight/2;
 
             Box * selected = QT->pRoot->find(m_x,m_y);
 
 
             if(selected!=NULL)
             {
+                //selected->pParent->distribute_features2box(selected);
+
+                BoxNode mid;
+                mid.x=selected->x;
+                mid.y=selected->y;
+                selected->pParent->determine_clearance(mid);
+                if(dynamic_cast<Wall*>(mid.nearest_feature)!=NULL)
+                {
+                    closest_wall=(Wall*)mid.nearest_feature;
+                    closest_corner=NULL;
+                }
+                else{
+                    closest_wall=NULL;
+                    closest_corner=(Corner*)mid.nearest_feature;
+                }
+
+
                 g_selected_PM.push_back(selected);
             }//end selected
 

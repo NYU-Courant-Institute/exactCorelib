@@ -45,13 +45,12 @@ double Wall::distance_star(double x, double y)
     double y2 = dst->y;
     double u = ( (x-x1)*(x2-x1) + (y-y1)*(y2-y1) ) / ( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
 
-    if(u>0 && u<1){
-        double x0 = u*x2 + (1-u)*x1;
-        double y0 = u*y2 + (1-u)*y1;
-        return sqrt( (x-x0)*(x-x0) + (y-y0)*(y-y0) );
-    }
+    if(u>=1) return FLT_MAX;
+    if(u<=0) return FLT_MAX;
 
-    return FLT_MAX;
+    double x0 = u*x2 + (1-u)*x1;
+    double y0 = u*y2 + (1-u)*y1;
+    return sqrt( (x-x0)*(x-x0) + (y-y0)*(y-y0) );
 }
 
 short Wall::distance_sign(double x, double y)
@@ -62,16 +61,33 @@ short Wall::distance_sign(double x, double y)
     double y2 = dst->y;
     double u = ( (x-x1)*(x2-x1) + (y-y1)*(y2-y1) ) / ( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
 
-    if(u>0 && u<1){
-        return 0;
-    }
+    if(u>=1) return 1;
+    if(u<=0) return -1;
+    return 0;
+}
 
-    if(u>=0) return 1;
-    return -1;
+//
+bool Wall::inZone(double x, double y)
+{
+    short s=distance_sign(x,y);
+    if(s==0) return true;
+    return false;
+}
+
+
+bool Wall::inZone_star(double x, double y)
+{
+    if(inZone(x,y)==false) return false;
+    if(isRight(x,y)) return true;
+    return false;
 }
 
 bool Wall::inZone(Box * b)
 {
+    //check if the end points of this wall are in the box
+    if( b->in(src->x,src->y) || b->in(dst->x,dst->y) )
+        return true;
+
     //center x,y
     double x=b->x;
     double y=b->y;
@@ -93,7 +109,7 @@ bool Wall::inZone(Box * b)
     if(s1==0 || s2==0 || s3==0 || s4==0)
         return true;
 
-    if(s1!=s2 || s2!=s3 || s3!=s4 || s4!=s1 || s1==0)
+    if(s1!=s2 || s2!=s3 || s3!=s4 || s4!=s1)
         return true;
 
     return false;
@@ -102,6 +118,8 @@ bool Wall::inZone(Box * b)
 bool Wall::inZone_star(Box * b)
 {
     if(inZone(b)==false) return false;
+
+//return true;
 
     //center x,y
     double x=b->x;
@@ -126,10 +144,11 @@ bool Wall::inZone_star(Box * b)
     if(r3) count++;
     if(r4) count++;
 
-    if(count==0) return false; //all on the left side
-    if(count>1) return true;   //at least two points on the right side
 
-    //count==1
+    if(count==0) return false; //all on the left side
+//    return true;
+
+    //if(count>1) return true;
 
     //check with the Zone of the wall
     short s1=distance_sign(corner1[0],corner1[1]);
@@ -142,9 +161,11 @@ bool Wall::inZone_star(Box * b)
     if(r3 && s3==0) return true;
     if(r4 && s4==0) return true;
 
-    //otherwise, check if the end points of this wall are in the box
-    if( b->in(src->x,src->y) || b->in(dst->x,dst->y) )
-        return true;
+    //
+    if( (r1 || r2) && s1!=s2) return true;
+    if( (r2 || r3) && s2!=s3) return true;
+    if( (r3 || r4) && s3!=s4) return true;
+    if( (r4 || r1) && s4!=s1) return true;
 
     return false;
 }
