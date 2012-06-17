@@ -49,8 +49,9 @@ HalfEdge *Euler_Ops::addhe(Edge *e, Vertex *v,HalfEdge *followhe,int sign){
 }
 
 HalfEdge *Euler_Ops::delhe(HalfEdge *he){
-  if (!he->edg){
+  if (he->edg==NULL){
     delete he;
+    return NULL;
   }
   else if (he->nxthe==he){
     he->edg=NULL;
@@ -61,6 +62,7 @@ HalfEdge *Euler_Ops::delhe(HalfEdge *he){
     he->prvhe->nxthe=he->nxthe;
     he->nxthe->prvhe=he->prvhe;
 
+  /*Return the previous HalfEdge*/
     HalfEdge *rhe=he->prvhe;
     delete he;
     return (rhe);
@@ -101,7 +103,6 @@ Solid *Euler_Ops::mvfs(Id s,Id f,Id v,double x,double y,double z){
   newhe->nxthe=newhe->prvhe=newhe;
   /*Connection between loops and and faces*/
   newface->flout=newloop;
-  newface->floops->push_back(newloop);
 
   /*We have a half edge but no edge*/  
   newhe->edg=NULL;
@@ -147,7 +148,6 @@ Face *Euler_Ops::lmef(HalfEdge *he1, HalfEdge *he2,Id f){
   Edge *newedge=new Edge(he1->wloop->lface->fsolid);
   newface->faceno=f;
   newface->flout=newloop;
-  newface->floops->push_back(newloop);
 
   /*The HalfEdges in [he1,he2) is in the newloop*/
   HalfEdge *he=he1;
@@ -222,7 +222,28 @@ HalfEdge *Euler_Ops::fhe(Face *f,Id vn1,Id vn2){
    }//for
 
    return NULL;
- }
+ }//fhe
+
+ /*Get HalfEdge (simple)*/
+HalfEdge *Euler_Ops::fhe(Face *f,Id vn){  
+
+  Vec<Loop *> *ls=f->floops;
+
+  /*Look through all loops*/
+  for (int i=0;i<ls->size();i++){
+    HalfEdge *he=(*ls)[i]->ledg;
+
+    /*Look through all half edges*/
+    do{
+      if(he->start->vertexno==vn)
+        return he;
+       he=he->nxthe;
+    }while(he!=(*ls)[i]->ledg);
+   }//for
+
+   return NULL;
+ }//fhe
+ 
 
 /*Higher level make edge vertex*/
 int Euler_Ops::mev(Id s,Id f1,Id f2,Id v1,Id v2,Id v3,Id v4,double x,double y,double z){
@@ -238,6 +259,7 @@ int Euler_Ops::mev(Id s,Id f1,Id f2,Id v1,Id v2,Id v3,Id v4,double x,double y,do
     return(ERROR);
   }
 
+  /*Get face*/
   oldface1=fface(oldsolid,f1);
   if(oldface1==NULL){
     cout<<"mev: face "<<f1<<"not found in solid "<<s<<endl;
@@ -280,6 +302,50 @@ int Euler_Ops::mev(Id s,Id f1,Id f2,Id v1,Id v2,Id v3,Id v4,double x,double y,do
 
 }//mev
 
+/*Simple mev*/
+int Euler_Ops::mev(Id s,Id f1,Id v1,Id v4,double x,double y,double z){
+
+  Solid *oldsolid;
+  Face *oldface;
+  HalfEdge *he;
+  
+  /*Get solid*/
+  oldsolid=getsolid(s);
+  if(oldsolid==NULL){
+    cout<<"mev: solid "<<s<<"not found\n";
+    return(ERROR);
+  }
+
+  /*Get face*/
+  oldface=fface(oldsolid,f1);
+  if(oldface==NULL){
+    cout<<"mev: face "<<f1<<"not found in solid "<<s<<endl;
+    return(ERROR);
+  }
+
+
+  he=fhe(oldface,v1);
+  if(he==NULL){
+    cout<<"mev: HalfEdge"<<v1<<"not found in face"<<f1<<endl;
+    return(ERROR);
+  }
+
+
+  /*cout<<"Solid "<<oldsolid->solidno<<endl;
+  oldsolid->print();
+  cout<<"oldface1 "<<oldface1->faceno<<endl;
+  oldface1->print();
+  cout<<"oldface2 "<<oldface2->faceno<<endl;
+  oldface2->print();
+  cout<<"he1 "<<endl;
+  he1->print();
+  cout<<"he2 "<<endl;
+  he2->print();
+  cout<<endl<<endl;*/
+
+  lmev(he,he,v4,x,y,z);
+}
+
 /*Higher level make edge face*/
 int Euler_Ops::mef(Id s,Id f1,Id v1,Id v2,Id v3,Id v4,Id f2){
                     
@@ -289,30 +355,218 @@ int Euler_Ops::mef(Id s,Id f1,Id v1,Id v2,Id v3,Id v4,Id f2){
 
   oldsolid=getsolid(s);
   if(oldsolid==NULL){
-    cout<<"mev: solid "<<s<<"not found\n";
+    cout<<"mef: solid "<<s<<"not found\n";
     return(ERROR);
   }
 
   oldface1=fface(oldsolid,f1);
   if(oldface1==NULL){
-    cout<<"mev: face "<<f1<<"not found in solid "<<s;
+    cout<<"mef: face "<<f1<<"not found in solid "<<s;
     return(ERROR);
   }
 
   he1=fhe(oldface1,v1,v2);
   if(he1==NULL){
-    cout<<"mev: HalfEdge"<<v1<<"->"<<v2<<"not found in face"<<f1;
+    cout<<"mef: HalfEdge"<<v1<<"->"<<v2<<"not found in face"<<f1;
     return(ERROR);
   }
 
   he2=fhe(oldface1,v3,v4);
   if(he2==NULL){
-    cout<<"mev: HalfEdge"<<v3<<"->"<<v4<<"not found in face"<<f1;
+    cout<<"mef: HalfEdge"<<v3<<"->"<<v4<<"not found in face"<<f1;
     return(ERROR);
   }
 
   lmef(he1,he2,f2);
   return SUCCESS;
 
-}
+}//mef
 
+/*Simple Higher level make edge face*/
+int Euler_Ops::mef(Id s,Id f1,Id v1,Id v3,Id f2){
+                    
+  Solid *oldsolid;
+  Face *oldface1;
+  HalfEdge *he1,*he2;
+
+  oldsolid=getsolid(s);
+  if(oldsolid==NULL){
+    cout<<"mef: solid "<<s<<"not found\n";
+    return(ERROR);
+  }
+
+  oldface1=fface(oldsolid,f1);
+  if(oldface1==NULL){
+    cout<<"mef: face "<<f1<<"not found in solid "<<s;
+    return(ERROR);
+  }
+
+  he1=fhe(oldface1,v1);
+  if(he1==NULL){
+    cout<<"mef: HalfEdge"<<v1<<"->"<<"not found in face"<<f1;
+    return(ERROR);
+  }
+
+  he2=fhe(oldface1,v3);
+  if(he2==NULL){
+    cout<<"mef: HalfEdge"<<v3<<"->"<<"not found in face"<<f1;
+    return(ERROR);
+  }
+
+  lmef(he1,he2,f2);
+  return SUCCESS;
+
+}//mef
+
+void Euler_Ops::lkemr(HalfEdge *h1,HalfEdge *h2){
+  register HalfEdge *h3,*h4;
+  Loop *nl;
+  Loop *ol;
+  Edge *killedge;
+  /*Get out loop,which is the old loop*/
+  ol=h1->wloop;
+
+  /*New Loop, which is the inner loop*/
+  nl=new Loop(ol->lface);
+
+  /*h1 and h2 share the same edge*/
+  killedge=h1->edg;
+
+  h3=h1->nxthe;
+  h1->nxthe=h2->nxthe;
+  h2->nxthe->prvhe=h1;
+  h2->nxthe=h3;
+  h3->prvhe=h2;
+
+  h4=h2;
+  
+  do{
+    h4->wloop=nl;
+    h4=h4->nxthe;
+  }while(h4!=h2);
+
+  ol->ledg=h3=delhe(h1);
+  nl->ledg=h4=delhe(h2);
+  
+  /*If there is no edge, it should be a self loop*/
+  h3->start->vedge=(h3->edg)? h3: NULL;
+  h4->start->vedge=(h4->edg)? h4: NULL;
+  
+  /*We have to use destruction here*/
+  delete killedge;
+
+
+
+}//lkemr
+
+int Euler_Ops::kemr(Id s,Id f,Id v1,Id v2){
+  Solid *oldsolid;
+  Face *oldface;
+  HalfEdge *he1;
+  HalfEdge *he2;
+  
+  /*Get solid*/
+  oldsolid=getsolid(s);
+  if(oldsolid==NULL){
+    cout<<"kemr: solid "<<s<<"not found\n"<<endl;
+    return(ERROR);
+  }
+
+  /*Get face*/
+  oldface=fface(oldsolid,f);
+  if(oldface==NULL){
+    cout<<"kemr: face "<<f<<"not found in solid "<<s<<endl;
+    return(ERROR);
+  }
+
+  /*Get HalfEdge he1 & HalfEdge he2*/
+  he1=fhe(oldface,v1,v2);
+  if(he1==NULL){
+    cout<<"kemr: HalfEdge"<<v1<<"->"<<v2<<"not found in face"<<f<<endl;
+    return(ERROR);
+  }
+
+  he2=fhe(oldface,v2,v1);
+  if(he2==NULL){
+    cout<<"kemr: HalfEdge"<<v2<<"->"<<v1<<"not found in face"<<f<<endl;
+    return(ERROR);
+  }
+
+  lkemr(he1,he2);
+  return (SUCCESS);
+
+}//kemr
+
+/*Opposite Operation : Make Edge kill Ring*/
+/*Lower Level*/
+void Euler_Ops::lmekr(HalfEdge *he1,HalfEdge *he2){
+  if(he1==NULL){
+    cout<<"In lmekr: he1 is NULL"<<endl;
+    return;
+  }
+
+  if(he2==NULL){
+    cout<<"In lmekr: he2 is NULL"<<endl;
+    return;
+  }
+  /*Add Half Edges?*/
+
+
+
+}
+/*Kill Face Make Ring Hole
+*Suppose Face2 is simple
+*remove Face2 and add outer 
+*Loop of Face2 into Face1
+*as an inner Loop
+*/
+void Euler_Ops::lkfmrh(Face *fac1,Face *fac2){
+  if (fac1==NULL){
+    cout<<"lkfmrh: fac1 is NULL"<<endl;
+    return;
+  }
+
+  if (fac2==NULL){
+    cout<<"lkfmrh: fac2 is NULL"<<endl;
+    return;
+  }
+
+  if(fac2->flout==NULL){
+    cout<<"lkfmrh: fac2's outer loop is NULL"<<endl;
+    return;
+  }
+  
+  fac1->addLoop(fac2->flout);
+
+  delete fac2;
+}//lkfmrh
+
+int Euler_Ops::kfmrh(Id s,Id f1,Id f2){
+  Solid *oldsolid;
+  Face *oldface1;
+  Face *oldface2;
+  
+  /*Get solid*/
+  oldsolid=getsolid(s);
+  if(oldsolid==NULL){
+    cout<<"kfmrh: solid "<<s<<"not found\n";
+    return(ERROR);
+  }
+
+  /*Get face1*/
+  oldface1=fface(oldsolid,f1);
+  if(oldface1==NULL){
+    cout<<"kemr: face "<<f1<<"not found in solid "<<s<<endl;
+    return(ERROR);
+  }
+  /*Get face2*/
+  oldface2=fface(oldsolid,f2);
+  if(oldface2==NULL){
+    cout<<"kemr: face "<<f2<<"not found in solid "<<s<<endl;
+    return(ERROR);
+  }
+
+  lkfmrh(oldface1,oldface2);
+  return (SUCCESS);
+
+}//kfmrh

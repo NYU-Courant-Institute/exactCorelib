@@ -1,7 +1,8 @@
 #include "Euler_Ops.h"
-
+#define CUBEWITHAHOLE
 int main(){
   Euler_Ops *eo=new Euler_Ops();
+  #ifdef CUBE
   /**********************First Step New a Solid with single Face&Vertex, add vertex 1:(0,0,0)*************************************/
   cout<<"**********************First Step New a Solid with single Face&Vertex, add vertex 1:(0,0,0)******************************"<<endl;
   Solid *cube=eo->mvfs(1,1,1,0,0,0);
@@ -121,6 +122,8 @@ int main(){
   cube->showInfo();
   cube->print();
 
+  #elif defined(TETRAHEDRON) 
+
   /*************************************************************************************************************************/
   /*************************************************************************************************************************/
   /****************************************************Tetrahedron*************************************************/
@@ -141,6 +144,56 @@ int main(){
     (*ss)[i]->showInfo();
     (*ss)[i]->print();
   }
+
+  #elif defined(CUBEWITHAHOLE)
+  
+  Solid *holecube=eo->mvfs(1,1,1,0,0,0);
+  int check=eo->mev(1,1,1,1,1,1,2,3,0,0);/*Solidno, faceno1,faceno2,v1,v2,v3...newV,coordinates*/
+  check=eo->mev(1,1,1,2,1,1,3,3,3,0);
+  check=eo->mev(1,1,1,3,2,2,4,0,3,0);
+  check=eo->mef(1,1,4,3,1,2,2);
+  check=eo->mev(1,2,2,1,4,4,5,0,0,3);/*Solidno, faceno1,faceno2,v1,v2,v3...newV,coordinates*/
+  check=eo->mev(1,2,2,2,1,1,6,3,0,3);/*Solidno, faceno1,faceno2,v1,v2,v3...newV,coordinates*/
+  check=eo->mev(1,2,2,3,2,2,7,3,3,3);/*Solidno, faceno1,faceno2,v1,v2,v3...newV,coordinates*/
+  check=eo->mev(1,2,2,4,3,3,8,0,3,3);/*Solidno, faceno1,faceno2,v1,v2,v3...newV,coordinates*/
+  check=eo->mef(1,2,6,2,5,1,3);/*Solidno, oldfaceno,v1,v2,v3,v4,newfaceno*/
+  check=eo->mef(1,2,5,1,8,4,4);/*Solidno, oldfaceno,v1,v2,v3,v4,newfaceno*/
+  check=eo->mef(1,2,8,4,7,3,5);/*Solidno, oldfaceno,v1,v2,v3,v4,newfaceno*/
+  check=eo->mef(1,2,7,3,6,5,6);/*Solidno, oldfaceno,v1,v2,v3,v4,newfaceno*/
+  /*Step 14-17 : 4*mev*/
+  check=eo->mev(1,1,1,1,2,2,9,1,1,0);
+  check=eo->mev(1,1,1,9,1,1,10,2,1,0);
+  check=eo->mev(1,1,1,10,9,9,11,2,2,0);
+  check=eo->mev(1,1,1,11,10,10,12,1,2,0);
+
+  /*Step 18 : mef*/
+  check=eo->mef(1,1,9,10,12,11,7);
+
+  /*Step 19 : kemr*/
+  check=eo->kemr(1,1,1,9);
+
+  /*Step 20-23 : 4*mev*/
+  check=eo->mev(1,7,9,13,1,1,3);
+  check=eo->mev(1,7,10,14,2,1,3);
+  check=eo->mev(1,7,11,15,2,2,3);
+  check=eo->mev(1,7,12,16,1,2,3);
+
+  /*Step 24-27 : 4*mef*/
+  check=eo->mef(1,7,13,9,14,10,8);
+  if(check!=SUCCESS)
+    cout<<"ERROR step 24"<<endl;
+  check=eo->mef(1,7,14,10,15,11,9);
+  check=eo->mef(1,7,15,11,16,12,10);
+  check=eo->mef(1,7,16,12,13,14,11);
+
+  /*Step 28 : kfmrh */
+  check=eo->kfmrh(1,2,7);
+
+  if (check!=SUCCESS)
+    cout<<"ERROR"<<endl;
+  holecube->print();
+  holecube->showInfo();
+  #endif
 
 
 

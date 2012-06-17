@@ -92,6 +92,11 @@ public:
   Vertex();
   void print(); /*Print the coordinates of the vertex*/
 
+
+  /*Destructors*/
+  ~Vertex();
+  
+
 };
 
 /*************HalfEdge with a start point and a mate funciton*******/
@@ -155,6 +160,7 @@ public:
 
   HalfEdge *mate();/*Find its mate*/
   void print();/*Print start -> end*/
+
 };
 
 
@@ -177,6 +183,9 @@ public:
   Edge();
   Edge(Solid *s);
   Edge(HalfEdge *he1,HalfEdge *he2,Solid *s);
+
+  /*Destructors*/
+  ~Edge();
 
   void print(){ if(he1) he1->print(); else if(he2) he2->print(); else cout<<"empty edge without halfedges"<<endl;}; /*print the start end end point*/
 };
@@ -205,10 +214,42 @@ public:
   Vec<Loop *> *floops;/*pointer to list of loops*/
   coords feq;/*face equation*/
 
+  /*Constructors*/
   Face();
   Face(Solid* s);
   Face(Vec<Loop *> *floops, Loop *flout,Solid * s, double a,double b,double c,double d);
   Face(Id faceno,Vec<Loop *> *floops, Loop *flout,Solid * s, double a,double b,double c,double d);
+
+  /*Destructors*/
+  ~Face();
+
+  /*Is simple*/
+  bool isSimple(){
+    return floops->size()<=1;
+  }
+
+  /*Add an inner Loop*/
+  void addLoop(Loop *l){
+    if (flout==NULL)
+      flout=l;
+
+    for (int i=0;i<floops->size();i++)
+      if((*floops)[i]==l)
+      return;
+
+    floops->push_back(l);
+  }
+
+  /*Getters & Setters*/
+  /*flout*/
+  Loop* getFlout(){
+    return flout;
+  }
+
+  void setFlout(Loop *flout){
+    this->flout=flout;
+  }
+
 
   void print();
 };

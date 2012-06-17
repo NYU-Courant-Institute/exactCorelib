@@ -12,3 +12,5 @@ sure that the edge on the upper face of the lamina should be in the new face.
 
 Be careful when "closing" the cube because in the last step you may only have
 single circle, which means that you cannot meet a duplicat point in the loop.
+
+We can build different solids through #ifdef

@@ -51,6 +51,14 @@ Vertex::Vertex(){
   //s->sverts->push_back(this);
 }
 
+/*Destructors*/
+Vertex::~Vertex(){
+  vector<Vertex *>::iterator it=s->sverts->begin();
+  for (;it!=s->sverts->end();it++){
+    if((*it)->vertexno==this->vertexno)
+      s->sverts->erase(it);
+  }
+}
 /*Print coordinates*/
 
 void Vertex::print(){
@@ -112,6 +120,7 @@ void HalfEdge::print(){
 
 }
 /********************Edge***************************/
+/*Constructors*/
 Edge::Edge(){
   he1=new HalfEdge();
   he2=new HalfEdge();
@@ -129,11 +138,20 @@ Edge::Edge(HalfEdge *half1,HalfEdge *half2,Solid *solid){
   s=solid;
   s->sedges->push_back(this);
 }
+/*Destructors*/
+Edge::~Edge(){
+  vector<Edge *>::iterator it=s->sedges->begin();
+  for (;it!=s->sedges->end();it++){
+    if((*it)==this)
+      s->sedges->erase(it);
+  }
+}
+
 /*********************Loop*********************/
 
 Loop::Loop(){ledg=new HalfEdge;}/*Default constructor*/
-Loop::Loop(Face *f){ledg=new HalfEdge;lface=f;}/*Constructor with a face*/
-Loop::Loop(HalfEdge *he,Face *f){ledg=he;lface=f;}/*Constructor wigh face and leading edge*/
+Loop::Loop(Face *f){ledg=new HalfEdge;lface=f;lface->addLoop(this);}/*Constructor with a face*/
+Loop::Loop(HalfEdge *he,Face *f){ledg=he;lface=f;lface->addLoop(this);}/*Constructor wigh face and leading edge*/
 void Loop::print(){
   HalfEdge *he=ledg;
   if (he==NULL)
@@ -186,6 +204,14 @@ Face::Face(Id faceno,Vec<Loop *> *floops, Loop *flout,Solid * s, double a,double
   feq[1]=b;
   feq[2]=c;
   feq[3]=d;
+}
+
+Face::~Face(){
+  vector<Face *>::iterator it=fsolid->sfaces->begin();
+  for (;it!=fsolid->sfaces->end();it++){
+    if((*it)->faceno==this->faceno)
+      fsolid->sfaces->erase(it);
+  }
 }
 
 void Face::print(){
