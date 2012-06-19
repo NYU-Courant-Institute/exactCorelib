@@ -127,6 +127,9 @@ QuadTree* QT;
 	GLUI_EditText* editBetaY;
 	GLUI_EditText* editSeed;
 
+	GLUI_Translation * guiTranslate;
+	GLUI_Translation * guiZoom;
+
 	//information display
 	GLUI_StaticText * selectedBoxInfo; //information about selected box
 	GLUI_StaticText * vorInfo;
@@ -160,10 +163,15 @@ void drawWallsPS(SimplePSinC& PS, Box* b);
 //GUI related functions
 void updateVARinfo();
 void updateSelectedBoxInfo();
+void reset_move();
 
 //tmp
 Wall * closest_wall=NULL;
 Corner * closest_corner=NULL;
+
+
+float gui_dXY[2];
+float gui_dZ;
 
 // MAIN PROGRAM: ========================================
 int main(int argc, char* argv[])
@@ -199,8 +207,7 @@ int main(int argc, char* argv[])
 	GLUI_Master.set_glutKeyboardFunc(Keyboard);
 	GLUI_Master.set_glutMouseFunc(Mouse);
 	GLUI_Master.set_glutSpecialFunc(SpecialKey);
-	GLUI *glui = GLUI_Master.create_glui( "Control",
-		0, windowPosX + boxWidth + 20, windowPosY );
+	GLUI *glui = GLUI_Master.create_glui( "Control", 0, windowPosX + boxWidth + 20, windowPosY );
 
 	glClearColor(0.5,0,0,0);
 
@@ -235,6 +242,14 @@ int main(int argc, char* argv[])
 	// Quit button
 	glui->add_button_to_panel(top_panel, "Quit", 0, (GLUI_Update_CB)exit );
 
+	//translate and zoom gui
+	GLUI_Panel * bottom_panel=glui->add_panel("View Control");
+	guiTranslate=glui->add_translation_to_panel(bottom_panel, "Translate", GLUI_TRANSLATION_XY,gui_dXY);
+	glui->add_column_to_panel(bottom_panel,true);
+	guiZoom=glui->add_translation_to_panel(bottom_panel, "Zoom", GLUI_TRANSLATION_Z,&gui_dZ);
+	// reset button
+	glui->add_column_to_panel(bottom_panel,true);
+	glui->add_button_to_panel(bottom_panel, "Reset View", 0, (GLUI_Update_CB)reset_move );
 
     //add some display
 	vorInfo=glui->add_statictext("var \n info"); //
@@ -540,6 +555,10 @@ void filledCircle( double radius, double x, double y, double r, double g, double
 
 void renderScene(void) 
 {
+    uscale_Render=(gui_dZ>0)?pow(1.05,gui_dZ):1.0/pow(1.05,-gui_dZ);
+    deltaX_Render=gui_dXY[0]/(uscale_Render);
+    deltaY_Render=gui_dXY[1]/(uscale_Render);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glLoadIdentity();
@@ -721,6 +740,14 @@ void updateSelectedBoxInfo()
 }
 
 
+void reset_move()
+{
+    uscale_Render=1; deltaX_Render=deltaY_Render=0;
+    guiTranslate->set_x(0);
+    guiTranslate->set_y(0);
+    guiZoom->set_z(0);
+}
+
 //
 // handle keyboard events
 //
@@ -735,7 +762,7 @@ void Keyboard( unsigned char key, int x, int y )
         case 'a': deltaX_Render-=boxWidth/(uscale_Render*100); break;
         case '=': uscale_Render*=1.5; break;
         case '-': uscale_Render/=1.5; break;
-        case 'r': uscale_Render=1; deltaX_Render=deltaY_Render=0; break;
+        case 'r': reset_move(); break;
         default: return;
     }
 
@@ -800,6 +827,7 @@ void Mouse(int button, int state, int x, int y)
             if(selected!=NULL)
             {
                 //selected->pParent->distribute_features2box(selected);
+                selected->buildVor();
 
                 BoxNode mid;
                 mid.x=selected->x;

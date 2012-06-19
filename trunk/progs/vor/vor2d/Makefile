@@ -365,9 +365,9 @@ eg12 bug2: vor2d
 		&
 
 
-# Eg3: dog example
+# Eg13: monkey example
 eg13 monkey:	vor2d
-	@echo "Target 'eg3' or 'dog': "
+	@echo "Target 'eg13' or 'monkey': "
 	./vor2d $(interactive) \
 		0.1 $(pseudo) $(interior) nazca_monkey.poly \
 		512 512 $(windowPosX) $(windowPosY) \
@@ -375,7 +375,18 @@ eg13 monkey:	vor2d
 		220 220 2 $(closePoly) \
 		$(c1) $(c2) \
 		&
-		
+
+# Eg14: mammoth example
+eg14 mammoth:	vor2d
+	@echo "Target 'eg14' or 'mammoth': "
+	./vor2d $(interactive) \
+		0.1 $(pseudo) $(interior) mammoth.poly \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		220 220 20 $(closePoly) \
+		$(c1) $(c2) \
+		&
+				
 # Eg150: Example with 150 randomly generated, overlapping triangles
 eg150: vor2d
 	./vor2d $(interactive) \

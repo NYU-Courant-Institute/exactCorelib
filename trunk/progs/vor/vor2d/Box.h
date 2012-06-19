@@ -7,6 +7,8 @@
 
 #pragma once
 
+#define ACTUAL 0
+
 #include <time.h>
 #include <stdlib.h>
 #include <iostream>
@@ -797,6 +799,16 @@ public:
 	}
 
 
+	int feature_count(Feature* f, list<Feature*>& all_features)
+	{
+	    typedef list<Feature*>::iterator IT;
+	    int count=0;
+	    for(IT i=all_features.begin();i!=all_features.end();i++){
+	        if( (*i)==f ) count++;
+	    }
+	    return count;
+	}
+
 	void buildVor()
 	{
 	    if(status!=Box::ON) return;
@@ -826,15 +838,27 @@ public:
         if(lrf==NULL || llf==NULL || urf==NULL || lrf==NULL)
             return;
 
-        list<BoxNode> mids[4];
+        list<BoxNode> mids[4]; //confusing name, this is for storing the intersections
+                               //between Vor and each edge of the box (north, east, south, west)
 
-        //north edge
+        Feature * mid_features[4]={NULL,NULL,NULL,NULL}; //closest feature of the mid pt of north, east, south, west edge
+        list<Feature *> all_features;
+        all_features.push_back(ulf);
+        all_features.push_back(llf);
+        all_features.push_back(urf);
+        all_features.push_back(lrf);
+
+        //north edge (top)
         if(ulf!=urf && ulf!=NULL && urf!=NULL)
         {
-//            BoxNode mid;
-//            mid=intersection(ulf,urf,UL,UR);
-//            mids[0].push_back(mid);
 
+#if ACTUAL
+
+            BoxNode mid;
+            mid=intersection(ulf,urf,UL,UR);
+            mids[0].push_back(mid);
+
+#else
             BoxNode mid;
             mid.x=x;
             mid.y=y+height/2;
@@ -845,6 +869,8 @@ public:
                 if(pChildren[0]->depth>depth){
                     determine_clearance(mid);
                     Feature * mf=(mid.nearest_feature==NULL)?NULL:UF.Find(mid.nearest_feature);
+                    mid_features[0]=mf;
+                    all_features.push_back(mf);
                     if(ulf==mf && mf!=urf){
                         mid.x=x+width/4;
                         mids[0].push_back(mid);
@@ -865,14 +891,17 @@ public:
                     mids[0].push_back(mid);
                 }
             }
+#endif
         }
 
+        //east edge (right)
         if(urf!=lrf && urf!=NULL && lrf!=NULL)
         {
-//            BoxNode mid;
-//            mid=intersection(urf,lrf,UR,LR);
-//            mids[1].push_back(mid);
-
+#if ACTUAL
+            BoxNode mid;
+            mid=intersection(urf,lrf,UR,LR);
+            mids[1].push_back(mid);
+#else
             BoxNode mid;
             mid.x=x+width/2;
             mid.y=y;
@@ -882,6 +911,8 @@ public:
                 if(pChildren[1]->depth>depth){
                     determine_clearance(mid);
                     Feature * mf=(mid.nearest_feature==NULL)?NULL:UF.Find(mid.nearest_feature);
+                    mid_features[1]=mf;
+                    all_features.push_back(mf);
                     if(urf==mf && mf!=lrf){
                         mid.y=y-height/4;
                         mids[1].push_back(mid);
@@ -902,14 +933,17 @@ public:
                     mids[1].push_back(mid);
                 }
             }
+#endif
         }
 
+        //south edge (bottom)
         if(lrf!=llf && lrf!=NULL && llf!=NULL)
         {
-//            BoxNode mid;
-//            mid=intersection(lrf,llf,LR,LL);
-//            mids[2].push_back(mid);
-
+#if ACTUAL
+            BoxNode mid;
+            mid=intersection(lrf,llf,LR,LL);
+            mids[2].push_back(mid);
+#else
             BoxNode mid;
             mid.x=x;
             mid.y=y-height/2;
@@ -919,6 +953,8 @@ public:
                 if(pChildren[2]->depth>depth){
                     determine_clearance(mid);
                     Feature * mf=(mid.nearest_feature==NULL)?NULL:UF.Find(mid.nearest_feature);
+                    mid_features[2]=mf;
+                    all_features.push_back(mf);
                     if(lrf==mf && mf!=llf){
                         mid.x=x-width/4;
                         mids[2].push_back(mid);
@@ -938,15 +974,17 @@ public:
                     mids[2].push_back(mid);
                 }
             }
-
+#endif
         }
 
+        //west edge (left)
         if(llf!=ulf && llf!=NULL && ulf!=NULL)
         {
-//            BoxNode mid;
-//            mid=intersection(llf,ulf,LL,UL);
-//            mids[3].push_back(mid);
-
+#if ACTUAL
+            BoxNode mid;
+            mid=intersection(llf,ulf,LL,UL);
+            mids[3].push_back(mid);
+#else
             BoxNode mid;
             mid.x=x-width/2;
             mid.y=y;
@@ -956,6 +994,8 @@ public:
                 if(pChildren[3]->depth>depth){
                     determine_clearance(mid);
                     Feature * mf=(mid.nearest_feature==NULL)?NULL:UF.Find(mid.nearest_feature);
+                    mid_features[3]=mf;
+                    all_features.push_back(mf);
                     if(llf==mf && mf!=ulf){
                         mid.y=y+height/4;
                         mids[3].push_back(mid);
@@ -975,7 +1015,7 @@ public:
                     mids[3].push_back(mid);
                 }
             }//end if
-
+#endif
         }
 
         int degree=mids[0].size()+mids[1].size()+mids[2].size()+mids[3].size();
@@ -995,69 +1035,181 @@ public:
                 }//end for j
             }//end for i
         }
+        else if(degree==2)
+        {
+            list<BoxNode> nodes;
+            for(int i=0;i<4;i++) nodes.insert(nodes.end(),mids[i].begin(),mids[i].end());
+            VorSegment seg;
+            seg.p[0]=nodes.front().x;
+            seg.p[1]=nodes.front().y;
+            seg.q[0]=nodes.back().x;
+            seg.q[1]=nodes.back().y;
+            vor_segments.push_back(seg);
+        }
         else
         {
             //connect the points
-            if( ulf!=urf &&  ulf!=llf && ulf!=NULL){
+            //check upper-left corner
+            int ul_fc=feature_count(ulf,all_features);
+//            if(mid_features[3]==NULL && llf==ulf) ul_fc--;
+//            if(mid_features[0]==NULL && urf==ulf) ul_fc--;
+//            if(mid_features[3]==ulf) ul_fc--;
+//            if(mid_features[0]==ulf) ul_fc--;
+
+            if( ul_fc==1 ){ //unique
                 VorSegment seg;
-                seg.p[0]=mids[0].front().x;
-                seg.p[1]=mids[0].front().y;
-                seg.q[0]=mids[3].back().x;
-                seg.q[1]=mids[3].back().y;
+                BoxNode n3=(mid_features[3]==ulf)?mids[3].front():mids[3].back();
+                BoxNode n0=(mid_features[0]==ulf)?mids[0].back():mids[0].front();
+                seg.p[0]=n3.x;
+                seg.p[1]=n3.y;
+                seg.q[0]=n0.x;
+                seg.q[1]=n0.y;
                 vor_segments.push_back(seg);
             }
 
             //connect the points
-            if( ulf!=urf &&  urf!=lrf && urf!=NULL){
+            //check upper-right corner
+            int ur_fc=feature_count(urf,all_features);
+//            if(mid_features[0]==NULL && ulf==urf) ur_fc--;
+//            if(mid_features[1]==NULL && lrf==urf) ur_fc--;
+//            if(mid_features[0]==urf) ur_fc--;
+//            if(mid_features[1]==urf) ur_fc--;
+
+            if( ur_fc==1 ){
                 VorSegment seg;
-                seg.p[0]=mids[0].back().x;
-                seg.p[1]=mids[0].back().y;
-                seg.q[0]=mids[1].front().x;
-                seg.q[1]=mids[1].front().y;
+                BoxNode n0=(mid_features[0]==urf)?mids[0].front():mids[0].back();
+                BoxNode n1=(mid_features[1]==urf)?mids[1].back():mids[1].front();
+                seg.p[0]=n0.x;
+                seg.p[1]=n0.y;
+                seg.q[0]=n1.x;
+                seg.q[1]=n1.y;
                 vor_segments.push_back(seg);
             }
 
             //connect the points
-            if( lrf!=urf &&  lrf!=llf && lrf!=NULL ){
+            //check lower right corner
+            int lr_fc=feature_count(lrf,all_features);
+//            if(mid_features[1]==NULL && urf==lrf) lr_fc--;
+//            if(mid_features[2]==NULL && llf==lrf) lr_fc--;
+//            if(mid_features[1]==lrf) lr_fc--;
+//            if(mid_features[2]==lrf) lr_fc--;
+
+            if( lr_fc==1 ){
                 VorSegment seg;
-                seg.p[0]=mids[1].back().x;
-                seg.p[1]=mids[1].back().y;
-                seg.q[0]=mids[2].front().x;
-                seg.q[1]=mids[2].front().y;
+                BoxNode n1=(mid_features[1]==lrf)?mids[1].front():mids[1].back();
+                BoxNode n2=(mid_features[2]==lrf)?mids[2].back():mids[2].front();
+                seg.p[0]=n1.x;
+                seg.p[1]=n1.y;
+                seg.q[0]=n2.x;
+                seg.q[1]=n2.y;
                 vor_segments.push_back(seg);
             }
 
             //connect the points
-            if( llf!=lrf &&  llf!=ulf && llf!=NULL){
+            //check lower lower-left corner
+            int ll_fc=feature_count(llf,all_features);
+//            if(mid_features[2]==NULL && lrf==llf) ll_fc--;
+//            if(mid_features[3]==NULL && ulf==llf) ll_fc--;
+//            if(mid_features[2]==llf) ll_fc--;
+//            if(mid_features[3]==llf) ll_fc--;
+
+            if( ll_fc==1 ){
                 VorSegment seg;
-                seg.p[0]=mids[2].back().x;
-                seg.p[1]=mids[2].back().y;
-                seg.q[0]=mids[3].front().x;
-                seg.q[1]=mids[3].front().y;
+                BoxNode n2=(mid_features[2]==llf)?mids[2].front():mids[2].back();
+                BoxNode n3=(mid_features[3]==llf)?mids[3].back():mids[3].front();
+                seg.p[0]=n2.x;
+                seg.p[1]=n2.y;
+                seg.q[0]=n3.x;
+                seg.q[1]=n3.y;
                 vor_segments.push_back(seg);
             }
 
-            if( ulf!=llf &&  urf!=lrf &&
-                    ulf==urf && llf==lrf)
-            {
-                VorSegment seg;
-                seg.p[0]=mids[1].front().x;
-                seg.p[1]=mids[1].front().y;
-                seg.q[0]=mids[3].front().x;
-                seg.q[1]=mids[3].front().y;
-                vor_segments.push_back(seg);
+            //check north edge
+            if(ulf==urf){
+                Feature * l_f=(mid_features[3]!=NULL)?mid_features[3]:llf;
+                Feature * r_f=(mid_features[1]!=NULL)?mid_features[1]:lrf;
+                if( ulf!=l_f &&  urf!=r_f){
+                    VorSegment seg;
+                    seg.q[0]=mids[3].back().x;
+                    seg.q[1]=mids[3].back().y;
+                    seg.p[0]=mids[1].front().x;
+                    seg.p[1]=mids[1].front().y;
+                    vor_segments.push_back(seg);
+                }
             }
 
-            if( ulf==llf &&  urf==lrf &&
-                    ulf!=urf && llf!=lrf)
-            {
-                VorSegment seg;
-                seg.p[0]=mids[0].front().x;
-                seg.p[1]=mids[0].front().y;
-                seg.q[0]=mids[2].front().x;
-                seg.q[1]=mids[2].front().y;
-                vor_segments.push_back(seg);
+            //check east edge
+            if(urf==lrf){
+                Feature * t_f=(mid_features[0]!=NULL)?mid_features[0]:ulf; //top
+                Feature * b_f=(mid_features[2]!=NULL)?mid_features[2]:llf; //bottom
+                if( urf!=t_f &&  lrf!=b_f){
+                    VorSegment seg;
+                    seg.p[0]=mids[0].back().x;
+                    seg.p[1]=mids[0].back().y;
+                    seg.q[0]=mids[2].front().x;
+                    seg.q[1]=mids[2].front().y;
+                    vor_segments.push_back(seg);
+                }
             }
+
+            //check south edge
+            if(lrf==llf){
+                Feature * r_f=(mid_features[1]!=NULL)?mid_features[1]:urf; //right
+                Feature * l_f=(mid_features[3]!=NULL)?mid_features[3]:ulf; //left
+                if( lrf!=r_f &&  llf!=l_f){
+
+                    if(mid_features[1]!=NULL || mid_features[3]!=NULL)
+                    {
+                        VorSegment seg;
+                        seg.p[0]=mids[1].back().x;
+                        seg.p[1]=mids[1].back().y;
+                        seg.q[0]=mids[3].front().x;
+                        seg.q[1]=mids[3].front().y;
+                        vor_segments.push_back(seg);
+                    }
+                }
+            }
+
+
+            //check west edge
+            if(llf==ulf){
+                Feature * b_f=(mid_features[2]!=NULL)?mid_features[2]:lrf; //bottom
+                Feature * t_f=(mid_features[0]!=NULL)?mid_features[0]:urf; //top
+                if( llf!=b_f &&  ulf!=t_f){
+
+                    if(mid_features[0]!=NULL || mid_features[2]!=NULL)
+                    {
+                        VorSegment seg;
+                        seg.p[0]=mids[2].back().x;
+                        seg.p[1]=mids[2].back().y;
+                        seg.q[0]=mids[0].front().x;
+                        seg.q[1]=mids[0].front().y;
+                        vor_segments.push_back(seg);
+                    }
+                }
+            }
+
+//            if( ulf!=llf &&  urf!=lrf &&
+//                    ulf==urf && llf==lrf)
+//            {
+//                VorSegment seg;
+//                seg.p[0]=mids[1].front().x;
+//                seg.p[1]=mids[1].front().y;
+//                seg.q[0]=mids[3].front().x;
+//                seg.q[1]=mids[3].front().y;
+//                vor_segments.push_back(seg);
+//            }
+//
+//            if( ulf==llf &&  urf==lrf &&
+//                    ulf!=urf && llf!=lrf)
+//            {
+//                VorSegment seg;
+//                seg.p[0]=mids[0].front().x;
+//                seg.p[1]=mids[0].front().y;
+//                seg.q[0]=mids[2].front().x;
+//                seg.q[1]=mids[2].front().y;
+//                vor_segments.push_back(seg);
+//            }
         }//end if(sfc!=3)
 
 	}
