@@ -386,7 +386,29 @@ eg14 mammoth:	vor2d
 		220 220 20 $(closePoly) \
 		$(c1) $(c2) \
 		&
-				
+			
+# Eg15: Vikram example
+eg15 :	vor2d
+	@echo "Target 'eg15' :"
+	./vor2d $(interactive) \
+		0.1 $(pseudo) $(interior) Vikram-1.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtrans) $(ytrans) $(scale) $(closePoly) \
+		$(c1) $(c2) \
+		&
+
+# Eg15a: Vikram example
+eg15a :	vor2d
+	@echo "Target 'eg15a' :"
+	./vor2d $(interactive) \
+		0.1 $(pseudo) $(interior) Vikram-2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtrans) $(ytrans) $(scale) $(closePoly) \
+		$(c1) $(c2) \
+		&
+								
 # Eg150: Example with 150 randomly generated, overlapping triangles
 eg150: vor2d
 	./vor2d $(interactive) \

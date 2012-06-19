@@ -89,7 +89,7 @@ QuadTree* QT;
 
 	int windowPosX = 400;			// X Position of Window
 	int windowPosY = 200;			// Y Position of Window
-	string fileName("input2.txt"); 		// Input file name
+	string fileName("test.poly"); 	// Input file name
 	string inputDir("inputs"); 		// Path for input files 
 
 	int interactive = 0;			// Run interactively?
