@@ -49,8 +49,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <set>
-using namespace std;
+
 
 #ifdef __CYGWIN32__
 #include "glui.h"
@@ -63,11 +62,16 @@ using namespace std;
 #endif
 
 
+double boxWidth = 512;          // Initial box width
+double boxHeight = 512;         // Initial box height
 
-#include "SimplePSinC.h"
 #include "Timer.h"
 #include "QuadTree.h"
+#include "PriorityQueue.h"
+#include "SimplePSinC.h"
 
+#include <set>
+using namespace std;
 
 QuadTree* QT;
 
@@ -75,15 +79,13 @@ QuadTree* QT;
 //
 
 	double epsilon = 10;			// resolution parameter
-	double boxWidth = 512;			// Initial box width
-	double boxHeight = 512;			// Initial box height
 	double deltaX=0;			// Translate input file in x-direction
 	double deltaY=0;			// Translate input file in y-direction
 	double uscale=1;			// Scale the input file
 
-    double deltaX_Render=0;            // Translate display in x-direction
-    double deltaY_Render=0;            // Translate display in y-direction
-    double uscale_Render=1;            // Scale the display
+	float deltaX_Render=0;            // Translate display in x-direction
+    float deltaY_Render=0;            // Translate display in y-direction
+    float uscale_Render=1;            // Scale the display
 
 	int windowPosX = 400;			// X Position of Window
 	int windowPosY = 200;			// Y Position of Window
@@ -147,7 +149,7 @@ extern int fileProcessor(string inputfile);
 //GL
 void renderScene(void);
 void drawPath(vector<Box*>&);
-void drawCircle( float Radius, int numPoints, double x, double y, double r, double g, double b);
+void drawCircle( double Radius, int numPoints, double x, double y, double r, double g, double b);
 void filledCircle( double radius, double x, double y, double r, double g, double b);
 void Keyboard( unsigned char key, int x, int y );
 void SpecialKey( int key, int x, int y );
@@ -164,6 +166,12 @@ void drawWallsPS(SimplePSinC& PS, Box* b);
 void updateVARinfo();
 void updateSelectedBoxInfo();
 void reset_move();
+
+//CORE
+void glVertex2f_core(double x, double y){ glVertex2f(CORE::Todouble(x),CORE::Todouble(y));}
+void glColor3d_core(double r, double g,double b){ glColor3d(CORE::Todouble(r),CORE::Todouble(g),CORE::Todouble(b));}
+
+
 
 //tmp
 Wall * closest_wall=NULL;
@@ -224,7 +232,7 @@ int main(int argc, char* argv[])
 	editDir = glui->add_edittext_to_panel(top_panel, "Input Directory:", GLUI_EDITTEXT_TEXT );
 	editDir->set_text((char*)inputDir.c_str());
 	editEpsilon = glui->add_edittext_to_panel(top_panel, "Epsilon:", GLUI_EDITTEXT_FLOAT );
-	editEpsilon->set_float_val(epsilon);
+	editEpsilon->set_float_val(CORE::Todouble(epsilon));
 
 	GLUI_Button* buttonRun = glui->add_button_to_panel(top_panel, "Run", -1, (GLUI_Update_CB)run);
 	buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
@@ -297,7 +305,7 @@ void run()
 	inputDir = editDir->get_text();
 	epsilon = editEpsilon->get_float_val();
 
-	Timer t;
+	::Timer t;
 
 	// start timer
 	t.start();
@@ -333,12 +341,12 @@ void run()
 //	glColor3f(0.5, 0, 0.25);
 //	glLineWidth(3.0);
 //	glBegin(GL_LINE_STRIP);
-//	glVertex2f(beta[0], beta[1]);
+//	glVertex2f_core(beta[0], beta[1]);
 //	for (int i = 0; i < (int)path.size(); ++i)
 //	{
-//		glVertex2f(path[i]->x, path[i]->y);
+//		glVertex2f_core(path[i]->x, path[i]->y);
 //	}
-//	glVertex2f(alpha[0], alpha[1]);
+//	glVertex2f_core(alpha[0], alpha[1]);
 //	glEnd();
 //	glLineWidth(1.0);
 //}
@@ -377,10 +385,10 @@ void drawQuad(Box* b)
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_POLYGON);
-    glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
-    glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
-    glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
-    glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
+    glVertex2f_core(b->x - b->width / 2, b->y - b->height / 2);
+    glVertex2f_core(b->x + b->width / 2, b->y - b->height / 2);
+    glVertex2f_core(b->x + b->width / 2, b->y + b->height / 2);
+    glVertex2f_core(b->x - b->width / 2, b->y + b->height / 2);
     glEnd();
 
 	if (showBoxBoundary)
@@ -388,21 +396,21 @@ void drawQuad(Box* b)
 		glColor3f(0.5, 0.5 , 0.5);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glBegin(GL_POLYGON);
-		glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
-		glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
-		glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
-		glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
+		glVertex2f_core(b->x - b->width / 2, b->y - b->height / 2);
+		glVertex2f_core(b->x + b->width / 2, b->y - b->height / 2);
+		glVertex2f_core(b->x + b->width / 2, b->y + b->height / 2);
+		glVertex2f_core(b->x - b->width / 2, b->y + b->height / 2);
 		glEnd();
 	}	
 
 	//draw segments
 	glBegin(GL_LINES);
 	glLineWidth(3);
-	glColor3d(.75,0,0);
+	glColor3d_core(.75,0,0);
 
 	for(list<VorSegment>::iterator i=b->vor_segments.begin();i!=b->vor_segments.end();i++){
-	    glVertex2f(i->p[0],i->p[1]);
-	    glVertex2f(i->q[0],i->q[1]);
+	    glVertex2f_core(i->p[0],i->p[1]);
+	    glVertex2f_core(i->q[0],i->q[1]);
 	}
 	glEnd();
 	glLineWidth(1);
@@ -431,10 +439,10 @@ void drawQuad_selected(list<Box*> boxes)
 
         //draw a highlight box
         glBegin(GL_LINE_LOOP);
-        glVertex2f(b->x - w2, b->y - h2);
-        glVertex2f(b->x + w2, b->y - h2);
-        glVertex2f(b->x + w2, b->y + h2);
-        glVertex2f(b->x - w2, b->y + h2);
+        glVertex2f_core(b->x - w2, b->y - h2);
+        glVertex2f_core(b->x + w2, b->y - h2);
+        glVertex2f_core(b->x + w2, b->y + h2);
+        glVertex2f_core(b->x - w2, b->y + h2);
         glEnd();
 
     }
@@ -451,11 +459,11 @@ void drawQuad_selected(list<Box*> boxes)
 
     glLineWidth(2);
     glBegin(GL_LINES);
-    glColor3d(0,0,1);
+    glColor3d_core(0,0,1);
     for(WIT i=b->walls.begin();i!=b->walls.end();i++){
         Wall * w=*i;
-        glVertex2d(w->src->x,w->src->y);
-        glVertex2d(w->dst->x,w->dst->y);
+        glVertex2f_core(w->src->x,w->src->y);
+        glVertex2f_core(w->dst->x,w->dst->y);
     }
     glEnd();
 
@@ -463,12 +471,12 @@ void drawQuad_selected(list<Box*> boxes)
     //tmp
     glLineWidth(2);
     glBegin(GL_LINES);
-    glColor3d(0,1,0);
+    glColor3d_core(0,1,0);
     if(closest_wall!=NULL)
     {
         Wall * w=closest_wall;
-        glVertex2d(w->src->x,w->src->y);
-        glVertex2d(w->dst->x,w->dst->y);
+        glVertex2f_core(w->src->x,w->src->y);
+        glVertex2f_core(w->dst->x,w->dst->y);
     }
     glEnd();
 
@@ -497,8 +505,8 @@ void drawWalls(Box* b)
 	{
 		Wall* w = *iter;
 		glBegin(GL_LINES);
-		glVertex2f(w->src->x, w->src->y);
-		glVertex2f(w->dst->x, w->dst->y);
+		glVertex2f_core(w->src->x, w->src->y);
+		glVertex2f_core(w->dst->x, w->dst->y);
 		glEnd();
 	}
 	glLineWidth(1.0);
@@ -521,43 +529,42 @@ void treeTraverse(Box* b)
 	}
 }
 
-void drawCircle( float Radius, int numPoints, double x, double y, double r, double g, double b)
-{	
-	glColor3d(r,g,b);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glBegin(GL_LINE_LOOP);
-	for( int i = 0; i <= numPoints; ++i )
-	{
-		float Angle = i * (2.0* 3.1415926 / numPoints);  
-		float X = cos( Angle )*Radius;  
-		float Y = sin( Angle )*Radius;
-		glVertex2f( X + x, Y + y);
-	}
-	glEnd();
+void drawCircle( double Radius, int numPoints, double x, double y, double r, double g, double b)
+{
+    glColor3d_core(r,g,b);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glBegin(GL_LINE_LOOP);
+    for( int i = 0; i <= numPoints; ++i )
+    {
+        double Angle = i * (2.0* 3.1415926 / numPoints);
+        double X = cos( CORE::Todouble(Angle) )*Radius;
+        double Y = sin( CORE::Todouble(Angle) )*Radius;
+        glVertex2f_core( X + x, Y + y);
+    }
+    glEnd();
 }
 
 void filledCircle( double radius, double x, double y, double r, double g, double b) 
 {
-	int numPoints = 100;
-	glColor3d(r,g,b);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glBegin(GL_POLYGON);
-	for( int i = 0; i <= numPoints; ++i )
-	{
-		float Angle = i * (2.0* 3.1415926 / numPoints);  
-		float X = cos( Angle )*radius;  
-		float Y = sin( Angle )*radius;
-		glVertex2f( X + x, Y + y);
-	}
-	glEnd();
+    int numPoints = 100;
+    glColor3d_core(r,g,b);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glBegin(GL_POLYGON);
+    for( int i = 0; i <= numPoints; ++i )
+    {
+        double Angle = i * (2.0* 3.1415926 / numPoints);
+        double X = cos( CORE::Todouble(Angle) )*radius;
+        double Y = sin( CORE::Todouble(Angle) )*radius;
+        glVertex2f_core( X + x, Y + y);
+    }
+    glEnd();
 }
-
 
 void renderScene(void) 
 {
-    uscale_Render=(gui_dZ>0)?pow(1.05,gui_dZ):1.0/pow(1.05,-gui_dZ);
-    deltaX_Render=gui_dXY[0]/(uscale_Render);
-    deltaY_Render=gui_dXY[1]/(uscale_Render);
+    uscale_Render=(gui_dZ>0)?pow(1.05f,gui_dZ):1.0f/pow(1.05f,-gui_dZ);
+    deltaX_Render=gui_dXY[0]*1.0f/uscale_Render;
+    deltaY_Render=gui_dXY[1]*1.0f/uscale_Render;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -707,6 +714,7 @@ void parseConfigFile(Box* b)
 // gather information and show it on the GUI diagram
 void updateVARinfo()
 {
+
     char info[1024];
 
     static int leave_size=-1;
@@ -717,7 +725,8 @@ void updateVARinfo()
         leave_size=leaves.size();
     }
 
-    sprintf(info,"Time used: %.2f ms; # of leaves=%d",timeused,leave_size);
+
+    sprintf(info,"Time used: %.2f ms; # of leaves=%d",CORE::Todouble(timeused),leave_size);
     vorInfo->set_text(info);
 }
 
@@ -926,7 +935,8 @@ void drawQuadPS(SimplePSinC& PS, Box* b)
     }
 
     PS.setlinewidth(1);
-    PS.rect(b->x-b->width / 2,b->y - b->height / 2, b->x + b->width / 2, b->y + b->height / 2);
+    PS.rect(CORE::Todouble(b->x-b->width / 2), CORE::Todouble(b->y - b->height / 2),
+            CORE::Todouble(b->x + b->width / 2), CORE::Todouble(b->y + b->height / 2) );
     PS.setstrokegray(0.5);
 
     if (showBoxBoundary)
@@ -944,7 +954,7 @@ void drawVorPS(SimplePSinC& PS, Box* b)
 
     for(list<VorSegment>::iterator i=b->vor_segments.begin();i!=b->vor_segments.end();i++)
     {
-        PS.line(i->p[0],i->p[1],i->q[0],i->q[1]);
+        PS.line(CORE::Todouble(i->p[0]),CORE::Todouble(i->p[1]), CORE::Todouble(i->q[0]), CORE::Todouble(i->q[1]) );
     }
 
     PS.stroke();
@@ -958,7 +968,7 @@ void drawWallsPS(SimplePSinC& PS, Box* b)
     for (list<Wall*>::iterator iter = b->walls.begin(); iter != b->walls.end(); ++iter)
     {
         Wall* w = *iter;
-        PS.line(w->src->x, w->src->y,w->dst->x, w->dst->y);
+        PS.line( CORE::Todouble(w->src->x), CORE::Todouble(w->src->y),CORE::Todouble(w->dst->x), CORE::Todouble(w->dst->y) );
     }
 
     PS.stroke();

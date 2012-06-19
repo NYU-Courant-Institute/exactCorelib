@@ -65,13 +65,13 @@ public:
     }
 
 	//draw line segment
-    void line(double a[2], double b[2]) 
+    void line(float a[2], float b[2])
     {
         moveto(a[0], a[1]);
         lineto(b[0], b[1]);
     }
 
-    void line(double a_x, double a_y, double b_x, double b_y)
+    void line(float a_x, float a_y, float b_x, float b_y)
     {
         moveto(a_x, a_y);
         lineto(b_x, b_y);
