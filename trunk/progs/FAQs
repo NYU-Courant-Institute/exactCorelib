@@ -11,7 +11,7 @@ TABLE OF CONTENTS:
 	--13: What is the difference between the escape bound and cut-off bound?
 	--14: How do I insert my error message into core_error()?
 	--15: Some examples of timing of Core Library?
-	--16: Examples for compiling a program into different accuracy levels?
+	--16: Different Ways to Automatically Compile into different CORE LEVELS
 	--17: Examples of compiling with different number kernels?
 	--18: How to do variant compilations of Core library?
 	--19: How to do compilations of user programs on different platforms?
@@ -196,7 +196,7 @@ TABLE OF CONTENTS:
 	Look at examples in prog/testFilter.cpp.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
---16: Examples for compiling a program into different accuracy levels?
+--16: Different Ways to Automatically Compile into different CORE LEVELS
 	A:
 	Suppose you have a program you want to be compiled into different
 	CORE LEVELS (1, 2 and 3).  Of course you can do this by hand, but it
@@ -256,6 +256,11 @@ TABLE OF CONTENTS:
 	   CORE/progs/radicals
 	   CORE/progs/curves
 	   CORE/progs/poly
+	The above were from Core1.  The following are based on
+	Narayan's contribution to make a common CORE interface for all three
+	levels:
+	   CORE/progs/mesh/{ceval,benchmark}
+	   CORE/progs/vor/vor2d
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 --18: How to do variant compilations of core library?
