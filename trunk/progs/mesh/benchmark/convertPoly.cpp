@@ -316,10 +316,15 @@ void read_poly_frisco(Polynomial<T>& p, FILE *instr) {
 		switch( data_type[2] ) {
 		    case 'i': { // integer coefficient
 			BigInt temp;
+			char is[80];
+			/*
 		        if (!mpz_inp_str(temp.mp(), instr, 10)) {
 		          // Exit if something happens.
 		          assert(false);
 		        }
+			*/
+			fscanf(instr, "%s", is);
+			temp = BigInt(string(is));
 		        coeffs[indx]=T(temp);
 			break;
 			}
@@ -341,6 +346,9 @@ void read_poly_frisco(Polynomial<T>& p, FILE *instr) {
 	      cerr << "We support only real coefficients currently" << endl;
 	      assert(false);
 	    }
+#ifdef DEBUG
+	    cerr <<" just read coeff "<< coeffs[indx] <<", at index=" << indx << endl ;
+#endif
 	  }
 	
 	  p = Polynomial<T>(deg, coeffs);
