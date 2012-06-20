@@ -103,6 +103,11 @@ eg11: ${TARGETS}
     --x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 	
 
+#=================================================
+# Temp
+#=================================================
+m:
+	gvim Makefile
 
 #=================================================
 # Rules
