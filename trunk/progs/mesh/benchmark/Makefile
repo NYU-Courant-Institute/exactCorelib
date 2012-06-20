@@ -22,8 +22,28 @@ verbose=$(v)
 
 friscoCollection=../../data/Collections/friscoRealIntegerMini
 friscoDir=../../data/frisco/
+
 friscoFile=kam4.pol	# real sparse int
 friscoFile=lar1.pol
+
+###################################################
+# arguments for ceval:
+# frisco polynomial for target eg:
+fpoly=chrmc23
+
+xmin=1.318
+ymin=1.632
+xmax=1.320
+ymax=1.634
+minboxsize=0.000001
+
+# compiling the two versions of predicates.cpp:
+###################################################
+ORIG=0
+
+DEBUG=
+DEBUG=-DDEBUG
+
 
 #=================================================
 # Targets:
@@ -61,9 +81,15 @@ help: main_ceval
 #  	zoom-in (i) or zoom-out (k or o), pan (w,a,s,d) 
 #  in viewing the display.
 
-# eg
+# eg0 -- similar to eg, but using user specified bounding box
+eg0: main_ceval
+	./main_ceval --poly ./data/$(fpoly).pol --display \
+		--x_max $(xmax) --x_min $(xmin) --y_min $(ymin) --y_max $(ymax) \
+		--min_box_size $(minboxsize) 
+
+# eg -- similar to eg0, but using computed root bounds to determine bounding box
 eg: main_ceval
-	./main_ceval --poly ./data/nroots20.pol --display --use_root_bounds
+	./main_ceval --poly ./data/$(fpoly).pol --display --use_root_bounds
 
 # eg1 (20 roots of unity)
 eg1: main_ceval
@@ -185,7 +211,9 @@ t3:	t
 	${CXX} $(LDFLAGS) $< $(CORE_LIB) -o $@
 
 .cpp.o:
-	${CXX} -c $(CXXFLAGS) -O3 $(CORE_INC) $< -o $@
+	${CXX} -c -DORIGINAL=$(ORIG) $(DEBUG) -O3 $(CXXFLAGS) $(CORE_INC) $< -o $@
+
+#old:	${CXX} -c $(CXXFLAGS) -O3 $(CORE_INC) $< -o $@
 
 #=================================================
 # Clean object files
