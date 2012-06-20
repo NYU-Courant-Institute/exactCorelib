@@ -1,5 +1,20 @@
 # Makefile for root isolation benchmarks.
 #
+# USING THIS FILE:
+#
+#	This directory runs the root isolation algorithms found in
+#		../ceval and ../krawczyk.
+# 	There are various demos: try
+#
+#		> make egN
+#
+# 	where N=0,1,2,3, etc.
+#
+#	Authors:
+#	Narayan Kamath, Chee Yap, Irian Voiculescu (2010-2012)
+#
+#	Since Core 2.1
+#
 # Core Library, $Id: Makefile,v 1.10 2010/11/09 04:44:05 exact Exp $
 
 CORE_PATH=../../..
@@ -114,6 +129,51 @@ eg4 : main_ceval
 # eg5 
 eg5 : main_ceval
 	./main_ceval --poly ./data/chrma22.pol --display --use_root_bounds
+
+# eg6 -- chrmc23.pol from the frisco Suite has 22 complex roots.  
+# 	The default arguments for main_ceval in Level 1 only
+# 	isolates 12 of these roots, leaving 72 ambiguous boxes, as this output shows:
+#
+# 	BOX STATISTICS: 
+# 	   iters=43637,   includes=24,   splits=10909,
+# 	      ambiguous=72,   exc_c0=32632,   exc_c1=0,time=270989
+# 	      Operated on Bounding box : [-64 + (-64)i],[64 + (64)i]
+#
+# 	      --------------------------
+# 	      Number of roots:12
+# 	      m= [2.41699 + (-1.5459)i], r= 0.00585938
+# 	      m= [2.93652 + (-0.754883)i], r= 0.00585938
+# 	      m= [1.20801 + (-0.668945)i], r= 0.00585938
+# 	      m= [1.23193 + (-0.252441)i], r= 0.00292969
+# 	      m= [-0.391602 + (-1.68457)i], r= 0.00585938
+# 	      m= [2.93652 + (0.754883)i], r= 0.00585938
+# 	      m= [2.41699 + (1.5459)i], r= 0.00585938
+# 	      m= [1.19092 + (0.000488281)i], r= 0.00292969
+# 	      m= [1.23193 + (0.252441)i], r= 0.00292969
+# 	      m= [1.20801 + (0.668945)i], r= 0.00585938
+# 	      m= [0.999512 + (0.000488281)i], r= 0.00292969
+# 	      m= [-0.391602 + (1.68457)i], r= 0.00585938
+# 	      -------------Graphic----------------
+#
+#
+# 	The ambiguous boxes are clustered in two regions, and the following  
+# 	demo (eg6) begins with a bounding box that encloses the ambiguous
+# 	boxes in one of these regions. 
+# 	Unfortunately, LEVEL 1 accuracy will
+# 	erroneously say there are NO roots (and NO ambiguous boxes)
+eg6:	./main_ceval
+	./main_ceval --poly ./data/chrmc23.pol --display \
+		--x_min 1.318 --y_min 1.632 --x_max 1.320 --y_max 1.634 \
+		--min_box_size 0.000001
+
+# eg6a: THIS uses a smaller bounding box than eg6.   
+# 	LEVEL 1 accuracy will erroneously say there are NO roots
+# 	(and 4 ambiguous boxes).
+eg6a:	./main_ceval
+	./main_ceval --poly ./data/chrmc23.pol --display \
+		--x_min 1.31942 --y_min 1.63314 --x_max 1.31948 --y_max 1.63320 \
+		--min_box_size 0.000001
+
 
 ##################################################
 ##################################################
