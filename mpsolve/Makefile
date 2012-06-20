@@ -1,3 +1,6 @@
+#
+# 	Copy this Makefile to corelib2/mpsolve/MPSolve-2.2
+#
 ############################################################
 ##       Multiprecision Polynomial Solver (MPSolve)       ##
 ##                Version 2.2, May 2001                   ##
