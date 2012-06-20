@@ -293,16 +293,27 @@ class ConnectedComponent {
 //
 void Algorithm::AttemptIsolation() {
   list<ConnectedComponent *> components;
+  //  cerr << endl << endl << "HERE 2" << endl << endl;
 
   vector<const Box *>::const_iterator it = ambiguous_.begin();
+
+  //  cerr << endl << endl << "HERE 3" << endl << endl;
+
   components.push_back(new ConnectedComponent(*it));
+
+  //  cerr << endl << endl << "HERE 4" << endl << endl;
+
   ++it;
+
+  //  cerr << endl << endl << "HERE 5" << endl << endl;
+
   vector<ConnectedComponent *> matching_comps;
+
+  //  cerr << endl << endl << "HERE 6" << endl << endl;
 
   while (it != ambiguous_.end()) {
     const Box *b = (*it);
     matching_comps.clear();
-
     list<ConnectedComponent *>::iterator c_it = components.begin();
     while (c_it != components.end()) {
       ConnectedComponent *comp = (*c_it);

@@ -299,6 +299,7 @@ bool Predicates::Calculate(const double &k, const Complex &m, const double &r,
 #else
     term = (term * r_term *fact_terms_u_[degree_ - fact_ctr]);
 #endif
+
     R +=term;
     r_term *= r;
     ++fact_ctr;
