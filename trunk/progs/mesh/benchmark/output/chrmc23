@@ -1,0 +1,6 @@
+
+The 22 roots in the file chrmc23.res
+are obtained by MPSOLVE using the command:
+
+	> unisolve -Ga -Db -o100 Data/chrmc23.pol > Results/ch
+
