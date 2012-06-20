@@ -12,6 +12,8 @@
 
 #include "algorithm.h"
 
+using namespace std;
+
 Box::Box(const Complex &min, const Complex &max) :
 min_(min), max_(max) { }
 
@@ -84,6 +86,10 @@ void Algorithm::Run() {
     const double rad_degree_2 = pred_.GetDegree() * 2 * b->radius();
 
     if (Size(b)) {
+#ifdef DEBUG
+cout << "ambiguous box = " << b->min_.re() << ", " << b->min_.im()
+    << ", " << b->max_.re() << ", " << b->max_.im() << endl;
+#endif
       if (!use_inclusion_) {
         // If no inclusion predicate is being used, then
         // if the box is too small - it is a part of the
@@ -283,6 +289,8 @@ class ConnectedComponent {
   Complex max;
 };
 
+// What is this trying to do?
+//
 void Algorithm::AttemptIsolation() {
   list<ConnectedComponent *> components;
 

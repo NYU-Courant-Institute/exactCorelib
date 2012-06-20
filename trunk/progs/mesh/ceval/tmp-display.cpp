@@ -76,10 +76,10 @@ void KeyHandler(const unsigned char key, const int x, const int y) {
       case 'f':
 	display_params.scalefactor /= 1.1;
 	break;
-      case 'C':
+      case 'C':		// increase acceleration?
 	display_params.accel *= 1.1;
 	break;
-      case 'c':
+      case 'c':		// decrease acceleration?
 	display_params.accel /= 1.1;
 	break;
       case 'w':
@@ -94,12 +94,13 @@ void KeyHandler(const unsigned char key, const int x, const int y) {
       case 'd':
         display_params.x_delta+=0.5*display_params.accel;
         break;
-      case 'i':
+      case 'o':
+      case 'k':
         display_params.scale /= 0.9*display_params.scalefactor;
         //display_params.x_delta = 0
         //display_params.y_delta = 0;
         break;
-      case 'k':
+      case 'i':
         display_params.scale *= 0.9*display_params.scalefactor;
         //display_params.x_delta = 0;
         //display_params.y_delta = 0;
@@ -122,7 +123,7 @@ inline void vertex2fWrapper(const double &x, const double &y) {
 void DisplayHandler() {
   glClear(GL_COLOR_BUFFER_BIT);
 
-  glColor3f(1.0f,0.0f,0.0f);
+  glColor3f(1.0f,0.0f,0.0f);	// red color boxes (excluded boxes)
 
   vector<const Box *>::const_iterator it = display_params.n_it->begin();
 
@@ -150,9 +151,32 @@ void DisplayHandler() {
     ++it;
   }
 
-  glColor3f(0.0f,1.0f,0.0f);
+  glColor3f(0.0f,1.0f,0.0f);	//green (isolated a root)
   it = display_params.it->begin();
   while (it != display_params.it->end()) {
+    const double &x_min = (*it)->min_.re();
+    const double &x_max = (*it)->max_.re();
+    const double &y_min = (*it)->min_.im();
+    const double &y_max = (*it)->max_.im();
+
+    glBegin(GL_LINES);
+    vertex2fWrapper(x_min, y_min);
+    vertex2fWrapper(x_min, y_max);
+
+    vertex2fWrapper(x_min, y_max);
+    vertex2fWrapper(x_max, y_max);
+
+    vertex2fWrapper(x_max, y_max);
+    vertex2fWrapper(x_max, y_min);
+    vertex2fWrapper(x_max, y_min);
+    vertex2fWrapper(x_min, y_min);
+    glEnd();
+    ++it;
+  }
+
+  glColor3f(0.0f,0.0f,1.0f);	//blue (ambiguous)
+  it = display_params.amb->begin();
+  while (it != display_params.amb->end()) {
     const double &x_min = (*it)->min_.re();
     const double &x_max = (*it)->max_.re();
     const double &y_min = (*it)->min_.im();
@@ -174,13 +198,40 @@ void DisplayHandler() {
     ++it;
   }
 
-  glColor3f(0.0f,0.0f,1.0f);
+  //double expand = 0.05 * display_params.scale;
+  double expand = 0.4 * display_params.scale;
+  glColor3f(1.0f,0.0f,1.0f);	//purple (ambiguous)
   it = display_params.amb->begin();
   while (it != display_params.amb->end()) {
-    const double &x_min = (*it)->min_.re();
-    const double &x_max = (*it)->max_.re();
-    const double &y_min = (*it)->min_.im();
-    const double &y_max = (*it)->max_.im();
+    const double &x_min = (*it)->min_.re()-expand;
+    const double &x_max = (*it)->max_.re()+expand;
+    const double &y_min = (*it)->min_.im()-expand;
+    const double &y_max = (*it)->max_.im()+expand;
+
+    glBegin(GL_LINES);
+    vertex2fWrapper(x_min, y_min);
+    vertex2fWrapper(x_min, y_max);
+
+    vertex2fWrapper(x_min, y_max);
+    vertex2fWrapper(x_max, y_max);
+
+    vertex2fWrapper(x_max, y_max);
+    vertex2fWrapper(x_max, y_min);
+
+    vertex2fWrapper(x_max, y_min);
+    vertex2fWrapper(x_min, y_min);
+    glEnd();
+    ++it;
+  }
+
+  expand = 2 * display_params.scale;
+  glColor3f(0.0f,0.0f,0.0f);	//black (ambiguous)
+  it = display_params.amb->begin();
+  while (it != display_params.amb->end()) {
+    const double &x_min = (*it)->min_.re()-expand;
+    const double &x_max = (*it)->max_.re()+expand;
+    const double &y_min = (*it)->min_.im()-expand;
+    const double &y_max = (*it)->max_.im()+expand;
 
     glBegin(GL_LINES);
     vertex2fWrapper(x_min, y_min);
