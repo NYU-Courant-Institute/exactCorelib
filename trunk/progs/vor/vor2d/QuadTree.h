@@ -56,10 +56,11 @@ public:
 
 	BoxQueue* PQ;
 	Box* pRoot;
-	double epsilon;
+	double epsilon;		// minimum size
+	double maxEpsilon;	// maximum size (if candidate box)
 
-	QuadTree(Box* root, double e):
-	    pRoot(root), epsilon(e)
+	QuadTree(Box* root, double e, double f):
+	    pRoot(root), epsilon(e), maxEpsilon(f)
 	{
 		PQ = new seqQueue();
 		assert(PQ);
@@ -121,7 +122,7 @@ public:
 
 	                Box::Status backup_nei_status=nei->status;
 	                nei->status=Box::IN; //force to split
-	                bool results=nei->split(epsilon); //ask the neighbor to slip
+	                bool results=nei->split(epsilon, maxEpsilon); //ask neighbor to slip
 	                nei->status=backup_nei_status;
 
 	                if(results) //the neighbor did split
@@ -205,7 +206,7 @@ public:
 
 	bool expand (Box* b)
 	{
-		if (!b->split(epsilon))
+		if (!b->split(epsilon, maxEpsilon))
 		{
 			return false;
 		}
@@ -225,7 +226,7 @@ public:
 		{
 			Box* b = PQ->extract();
 			//b might not be a leaf since it could already be split in expand(Box* b), and PQ is not updated there
-			if (b->isLeaf && b->split(epsilon))
+			if (b->isLeaf && b->split(epsilon, maxEpsilon))
 			{
 				assert(b->status == Box::IN);
 				for (int i = 0; i < 4; ++i)

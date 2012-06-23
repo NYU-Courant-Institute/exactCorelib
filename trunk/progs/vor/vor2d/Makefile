@@ -19,7 +19,8 @@
 #			$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 #			$(inputDir) \
 #			$(xtrans) $(ytrans) $(scale) \
-#			$(closePoly) $(c1) $(c2) 
+#			$(closePoly) $(c1) $(c2) \
+#			$(maxEps)
 #
 #	where the meaning of these arguments are described below when we
 #	define these parameters.
@@ -49,6 +50,9 @@
 # 		eg10 (2tri)
 # 		eg11 (star) 	-- or eg11a (stara) for variant
 # 		eg12 (bug2) 	-- a double bug trap
+# 		eg13 (monkey)
+# 		eg14 (mammoth)	
+# 		eg15 	 	-- Vikram's degenerate example
 # 		eg150		-- 150 random overlapping triangles 
 # 		eg200		-- 200 random overlapping triangles 
 #
@@ -113,6 +117,8 @@ closePoly  = 1  # if true (non zero) then do not attempt to close input polygons
 c1  = 0			# if 0 (false) then do not use c1 filter
 c2  = 0			# if 0 (false) then do not use c2 filter
 
+maxEps = 200		# maximum size of a box containing an Voronoi point
+
 #=================================================
 # Define target files (put all your files here)
 #=================================================
@@ -135,7 +141,7 @@ test: $(TARGETS)
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2)
+		$(c1) $(c2) $(maxEps)
 
 testall: $(TARGETS)
 	make eg0 interactive=1
@@ -143,6 +149,14 @@ testall: $(TARGETS)
 
 testa: $(TARGETS)
 	./vor2d 1 &
+
+help:
+	@echo "USAGE: Type "
+	@echo "   > make eg             -- to an example"
+	@echo "   > make params         -- to see default parameters of eg"
+	@echo "   > make eg epsilon=7   -- to change the default epsilon parameter of eg"
+	@echo "   > make egN		-- where N = 0, 1, 2, ..., 14, 15, 150, 200"
+	@echo "                             to see various examples "
 
 #=================================================
 # Examples of running vor2d program
@@ -157,7 +171,7 @@ eg:	vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 
 # Eg0: Simple NO PATH example (an triangular annulus region)
@@ -167,7 +181,7 @@ nopath eg0:	vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 
 # Eg1: Simple example with 3 obstacles (2 Voronoi vertices, one concave verteix)
@@ -179,7 +193,7 @@ simple eg1:	vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 
 # Eg2: Same as simple, but with bounding box
@@ -189,7 +203,7 @@ simple2 eg2: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 
 # Eg3: dog example
@@ -200,7 +214,7 @@ eg3 dog:	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		100 256 1.4 $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 
 # Eg4: Example of a non-regularized input (set of 4 lines) with closed polygons
@@ -211,7 +225,7 @@ eg4 line:	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) 1 \
-		0 $(c2) \
+		0 $(c2) $(maxEps) \
 		&
 	
 # Eg4a: Example of a non-regularized input (set of 4 lines) but using C1 filter
@@ -222,7 +236,7 @@ eg4a linea:	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) 1 \
-		1 $(c2) \
+		1 $(c2) $(maxEps) \
 		&
 	
 # Eg4a: Example of a non-regularized input (set of 4 lines) but open polygons 
@@ -233,7 +247,7 @@ eg4b lineb:	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) 0 \
-		0 $(c2) \
+		0 $(c2) $(maxEps) \
 		&
 	
 # Eg5: A degenerate input with 5 boxes
@@ -242,7 +256,7 @@ eg5 boxes: vor2d
 		1 $(pseudo) $(interior) boxes.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) 100 100 $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 		
 # Eg5a: A degenerate input with 5 boxes (but with no translations, our current
@@ -252,7 +266,7 @@ eg5a boxesa: vor2d
 		1 $(pseudo) $(interior) boxes.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) 0 0 $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 		
 # Eg6: A triangular star within a bounding frame
@@ -262,7 +276,7 @@ eg6 boundedstar: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 
 # Eg7: bugtrap
@@ -272,7 +286,7 @@ eg7 bug: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 
 # Eg8: Overlapping polygons: 2 triangles + 2 concentric squares (with funny orientation)
@@ -282,7 +296,7 @@ eg8 overlap: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 		
 # Eg9x: Box containing Voronoi Vertex whose vertices has only two colors
@@ -293,7 +307,7 @@ eg9x 2colorx: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		-50 80 0.1 $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 		
 # Eg9: Box containing Voronoi Vertex whose vertices has only two colors
@@ -303,7 +317,7 @@ eg9 2color: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		-360 -150 0.1 $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 		
 # Eg9a: Box containing Voronoi Vertex whose vertices has only two colors
@@ -313,7 +327,7 @@ eg9a 2colora: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		-350 -150 0.1 $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 		
 # Eg9b: Box containing Voronoi Vertex whose vertices has only two colors
@@ -323,7 +337,7 @@ eg9b 2colorb: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		-340 -150 0.1 $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 		
 # Eg10: Two triangles generating a Voronoi curve
@@ -333,7 +347,7 @@ eg10 2tri: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 		
 # Eg11: Star example
@@ -342,7 +356,7 @@ eg11 star:	vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		100 100 10 $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 	#
 # Eg11a: with pseudo=1(false) and interior=1(false)
@@ -351,7 +365,7 @@ eg11a stara:	vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		100 100 4 $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 
 # Eg12: bugtrap2  (one bug trap inside another)
@@ -361,9 +375,8 @@ eg12 bug2: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
-
 
 # Eg13: monkey example
 eg13 monkey:	vor2d
@@ -373,7 +386,7 @@ eg13 monkey:	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		220 220 2 $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 
 # Eg14: mammoth example
@@ -384,7 +397,7 @@ eg14 mammoth:	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		220 220 20 $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 			
 # Eg15: Vikram example
@@ -395,7 +408,7 @@ eg15 :	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 
 # Eg15a: Vikram example
@@ -406,7 +419,7 @@ eg15a :	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 								
 # Eg150: Example with 150 randomly generated, overlapping triangles
@@ -416,7 +429,7 @@ eg150: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 		
 eg200: vor2d
@@ -425,7 +438,7 @@ eg200: vor2d
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
-		$(c1) $(c2) \
+		$(c1) $(c2) $(maxEps) \
 		&
 		
 moretest: $(TARGETS)

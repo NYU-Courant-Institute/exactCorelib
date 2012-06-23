@@ -543,19 +543,28 @@ public:
 		return status;
 	}
 
-	//  split (eps)
-	// 	returns false if we fail to split for some reason
+	//  split (eps, maxEps=1000)
 	//
-	bool split(double epsilon)
+	//  	ASSERT( eps < maxEps)
+	//
+	//  	--will not split if size < eps (where size = min(height,width) )
+	//  	--will split if size > maxEps, and Box is "IN"
+	//
+	// 	--returns false if we fail to split for some reason
+	//
+	bool split(double epsilon, double maxEps)
 	{
 		if (this->height < epsilon || this->width < epsilon)
 		{
 			return false;
 		}
 
-		if (!this->isLeaf || this->status != IN)
-		{
+		if (this->height > epsilon && this->width > maxEps) {// Chee 
+std::cout << "maxEps = " << maxEps << ", this->height = " << this->height << std::endl;
+		   if (!this->isLeaf || this->status != IN)
+		   {
 			return false; 
+		   }
 		}
 
 		//record the time of this split event, will be used to set priority of children

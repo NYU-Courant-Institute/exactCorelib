@@ -106,6 +106,7 @@ QuadTree* QT;
 
 	string title="Subdivision Voronoi 2D";	// display title
 	double cutoff = 10;			// cutoff value (or "delta") for expansion
+	double maxEpsilon = 1000;		// maximum epsilon for an IN box
 
 	int freeCount = 0;
 	int stuckCount = 0;
@@ -123,6 +124,7 @@ QuadTree* QT;
 	GLUI_EditText* editDir;
 	GLUI_EditText* editRadius;
 	GLUI_EditText* editEpsilon;
+	GLUI_EditText* editMaxEpsilon;
 	GLUI_EditText* editAlphaX;
 	GLUI_EditText* editAlphaY;
 	GLUI_EditText* editBetaX;
@@ -185,9 +187,9 @@ float gui_dZ;
 int main(int argc, char* argv[])
 {
 	if (argc > 1) interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
-	if (argc > 2) epsilon = atof(argv[2]);		// show pseudo Voronoi vertices/curves
-	if (argc > 3) pseudo = atoi(argv[3]);      // show Voronoi interior to the polygons
-	if (argc > 4) interior = atoi(argv[4]);      // epsilon (resolution)
+	if (argc > 2) epsilon = atof(argv[2]);	// show pseudo Voronoi vertices/curves
+	if (argc > 3) pseudo = atoi(argv[3]); 	// show Voronoi interior to the polygons
+	if (argc > 4) interior = atoi(argv[4]);	// epsilon (resolution)
 	if (argc > 5) fileName = argv[5]; 		// Input file name
 	if (argc > 6) boxWidth = atof(argv[6]);		// boxWidth
 	if (argc > 7) boxHeight = atof(argv[7]);	// boxHeight
@@ -202,6 +204,7 @@ int main(int argc, char* argv[])
 	if (argc > 16) c2 = atoi(argv[16]);             // control c2 predicate
 	if (argc > 17) title = argv[17];               	// title of this demo
 	if (argc > 18) cutoff = atof(argv[18]);        	// cutoff for subdivision
+	if (argc > 19) maxEpsilon = atof(argv[19]);    	// max eps for any Vor (IN) box
 
 	// Else, set up for GLUT/GLUI interactive display:
 	glutInit(&argc, argv);
@@ -233,6 +236,8 @@ int main(int argc, char* argv[])
 	editDir->set_text((char*)inputDir.c_str());
 	editEpsilon = glui->add_edittext_to_panel(top_panel, "Epsilon:", GLUI_EDITTEXT_FLOAT );
 	editEpsilon->set_float_val(CORE::Todouble(epsilon));
+	editMaxEpsilon = glui->add_edittext_to_panel(top_panel, "maxEpsilon:", GLUI_EDITTEXT_FLOAT );
+	editMaxEpsilon->set_float_val(CORE::Todouble(maxEpsilon));
 
 	GLUI_Button* buttonRun = glui->add_button_to_panel(top_panel, "Run", -1, (GLUI_Update_CB)run);
 	buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
@@ -294,7 +299,7 @@ void genEmptyTree()
 	{
 		delete(QT);
 	}
-	QT = new QuadTree(root, epsilon);
+	QT = new QuadTree(root, epsilon, maxEpsilon);
 
 }
 
