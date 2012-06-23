@@ -151,12 +151,12 @@ testa: $(TARGETS)
 	./vor2d 1 &
 
 help:
-	@echo "USAGE: Type "
-	@echo "   > make eg             -- to an example"
-	@echo "   > make params         -- to see default parameters of eg"
-	@echo "   > make eg epsilon=7   -- to change the default epsilon parameter of eg"
-	@echo "   > make egN		-- where N = 0, 1, 2, ..., 14, 15, 150, 200"
-	@echo "                             to see various examples "
+	@echo "USAGE: Type the following"
+	@echo "  > make eg                 -- to see an example"
+	@echo "  > make params             -- to see default parameters of eg"
+	@echo "  > make eg epsilon=7 [...] -- change the default epsilon [...] of eg"
+	@echo "  > make egN                -- where N = 0, 1, 2, ..., 14, 15, 150, 200"
+	@echo "                               to see various examples "
 
 #=================================================
 # Examples of running vor2d program
