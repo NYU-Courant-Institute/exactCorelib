@@ -65,7 +65,7 @@ public:
 		PQ = new seqQueue();
 		assert(PQ);
 
-		pRoot->updateStatus();
+		pRoot->updateStatus(maxEpsilon);
 		insertNode(pRoot);
 	}
 
@@ -122,7 +122,7 @@ public:
 
 	                Box::Status backup_nei_status=nei->status;
 	                nei->status=Box::IN; //force to split
-	                bool results=nei->split(epsilon, maxEpsilon); //ask neighbor to slip
+	                bool results=nei->split(epsilon); //ask neighbor to slip
 	                nei->status=backup_nei_status;
 
 	                if(results) //the neighbor did split
@@ -132,7 +132,7 @@ public:
                             Box * nei_kid=nei->pChildren[k];
 
                             //
-                            nei_kid->updateStatus();
+                            nei_kid->updateStatus(maxEpsilon);
                             if(nei_kid->status==Box::IN)
                             {
                                 PQ->push(nei_kid);
@@ -204,21 +204,21 @@ public:
 		return getBox(pRoot, x, y);
 	}
 
-	bool expand (Box* b)
-	{
-		if (!b->split(epsilon, maxEpsilon))
-		{
-			return false;
-		}
-	
-		for (int i = 0; i < 4; ++i)
-		{
-			b->pChildren[i]->updateStatus();
-			insertNode(b->pChildren[i]);
-		}
-
-		return true;
-	}
+//	bool expand (Box* b)
+//	{
+//		if (!b->split(epsilon, maxEpsilon))
+//		{
+//			return false;
+//		}
+//
+//		for (int i = 0; i < 4; ++i)
+//		{
+//			b->pChildren[i]->updateStatus();
+//			insertNode(b->pChildren[i]);
+//		}
+//
+//		return true;
+//	}
 
 	bool expand ()
 	{
@@ -226,12 +226,12 @@ public:
 		{
 			Box* b = PQ->extract();
 			//b might not be a leaf since it could already be split in expand(Box* b), and PQ is not updated there
-			if (b->isLeaf && b->split(epsilon, maxEpsilon))
+			if (b->isLeaf && b->split(epsilon))
 			{
 				assert(b->status == Box::IN);
 				for (int i = 0; i < 4; ++i)
 				{
-					b->pChildren[i]->updateStatus();
+					b->pChildren[i]->updateStatus(maxEpsilon);
 					insertNode(b->pChildren[i]);
 				}			
 				return true;

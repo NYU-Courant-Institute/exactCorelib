@@ -202,9 +202,10 @@ int main(int argc, char* argv[])
 	if (argc > 14) closing_poly = atoi(argv[14]);    // control closing polygons
 	if (argc > 15) c1 = atoi(argv[15]);             // control c1 predicate
 	if (argc > 16) c2 = atoi(argv[16]);             // control c2 predicate
-	if (argc > 17) title = argv[17];               	// title of this demo
-	if (argc > 18) cutoff = atof(argv[18]);        	// cutoff for subdivision
-	if (argc > 19) maxEpsilon = atof(argv[19]);    	// max eps for any Vor (IN) box
+	if (argc > 17) maxEpsilon = atof(argv[17]);     // max eps for any Vor (IN) box
+	if (argc > 18) title = argv[18];               	// title of this demo
+	if (argc > 19) cutoff = atof(argv[19]);        	// cutoff for subdivision
+
 
 	// Else, set up for GLUT/GLUI interactive display:
 	glutInit(&argc, argv);
@@ -293,7 +294,7 @@ void genEmptyTree()
 	Box* root = new Box(boxWidth/2, boxHeight/2, boxWidth, boxHeight);
 
 	parseConfigFile(root);
-	root->updateStatus();
+	root->updateStatus(maxEpsilon);
 
 	if (QT)
 	{
@@ -309,6 +310,7 @@ void run()
 	fileName = editInput->get_text();
 	inputDir = editDir->get_text();
 	epsilon = editEpsilon->get_float_val();
+	maxEpsilon= editMaxEpsilon->get_float_val();
 
 	::Timer t;
 

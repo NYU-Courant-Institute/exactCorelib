@@ -96,6 +96,8 @@ bool Corner::inZone(Box * box)
         }
         return false;
     }
+
+    return false;
 }
 
 bool Corner::inZone_star(Box * box)

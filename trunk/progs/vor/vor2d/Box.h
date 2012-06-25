@@ -154,12 +154,18 @@ public:
 	//
 	// determine the status of the box: UNKNOWN, IN, OUT, ON
 	//
-	void updateStatus()
+	void updateStatus(double maxEps)
 	{
 		if (status != UNKNOWN)
 		{
 			return;
 		}
+
+		if(this->height>maxEps)
+		{
+            status = IN; //need more split
+            return;
+        }
 
 		int total_feature_size=corners.size()+walls.size();
 
@@ -539,33 +545,26 @@ public:
 
 	Status getStatus()
 	{
-		updateStatus();
+		//updateStatus();
 		return status;
 	}
 
-	//  split (eps, maxEps=1000)
-	//
-	//  	ASSERT( eps < maxEps)
-	//
-	//  	--will not split if size < eps (where size = min(height,width) )
-	//  	--will split if size > maxEps, and Box is "IN"
+	//  split (eps)
 	//
 	// 	--returns false if we fail to split for some reason
 	//
-	bool split(double epsilon, double maxEps)
+	bool split(double epsilon)
 	{
 		if (this->height < epsilon || this->width < epsilon)
 		{
 			return false;
 		}
 
-		if (this->height > epsilon && this->width > maxEps) {// Chee 
-std::cout << "maxEps = " << maxEps << ", this->height = " << this->height << std::endl;
-		   if (!this->isLeaf || this->status != IN)
-		   {
-			return false; 
-		   }
-		}
+
+        if (!this->isLeaf || this->status != IN)
+        {
+            return false;
+        }
 
 		//record the time of this split event, will be used to set priority of children
 		++Box::counter;

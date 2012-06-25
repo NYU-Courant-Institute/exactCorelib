@@ -64,8 +64,11 @@ SOFTWARE:
 	belonging to this box will also be high-lighted (in blue).
 	Note that the Disk of Influence of the box (clearance + 2*radius of box)
 	will also be drawn!
+	
 	(2) Next, if you press Control-uparrow or Control-downarrow,
 	you can move to the parent or child box in the subdivision tree.
+	
+	(3) To compile to different levels, change Feature.h
 
 CORE LEVELS OF ACCURACY:
 	This software is written to compile in all 3 CORE LEVELS.
