@@ -121,6 +121,7 @@ c2  = 0			# if 0 (false) then do not use c2 filter
 
 maxEps = 200		# maximum size of a box containing an Voronoi point
 
+screendumpfile=vor2d_screen_dump.ps
 #=================================================
 # Define target files (put all your files here)
 #=================================================
@@ -478,6 +479,8 @@ include Dependencies
 #=================================================
 # Misc
 #=================================================
+dump screendump:
+	open -a /Applications/Preview.app $(screendumpfile)
 
 params:
 	@echo "================ Parameters =================="
