@@ -62,8 +62,12 @@ bool Corner::inZone(Box * box)
     {
         if( ( ps1==1 || ps2==1 || ps3==1 || ps4==1) && ( ns1==-1 || ns2==-1 || ns3==-1 || ns4==-1) )
             return true;
-        return false;
     }
+    return false;	// Chee: moved this "return false" statement from inside
+    			// the previous clause.   This is just to avoid the following 
+			// compiler warning:
+			// Corner.cpp:99: warning: control reaches end of non-void function
+			//
 }
 
 bool Corner::inZone_star(Box * box)

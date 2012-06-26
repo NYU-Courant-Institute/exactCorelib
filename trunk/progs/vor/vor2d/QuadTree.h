@@ -149,7 +149,7 @@ public:
 	            }
 	        }//end for i
 	    }//end while
-	}
+	}//balancedPhase
 
 	//
 	// call each box to construct itself
