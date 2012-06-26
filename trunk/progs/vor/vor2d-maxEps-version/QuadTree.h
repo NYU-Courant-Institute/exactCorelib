@@ -39,6 +39,7 @@ private:
 			break;
 		case Box::ON:
 			++stuckCount;
+			if (b->height > maxEpsilon) PQ->push(b);
 			break;
 		case Box::IN:
 			++mixCount;
@@ -205,22 +206,28 @@ public:
 		return getBox(pRoot, x, y);
 	}
 
-//	bool expand (Box* b)
-//	{
-//		if (!b->split(epsilon, maxEpsilon))
-//		{
-//			return false;
-//		}
-//
-//		for (int i = 0; i < 4; ++i)
-//		{
-//			b->pChildren[i]->updateStatus();
-//			insertNode(b->pChildren[i]);
-//		}
-//
-//		return true;
-//	}
+	// Chee: I restored this version of expand...
+	/*
+	bool expand (Box* b)
+	{
+		if (!b->split(epsilon, maxEpsilon))
+		{
+			return false;
+		}
 
+		for (int i = 0; i < 4; ++i)
+		{
+			b->pChildren[i]->updateStatus();
+			insertNode(b->pChildren[i]);
+		}
+
+		return true;
+	}//expand (Box* b)
+	*/
+
+	// THIS expand() is funny: why does it have a loop?
+	// 	Why not use expand(box* b) above?
+	/**/
 	bool expand ()
 	{
 		while(!PQ->empty())
@@ -229,7 +236,13 @@ public:
 			//b might not be a leaf since it could already be split in expand(Box* b), and PQ is not updated there
 			if (b->isLeaf && b->split(epsilon, maxEpsilon))
 			{
-		//		assert(b->status == Box::IN);
+			    // Chee: The following assertion seems wrong now: we could
+			    // have split even though status is not equal to IN.
+			    //
+			    // WHY?  Because box status could be equal to ON
+			    //        and box height is greated than maxEps!
+				//Chee: assert(b->status == Box::IN);
+				assert(b->status == Box::IN || b->status == Box::ON);
 				for (int i = 0; i < 4; ++i)
 				{
 					//chee: b->pChildren[i]->updateStatus(maxEpsilon);
@@ -240,7 +253,8 @@ public:
 			}			
 		}
 		return false;
-	}
+	}//expand
+	/**/
 	
 	~QuadTree(void)
 	{

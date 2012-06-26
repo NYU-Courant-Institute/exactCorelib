@@ -59,6 +59,8 @@
 # 	These targets uses different input files, all taken from
 # 	the subdirectory "inputs".   
 #
+# 	TODO: add timings and auto-timing tests ...
+#
 ################################################################################
 # 	Chee Yap, Jyh-Ming Lien, Vikram Sharma
 # 	May 20, 2012

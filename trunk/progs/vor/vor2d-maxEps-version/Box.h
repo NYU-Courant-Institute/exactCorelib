@@ -572,14 +572,15 @@ public:
 		}
 
 
-cout << "split: status =" << this->status
-    << ", maxEps = " << maxEpsilon
-    << ", ht = " << this-> height << endl;
         //if ((!this->isLeaf || this->status != IN)
 	//	
-	// Chee: "status != IN" is equiv. to "status == OUT || status == ON".
+	// Chee: "status != IN"
 	//
-	// 	We weaken the ON part, by adding a maxEpsilon criterion:
+	// 	is equiv. to
+	//
+	// 	"status == OUT || status == UNKNOWN || status == ON".
+	//
+	// 	But we weaken the ON part, by adding a maxEpsilon criterion:
 	//
         if ( (!this->isLeaf	|| this->status == OUT || this->status == UNKNOWN)
 	  	|| (this->status == ON	&& 
@@ -587,10 +588,8 @@ cout << "split: status =" << this->status
 		   )
 	   )
         {
-cout << "INSIDE weakened ON status" << endl;
             return false;
         }
-cout << "OUTSIDE weakened ON status" << endl;
 
 		//record the time of this split event, will be used to set priority of children
 		++Box::counter;
