@@ -581,7 +581,7 @@ cout << "split: status =" << this->status
 	//
 	// 	We weaken the ON part, by adding a maxEpsilon criterion:
 	//
-        if ( (!this->isLeaf	|| this->status == OUT)
+        if ( (!this->isLeaf	|| this->status == OUT || this->status == UNKNOWN)
 	  	|| (this->status == ON	&& 
 		    this->height < maxEpsilon	&& this->width < maxEpsilon
 		   )
@@ -590,6 +590,7 @@ cout << "split: status =" << this->status
 cout << "INSIDE weakened ON status" << endl;
             return false;
         }
+cout << "OUTSIDE weakened ON status" << endl;
 
 		//record the time of this split event, will be used to set priority of children
 		++Box::counter;
