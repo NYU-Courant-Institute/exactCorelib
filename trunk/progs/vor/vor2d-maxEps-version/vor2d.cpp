@@ -881,24 +881,7 @@ void renderScenePS()
     SimplePSinC PS;
     PS.open(ps_filename,0,0,boxWidth,boxHeight);
     PS.setlinejoin(1);
-//////////////////////////////////////////////////
-//Chee: bounding box:
-    //PS.setlinewidth(3);
-    //PS.rect(4,boxWidth-4,4,boxHeight-4);
-    //PS.setstrokegray(0.5);
 
-    //NO:drawQuadPS(PS, QT->pRoot);
-//
-    PS.setfilledrgb(0.5, 0.5, 0.5);
-    PS.setlinewidth(4);
-    Box* r = QT->pRoot;
-    PS.rect(CORE::Todouble(r->x-r->width / 2), CORE::Todouble(r->y - r->height / 2),
-            CORE::Todouble(r->x + r->width / 2), CORE::Todouble(r->y + r->height / 2) );
-    PS.circle(0.0, 0.0, 50.0);
-    PS.setstrokegray(0.5);
-    //if (showBoxBoundary)
-        PS.fillstroke();
-//////////////////////////////////////////////////
 
    //
     //draw tree
@@ -908,6 +891,16 @@ void renderScenePS()
     drawWallsPS(PS,QT->pRoot);
 
     //draw selected item(s)
+
+//////////////////////////////////////////////////
+//Chee: bounding box:
+    PS.setlinewidth(4);
+    Box* r = QT->pRoot;
+    PS.rect(CORE::Todouble(r->x-r->width / 2), CORE::Todouble(r->y - r->height / 2),
+            CORE::Todouble(r->x + r->width / 2), CORE::Todouble(r->y + r->height / 2) );
+    PS.setstrokergb(0,0,0);
+    PS.stroke();
+//////////////////////////////////////////////////
 
     PS.close();
 
