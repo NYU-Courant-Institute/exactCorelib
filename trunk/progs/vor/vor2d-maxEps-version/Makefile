@@ -228,7 +228,7 @@ eg4 line:	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) 1 \
-		0 $(c2) $(maxEps) \
+		1 $(c2) $(maxEps) \
 		&
 	
 # Eg4a: Example of a non-regularized input (set of 4 lines) but using C1 filter
@@ -239,7 +239,7 @@ eg4a linea:	vor2d
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) 1 \
-		1 $(c2) $(maxEps) \
+		0 $(c2) $(maxEps) \
 		&
 	
 # Eg4a: Example of a non-regularized input (set of 4 lines) but open polygons 
