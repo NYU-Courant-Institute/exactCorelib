@@ -403,9 +403,13 @@ eg14 mammoth:	vor2d
 		$(c1) $(c2) $(maxEps) \
 		&
 			
-# Eg15: Vikram's example
+# Eg15: Vikram's example -- THIS INPUT IS DEGENERATE !!
+#
 eg15 vikram:	vor2d
-	@echo "Target 'eg15' :"
+	@echo "Target 'eg15' : a degenerate example"
+ 	@echo "   AT LEVEL 1, You will see an obvious error."
+ 	@echo "		But that is NOT a programming error."
+ 	@echo "	  AT LEVEL 3, Core Library will detect a DIVIDE-BY-ZERO."
 	./vor2d $(interactive) \
 		0.1 $(pseudo) $(interior) Vikram-1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
@@ -414,7 +418,7 @@ eg15 vikram:	vor2d
 		$(c1) $(c2) $(maxEps) \
 		&
 
-# Eg15a: Vikram's example
+# Eg15a: Vikram's example (variant)
 eg15a vikrama:	vor2d
 	@echo "Target 'eg15a' :"
 	./vor2d $(interactive) \
