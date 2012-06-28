@@ -38,17 +38,17 @@
 # 	names are in parenthesis):
 #
 #		eg0 (annulus)
-#		eg1 (simple)
+#		eg1 (simple)	-- variant: eg1a (for medial axis)
 #		eg2 (simple2)
 #		eg3 (dog)
-#		eg4 (line)	-- or eg4a, eg4b (linea, lineb) for variants
-#		eg5 (boxes)	-- or eg5a (boxesa) for a various with no translation
+#		eg4 (line)	-- variant: eg4a, eg4b (linea, lineb) 
+#		eg5 (boxes)	-- variant: eg5a (boxesa) 
 #		eg6 (boundedstar)
 #		eg7 (bug)	-- a bug trap
 #		eg8 (overlap)
-# 		eg9 (2color)	-- or eg9a, eg9b
+# 		eg9 (2color)	-- variant: eg9a, eg9b
 # 		eg10 (2tri)
-# 		eg11 (star) 	-- or eg11a (stara) for variant
+# 		eg11 (star) 	-- variant: eg11a (stara)
 # 		eg12 (bug2) 	-- a double bug trap
 # 		eg13 (monkey)
 # 		eg14 (mammoth)	
@@ -89,8 +89,8 @@ interior = 1		# boolean: 1 or false => do not show interior Vor objects
 
 inputDir = inputs	# where to find input files
 fileName = input2d.txt	# input environment file
-fileName = input2.txt	# input environment file
 fileName = input0.txt	# input environment file
+fileName = input2.txt	# input environment file
 fileName = input.txt	# input environment file
 fileName = input100.txt	# input environment file
 fileName = input150.txt	# input environment file
@@ -189,13 +189,24 @@ nopath eg0:	vor2d
 # 		But input2.txt has comments in it.
 simple eg1:	vor2d
 	./vor2d $(interactive) \
-		1 $(pseudo) $(interior) input.txt \
+		1 $(pseudo) $(interior) input2.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
 		$(c1) $(c2) $(maxEps) \
 		&
 
+# Eg1a: Modification of Eg1 using input2a.txt,
+# 		in which the polygon vertices are in clockwise order!
+eg1a:	vor2d
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) input2a.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtrans) $(ytrans) $(scale) $(closePoly) \
+		$(c1) $(c2) $(maxEps) \
+		&
+	#
 # Eg2: Same as simple, but with bounding box
 simple2 eg2: vor2d
 	./vor2d $(interactive)\
@@ -403,17 +414,17 @@ eg14 mammoth:	vor2d
 # Eg15: Vikram's example -- THIS INPUT IS DEGENERATE !!
 #
 eg15 vikram:    vor2d
-         @echo "Target 'eg15' : a degenerate example"
-         @echo "   AT LEVEL 1, You will see an obvious error."
-         @echo "         But that is NOT a programming error."
-         @echo "   AT LEVEL 3, Core Library will detect a DIVIDE-BY-ZERO."
-         ./vor2d $(interactive) \
-                 0.1 $(pseudo) $(interior) Vikram-1.txt \
-                 512 512 $(windowPosX) $(windowPosY) \
-                 $(inputDir) \
-                 $(xtrans) $(ytrans) $(scale) $(closePoly) \
-                 $(c1) $(c2) $(maxEps) \
-                 &
+	 @echo "Target 'eg15' : a degenerate example"
+	 @echo "   AT LEVEL 1, You will see an obvious error."
+	 @echo "       But that is NOT a programming error."
+	 @echo "   AT LEVEL 3, Core Library will detect a DIVIDE-BY-ZERO."
+	 ./vor2d $(interactive) \
+		 0.1 $(pseudo) $(interior) Vikram-1.txt \
+		 512 512 $(windowPosX) $(windowPosY) \
+		 $(inputDir) \
+		 $(xtrans) $(ytrans) $(scale) $(closePoly) \
+		 $(c1) $(c2) $(maxEps) \
+		 &
 
 # Eg15a: Vikram example (variant)
 eg15a :	vor2d

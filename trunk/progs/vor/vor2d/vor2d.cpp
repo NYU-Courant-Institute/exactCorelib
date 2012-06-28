@@ -642,7 +642,7 @@ void parseConfigFile(Box* b)
 	std::stringstream ss;
 	ss << inputDir << "/" << fileName;	// create full file name 
 	std::string s = ss.str();
-	cout << "- Input file name = " << s << endl;
+	cout << "\n- Input file name = " << s << endl;
 
 	fileProcessor(s);	// this will clean the input and put in
 				// output-tmp.txt

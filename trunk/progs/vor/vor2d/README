@@ -95,6 +95,13 @@ CORE LEVELS OF ACCURACY:
 
 		> make LEV=2 ...the normal arguments...
 		> make LEV=3 ...the normal arguments...
+	
+	(3) Timing differences (LEV 1 / LEV 2 / LEV 3) -- averaged
+		> make eg1      (8.5 ms/ 8.7 ms / 9.0 ms)
+		> make eg2	(26.4 ms / 27.9 ms / 26.8 ms)
+
+		NOTE: LEVEL 3 may be fast if its filters are effective
+			(when the input is not too degenerate)
 
 THEORY:
 	The "Voronoi complex" of Omega is a 1-dimensional complex
