@@ -1,7 +1,41 @@
 #include "Euler_Ops.h"
 #define CUBEWITHAHOLE
-int main(){
-  Euler_Ops *eo=new Euler_Ops();
+GLsizei ww=500;
+GLsizei wh=500;
+Euler_Ops *eo;
+void MyInit(void){
+  glClearColor(1,1,1,0);
+  glColor3f(1,0,0);
+  glPointSize(10);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  //gluOrtho2D(0,(GLdouble)ww,0.0,(GLdouble)wh);
+  glOrtho(-100.0,(GLdouble)ww,-100.0,(GLdouble)wh,-1000,1000);
+}
+void display(void){
+  glClear(GL_COLOR_BUFFER_BIT);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  
+  Solid *s=(*(eo->solids))[0]; 
+  vector<Edge *> *es=s->sedges;
+  glRotatef(45,1,1,1);
+  glScalef(100,100,100);
+  glBegin(GL_LINES);
+  for (int i=0;i<es->size();i++){
+    Edge *e=(*es)[i];
+    Vertex *v1=e->he1->start;
+    Vertex *v2=e->he2->start;
+   glVertex3f(v1->getX(),v1->getY(),v1->getZ());
+   glVertex3f(v2->getX(),v2->getY(),v2->getZ());
+
+  }
+   glEnd();
+   glFlush();
+
+}
+int main(int argc,char **argv){
+  eo=new Euler_Ops();
   #ifdef CUBE
   /**********************First Step New a Solid with single Face&Vertex, add vertex 1:(0,0,0)*************************************/
   cout<<"**********************First Step New a Solid with single Face&Vertex, add vertex 1:(0,0,0)******************************"<<endl;
@@ -228,6 +262,18 @@ int main(){
   cout<<"he start vertex"<<he->start<<endl;
   cout<<"nxthe start vertex"<<he->nxthe->start<<endl;*/
   
+   glutInit(&argc,argv);
+   glutInitDisplayMode( GLUT_SINGLE | GLUT_RGB );
+   glutInitWindowSize(ww,wh);
+   glutInitWindowPosition(150,150);
+   glutCreateWindow("Cube");
+
+   MyInit();
+
+   glutDisplayFunc(display);
+   //glutMouseFunc(pressMouse);
+   //glutMotionFunc(holdMouse);
+   glutMainLoop();
   
   
 

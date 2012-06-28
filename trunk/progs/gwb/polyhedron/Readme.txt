@@ -14,3 +14,34 @@ Be careful when "closing" the cube because in the last step you may only have
 single circle, which means that you cannot meet a duplicat point in the loop.
 
 We can build different solids through #ifdef
+
+For OPENGL, we have to download glut, with the command as follows in unbuntu:
+
+sudo aptitude install freeglut3 freeglut3-dev
+
+To install GLUT:
+
+    sudo aptitude install freeglut3 freeglut3-dev  freeglut3-dbg
+    sudo apt-get install libglui-dev libglui2c2
+
+
+    This will install the OpenGL header files to /usr/include/GL/
+    And the library objects to /usr/lib/libglut.a
+
+    With all that taken care of now you just need a quick sample app to see if it worked, I googled "glut hello world" and this was the second result.
+
+    I needed to add "#include ". Also notice that GLUT is included like "#include ". I then renamed it to helloworld.cpp and was able to compile as follows:
+
+g++ rect.cc -o rect -lGLU -lGL -lglut -glui
+
+The coordinates of the points and the position of the mouse arrow is inversed (x,y)vs(x,-y)
+
+
+ --------------------OPENGL--------------------
+1.You have to Normalize the coordinated using gluOrtho2D or glOrtho()(3D),for glOrtho(0,ww,0,wh,-z,z),-z is for translate(x,y,z) and z is for translate(x,y,-z) 
+
+2.Multiplication by transformation matrix is from left to right.(Inverse Sequence)
+
+3.For Matrix Mode
+window:GL_PROJECTION
+draw:GL_MODEL

@@ -4,6 +4,8 @@
 */
 #include <iostream>
 #include <vector>
+#include <X11/Xlib.h>
+#include <GL/glut.h>
 using namespace std;
 typedef double coords[4];
 typedef float matrix[4][4];
@@ -18,7 +20,18 @@ class Loop;
 class Face;
 class Solid;
 
-
+/*Built for OpenGL*/
+//GLsizei ww=500;
+//GLsizei wh=500;
+/*void init(void){
+  glClearColor(1,1,1,0);
+  glColor3f(1,0,0);
+  glPointSize(10);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  //gluOrtho2D(0,(GLdouble)ww,0.0,(GLdouble)wh);
+  glOrtho(0.0,(GLdouble)ww,0.0,(GLdouble)wh,-1000,1000);
+}*/
 /*********************Vertex with coordinates*********************/
 class Vertex
 {
@@ -270,6 +283,22 @@ public:
   Solid(Id solidno,vector<Face *> *sfaces, vector<Edge *> *sedges,vector<Vertex *> *sverts,Vec<Solid *> *solids);
 
 
+  /*void showGL(int argc,char **argv){
+   glutInit(&argc,argv);
+   glutInitDisplayMode( GLUT_SINGLE | GLUT_RGB );
+   glutInitWindowSize(ww,wh);
+   glutInitWindowPosition(150,150);
+   glutCreateWindow("Line");
+
+   init();
+
+   glutDisplayFunc(Display);
+   //glutMouseFunc(pressMouse);
+   //glutMotionFunc(holdMouse);
+   glutMainLoop();
+    
+
+  }*/
   void print();
   void showInfo(){
     cout<<"Solid Id="<<solidno<<endl;
