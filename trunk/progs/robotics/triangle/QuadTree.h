@@ -114,16 +114,12 @@ public:
 			}
 
 			vector<Box*> cldrn;
-			if (!b->split(epsilon, cldrn))
+			if (!expand(b, cldrn))
 			{
 				return 0;
 			}
 			++ct;
-			for (int i = 0; i < (int)cldrn.size(); ++i)
-			{
-				cldrn[i]->updateStatus();
-				insertNode(cldrn[i]);
-			}
+
 			for (int i = 0; i < (int)cldrn.size(); ++i)
 			{
 				if ( cldrn[i]->contains(x, y, a) )
@@ -143,6 +139,12 @@ public:
 	bool expand (Box* b)
 	{
 		vector<Box*> cldrn;
+		return expand(b, cldrn);
+	}
+
+	//expand and put children ptr in cldrn
+	bool expand (Box* b, vector<Box*>& cldrn)
+	{
 		if (!b->split(epsilon, cldrn))
 		{
 			return false;

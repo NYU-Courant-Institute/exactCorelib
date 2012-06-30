@@ -180,112 +180,110 @@ void drawLine();
 
 //find path using simple heuristic:
 //use distance to beta as key in PQ, see dijkstraQueue
-//bool findPath(Box* a, Box* b, QuadTree* QT, int& ct)
-//{
-//	bool isPath = false;
-//	vector<Box*> toReset;
-//	a->dist2Source = 0;
-//	dijkstraQueue dijQ;
-//	dijQ.push(a);
-//	toReset.push_back(a);
-//	while(!dijQ.empty())
-//	{
-//		Box* current = dijQ.extract();
-//		current->visited = true;
-//
-//		// if current is MIXED, try expand it and push the children that is
-//		// ACTUALLY neighbors of the source set (set containing alpha) into the dijQ again
-//		if (current->status == Box::MIXED)
-//		{
-//			if (QT->expand(current))
-//			{
-//				++ct;
-//				for (int i = 0; i < 4; ++i)
-//				{
-//					// go through neighbors of each child to see if it's in source set
-//					// if yes, this child go into the dijQ
-//					bool isNeighborOfSourceSet = false;
-//					for (int j = 0; j < 4 && !isNeighborOfSourceSet; ++j)
-//					{
-//						BoxIter* iter = new BoxIter(current->pChildren[i], j);
-//						Box* n = iter->First();
-//						while (n && n != iter->End())
-//						{
-//							if (n->dist2Source == 0)
-//							{
-//								isNeighborOfSourceSet = true;
-//								break;
-//							}
-//							n = iter->Next();
-//						}							
-//					}					
-//					if (isNeighborOfSourceSet)
-//					{
-//
-//						switch (current->pChildren[i]->getStatus())
-//						{
-//							//if it's FREE, also insert to source set
-//							case Box::FREE:
-//								current->pChildren[i]->dist2Source = 0;
-//								dijQ.push(current->pChildren[i]);
-//								toReset.push_back(current->pChildren[i]);
-//								break;
-//							case Box::MIXED:
-//								dijQ.push(current->pChildren[i]);
-//								toReset.push_back(current->pChildren[i]);
-//								break;
-//							case Box::STUCK:
-//								cerr << "inside FindPath: STUCK case not treated" << endl;
-//								break;
-//							case Box::UNKNOWN:
-//								cerr << "inside FindPath: UNKNOWN case not treated" << endl;
-//						}
-//					}
-//				}
-//			}
-//			continue;
-//		}
-//
-//		//found path!
-//		if (current == b)
-//		{			
-//			isPath = true;
-//			break;
-//		}
-//
-//		// if current is not MIXED, then must be FREE
-//		// go through it's neighbors and add FREE and MIXED ones to dijQ
-//		// also add FREE ones to source set 
-//		for (int i = 0; i < 4; ++i)
-//		{
-//			BoxIter* iter = new BoxIter(current, i);
-//			Box* neighbor = iter->First();
-//			while (neighbor && neighbor != iter->End())
-//			{
-//				if (!neighbor->visited && neighbor->dist2Source == -1 && (neighbor->status == Box::FREE || neighbor->status == Box::MIXED))
-//				{					
-//					if (neighbor->status == Box::FREE)
-//					{
-//						neighbor->dist2Source = 0;
-//					}						
-//					dijQ.push(neighbor);	
-//					toReset.push_back(neighbor);
-//				}
-//				neighbor = iter->Next();
-//			}
-//		}
-//	}
-//
-//	//these two fields are also used in dijkstraShortestPath
-//	// need to reset
-//	for (int i = 0; i < (int)toReset.size(); ++i)
-//	{
-//		toReset[i]->visited = false;
-//		toReset[i]->dist2Source = -1;
-//	}
-//
-//	return isPath;
-//}
+bool findPath(Box* a, Box* b, QuadTree* QT, int& ct)
+{
+	bool isPath = false;
+	vector<Box*> toReset;
+	a->dist2Source = 0;
+	dijkstraQueue dijQ;
+	dijQ.push(a);
+	toReset.push_back(a);
+	while(!dijQ.empty())
+	{
+		Box* current = dijQ.extract();
+		current->visited = true;
+
+		// if current is MIXED, try expand it and push the children that is
+		// ACTUALLY neighbors of the source set (set containing alpha) into the dijQ again
+		if (current->status == Box::MIXED)
+		{
+			vector<Box*> cldrn;
+			if (QT->expand(current, cldrn))
+			{
+				++ct;
+				for (int i = 0; i < (int)cldrn.size(); ++i)
+				{
+					// go through neighbors of each child to see if it's in source set
+					// if yes, this child go into the dijQ					
+					bool isNeighborOfSourceSet = false;
+					for (int j = 0; j < 6 && !isNeighborOfSourceSet; ++j)
+					{
+						for (vector<Box*>::iterator iter = cldrn[i]->Nhbrs[j].begin(); iter < cldrn[i]->Nhbrs[j].end(); ++iter)
+						{
+							Box* n = *iter;
+							if (n->dist2Source == 0)
+							{
+								isNeighborOfSourceSet = true;
+								break;
+							}
+						}
+						
+					}
+				
+					if (isNeighborOfSourceSet)
+					{
+						switch (cldrn[i]->getStatus())
+						{
+							//if it's FREE, also insert to source set
+							case Box::FREE:
+								cldrn[i]->dist2Source = 0;
+								dijQ.push(cldrn[i]);
+								toReset.push_back(cldrn[i]);
+								break;
+							case Box::MIXED:
+								dijQ.push(cldrn[i]);
+								toReset.push_back(cldrn[i]);
+								break;
+							case Box::STUCK:
+								cerr << "inside FindPath: STUCK case not treated" << endl;
+								break;
+							case Box::UNKNOWN:
+								cerr << "inside FindPath: UNKNOWN case not treated" << endl;
+						}
+					}
+				}
+			}
+			continue;
+		}
+
+		//found path!
+		if (current == b)
+		{			
+			isPath = true;
+			break;
+		}
+
+		// if current is not MIXED, then must be FREE
+		// go through it's neighbors and add FREE and MIXED ones to dijQ
+		// also add FREE ones to source set 
+		for (int i = 0; i < 6; ++i)
+		{
+			for (vector<Box*>::iterator iter = current->Nhbrs[i].begin(); iter < current->Nhbrs[i].end(); ++iter)
+			{
+				Box* neighbor = *iter;
+				if (!neighbor->visited && neighbor->dist2Source == -1 && (neighbor->status == Box::FREE || neighbor->status == Box::MIXED))
+				{					
+					if (neighbor->status == Box::FREE)
+					{
+						neighbor->dist2Source = 0;
+					}						
+					dijQ.push(neighbor);	
+					toReset.push_back(neighbor);
+				}
+			}
+		}
+	}
+
+	//these two fields are also used in dijkstraShortestPath
+	// need to reset
+	for (int i = 0; i < (int)toReset.size(); ++i)
+	{
+		toReset[i]->visited = false;
+		toReset[i]->dist2Source = -1;
+	}
+
+	return isPath;
+}
 
 
 // MAIN PROGRAM: ========================================
@@ -504,29 +502,23 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 	} 
 	else if(QType == 2)
 	{
-		//boxA = QT->getBox(alpha[0], alpha[1]);
-		//while (boxA && !boxA->isFree())
-		//{
-		//	if (!QT->expand(boxA))
-		//	{
-		//		noPath = true;
-		//		break;
-		//	}
-		//	boxA = QT->getBox(boxA, alpha[0], alpha[1]);
-		//}
+		boxA = QT->getBox(alpha[0], alpha[1], alpha[2], ct);
+		if (!boxA)
+		{
+			noPath = true;  
+			cout << "Start Configuration is not free\n";
+		}
 
-		//boxB = QT->getBox(beta[0], beta[1]);
-		//while (!noPath && boxB && !boxB->isFree())
-		//{
-		//	if (!QT->expand(boxB))
-		//	{
-		//		noPath = true;
-		//		break;
-		//	}
-		//	boxB = QT->getBox(boxB, beta[0], beta[1]);
-		//}
-
-		//noPath = !findPath(boxA, boxB, QT, ct);
+		boxB = QT->getBox(beta[0], beta[1], beta[2], ct);
+		if (!boxB)
+		{
+			noPath = true;  
+			cout << "Goal Configuration is not free\n";
+		}
+		if (!noPath)
+		{
+			noPath = !findPath(boxA, boxB, QT, ct);
+		}		
 	}	
 
 	t.stop();
@@ -747,9 +739,6 @@ void renderScene(void)
 			{
 				glColor4f(0.5, 0.5, 0.5, 0.1);
 			}
-			break;
-		case Box::UNKNOWN:
-			cout << "UNKNOWN is unexpected!" << endl;
 			break;
 	}
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
