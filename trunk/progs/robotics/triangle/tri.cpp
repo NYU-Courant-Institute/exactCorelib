@@ -464,10 +464,10 @@ void run()
 
 cout<<"inside run:  Qtype= " << QType << "\n";
 
+	genEmptyTree();
+
 	Timer t;
 	t.start();
-
-	genEmptyTree();
 
 	noPath = false;	// initially, pretend we have found path 
 	int ct = 0;	// number of times a node is expanded
