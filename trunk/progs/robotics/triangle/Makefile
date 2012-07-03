@@ -472,7 +472,7 @@ ex-all: ex-bug ex-150 ex-200 ex-300
 # Bugtrap example 
 ex-bug experiment-bug: ./tri
 	@echo "Target 'ex-bug':  runs tri for bugtrap input, bugtrap.txt"
-	./tri 0 200 350 0 30 30 0 \
+	./tri 1 200 350 0 30 30 0 \
 		17 40 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
@@ -482,7 +482,7 @@ ex-bug experiment-bug: ./tri
 # ex-150: 150 random triangles (use radius=1)
 ex-150: ./tri
 	@echo "Target ex-150:  runs tri amidst 150 randomly generated triangles"
-	./tri 0 200 270 0 20 20 0\
+	./tri 1 200 270 0 20 20 0\
 		1 7 input150.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
