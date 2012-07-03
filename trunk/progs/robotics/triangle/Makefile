@@ -239,7 +239,7 @@ eg4 egbug bug: ./tri
 	@echo "--  you could see a green path that must pass between two green boxes"
 	@echo "--  that are NOT adjacent but shares a corner."
 	./tri $(interactive) 200 350 0 30 30 0 \
-		20 10 bugtrap.txt \
+		15 1 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -252,42 +252,39 @@ eg4a egbuga buga: ./tri
 	@echo "--  the only change from target 'egbug' is that epsilon is now 10, not 20"
 	@echo "--  that are NOT adjacent but shares a corner."
 	./tri $(interactive) 200 350 0 30 30 0 \
-		10 10 bugtrap.txt \
+		14 1 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # Bugtrap2 example -- Non-existence of path.
-# 	THIS IS TOO SLOW, SO MORE WORK NEEDED.
-# 	FOR NOW, WE USE big values for epsilon, etc...
-# 	SAMPLE values: Epsilon=18, radius=1 takes 835 ms to report NO PATH.
-# 	SAMPLE values: Epsilon=17, radius=2 takes 2800 ms to report NO PATH.
+# 	SAMPLE values: Eps=1, radius=8:
+# 		with Best First, takes <1 ms to report NO PATH 
+# 		with BFS, takes 15 ms to report NO PATH
 eg5 egbug2 bug2: ./tri
 	@echo "Target 'egbug':  runs tri for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
 	@echo "--  that are NOT adjacent but shares a corner."
-	./tri $(interactive) 200 350 0 30 30 0 \
-		18 2 bugtrap2.txt \
+	./tri $(interactive) 180 210 0 30 30 0 \
+		1 8 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
 # Bugtrap2 example -- Existence of path.
-# 	THIS IS TOO SLOW, SO MORE WORK NEEDED.
-# 	FOR NOW, WE USE small values for radius, etc...
-# 	SAMPLE values: Epsilon=16, radius=1 takes 5700 ms to report PATH.
-# 	SAMPLE values: Epsilon=16, radius=2 takes 18000 ms to report PATH.
-# 	SAMPLE values: Epsilon=12, radius=2 takes 41000 ms to report PATH.
+# 	SAMPLE values: Eps=1, radius=7:
+# 		with Best First, takes 7.4 ms to find PATH 
+# 		with BFS, takes 3.6 ms to report PATH 
 eg5a egbug2a bug2a: ./tri
 	@echo "Target 'egbug':  runs tri for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
 	@echo "--  that are NOT adjacent but shares a corner."
-	./tri $(interactive) 200 350 0 30 30 0 \
-		16 1 bugtrap2.txt \
+	./tri $(interactive) 180 210 0 30 30 0 \
+		1 7 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
