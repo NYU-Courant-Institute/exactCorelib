@@ -481,6 +481,7 @@ cout<<"   beta = (" << beta[0] << ", " << beta[1] << ", " << beta[2] << ")" << e
 	genEmptyTree();
 
 	Timer t;
+
 	t.start();
 
 	noPath = false;	// initially, pretend we have found path 
@@ -664,7 +665,7 @@ void drawQuad(Box* b)
 
 void drawWalls(Box* b)
 {
-	glColor3f(1, 1, 1);
+	glColor3f(0, 0, 0.7);
 	glLineWidth(2.0);
 	for (list<Wall*>::iterator iter = b->walls.begin(); iter != b->walls.end(); ++iter)
 	{

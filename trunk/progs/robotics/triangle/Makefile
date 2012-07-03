@@ -258,6 +258,52 @@ eg4a egbuga buga: ./tri
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
+prm_bug: ./tri
+	@echo "Target 'egbuga':  runs tri for bugtrap input, bugtrap.txt"
+	@echo "--  this examples shows there is a PATH, but barely so!"
+	@echo "--  the only change from target 'egbug' is that epsilon is now 10, not 20"
+	@echo "--  that are NOT adjacent but shares a corner."
+	./tri 1  250 350 0 60 50 0 \
+		10 40 bugtrap.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
+
+
+prm_200: ./tri
+	@echo "Target eg200:  runs tri on randomly generated obstacles"
+	@echo "--  This may take a noticeable amount bit of time!!!"
+	./tri $(interactive) 130 460 0 20 20 0 \
+		2 5 input1.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
+
+
+prm_300: ./tri
+	@echo "Target eg300:  runs tri amidst 300 randomly generated triangles"
+	@echo "--  This may take a noticeable amount bit of time!!! "
+	./tri $(interactive) 230 210 0 480 10 0\
+		4 7 input300.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
+
+
+prm_150: ./tri
+	@echo "Target eg150:  runs tri amidst 100 randomly generated triangles"
+	./tri $(interactive) 200 270 0 20 20 0\
+		5 7 input150.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
+
+
+
 # Bugtrap2 example -- Non-existence of path.
 # 	SAMPLE values: Eps=1, radius=8:
 # 		with Best First, takes <1 ms to report NO PATH 
