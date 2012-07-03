@@ -472,8 +472,8 @@ ex-all: ex-bug ex-150 ex-200 ex-300
 # Bugtrap example 
 ex-bug experiment-bug: ./tri
 	@echo "Target 'ex-bug':  runs tri for bugtrap input, bugtrap.txt"
-	./tri 1 200 350 0 30 30 0 \
-		10 40 bugtrap.txt \
+	./tri 0 200 350 0 30 30 0 \
+		17 40 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -482,7 +482,7 @@ ex-bug experiment-bug: ./tri
 # ex-150: 150 random triangles (use radius=1)
 ex-150: ./tri
 	@echo "Target ex-150:  runs tri amidst 150 randomly generated triangles"
-	./tri 1 200 270 0 20 20 0\
+	./tri 0 200 270 0 20 20 0\
 		1 7 input150.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
@@ -492,7 +492,7 @@ ex-150: ./tri
 # ex-200: 200 random triangles
 ex-200: ./tri
 	@echo "Target 2x-200:  runs tri on randomly generated obstacles"
-	./tri 1 130 460 0 20 20 0 \
+	./tri 0 130 460 0 20 20 0 \
 		5 2 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
@@ -503,7 +503,7 @@ ex-200: ./tri
 #
 ex-300: ./tri
 	@echo "Target ex-300:  runs tri amidst 300 randomly generated triangles"
-	./tri 1 230 210 0 480 10 0\
+	./tri 0 230 210 0 480 10 0\
 		3 3 input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
