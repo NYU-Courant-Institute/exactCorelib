@@ -375,7 +375,7 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 	radioQType = glui->add_radiogroup();
 	glui->add_radiobutton_to_group(radioQType, "Random");
 	glui->add_radiobutton_to_group(radioQType, "BFS");
-	glui->add_radiobutton_to_group(radioQType, "A-star");
+	glui->add_radiobutton_to_group(radioQType, "Best First");
 	glui->add_separator();
 
 	radioDrawOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)renderScene);
