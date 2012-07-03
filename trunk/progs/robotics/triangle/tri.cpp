@@ -472,6 +472,8 @@ void run()
 
 
 cout<<"inside run:  Qtype= " << QType << "\n";
+cout<<"radius = " << R0 << ", eps = " << epsilon << endl;
+cout<<"alpha = (" << alpha[0] << ", " << alpha[1] << ", " << alpha[2] << ")" << endl;
 
 	genEmptyTree();
 
