@@ -314,7 +314,7 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 
 	if (interactive > 0) {	// non-interactive
 	    // do something...
-	    cout << "Non Interactive Run of Disc Robot" << endl;
+	    cout << "Non Interactive Run of Triangle Robot" << endl;
 	    if (noPath)
 	    	cout << "No Path Found!" << endl;
 	    else
@@ -740,6 +740,8 @@ void renderScene(void)
 				glColor4f(0.5, 0.5, 0.5, 0.1);
 			}
 			break;
+		case Box::UNKNOWN:
+			std::cerr << "UNKNOWN classification unexpected" << std::endl;
 	}
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBegin(GL_POLYGON);

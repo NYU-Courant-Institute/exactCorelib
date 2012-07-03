@@ -118,11 +118,6 @@ all: $(TARGETS)
 #       non-interactive mode (i.e., the first argument to "tri" is "1").
 #
 test: $(TARGETS)
-	./tri 1 \
-		$(startX) $(startY)  $(startTheta) $(goalX) $(goalY) $(startBeta) \
-		$(epsilon)  $(radius)  input.txt  $(boxWidth) $(boxHt) \
-       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
 
 testa: $(TARGETS)
 	./tri 1
@@ -136,11 +131,27 @@ testb: $(TARGETS)
 
 help:
 	@echo "USAGE:  The main program is called tri.  Demos can be invoked thus:"
-	@echo "         > make egX"
-	@echo "     where X is replaced by 1, 2, 3, 4, 5, 6, 100, 150, 200, 300,  etc."
-	@echo "     Some demos have variants, such as egXa, egXb or egXc."
-	@echo "     You may also try"
-	@echo "         > make eg [...optional parameters...]"
+	@echo "              > make eg [...optional parameters...]"
+	@echo "     where parameters include fileName, radius, startX, startY,"
+	@echo "     goalX, goalY, etc.  Best to see the Makefile for examples."
+	@echo "     You can also call demos where these these parameters are prechosen:"
+	@echo "              > make egX"
+	@echo "     where X is replaced by 1, 2, 3, 4, 5, 6, 100, 150, 200, 300, etc."
+	@echo "     Demos have variants (such as egXa, egXb or egXc)"
+	@echo "     or alternative names (such as bug, bug2, tunnal, etc): "
+	@echo "        ega, egb,"
+	@echo "        eg1, eg1a, eg1b, [simple environment with bounding box]"
+	@echo "        eg2, eg2a, eg2b, [simple environment without bounding box]"
+	@echo "        eg3  [simple environment with door]"
+	@echo "        eg4 (= egbug, bug), eg4a (= egbuga, buga),"
+	@echo "        eg5 (= egbug2, bug2), eg5a (= egbug2a, bug2a),"
+	@echo "        eg6 (= kavraki), eg6a (= kavrakia),"
+	@echo "        eg7 (= tunnel), eg7a (= tunnela), eg7b (= tunnelb)"
+	@echo "        eg100, eg100a"
+	@echo "        eg150"
+	@echo "        eg200, eg200a, eg200b"
+	@echo "        eg300"
+
 
 #=================================================
 # Examples of running tri program
@@ -173,8 +184,8 @@ ega:	./tri
 #
 egb:	./tri
 	@echo "Target 'egb':  runs tri with default Makefile options for file input.txt"
-	./tri $(interactive) 10 350 0 300 20 0\
-		10 40 input.txt \
+	./tri $(interactive) 60 350 -0.17 300 60 0.5 \
+		5 40 input.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -199,7 +210,7 @@ eg1: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir)
 
-# eg2:
+# eg2: input 2.text, no bounding box
 eg2: ./tri
 	@echo "Target eg2e:  runs tri on input2.txt"
 	./tri $(interactive) 150 260 0 20 20 0 \
@@ -212,7 +223,7 @@ eg2: ./tri
 # eg3: input3.txt is line input2e, but there is a narrow door
 eg3: ./tri
 	@echo "Target eg3:  runs tri on input3.txt"
-	./tri $(interactive) 150 260 0 450 450 0 \
+	./tri $(interactive) 150 260 0.5 450 450 0 \
 		10 30 input3.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
@@ -432,7 +443,7 @@ eg200b: ./tri
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
-# eg300: 
+# eg300: 300 random triangles
 #
 eg300: ./tri
 	@echo "Target eg300:  runs tri amidst 300 randomly generated triangles"
@@ -449,6 +460,58 @@ moretest: $(TARGETS)
 # nothing to do
 
 tri: $(OBJ_FILES) tri.o
+
+
+#=================================================
+# Experiments for our paper 
+#=================================================
+#bugtrap: radius 40, other setting same as buga
+#200: alpha 130, 460, beta 20, 20, other setting same as eg200
+#300: alpha 230, 210, beta 480, 10, other setting unchanged
+#150: radius 7, epsilon 1, other setting unchanged
+
+ex-all: ex-bug ex-150 ex-200 ex-300
+
+# Bugtrap example 
+ex-bug experiment-bug: ./tri
+	@echo "Target 'ex-bug':  runs tri for bugtrap input, bugtrap.txt"
+	./tri 1 200 350 0 30 30 0 \
+		10 40 bugtrap.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
+
+# ex-150: 150 random triangles (use radius=1)
+ex-150: ./tri
+	@echo "Target ex-150:  runs tri amidst 150 randomly generated triangles"
+	./tri 1 200 270 0 20 20 0\
+		1 7 input150.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
+
+# ex-200: 200 random triangles
+ex-200: ./tri
+	@echo "Target 2x-200:  runs tri on randomly generated obstacles"
+	./tri 1 130 460 0 20 20 0 \
+		5 2 input1.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
+	#
+# ex-300: 300 random triangles
+#
+ex-300: ./tri
+	@echo "Target ex-300:  runs tri amidst 300 randomly generated triangles"
+	./tri 1 230 210 0 480 10 0\
+		3 3 input300.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
 
 
 #=================================================
