@@ -22,6 +22,7 @@ using namespace std;
 class Box
 {
 private:
+    	// isOverLimit( base, nextBox) is not used (was for disc)
 	static bool isOverLimit(const Box* base, const Box* nextBox)
 	{
 		if ((nextBox->x > base->x - base->width / 2 && nextBox->x < base->x + base->width / 2)
@@ -720,14 +721,14 @@ public:
 		if ( this->xi[1] > this->xi[0] )
 		{
 			//todo, 0.028 is somehow random
-			if ( (this->xi[1] - this->xi[0]) * PI < 0.014)
+			if ( (this->xi[1] - this->xi[0]) * PI < epsilon/r0)
 			{
 				return 0;
 			}
 		} 
 		else
 		{
-			if ( (2 + this->xi[1] - this->xi[0]) * PI < 0.014)
+			if ( (2 + this->xi[1] - this->xi[0]) * PI < epsilon/r0)
 			{
 				return 0;
 			}

@@ -96,8 +96,8 @@ windowPosY = 200
 windowPosX = 500	# initial Window position
 windowPosY = 20	
 
-Qtype = 0		# type of priority queue
-			#	(1 = BFS, 0 = random) // funny switch...
+Qtype = 2		# type of priority queue
+			#  (0=random, 1 = BFS, 2 = Best First, 3 = A-star) 
 seed = 11		# seed for random
 step = 0		# number of steps to run
 			#	(step=0 means run to completion)
@@ -263,10 +263,10 @@ prm_bug: ./tri
 	@echo "--  this examples shows there is a PATH, but barely so!"
 	@echo "--  the only change from target 'egbug' is that epsilon is now 10, not 20"
 	@echo "--  that are NOT adjacent but shares a corner."
-	./tri 1  250 350 0 60 50 0 \
+	./tri 0  250 350 0 60 50 0 \
 		10 40 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir) \
+		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
@@ -520,6 +520,16 @@ ex-bug experiment-bug: ./tri
 	@echo "Target 'ex-bug':  runs tri for bugtrap input, bugtrap.txt"
 	./tri 1 200 350 0 30 30 0 \
 		17 40 bugtrap.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
+
+# Bugtrap example 
+ex-buga: ./tri
+	@echo "Target 'ex-bug':  runs tri for bugtrap input, bugtrap.txt"
+	./tri 1 200 350 0 30 30 0 \
+		1 15 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \

@@ -774,6 +774,8 @@ void renderScene(void)
 				glColor4f(0.5, 0.5, 0.5, 0.1);
 			}
 			break;
+		case Box::UNKNOWN:
+			cerr <<"UNKNOWN not handled" << endl;
 	}
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBegin(GL_POLYGON);
