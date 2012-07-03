@@ -177,6 +177,7 @@ void drawPath(vector<Box*>&);
 extern int fileProcessor(string inputfile);
 void drawCircle( float Radius, int numPoints, double x, double y, double r, double g, double b);
 void drawLine();
+void drawTri(Box*);
 
 //find path using simple heuristic:
 //use distance to beta as key in PQ, see dijkstraQueue
@@ -788,6 +789,15 @@ void renderScene(void)
 	drawWalls(QT->pRoot);
 
 	drawLine();
+
+	if (boxA)
+	{
+		drawTri(boxA);
+	}
+	if (boxB)
+	{
+		drawTri(boxB);
+	}
 
 	if (!noPath)
 	{
