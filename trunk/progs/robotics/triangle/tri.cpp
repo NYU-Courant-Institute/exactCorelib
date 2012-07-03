@@ -235,10 +235,11 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct)
 								toReset.push_back(cldrn[i]);
 								break;
 							case Box::STUCK:
-								cerr << "inside FindPath: STUCK case not treated" << endl;
+								//cerr << "inside FindPath: STUCK case not treated" << endl;
 								break;
 							case Box::UNKNOWN:
-								cerr << "inside FindPath: UNKNOWN case not treated" << endl;
+								//cerr << "inside FindPath: UNKNOWN case not treated" << endl;
+								break;
 						}
 					}
 				}
@@ -314,12 +315,12 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 
 	if (interactive > 0) {	// non-interactive
 	    // do something...
-	    cout << "Non Interactive Run of Triangle Robot" << endl;
-	    if (noPath)
-	    	cout << "No Path Found!" << endl;
-	    else
-	    	cout << "Path was Found!" << endl;
-	    return 0;
+	    cout << "Non Interactive Run of Disc Robot" << endl;
+	    //if (noPath)
+	    //	cout << "No Path Found!" << endl;
+	    //else
+	    //	cout << "Path was Found!" << endl;
+	    //return 0;
 	}
 
 	alpha[2] /= 180.0;		// start theta, convert from degree to radian
@@ -327,66 +328,69 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 
 	// Else, set up for GLUT/GLUI interactive display:
 	
+	if (interactive == 0)
+	{
 //cout<<"before glutInit\n";
-	glutInit(&argc, argv);
-	glutInitWindowPosition(windowPosX, windowPosY);
-	glutInitWindowSize(boxWidth, boxWidth);
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	int windowID = glutCreateWindow("Motion Planning");
-	glutDisplayFunc(renderScene);
-	GLUI_Master.set_glutIdleFunc( NULL );
-	GLUI *glui = GLUI_Master.create_glui( "control", 0, windowPosX + boxWidth + 20, windowPosY );
+		glutInit(&argc, argv);
+		glutInitWindowPosition(windowPosX, windowPosY);
+		glutInitWindowSize(boxWidth, boxWidth);
+		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+		int windowID = glutCreateWindow("Motion Planning");
+		glutDisplayFunc(renderScene);
+		GLUI_Master.set_glutIdleFunc( NULL );
+		GLUI *glui = GLUI_Master.create_glui( "control", 0, windowPosX + boxWidth + 20, windowPosY );
 	
-	// SETTING UP THE CONTROL PANEL:
-	editInput = glui->add_edittext( "Input file:", GLUI_EDITTEXT_TEXT );
-	editInput->set_text((char*)fileName.c_str());
-	editDir = glui->add_edittext( "Input Directory:", GLUI_EDITTEXT_TEXT );
-	editDir->set_text((char*)inputDir.c_str());
-	editRadius = glui->add_edittext( "Radius:", GLUI_EDITTEXT_FLOAT );
-	editRadius->set_float_val(R0);
-	editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_FLOAT );
-	editEpsilon->set_float_val(epsilon);
+		// SETTING UP THE CONTROL PANEL:
+		editInput = glui->add_edittext( "Input file:", GLUI_EDITTEXT_TEXT );
+		editInput->set_text((char*)fileName.c_str());
+		editDir = glui->add_edittext( "Input Directory:", GLUI_EDITTEXT_TEXT );
+		editDir->set_text((char*)inputDir.c_str());
+		editRadius = glui->add_edittext( "Radius:", GLUI_EDITTEXT_FLOAT );
+		editRadius->set_float_val(R0);
+		editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_FLOAT );
+		editEpsilon->set_float_val(epsilon);
 
-	editAlphaX = glui->add_edittext( "alpha.x:", GLUI_EDITTEXT_FLOAT );
-	editAlphaX->set_float_val(alpha[0]);
-	editAlphaY = glui->add_edittext( "alpha.y:", GLUI_EDITTEXT_FLOAT );
-	editAlphaY->set_float_val(alpha[1]);
-	editAlphaTheta = glui->add_edittext( "alpha.theta:", GLUI_EDITTEXT_FLOAT );
-	editAlphaTheta->set_float_val(alpha[2]);
+		editAlphaX = glui->add_edittext( "alpha.x:", GLUI_EDITTEXT_FLOAT );
+		editAlphaX->set_float_val(alpha[0]);
+		editAlphaY = glui->add_edittext( "alpha.y:", GLUI_EDITTEXT_FLOAT );
+		editAlphaY->set_float_val(alpha[1]);
+		editAlphaTheta = glui->add_edittext( "alpha.theta:", GLUI_EDITTEXT_FLOAT );
+		editAlphaTheta->set_float_val(alpha[2]);
 
-	editBetaX = glui->add_edittext( "beta.x:", GLUI_EDITTEXT_FLOAT );
-	editBetaX->set_float_val(beta[0]);
-	editBetaY = glui->add_edittext( "beta.y:", GLUI_EDITTEXT_FLOAT );
-	editBetaY->set_float_val(beta[1]);
-	editBetaTheta = glui->add_edittext( "beta.theta:", GLUI_EDITTEXT_FLOAT );
-	editBetaTheta->set_float_val(beta[2]);
+		editBetaX = glui->add_edittext( "beta.x:", GLUI_EDITTEXT_FLOAT );
+		editBetaX->set_float_val(beta[0]);
+		editBetaY = glui->add_edittext( "beta.y:", GLUI_EDITTEXT_FLOAT );
+		editBetaY->set_float_val(beta[1]);
+		editBetaTheta = glui->add_edittext( "beta.theta:", GLUI_EDITTEXT_FLOAT );
+		editBetaTheta->set_float_val(beta[2]);
 
-	editSeed = glui->add_edittext( "seed:", GLUI_EDITTEXT_INT );
-	editSeed->set_int_val(seed);
+		editSeed = glui->add_edittext( "seed:", GLUI_EDITTEXT_INT );
+		editSeed->set_int_val(seed);
 
-	GLUI_Button* buttonRun = glui->add_button( "Run", -1, (GLUI_Update_CB)run);
-	buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
+		GLUI_Button* buttonRun = glui->add_button( "Run", -1, (GLUI_Update_CB)run);
+		buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
 
 
-	// New column:
-	glui->add_column(true);
+		// New column:
+		glui->add_column(true);
 
-	glui->add_separator();
-	radioQType = glui->add_radiogroup();
-	glui->add_radiobutton_to_group(radioQType, "Random");
-	glui->add_radiobutton_to_group(radioQType, "BFS");
-	glui->add_radiobutton_to_group(radioQType, "Best First");
-	glui->add_separator();
+		glui->add_separator();
+		radioQType = glui->add_radiogroup();
+		glui->add_radiobutton_to_group(radioQType, "Random");
+		glui->add_radiobutton_to_group(radioQType, "BFS");
+		glui->add_radiobutton_to_group(radioQType, "A-star");
+		glui->add_separator();
 
-	radioDrawOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)renderScene);
-	glui->add_radiobutton_to_group(radioDrawOption, "Show Box Boundary");
-	glui->add_radiobutton_to_group(radioDrawOption, "Hide Box Boundary");
-	glui->add_separator();
+		radioDrawOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)renderScene);
+		glui->add_radiobutton_to_group(radioDrawOption, "Show Box Boundary");
+		glui->add_radiobutton_to_group(radioDrawOption, "Hide Box Boundary");
+		glui->add_separator();
 
-	// Quit button
-	glui->add_button( "Quit", 0, (GLUI_Update_CB)exit );
+		// Quit button
+		glui->add_button( "Quit", 0, (GLUI_Update_CB)exit );
 
-	glui->set_main_gfx_window( windowID );
+		glui->set_main_gfx_window( windowID );
+	}
 
 //cout<<"before run\n";
 	// PERFORM THE INITIAL RUN OF THE ALGORITHM
@@ -446,21 +450,26 @@ cout<<"done genEmptyTree \n";
 
 void run()
 {
-	//update from glui live variables
-	fileName = editInput->get_text();
-	inputDir = editDir->get_text();
-	R0 = editRadius->get_float_val();
-	epsilon = editEpsilon->get_float_val();
-	alpha[0] = editAlphaX->get_float_val();
-	alpha[1] = editAlphaY->get_float_val();
-	alpha[2] = editAlphaTheta->get_float_val();	
-	alpha[2] = alpha[2] - floor(alpha[2] / 2) * 2;	
-	beta[0] = editBetaX->get_float_val();
-	beta[1] = editBetaY->get_float_val();
-	beta[2] = editBetaTheta->get_float_val();
-	beta[2] = beta[2] - floor(beta[2] / 2) * 2;	
 
-    QType = radioQType->get_int_val();	
+	if (interactive == 0)
+	{
+		//update from glui live variables
+		fileName = editInput->get_text();
+		inputDir = editDir->get_text();
+		R0 = editRadius->get_float_val();
+		epsilon = editEpsilon->get_float_val();
+		alpha[0] = editAlphaX->get_float_val();
+		alpha[1] = editAlphaY->get_float_val();
+		alpha[2] = editAlphaTheta->get_float_val();	
+		alpha[2] = alpha[2] - floor(alpha[2] / 2) * 2;	
+		beta[0] = editBetaX->get_float_val();
+		beta[1] = editBetaY->get_float_val();
+		beta[2] = editBetaTheta->get_float_val();
+		beta[2] = beta[2] - floor(beta[2] / 2) * 2;	
+
+		QType = radioQType->get_int_val();	
+	}
+
 
 cout<<"inside run:  Qtype= " << QType << "\n";
 
@@ -523,8 +532,10 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 
 	t.stop();
 
-
-	glutPostRedisplay();
+	if (interactive == 0)
+	{
+		glutPostRedisplay();
+	}
 
 	if (!noPath) cout << "          --------------------->>  PATH FOUND !" << endl;
 	else  cout << "          --------------------->>  NO PATH !" << endl;
@@ -740,8 +751,6 @@ void renderScene(void)
 				glColor4f(0.5, 0.5, 0.5, 0.1);
 			}
 			break;
-		case Box::UNKNOWN:
-			std::cerr << "UNKNOWN classification unexpected" << std::endl;
 	}
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBegin(GL_POLYGON);
