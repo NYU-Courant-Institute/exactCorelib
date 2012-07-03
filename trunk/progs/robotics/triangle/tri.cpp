@@ -381,6 +381,8 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 		glui->add_radiobutton_to_group(radioQType, "A-star");
 		glui->add_separator();
 
+		radioQType->set_int_val(QType);
+
 		radioDrawOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)renderScene);
 		glui->add_radiobutton_to_group(radioDrawOption, "Show Box Boundary");
 		glui->add_radiobutton_to_group(radioDrawOption, "Hide Box Boundary");
