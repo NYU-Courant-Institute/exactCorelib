@@ -178,6 +178,7 @@ extern int fileProcessor(string inputfile);
 void drawCircle( float Radius, int numPoints, double x, double y, double r, double g, double b);
 void drawLine();
 void drawTri(Box*);
+void drawTri(Box*, double, double);
 
 //find path using simple heuristic:
 //use distance to beta as key in PQ, see dijkstraQueue
@@ -571,6 +572,21 @@ void drawTri(Box* b)
 	glLineWidth(1.0);
 }
 
+void drawTri(Box* b, double x, double y)
+{
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glColor3f(1, 0, 0);
+	glLineWidth(2);
+	glBegin(GL_TRIANGLES);	
+
+	glVertex2f( R0*cos((b->xi[0]) * PI) + x, R0*sin((b->xi[0]) * PI) + y );
+	glVertex2f( R0*cos((triRobo[0] + b->xi[0]) * PI) + x, R0*sin((triRobo[0] + b->xi[0]) * PI) + y );
+	glVertex2f( R0*cos((triRobo[1] + b->xi[0]) * PI) + x, R0*sin((triRobo[1] + b->xi[0]) * PI) + y );
+
+	glEnd();
+	glLineWidth(1.0);
+}
+
 void drawPath(vector<Box*>& path)
 {
 	glColor3f(0.5, 0, 0.25);
@@ -792,11 +808,11 @@ void renderScene(void)
 
 	if (boxA)
 	{
-		drawTri(boxA);
+		drawTri(boxA, alpha[0], alpha[1]);
 	}
 	if (boxB)
 	{
-		drawTri(boxB);
+		drawTri(boxB, beta[0], beta[1]);
 	}
 
 	if (!noPath)
