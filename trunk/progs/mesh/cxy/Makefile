@@ -1,13 +1,26 @@
-# Makefile for mesh/CXY
+# Makefile for mesh/cxy
 #
-# The point of this code is that we guarantee topology
-# of our curves (if nonsingular).  If the curve looks zagged, it
-# is really a continuous line -- you must zoom into the image to see this.
+# WHAT THIS CODE DOES:
+# 	It is an implementation of the Cxy Algorithm from Lin and Yap 
+# 	(SoCG 2009).
+#
+# 	This code computes a piecewise-linear approximation of an implicitly given
+# 	curve f(x,y)=0 restricted to a specifed box region B.
+#
+# 	Here f is a polynomial, but the theory could accept more general functions.
+# 	We guarantee the correct topology of the output provided
+# 	(1) f has no singularities inside B, and
+# 	(2) f intersects the boundary of B transversally. 
+#
+#  	The curve may look zagged, but it is
+# 	really a continuous line -- you must zoom into the image to see this.
+# 	You can improve its closeness to the actual curve by specifying smaller
+# 	epsilons.
 #
 # (1) COMPILING THE PROGRAM:
-# You can compile the program at various levels (level 1 is fast,
-# but possibly incorrect for difficult cases, level 3 is always
-# correct, but can be very slow).
+#	You can compile the program at various levels (level 1 is fast,
+#	but possibly incorrect for difficult cases, level 3 is always
+#	correct, but can be very slow).
 #
 # To make the program "cxy" at level n, do:
 #
