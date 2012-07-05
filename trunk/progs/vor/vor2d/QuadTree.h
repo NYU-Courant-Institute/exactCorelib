@@ -39,6 +39,7 @@ private:
 			break;
 		case Box::ON:
 			++stuckCount;
+            if (b->height > maxEpsilon) PQ->push(b);
 			break;
 		case Box::IN:
 			++mixCount;
@@ -65,7 +66,8 @@ public:
 		PQ = new seqQueue();
 		assert(PQ);
 
-		pRoot->updateStatus(maxEpsilon);
+		pRoot->updateStatus();
+
 		insertNode(pRoot);
 	}
 
@@ -122,7 +124,7 @@ public:
 
 	                Box::Status backup_nei_status=nei->status;
 	                nei->status=Box::IN; //force to split
-	                bool results=nei->split(epsilon); //ask neighbor to slip
+	                bool results=nei->split(epsilon, maxEpsilon); //ask neighbor to slip
 	                nei->status=backup_nei_status;
 
 	                if(results) //the neighbor did split
@@ -132,7 +134,7 @@ public:
                             Box * nei_kid=nei->pChildren[k];
 
                             //
-                            nei_kid->updateStatus(maxEpsilon);
+                            nei_kid->updateStatus();
                             if(nei_kid->status==Box::IN)
                             {
                                 PQ->push(nei_kid);
@@ -149,7 +151,7 @@ public:
 	            }
 	        }//end for i
 	    }//end while
-	}//balancedPhase
+	}//balancePhase
 
 	//
 	// call each box to construct itself
@@ -204,21 +206,24 @@ public:
 		return getBox(pRoot, x, y);
 	}
 
-//	bool expand (Box* b)
-//	{
-//		if (!b->split(epsilon, maxEpsilon))
-//		{
-//			return false;
-//		}
-//
-//		for (int i = 0; i < 4; ++i)
-//		{
-//			b->pChildren[i]->updateStatus();
-//			insertNode(b->pChildren[i]);
-//		}
-//
-//		return true;
-//	}
+	// Chee: I restored this version of expand...
+	/*
+	bool expand (Box* b)
+	{
+		if (!b->split(epsilon, maxEpsilon))
+		{
+			return false;
+		}
+
+		for (int i = 0; i < 4; ++i)
+		{
+			b->pChildren[i]->updateStatus();
+			insertNode(b->pChildren[i]);
+		}
+
+		return true;
+	}//expand (Box* b)
+    */
 
 	bool expand ()
 	{
@@ -226,12 +231,16 @@ public:
 		{
 			Box* b = PQ->extract();
 			//b might not be a leaf since it could already be split in expand(Box* b), and PQ is not updated there
-			if (b->isLeaf && b->split(epsilon))
+			if (b->isLeaf && b->split(epsilon, maxEpsilon))
 			{
-				assert(b->status == Box::IN);
+
+			    // box status could be equal to ON
+			    //        and box height is greated than maxEps!
+			    assert(b->status == Box::IN || b->status == Box::ON);
+
 				for (int i = 0; i < 4; ++i)
 				{
-					b->pChildren[i]->updateStatus(maxEpsilon);
+					b->pChildren[i]->updateStatus();
 					insertNode(b->pChildren[i]);
 				}			
 				return true;

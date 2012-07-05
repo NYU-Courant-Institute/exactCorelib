@@ -294,7 +294,9 @@ void genEmptyTree()
 	Box* root = new Box(boxWidth/2, boxHeight/2, boxWidth, boxHeight);
 
 	parseConfigFile(root);
-	root->updateStatus(maxEpsilon);
+	//Chee: root->updateStatus(maxEpsilon);
+	root->updateStatus();
+
 
 	if (QT)
 	{
@@ -888,6 +890,16 @@ void renderScenePS()
     drawWallsPS(PS,QT->pRoot);
 
     //draw selected item(s)
+
+    //////////////////////////////////////////////////
+    //Chee: bounding box:
+    PS.setlinewidth(4);
+    Box* r = QT->pRoot;
+    PS.rect(CORE::Todouble(r->x-r->width / 2), CORE::Todouble(r->y - r->height / 2),
+            CORE::Todouble(r->x + r->width / 2), CORE::Todouble(r->y + r->height / 2) );
+    PS.setstrokergb(0,0,0);
+    PS.stroke();
+    //////////////////////////////////////////////////
 
     PS.close();
 

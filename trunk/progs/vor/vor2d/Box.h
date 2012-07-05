@@ -1,6 +1,14 @@
-
 //
 // Box in Quadtree
+//
+//  REMARKS: the use of FLT_MAX and 1e-5 and 1e-10 below need to be
+//      fixed to make this code acceptable to all CORE LEVELS.
+//
+//  Boxex are classified with the enum "Status" type with values
+//   IN: the VOR is inside the box but doesn't intersect the border of the box
+//   OUT: the VOR is outside
+//   ON: the VOR is cross the border
+//   TRICKY: tricky case (see def below)
 //
 // $Id$
 //
@@ -149,23 +157,17 @@ public:
 		rB = sqrt(width*width + height*height)/2;
 		priority = Box::counter; 
 	}
-	
 
 	//
 	// determine the status of the box: UNKNOWN, IN, OUT, ON
 	//
-	void updateStatus(double maxEps)
+
+	void updateStatus()
 	{
 		if (status != UNKNOWN)
 		{
 			return;
 		}
-
-		if(this->height>maxEps)
-		{
-            status = IN; //need more split
-            return;
-        }
 
 		int total_feature_size=corners.size()+walls.size();
 
@@ -545,7 +547,7 @@ public:
 
 	Status getStatus()
 	{
-		//updateStatus();
+		updateStatus();
 		return status;
 	}
 
@@ -553,7 +555,7 @@ public:
 	//
 	// 	--returns false if we fail to split for some reason
 	//
-	bool split(double epsilon)
+	bool split(double epsilon, double maxEpsilon)
 	{
 		if (this->height < epsilon || this->width < epsilon)
 		{
@@ -561,7 +563,18 @@ public:
 		}
 
 
-        if (!this->isLeaf || this->status != IN)
+        //if ((!this->isLeaf || this->status != IN)
+    //
+    // Chee: "status != IN"
+    //
+    //  is equiv. to
+    //
+    //  "status == OUT || status == UNKNOWN || status == ON".
+    //
+    //  But we weaken the ON part, by adding a maxEpsilon criterion:
+    //
+        if ( (!this->isLeaf || this->status == OUT || this->status == UNKNOWN)
+        || (this->status == ON  && this->height < maxEpsilon   && this->width < maxEpsilon) )
         {
             return false;
         }
@@ -1234,67 +1247,75 @@ public:
 	    {
 	        Wall * w1=dynamic_cast<Wall*>(f1);
 	        Wall * w2=dynamic_cast<Wall*>(f2);
-	        //find bisector
-	        pair<Corner*,Corner*> pairs[2];
-	        //find left end-pt
 
-	        //check w1
-	        if( w1->src->x<w1->dst->x ){
-	            pairs[0].first=w1->src;
-	            pairs[1].first=w1->dst;
+	        double z_x=0, z_y=0;   //bisector origin
+	        double bv_x=0, bv_y=0; //bisector vector
+
+	        double a_x=w1->src->x, a_y=w1->src->y;
+	        double b_x=w2->src->x, b_y=w2->src->y;
+	        double v_x=w1->dst->x-a_x, v_y=w1->dst->y-a_y;
+	        double u_x=w2->dst->x-b_x, u_y=w2->dst->y-b_y;
+	        double d_v=sqrt(v_x*v_x+v_y*v_y);
+	        double d_u=sqrt(u_x*u_x+u_y*u_y);
+
+	        if(d_v==0 || d_u==0){
+
+	            cerr<<"! Error: Input contains 0 length edges"<<endl;
+
+	            //just use the mid point....
+	            BoxNode result;
+	            result.x=(n1.x+n2.x)/2;
+	            result.y=(n1.y+n2.y)/2;
+
+	            return result;
 	        }
-	        else if( w1->src->x>w1->dst->x ){
-	            pairs[0].first=w1->dst;
-                pairs[1].first=w1->src;
+
+	        double v_xu_y=v_x*u_y;
+	        double v_yu_x=v_y*u_x;
+	        if(v_xu_y==v_yu_x){ //parallel
+
+	            double w_x=a_x-b_x;
+	            double w_y=a_y-b_y;
+
+	            double a_prime_x=b_x+w_x*u_x/d_u;
+	            double a_prime_y=b_y+w_y*u_y/d_u;
+
+	            z_x=(a_x+a_prime_x)/2;
+	            z_y=(a_y+a_prime_y)/2;
+	            bv_x=u_x;
+	            bv_y=u_y;
 	        }
-	        else{
-	            if( w1->src->y<w1->dst->y ){
-	                pairs[0].first=w1->src;
-	                pairs[1].first=w1->dst;
+	        else{ //not parallel
+	            //find the intersection of lines containing these two walls
+
+	            if(u_x==0){ //u is vertical...
+	                double t=(b_x-a_x)/v_x; //v_x cannot be 0 otherwise both segments are parallel...
+	                z_x=b_x;
+	                z_y=a_y+t*v_y;
 	            }
-	            else {
-	                pairs[0].first=w1->dst;
-	                pairs[1].first=w1->src;
+	            else{ //not vertical
+	                double t=(a_y*u_x-a_x*u_y+b_x*u_y-b_y*u_x)/(v_xu_y-v_yu_x);
+	                z_x=a_x+t*v_x;
+	                z_y=a_y+t*v_y;
 	            }
+
+	            double v_az_x=z_x-a_x; //vector za
+	            double v_az_y=z_y-a_y;
+	            double d_za=sqrt(v_az_x*v_az_x+v_az_y*v_az_y);
+	            double v_bz_x=z_x-b_x; //vector zb
+	            double v_bz_y=z_y-b_y;
+	            double d_zb=sqrt(v_bz_x*v_bz_x+v_bz_y*v_bz_y);
+
+//	            if(d_za ==0 || d_zb==0 )
+//	                int a=0;
+
+	            bv_x=(v_az_x/d_za+v_bz_x/d_zb)/2;
+	            bv_y=(v_az_y/d_za+v_bz_y/d_zb)/2;
 	        }
-
-	        //check w2
-            if( w2->src->x<w2->dst->x ){
-                pairs[0].second=w2->src;
-                pairs[1].second=w2->dst;
-            }
-            else if( w2->src->x>w2->dst->x ){
-                pairs[0].second=w2->dst;
-                pairs[1].second=w2->src;
-            }
-            else{
-                if( w2->src->y<w2->dst->y ){
-                    pairs[0].second=w2->src;
-                    pairs[1].second=w2->dst;
-                }
-                else {
-                    pairs[0].second=w2->dst;
-                    pairs[1].second=w2->src;
-                }
-            }
-
-            //now determine the segment
-            BoxNode e1, e2;
-            e1.x=(pairs[0].first->x+pairs[0].second->x)/2;
-            e1.y=(pairs[0].first->y+pairs[0].second->y)/2;
-            e2.x=(pairs[1].first->x+pairs[1].second->x)/2;
-            e2.y=(pairs[1].first->y+pairs[1].second->y)/2;
-
-            double v_x=e2.x-e1.x;
-            double v_y=e2.y-e1.y;
-            e1.x=e1.x-v_x*1000;
-            e1.y=e1.y-v_y*1000;
-            e2.x=e2.x+v_x*1000;
-            e2.y=e2.y+v_y*1000;
 
             //find intersection...
-            double a[2]={e1.x,e1.y};
-            double b[2]={e2.x,e2.y};
+            double a[2]={z_x+bv_x*1000,z_y+bv_y*1000};
+            double b[2]={z_x-bv_x*1000,z_y-bv_y*1000};
             double c[2]={n1.x,n1.y};
             double d[2]={n2.x,n2.y};
             double p[2];
