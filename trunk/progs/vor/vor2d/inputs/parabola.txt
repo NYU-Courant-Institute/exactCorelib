@@ -1,0 +1,12 @@
+# This is mainly to generate images of a standard parabola:
+
+4
+0 100
+512 100
+256 140
+256 141
+
+
+2
+1 2 
+3 4

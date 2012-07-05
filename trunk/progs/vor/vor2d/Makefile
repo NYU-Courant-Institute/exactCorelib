@@ -437,6 +437,17 @@ eg15a :	vor2d
 		$(c1) $(c2) $(maxEps) \
 		&
 								
+# Eg50: standard parabola
+eg50 parabola:	vor2d
+	@echo "Target 'eg50' or 'line': "
+	./vor2d $(interactive) \
+		0.5 $(pseudo) $(interior) parabola.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtrans) $(ytrans) $(scale) 1 \
+		1 $(c2) 10 \
+		&
+	
 # Eg150: Example with 150 randomly generated, overlapping triangles
 eg150: vor2d
 	./vor2d $(interactive) \
