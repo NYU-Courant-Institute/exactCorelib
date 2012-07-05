@@ -10,7 +10,6 @@ bool Corner::isConvex()
 	return !this->preWall->isRight(c->x, c->y);
 }
 
-
 bool Corner::inZone(Box * box)
 {
     if(box->in(this->x,this->y)) return true;
