@@ -127,7 +127,7 @@ maxEps = 200		# maximum size of a box containing an Voronoi point
 #=================================================
 # Define target files (put all your files here)
 #=================================================
-TARGETS = vor2d
+TARGETS = ./vor2d_lev1 ./vor2d_lev2 ./vor2d_lev3
 SUBDIRS = . 
 SRCS=$(wildcard $(addsuffix /*.cpp,$(SUBDIRS)))
 OBJS=${SRCS:.cpp=.o}
@@ -141,7 +141,7 @@ all: $(TARGETS)
 #       non-interactive mode (i.e., the first argument to "vor2d" is "1").
 #
 test: $(TARGETS)
-	./vor2d 1 \
+	./vor2d_lev1 1 \
 		1 $(pseudo) $(interior) input.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
