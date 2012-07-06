@@ -26,7 +26,7 @@ bool Corner::inZone(Box * box)
     double corner4[2]={x-w2,y+h2};
 
     //check with the Zone of the previous wall
-    short ps1, ps2, ps3, ps4;
+    short ps1=0, ps2=0, ps3=0, ps4=0;
 
     if(preWall!=NULL)
     {
@@ -37,7 +37,7 @@ bool Corner::inZone(Box * box)
     }
 
     //check with the Zone of the next wall
-    short ns1, ns2, ns3, ns4;
+    short ns1=0, ns2=0, ns3=0, ns4=0;
     if(nextWall!=NULL)
     {
         ns1=nextWall->distance_sign(corner1[0],corner1[1]);
