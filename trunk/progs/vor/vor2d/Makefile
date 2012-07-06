@@ -69,8 +69,8 @@
 #=================================================
 #	Core Library Options
 #=================================================
-VAR=Opt
 VAR=Debug
+VAR=Opt
 CORE_PATH=../../..
 include ../Make.options
 

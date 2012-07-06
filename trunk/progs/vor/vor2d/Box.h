@@ -1074,8 +1074,8 @@ public:
             int ul_fc=feature_count(ulf,all_features);
 //            if(mid_features[3]==NULL && llf==ulf) ul_fc--;
 //            if(mid_features[0]==NULL && urf==ulf) ul_fc--;
-//            if(mid_features[3]==ulf) ul_fc--;
-//            if(mid_features[0]==ulf) ul_fc--;
+            if(mid_features[3]==ulf) ul_fc--;
+            if(mid_features[0]==ulf) ul_fc--;
 
             if( ul_fc==1 ){ //unique
                 VorSegment seg;
@@ -1093,8 +1093,8 @@ public:
             int ur_fc=feature_count(urf,all_features);
 //            if(mid_features[0]==NULL && ulf==urf) ur_fc--;
 //            if(mid_features[1]==NULL && lrf==urf) ur_fc--;
-//            if(mid_features[0]==urf) ur_fc--;
-//            if(mid_features[1]==urf) ur_fc--;
+            if(mid_features[0]==urf) ur_fc--;
+            if(mid_features[1]==urf) ur_fc--;
 
             if( ur_fc==1 ){
                 VorSegment seg;
@@ -1112,8 +1112,8 @@ public:
             int lr_fc=feature_count(lrf,all_features);
 //            if(mid_features[1]==NULL && urf==lrf) lr_fc--;
 //            if(mid_features[2]==NULL && llf==lrf) lr_fc--;
-//            if(mid_features[1]==lrf) lr_fc--;
-//            if(mid_features[2]==lrf) lr_fc--;
+            if(mid_features[1]==lrf) lr_fc--;
+            if(mid_features[2]==lrf) lr_fc--;
 
             if( lr_fc==1 ){
                 VorSegment seg;
@@ -1131,8 +1131,8 @@ public:
             int ll_fc=feature_count(llf,all_features);
 //            if(mid_features[2]==NULL && lrf==llf) ll_fc--;
 //            if(mid_features[3]==NULL && ulf==llf) ll_fc--;
-//            if(mid_features[2]==llf) ll_fc--;
-//            if(mid_features[3]==llf) ll_fc--;
+            if(mid_features[2]==llf) ll_fc--;
+            if(mid_features[3]==llf) ll_fc--;
 
             if( ll_fc==1 ){
                 VorSegment seg;
@@ -1147,9 +1147,12 @@ public:
 
             //check north edge
             if(ulf==urf){
-                Feature * l_f=(mid_features[3]!=NULL)?mid_features[3]:llf;
-                Feature * r_f=(mid_features[1]!=NULL)?mid_features[1]:lrf;
-                if( ulf!=l_f &&  urf!=r_f){
+
+                if(ul_fc==2){
+
+                //Feature * l_f=(mid_features[3]!=NULL)?mid_features[3]:llf;
+                //Feature * r_f=(mid_features[1]!=NULL)?mid_features[1]:lrf;
+                //if( ulf!=l_f &&  urf!=r_f){
                     VorSegment seg;
                     seg.q[0]=mids[3].back().x;
                     seg.q[1]=mids[3].back().y;
@@ -1161,9 +1164,10 @@ public:
 
             //check east edge
             if(urf==lrf){
-                Feature * t_f=(mid_features[0]!=NULL)?mid_features[0]:ulf; //top
-                Feature * b_f=(mid_features[2]!=NULL)?mid_features[2]:llf; //bottom
-                if( urf!=t_f &&  lrf!=b_f){
+                if(ur_fc==2){
+//                Feature * t_f=(mid_features[0]!=NULL)?mid_features[0]:ulf; //top
+//                Feature * b_f=(mid_features[2]!=NULL)?mid_features[2]:llf; //bottom
+//                if( urf!=t_f &&  lrf!=b_f){
                     VorSegment seg;
                     seg.p[0]=mids[0].back().x;
                     seg.p[1]=mids[0].back().y;
@@ -1175,9 +1179,10 @@ public:
 
             //check south edge
             if(lrf==llf){
-                Feature * r_f=(mid_features[1]!=NULL)?mid_features[1]:urf; //right
-                Feature * l_f=(mid_features[3]!=NULL)?mid_features[3]:ulf; //left
-                if( lrf!=r_f &&  llf!=l_f){
+                if(lr_fc==2){
+//                Feature * r_f=(mid_features[1]!=NULL)?mid_features[1]:urf; //right
+//                Feature * l_f=(mid_features[3]!=NULL)?mid_features[3]:ulf; //left
+//                if( lrf!=r_f &&  llf!=l_f){
 
                     if(mid_features[1]!=NULL || mid_features[3]!=NULL)
                     {
@@ -1194,9 +1199,12 @@ public:
 
             //check west edge
             if(llf==ulf){
-                Feature * b_f=(mid_features[2]!=NULL)?mid_features[2]:lrf; //bottom
-                Feature * t_f=(mid_features[0]!=NULL)?mid_features[0]:urf; //top
-                if( llf!=b_f &&  ulf!=t_f){
+
+                if(ll_fc==2){
+
+//                Feature * b_f=(mid_features[2]!=NULL)?mid_features[2]:lrf; //bottom
+//                Feature * t_f=(mid_features[0]!=NULL)?mid_features[0]:urf; //top
+//                if( llf!=b_f &&  ulf!=t_f){
 
                     if(mid_features[0]!=NULL || mid_features[2]!=NULL)
                     {
