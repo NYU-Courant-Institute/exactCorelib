@@ -74,6 +74,11 @@ VAR=Debug
 CORE_PATH=../../..
 include ../Make.options
 
+# CHOOSE YOUR CORE_LEVEL 
+LEV=2
+LEV=3
+LEV=1
+
 #=================================================
 # User variables (you can change them in the command line)
 #=================================================
@@ -149,6 +154,29 @@ testall: $(TARGETS)
 
 testa: $(TARGETS)
 	./vor2d 1 &
+
+timing1: ./vor2d_lev1 ./vor2d_lev2 ./vor2d_lev3
+	@echo "Level 1"
+	make eg2 LEV=1
+	@echo "Level 2"
+	make eg2 LEV=2 
+	@echo "Level 3"
+	make eg2 LEV=3
+
+vor2d_lev1:
+	make vclean; make LEV=1
+	mv ./vor2d ./vor2d_lev1
+	ln -s ./vor2d_lev1 ./vor2d
+
+vor2d_lev2:
+	make vclean; make LEV=2
+	mv ./vor2d ./vor2d_lev2
+	ln -s ./vor2d_lev2 ./vor2d
+
+vor2d_lev3:
+	make vclean; make LEV=3
+	mv ./vor2d ./vor2d_lev3
+	ln -s ./vor2d_lev3 ./vor2d
 
 help:
 	@echo "USAGE: Type the following"
@@ -490,7 +518,7 @@ vi:
 	${CXX} $(OBJ_FILES) $(LDFLAGS) $(CORE_LIB) -o $@
 
 .cpp.o:
-	${CXX} $(CXXFLAGS) $(CORE_INC) -c $< -o $@
+	${CXX} $(CXXFLAGS) $(CORE_INC) -DCORE_LEVEL=$(LEV) -c $< -o $@
 	cat $*.d >> Dependencies
 	rm -f $*.d 
 
@@ -522,6 +550,13 @@ params:
 	@echo "    scale = " ${scale}
 	@echo "    closePoly = " ${closePoly}
 	@echo "=============================================="
+
+dump screendump:
+		open -a /Applications/Preview.app $(screendumpfile)
+
+ln link:
+	-rm -f vor2d
+	-ln -s vor2d_lev$(LEV) vor2d
 
 #=================================================
 # Clean object files

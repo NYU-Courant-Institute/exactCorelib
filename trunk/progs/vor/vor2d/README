@@ -90,7 +90,7 @@ CORE LEVELS OF ACCURACY:
 
 	COMPILING IN CORE LEVELS 1,2,3:
 	(1) The CORE LEVEL is controlled by the code in the file Feature.h.
-		So a simple way is to change the CORE_LEVEL in Feature.h.
+		So you can explicitly change the CORE_LEVEL in Feature.h.
 	(2) Better still, call our Makefile with the command line definition
 
 		> make LEV=2 ...the normal arguments...
