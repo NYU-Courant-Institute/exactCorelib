@@ -179,6 +179,81 @@ Face *Euler_Ops::lmef(HalfEdge *he1, HalfEdge *he2,Id f){
   
 }
 
+/*Kill Edge Face*/
+void Euler_Ops::lkef(HalfEdge *he1, HalfEdge *he2){
+
+  /*check whether share an edge*/
+  if (he1->edg!=he2->edg){
+    cout<<"lkef:Two HalfEdges does not share an edge."<<endl;
+    return;
+  }
+  /*Check whether belongs to different faces*/
+  if (he1->wloop->lface==he2->wloop->lface){
+    cout<<"lkefTwo HalfEdges in the same Face!"<<endl;
+    return;
+  }
+
+  /*Connect the half edges*/
+  he1->nxthe->prvhe=he2->prvhe;
+  he1->prvhe->nxthe=he2->nxthe;
+  
+  he2->nxthe->prvhe=he1->prvhe;
+  he2->prvhe->nxthe=he1->nxthe;
+
+  /*Repoint the lead pointers of loops*/
+  he1->wloop->ledg=he1->nxthe;
+
+  cout<<"In KEF"<<endl;
+
+  cout<<"DELETE EDGE"<<endl;
+  delete he1->edg;
+  cout<<"DELETE the face"<<endl;
+  cout<<he2<<endl;
+  cout<<he2->wloop<<endl;
+  cout<<he2->wloop->lface<<endl;
+  delete he2->wloop->lface;
+  cout<<"DELETE HE1"<<endl;
+  delete he1;
+  cout<<"DELETE HE2"<<endl;
+  delete he2;
+}//lkef
+
+int Euler_Ops::kef(Id s,Id f,Id v1,Id v2){
+  
+  Solid *oldsolid;
+  Face *oldface;
+  HalfEdge *he1,*he2;
+  
+  /*Get solid*/
+  oldsolid=getsolid(s);
+  if(oldsolid==NULL){
+    cout<<"kef: solid "<<s<<"not found\n";
+    return(ERROR);
+  }
+
+  /*Get face*/
+  oldface=fface(oldsolid,f);
+  if(oldface==NULL){
+    cout<<"kef: face "<<f<<"not found in solid "<<s<<endl;
+    return(ERROR);
+  }
+
+  /*Get He v1->v2*/
+  he2=fhe(oldface,v1,v2);
+  if(he2==NULL){
+    cout<<"kef: HalfEdge"<<v1<<"->"<<v2<<"not found in face"<<f<<endl;
+    return(ERROR);
+  }
+
+  /**Get He v2->v1*/
+  he1=he2->mate();
+  if(he1==NULL){
+    cout<<"kef: HalfEdge"<<v2<<"->"<<v1<<"not found"<<endl;
+    return (ERROR);
+  }
+
+  lkef(he1,he2);
+}
 /*Get solid*/
 Solid *Euler_Ops::getsolid(Id sn){
   /*cout<<"begin get solid"<<endl;
@@ -246,6 +321,7 @@ HalfEdge *Euler_Ops::fhe(Face *f,Id vn){
  
 
 /*Higher level make edge vertex*/
+/*From he1(v1,v2) in f1 to he2(v1,v3) in f2*/
 int Euler_Ops::mev(Id s,Id f1,Id f2,Id v1,Id v2,Id v3,Id v4,double x,double y,double z){
 
   Solid *oldsolid;
@@ -347,6 +423,7 @@ int Euler_Ops::mev(Id s,Id f1,Id v1,Id v4,double x,double y,double z){
 }
 
 /*Higher level make edge face*/
+/*from he1(v1,v2) in f1 to he2(v3,v4) in f2 ,he1 in the new face*/
 int Euler_Ops::mef(Id s,Id f1,Id v1,Id v2,Id v3,Id v4,Id f2){
                     
   Solid *oldsolid;

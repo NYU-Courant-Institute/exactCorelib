@@ -55,8 +55,10 @@ Vertex::Vertex(){
 Vertex::~Vertex(){
   vector<Vertex *>::iterator it=s->sverts->begin();
   for (;it!=s->sverts->end();it++){
-    if((*it)->vertexno==this->vertexno)
+    if((*it)->vertexno==this->vertexno){
       s->sverts->erase(it);
+      break;
+    }
   }
 }
 /*Print coordinates*/
@@ -142,8 +144,10 @@ Edge::Edge(HalfEdge *half1,HalfEdge *half2,Solid *solid){
 Edge::~Edge(){
   vector<Edge *>::iterator it=s->sedges->begin();
   for (;it!=s->sedges->end();it++){
-    if((*it)==this)
+    if((*it)==this){
       s->sedges->erase(it);
+      break;
+    }
   }
 }
 
@@ -207,11 +211,19 @@ Face::Face(Id faceno,Vec<Loop *> *floops, Loop *flout,Solid * s, double a,double
 }
 
 Face::~Face(){
+  cout << "Now we are in the ~Face"<<endl;
   vector<Face *>::iterator it=fsolid->sfaces->begin();
+  cout << "Now we have the iterator "<<endl;
+  cout << "size ="<< fsolid->sfaces->size()<<endl;
   for (;it!=fsolid->sfaces->end();it++){
-    if((*it)->faceno==this->faceno)
+    cout<<"In the loop"<<endl;
+    cout<<*it<<endl;
+    if((*it)->faceno==this->faceno){
       fsolid->sfaces->erase(it);
+      break;
+    }
   }
+  cout<<"Finished Deleting."<<endl;
 }
 
 void Face::print(){

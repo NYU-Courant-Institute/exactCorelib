@@ -4,6 +4,7 @@
 */
 #include <iostream>
 #include <vector>
+#include <math.h>
 #include <X11/Xlib.h>
 #include <GL/glut.h>
 using namespace std;
@@ -282,6 +283,11 @@ public:
   Solid(vector<Face *> *sfaces, vector<Edge *> *sedges,vector<Vertex *> *sverts,Vec<Solid *> *solids);
   Solid(Id solidno,vector<Face *> *sfaces, vector<Edge *> *sedges,vector<Vertex *> *sverts,Vec<Solid *> *solids);
 
+    
+  
+
+
+
 
   /*void showGL(int argc,char **argv){
    glutInit(&argc,argv);
@@ -299,6 +305,26 @@ public:
     
 
   }*/
+  Vec <double> *center(){
+    double cx=0;
+    double cy=0;
+    double cz=0;
+    for (int i=0;i<sverts->size();i++){
+      Vertex *v=(*sverts)[i];
+      cx+=v->getX();
+      cy+=v->getY();
+      cz+=v->getZ();
+    }
+    cx/=sverts->size();
+    cy/=sverts->size();
+    cz/=sverts->size();
+    
+    Vec<double> *vs=new Vec<double>(3,0);
+    (*vs)[0]=cx;
+    (*vs)[1]=cy;
+    (*vs)[2]=cz;
+    return vs;
+  }
   void print();
   void showInfo(){
     cout<<"Solid Id="<<solidno<<endl;
