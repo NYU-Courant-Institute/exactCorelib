@@ -2,12 +2,17 @@
 /**
  *Author:Kai Cao
 */
+
 #include <iostream>
 #include <vector>
 #include <math.h>
 #include <X11/Xlib.h>
 #include <GL/glut.h>
+#include <GL/glui.h>
+
+
 using namespace std;
+
 typedef double coords[4];
 typedef float matrix[4][4];
 typedef short Id;
@@ -247,7 +252,7 @@ public:
     if (flout==NULL)
       flout=l;
 
-    for (int i=0;i<floops->size();i++)
+    for (unsigned int i=0;i<floops->size();i++)
       if((*floops)[i]==l)
       return;
 
@@ -309,7 +314,7 @@ public:
     double cx=0;
     double cy=0;
     double cz=0;
-    for (int i=0;i<sverts->size();i++){
+    for (unsigned int i=0;i<sverts->size();i++){
       Vertex *v=(*sverts)[i];
       cx+=v->getX();
       cy+=v->getY();
@@ -329,12 +334,12 @@ public:
   void showInfo(){
     cout<<"Solid Id="<<solidno<<endl;
     cout<<"sfaces: size="<<sfaces->size()<<endl;
-    for (int i=0;i<sfaces->size();i++)
+    for (unsigned int i=0;i<sfaces->size();i++)
       cout<<"faceno="<<(*sfaces)[i]->faceno<<endl;
     cout<<endl;
 
     cout<<"sedges: size="<<sedges->size()<<endl;
-    for (int i=0;i<sedges->size();i++){
+    for (unsigned int i=0;i<sedges->size();i++){
       Edge *e=(*sedges)[i];
       e->he1->print();
       e->he2->print();
@@ -343,12 +348,26 @@ public:
     cout<<endl;
 
     cout<<"sverts: size="<<sverts->size()<<endl;
-    for (int i=0;i<sverts->size();i++){
+    for (unsigned int i=0;i<sverts->size();i++){
       Vertex *v=(*sverts)[i];
       v->print();
     }
 
     cout<<endl;
+  }
+
+  /*Radius and Diameter*/
+  double radius(){
+    Vertex *v= (*sedges)[0]->he1->start;
+    double x = v->getX();
+    double y = v->getY();
+    double z = v->getZ();
+
+    Vec<double> *c=center();
+    return sqrt((x-(*c)[0])*(x-(*c)[0])+(y-(*c)[1])*(y-(*c)[1])+(z-(*c)[2])*(z-(*c)[2]));
+  }
+  double diameter(){
+      return radius()*2;
   }
 
 };

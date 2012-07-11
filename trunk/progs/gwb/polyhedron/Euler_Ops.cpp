@@ -114,7 +114,11 @@ Solid *Euler_Ops::mvfs(Id s,Id f,Id v,double x,double y,double z){
   newsolid->print();*/
 
   return(newsolid);
-}
+}//mvfs
+
+void Euler_Ops::kvfs(Id s){
+
+}//kvfs
 
 void Euler_Ops::lmev(HalfEdge *he1,HalfEdge *he2,Id v,double x,double y,double z){
   HalfEdge *he;
@@ -420,7 +424,10 @@ int Euler_Ops::mev(Id s,Id f1,Id v1,Id v4,double x,double y,double z){
   cout<<endl<<endl;*/
 
   lmev(he,he,v4,x,y,z);
-}
+}//mev
+
+int Euler_Ops::kev(Id s,Id f,Id v1,Id v2){
+}//kev
 
 /*Higher level make edge face*/
 /*from he1(v1,v2) in f1 to he2(v3,v4) in f2 ,he1 in the new face*/
@@ -586,11 +593,19 @@ void Euler_Ops::lmekr(HalfEdge *he1,HalfEdge *he2){
     cout<<"In lmekr: he2 is NULL"<<endl;
     return;
   }
-  /*Add Half Edges?*/
+  /*Add Half Edges*/
 
 
 
+}//lmekr
+
+int Euler_Ops::mekr(Id s,Id f,Id v1,Id v2,Id v3,Id v4){
+      return SUCCESS;
 }
+int Euler_Ops::mekr(Id s,Id f,Id v1,Id v3){
+      return SUCCESS;
+}
+
 /*Kill Face Make Ring Hole
 *Suppose Face2 is simple
 *remove Face2 and add outer 
@@ -647,3 +662,20 @@ int Euler_Ops::kfmrh(Id s,Id f1,Id f2){
   return (SUCCESS);
 
 }//kfmrh
+
+/*Make face , kill ring & hole*/
+void Euler_Ops::lmfkrh(Loop *l,Id f){
+}
+int Euler_Ops::mfkrh(Id s,Id f1,Id v1,Id v2,Id f2){
+  return SUCCESS;
+}
+
+/*Move a ring*/
+void Euler_Ops::lringmv(Loop *l,Face *tofac,int inout){
+}
+int Euler_Ops::ringmv(Id s,Id f1,Id f2,Id v1,Id v2,Id inout){
+  return SUCCESS;
+}
+
+
+

@@ -8,7 +8,6 @@ file: README
             to build a geometric model.
 
 (2) Format for *.gwb files:
-
     These are line-oriented ASCII files with
        -- single-line comments indicated by "#" (rest of line is ignored)
        -- continuation character indicated by "/" (the current line is joined
