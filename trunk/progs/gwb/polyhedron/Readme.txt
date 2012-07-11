@@ -45,3 +45,10 @@ The coordinates of the points and the position of the mouse arrow is inversed (x
 3.For Matrix Mode
 window:GL_PROJECTION
 draw:GL_MODEL
+
+
+ --------------------WORK SHOULD BE DONE NEXT--------------------
+ 1. Modify macros in file
+ 2. Modify rotation equation
+ 3. Learn more Makefile
+ 4. Modify openGL show
