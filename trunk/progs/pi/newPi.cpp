@@ -5,7 +5,7 @@ Purpose: To compute Pi using several algorithms:
 		Brent's algorithm and Machin's algorithm
    	     
    Usage:
-	  % newPi [optPrec=54] [method=2]
+	  % newPi [optPrec=54] [method=0]
 
 	where the arguments (all optional) are
 
@@ -13,12 +13,15 @@ Purpose: To compute Pi using several algorithms:
 		Default is [optPrec] = 54 (as in machine double)
 	-- [method] specifies the algorithm:
 
-	 method=1 for machin's algorithm
-	 method=2 for brent's algorithm (dynamically checking if suff.precision)
-	 method=3 for brent's algorithm (static determination of suff.precision)
+	 method=0 for machin's algorithm
+	 method=1 for brent's algorithm (dynamically checking if suff.precision)
+	 method=2 for brent's algorithm (static determination of suff.precision)
 
 	EXAMPLE:  To compute Pi to 2000 digits, set [optPrec] to
 	6644 (= 2000 * log_2(10)).  
+
+	WARNING: Since Core2, Brent's algorithm is no longer correct!
+	Hope to debug this eventually...
 
    Author: Zilin (Oct 2004)
    Since Core Library Version 1.7
@@ -197,10 +200,13 @@ int main( int argc, char *argv[] ) {
   *************************************************************************** */
   int eps = 54; 	// Number of bits of absolute precision desired
 			// default to 54 bits (= machine double precision)
-  int arg = 1; 
+  int algo = 0;		// 0 = machin's algorithm (Default algorithm)
+  			// 1 = brent's algorithm
+			// 2 = brent2
+			// 3 = brent3
 
   if (argc > 1) eps = atoi(argv[1]);	
-  if (argc > 2) arg = atoi(argv[2]);
+  if (argc > 2) algo = atoi(argv[2]);
 
   //int DOvalidate = 1;   // 1st level of checking
 
@@ -212,17 +218,17 @@ int main( int argc, char *argv[] ) {
   BigFloat pi2;
   Timer timer;
   timer.start();
-  if (arg == 0)
+  if (algo == 0)
     pi1 = machin(eps);
-  else if (arg == 1)
+  else if (algo == 1)
     pi2 = brent(eps);
-  else if (arg == 2)
+  else if (algo == 2)
     pi2 = brent2(eps);
   else
     pi2 = brent3(eps);
 
   timer.stop();
-  cout << "Time = " << timer.getSeconds() << endl;
+  cout << "Time = " << timer.getSeconds() << " seconds" << endl;
 
   // Translates eps (in bits) to outputPrec (in digits)
 
@@ -232,7 +238,7 @@ int main( int argc, char *argv[] ) {
 
   // Output of Pi
   cout << "outputPrec = " << outputPrec << endl;
-  if (arg == 0)
+  if (algo == 0)
     cout << " Pi = " << setprecision(outputPrec+1) << pi1 << endl;
   else 
     cout << " Pi = " << setprecision(outputPrec+1) << pi2 << endl;
