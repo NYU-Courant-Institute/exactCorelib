@@ -1058,7 +1058,7 @@ public:
             set<Feature* >::iterator f2=++featureset.begin();
             set<Feature* >::iterator f3=++(++featureset.begin());
 
-            char vvt_code=VVT(*f1,*f2,*f3);
+            char vvt_code=VVT(*f2,*f3,*f1);
 
             //cout<<"code="<<vvt_code<<endl;
 
@@ -1346,12 +1346,13 @@ public:
 
             if(isWall(h)){
                 cout<<"Check the second bisector"<<endl;
+                BoxNode tmp;
                 Wall * w3=dynamic_cast<Wall*>(h);
                 Cx=Ax;
                 Cy=Ay;
                 Dx=Bx;
                 Dy=By;
-                intersection(w1,w3,LL,UL,Wx);
+                intersection(w1,w3,LL,UL,tmp);
             }
         }
         else
@@ -1377,7 +1378,7 @@ public:
             if(d2f<=d2h) all_closer_to_h=false;
             if(d2h<=d2f) all_closer_to_f=false;
 
-            cout<<"N: d2f="<<d2f<<" d2h="<<d2h<<endl;
+            cout<<"N ("<<Nx.x<<","<<Nx.y<<"): d2f="<<d2f<<" d2h="<<d2h<<endl;
         }
 
         if(bEx){ //there is an intersection on east edge
@@ -1386,7 +1387,7 @@ public:
             if(d2f<=d2h) all_closer_to_h=false;
             if(d2h<=d2f) all_closer_to_f=false;
 
-            cout<<"E: d2f="<<d2f<<" d2h="<<d2h<<endl;
+            cout<<"E ("<<Ex.x<<","<<Ex.y<<"): d2f="<<d2f<<" d2h="<<d2h<<endl;
         }
 
         if(bSx){ //there is an intersection on south edge
@@ -1395,7 +1396,7 @@ public:
             if(d2f<=d2h) all_closer_to_h=false;
             if(d2h<=d2f) all_closer_to_f=false;
 
-            cout<<"S: d2f="<<d2f<<" d2h="<<d2h<<endl;
+            cout<<"S ("<<Sx.x<<","<<Sx.y<<"): d2f="<<d2f<<" d2h="<<d2h<<endl;
         }
 
         if(bWx){ //there is an intersection on west edge
@@ -1404,7 +1405,7 @@ public:
             if(d2f<=d2h) all_closer_to_h=false;
             if(d2h<=d2f) all_closer_to_f=false;
 
-            cout<<"W: d2f="<<d2f<<" d2h="<<d2h<<endl;
+            cout<<"W ("<<Wx.x<<","<<Wx.y<<"): d2f="<<d2f<<" d2h="<<d2h<<endl;
         }
 
         if(all_closer_to_h) return 'h'; //all intersections are closer to f3 then to f1/f2
@@ -1574,7 +1575,8 @@ public:
         Bx=b[0];
         By=b[1];
 
-        char code=SegSegInt(a,b,c,d,p);
+        char code=SegSegInt(c,d,a,b,p);
+        cout<<"segseg code="<<code<<endl;
 
         if(code!='0'){
             cross.x=p[0];
@@ -1603,7 +1605,7 @@ public:
         double d[2]={n2.x,n2.y};
         double p[2];
 
-        char code=SegSegInt(a,b,c,d,p);
+        char code=SegSegInt(c,d,a,b,p);
         BoxNode result;
 
         if(code!='0'){

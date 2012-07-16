@@ -149,9 +149,10 @@ lev =
 #=================================================
 # Targets for CORE LIBRARY TESTING
 #=================================================
-default: eg
 
-all: $(ALL_TARGETS)
+all: $(TARGETS)
+
+default: eg
 
 # note: this target is the standard target that Core Library uses
 #       to test its subdirectories.   So the program must run in a
@@ -562,7 +563,7 @@ Dependencies:
 	touch Dependencies
 
 # The following line is causing trouble with levels...
-# include Dependencies
+include Dependencies
 
 #=================================================
 # Misc
