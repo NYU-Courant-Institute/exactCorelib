@@ -415,7 +415,7 @@ std::string toString(PolyNT p, char var){
   // FOR EXTRA ROBUSTNESS,
   // 	we check the possibility that
   //	the zero polynomial is regarded as having degree 0:
-  if (d == 0 && p.getCoeff(0) == 0) return std::string("0"); 
+  if (d == 0 && p.getCoeff(0) == NT(0)) return std::string("0"); 
   int i=d;
   std::ostringstream oss;
   std::string s;

@@ -1,0 +1,13 @@
+README for curves
+
+
+July 2012:
+	Implemented the various methods for IntWrapper to
+	allow polynomial coefficients to be NT = Int.
+
+	However,  tCurves and tBiPoly now cause segment faults.
+	But plotCurves seems to be OK...
+
+	--Chee 
+
+
