@@ -5,8 +5,11 @@
 # (A)	To compile run this demo, you can use this Makefile and just have to type:
 #
 # 	       > make 		-- compiles the main program into "vor2d"
+# 	       			 	and run a default demo interactively
+# 	       > make all	-- compiles vor2d into 3 CORE Levels
+#				   	(vor2d_lev1,  vor2d_lev2, vor2d_lev3)
 # 	       > make test	-- compiles and runs "vor2d" non-interactively
-# 	       			   (this is Core Library's automatic self-test)
+# 	       			 	(this is Core Library's automatic self-test)
 #
 # (B)	But you probably want to try the various interactive demos of this program:
 #
@@ -29,10 +32,12 @@
 #
 #		> make params
 #
-# (C)	You can override any of these values at the command line.
-#	For instance, to change the input file to "input2.txt", you may type:
+# (C)	You can override any of these parameters at the command line.
+#	For instance, to change the input file to "input100.txt", you may type:
 #
-#		> make eg fineName=input2.txt
+#		> make eg fileName=input100.txt
+#
+#	Various input environments are found in the subdirectory called "inputs".
 #
 # (D)	Instead of the target "eg" you can try these targets (alternative
 # 	names are in parenthesis):
@@ -97,7 +102,6 @@ interior = 1		# boolean: 1 or false => do not show interior Vor objects
 inputDir = inputs	# where to find input files
 fileName = input2d.txt	# input environment file
 fileName = input0.txt	# input environment file
-fileName = input2.txt	# input environment file
 fileName = input.txt	# input environment file
 fileName = input100.txt	# input environment file
 fileName = input150.txt	# input environment file
@@ -127,31 +131,53 @@ c2  = 0			# if 0 (false) then do not use c2 filter
 maxEps = 200		# maximum size of a box containing an Voronoi point
 
 #=================================================
-# Define target files (put all your files here)
+# These are generated variables -- do not change
 #=================================================
 TARGETS = vor2d
-#./vor2d_lev1 ./vor2d_lev2 ./vor2d_lev3
+ALL_TARGETS = vor2d_lev3 vor2d_lev2 vor2d_lev1
 SUBDIRS = . 
 SRCS=$(wildcard $(addsuffix /*.cpp,$(SUBDIRS)))
 OBJS=${SRCS:.cpp=.o}
 OBJ_FILES = $(OBJS)
 CXXFLAGS += -MMD
 
-all: $(TARGETS)
+DEPENDS=Box.o fileProcessor.o QuadTree.o Corner.o Wall.o Timer.o
+
+lev = _lev$(LEV)
+lev =
+
+#=================================================
+# Targets for CORE LIBRARY TESTING
+#=================================================
+default: eg
+
+all: $(ALL_TARGETS)
 
 # note: this target is the standard target that Core Library uses
 #       to test its subdirectories.   So the program must run in a
 #       non-interactive mode (i.e., the first argument to "vor2d" is "1").
 #
-test: $(TARGETS)
+test: $(ALL_TARGETS)
 	./vor2d_lev1 1 \
 		1 $(pseudo) $(interior) input.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
 		$(c1) $(c2) $(maxEps)
+	./vor2d_lev2 1 \
+		1 $(pseudo) $(interior) input.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtrans) $(ytrans) $(scale) $(closePoly) \
+		$(c1) $(c2) $(maxEps)
+	./vor2d_lev3 1 \
+		1 $(pseudo) $(interior) input.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtrans) $(ytrans) $(scale) $(closePoly) \
+		$(c1) $(c2) $(maxEps)
 
-testall: $(TARGETS)
+testall: $(ALL_TARGETS)
 	make eg0 interactive=1
 	make eg1 interactive=1
 
@@ -166,22 +192,25 @@ timing1: ./vor2d_lev1 ./vor2d_lev2 ./vor2d_lev3
 	@echo "Level 3"
 	make eg2 LEV=3
 
-vor2d_lev1:
-	make vclean; make LEV=1
-	mv ./vor2d ./vor2d_lev1
-	ln -s ./vor2d_lev1 ./vor2d
+lev1 vor2d_lev1:
+	make vclean; make LEV=1 compile
+	-rm -f vor2d
+	-ln -s vor2d_lev1 vor2d
 
-vor2d_lev2:
-	make vclean; make LEV=2
-	mv ./vor2d ./vor2d_lev2
-	ln -s ./vor2d_lev2 ./vor2d
+lev2 vor2d_lev2:
+	make vclean; make LEV=2 compile
+	-rm -f vor2d
+	-ln -s vor2d_lev2 vor2d
 
-vor2d_lev3:
-	make vclean; make LEV=3
-	mv ./vor2d ./vor2d_lev3
-	ln -s ./vor2d_lev3 ./vor2d
+lev3 vor2d_lev3:
+	make vclean; make LEV=3 compile
+	-rm -f vor2d
+	-ln -s vor2d_lev3 vor2d
 
-vor2d: $(OBJ_FILES)
+compile: vor2d
+	cp ./vor2d ./vor2d_lev$(LEV)
+
+#vor2d: $(OBJ_FILES)
 
 help:
 	@echo "USAGE: Type the following"
@@ -192,7 +221,7 @@ help:
 	@echo "                               to see various examples "
 
 #=================================================
-# Examples of running vor2d program
+# TARGETS with demos (examples) of running vor2d program
 #=================================================
 #
 # This is default, but every option may be changed at command line:
@@ -515,9 +544,11 @@ vi:
 
 #=================================================
 # Rules
+# 	First clean out all suffixes:
+.SUFFIXES:
+#	Then establish the suffixes we want for this file:
+.SUFFIXES: .cpp .o
 #=================================================
-
-.SUFFIXES: .cpp
 
 %: %.o
 	${CXX} $(OBJ_FILES) $(LDFLAGS) $(CORE_LIB) -o $@
@@ -530,7 +561,8 @@ vi:
 Dependencies:
 	touch Dependencies
 
-include Dependencies
+# The following line is causing trouble with levels...
+# include Dependencies
 
 #=================================================
 # Misc
