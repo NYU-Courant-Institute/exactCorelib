@@ -69,8 +69,10 @@
 #=================================================
 #	Core Library Options
 #=================================================
-VAR=Debug
 VAR=Opt
+VAR=Debug
+
+
 CORE_PATH=../../..
 include ../Make.options
 
@@ -127,7 +129,8 @@ maxEps = 200		# maximum size of a box containing an Voronoi point
 #=================================================
 # Define target files (put all your files here)
 #=================================================
-TARGETS = ./vor2d_lev1 ./vor2d_lev2 ./vor2d_lev3
+TARGETS = vor2d
+#./vor2d_lev1 ./vor2d_lev2 ./vor2d_lev3
 SUBDIRS = . 
 SRCS=$(wildcard $(addsuffix /*.cpp,$(SUBDIRS)))
 OBJS=${SRCS:.cpp=.o}
@@ -177,6 +180,8 @@ vor2d_lev3:
 	make vclean; make LEV=3
 	mv ./vor2d ./vor2d_lev3
 	ln -s ./vor2d_lev3 ./vor2d
+
+vor2d: $(OBJ_FILES)
 
 help:
 	@echo "USAGE: Type the following"

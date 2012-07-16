@@ -34,6 +34,11 @@
 extern bool c1; //c1 predicate (true is the new version and false is the old version)
 extern bool c2; //c2 predicate
 
+extern double Ax,Ay;
+extern double Bx,By;
+extern double Cx,Cy;
+extern double Dx,Dy;
+
 //
 // keep these as options
 //
@@ -876,8 +881,8 @@ public:
 #if ACTUAL
 
             BoxNode mid;
-            mid=intersection(ulf,urf,UL,UR);
-            mids[0].push_back(mid);
+            if(intersection(ulf,urf,UL,UR,mid))
+                mids[0].push_back(mid);
 
 #else
             BoxNode mid;
@@ -920,8 +925,8 @@ public:
         {
 #if ACTUAL
             BoxNode mid;
-            mid=intersection(urf,lrf,UR,LR);
-            mids[1].push_back(mid);
+            if(intersection(urf,lrf,UR,LR,mid))
+                mids[1].push_back(mid);
 #else
             BoxNode mid;
             mid.x=x+width/2;
@@ -962,8 +967,8 @@ public:
         {
 #if ACTUAL
             BoxNode mid;
-            mid=intersection(lrf,llf,LR,LL);
-            mids[2].push_back(mid);
+            if( intersection(lrf,llf,LR,LL,mid) )
+                mids[2].push_back(mid);
 #else
             BoxNode mid;
             mid.x=x;
@@ -1003,8 +1008,8 @@ public:
         {
 #if ACTUAL
             BoxNode mid;
-            mid=intersection(llf,ulf,LL,UL);
-            mids[3].push_back(mid);
+            if( intersection(llf,ulf,LL,UL,mid) )
+                mids[3].push_back(mid);
 #else
             BoxNode mid;
             mid.x=x-width/2;
@@ -1039,22 +1044,51 @@ public:
 #endif
         }
 
+        //number of nodes
         int degree=mids[0].size()+mids[1].size()+mids[2].size()+mids[3].size();
 
         if(degree==3)
         {
-            for(int i=0;i<4;i++)
+            //collect those three features...
+            set<Feature* > featureset(all_features.begin(),all_features.end());
+            assert(featureset.size()==3);
+
+            //VVT (Voronoi Vertex Test), check if there is a vor vertex in this box
+            set<Feature* >::iterator f1=featureset.begin();
+            set<Feature* >::iterator f2=++featureset.begin();
+            set<Feature* >::iterator f3=++(++featureset.begin());
+
+            char vvt_code=VVT(*f1,*f2,*f3);
+
+            //cout<<"code="<<vvt_code<<endl;
+
+            //yes, there is a vertex!
+            if(vvt_code=='1') //there can be f b/c there can be degenerated case...
             {
-                for(list<BoxNode>::iterator j=mids[i].begin();j!=mids[i].end();j++)
+                for(int i=0;i<4;i++)
                 {
-                    VorSegment seg;
-                    seg.p[0]=j->x;
-                    seg.p[1]=j->y;
-                    seg.q[0]=x;
-                    seg.q[1]=y;
-                    vor_segments.push_back(seg);
-                }//end for j
-            }//end for i
+                    for(list<BoxNode>::iterator j=mids[i].begin();j!=mids[i].end();j++)
+                    {
+                        VorSegment seg;
+                        seg.p[0]=j->x;
+                        seg.p[1]=j->y;
+                        seg.q[0]=x;
+                        seg.q[1]=y;
+                        vor_segments.push_back(seg);
+                    }//end for j
+                }//end for i
+            }
+            //no vertex in the box, the box corners must be separated by non-intersecting arcs
+            else if(vvt_code=='h'){ //there should be two arcs here separating all 3 features
+                cout<<"vvt_code=h, build two arcs here separating all 3 features"<<endl;
+            }
+            else if(vvt_code=='f'){ //there should be two arcs here separating all 3 features
+                cout<<"vvt_code=f, build one arc here separating"<<endl;
+            }
+            else{
+                cerr<<"! Error: Box::buildVor: vvt_code="<<vvt_code<<endl;
+                //assert(0);
+            }
         }
         else if(degree==2)
         {
@@ -1243,148 +1277,346 @@ public:
 
 	}
 
-	//
-	//compute the intersection between the bisector of (f1,f2) and the line segment connecting n1 and n2
-	//
-	BoxNode intersection(Feature * f1, Feature * f2, const BoxNode& n1, const BoxNode& n2)
+	//check if a feature is wall or corner
+	bool isWall(Feature * f)
 	{
-	    bool is_f1_wall=dynamic_cast<Wall*>(f1)!=NULL;
-	    bool is_f2_wall=dynamic_cast<Wall*>(f2)!=NULL;
+	    return dynamic_cast<Wall*>(f)!=NULL;
+	}
+
+
+	//
+    // Voronoi vertex test
+    //
+    char VVT(Feature * f1, Feature * f2, Feature * f3)
+    {
+        bool is_f1_wall=isWall(f1);
+        bool is_f2_wall=isWall(f2);
+        bool is_f3_wall=isWall(f3);
+
+        if(is_f1_wall==is_f2_wall)
+        {
+            return VVT_ordered(f1,f2,f3);
+        }
+
+        if(is_f1_wall==is_f3_wall)
+        {
+            return VVT_ordered(f1,f3,f2);
+        }
+
+        if(is_f2_wall==is_f3_wall)
+        {
+            return VVT_ordered(f2,f3,f1);
+        }
+
+        //this is impossible to happen
+        return '0';
+    }
+
+    //
+    // f&g are the same type (wall or corner) of feature
+    //
+    // '0': failed, no intersection between the box and the bisection of w1/w2
+    // 'f': failed, all intersection are closer to f/g (the f/g feature in the paper)
+    // 'h': failed, all intersection are closer to h (the h feature in the paper)
+    // '1': passed, there is a vertex in the box
+    //
+    char VVT_ordered(Feature * f, Feature * g, Feature * h)
+    {
+        //
+        Ax=Ay=Bx=By=Cx=Cy=Dx=Dy=0;
+        //
+        BoxNode UL, LL, UR, LR; //Box corners, upper left, lower left, upper right, lower right
+        UL.x=x-width/2; UL.y=y+height/2;
+        LL.x=x-width/2; LL.y=y-height/2;
+        UR.x=x+width/2; UR.y=y+height/2;
+        LR.x=x+width/2; LR.y=y-height/2;
+
+        //
+        BoxNode Nx,Ex,Sx,Wx; //intersections from the North, East, South, West box edges
+        bool bNx=false, bEx=false, bSx=false, bWx=false;
+
+        if(isWall(f))
+        {
+            Wall * w1=dynamic_cast<Wall*>(f);
+            Wall * w2=dynamic_cast<Wall*>(g);
+            bNx=intersection(w1,w2,UL,UR,Nx);
+            bEx=intersection(w1,w2,UR,LR,Ex);
+            bSx=intersection(w1,w2,LR,LL,Sx);
+            bWx=intersection(w1,w2,LL,UL,Wx);
+
+            if(isWall(h)){
+                cout<<"Check the second bisector"<<endl;
+                Wall * w3=dynamic_cast<Wall*>(h);
+                Cx=Ax;
+                Cy=Ay;
+                Dx=Bx;
+                Dy=By;
+                intersection(w1,w3,LL,UL,Wx);
+            }
+        }
+        else
+        {
+            Corner * c1=dynamic_cast<Corner*>(f);
+            Corner * c2=dynamic_cast<Corner*>(g);
+            bNx=intersection(c1,c2,UL,UR,Nx);
+            bEx=intersection(c1,c2,UR,LR,Ex);
+            bSx=intersection(c1,c2,LR,LL,Sx);
+            bWx=intersection(c1,c2,LL,UL,Wx);
+        }
+
+        if(!bNx && !bEx && !bSx && !bWx ){
+            return '0'; //no intersection...
+        }
+
+        bool all_closer_to_f=true; //are all intersections closer to f1/f2
+        bool all_closer_to_h=true; //are all intersections closer to f3
+
+        if(bNx){ //there is an intersection on north edge
+            double d2f=f->distance(Nx.x,Nx.y);
+            double d2h=h->distance(Nx.x,Nx.y);
+            if(d2f<=d2h) all_closer_to_h=false;
+            if(d2h<=d2f) all_closer_to_f=false;
+
+            cout<<"N: d2f="<<d2f<<" d2h="<<d2h<<endl;
+        }
+
+        if(bEx){ //there is an intersection on east edge
+            double d2f=f->distance(Ex.x,Ex.y);
+            double d2h=h->distance(Ex.x,Ex.y);
+            if(d2f<=d2h) all_closer_to_h=false;
+            if(d2h<=d2f) all_closer_to_f=false;
+
+            cout<<"E: d2f="<<d2f<<" d2h="<<d2h<<endl;
+        }
+
+        if(bSx){ //there is an intersection on south edge
+            double d2f=f->distance(Sx.x,Sx.y);
+            double d2h=h->distance(Sx.x,Sx.y);
+            if(d2f<=d2h) all_closer_to_h=false;
+            if(d2h<=d2f) all_closer_to_f=false;
+
+            cout<<"S: d2f="<<d2f<<" d2h="<<d2h<<endl;
+        }
+
+        if(bWx){ //there is an intersection on west edge
+            double d2f=f->distance(Wx.x,Wx.y);
+            double d2h=h->distance(Wx.x,Wx.y);
+            if(d2f<=d2h) all_closer_to_h=false;
+            if(d2h<=d2f) all_closer_to_f=false;
+
+            cout<<"W: d2f="<<d2f<<" d2h="<<d2h<<endl;
+        }
+
+        if(all_closer_to_h) return 'h'; //all intersections are closer to f3 then to f1/f2
+        if(all_closer_to_f) return 'f'; //all intersections are closer to f1&f2 then to f3
+
+        return '1';
+    }
+
+    // compute the bisector of w1 and w2
+    // (bo_x,bo_y) //bisector origin
+    // (bv_x,bv_y) //bisector vector, not normalized
+    void getBisector(Wall * w1, Wall * w2, double& bo_x, double& bo_y, double& bv_x, double& bv_y)
+    {
+        double a_x=w1->src->x, a_y=w1->src->y;
+        double b_x=w2->src->x, b_y=w2->src->y;
+        double v_x=w1->dst->x-a_x, v_y=w1->dst->y-a_y; //vector along w1
+        double u_x=w2->dst->x-b_x, u_y=w2->dst->y-b_y; //vector along w2
+        double d_v=sqrt(v_x*v_x+v_y*v_y);
+        double d_u=sqrt(u_x*u_x+u_y*u_y);
+
+        if(d_v==0 || d_u==0)
+        {
+            cerr<<"! Error: getWallBisector: Input contains 0 length walls"<<endl;
+            assert(0);
+        }
+
+        double v_xu_y=v_x*u_y;
+        double v_yu_x=v_y*u_x;
+
+        if(v_xu_y==v_yu_x) //parallel
+        {
+
+            double w_x=a_x-b_x;
+            double w_y=a_y-b_y;
+
+            double a_prime_x=b_x+w_x*u_x/d_u;
+            double a_prime_y=b_y+w_y*u_y/d_u;
+
+            bo_x=(a_x+a_prime_x)/2;
+            bo_y=(a_y+a_prime_y)/2;
+            bv_x=u_x;
+            bv_y=u_y;
+
+        }
+        else //not parallel
+        {
+            //find the intersection of lines containing these two walls
+
+            if(u_x==0){ //u is vertical...
+                double t=(b_x-a_x)/v_x; //v_x cannot be 0 otherwise both segments are parallel...
+                bo_x=b_x;
+                bo_y=a_y+t*v_y;
+            }
+            else{ //not vertical
+                double t=(a_y*u_x-a_x*u_y+b_x*u_y-b_y*u_x)/(v_xu_y-v_yu_x);
+                bo_x=a_x+t*v_x;
+                bo_y=a_y+t*v_y;
+            }
+
+            /*
+            double v_az_x=0, v_az_y=0, d_za=0;
+            if(bo_x!=w1->src->x||bo_y!=w1->src->y)
+            {
+                v_az_x=bo_x-w1->src->x; //vector za
+                v_az_y=bo_y-w1->src->y;
+            }
+            else
+            {
+                v_az_x=bo_x-w1->dst->x; //vector za
+                v_az_y=bo_y-w1->dst->y;
+            }
+
+            double v_bz_x=0, v_bz_y=0, d_zb=0;
+
+            if(bo_x!=w2->src->x||bo_y!=w2->src->y)
+            {
+                v_bz_x=bo_x-w2->src->x; //vector zb
+                v_bz_y=bo_y-w2->src->y;
+            }
+            else
+            {
+                v_bz_x=bo_x-w2->dst->x; //vector zb
+                v_bz_y=bo_y-w2->dst->y;
+            }
+
+            d_za=sqrt(v_az_x*v_az_x+v_az_y*v_az_y);
+            d_zb=sqrt(v_bz_x*v_bz_x+v_bz_y*v_bz_y);
+            */
+
+            bv_x=(u_y/d_u+v_y/d_v)/2; //(v_az_x/d_za+v_bz_x/d_zb)/2;
+            bv_y=-(u_x/d_u+v_x/d_v)/2; //(v_az_y/d_za+v_bz_y/d_zb)/2;
+        }
+    }
+
+    // compute the bisector of w1 and w2
+    // (bo_x,bo_y) //bisector origin
+    // (bv_x,bv_y) //bisector vector, not normalized
+    void getBisector(Corner * c1, Corner * c2, double& bo_x, double& bo_y, double& bv_x, double& bv_y)
+    {
+        BoxNode mid;
+        bo_x = (c1->x+c2->x)/2;
+        bo_y = (c1->y+c2->y)/2;
+        double v_x=c1->x-c2->x;
+        double v_y=c1->y-c2->y;
+        bv_x=v_y;
+        bv_y=-v_x;
+    }
+
+	//
+	// compute the intersection between the bisector of (f1,f2) and the line segment connecting n1 and n2
+    //
+    // the return value is true if there is an intersection between the bisector of f1/f2 and the
+    // segment connecting n1 and n2
+    //
+    // "cross" contains the intersection if the return is true
+	//
+	bool intersection(Feature * f1, Feature * f2, const BoxNode& n1, const BoxNode& n2, BoxNode& cross)
+	{
+	    bool is_f1_wall=isWall(f1);
+	    bool is_f2_wall=isWall(f2);
 
 	    if( is_f1_wall && is_f2_wall) //two walls
 	    {
 	        Wall * w1=dynamic_cast<Wall*>(f1);
 	        Wall * w2=dynamic_cast<Wall*>(f2);
-
-	        double z_x=0, z_y=0;   //bisector origin
-	        double bv_x=0, bv_y=0; //bisector vector
-
-	        double a_x=w1->src->x, a_y=w1->src->y;
-	        double b_x=w2->src->x, b_y=w2->src->y;
-	        double v_x=w1->dst->x-a_x, v_y=w1->dst->y-a_y;
-	        double u_x=w2->dst->x-b_x, u_y=w2->dst->y-b_y;
-	        double d_v=sqrt(v_x*v_x+v_y*v_y);
-	        double d_u=sqrt(u_x*u_x+u_y*u_y);
-
-	        if(d_v==0 || d_u==0){
-
-	            cerr<<"! Error: Input contains 0 length edges"<<endl;
-
-	            //just use the mid point....
-	            BoxNode result;
-	            result.x=(n1.x+n2.x)/2;
-	            result.y=(n1.y+n2.y)/2;
-
-	            return result;
-	        }
-
-	        double v_xu_y=v_x*u_y;
-	        double v_yu_x=v_y*u_x;
-	        if(v_xu_y==v_yu_x){ //parallel
-
-	            double w_x=a_x-b_x;
-	            double w_y=a_y-b_y;
-
-	            double a_prime_x=b_x+w_x*u_x/d_u;
-	            double a_prime_y=b_y+w_y*u_y/d_u;
-
-	            z_x=(a_x+a_prime_x)/2;
-	            z_y=(a_y+a_prime_y)/2;
-	            bv_x=u_x;
-	            bv_y=u_y;
-	        }
-	        else{ //not parallel
-	            //find the intersection of lines containing these two walls
-
-	            if(u_x==0){ //u is vertical...
-	                double t=(b_x-a_x)/v_x; //v_x cannot be 0 otherwise both segments are parallel...
-	                z_x=b_x;
-	                z_y=a_y+t*v_y;
-	            }
-	            else{ //not vertical
-	                double t=(a_y*u_x-a_x*u_y+b_x*u_y-b_y*u_x)/(v_xu_y-v_yu_x);
-	                z_x=a_x+t*v_x;
-	                z_y=a_y+t*v_y;
-	            }
-
-	            double v_az_x=z_x-a_x; //vector za
-	            double v_az_y=z_y-a_y;
-	            double d_za=sqrt(v_az_x*v_az_x+v_az_y*v_az_y);
-	            double v_bz_x=z_x-b_x; //vector zb
-	            double v_bz_y=z_y-b_y;
-	            double d_zb=sqrt(v_bz_x*v_bz_x+v_bz_y*v_bz_y);
-
-//	            if(d_za ==0 || d_zb==0 )
-//	                int a=0;
-
-	            bv_x=(v_az_x/d_za+v_bz_x/d_zb)/2;
-	            bv_y=(v_az_y/d_za+v_bz_y/d_zb)/2;
-	        }
-
-            //find intersection...
-            double a[2]={z_x+bv_x*1000,z_y+bv_y*1000};
-            double b[2]={z_x-bv_x*1000,z_y-bv_y*1000};
-            double c[2]={n1.x,n1.y};
-            double d[2]={n2.x,n2.y};
-            double p[2];
-
-            char code=SegSegInt(a,b,c,d,p);
-            BoxNode result;
-
-            if(code!='0'){
-                result.x=p[0];
-                result.y=p[1];
-            }
-            else{
-                result.x=(n1.x+n2.x)/2;
-                result.y=(n1.y+n2.y)/2;
-            }
-
-            return result;
+	        return intersection(w1,w2,n1,n2,cross);
 	    }
 	    else if( is_f1_wall==false && is_f2_wall==false) //two corners
 	    {
 	        Corner * c1=dynamic_cast<Corner*>(f1);
 	        Corner * c2=dynamic_cast<Corner*>(f2);
-	        BoxNode mid;
-	        mid.x = (c1->x+c2->x)/2;
-	        mid.y = (c1->y+c2->y)/2;
-            double v_x=c1->x-c2->x;
-            double v_y=c1->y-c2->y;
-            double n_x=v_y*1000;
-            double n_y=-v_x*1000;
-
-            //find intersection...
-            double a[2]={mid.x+n_x,mid.y+n_y};
-            double b[2]={mid.x-n_x,mid.y-n_y};
-            double c[2]={n1.x,n1.y};
-            double d[2]={n2.x,n2.y};
-            double p[2];
-
-            char code=SegSegInt(a,b,c,d,p);
-            BoxNode result;
-
-            if(code!='0'){
-                result.x=p[0];
-                result.y=p[1];
-            }
-            else{
-                result.x=(n1.x+n2.x)/2;
-                result.y=(n1.y+n2.y)/2;
-            }
-
-            return result;
+	        return intersection(c1,c2,n1,n2,cross);
 	    }
 	    else{
 	        //tricky case
-
-            BoxNode result;
-            result.x=(n1.x+n2.x)/2;
-            result.y=(n1.y+n2.y)/2;
-
-            return result;
+            cross.x=(n1.x+n2.x)/2;
+            cross.y=(n1.y+n2.y)/2;
+            return false;
 	    }
 	    //done
 	}
+
+
+
+	bool intersection(Wall * w1, Wall * w2, const BoxNode& n1, const BoxNode& n2, BoxNode& cross)
+	{
+        double z_x=0, z_y=0;   //bisector origin
+        double bv_x=0, bv_y=0; //bisector vector
+
+        //find bisector
+        getBisector(w1,w2,z_x,z_y,bv_x,bv_y);
+
+        if(bv_x!=bv_x){
+            cout<<"FOUND NAN"<<endl;
+            getBisector(w1,w2,z_x,z_y,bv_x,bv_y);
+        }
+
+        //find intersection...
+        double a[2]={z_x+bv_x*100000,z_y+bv_y*100000};
+        double b[2]={z_x-bv_x*100000,z_y-bv_y*100000};
+        double c[2]={n1.x,n1.y};
+        double d[2]={n2.x,n2.y};
+        double p[2];
+
+        Ax=a[0];
+        Ay=a[1];
+        Bx=b[0];
+        By=b[1];
+
+        char code=SegSegInt(a,b,c,d,p);
+
+        if(code!='0'){
+            cross.x=p[0];
+            cross.y=p[1];
+            return true;
+        }
+
+        //!!
+        cross.x=(n1.x+n2.x)/2;
+        cross.y=(n1.y+n2.y)/2;
+
+        return false;
+	}
+
+    bool intersection(Corner * c1, Corner * c2, const BoxNode& n1, const BoxNode& n2, BoxNode& cross)
+    {
+        //bisector
+        BoxNode mid;
+        double n_x=0, n_y=0;
+        getBisector(c1,c2,mid.x,mid.y,n_x,n_y);
+
+        //find intersection...
+        double a[2]={mid.x+n_x*100000,mid.y+n_y*100000};
+        double b[2]={mid.x-n_x*100000,mid.y-n_y*100000};
+        double c[2]={n1.x,n1.y};
+        double d[2]={n2.x,n2.y};
+        double p[2];
+
+        char code=SegSegInt(a,b,c,d,p);
+        BoxNode result;
+
+        if(code!='0'){
+            cross.x=p[0];
+            cross.y=p[1];
+            return true;
+        }
+
+        //!!
+        result.x=(n1.x+n2.x)/2;
+        result.y=(n1.y+n2.y)/2;
+
+        return false;
+    }
 
 };//class Box

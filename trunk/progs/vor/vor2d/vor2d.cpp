@@ -425,6 +425,11 @@ void drawQuad(Box* b)
 	glLineWidth(1);
 }
 
+double Ax,Ay;
+double Bx,By;
+double Cx,Cy;
+double Dx,Dy;
+
 void drawQuad_selected(list<Box*> boxes)
 {
     for(list<Box*>::iterator i=boxes.begin();i!=boxes.end();i++)
@@ -495,6 +500,17 @@ void drawQuad_selected(list<Box*> boxes)
     }
     //------------------------
 
+    glLineWidth(3);
+    glBegin(GL_LINES);
+    glColor3d(1,1,0);
+    glVertex2f_core(Ax,Ay);
+    glVertex2f_core(Bx,By);
+
+    glColor3d(0,1,0);
+    glVertex2f_core(Cx,Cy);
+    glVertex2f_core(Dx,Dy);
+
+    glEnd();
 
     glLineWidth(1);
     for(CIT i=b->corners.begin();i!=b->corners.end();i++){

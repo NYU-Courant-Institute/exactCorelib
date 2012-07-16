@@ -21,6 +21,7 @@
 #include "CORE.h"
 
 class Set; //defined in "UnionFind.h"
+class Box; //defined in "Box.h"
 
 class Feature
 {
@@ -42,12 +43,23 @@ public:
     */
 
     Feature() { pSet=NULL; }
-    ~Feature(){}
+    virtual ~Feature(){}
 
-    void static showLevel(){
-	std::cout << "Core Level = " << LEVEL << std::endl;
+    void static showLevel()
+    {
+        std::cout << "Core Level = " << LEVEL << std::endl;
     }
 
-    virtual void dummy(){}
+    //
+    virtual double distance(double x2, double y2)=0;
+
+    //
+    virtual bool inZone(double x, double y)=0;
+    virtual bool inZone_star(double x, double y)=0;
+
+    //
+    virtual bool inZone(Box * b)=0;
+    virtual bool inZone_star(Box * b)=0;
+
 	Set* pSet;   //?
 };

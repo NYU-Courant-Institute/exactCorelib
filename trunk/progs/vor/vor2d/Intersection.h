@@ -127,8 +127,6 @@ inline char SegSegInt( const double a[2], const double b[2], const double c[2], 
   else if( fabs(1-t)<SMALLNUMBER) t=1;
 
   //decide the code
-//   if(s==0 || s==1 || t==0 || t==1)
-//        code = 'v';
   if( (0.0<s) && (s< 1.0) && (0.0< t) && (t< 1.0) )
 	   code = '1';
   else if ( (0.0>s) || (s>1.0) || (0.0>t) || (t>1.0) )
@@ -154,17 +152,6 @@ inline char SegSegInt( const double a[2], const double b[2], const double c[2], 
 		 assert(false);
 	 }
   }
-
-  //double check...
-//   if(code=='v'){
-//       double q[2];
-//       q[0] = (c[0] + t*(d[0]-c[0]));
-//       q[1] = (c[1] + t*(d[1]-c[1]));
-//       if(AlmostEqual(p,q)==false){
-//           //cout<<"SHOOT: "<<code<<" points:"<<p[0]<<","<<p[1]<<"  "<<q[0]<<","<<q[1]<<endl;
-//           return '0';
-//       }
-//   }
 
   return code;
 }
