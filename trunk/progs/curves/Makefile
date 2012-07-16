@@ -44,6 +44,7 @@ verbose=$(v)
 
 # core level l (l=1,2,3,4)
 l=1
+l=3
 
 lev=_${l}
 

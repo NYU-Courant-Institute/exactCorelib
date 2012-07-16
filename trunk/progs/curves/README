@@ -6,8 +6,11 @@ July 2012:
 	allow polynomial coefficients to be NT = Int.
 
 	However,  tCurves and tBiPoly now cause segment faults.
-	But plotCurves seems to be OK...
 
+	In tCurves.cpp, we see that the construction of the curve
+		caused segment fault.
+
+	RETURN TO THIS...
 	--Chee 
 
 

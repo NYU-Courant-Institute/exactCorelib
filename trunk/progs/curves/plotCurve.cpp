@@ -47,8 +47,8 @@
 #endif
 
 #include "CORE/CORE.h"
-// #include "localCurves.h"	// this is the local version of Curves.h
-#include "CORE/poly/Curves.h"	// this is the official version of Curves.h
+#include "localCurves.h"	// this is the local version of Curves.h
+//#include "CORE/poly/Curves.h"	// this is the official version of Curves.h
 
 using namespace std;
 
@@ -124,8 +124,12 @@ int main(int argc, char* argv[])
     cout.precision(prec/3); 		// convert prec bits into prec/3 digits
 
    // CONSTRUCT EQUATION OF CURVE
+   
 
+cout<< "DEBUG: before segment fault" << endl;
    Curve<NT> CC(curveDef);
+cout<< "DEBUG: after segment fault" << endl;
+
    setParams(eps,xmin,ymin,xmax,ymax);
    // PLOTTING CURVES
    cout << "==========================" << endl;
