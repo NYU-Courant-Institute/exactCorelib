@@ -82,7 +82,88 @@ class IntWrapper {
  public:
   int i_val;
   operator int() { return i_val; }
-};
+
+  // Chee (July 2012): basic datatype conversions,
+  // 		copied from DoubleWrapper (needed by tBiPoly.cpp):
+  //		==================================================
+  // Conversion from fundamental data types, the default C++
+  // promotions / demotions occur.
+  IntWrapper() : i_val(0) { }
+  IntWrapper(const double &rhs) : i_val(rhs) { }
+  IntWrapper(const int rhs) : i_val(rhs) { }
+  IntWrapper(const long rhs) : i_val(rhs) { }
+  IntWrapper(const LongWrapper &w) : i_val(w.l_val) { }
+  // 		IntWrapper(const DoubleWrapper &d) : i_val(d.d_val) { }
+  // Duplication of Promote.h: (?)
+  IntWrapper(const char* str) : i_val(atoi(str)) {}
+
+  // Chee (July 2012): *= operator,
+  // 		copied from DoubleWrapper (needed by tBiPoly.cpp):
+  //		==================================================
+  /// compound assignment operator <tt>*=</tt>
+  //		IntWrapper& operator*=(const IntWrapper& rhs)
+  //		{  i_val *= rhs.d_val; return *this; }
+  /// compound assignment operator <tt>*=</tt>
+  IntWrapper& operator*=(const int rhs)
+  {  i_val *= rhs; return *this; }
+  /// compound assignment operator <tt>*=</tt>
+  IntWrapper& operator*=(const unsigned int rhs)
+  {  i_val *= rhs; return *this;  }
+  /// compound assignment operator <tt>*=</tt>
+  IntWrapper& operator*=(const long rhs)
+  {  i_val *= rhs; return *this;  }
+  /// compound assignment operator <tt>*=</tt>
+  IntWrapper& operator*=(const unsigned long rhs)
+  {  i_val *= rhs; return *this;  }
+  /// compound assignment operator <tt>*=</tt>
+  IntWrapper& operator*=(const double rhs)
+  {  i_val *= rhs; return *this;  }
+  
+  // Chee (July 2012): += operator,
+  // 		modeled after *= operator of IntWrapper above (needed by Poly.h):
+  //		==================================================
+  /// compound assignment operator <tt>+=</tt>
+  //		IntWrapper& operator+=(const IntWrapper& rhs)
+  //		{  i_val += rhs.d_val; return *this; }
+  /// compound assignment operator <tt>+=</tt>
+  IntWrapper& operator+=(const int rhs)
+  {  i_val += rhs; return *this; }
+  /// compound assignment operator <tt>+=</tt>
+  IntWrapper& operator+=(const unsigned int rhs)
+  {  i_val += rhs; return *this;  }
+  /// compound assignment operator <tt>+=</tt>
+  IntWrapper& operator+=(const long rhs)
+  {  i_val += rhs; return *this;  }
+  /// compound assignment operator <tt>+=</tt>
+  IntWrapper& operator+=(const unsigned long rhs)
+  {  i_val += rhs; return *this;  }
+  /// compound assignment operator <tt>+=</tt>
+  IntWrapper& operator+=(const double rhs)
+  {  i_val += rhs; return *this;  }
+
+  // Chee (July 2012): -= operator,
+  // 		modeled after += operator of IntWrapper above (needed by Poly.h):
+  //		==================================================
+  /// compound assignment operator <tt>-=</tt>
+  //		IntWrapper& operator-=(const IntWrapper& rhs)
+  //		{  i_val -= rhs.d_val; return *this; }
+  /// compound assignment operator <tt>-=</tt>
+  IntWrapper& operator-=(const int rhs)
+  {  i_val -= rhs; return *this; }
+  /// compound assignment operator <tt>-=</tt>
+  IntWrapper& operator-=(const unsigned int rhs)
+  {  i_val -= rhs; return *this;  }
+  /// compound assignment operator <tt>-=</tt>
+  IntWrapper& operator-=(const long rhs)
+  {  i_val -= rhs; return *this;  }
+  /// compound assignment operator <tt>-=</tt>
+  IntWrapper& operator-=(const unsigned long rhs)
+  {  i_val -= rhs; return *this;  }
+  /// compound assignment operator <tt>-=</tt>
+  IntWrapper& operator-=(const double rhs)
+  {  i_val -= rhs; return *this;  }
+
+};//IntWrapper Class
 
 /// power(i,p)
 ///    --power function for IntWrapper
@@ -91,6 +172,151 @@ inline IntWrapper power(const IntWrapper &i, unsigned long p) {
   ret.i_val = (int)::pow((double)i.i_val, (double)p);  // calls pow of std math library
   return ret;
 }
+
+  // Chee (July 2012): != operator,
+  // 		modeled after == operator for IntWrapper (needed by inc/CORE/poly/Poly.h):
+  //		==================================================
+  /// \addtogroup IntWrapperComparisonOperators
+  //@{
+  /// IntWrapper  != IntWrapper
+  inline bool operator!=(const IntWrapper & x, const IntWrapper & y)
+  { return x.i_val != y.i_val; }
+  /// IntWrapper  != int
+  inline bool operator!=(const IntWrapper & x, int y)
+  { return x.i_val != y; }
+  /// int != IntWrapper
+  inline bool operator!=(int x, const IntWrapper & y)
+  { return x != y.i_val; }
+  /// IntWrapper  != unsigned int	(WARNING...)
+  //		inline bool operator!=(const IntWrapper & x, unsigned int y)
+  //		{ return x.i_val != y; }
+  /// unsigned int != IntWrapper	(WARNING...)
+  //		inline bool operator!=(unsigned int x, const IntWrapper & y)
+  //		{ return x != y.i_val;; }
+  /// IntWrapper  != long
+  inline bool operator!=(const IntWrapper & x, long y)
+  { return x.i_val != y; }
+  /// long != IntWrapper
+  inline bool operator!=(long x, const IntWrapper & y)
+  { return x != y.i_val; }
+  /// IntWrapper  != unsigned long	(WARNING...)
+  //		inline bool operator!=(const IntWrapper & x, unsigned long y)
+  //		{ return x.i_val != y; }
+  /// unsigned long != IntWrapper	(WARNING...)
+  //		inline bool operator!=(unsigned long x, const IntWrapper & y)
+  //		{ return x != y.i_val;; }
+  /// DoubleWrapper  != double
+  //		inline bool operator!=(const DoubleWrapper & x, double y)
+  //		{ return x.d_val != y; }
+  /// double != DoubleWrapper
+  //		inline bool operator!=(double x, const DoubleWrapper & y)
+  //		{ return x != y.d_val; }
+  /// IntWrapper  != LongWrapper
+  inline bool operator!=(const IntWrapper & x, const LongWrapper& y)
+  { return x.i_val != y.l_val; }
+  /// LongWrapper != IntWrapper
+  inline bool operator!=(const LongWrapper& x, const IntWrapper & y)
+  { return x.l_val != y.i_val; }
+
+  //@}
+ 
+  // Chee (July 2012): == operator,
+  // 		copied from DoubleWrapper (needed by tBiPoly.cpp):
+  //		==================================================
+  /// \addtogroup IntWrapperComparisonOperators
+  //@{
+  /// IntWrapper  == IntWrapper
+  inline bool operator==(const IntWrapper & x, const IntWrapper & y)
+  { return x.i_val == y.i_val; }
+  /// IntWrapper  == int
+  inline bool operator==(const IntWrapper & x, int y)
+  { return x.i_val == y; }
+  /// int == IntWrapper
+  inline bool operator==(int x, const IntWrapper & y)
+  { return x == y.i_val; }
+  /// IntWrapper  == unsigned int	(WARNING...)
+  //		inline bool operator==(const IntWrapper & x, unsigned int y)
+  //		{ return x.i_val == y; }
+  /// unsigned int == IntWrapper	(WARNING...)
+  //		inline bool operator==(unsigned int x, const IntWrapper & y)
+  //		{ return x == y.i_val;; }
+  /// IntWrapper  == long
+  inline bool operator==(const IntWrapper & x, long y)
+  { return x.i_val == y; }
+  /// long == IntWrapper
+  inline bool operator==(long x, const IntWrapper & y)
+  { return x == y.i_val; }
+  /// IntWrapper  == unsigned long	(WARNING...)
+  //		inline bool operator==(const IntWrapper & x, unsigned long y)
+  //		{ return x.i_val == y; }
+  /// unsigned long == IntWrapper	(WARNING...)
+  //		inline bool operator==(unsigned long x, const IntWrapper & y)
+  //		{ return x == y.i_val;; }
+  /// DoubleWrapper  == double
+  //		inline bool operator==(const DoubleWrapper & x, double y)
+  //		{ return x.d_val == y; }
+  /// double == DoubleWrapper
+  //		inline bool operator==(double x, const DoubleWrapper & y)
+  //		{ return x == y.d_val; }
+  /// IntWrapper  == LongWrapper
+  inline bool operator==(const IntWrapper & x, const LongWrapper& y)
+  { return x.i_val == y.l_val; }
+  /// LongWrapper == IntWrapper
+  inline bool operator==(const LongWrapper& x, const IntWrapper & y)
+  { return x.l_val == y.i_val; }
+
+  //@}
+  
+/* */
+// Chee (July 2012): modeling after DoubleWrapper ArithmeticOperators
+//
+/// \addtogroup IntWrapper ArithmeticOperators
+//@{
+/// IntWrapper * IntWrapper
+
+/// IntWrapper * IntWrapper
+inline IntWrapper operator*(const IntWrapper& x, const IntWrapper& y)
+{ IntWrapper r; r.i_val = x.i_val * y.i_val;  return r; }
+/// IntWrapper * int
+inline IntWrapper operator*(const IntWrapper& x, const int y)
+{ IntWrapper r; r.i_val = x.i_val * y;  return r; }
+/// int * IntWrapper
+inline IntWrapper operator*(const int x, const IntWrapper& y)
+{ IntWrapper r; r.i_val = x * y.i_val;  return r; }
+/// IntWrapper * unsigned int
+inline IntWrapper operator*(const IntWrapper& x, const unsigned int y)
+{ IntWrapper r; r.i_val = x.i_val * y;  return r; }
+/// unsigned int * IntWrapper
+inline IntWrapper operator*(const unsigned int x, const IntWrapper& y)
+{ IntWrapper r; r.i_val = x * y.i_val; return r; }
+/// IntWrapper * long
+inline IntWrapper operator*(const IntWrapper& x, const long y)
+{ IntWrapper r;  r.i_val = x.i_val * y; return r; }
+/// long * IntWrapper
+inline IntWrapper operator*(const long x, const IntWrapper& y)
+{ IntWrapper r; r.i_val = x * y.i_val;  return r; }
+/// IntWrapper * unsigned long
+inline IntWrapper operator*(const IntWrapper& x, const unsigned long y)
+{ IntWrapper r; r.i_val = x.i_val * y;  return r; }
+/// unsigned long * IntWrapper
+inline IntWrapper operator*(const unsigned long x, const IntWrapper& y)
+{ IntWrapper r; r.i_val = x * y.i_val;  return r; }
+/// IntWrapper * double
+inline IntWrapper operator*(const IntWrapper& x, const double y)
+{ IntWrapper r; r.i_val = x.i_val * y;  return r; }
+/// double * IntWrapper
+inline IntWrapper operator*(const double x, const IntWrapper& y)
+{ IntWrapper r; r.i_val = x * y.i_val;  return r; }
+/// IntWrapper * LongWrapper
+inline IntWrapper operator*(const IntWrapper& x, const LongWrapper& y)
+{ IntWrapper r; r.i_val = x.i_val * y.l_val;  return r; }
+/// LongWrapper * IntWrapper
+inline IntWrapper operator*(const LongWrapper& x, const IntWrapper& y)
+{ IntWrapper r; r.i_val = x.l_val * y.i_val; return r; }
+ 
+//@}
+
+/* */
 
 /* ***************************************************
  * END of IntWrapper Definitions
@@ -278,7 +504,7 @@ class DoubleWrapper {
  {  d_val /= rhs; return *this; }
 
  //@}
-};
+};//DoubleWrapper Class
 
 
 /// \addtogroup BigFloatArithmeticOperators

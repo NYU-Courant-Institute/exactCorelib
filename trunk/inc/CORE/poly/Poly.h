@@ -345,7 +345,12 @@ public:
   /// return the true degree
   int getTrueDegree() const {
     int i = getDegree();
-    while (i>=0 && sign(coeff()[i]) == 0) --i;
+    //while (i>=0 && sign(coeff()[i]) == 0) --i;
+    	NT c = coeff()[i];
+    	while (i>=0 && sign(c) == 0) {
+	    --i;
+	    c = coeff()[i];
+	}
     return i;
   }
 
@@ -427,16 +432,24 @@ public:
   Polynomial& operator+=(const Polynomial& rhs) {
     int d = rhs.getDegree();
     if (d > getDegree()) expand(d);
-    for (int i=0; i<=d; ++i)
-      coeff()[i] += rhs.coeff()[i];
+    NT c;
+    for (int i=0; i<=d; ++i){
+      // coeff()[i] += rhs.coeff()[i];		//const error...
+	c = rhs.coeff()[i];			// fix...
+	coeff()[i] += c;
+    }
     return *this;
   }
   /// compound assignment operator <tt>-=</tt>
   Polynomial& operator-=(const Polynomial& rhs) {
     int d = rhs.getDegree();
     if (d > getDegree()) expand(d);
-    for (int i=0; i<=d; ++i)
-      coeff()[i] -= rhs.coeff()[i];
+    NT c;
+    for (int i=0; i<=d; ++i){
+      // coeff()[i] -= rhs.coeff()[i];		// const error..
+	c = rhs.coeff()[i];			// fix...
+	coeff()[i] -= c;
+    }
     return *this;
   }
   /// compound assignment operator <tt>*=</tt>
@@ -457,8 +470,10 @@ public:
 
   ///Multiply by a scalar
   Polynomial<NT> & mulScalar( const NT & c) {
+    NT cc = c;
     for (int i = 0; i<=degree() ; i++)
-      coeff()[i] *= c;
+      //	coeff()[i] *= c;		// const error..
+      coeff()[i] *= cc;				// fix...
     return *this;
   }
 

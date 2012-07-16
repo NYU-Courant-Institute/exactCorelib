@@ -253,14 +253,14 @@ void BiPoly<NT>::constructY(int n, BiPoly<NT>& P){
   P.mulYpower(n);
 }
 
-//Returns in P the coeffecient starting from start
+//Returns in P the coefficient, beginning from start
 template <class NT>
 int BiPoly<NT>::getnumber(const char* c, int start, unsigned int len,
 			  BiPoly<NT> & P){
   int j=0;
   char *temp = new char[len];
   while(is_float_or_rational(c[j+start])){
-    temp[j]=c[j+start];j++;
+    temp[j]=c[j+start];   j++;
   }
   temp[j] = '\0';
   // This conversion from string to NT is not working
