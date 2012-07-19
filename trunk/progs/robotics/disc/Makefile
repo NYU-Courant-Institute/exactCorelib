@@ -360,11 +360,34 @@ eg6a: disc
 
 # eg7: from Paper of Hsu-Lathombe-Kurniawati
 eg7: disc
-	@echo "Target  -- their robot is shown"
-	@echo "	There is a narrow path... when radius=15, epsilon=2"
-	@echo " 	There is No Path... when radius=15, epsilon=3"
+	@echo "Target eg7: example from the paper of Hsu, Latombe, Kurniawati (2006)"
+	@echo "	There is a path passage... when radius=6, epsilon=1"
+	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./disc $(interactive) 75 350  380 205 \
 		1 5 hsu-latombe-kurniawati.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		-70 -70 0.065 \
+		&
+
+eg7a: disc
+	@echo "Target eg7: example from the paper of Hsu, Latombe, Kurniawati (2006)"
+	@echo "	There is a path passage... when radius=6, epsilon=1"
+	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./disc $(interactive) 75 350  380 205 \
+		1 7 hsu-latombe-kurniawati.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		-70 -70 0.065 \
+		&
+
+eg7b: disc
+	@echo "Target eg7a: example from the paper of Hsu, Latombe, Kurniawati (2006)"
+	@echo "	The environment here is slightly irregular: the polygons have overlapping"
+	@echo "      edges.  This caused our soft predicate to be confused -- you see"
+	@echo "      some green cells that ought to be red."
+	./disc $(interactive) 75 350  380 205 \
+		1 5 hsu-latombe-kurniawati2.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-70 -70 0.065 \
