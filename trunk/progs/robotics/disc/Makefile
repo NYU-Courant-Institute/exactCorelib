@@ -348,7 +348,7 @@ eg6: disc
 
 # eg6a:  Variant of eg6 where their "robot" is shown.
 eg6a: disc
-	@echo "Target DemoSE2_PRM (from Kavraki's group) -- their robot is shown"
+	@echo "Target eg6a, (DemoSE2_PRM from Kavraki's group) -- their robot is shown"
 	@echo "	There is a narrow path... when radius=15, epsilon=2"
 	@echo " 	There is No Path... when radius=15, epsilon=3"
 	./disc $(interactive) 75 350  380 205 \
@@ -358,6 +358,17 @@ eg6a: disc
 		250 250 0.04 \
 		&
 
+# eg7: from Paper of Hsu-Lathombe-Kurniawati
+eg7: disc
+	@echo "Target  -- their robot is shown"
+	@echo "	There is a narrow path... when radius=15, epsilon=2"
+	@echo " 	There is No Path... when radius=15, epsilon=3"
+	./disc $(interactive) 75 350  380 205 \
+		1 5 hsu-latombe-kurniawati.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		-70 -70 0.065 \
+		&
 
 # RANDOMLY GENERATED ENVIRONMENT:
 # eg100 (similar to eg3 above)
