@@ -46,6 +46,7 @@
 #		eg5 (= egbug2, bug2), eg5a (= egbug2a, bug2a),
 #		eg6 (= kavraki), eg6a (= kavrakia),
 #		eg7 (= tunnel), eg7a (= tunnela), eg7b (= tunnelb)
+#		eg8 (= hsu), eg8a (= hsua), eg8b (= hsub)
 #		eg100, eg100a
 #		eg150
 #		eg200, eg200a, eg200b
@@ -238,8 +239,8 @@ eg4 egbug bug: ./tri
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
 	@echo "--  that are NOT adjacent but shares a corner."
-	./tri $(interactive) 200 350 0 30 30 0 \
-		15 1 bugtrap.txt \
+	./tri $(interactive) 200 350 0 30 30 90 \
+		1 14 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -252,7 +253,7 @@ eg4a egbuga buga: ./tri
 	@echo "--  the only change from target 'egbug' is that epsilon is now 10, not 20"
 	@echo "--  that are NOT adjacent but shares a corner."
 	./tri $(interactive) 200 350 0 30 30 0 \
-		14 1 bugtrap.txt \
+		1 14 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -410,6 +411,40 @@ eg7b tunnelb: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		100 200 0.05
+
+# eg8: from Paper of Hsu-Lathombe-Kurniawati
+eg8 hsu: ./tri
+	@echo "Target eg8: example from the paper of Hsu, Latombe, Kurniawati (2006)"
+	@echo "	There is a path passage... when radius=6, epsilon=1"
+	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./tri $(interactive) 75 350 0 380 205 0\
+		1 5 hsu-latombe-kurniawati.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		-70 -70 0.065 \
+		&
+
+eg8a hsua: ./tri
+	@echo "Target eg8a: example from the paper of Hsu, Latombe, Kurniawati (2006)"
+	@echo "	There is a path passage... when radius=6, epsilon=1"
+	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./tri $(interactive) 75 350 0 380 205 0\
+		1 7 hsu-latombe-kurniawati.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		-70 -70 0.065 \
+		&
+
+eg8b hsub: ./tri
+	@echo "Target eg8b: example from the paper of Hsu, Latombe, Kurniawati (2006)"
+	@echo "	There is a path passage... when radius=6, epsilon=1"
+	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./tri $(interactive) 75 350 0 380 205 0\
+		1 5 hsu-latombe-kurniawati2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		-70 -70 0.065 \
+		&
 
 # RANDOMLY GENERATED ENVIRONMENT:
 #	This one, generated using our Python Generator, has 200 triangles.
