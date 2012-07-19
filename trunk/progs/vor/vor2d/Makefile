@@ -146,6 +146,8 @@ DEPENDS=Box.o fileProcessor.o QuadTree.o Corner.o Wall.o Timer.o
 lev = _lev$(LEV)
 lev =
 
+vor2d_ = vor2d_lev$(LEV)
+
 #=================================================
 # Targets for CORE LIBRARY TESTING
 #=================================================
@@ -227,9 +229,9 @@ help:
 #
 # This is default, but every option may be changed at command line:
 #
-eg:	vor2d
+eg:	$(vor2d_)
 	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
-	./vor2d $(interactive) \
+	./$(vor2d_) $(interactive) \
 		1 $(pseudo) $(interior) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -271,8 +273,8 @@ eg1a:	vor2d
 		&
 	#
 # Eg2: Same as simple, but with bounding box
-simple2 eg2: vor2d
-	./vor2d $(interactive)\
+simple2 eg2: $(vor2d)
+	./$(vor2d) $(interactive)\
 		1 $(pseudo) $(interior) input5.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
