@@ -45,6 +45,7 @@
 #		eg4				-- maze
 #		eg5, eg5a (bug2, bug2a)		-- double bugtrap
 #		eg6, eg6a 			-- example from Kavraki's OOPSMP
+#		eg100, eg100a, eg100b		-- 100 random triangles
 #		eg200, eg200a			-- 200 random triangles
 #		eg300				-- 300 random triangles
 #
@@ -310,10 +311,20 @@ eg3a eg100a: disc
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
-# This environment has 100 randomly generated triangles (this has NO PATH)
+# This environment has 100 randomly generated triangles (this has PATH)
 eg3b eg100b: disc
-	@echo "Target eg100:  runs disc amidst 100 randomly generated triangles"
+	@echo "Target eg100b:  runs disc amidst 100 randomly generated triangles"
 	./disc $(interactive) 200 270 20 20 \
+		2 5 input100.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
+	
+# This environment has 100 randomly generated triangles (this has PATH)
+eg3c eg100c: disc
+	@echo "Target eg100c:  runs disc amidst 100 randomly generated triangles"
+	./disc $(interactive) 350 370 20 20 \
 		2 5 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
@@ -358,9 +369,20 @@ eg6a: disc
 		250 250 0.04 \
 		&
 
-# eg7: from Paper of Hsu-Lathombe-Kurniawati
-eg7: disc
-	@echo "Target eg7: example from the paper of Hsu, Latombe, Kurniawati (2006)"
+# eg7: this should be the tunnel example from triangle...
+
+# eg8: from Paper of Hsu-Lathombe-Kurniawati
+# 	THIS IS SLOW!!!
+#	          --------------------->>  PATH FOUND !
+#	Expanded 219159 times
+#	Time used: 94334.1 ms
+#	total Free boxes: 789023
+#	total Stuck boxes: 24404
+#	total Mixed boxes smaller than epsilon: 662771
+#	total Mixed boxes bigger than epsilon: 57932
+#
+eg8: disc
+	@echo "Target eg8: example from the paper of Hsu, Latombe, Kurniawati (2006)"
 	@echo "	There is a path passage... when radius=6, epsilon=1"
 	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./disc $(interactive) 75 350  380 205 \
@@ -370,8 +392,8 @@ eg7: disc
 		-70 -70 0.065 \
 		&
 
-eg7a: disc
-	@echo "Target eg7: example from the paper of Hsu, Latombe, Kurniawati (2006)"
+eg8a: disc
+	@echo "Target eg8: example from the paper of Hsu, Latombe, Kurniawati (2006)"
 	@echo "	There is a path passage... when radius=6, epsilon=1"
 	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./disc $(interactive) 75 350  380 205 \
@@ -381,8 +403,8 @@ eg7a: disc
 		-70 -70 0.065 \
 		&
 
-eg7b: disc
-	@echo "Target eg7a: example from the paper of Hsu, Latombe, Kurniawati (2006)"
+eg8b: disc
+	@echo "Target eg8a: example from the paper of Hsu, Latombe, Kurniawati (2006)"
 	@echo "	The environment here is slightly irregular: the polygons have overlapping"
 	@echo "      edges.  This caused our soft predicate to be confused -- you see"
 	@echo "      some green cells that ought to be red."
