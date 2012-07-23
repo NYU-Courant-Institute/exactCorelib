@@ -152,7 +152,7 @@ vor2d_ = vor2d_lev$(LEV)
 # Targets for CORE LIBRARY TESTING
 #=================================================
 
-all: $(TARGETS)
+all: $(ALL_TARGETS)
 
 default: eg
 
@@ -357,6 +357,16 @@ eg6 boundedstar: vor2d
 
 # Eg7: bugtrap
 eg7 bug: vor2d
+	./vor2d $(interactive) \
+		1 $(pseudo) $(interior) bugtrap.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtrans) $(ytrans) $(scale) $(closePoly) \
+		$(c1) $(c2) $(maxEps) \
+		&
+
+# Eg7: bugtrap
+eg7 bugX: vor2d
 	./vor2d $(interactive) \
 		1 $(pseudo) $(interior) bugtrap.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
