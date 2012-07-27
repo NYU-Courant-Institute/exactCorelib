@@ -32,21 +32,23 @@ class Box; //defined in "Box.h"
 class Feature
 {
 public:
+
     static int LEVEL;
 
-    /*
-    int corelevel() {
-#if CORE_LEVEL=1
-    LEVEL=1;
-#elif CORE_LEVEL=2
-    LEVEL=2;
-#elif CORE_LEVEL=3
-    LEVEL=3;
+    static int corelevel()
+    {
+
+#if CORE_LEVEL==1
+        LEVEL=1;
+#elif CORE_LEVEL==2
+        LEVEL=2;
+#elif CORE_LEVEL==3
+        LEVEL=3;
 #else
-    LEVEL=4;
+        LEVEL=4;
 #endif
+        return LEVEL;
     }
-    */
 
     Feature() { pSet=NULL; }
     virtual ~Feature(){}

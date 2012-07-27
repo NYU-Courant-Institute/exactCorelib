@@ -985,6 +985,7 @@ public:
         short typeCount[5]={0,0,0,0,0}; //'0', 'r', 'p', '1','2'
 
         int segSize=buildBdSegs(Bd);
+
         for(short i=0;i<4;i++)
         {
             for(short j=0;j<(short)Bd[i].size();j++)

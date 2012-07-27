@@ -70,6 +70,8 @@ double boxHeight = 512;         // Initial box height
 #include "PriorityQueue.h"
 #include "SimplePSinC.h"
 
+int Feature::LEVEL=0;
+
 #include <set>
 using namespace std;
 
@@ -219,7 +221,10 @@ int main(int argc, char* argv[])
 	GLUI_Master.set_glutKeyboardFunc(Keyboard);
 	GLUI_Master.set_glutMouseFunc(Mouse);
 	GLUI_Master.set_glutSpecialFunc(SpecialKey);
-	GLUI *glui = GLUI_Master.create_glui( "Control", 0, windowPosX + boxWidth + 20, windowPosY );
+
+	char level_string[36];
+	sprintf(level_string,"Vor2D Level %d",Feature::corelevel());
+	GLUI *glui = GLUI_Master.create_glui( level_string, 0, windowPosX + boxWidth + 20, windowPosY );
 
 	glClearColor(0.5,0,0,0);
 
