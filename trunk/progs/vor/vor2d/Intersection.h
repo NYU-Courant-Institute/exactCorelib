@@ -4,8 +4,6 @@
 #include <iostream>
 using namespace std;
 
-#define SMALLNUMBER 1e-10
-
 inline double Area(const double a[2], const double b[2], const double c[2])
 {
    return ( b[0] - a[0] ) * ( c[1] - a[1] ) -
@@ -15,8 +13,8 @@ inline double Area(const double a[2], const double b[2], const double c[2])
 inline int AreaSign(const double a[2], const double b[2], const double c[2])
 {
    double area=Area(a,b,c);
-   if      ( area >  SMALLNUMBER ) return  1;
-   else if ( area < -SMALLNUMBER ) return -1;
+   if      ( area >  0 ) return  1;
+   else if ( area < 0 ) return -1;
    else     return  0;
 }
 
@@ -25,9 +23,9 @@ inline int Collinear(const double a[2], const double b[2], const double c[2])
   return AreaSign( a, b, c ) == 0;
 }
 
-inline bool AlmostEqual(const double a[2], const double b[2])
+inline bool Equal(const double a[2], const double b[2])
 {
-   return (fabs(a[0]-b[0])<SMALLNUMBER &&fabs(a[1]-b[1])<SMALLNUMBER);
+   return (a[0]==b[0] && a[1]==b[1]);
 }
 
 
@@ -61,10 +59,10 @@ inline char ParallelInt
 
   //they don't overlap but the end points may..
   //check if the end points overlap
-  if(AlmostEqual(a,c)){ p[0]=a[0]; p[1]=a[1]; return 'v';}
-  if(AlmostEqual(b,c)){ p[0]=b[0]; p[1]=b[1]; return 'v';}
-  if(AlmostEqual(a,d)){ p[0]=a[0]; p[1]=a[1]; return 'v';}
-  if(AlmostEqual(b,d)){ p[0]=b[0]; p[1]=b[1]; return 'v';}
+  if(Equal(a,c)){ p[0]=a[0]; p[1]=a[1]; return 'v';}
+  if(Equal(b,c)){ p[0]=b[0]; p[1]=b[1]; return 'v';}
+  if(Equal(a,d)){ p[0]=a[0]; p[1]=a[1]; return 'v';}
+  if(Equal(b,d)){ p[0]=b[0]; p[1]=b[1]; return 'v';}
 
   return '0';
 }
@@ -93,14 +91,13 @@ inline char SegSegInt( const double a[2], const double b[2], const double c[2], 
 		  c[0] * ( a[1] - b[1] );
 
   // If denom is zero, then segments are parallel: handle separately.
-  //if (fabs(denom)<SMALLNUMBER) denom=0;
-  if (fabs(denom)<SMALLNUMBER) return  ParallelInt(a, b, c, d, p);
+  if (denom==0) return  ParallelInt(a, b, c, d, p);
 
 
-  if(AlmostEqual(a,c)){ p[0]=a[0]; p[1]=a[1]; return 'v';}
-  if(AlmostEqual(b,c)){ p[0]=b[0]; p[1]=b[1]; return 'v';}
-  if(AlmostEqual(a,d)){ p[0]=a[0]; p[1]=a[1]; return 'v';}
-  if(AlmostEqual(b,d)){ p[0]=b[0]; p[1]=b[1]; return 'v';}
+  if(Equal(a,c)){ p[0]=a[0]; p[1]=a[1]; return 'v';}
+  if(Equal(b,c)){ p[0]=b[0]; p[1]=b[1]; return 'v';}
+  if(Equal(a,d)){ p[0]=a[0]; p[1]=a[1]; return 'v';}
+  if(Equal(b,d)){ p[0]=b[0]; p[1]=b[1]; return 'v';}
 
   //compute s
   num_s =    a[0] * ( d[1] - c[1] ) +
@@ -110,9 +107,6 @@ inline char SegSegInt( const double a[2], const double b[2], const double c[2], 
 
   s = num_s / denom;
 
-  if( fabs(s)<SMALLNUMBER ) s=0;
-  else if( fabs(1-s)<SMALLNUMBER ) s=1;
-
 
   //compute t
   num_t = -( a[0] * ( c[1] - b[1] ) +
@@ -121,10 +115,7 @@ inline char SegSegInt( const double a[2], const double b[2], const double c[2], 
 
 
 
-  t = num_t / denom;
-
-  if( fabs(t)<SMALLNUMBER ) t=0;
-  else if( fabs(1-t)<SMALLNUMBER) t=1;
+  t = num_t/denom;
 
   //decide the code
   if( (0.0<s) && (s< 1.0) && (0.0< t) && (t< 1.0) )

@@ -835,8 +835,102 @@ public:
 	    return count;
 	}
 
-	//collect the intersections between the boundary of this box and the bisector of the features f and g
-	void getBoundaryIntersections(Feature * f, Feature * g, list<BoxNode>& crossings)
+	VorSegment createVorSegment(const BoxNode& n1, const BoxNode& n2)
+    {
+	    VorSegment seg;
+	    seg.p[0]=n1.x;
+	    seg.p[1]=n1.y;
+	    seg.q[0]=n2.x;
+        seg.q[1]=n2.y;
+	    return seg;
+    }
+
+    //
+    // check if the edge (n1,n2) is cut by the separator of features f and g
+	//
+    // this function is correct unless (1) f is an edge and g is a corner and
+    // (2) n1 and n2 are closer to f but the separator still cuts through the
+	// interior of the edge
+	//
+    // This case is prevented by predicate C3
+	//
+	// return value:
+	//  '0': the separator does not touch (n1,n2)
+	//  'r': the separator intersects the interior of (n1,n2) in the regular way
+    //  'p': the separator go through both n1 and n2
+	//  '1':the separator go through n1
+	//  '2':the separator go through n2
+	//
+	char cutBy(Feature * f, Feature * g, const BoxNode& n1, const BoxNode& n2)
+	{
+	    double d_n1f=f->distance(n1.x,n1.y);
+	    double d_n1g=g->distance(n1.x,n1.y);
+	    double d_n2f=f->distance(n2.x,n2.y);
+	    double d_n2g=g->distance(n2.x,n2.y);
+
+	    if(d_n1f<d_n1g && d_n2f<d_n2g) return '0'; //n1 is closer to f && n2 is also closer to f
+	    if(d_n1g<d_n1f && d_n2g<d_n2f) return '0'; //n1 is closer to g && n2 is also closer to g
+
+	    if(d_n1f==d_n1g && d_n2f==d_n2g) return 'p'; //the separator is aligned with n1 and n2...
+
+	    if(d_n1f==d_n1g) return '1'; //the separator is go throug n1...
+
+	    if(d_n1f==d_n1g) return '2'; //the separator is go throug n2...
+
+	    return 'r'; //regular case
+	}
+
+	//
+	// check if this box is cut by the separator of features f and g
+	// this function is correct unless (1) f is an edge and g is a corner and
+	// (2) all corners of the box are closer to f but the separator still cuts through the box
+	// This case is prevented by predicate C3
+	//
+//    bool cutBy(Feature * f, Feature * g)
+//    {
+//        BoxNode UL, LL, UR, LR; //Box corners, upper left, lower left, upper right, lower right
+//        UL.x=x-width/2; UL.y=y+height/2;
+//        LL.x=x-width/2; LL.y=y-height/2;
+//        UR.x=x+width/2; UR.y=y+height/2;
+//        LR.x=x+width/2; LR.y=y-height/2;
+//
+//        BoxNode Nx,Ex,Sx,Wx; //intersections from the North, East, South, West box edges
+//
+//        char bNx=cutBy(f,g,UL,UR);
+//        char bEx=cutBy(f,g,UR,LR);
+//        char bSx=cutBy(f,g,LR,LL);
+//        char bWx=cutBy(f,g,LL,UL);
+//
+//        return false;
+//    }
+
+	void printBuildVorWarning(short typeCount[5])
+	{
+        cerr<<"! WARNING: Case not analyzed: "
+            <<" 0:"<<typeCount[0]
+            <<" r:"<<typeCount[1]
+            <<" p:"<<typeCount[2]
+            <<" 1:"<<typeCount[3]
+            <<" 2:"<<typeCount[4]<<endl;
+	}
+
+	struct BdSeg //border segment
+	{
+	    BoxNode n1, //start
+	            n2, //end
+	            x;  //crossing point
+
+	    void approxX()
+	    {
+	        if(type=='r'){ x.x=(n1.x+n2.x)/2;  x.y=(n1.y+n2.y)/2; }
+	        else if(type=='1'){ x=n1; }
+	        else if(type=='2'){ x=n2; }
+	    }
+
+	    char type; //0, r, p, 1 or 2
+	};
+
+	int buildBdSegs(vector<BdSeg> Bd[4])
 	{
         BoxNode UL, LL, UR, LR; //Box corners, upper left, lower left, upper right, lower right
         UL.x=x-width/2; UL.y=y+height/2;
@@ -844,49 +938,149 @@ public:
         UR.x=x+width/2; UR.y=y+height/2;
         LR.x=x+width/2; LR.y=y-height/2;
 
-        bool f_is_wall=isWall(f);
-        bool g_is_wall=isWall(g);
+	    //go through each border border
+        BdSeg seg;
+        int count=0;
+	    for(int i=0;i<4;i++)
+	    {
+	        BoxNode n1, n2, mid;
+	        if(i==0){ n1=UL; n2=UR; mid.y=UL.y; mid.x=x; }
+	        else if(i==1){ n1=UR; n2=LR; mid.y=y; mid.x=UR.x; }
+	        else if(i==2){ n1=LR; n2=LL; mid.y=LR.y; mid.x=x; }
+	        else { n1=LL; n2=UL; mid.y=y; mid.x=LL.x; }
 
-        if(f_is_wall!=g_is_wall) //wall/corner or corner/wall...
-        {
-            //this shouldn't happen due to predicate #3...
-            cerr<<"! ERROR: Box:getBoundaryIntersections: no method to handle Wall/Corner case"<<endl;
-            //assert(false);
-            return;
-        }
+            if(pChildren[i]==NULL)
+            {
+                seg.n1=n1;
+                seg.n2=n2;
+                Bd[i].push_back(seg);
+                count++;
+            }
+            else{
+                if(pChildren[i]->depth>depth){
+                    seg.n1=n1;
+                    seg.n2=mid;
+                    Bd[i].push_back(seg);
+                    seg.n1=mid;
+                    seg.n2=n2;
+                    Bd[i].push_back(seg);
+                    count+=2;
+                }
+                else{
+                    seg.n1=n1;
+                    seg.n2=n2;
+                    Bd[i].push_back(seg);
+                    count++;
+                }
+            }
+	    }//end for i
 
-        BoxNode Nx,Ex,Sx,Wx; //intersections from the North, East, South, West box edges
-        bool bNx=false, bEx=false, bSx=false, bWx=false;
-
-        if(isWall(f))
-        {
-            Wall * w1=dynamic_cast<Wall*>(f);
-            Wall * w2=dynamic_cast<Wall*>(g);
-            bNx=intersection(w1,w2,UL,UR,Nx);
-            bEx=intersection(w1,w2,UR,LR,Ex);
-            bSx=intersection(w1,w2,LR,LL,Sx);
-            bWx=intersection(w1,w2,LL,UL,Wx);
-        }
-        else
-        {
-            Corner * c1=dynamic_cast<Corner*>(f);
-            Corner * c2=dynamic_cast<Corner*>(g);
-            bNx=intersection(c1,c2,UL,UR,Nx);
-            bEx=intersection(c1,c2,UR,LR,Ex);
-            bSx=intersection(c1,c2,LR,LL,Sx);
-            bWx=intersection(c1,c2,LL,UL,Wx);
-        }
-
-        //collect all intersections
-        if(bNx) crossings.push_back(Nx);
-        if(bEx) crossings.push_back(Ex);
-        if(bSx) crossings.push_back(Sx);
-        if(bWx) crossings.push_back(Wx);
+	    return count;
 	}
 
 	//build the vor curve with 2 features!
     void buildVor(Feature * f, Feature * g)
     {
+        vector<BdSeg> Bd[4];
+        short typeCount[5]={0,0,0,0,0}; //'0', 'r', 'p', '1','2'
+
+        int segSize=buildBdSegs(Bd);
+        for(short i=0;i<4;i++)
+        {
+            for(short j=0;j<(short)Bd[i].size();j++)
+            {
+                BdSeg& seg=Bd[i][j];
+                seg.type=cutBy(f,g,seg.n1,seg.n2);
+                seg.approxX();
+                switch(seg.type)
+                {
+                    case '0': typeCount[0]++; break;
+                    case 'r': typeCount[1]++; break;
+                    case 'p': typeCount[2]++; break;
+                    case '1': typeCount[3]++; break;
+                    case '2': typeCount[4]++; break;
+                    default: assert(0); break; //no such type
+                }
+            }//end for j
+        }//end for i
+
+        //no intersection at all
+        if( typeCount[0]==segSize) return; //nothing to do
+
+        // some boundary has no intersection and some edges has special intersection
+        // i.e. the separator cuts through the corner of the box without going
+        // into the interior of the box
+        if(typeCount[0]!=0 && typeCount[3]+typeCount[4]+typeCount[0]==segSize)
+        {
+            return; //nothing to do
+        }
+
+        //the separator cuts through the border of the box...
+        if(typeCount[2]!=0)
+        {
+            for(short i=0;i<4;i++)
+            {
+                for(short j=0;j<(short)Bd[i].size();j++)
+                {
+                    BdSeg& seg=Bd[i][j];
+                    if(seg.type=='p'){
+                        vor_segments.push_back(createVorSegment(seg.n1,seg.n2));
+                    }
+                }//end j
+            }//end i
+
+            return; //done
+        }
+
+        //the separator cuts through the corners of the box...
+        //no regular cuts, 2 type '1' cuts and 2 type '2' cuts
+        if(typeCount[1]==0 && typeCount[3]==2 && typeCount[4]==2)
+        {
+            list<BoxNode> nodes;
+            for(short i=0;i<4;i++)
+            {
+                for(short j=0;j<(short)Bd[i].size();j++)
+                {
+                    BdSeg& seg=Bd[i][j];
+                    if(seg.type=='2'){
+                        nodes.push_back(seg.x);
+                    }
+                }//end j
+            }//end i
+
+            assert(nodes.size()==2);
+            vor_segments.push_back(createVorSegment(nodes.front(),nodes.back()));
+
+            return; //done
+        }
+
+        //2 regular cuts and segSize-2 type '0' cuts (ie. no cuts)
+        if(typeCount[1]==2 && typeCount[0]==segSize-2)
+        {
+            list<BoxNode> nodes;
+            for(short i=0;i<4;i++)
+            {
+                for(short j=0;j<(short)Bd[i].size();j++)
+                {
+                    BdSeg& seg=Bd[i][j];
+                    if(seg.type=='r'){
+                        nodes.push_back(seg.x);
+                    }
+                }//end j
+            }//end i
+
+            assert(nodes.size()==2);
+            vor_segments.push_back(createVorSegment(nodes.front(),nodes.back()));
+
+            return; //done
+        }
+
+        //
+        printBuildVorWarning(typeCount);
+
+        return; //done
+
+        /*
         //collect all intersections
         list<BoxNode> nodes;
         getBoundaryIntersections(f,g,nodes);
@@ -917,46 +1111,91 @@ public:
         //record the segment
         vor_segments.push_back(seg);
         //done
+         */
     }
 
     void buildVor(Feature * f, Feature * g, Feature * h)
     {
-        char vvt_code=VVT(f,g,h);
+         char vvt_code=VVT(f,g,h);
+
+         vector<BdSeg> Bd[4];
+         buildBdSegs(Bd);
 
          //yes, there is a vertex!
-         if(vvt_code=='1') //there can be f b/c there can be degenerated case...
+         if(vvt_code=='1')
          {
              list<BoxNode> nodes;
-             if(isWall(f)==isWall(g)) getBoundaryIntersections(f,g,nodes);
-             if(isWall(f)==isWall(h)) getBoundaryIntersections(f,h,nodes);
-             if(isWall(g)==isWall(h)) getBoundaryIntersections(g,h,nodes);
+             for(short i=0;i<4;i++)
+             {
+                 for(short j=0;j<(short)Bd[i].size();j++)
+                 {
+                     BdSeg& seg=Bd[i][j];
+                     seg.type=cutBy(f,g,seg.n1,seg.n2);
+                     seg.approxX();
+
+                     //fg separator
+                     if(seg.type=='r' || seg.type=='0' || seg.type=='1'){
+                         if(h->distance(seg.x.x,seg.x.y)>=f->distance(seg.x.x,seg.x.y))
+                             nodes.push_back(seg.x);
+                     }
+                     else if(seg.type=='p'){
+                         //what do you do here?
+                     }
+
+                     //fh separator
+                     seg.type=cutBy(f,h,seg.n1,seg.n2);
+                     seg.approxX();
+                     if(seg.type=='r' || seg.type=='0' || seg.type=='1'){
+                          if(g->distance(seg.x.x,seg.x.y)>=f->distance(seg.x.x,seg.x.y))
+                              nodes.push_back(seg.x);
+                      }
+                      else if(seg.type=='p'){
+                          //what do you do here?
+                      }
+
+                     //gh separator
+                     seg.type=cutBy(g,h,seg.n1,seg.n2);
+                     seg.approxX();
+                     if(seg.type=='r' || seg.type=='0' || seg.type=='1'){
+                          if(f->distance(seg.x.x,seg.x.y)>=g->distance(seg.x.x,seg.x.y))
+                              nodes.push_back(seg.x);
+                     }
+                     else if(seg.type=='p'){
+                         //what do you do here?
+                     }
+
+                 }//end for j
+             }//end for i
 
              for(list<BoxNode>::iterator j=nodes.begin();j!=nodes.end();j++)
-            {
-                VorSegment seg;
-                seg.p[0]=j->x;
-                seg.p[1]=j->y;
-                seg.q[0]=x;
-                seg.q[1]=y;
-                vor_segments.push_back(seg);
-            }//end for j
+             {
+                 VorSegment seg;
+                 seg.p[0]=j->x;
+                 seg.p[1]=j->y;
+                 seg.q[0]=x;
+                 seg.q[1]=y;
+                 vor_segments.push_back(seg);
+             }//end for j
          }
+
          //no vertex in the box, the box corners must be separated by non-intersecting arcs
-         else if(vvt_code=='h' || vvt_code=='f') //
+         else if(vvt_code=='f') //this is the case that the separator of f and g are closer than h
          {
-             if(isWall(f)==isWall(g)) buildVor(f,g);
-             if(isWall(f)==isWall(h)) buildVor(f,h);
-             if(isWall(g)==isWall(h)) buildVor(g,h);
+             buildVor(f,g);
          }
-         else{
-             //no intersection at ALL...
+         else if(vvt_code=='h') // otherwise
+         {
+             buildVor(f,h);
+             buildVor(g,h);
+         }
+         else{ //no intersection at ALL...
              return;
          }
     }
 
 	void buildVorDegenerate(list<Feature*> insep)
 	{
-	    cerr<<"! Error: buildVorDegenerate not implemented"<<endl;
+	    cerr<<"! Error: buildVorDegenerate not implemented yet"<<endl;
 	    assert(false);
 	}
 
@@ -1432,6 +1671,13 @@ public:
 	//
     // Voronoi vertex test
     //
+    // return:
+	//
+    // '0': failed, no intersection between the box and the bisection of w1/w2
+    // 'f': failed, all intersections are closer to f/g (the f/g feature in the paper)
+    // 'h': failed, all intersections are closer to h (the h feature in the paper)
+    // '1': passed, there is a vertex in the box
+    //
     char VVT(Feature * f1, Feature * f2, Feature * f3)
     {
         bool is_f1_wall=isWall(f1);
@@ -1461,8 +1707,8 @@ public:
     // f&g are the same type (wall or corner) of feature
     //
     // '0': failed, no intersection between the box and the bisection of w1/w2
-    // 'f': failed, all intersection are closer to f/g (the f/g feature in the paper)
-    // 'h': failed, all intersection are closer to h (the h feature in the paper)
+    // 'f': failed, all intersections are closer to f/g (the f/g feature in the paper)
+    // 'h': failed, all intersections are closer to h (the h feature in the paper)
     // '1': passed, there is a vertex in the box
     //
     char VVT_ordered(Feature * f, Feature * g, Feature * h)
@@ -1751,5 +1997,57 @@ public:
 
         return false;
     }
+
+
+    //collect the intersections between the boundary of this box and the bisector of the features f and g
+    void getBoundaryIntersections(Feature * f, Feature * g, list<BoxNode>& crossings)
+    {
+        BoxNode UL, LL, UR, LR; //Box corners, upper left, lower left, upper right, lower right
+
+        UL.x=x-width/2; UL.y=y+height/2;
+        LL.x=x-width/2; LL.y=y-height/2;
+        UR.x=x+width/2; UR.y=y+height/2;
+        LR.x=x+width/2; LR.y=y-height/2;
+
+        bool f_is_wall=isWall(f);
+        bool g_is_wall=isWall(g);
+
+        if(f_is_wall!=g_is_wall) //wall/corner or corner/wall...
+        {
+            //this shouldn't happen due to predicate #3...
+            cerr<<"! ERROR: Box:getBoundaryIntersections: no method to handle Wall/Corner case"<<endl;
+            //assert(false);
+            return;
+        }
+
+        BoxNode Nx,Ex,Sx,Wx; //intersections from the North, East, South, West box edges
+        bool bNx=false, bEx=false, bSx=false, bWx=false;
+
+        if(isWall(f))
+        {
+            Wall * w1=dynamic_cast<Wall*>(f);
+            Wall * w2=dynamic_cast<Wall*>(g);
+            bNx=intersection(w1,w2,UL,UR,Nx);
+            bEx=intersection(w1,w2,UR,LR,Ex);
+            bSx=intersection(w1,w2,LR,LL,Sx);
+            bWx=intersection(w1,w2,LL,UL,Wx);
+        }
+        else
+        {
+            Corner * c1=dynamic_cast<Corner*>(f);
+            Corner * c2=dynamic_cast<Corner*>(g);
+            bNx=intersection(c1,c2,UL,UR,Nx);
+            bEx=intersection(c1,c2,UR,LR,Ex);
+            bSx=intersection(c1,c2,LR,LL,Sx);
+            bWx=intersection(c1,c2,LL,UL,Wx);
+        }
+
+        //collect all intersections
+        if(bNx) crossings.push_back(Nx);
+        if(bEx) crossings.push_back(Ex);
+        if(bSx) crossings.push_back(Sx);
+        if(bWx) crossings.push_back(Wx);
+    }
+
 
 };//class Box
