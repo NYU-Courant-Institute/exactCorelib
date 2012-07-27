@@ -18,6 +18,11 @@
 	#define CORE_LEVEL 1
 #endif
 
+#if (CORE_LEVEL==0)
+	#undef CORE_LEVEL
+	#define CORE_LEVEL 1
+#endif
+
 #include "CORE.h"
 
 class Set; //defined in "UnionFind.h"

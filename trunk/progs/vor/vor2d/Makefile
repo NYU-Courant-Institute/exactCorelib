@@ -11,6 +11,7 @@
 # 	       > make test	-- compiles and runs "vor2d" non-interactively
 # 	       			 	(this is Core Library's automatic self-test)
 #
+#
 # (B)	But you probably want to try the various interactive demos of this program:
 #
 # 	       > make eg	-- compiles and runs "vor2d" interactively
@@ -39,6 +40,17 @@
 #
 #	Various input environments are found in the subdirectory called "inputs".
 #
+# 	REMARK:
+# 		By default, we call the executable program "vor2d".
+# 	But "vor2d" is really the last compiled version of the program,
+# 	and it could represent Levels 1, 2, or 3.   Hence, to choose the
+# 	CORE Level explicitly, you should call
+#
+#		> make eg fileName=input100.txt LEV=X  
+#			(where X=1,2,3)
+#
+#	Then the program "vor2d_levX" will be called.
+# 	       	
 # (D)	Instead of the target "eg" you can try these targets (alternative
 # 	names are in parenthesis):
 #
@@ -144,7 +156,7 @@ CXXFLAGS += -MMD
 
 DEPENDS=Box.o fileProcessor.o QuadTree.o Corner.o Wall.o Timer.o
 
-VOR2D = ./vor2d_lev$(LEV)
+VOR2D = ./vor2d_lev${LEV}
 ifeq (${LEV},0)
     VOR2D = ./vor2d
 endif
@@ -279,8 +291,8 @@ eg1a:	$(VOR2D)
 		&
 	#
 # Eg2: Same as simple, but with bounding box
-simple2 eg2: $(vor2d)
-	./$(vor2d) $(interactive)\
+simple2 eg2: $(VOR2D)
+	./$(VOR2D) $(interactive)\
 		1 $(pseudo) $(interior) input5.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -300,7 +312,7 @@ eg3 dog:	$(VOR2D)
 		&
 
 # Eg4: Example of a non-regularized input (set of 4 lines) with closed polygons
-eg4 line:	vor2d
+eg4 line:	$(VOR2D)
 	@echo "Target 'eg4' or 'line': "
 	$(VOR2D) $(interactive) \
 		0.5 $(pseudo) $(interior) line.txt \
@@ -311,7 +323,7 @@ eg4 line:	vor2d
 		&
 	
 # Eg4a: Example of a non-regularized input (set of 4 lines) but using C1 filter
-eg4a linea:	vor2d
+eg4a linea:	$(VOR2D)
 	@echo "Target 'eg4a' or 'linea': "
 	$(VOR2D) $(interactive) \
 		0.5 $(pseudo) $(interior) line.txt \
@@ -322,7 +334,7 @@ eg4a linea:	vor2d
 		&
 	
 # Eg4a: Example of a non-regularized input (set of 4 lines) but open polygons 
-eg4b lineb:	vor2d
+eg4b lineb:	$(VOR2D)
 	@echo "Target 'eg4b' or 'lineb': "
 	$(VOR2D) $(interactive) \
 		0.5 $(pseudo) $(interior) line.txt \
@@ -443,7 +455,7 @@ eg10 2tri: $(VOR2D)
 		&
 		
 # Eg11: Star example
-eg11 star:	vor2d
+eg11 star:	$(VOR2D)
 	$(VOR2D) $(interactive) 1 $(pseudo) $(interior) star.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -452,7 +464,7 @@ eg11 star:	vor2d
 		&
 	#
 # Eg11a: with pseudo=1(false) and interior=1(false)
-eg11a stara:	vor2d
+eg11a stara:	$(VOR2D)
 	$(VOR2D) $(interactive) 1 1 1 star.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -471,7 +483,7 @@ eg12 bug2: $(VOR2D)
 		&
 
 # Eg13: monkey example
-eg13 monkey:	vor2d
+eg13 monkey:	$(VOR2D)
 	@echo "Target 'eg13' or 'monkey': "
 	$(VOR2D) $(interactive) \
 		0.1 $(pseudo) $(interior) nazca_monkey.poly \
@@ -482,7 +494,7 @@ eg13 monkey:	vor2d
 		&
 
 # Eg14: mammoth example
-eg14 mammoth:	vor2d
+eg14 mammoth:	$(VOR2D)
 	@echo "Target 'eg14' or 'mammoth': "
 	$(VOR2D) $(interactive) \
 		0.1 $(pseudo) $(interior) mammoth.poly \
@@ -494,7 +506,7 @@ eg14 mammoth:	vor2d
 			
 # Eg15: Vikram's example -- THIS INPUT IS DEGENERATE !!
 #
-eg15 vikram:    vor2d
+eg15 vikram:    $(VOR2D)
 	 @echo "Target 'eg15' : a degenerate example"
 	 @echo "   AT LEVEL 1, You will see an obvious error."
 	 @echo "       But that is NOT a programming error."
@@ -508,7 +520,7 @@ eg15 vikram:    vor2d
 		 &
 
 # Eg15a: Vikram example (variant)
-eg15a :	vor2d
+eg15a :	$(VOR2D)
 	@echo "Target 'eg15a' :"
 	$(VOR2D) $(interactive) \
 		0.1 $(pseudo) $(interior) Vikram-2.txt \
@@ -519,7 +531,7 @@ eg15a :	vor2d
 		&
 								
 # Eg50: standard parabola
-eg50 parabola:	vor2d
+eg50 parabola:	$(VOR2D)
 	@echo "Target 'eg50' or 'line': "
 	$(VOR2D) $(interactive) \
 		0.5 $(pseudo) $(interior) parabola.txt \
