@@ -73,7 +73,10 @@ double boxHeight = 512;         // Initial box height
 #include <set>
 using namespace std;
 
-#define CORE_LEVEL 1
+#ifndef CORE_LEVEL
+	#define CORE_LEVEL 1
+#endif
+
 #include "CORE/Core.h"
 
 QuadTree* QT;

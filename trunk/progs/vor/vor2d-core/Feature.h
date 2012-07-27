@@ -1,7 +1,10 @@
 
 #pragma once
 
-#define CORE_LEVEL 2
+#ifndef CORE_LEVEL
+	#define CORE_LEVEL 2
+#endif
+
 #include "CORE.h"
 
 class Set; //defined in "UnionFind.h"
