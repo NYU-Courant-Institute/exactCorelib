@@ -85,6 +85,7 @@ include ../Make.options
 LEV=2
 LEV=3
 LEV=1
+LEV=0
 
 #=================================================
 # User variables (you can change them in the command line)
@@ -143,10 +144,11 @@ CXXFLAGS += -MMD
 
 DEPENDS=Box.o fileProcessor.o QuadTree.o Corner.o Wall.o Timer.o
 
-lev = _lev$(LEV)
-lev =
+VOR2D = ./vor2d_lev$(LEV)
+ifeq (${LEV},0)
+    VOR2D = ./vor2d
+endif
 
-vor2d_ = vor2d_lev$(LEV)
 
 #=================================================
 # Targets for CORE LIBRARY TESTING
@@ -180,12 +182,19 @@ test: $(ALL_TARGETS)
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
 		$(c1) $(c2) $(maxEps)
 
-testall: $(ALL_TARGETS)
-	make eg0 interactive=1
-	make eg1 interactive=1
+testmore: $(ALL_TARGETS)
+	make eg0 interactive=1 LEV=1
+	make eg1 interactive=1 LEV=1
+	make eg3 interactive=1 LEV=1
+	make eg0 interactive=1 LEV=2
+	make eg1 interactive=1 LEV=2
+	make eg3 interactive=1 LEV=2
+	make eg0 interactive=1 LEV=3
+	make eg1 interactive=1 LEV=3
+	make eg3 interactive=1 LEV=3
 
 testa: $(TARGETS)
-	./vor2d 1 &
+	$(VOR2D) 1 &
 
 timing1: ./vor2d_lev1 ./vor2d_lev2 ./vor2d_lev3
 	@echo "Level 1"
@@ -196,22 +205,19 @@ timing1: ./vor2d_lev1 ./vor2d_lev2 ./vor2d_lev3
 	make eg2 LEV=3
 
 lev1 vor2d_lev1:
-	make vclean; make LEV=1 compile
-	-rm -f vor2d
-	-ln -s vor2d_lev1 vor2d
+	make clean
+	make LEV=1 compile
 
 lev2 vor2d_lev2:
-	make vclean; make LEV=2 compile
-	-rm -f vor2d
-	-ln -s vor2d_lev2 vor2d
+	make clean
+	make LEV=2 compile
 
 lev3 vor2d_lev3:
-	make vclean; make LEV=3 compile
-	-rm -f vor2d
-	-ln -s vor2d_lev3 vor2d
+	make clean
+	make LEV=3 compile
 
-compile: vor2d
-	cp ./vor2d ./vor2d_lev$(LEV)
+compile: ./vor2d
+	-cp ./vor2d $(VOR2D)
 
 #vor2d: $(OBJ_FILES)
 
@@ -229,9 +235,9 @@ help:
 #
 # This is default, but every option may be changed at command line:
 #
-eg:	$(vor2d_)
+eg:	$(VOR2D)
 	@echo "Target 'eg':  runs vor2d with the default options of Makefile"
-	./$(vor2d_) $(interactive) \
+	$(VOR2D) $(interactive) \
 		1 $(pseudo) $(interior) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -240,8 +246,8 @@ eg:	$(vor2d_)
 		&
 
 # Eg0: Simple NO PATH example (an triangular annulus region)
-nopath eg0:	vor2d
-	./vor2d $(interactive) \
+nopath eg0:	$(VOR2D)
+	$(VOR2D) $(interactive) \
 		1 $(pseudo) $(interior) input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -252,8 +258,8 @@ nopath eg0:	vor2d
 # Eg1: Simple example with 3 obstacles (2 Voronoi vertices, one concave verteix)
 # 	REMARK: input.txt and input2.txt are really the same.
 # 		But input2.txt has comments in it.
-simple eg1:	vor2d
-	./vor2d $(interactive) \
+simple eg1:	$(VOR2D)
+	$(VOR2D) $(interactive) \
 		1 $(pseudo) $(interior) input2.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -263,8 +269,8 @@ simple eg1:	vor2d
 
 # Eg1a: Modification of Eg1 using input2a.txt,
 # 		in which the polygon vertices are in clockwise order!
-eg1a:	vor2d
-	./vor2d $(interactive) \
+eg1a:	$(VOR2D)
+	$(VOR2D) $(interactive) \
 		1 $(pseudo) $(interior) input2a.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -283,9 +289,9 @@ simple2 eg2: $(vor2d)
 		&
 
 # Eg3: dog example
-eg3 dog:	vor2d
+eg3 dog:	$(VOR2D)
 	@echo "Target 'eg3' or 'dog': "
-	./vor2d $(interactive) \
+	$(VOR2D) $(interactive) \
 		0.1 $(pseudo) $(interior) dog.poly \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -296,7 +302,7 @@ eg3 dog:	vor2d
 # Eg4: Example of a non-regularized input (set of 4 lines) with closed polygons
 eg4 line:	vor2d
 	@echo "Target 'eg4' or 'line': "
-	./vor2d $(interactive) \
+	$(VOR2D) $(interactive) \
 		0.5 $(pseudo) $(interior) line.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -307,7 +313,7 @@ eg4 line:	vor2d
 # Eg4a: Example of a non-regularized input (set of 4 lines) but using C1 filter
 eg4a linea:	vor2d
 	@echo "Target 'eg4a' or 'linea': "
-	./vor2d $(interactive) \
+	$(VOR2D) $(interactive) \
 		0.5 $(pseudo) $(interior) line.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -318,7 +324,7 @@ eg4a linea:	vor2d
 # Eg4a: Example of a non-regularized input (set of 4 lines) but open polygons 
 eg4b lineb:	vor2d
 	@echo "Target 'eg4b' or 'lineb': "
-	./vor2d $(interactive) \
+	$(VOR2D) $(interactive) \
 		0.5 $(pseudo) $(interior) line.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -327,8 +333,8 @@ eg4b lineb:	vor2d
 		&
 	
 # Eg5: A degenerate input with 5 boxes
-eg5 boxes: vor2d
-	./vor2d $(interactive)\
+eg5 boxes: $(VOR2D)
+	$(VOR2D) $(interactive)\
 		1 $(pseudo) $(interior) boxes.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) 100 100 $(scale) $(closePoly) \
@@ -337,8 +343,8 @@ eg5 boxes: vor2d
 		
 # Eg5a: A degenerate input with 5 boxes (but with no translations, our current
 # 	code shows some discontinuous curves)
-eg5a boxesa: vor2d
-	./vor2d $(interactive)\
+eg5a boxesa: $(VOR2D)
+	$(VOR2D) $(interactive)\
 		1 $(pseudo) $(interior) boxes.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) 0 0 $(scale) $(closePoly) \
@@ -346,8 +352,8 @@ eg5a boxesa: vor2d
 		&
 		
 # Eg6: A triangular star within a bounding frame
-eg6 boundedstar: vor2d
-	./vor2d $(interactive)\
+eg6 boundedstar: $(VOR2D)
+	$(VOR2D) $(interactive)\
 		1 $(pseudo) $(interior) input6.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -356,8 +362,8 @@ eg6 boundedstar: vor2d
 		&
 
 # Eg7: bugtrap
-eg7 bug: vor2d
-	./vor2d $(interactive) \
+eg7 bug: $(VOR2D)
+	$(VOR2D) $(interactive) \
 		1 $(pseudo) $(interior) bugtrap.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -366,8 +372,8 @@ eg7 bug: vor2d
 		&
 
 # Eg7: bugtrap
-eg7 bugX: vor2d
-	./vor2d $(interactive) \
+eg7X bugX: vor2d_lev3
+	./vor2d_lev3 $(interactive) \
 		1 $(pseudo) $(interior) bugtrap.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -376,8 +382,8 @@ eg7 bugX: vor2d
 		&
 
 # Eg8: Overlapping polygons: 2 triangles + 2 concentric squares (with funny orientation)
-eg8 overlap: vor2d
-	./vor2d $(interactive) \
+eg8 overlap: $(VOR2D)
+	$(VOR2D) $(interactive) \
 		1 $(pseudo) $(interior) overlap.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -387,8 +393,8 @@ eg8 overlap: vor2d
 		
 # Eg9x: Box containing Voronoi Vertex whose vertices has only two colors
 # 	CORRECT trans/scale params:   xtrans=-50  ytrans=80,   scale = 0.1
-eg9x 2colorx: vor2d
-	./vor2d $(interactive) \
+eg9x 2colorx: $(VOR2D)
+	$(VOR2D) $(interactive) \
 		1 $(pseudo) $(interior) vorBoxWith2colorX.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -397,8 +403,8 @@ eg9x 2colorx: vor2d
 		&
 		
 # Eg9: Box containing Voronoi Vertex whose vertices has only two colors
-eg9 2color: vor2d
-	./vor2d $(interactive) \
+eg9 2color: $(VOR2D)
+	$(VOR2D) $(interactive) \
 		1 $(pseudo) $(interior) vorBoxWith2color.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -407,8 +413,8 @@ eg9 2color: vor2d
 		&
 		
 # Eg9a: Box containing Voronoi Vertex whose vertices has only two colors
-eg9a 2colora: vor2d
-	./vor2d $(interactive) \
+eg9a 2colora: $(VOR2D)
+	$(VOR2D) $(interactive) \
 		1 $(pseudo) $(interior) vorBoxWith2color.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -417,8 +423,8 @@ eg9a 2colora: vor2d
 		&
 		
 # Eg9b: Box containing Voronoi Vertex whose vertices has only two colors
-eg9b 2colorb: vor2d
-	./vor2d $(interactive) \
+eg9b 2colorb: $(VOR2D)
+	$(VOR2D) $(interactive) \
 		1 $(pseudo) $(interior) vorBoxWith2color.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -427,8 +433,8 @@ eg9b 2colorb: vor2d
 		&
 		
 # Eg10: Two triangles generating a Voronoi curve
-eg10 2tri: vor2d
-	./vor2d $(interactive) \
+eg10 2tri: $(VOR2D)
+	$(VOR2D) $(interactive) \
 		1 $(pseudo) $(interior) input10.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -438,7 +444,7 @@ eg10 2tri: vor2d
 		
 # Eg11: Star example
 eg11 star:	vor2d
-	./vor2d $(interactive) 1 $(pseudo) $(interior) star.poly \
+	$(VOR2D) $(interactive) 1 $(pseudo) $(interior) star.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		100 100 10 $(closePoly) \
@@ -447,7 +453,7 @@ eg11 star:	vor2d
 	#
 # Eg11a: with pseudo=1(false) and interior=1(false)
 eg11a stara:	vor2d
-	./vor2d $(interactive) 1 1 1 star.poly \
+	$(VOR2D) $(interactive) 1 1 1 star.poly \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
 		100 100 4 $(closePoly) \
@@ -455,8 +461,8 @@ eg11a stara:	vor2d
 		&
 
 # Eg12: bugtrap2  (one bug trap inside another)
-eg12 bug2: vor2d
-	./vor2d $(interactive) \
+eg12 bug2: $(VOR2D)
+	$(VOR2D) $(interactive) \
 		1 $(pseudo) $(interior) bugtrap2.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -467,7 +473,7 @@ eg12 bug2: vor2d
 # Eg13: monkey example
 eg13 monkey:	vor2d
 	@echo "Target 'eg13' or 'monkey': "
-	./vor2d $(interactive) \
+	$(VOR2D) $(interactive) \
 		0.1 $(pseudo) $(interior) nazca_monkey.poly \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -478,7 +484,7 @@ eg13 monkey:	vor2d
 # Eg14: mammoth example
 eg14 mammoth:	vor2d
 	@echo "Target 'eg14' or 'mammoth': "
-	./vor2d $(interactive) \
+	$(VOR2D) $(interactive) \
 		0.1 $(pseudo) $(interior) mammoth.poly \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -493,7 +499,7 @@ eg15 vikram:    vor2d
 	 @echo "   AT LEVEL 1, You will see an obvious error."
 	 @echo "       But that is NOT a programming error."
 	 @echo "   AT LEVEL 3, Core Library will detect a DIVIDE-BY-ZERO."
-	 ./vor2d $(interactive) \
+	 $(VOR2D) $(interactive) \
 		 0.1 $(pseudo) $(interior) Vikram-1.txt \
 		 512 512 $(windowPosX) $(windowPosY) \
 		 $(inputDir) \
@@ -504,7 +510,7 @@ eg15 vikram:    vor2d
 # Eg15a: Vikram example (variant)
 eg15a :	vor2d
 	@echo "Target 'eg15a' :"
-	./vor2d $(interactive) \
+	$(VOR2D) $(interactive) \
 		0.1 $(pseudo) $(interior) Vikram-2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -515,7 +521,7 @@ eg15a :	vor2d
 # Eg50: standard parabola
 eg50 parabola:	vor2d
 	@echo "Target 'eg50' or 'line': "
-	./vor2d $(interactive) \
+	$(VOR2D) $(interactive) \
 		0.5 $(pseudo) $(interior) parabola.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -524,8 +530,8 @@ eg50 parabola:	vor2d
 		&
 	
 # Eg150: Example with 150 randomly generated, overlapping triangles
-eg150: vor2d
-	./vor2d $(interactive) \
+eg150: $(VOR2D)
+	$(VOR2D) $(interactive) \
 		4 $(pseudo) $(interior) input150.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -533,8 +539,8 @@ eg150: vor2d
 		$(c1) $(c2) $(maxEps) \
 		&
 		
-eg200: vor2d
-	./vor2d $(interactive) \
+eg200: $(VOR2D)
+	$(VOR2D) $(interactive) \
 		4 $(pseudo) $(interior) input200.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(inputDir) \
@@ -575,7 +581,7 @@ Dependencies:
 	touch Dependencies
 
 # The following line is causing trouble with levels...
-include Dependencies
+# include Dependencies
 
 #=================================================
 # Misc
@@ -617,7 +623,7 @@ clean:
 #=================================================
 # Remove executable files
 #=================================================
-EXEPROGS=$(TARGETS:=$(EXETYPE))
+EXEPROGS=$(ALL_TARGETS:=$(EXETYPE))
 
 vclean veryclean: clean
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS) Dependencies
