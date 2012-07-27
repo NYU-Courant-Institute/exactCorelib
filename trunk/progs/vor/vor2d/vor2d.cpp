@@ -102,7 +102,15 @@ QuadTree* QT;
 	bool pseudo = false;   // show pseudo Voronoi vertices/curves
 	bool interior = false; // show Voronoi interior to the polygons
 	bool closing_poly=true;
-	int  showBoxBoundary = 1;  //draw box boundary
+	int sel_circle=true;              //show the circle of selected box
+	int sel_features=true;            //show the features of selected box
+	int sel_wall_bisectors=false;     //show the wall bisectors of selected box (if possible)
+	int sel_corner_bisectors=false;   //show the corner bisectors of selected box (if possible)
+	int sel_parabola=false;           //show the parabola of wall/corner pairs in the features
+
+	int showBoxBoundary = 1;  //draw box boundary
+	int showVor=1;            //draw Vor complex
+
 	bool c1=false; //c1 predicate (true is new version, false is old version)
 	bool c2=false; //c2 predicate
 
@@ -152,8 +160,9 @@ extern int fileProcessor(string inputfile);
 
 //GL
 void renderScene(void);
-void drawPath(vector<Box*>&);
 void drawCircle( double Radius, int numPoints, double x, double y, double r, double g, double b);
+void drawParabola(double fx, double fy, double ox, double oy, double vx, double vy, int numPoints);
+void drawParabola(double p, int numPoints);
 void filledCircle( double radius, double x, double y, double r, double g, double b);
 void Keyboard( unsigned char key, int x, int y );
 void SpecialKey( int key, int x, int y );
@@ -174,8 +183,8 @@ void reset_move();
 //CORE
 void glVertex2f_core(double x, double y){ glVertex2f(CORE::Todouble(x),CORE::Todouble(y));}
 void glColor3d_core(double r, double g,double b){ glColor3d(CORE::Todouble(r),CORE::Todouble(g),CORE::Todouble(b));}
-
-
+void glTranslated_core(double x, double y,double z){ glTranslated(CORE::Todouble(x),CORE::Todouble(y),CORE::Todouble(z));}
+void glRotated_core(double a, double x, double y,double z){ glRotated(CORE::Todouble(a), CORE::Todouble(x),CORE::Todouble(y),CORE::Todouble(z));}
 
 //tmp
 Wall * closest_wall=NULL;
@@ -215,16 +224,16 @@ int main(int argc, char* argv[])
 	glutInitWindowSize(boxWidth, boxWidth);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 
+	char control_panel_caption[36];
+	sprintf(control_panel_caption,"Vor2D Level %d",Feature::corelevel());
+	title=title+string(" : ")+string(control_panel_caption);
 	int windowID = glutCreateWindow((char*)title.c_str());
 	glutDisplayFunc(renderScene);
 	GLUI_Master.set_glutIdleFunc( NULL );
 	GLUI_Master.set_glutKeyboardFunc(Keyboard);
 	GLUI_Master.set_glutMouseFunc(Mouse);
 	GLUI_Master.set_glutSpecialFunc(SpecialKey);
-
-	char level_string[36];
-	sprintf(level_string,"Vor2D Level %d",Feature::corelevel());
-	GLUI *glui = GLUI_Master.create_glui( level_string, 0, windowPosX + boxWidth + 20, windowPosY );
+	GLUI *glui = GLUI_Master.create_glui( control_panel_caption, 0, windowPosX + boxWidth + 20, windowPosY );
 
 	glClearColor(0.5,0,0,0);
 
@@ -252,20 +261,31 @@ int main(int argc, char* argv[])
 	glui->add_column_to_panel(top_panel,true);
 
 	glui->add_separator_to_panel(top_panel);
-	glui->add_checkbox_to_panel(top_panel,"Box Boundary", &showBoxBoundary, -1, (GLUI_Update_CB)renderScene)->set_int_val(1);
-	glui->add_separator_to_panel(top_panel);
+	glui->add_checkbox_to_panel(top_panel,"Box Boundary", &showBoxBoundary, -1, (GLUI_Update_CB)renderScene)->set_int_val(showBoxBoundary);
+	glui->add_checkbox_to_panel(top_panel,"Voronoi Curves", &showVor, -1, (GLUI_Update_CB)renderScene)->set_int_val(showVor);
 
-	// Save image button
+    // Save image button
     glui->add_button_to_panel(top_panel, "Save Image", 0, (GLUI_Update_CB)renderScenePS );
 
-	// Quit button
-	glui->add_button_to_panel(top_panel, "Quit", 0, (GLUI_Update_CB)exit );
+    // Quit button
+    glui->add_button_to_panel(top_panel, "Quit", 0, (GLUI_Update_CB)exit );
+
+
+
+	GLUI_Panel * selected_box_panel=glui->add_panel("Rendering Options for Selected Box");
+	glui->add_checkbox_to_panel(selected_box_panel,"Circle (clearance+2*Rb)", &sel_circle, -1, (GLUI_Update_CB)renderScene)->set_int_val(sel_circle);
+	glui->add_checkbox_to_panel(selected_box_panel,"Features in the circle", &sel_features, -1, (GLUI_Update_CB)renderScene)->set_int_val(sel_features);
+	glui->add_checkbox_to_panel(selected_box_panel,"Wall Bisectors (purple)", &sel_wall_bisectors, -1, (GLUI_Update_CB)renderScene)->set_int_val(sel_wall_bisectors);
+	glui->add_checkbox_to_panel(selected_box_panel,"Corner Bisectors (green)", &sel_corner_bisectors, -1, (GLUI_Update_CB)renderScene)->set_int_val(sel_corner_bisectors);
+	glui->add_checkbox_to_panel(selected_box_panel,"Parabola (gray)", &sel_parabola, -1, (GLUI_Update_CB)renderScene)->set_int_val(sel_parabola);
+
 
 	//translate and zoom gui
 	GLUI_Panel * bottom_panel=glui->add_panel("View Control");
 	guiTranslate=glui->add_translation_to_panel(bottom_panel, "Translate", GLUI_TRANSLATION_XY,gui_dXY);
 	glui->add_column_to_panel(bottom_panel,true);
 	guiZoom=glui->add_translation_to_panel(bottom_panel, "Zoom", GLUI_TRANSLATION_Z,&gui_dZ);
+
 	// reset button
 	glui->add_column_to_panel(bottom_panel,true);
 	glui->add_button_to_panel(bottom_panel, "Reset View", 0, (GLUI_Update_CB)reset_move );
@@ -417,26 +437,27 @@ void drawQuad(Box* b)
 		glEnd();
 	}	
 
-	//draw segments
-	glBegin(GL_LINES);
-	glLineWidth(3);
-	glColor3d_core(.75,0,0);
-
-	for(list<VorSegment>::iterator i=b->vor_segments.begin();i!=b->vor_segments.end();i++){
-	    glVertex2f_core(i->p[0],i->p[1]);
-	    glVertex2f_core(i->q[0],i->q[1]);
+	//draw Vor segments
+	if(showVor)
+	{
+        glBegin(GL_LINES);
+        glLineWidth(3);
+        glColor3d_core(.75,0,0);
+        for(list<VorSegment>::iterator i=b->vor_segments.begin();i!=b->vor_segments.end();i++){
+            glVertex2f_core(i->p[0],i->p[1]);
+            glVertex2f_core(i->q[0],i->q[1]);
+        }
+        glEnd();
 	}
-	glEnd();
+
 	glLineWidth(1);
 }
 
-double Ax,Ay;
-double Bx,By;
-double Cx,Cy;
-double Dx,Dy;
-
 void drawQuad_selected(list<Box*> boxes)
 {
+    typedef list<Corner*>::iterator CIT;
+    typedef list<Wall*>::iterator WIT;
+
     for(list<Box*>::iterator i=boxes.begin();i!=boxes.end();i++)
     {
         Box * b=*i;
@@ -466,62 +487,119 @@ void drawQuad_selected(list<Box*> boxes)
 
     }
 
+    //draw details of the last selected box
     Box * b=boxes.back();
 
     //draw circle with radius (clearance+2*Rb)
-    drawCircle( b->rB*2+b->cl_m, 100, b->x, b->y, 1,1,0);
-    //filledCircle( b->rB*2+b->cl_m, b->x, b->y, 1,1,0);
+    if(sel_circle)
+    {
+        drawCircle( b->rB*2+b->cl_m, 100, b->x, b->y, 1,1,0);
+    }
 
     //draw features in blue
-    typedef list<Corner*>::iterator CIT;
-    typedef list<Wall*>::iterator WIT;
+    if(sel_features)
+    {
+        //draw wall features
+        glLineWidth(2);
+        glBegin(GL_LINES);
+        glColor3d_core(0,0,1); //blue
+        for(WIT i=b->walls.begin();i!=b->walls.end();i++){
+            Wall * w=*i;
+            glVertex2f_core(w->src->x,w->src->y);
+            glVertex2f_core(w->dst->x,w->dst->y);
+        }
+        glEnd();
 
-    glLineWidth(2);
-    glBegin(GL_LINES);
-    glColor3d_core(0,0,1);
-    for(WIT i=b->walls.begin();i!=b->walls.end();i++){
-        Wall * w=*i;
-        glVertex2f_core(w->src->x,w->src->y);
-        glVertex2f_core(w->dst->x,w->dst->y);
+        //draw corner features
+        glLineWidth(1);
+        for(CIT i=b->corners.begin();i!=b->corners.end();i++){
+            Corner*c=*i;
+            filledCircle(5/uscale_Render,c->x,c->y,0.75,0.75,1);
+            drawCircle(5/uscale_Render,36, c->x,c->y,0,0,1);
+        }
     }
-    glEnd();
 
     //------------------------
-    //tmp
-    glLineWidth(2);
-    glBegin(GL_LINES);
-    glColor3d_core(0,1,0);
-    if(closest_wall!=NULL)
-    {
-        Wall * w=closest_wall;
-        glVertex2f_core(w->src->x,w->src->y);
-        glVertex2f_core(w->dst->x,w->dst->y);
-    }
-    glEnd();
-
-    if(closest_corner!=NULL)
-    {
-        drawCircle(5/uscale_Render,36, closest_corner->x,closest_corner->y,0,1,0);
-    }
+    //highlight the closest feature to the center of the box
+//    glLineWidth(2);
+//    glBegin(GL_LINES);
+//    glColor3d_core(0,1,0);
+//    if(closest_wall!=NULL)
+//    {
+//        Wall * w=closest_wall;
+//        glVertex2f_core(w->src->x,w->src->y);
+//        glVertex2f_core(w->dst->x,w->dst->y);
+//    }
+//    glEnd();
+//
+//    if(closest_corner!=NULL)
+//    {
+//        drawCircle(5/uscale_Render,36, closest_corner->x,closest_corner->y,0,1,0);
+//    }
     //------------------------
+    if(sel_wall_bisectors)
+    {
+        glLineWidth(1);
+        glBegin(GL_LINES);
 
-    glLineWidth(3);
-    glBegin(GL_LINES);
-    glColor3d(1,1,0);
-    glVertex2f_core(Ax,Ay);
-    glVertex2f_core(Bx,By);
+        //draw corner/corner bisector in yellow
+        glColor3d(1,0,1); //purple
+        for(WIT i=b->walls.begin();i!=b->walls.end();i++){
+            WIT j=i;
+            j++;
+            for(;j!=b->walls.end();j++){
+                double ox,oy,vx,vy;
+                b->getBisector(*i,*j,ox,oy,vx,vy);
+                double r=sqrt(vx*vx+vy*vy);
+                vx=boxWidth*10*vx/r;
+                vy=boxWidth*10*vy/r;
+                glVertex2f_core(ox+vx, oy+vy);
+                glVertex2f_core(ox-vx, oy-vy);
+            }
+        }
 
-    glColor3d(0,1,0);
-    glVertex2f_core(Cx,Cy);
-    glVertex2f_core(Dx,Dy);
+        glEnd();
+    }
 
-    glEnd();
+    if(sel_corner_bisectors)
+    {
+        glLineWidth(1);
+        glBegin(GL_LINES);
+        //draw corner/corner bisector in green
+        glColor3d(0,1,0); //green
+        for(CIT i=b->corners.begin();i!=b->corners.end();i++){
+            CIT j=i;
+            j++;
+            for(;j!=b->corners.end();j++){
+                double ox,oy,vx,vy;
+                b->getBisector(*i,*j,ox,oy,vx,vy);
+                double r=sqrt(vx*vx+vy*vy);
+                vx=boxWidth*10*vx/r;
+                vy=boxWidth*10*vy/r;
+                glVertex2f_core(ox+vx, oy+vy);
+                glVertex2f_core(ox-vx, oy-vy);
+            }
+        }
 
-    glLineWidth(1);
-    for(CIT i=b->corners.begin();i!=b->corners.end();i++){
-        Corner*c=*i;
-        filledCircle(5/uscale_Render,c->x,c->y,0.75,0.75,1);
-        drawCircle(5/uscale_Render,36, c->x,c->y,0,0,1);
+        glEnd();
+    }
+
+    //draw parabola of corner/edge case
+    if(sel_parabola)
+    {
+        glLineWidth(1);
+        glColor3d_core(0.4,0.4,0.4);
+        for(CIT i=b->corners.begin();i!=b->corners.end();i++)
+        {
+            Corner * c=*i;
+            for(WIT j=b->walls.begin();j!=b->walls.end();j++)
+            {
+                Wall * w=*j;
+                double vx=w->dst->x-w->src->x;
+                double vy=w->dst->y-w->src->y;
+                drawParabola(c->x,c->y,w->src->x,w->src->y,vx,vy,120);
+            }//end j
+        }//end i
     }
 
     glLineWidth(1);
@@ -557,6 +635,43 @@ void treeTraverse(Box* b)
 	{
 		treeTraverse(b->pChildren[i]);
 	}
+}
+
+void drawParabola(double p, int numPoints)
+{
+    numPoints=numPoints/2;
+    double d=epsilon/uscale_Render;
+
+    glBegin(GL_LINE_STRIP);
+    for(int i=-numPoints;i<numPoints;i++)
+    {
+        double x=i*i*d*((i<0)?-1:1);
+        double y=(x*x)/(4*p);
+        glVertex2f_core(x,y);
+    }//end for i
+    glEnd();
+}
+
+//draw a parabola using focus (fx,fy) and directrix with point (ox,oy) and  vector (vx,vy)
+void drawParabola(double fx, double fy, double ox, double oy, double vx, double vy, int numPoints)
+{
+    //compute p, half the distance from focus to directrix
+    double dx=fx-ox;
+    double dy=fy-oy;
+
+    double v_norm=sqrt(vx*vx+vy*vy);
+    double nx=vy/v_norm; //normal vector of directrix
+    double ny=-vx/v_norm;
+    double p=(dx*nx+dy*ny)/2;
+
+    const double PI=3.14159265;
+    glPushMatrix();
+    glTranslated_core(fx,fy,0);
+    double angle=atan2(CORE::Todouble(ny),CORE::Todouble(nx))*180/PI-90;
+    glRotated_core(angle,0,0,1);
+    glTranslated_core(0,-p,0);
+    drawParabola(p,numPoints);
+    glPopMatrix();
 }
 
 void drawCircle( double Radius, int numPoints, double x, double y, double r, double g, double b)
@@ -612,6 +727,9 @@ void renderScene(void)
     //draw selected feature
     if(g_selected_PM.empty()==false)
         drawQuad_selected(g_selected_PM);
+
+    glColor3d_core(0,0,0);
+    glTranslated(250,250,0);
 
 	glutSwapBuffers();
 }

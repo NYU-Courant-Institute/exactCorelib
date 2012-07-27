@@ -594,7 +594,7 @@ Dependencies:
 	touch Dependencies
 
 # The following line is causing trouble with levels...
-# include Dependencies
+include Dependencies
 
 #=================================================
 # Misc

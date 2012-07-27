@@ -34,10 +34,6 @@
 extern bool c1; //c1 predicate (true is the new version and false is the old version)
 extern bool c2; //c2 predicate
 
-extern double Ax,Ay;
-extern double Bx,By;
-extern double Cx,Cy;
-extern double Dx,Dy;
 
 //
 // keep these as options
@@ -1948,10 +1944,6 @@ public:
         double d[2]={n2.x,n2.y};
         double p[2];
 
-        Ax=a[0];
-        Ay=a[1];
-        Bx=b[0];
-        By=b[1];
 
         char code=SegSegInt(c,d,a,b,p);
         //cout<<"segseg code="<<code<<endl;
