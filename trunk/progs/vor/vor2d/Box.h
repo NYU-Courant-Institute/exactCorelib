@@ -835,14 +835,158 @@ public:
 	    return count;
 	}
 
+	//collect the intersections between the boundary of this box and the bisector of the features f and g
+	void getBoundaryIntersections(Feature * f, Feature * g, list<BoxNode>& crossings)
+	{
+        BoxNode UL, LL, UR, LR; //Box corners, upper left, lower left, upper right, lower right
+        UL.x=x-width/2; UL.y=y+height/2;
+        LL.x=x-width/2; LL.y=y-height/2;
+        UR.x=x+width/2; UR.y=y+height/2;
+        LR.x=x+width/2; LR.y=y-height/2;
+
+        bool f_is_wall=isWall(f);
+        bool g_is_wall=isWall(g);
+
+        if(f_is_wall!=g_is_wall) //wall/corner or corner/wall...
+        {
+            //this shouldn't happen due to predicate #3...
+            cerr<<"! ERROR: Box:getBoundaryIntersections: no method to handle Wall/Corner case"<<endl;
+            //assert(false);
+            return;
+        }
+
+        BoxNode Nx,Ex,Sx,Wx; //intersections from the North, East, South, West box edges
+        bool bNx=false, bEx=false, bSx=false, bWx=false;
+
+        if(isWall(f))
+        {
+            Wall * w1=dynamic_cast<Wall*>(f);
+            Wall * w2=dynamic_cast<Wall*>(g);
+            bNx=intersection(w1,w2,UL,UR,Nx);
+            bEx=intersection(w1,w2,UR,LR,Ex);
+            bSx=intersection(w1,w2,LR,LL,Sx);
+            bWx=intersection(w1,w2,LL,UL,Wx);
+        }
+        else
+        {
+            Corner * c1=dynamic_cast<Corner*>(f);
+            Corner * c2=dynamic_cast<Corner*>(g);
+            bNx=intersection(c1,c2,UL,UR,Nx);
+            bEx=intersection(c1,c2,UR,LR,Ex);
+            bSx=intersection(c1,c2,LR,LL,Sx);
+            bWx=intersection(c1,c2,LL,UL,Wx);
+        }
+
+        //collect all intersections
+        if(bNx) crossings.push_back(Nx);
+        if(bEx) crossings.push_back(Ex);
+        if(bSx) crossings.push_back(Sx);
+        if(bWx) crossings.push_back(Wx);
+	}
+
+	//build the vor curve with 2 features!
+    void buildVor(Feature * f, Feature * g)
+    {
+        //collect all intersections
+        list<BoxNode> nodes;
+        getBoundaryIntersections(f,g,nodes);
+
+        if(nodes.empty()) return;
+
+        //find two far-apart points and connect them...
+        double max_d=-FLT_MAX;
+        VorSegment seg;
+        for(list<BoxNode>::iterator i=nodes.begin();i!=nodes.end();i++)
+        {
+            list<BoxNode>::iterator j=i;
+            j++;
+            for(;j!=nodes.end();j++){
+                double dx=i->x-j->x;
+                double dy=i->y-j->y;
+                double d=dx*dx+dy*dy;
+                if(d>max_d){
+                    max_d=d;
+                    seg.p[0]=i->x;
+                    seg.p[1]=i->y;
+                    seg.q[0]=j->x;
+                    seg.q[1]=j->y;
+                }//end if
+            }//end for j
+        }//end for i
+
+        //record the segment
+        vor_segments.push_back(seg);
+        //done
+    }
+
+    void buildVor(Feature * f, Feature * g, Feature * h)
+    {
+        char vvt_code=VVT(f,g,h);
+
+         //yes, there is a vertex!
+         if(vvt_code=='1') //there can be f b/c there can be degenerated case...
+         {
+             list<BoxNode> nodes;
+             if(isWall(f)==isWall(g)) getBoundaryIntersections(f,g,nodes);
+             if(isWall(f)==isWall(h)) getBoundaryIntersections(f,h,nodes);
+             if(isWall(g)==isWall(h)) getBoundaryIntersections(g,h,nodes);
+
+             for(list<BoxNode>::iterator j=nodes.begin();j!=nodes.end();j++)
+            {
+                VorSegment seg;
+                seg.p[0]=j->x;
+                seg.p[1]=j->y;
+                seg.q[0]=x;
+                seg.q[1]=y;
+                vor_segments.push_back(seg);
+            }//end for j
+         }
+         //no vertex in the box, the box corners must be separated by non-intersecting arcs
+         else if(vvt_code=='h' || vvt_code=='f') //
+         {
+             if(isWall(f)==isWall(g)) buildVor(f,g);
+             if(isWall(f)==isWall(h)) buildVor(f,h);
+             if(isWall(g)==isWall(h)) buildVor(g,h);
+         }
+         else{
+             //no intersection at ALL...
+             return;
+         }
+    }
+
+	void buildVorDegenerate(list<Feature*> insep)
+	{
+	    cerr<<"! Error: buildVorDegenerate not implemented"<<endl;
+	    assert(false);
+	}
+
 	void buildVor()
 	{
 	    if(status!=Box::ON) return;
 
-	    UnionFind UF;
-
 	    //this build sets of inseparable features
-	    separable_features_count();
+	    list<Feature*> insep;
+	    getInseparableFeatures(walls, corners,insep);
+
+	    switch(insep.size())
+	    {
+	        case 0: return; //no vor features
+	        case 1: return; //no vor features
+	        case 2: buildVor(insep.front(),insep.back()); return;
+	        case 3: buildVor(insep.front(), *(++insep.begin()), insep.back()); return;
+	        default: //more than 3...
+	            buildVorDegenerate(insep);
+	            return;
+	    }
+
+
+/*
+        if(status!=Box::ON) return;
+
+        UnionFind UF;
+
+        //this build sets of inseparable features
+        int count=separable_features_count();
 
         //find actual features of the box nodes
         BoxNode UL, LL, UR, LR; //upper left, lower left, upper right, lower right
@@ -1274,6 +1418,7 @@ public:
 //                vor_segments.push_back(seg);
 //            }
         }//end if(sfc!=3)
+*/
 
 	}
 
@@ -1322,9 +1467,6 @@ public:
     //
     char VVT_ordered(Feature * f, Feature * g, Feature * h)
     {
-        //
-        Ax=Ay=Bx=By=Cx=Cy=Dx=Dy=0;
-        //
         BoxNode UL, LL, UR, LR; //Box corners, upper left, lower left, upper right, lower right
         UL.x=x-width/2; UL.y=y+height/2;
         LL.x=x-width/2; LL.y=y-height/2;
@@ -1343,17 +1485,6 @@ public:
             bEx=intersection(w1,w2,UR,LR,Ex);
             bSx=intersection(w1,w2,LR,LL,Sx);
             bWx=intersection(w1,w2,LL,UL,Wx);
-
-            if(isWall(h)){
-                cout<<"Check the second bisector"<<endl;
-                BoxNode tmp;
-                Wall * w3=dynamic_cast<Wall*>(h);
-                Cx=Ax;
-                Cy=Ay;
-                Dx=Bx;
-                Dy=By;
-                intersection(w1,w3,LL,UL,tmp);
-            }
         }
         else
         {
@@ -1378,7 +1509,7 @@ public:
             if(d2f<=d2h) all_closer_to_h=false;
             if(d2h<=d2f) all_closer_to_f=false;
 
-            cout<<"N ("<<Nx.x<<","<<Nx.y<<"): d2f="<<d2f<<" d2h="<<d2h<<endl;
+            //cout<<"N ("<<Nx.x<<","<<Nx.y<<"): d2f="<<d2f<<" d2h="<<d2h<<endl;
         }
 
         if(bEx){ //there is an intersection on east edge
@@ -1387,7 +1518,7 @@ public:
             if(d2f<=d2h) all_closer_to_h=false;
             if(d2h<=d2f) all_closer_to_f=false;
 
-            cout<<"E ("<<Ex.x<<","<<Ex.y<<"): d2f="<<d2f<<" d2h="<<d2h<<endl;
+            //cout<<"E ("<<Ex.x<<","<<Ex.y<<"): d2f="<<d2f<<" d2h="<<d2h<<endl;
         }
 
         if(bSx){ //there is an intersection on south edge
@@ -1396,7 +1527,7 @@ public:
             if(d2f<=d2h) all_closer_to_h=false;
             if(d2h<=d2f) all_closer_to_f=false;
 
-            cout<<"S ("<<Sx.x<<","<<Sx.y<<"): d2f="<<d2f<<" d2h="<<d2h<<endl;
+            //cout<<"S ("<<Sx.x<<","<<Sx.y<<"): d2f="<<d2f<<" d2h="<<d2h<<endl;
         }
 
         if(bWx){ //there is an intersection on west edge
@@ -1405,7 +1536,7 @@ public:
             if(d2f<=d2h) all_closer_to_h=false;
             if(d2h<=d2f) all_closer_to_f=false;
 
-            cout<<"W ("<<Wx.x<<","<<Wx.y<<"): d2f="<<d2f<<" d2h="<<d2h<<endl;
+            //cout<<"W ("<<Wx.x<<","<<Wx.y<<"): d2f="<<d2f<<" d2h="<<d2h<<endl;
         }
 
         if(all_closer_to_h) return 'h'; //all intersections are closer to f3 then to f1/f2
@@ -1576,7 +1707,7 @@ public:
         By=b[1];
 
         char code=SegSegInt(c,d,a,b,p);
-        cout<<"segseg code="<<code<<endl;
+        //cout<<"segseg code="<<code<<endl;
 
         if(code!='0'){
             cross.x=p[0];
