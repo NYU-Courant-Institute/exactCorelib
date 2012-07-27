@@ -3,8 +3,9 @@
  *
  * 	This is the main file that controls the CORE_LEVEL...
  * 		Choose CORE_LEVEL to be 1, 2 or 3.
- * 	We generally prefer to default to LEVEL 1,
- * 		as it could be slow for LEVEL 2 or 3.
+ * 		CORE_LEVEL 0 will default to CORE_LEVEL 1.
+ * 	We prefer to default to LEVEL 1
+ * 		as it is slower for LEVEL 2 or 3.
  *
  * 	Author: Jyh-Ming Lien
  * 		Chee Yap

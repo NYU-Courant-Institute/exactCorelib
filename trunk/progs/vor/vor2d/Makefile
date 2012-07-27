@@ -93,7 +93,8 @@ VAR=Debug
 CORE_PATH=../../..
 include ../Make.options
 
-# CHOOSE YOUR CORE_LEVEL 
+# CHOOSE YOUR CORE_LEVEL
+# 	(LEV=0 is really the same as LEV=1 but it affects this Makefile)
 LEV=2
 LEV=3
 LEV=1
@@ -629,6 +630,8 @@ ln link:
 #=================================================
 # Clean object files
 #=================================================
+#  Above, we assume that "clean" will remove the executable "vor2d".
+#  Hence it is important that "vor2d" is specified in TARGETS.
 clean:
 	-@test -z "*.o" || rm -f *.o Dependencies $(TARGETS)
 
