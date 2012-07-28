@@ -224,16 +224,16 @@ int main(int argc, char* argv[])
 	glutInitWindowSize(boxWidth, boxWidth);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 
-	char control_panel_caption[36];
-	sprintf(control_panel_caption,"Vor2D Level %d",Feature::corelevel());
-	title=title+string(" : ")+string(control_panel_caption);
+	char core_level_string[36];
+	sprintf(core_level_string,"Vor2D CORE Level %d",Feature::corelevel());
+	title=title+string(" : ")+string(core_level_string);
 	int windowID = glutCreateWindow((char*)title.c_str());
 	glutDisplayFunc(renderScene);
 	GLUI_Master.set_glutIdleFunc( NULL );
 	GLUI_Master.set_glutKeyboardFunc(Keyboard);
 	GLUI_Master.set_glutMouseFunc(Mouse);
 	GLUI_Master.set_glutSpecialFunc(SpecialKey);
-	GLUI *glui = GLUI_Master.create_glui( control_panel_caption, 0, windowPosX + boxWidth + 20, windowPosY );
+	GLUI *glui = GLUI_Master.create_glui( core_level_string, 0, windowPosX + boxWidth + 20, windowPosY );
 
 	glClearColor(0.5,0,0,0);
 
@@ -640,7 +640,7 @@ void treeTraverse(Box* b)
 void drawParabola(double p, int numPoints)
 {
     numPoints=numPoints/2;
-    double d=epsilon/uscale_Render;
+    double d=epsilon/((double)uscale_Render);
 
     glBegin(GL_LINE_STRIP);
     for(int i=-numPoints;i<numPoints;i++)
