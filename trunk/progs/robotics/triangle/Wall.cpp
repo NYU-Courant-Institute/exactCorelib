@@ -12,6 +12,7 @@
 #include "Wall.h"
 #include "Corner.h"
 #include "Box.h"
+#include <float.h>
 
 Wall::Wall(Corner* s, Corner* d):src(s), dst(d)
 {
