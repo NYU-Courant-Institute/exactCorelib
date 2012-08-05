@@ -1,9 +1,9 @@
 #include "Box.h"
 #include <assert.h>
 #include <math.h>
-
-#define OVERRIDE_NEW_DELETE
-#include "MemProCpp\MemPro.cpp"
+//
+//#define OVERRIDE_NEW_DELETE
+//#include "MemProCpp\MemPro.cpp"
 
 extern double triRobo[3];
 
