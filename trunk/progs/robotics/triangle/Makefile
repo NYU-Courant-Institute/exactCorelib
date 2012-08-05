@@ -105,6 +105,9 @@ step = 0		# number of steps to run
 xtrans = 0		# x-translation of input file
 ytrans = 0		# y-translation of input file
 scale = 1		# scaling of input file
+
+TRI = tri
+TRI = triangle
 #=================================================
 # Define target files (put all your files here)
 #=================================================

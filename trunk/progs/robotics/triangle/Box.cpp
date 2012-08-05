@@ -485,7 +485,8 @@ void Box::updateStatusSmall()
 	Line2d L1(v02x, v02y, v11x, v11y);
 	Line2d L2(v12x, v12y, v21x, v21y);
 	Line2d L3(v22x, v22y, v01x, v01y);
-	bool expandSuccess = L1.expand(rB, L2, L3) && L2.expand(rB, L1, L3) && L3.expand(rB, L1, L2) && !L1.isNegative(L2, L3);
+	bool expandSuccess;
+	expandSuccess = L1.expand(rB, L2, L3) && L2.expand(rB, L1, L3) && L3.expand(rB, L1, L2) && !L1.isNegative(L2, L3);
 	assert(expandSuccess);
 
 
