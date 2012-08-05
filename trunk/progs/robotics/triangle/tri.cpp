@@ -167,6 +167,9 @@ double triRobo[2] = {0.833333333, 1.0};
 	GLUI_EditText* editBetaTheta;
 	GLUI_EditText* editSeed;
 
+	GLUI_TextBox* textBox;
+
+
 
 // External Routines ========================================
 //////////////////////////////////////////////////////////////////////////////////
@@ -391,6 +394,11 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 		glui->add_radiobutton_to_group(radioDrawOption, "Hide Box Boundary");
 		glui->add_separator();
 
+		textBox = new GLUI_TextBox(glui,true);		
+		textBox->set_h(250);
+		textBox->set_w(310);
+		textBox->disable();
+
 		// Quit button
 		glui->add_button( "Quit", 0, (GLUI_Update_CB)exit );
 
@@ -554,6 +562,18 @@ cout<<"   beta = (" << beta[0] << ", " << beta[1] << ", " << beta[2] << ")" << e
 	cout << "total Stuck boxes: " << stuckCount << endl;
 	cout << "total Mixed boxes smaller than epsilon: " << mixSmallCount << endl;
 	cout << "total Mixed boxes bigger than epsilon: " << mixCount - ct - mixSmallCount << endl;
+
+	stringstream ssout;
+	if (!noPath) ssout << "            PATH FOUND !" << endl;
+	else  ssout << "           NO PATH !" << endl;
+	ssout << "Expanded " << ct << " times" << endl;
+	ssout << "Time used: " << t.getElapsedTimeInMilliSec() << " ms" << endl;
+	ssout << "total Free boxes: " << freeCount << endl;
+	ssout << "total Stuck boxes: " << stuckCount << endl;
+	ssout << "total Mixed boxes smaller than epsilon: " << mixSmallCount << endl;
+	ssout << "total Mixed boxes bigger than epsilon: " << mixCount - ct - mixSmallCount << endl;
+	textBox->set_text(ssout.str().c_str());
+
 	freeCount = stuckCount = mixCount = mixSmallCount = 0;
 	cout << "####################### END of RUN ######################\n";
 }//run
