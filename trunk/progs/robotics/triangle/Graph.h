@@ -137,15 +137,17 @@ class PQCmp3
 public:
 	bool operator() (const Box* a, const Box* b)
 	{
-		//if depth diff bigger than 3, use depth as priority
-		//if (abs(a->depth - b->depth) > 8)
-		//{
-		//	return a->depth > b->depth;
-		//}
-		//otherwise expand box closer to beta
-		double distDiff = (a->x - beta[0])*(a->x - beta[0]) + (a->y - beta[1])*(a->y - beta[1]) 
-			- ((b->x - beta[0])*(b->x - beta[0]) + (b->y - beta[1])*(b->y - beta[1]));
-		return distDiff > 0;	
+		//double distDiff = (a->x - beta[0])*(a->x - beta[0]) + (a->y - beta[1])*(a->y - beta[1]) 
+		//	- ((b->x - beta[0])*(b->x - beta[0]) + (b->y - beta[1])*(b->y - beta[1]));		
+		//return distDiff > 0;	
+
+		//use c*d(B) + 1 / w(B) as the measure, instead of just d(B)
+		double distDiff = sqrt((a->x - beta[0])*(a->x - beta[0]) + (a->y - beta[1])*(a->y - beta[1]))
+			- sqrt(((b->x - beta[0])*(b->x - beta[0]) + (b->y - beta[1])*(b->y - beta[1])));	
+		double wDiff = 1 / a->width - 1 / b->width;
+		double c = 0.0001;
+		return c * distDiff + wDiff > 0;
+
 	}
 };
 

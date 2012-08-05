@@ -116,17 +116,18 @@ double triRobo[2] = {0.833333333, 1.0};
 //////////////////////////////////////////////////////////////////////////////////
 	double alpha[3] = {200, 350, 0};		// start configuration
 	double beta[3] = {30, 30, 0};		// goal configuration
-	double epsilon = 20;			// resolution parameter
+	double epsilon = 1;			// resolution parameter
 	Box* boxA;				// start box (containing alpha)
 	Box* boxB;				// goal box (containing beta)
 	double boxWidth = 512;			// Initial box width
 	double boxHeight = 512;			// Initial box height
-	double R0 = 10;				// Robot radius 
+	double R0 = 19;				// Robot radius 
 	int windowPosX = 400;			// X Position of Window
 	int windowPosY = 200;			// Y Position of Window
-	string fileName("input.txt"); 		// Input file name
+	string fileName("bugtrap.txt"); 		// Input file name
+	//string fileName("input150.txt"); 		// Input file name
 	string inputDir("inputs"); 		// Path for input files 
-	int QType = 0;				// The Priority Queue can be
+	int QType = 2;				// The Priority Queue can be
 	//    sequential (0) or random (1)
 	int interactive = 0;			// Run interactively?
 	//    Yes (0) or No (1)
@@ -380,7 +381,7 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 		radioQType = glui->add_radiogroup();
 		glui->add_radiobutton_to_group(radioQType, "Random");
 		glui->add_radiobutton_to_group(radioQType, "BFS");
-		glui->add_radiobutton_to_group(radioQType, "A-star");
+		glui->add_radiobutton_to_group(radioQType, "Greedy");
 		glui->add_separator();
 
 		radioQType->set_int_val(QType);
@@ -774,8 +775,6 @@ void renderScene(void)
 				glColor4f(0.5, 0.5, 0.5, 0.1);
 			}
 			break;
-		case Box::UNKNOWN:
-			cerr <<"UNKNOWN not handled" << endl;
 	}
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBegin(GL_POLYGON);

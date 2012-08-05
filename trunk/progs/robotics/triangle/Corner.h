@@ -1,8 +1,12 @@
 #pragma once
 #include <math.h>
-class Wall;
+#include "Feature.h"
+#include <stdlib.h>
 
-class Corner
+class Wall;
+class Box;
+
+class Corner : public Feature
 {
 public:
 	double x, y;
@@ -20,4 +24,16 @@ public:
 	}
 
 	bool isConvex();
+
+	virtual bool inZone(Box * box);
+
+	virtual bool inZone(double x2, double y2);
+
+	virtual bool inZone_star(Box * box);
+
+	virtual bool inZone_star(double x2, double y2);
+
+	bool isIsolated(){ return preWall==NULL && nextWall==NULL; }
+
+	bool isDangling(){ return preWall==NULL || nextWall==NULL; }
 };
