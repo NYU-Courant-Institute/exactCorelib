@@ -25,18 +25,18 @@ public:
 	Wall(Corner* s, Corner* d);
 
 	//distance functions
-	virtual double distance(double x, double y);
-	double distance_star(double x, double y);
-	short distance_sign(double x, double y);
+	virtual double distance(const Point2d& p);
+	double distance_star(const Point2d& p);
+	short distance_sign(const Point2d& p);
 
     //
-	virtual bool inZone(double x, double y);
-	virtual bool inZone_star(double x, double y);
+	virtual bool inZone(const Point2d& p);
+	virtual bool inZone_star(const Point2d& p);
 
 	//
 	virtual bool inZone(Box * b);
 	virtual bool inZone_star(Box * b);
 
-	bool isRight(double x, double y);
+	bool isRight(const Point2d& p);
 
 };

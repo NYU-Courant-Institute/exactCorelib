@@ -31,15 +31,16 @@ public:
 };
 
 
+
 class BoxQueue
 {
 private:
 
 public:
 
-	BoxQueue(void)
-	{
-	}
+	BoxQueue(void){}
+
+	~BoxQueue(){}
 
 	virtual void push(Box* b) = 0;
 
@@ -48,17 +49,15 @@ public:
 	virtual bool empty() = 0;
 
 	virtual int size() = 0;
-
-	~BoxQueue(void)
-	{
-	}
 };
+
 
 class seqQueue : public BoxQueue
 {
-private:
-	priority_queue<Box*, vector<Box*>, PQCmp> PQ;
 public:
+
+    ~seqQueue(){}
+
 	void push(Box* b)
 	{
 		PQ.push(b);
@@ -80,46 +79,50 @@ public:
 	{
 		return PQ.size();
 	}
-};
 
-class randQueue : public BoxQueue
-{
 private:
-	list<Box*> L;
-	int Qseed;
 
-public:
-	randQueue(int s): Qseed(s) {
-		//srand( time(0) );
-		srand( Qseed ); 
-	}
-
-	void push(Box* b)
-	{
-		L.push_back(b);
-	}
-
-	Box* extract()
-	{
-		int i = rand() % L.size();
-		list<Box*>::iterator iter = L.begin();
-		advance(iter, i);
-		Box* r = *iter;
-		L.erase(iter);
-		return r;
-	}
-
-	bool empty()
-	{
-		return L.empty();
-	}
-
-	int size()
-	{
-		return L.size();
-	}
-
+    priority_queue<Box*, vector<Box*>, PQCmp> PQ;
 };
+
+//class randQueue : public BoxQueue
+//{
+//private:
+//	list<Box*> L;
+//	int Qseed;
+//
+//public:
+//	randQueue(int s): Qseed(s) {
+//		//srand( time(0) );
+//		srand( Qseed );
+//	}
+//
+//	void push(Box* b)
+//	{
+//		L.push_back(b);
+//	}
+//
+//	Box* extract()
+//	{
+//		int i = rand() % L.size();
+//		list<Box*>::iterator iter = L.begin();
+//		advance(iter, i);
+//		Box* r = *iter;
+//		L.erase(iter);
+//		return r;
+//	}
+//
+//	bool empty()
+//	{
+//		return L.empty();
+//	}
+//
+//	int size()
+//	{
+//		return L.size();
+//	}
+//
+//};
 
 //class dijkstraQueue : public BoxQueue
 //{

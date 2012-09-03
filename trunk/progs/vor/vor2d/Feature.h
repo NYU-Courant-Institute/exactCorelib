@@ -26,6 +26,9 @@
 
 #include "CORE.h"
 
+#include "Vector.h"
+#include "Point.h"
+
 class Set; //defined in "UnionFind.h"
 class Box; //defined in "Box.h"
 
@@ -59,11 +62,11 @@ public:
     }
 
     //
-    virtual double distance(double x2, double y2)=0;
+    virtual double distance(const Point2d& p)=0;
 
     //
-    virtual bool inZone(double x, double y)=0;
-    virtual bool inZone_star(double x, double y)=0;
+    virtual bool inZone(const Point2d& p)=0;
+    virtual bool inZone_star(const Point2d& p)=0;
 
     //
     virtual bool inZone(Box * b)=0;

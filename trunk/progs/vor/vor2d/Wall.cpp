@@ -23,43 +23,44 @@ Wall::Wall(Corner* s, Corner* d):src(s), dst(d)
 
 //	distance to line segment,
 //	follows http://local.wasp.uwa.edu.au/~pbourke/geometry/pointline/
-double Wall::distance(double x, double y)
+double Wall::distance(const Point2d& p)
 {
-	double x1 = src->x;
-	double x2 = dst->x;
-	double y1 = src->y;
-	double y2 = dst->y;
-	double u = ( (x-x1)*(x2-x1) + (y-y1)*(y2-y1) ) / ( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
+    const double x1 = src->pos[0];
+    const double x2 = dst->pos[0];
+    const double y1 = src->pos[1];
+    const double y2 = dst->pos[1];
+	double u = ( (p[0]-x1)*(x2-x1) + (p[1]-y1)*(y2-y1) ) / ( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
 	u = u < 0 ? 0 : u;
 	u = u > 1 ? 1 : u;
 	double x0 = u*x2 + (1-u)*x1;
 	double y0 = u*y2 + (1-u)*y1;
-	return sqrt( (x-x0)*(x-x0) + (y-y0)*(y-y0) );
+	return sqrt( sqr(p[0]-x0) + sqr(p[1]-y0) );
 }
 
-double Wall::distance_star(double x, double y)
+double Wall::distance_star(const Point2d& p)
 {
-    double x1 = src->x;
-    double x2 = dst->x;
-    double y1 = src->y;
-    double y2 = dst->y;
-    double u = ( (x-x1)*(x2-x1) + (y-y1)*(y2-y1) ) / ( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
+    const double x1 = src->pos[0];
+    const double x2 = dst->pos[0];
+    const double y1 = src->pos[1];
+    const double y2 = dst->pos[1];
+    double u = ( (p[0]-x1)*(x2-x1) + (p[1]-y1)*(y2-y1) ) / ( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
 
     if(u>=1) return FLT_MAX;
     if(u<=0) return FLT_MAX;
 
     double x0 = u*x2 + (1-u)*x1;
     double y0 = u*y2 + (1-u)*y1;
-    return sqrt( (x-x0)*(x-x0) + (y-y0)*(y-y0) );
+
+    return sqrt( sqr(p[0]-x0) + sqr(p[1]-y0) );
 }
 
-short Wall::distance_sign(double x, double y)
+short Wall::distance_sign(const Point2d& p)
 {
-    double x1 = src->x;
-    double x2 = dst->x;
-    double y1 = src->y;
-    double y2 = dst->y;
-    double u = ( (x-x1)*(x2-x1) + (y-y1)*(y2-y1) ) / ( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
+    const double x1 = src->pos[0];
+    const double x2 = dst->pos[0];
+    const double y1 = src->pos[1];
+    const double y2 = dst->pos[1];
+    double u = ( (p[0]-x1)*(x2-x1) + (p[1]-y1)*(y2-y1) ) / ( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
 
     if(u>=1) return 1;
     if(u<=0) return -1;
@@ -67,43 +68,42 @@ short Wall::distance_sign(double x, double y)
 }
 
 //
-bool Wall::inZone(double x, double y)
+bool Wall::inZone(const Point2d& p)
 {
-    short s=distance_sign(x,y);
+    short s=distance_sign(p);
     if(s==0) return true;
     return false;
 }
 
 
-bool Wall::inZone_star(double x, double y)
+bool Wall::inZone_star(const Point2d& p)
 {
-    if(inZone(x,y)==false) return false;
-    if(isRight(x,y)) return true;
+    if(inZone(p)==false) return false;
+    if(isRight(p)) return true;
     return false;
 }
 
 bool Wall::inZone(Box * b)
 {
     //check if the end points of this wall are in the box
-    if( b->in(src->x,src->y) || b->in(dst->x,dst->y) )
+    if( b->in(src->pos) || b->in(dst->pos) )
         return true;
 
-    //center x,y
-    double x=b->x;
-    double y=b->y;
+    //center o
+    const Point2d& o=b->o;
     double w2=b->width/2;  //half of width
     double h2=b->height/2; //half of height
 
-    double corner1[2]={x-w2,y-h2};
-    double corner2[2]={x+w2,y-h2};
-    double corner3[2]={x+w2,y+h2};
-    double corner4[2]={x-w2,y+h2};
+    Point2d corner1(o[0]-w2,o[1]-h2);
+    Point2d corner2(o[0]+w2,o[1]-h2);
+    Point2d corner3(o[0]+w2,o[1]+h2);
+    Point2d corner4(o[0]-w2,o[1]+h2);
 
     //check with the Zone of the wall
-    short s1=distance_sign(corner1[0],corner1[1]);
-    short s2=distance_sign(corner2[0],corner2[1]);
-    short s3=distance_sign(corner3[0],corner3[1]);
-    short s4=distance_sign(corner4[0],corner4[1]);
+    short s1=distance_sign(corner1);
+    short s2=distance_sign(corner2);
+    short s3=distance_sign(corner3);
+    short s4=distance_sign(corner4);
 
 
     if(s1==0 || s2==0 || s3==0 || s4==0)
@@ -119,24 +119,21 @@ bool Wall::inZone_star(Box * b)
 {
     if(inZone(b)==false) return false;
 
-//return true;
-
-    //center x,y
-    double x=b->x;
-    double y=b->y;
+    //center of box
+    const Point2d& o=b->o;
     double w2=b->width/2;  //half of width
     double h2=b->height/2; //half of height
 
-    double corner1[2]={x-w2,y-h2};
-    double corner2[2]={x+w2,y-h2};
-    double corner3[2]={x+w2,y+h2};
-    double corner4[2]={x-w2,y+h2};
+    Point2d corner1(o[0]-w2,o[1]-h2);
+    Point2d corner2(o[0]+w2,o[1]-h2);
+    Point2d corner3(o[0]+w2,o[1]+h2);
+    Point2d corner4(o[0]-w2,o[1]+h2);
 
     //check the side of the wall
-    bool r1=isRight(corner1[0],corner1[1]);
-    bool r2=isRight(corner2[0],corner2[1]);
-    bool r3=isRight(corner3[0],corner3[1]);
-    bool r4=isRight(corner4[0],corner4[1]);
+    bool r1=isRight(corner1);
+    bool r2=isRight(corner2);
+    bool r3=isRight(corner3);
+    bool r4=isRight(corner4);
 
     int count=0;
     if(r1) count++;
@@ -146,15 +143,12 @@ bool Wall::inZone_star(Box * b)
 
 
     if(count==0) return false; //all on the left side
-//    return true;
-
-    //if(count>1) return true;
 
     //check with the Zone of the wall
-    short s1=distance_sign(corner1[0],corner1[1]);
-    short s2=distance_sign(corner2[0],corner2[1]);
-    short s3=distance_sign(corner3[0],corner3[1]);
-    short s4=distance_sign(corner4[0],corner4[1]);
+    short s1=distance_sign(corner1);
+    short s2=distance_sign(corner2);
+    short s3=distance_sign(corner3);
+    short s4=distance_sign(corner4);
 
     if(r1 && s1==0) return true; //in the zone and on the right
     if(r2 && s2==0) return true;
@@ -170,11 +164,11 @@ bool Wall::inZone_star(Box * b)
     return false;
 }
 
-bool Wall::isRight(double x, double y)
+bool Wall::isRight(const Point2d& p)
 {
-	double x1 = src->x;
-	double x2 = dst->x;
-	double y1 = src->y;
-	double y2 = dst->y;
-	return (x2-x1)*(y-y1) - (y2-y1)*(x-x1) < 0;
+	const double x1 = src->pos[0];
+	const double x2 = dst->pos[0];
+	const double y1 = src->pos[1];
+	const double y2 = dst->pos[1];
+	return (x2-x1)*(p[1]-y1) - (y2-y1)*(p[0]-x1) < 0;
 }

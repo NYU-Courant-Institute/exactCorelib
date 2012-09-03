@@ -16,7 +16,6 @@
 #pragma once
 #include <iostream>
 #include "Box.h"
-//#include "UnionFind.h"
 #include "PriorityQueue.h"
 
 extern int freeCount;
@@ -170,8 +169,8 @@ public:
 
 	Box* getBox(Box* root, double x, double y)
 	{
-		if (x > root->x + root->width / 2 || x < root->x - root->width / 2
-			|| y > root->y + root->height / 2 || y < root->y - root->height / 2)
+		if (x > root->o[0] + root->width / 2 || x < root->o[0] - root->width / 2
+			|| y > root->o[1] + root->height / 2 || y < root->o[1] - root->height / 2)
 		{
 			return 0;
 		}
@@ -179,8 +178,9 @@ public:
 		Box* b = root;
 		while (!b->isLeaf)
 		{
-			double dx = x - b->x;
-			double dy = y - b->y;
+			double dx = x - b->o[0];
+			double dy = y - b->o[1];
+
 			if (dx <= 0 && dy >= 0)
 			{
 				b = b->pChildren[0];

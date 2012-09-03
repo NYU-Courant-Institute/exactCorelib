@@ -9,27 +9,31 @@ class Box;
 class Corner : public Feature
 {
 public:
-	double x, y;
+
+    //double x, y;
+    Point2d pos; //position of the corner
+
 	Wall* preWall;
 	Wall* nextWall;
 
-	Corner(double xx, double yy):x(xx), y(yy)
+	Corner(const Point2d& p)
 	{
+	    pos=p;
 	    preWall=nextWall=NULL;
 	}
 
-	virtual double distance(double x2, double y2)
+	virtual double distance(const Point2d& p)
 	{
-		return sqrt( (x-x2)*(x-x2) + (y-y2)*(y-y2) );
+		return (p-this->pos).norm();
 	}
 
 	virtual bool inZone(Box * box);
 
-	virtual bool inZone(double x2, double y2);
+	virtual bool inZone(const Point2d& p);
 
 	virtual bool inZone_star(Box * box);
 
-	virtual bool inZone_star(double x2, double y2);
+	virtual bool inZone_star(const Point2d& p);
 
 	bool isConvex();
 

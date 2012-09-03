@@ -27,7 +27,7 @@
 		boxHt = 512
 		windowPosX = 200	# initial Window position
 		windowPosY = 200	
-		seed = 11		# ransom seed 
+
 		step = 0		# number of steps to run
 					#	(step=0 means run to completion)
 		xtrans = 5		# x-translation of the input data 
@@ -80,7 +80,7 @@ QuadTree* QT;
 // GLOBAL INPUT Parameters ========================================
 //
 
-	double epsilon = 10;			// resolution parameter
+	double epsilon = 10;		// resolution parameter
 	double deltaX=0;			// Translate input file in x-direction
 	double deltaY=0;			// Translate input file in y-direction
 	double uscale=1;			// Scale the input file
@@ -95,9 +95,8 @@ QuadTree* QT;
 	string inputDir("inputs"); 		// Path for input files 
 
 	int interactive = 0;			// Run interactively?
-						        //    Yes (0) or No (1)
-	int seed = 111;				// seed for random number generator
-						// (Could also be used for BFS, etc)
+						            //    Yes (0) or No (1)
+
 
 	bool pseudo = false;   // show pseudo Voronoi vertices/curves
 	bool interior = false; // show Voronoi interior to the polygons
@@ -114,6 +113,9 @@ QuadTree* QT;
 	bool c1=false; //c1 predicate (true is new version, false is old version)
 	bool c2=false; //c2 predicate
 
+	int vor_build_option=0; //0, build vor as described in the paper
+	                        //1, build vor using the closest features of box corners
+
 	string title="Subdivision Voronoi 2D";	// display title
 	double cutoff = 10;			// cutoff value (or "delta") for expansion
 	double maxEpsilon = 1000;		// maximum epsilon for an IN box
@@ -128,8 +130,7 @@ QuadTree* QT;
 
 // GLUI controls ========================================
 //
-	GLUI_RadioGroup* radioQType;
-	GLUI_RadioGroup* radioDrawOption;
+	GLUI_RadioGroup* radioBuildOptions;
 	GLUI_EditText* editInput;
 	GLUI_EditText* editDir;
 	GLUI_EditText* editRadius;
@@ -139,7 +140,6 @@ QuadTree* QT;
 	GLUI_EditText* editAlphaY;
 	GLUI_EditText* editBetaX;
 	GLUI_EditText* editBetaY;
-	GLUI_EditText* editSeed;
 
 	GLUI_Translation * guiTranslate;
 	GLUI_Translation * guiZoom;
@@ -160,10 +160,11 @@ extern int fileProcessor(string inputfile);
 
 //GL
 void renderScene(void);
-void drawCircle( double Radius, int numPoints, double x, double y, double r, double g, double b);
-void drawParabola(double fx, double fy, double ox, double oy, double vx, double vy, int numPoints);
+void drawCircle( double Radius, int numPoints, const Point2d& o, double r, double g, double b);
+
+void drawParabola(const Point2d& f, const Point2d& o, const Vector2d& v, int numPoints);
 void drawParabola(double p, int numPoints);
-void filledCircle( double radius, double x, double y, double r, double g, double b);
+void filledCircle( double radius, const Point2d& o, double r, double g, double b);
 void Keyboard( unsigned char key, int x, int y );
 void SpecialKey( int key, int x, int y );
 void Mouse(int button, int state, int x, int y);
@@ -182,6 +183,7 @@ void reset_move();
 
 //CORE
 void glVertex2f_core(double x, double y){ glVertex2f(CORE::Todouble(x),CORE::Todouble(y));}
+void glVertex2f_core(const Point2d& p){ glVertex2f(CORE::Todouble(p[0]),CORE::Todouble(p[1]));}
 void glColor3d_core(double r, double g,double b){ glColor3d(CORE::Todouble(r),CORE::Todouble(g),CORE::Todouble(b));}
 void glTranslated_core(double x, double y,double z){ glTranslated(CORE::Todouble(x),CORE::Todouble(y),CORE::Todouble(z));}
 void glRotated_core(double a, double x, double y,double z){ glRotated(CORE::Todouble(a), CORE::Todouble(x),CORE::Todouble(y),CORE::Todouble(z));}
@@ -254,6 +256,10 @@ int main(int argc, char* argv[])
 	editMaxEpsilon = glui->add_edittext_to_panel(top_panel, "maxEpsilon:", GLUI_EDITTEXT_FLOAT );
 	editMaxEpsilon->set_float_val(CORE::Todouble(maxEpsilon));
 
+	radioBuildOptions=glui->add_radiogroup_to_panel(top_panel,&vor_build_option);
+	glui->add_radiobutton_to_group(radioBuildOptions, "build Curves CKY");
+	glui->add_radiobutton_to_group(radioBuildOptions, "build Curves VF");
+
 	GLUI_Button* buttonRun = glui->add_button_to_panel(top_panel, "Run", -1, (GLUI_Update_CB)run);
 	buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
 
@@ -316,7 +322,7 @@ int main(int argc, char* argv[])
 //create an empty quadtree
 void genEmptyTree()
 {
-	Box* root = new Box(boxWidth/2, boxHeight/2, boxWidth, boxHeight);
+	Box* root = new Box( Point2d(boxWidth/2, boxHeight/2), boxWidth, boxHeight);
 
 	parseConfigFile(root);
 	//Chee: root->updateStatus(maxEpsilon);
@@ -417,12 +423,15 @@ void drawQuad(Box* b)
             break;
 	}
 
+	Point2d UL, UR, LR, LL;
+	b->getCorners(UL, UR, LR, LL);
+
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_POLYGON);
-    glVertex2f_core(b->x - b->width / 2, b->y - b->height / 2);
-    glVertex2f_core(b->x + b->width / 2, b->y - b->height / 2);
-    glVertex2f_core(b->x + b->width / 2, b->y + b->height / 2);
-    glVertex2f_core(b->x - b->width / 2, b->y + b->height / 2);
+    glVertex2f_core(UL);
+    glVertex2f_core(UR);
+    glVertex2f_core(LR);
+    glVertex2f_core(LL);
     glEnd();
 
 	if (showBoxBoundary)
@@ -430,10 +439,10 @@ void drawQuad(Box* b)
 		glColor3f(0.5, 0.5 , 0.5);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glBegin(GL_POLYGON);
-		glVertex2f_core(b->x - b->width / 2, b->y - b->height / 2);
-		glVertex2f_core(b->x + b->width / 2, b->y - b->height / 2);
-		glVertex2f_core(b->x + b->width / 2, b->y + b->height / 2);
-		glVertex2f_core(b->x - b->width / 2, b->y + b->height / 2);
+		glVertex2f_core(UL);
+        glVertex2f_core(UR);
+        glVertex2f_core(LR);
+        glVertex2f_core(LL);
 		glEnd();
 	}	
 
@@ -444,8 +453,8 @@ void drawQuad(Box* b)
         glLineWidth(3);
         glColor3d_core(.75,0,0);
         for(list<VorSegment>::iterator i=b->vor_segments.begin();i!=b->vor_segments.end();i++){
-            glVertex2f_core(i->p[0],i->p[1]);
-            glVertex2f_core(i->q[0],i->q[1]);
+            glVertex2f_core(i->p);
+            glVertex2f_core(i->q);
         }
         glEnd();
 	}
@@ -479,10 +488,10 @@ void drawQuad_selected(list<Box*> boxes)
 
         //draw a highlight box
         glBegin(GL_LINE_LOOP);
-        glVertex2f_core(b->x - w2, b->y - h2);
-        glVertex2f_core(b->x + w2, b->y - h2);
-        glVertex2f_core(b->x + w2, b->y + h2);
-        glVertex2f_core(b->x - w2, b->y + h2);
+        glVertex2f_core(b->o[0] - w2, b->o[1] - h2);
+        glVertex2f_core(b->o[0] + w2, b->o[1] - h2);
+        glVertex2f_core(b->o[0] + w2, b->o[1] + h2);
+        glVertex2f_core(b->o[0] - w2, b->o[1] + h2);
         glEnd();
 
     }
@@ -493,7 +502,7 @@ void drawQuad_selected(list<Box*> boxes)
     //draw circle with radius (clearance+2*Rb)
     if(sel_circle)
     {
-        drawCircle( b->rB*2+b->cl_m, 100, b->x, b->y, 1,1,0);
+        drawCircle( b->rB*2+b->cl_m, 100, b->o, 1,1,0);
     }
 
     //draw features in blue
@@ -505,8 +514,8 @@ void drawQuad_selected(list<Box*> boxes)
         glColor3d_core(0,0,1); //blue
         for(WIT i=b->walls.begin();i!=b->walls.end();i++){
             Wall * w=*i;
-            glVertex2f_core(w->src->x,w->src->y);
-            glVertex2f_core(w->dst->x,w->dst->y);
+            glVertex2f_core(w->src->pos);
+            glVertex2f_core(w->dst->pos);
         }
         glEnd();
 
@@ -514,8 +523,8 @@ void drawQuad_selected(list<Box*> boxes)
         glLineWidth(1);
         for(CIT i=b->corners.begin();i!=b->corners.end();i++){
             Corner*c=*i;
-            filledCircle(5/uscale_Render,c->x,c->y,0.75,0.75,1);
-            drawCircle(5/uscale_Render,36, c->x,c->y,0,0,1);
+            filledCircle(5/uscale_Render,c->pos,0.75,0.75,1);
+            drawCircle(5/uscale_Render,36, c->pos,0,0,1);
         }
     }
 
@@ -548,13 +557,13 @@ void drawQuad_selected(list<Box*> boxes)
             WIT j=i;
             j++;
             for(;j!=b->walls.end();j++){
-                double ox,oy,vx,vy;
-                b->getBisector(*i,*j,ox,oy,vx,vy);
-                double r=sqrt(vx*vx+vy*vy);
-                vx=boxWidth*10*vx/r;
-                vy=boxWidth*10*vy/r;
-                glVertex2f_core(ox+vx, oy+vy);
-                glVertex2f_core(ox-vx, oy-vy);
+                Point2d o;
+                Vector2d v;
+                b->getBisector(*i,*j,o,v);
+                double r=v.norm();
+                v=v*(boxWidth*10/r);
+                glVertex2f_core(o[0]+v[0], o[1]+v[1]);
+                glVertex2f_core(o[0]-v[0], o[1]-v[1]);
             }
         }
 
@@ -571,13 +580,13 @@ void drawQuad_selected(list<Box*> boxes)
             CIT j=i;
             j++;
             for(;j!=b->corners.end();j++){
-                double ox,oy,vx,vy;
-                b->getBisector(*i,*j,ox,oy,vx,vy);
-                double r=sqrt(vx*vx+vy*vy);
-                vx=boxWidth*10*vx/r;
-                vy=boxWidth*10*vy/r;
-                glVertex2f_core(ox+vx, oy+vy);
-                glVertex2f_core(ox-vx, oy-vy);
+                Point2d o;
+                Vector2d v;
+                b->getBisector(*i,*j,o,v);
+                double r=v.norm();
+                v=v*(boxWidth*10/r);
+                glVertex2f_core(o[0]+v[0], o[1]+v[1]);
+                glVertex2f_core(o[0]-v[0], o[1]-v[1]);
             }
         }
 
@@ -595,9 +604,11 @@ void drawQuad_selected(list<Box*> boxes)
             for(WIT j=b->walls.begin();j!=b->walls.end();j++)
             {
                 Wall * w=*j;
-                double vx=w->dst->x-w->src->x;
-                double vy=w->dst->y-w->src->y;
-                drawParabola(c->x,c->y,w->src->x,w->src->y,vx,vy,120);
+                if(w->inZone(c->pos))
+                {
+                    Vector2d v=w->dst->pos-w->src->pos;
+                    drawParabola(c->pos,w->src->pos,v,120);
+                }
             }//end j
         }//end i
     }
@@ -613,8 +624,8 @@ void drawWalls(Box* b)
 	{
 		Wall* w = *iter;
 		glBegin(GL_LINES);
-		glVertex2f_core(w->src->x, w->src->y);
-		glVertex2f_core(w->dst->x, w->dst->y);
+		glVertex2f_core(w->src->pos);
+		glVertex2f_core(w->dst->pos);
 		glEnd();
 	}
 	glLineWidth(1.0);
@@ -653,28 +664,26 @@ void drawParabola(double p, int numPoints)
 }
 
 //draw a parabola using focus (fx,fy) and directrix with point (ox,oy) and  vector (vx,vy)
-void drawParabola(double fx, double fy, double ox, double oy, double vx, double vy, int numPoints)
+void drawParabola(const Point2d& f, const Point2d& o, const Vector2d& v, int numPoints)
 {
     //compute p, half the distance from focus to directrix
-    double dx=fx-ox;
-    double dy=fy-oy;
+    Vector2d d=f-o;
 
-    double v_norm=sqrt(vx*vx+vy*vy);
-    double nx=vy/v_norm; //normal vector of directrix
-    double ny=-vx/v_norm;
-    double p=(dx*nx+dy*ny)/2;
+    double v_norm=v.norm();
+    Vector2d n(v[1],-v[0]);
+    n=n/v_norm;
+    double p=(d*n)/2;
 
-    const double PI=3.14159265;
     glPushMatrix();
-    glTranslated_core(fx,fy,0);
-    double angle=atan2(CORE::Todouble(ny),CORE::Todouble(nx))*180/PI-90;
+    glTranslated_core(f[0],f[1],0);
+    double angle=atan2(CORE::Todouble(n[1]),CORE::Todouble(n[0]))*180/PI-90;
     glRotated_core(angle,0,0,1);
     glTranslated_core(0,-p,0);
     drawParabola(p,numPoints);
     glPopMatrix();
 }
 
-void drawCircle( double Radius, int numPoints, double x, double y, double r, double g, double b)
+void drawCircle( double Radius, int numPoints, const Point2d& o, double r, double g, double b)
 {
     glColor3d_core(r,g,b);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -684,12 +693,12 @@ void drawCircle( double Radius, int numPoints, double x, double y, double r, dou
         double Angle = i * (2.0* 3.1415926 / numPoints);
         double X = cos( CORE::Todouble(Angle) )*Radius;
         double Y = sin( CORE::Todouble(Angle) )*Radius;
-        glVertex2f_core( X + x, Y + y);
+        glVertex2f_core( X + o[0], Y + o[1]);
     }
     glEnd();
 }
 
-void filledCircle( double radius, double x, double y, double r, double g, double b) 
+void filledCircle( double radius, const Point2d& o, double r, double g, double b)
 {
     int numPoints = 100;
     glColor3d_core(r,g,b);
@@ -700,14 +709,14 @@ void filledCircle( double radius, double x, double y, double r, double g, double
         double Angle = i * (2.0* 3.1415926 / numPoints);
         double X = cos( CORE::Todouble(Angle) )*radius;
         double Y = sin( CORE::Todouble(Angle) )*radius;
-        glVertex2f_core( X + x, Y + y);
+        glVertex2f_core( X + o[0], Y + o[1]);
     }
     glEnd();
 }
 
 void renderScene(void) 
 {
-    uscale_Render=(gui_dZ>0)?pow(1.05f,gui_dZ):1.0f/pow(1.05f,-gui_dZ);
+    uscale_Render=(gui_dZ>0)?1.0f/pow(1.05f,gui_dZ):pow(1.05f,-gui_dZ);
     deltaX_Render=gui_dXY[0]*1.0f/uscale_Render;
     deltaY_Render=gui_dXY[1]*1.0f/uscale_Render;
 
@@ -831,7 +840,8 @@ void parseConfigFile(Box* b)
 			pt -= 1; //1 based array
 			if (ptSet.find(pt) == ptSet.end())
 			{
-				ptVec.push_back(new Corner(pts[pt*2]*uscale+deltaX, pts[pt*2+1]*uscale+deltaY));
+			    Point2d pos(pts[pt*2]*uscale+deltaX, pts[pt*2+1]*uscale+deltaY);
+				ptVec.push_back(new Corner(pos));
 				b->addCorner(ptVec.back());
 				ptSet.insert(pt);
 				if (ptVec.size() > 1)
@@ -978,8 +988,7 @@ void Mouse(int button, int state, int x, int y)
             double m_x=(x-boxWidth/2)/uscale_Render-deltaX_Render+boxWidth/2;
             double m_y=(viewport[3]-y-boxHeight/2)/uscale_Render-deltaY_Render+boxHeight/2;
 
-            Box * selected = QT->pRoot->find(m_x,m_y);
-
+            Box * selected = QT->pRoot->find(Point2d(m_x,m_y));
 
             if(selected!=NULL)
             {
@@ -987,8 +996,7 @@ void Mouse(int button, int state, int x, int y)
                 selected->buildVor();
 
                 BoxNode mid;
-                mid.x=selected->x;
-                mid.y=selected->y;
+                mid.pos=selected->o;
                 selected->pParent->determine_clearance(mid);
                 if(dynamic_cast<Wall*>(mid.nearest_feature)!=NULL)
                 {
@@ -1034,8 +1042,8 @@ void renderScenePS()
     //Chee: bounding box:
     PS.setlinewidth(4);
     Box* r = QT->pRoot;
-    PS.rect(CORE::Todouble(r->x-r->width / 2), CORE::Todouble(r->y - r->height / 2),
-            CORE::Todouble(r->x + r->width / 2), CORE::Todouble(r->y + r->height / 2) );
+    PS.rect(CORE::Todouble(r->o[0] - r->width / 2), CORE::Todouble(r->o[1] - r->height / 2),
+            CORE::Todouble(r->o[0] + r->width / 2), CORE::Todouble(r->o[1] + r->height / 2) );
     PS.setstrokergb(0,0,0);
     PS.stroke();
     //////////////////////////////////////////////////
@@ -1093,8 +1101,8 @@ void drawQuadPS(SimplePSinC& PS, Box* b)
     }
 
     PS.setlinewidth(1);
-    PS.rect(CORE::Todouble(b->x-b->width / 2), CORE::Todouble(b->y - b->height / 2),
-            CORE::Todouble(b->x + b->width / 2), CORE::Todouble(b->y + b->height / 2) );
+    PS.rect(CORE::Todouble(b->o[0]-b->width / 2), CORE::Todouble(b->o[1] - b->height / 2),
+            CORE::Todouble(b->o[0] + b->width / 2), CORE::Todouble(b->o[1] + b->height / 2) );
     PS.setstrokegray(0.5);
 
     if (showBoxBoundary)
@@ -1126,7 +1134,7 @@ void drawWallsPS(SimplePSinC& PS, Box* b)
     for (list<Wall*>::iterator iter = b->walls.begin(); iter != b->walls.end(); ++iter)
     {
         Wall* w = *iter;
-        PS.line( CORE::Todouble(w->src->x), CORE::Todouble(w->src->y),CORE::Todouble(w->dst->x), CORE::Todouble(w->dst->y) );
+        PS.line( CORE::Todouble(w->src->pos[0]), CORE::Todouble(w->src->pos[1]),CORE::Todouble(w->dst->pos[0]), CORE::Todouble(w->dst->pos[1]) );
     }
 
     PS.stroke();
