@@ -393,17 +393,24 @@ public:
     //
     char VVT_ordered(Feature * f, Feature * g, Feature * h);
 
+    // compute the bisector of f1 and f2
+    // @return
+    // bo //bisector origin
+    // bv //bisector vector, not normalized
+    void getBisector(Feature * f1, Feature * f2, Point2d& bo, Vector2d& bv);
+
+
     // compute the bisector of w1 and w2
     // @return
     // bo //bisector origin
     // bv //bisector vector, not normalized
-    void getBisector(Wall * w1, Wall * w2, Point2d& bo, Vector2d& bv); // double& bo_x, double& bo_y, double& bv_x, double& bv_y);
+    void getBisector(Wall * w1, Wall * w2, Point2d& bo, Vector2d& bv);
 
     // compute the bisector of c1 and c2
     // @return
     // bo //bisector origin
     // bv //bisector vector, not normalized
-    void getBisector(Corner * c1, Corner * c2, Point2d& bo, Vector2d& bv); //double& bo_x, double& bo_y, double& bv_x, double& bv_y);
+    void getBisector(Corner * c1, Corner * c2, Point2d& bo, Vector2d& bv);
 
 	//
 	// compute the intersection between the bisector of (f1,f2) and the line segment connecting n1 and n2
@@ -458,6 +465,9 @@ protected:
     // build a Voronoi curve from features f, g, h
     // Called by buildVor(f,g,h)
     void buildVorCurve(Feature * f, Feature * g, Feature * h);
+
+    //build Voronoi vertex from 3 features
+    Point2d buildVorVertex(Feature * f, Feature * g, Feature * h);
 
 private:
 

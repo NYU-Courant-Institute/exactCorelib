@@ -167,7 +167,7 @@ endif
 # Targets for CORE LIBRARY TESTING
 #=================================================
 
-all: $(ALL_TARGETS)
+all: $(VOR2D) $(ALL_TARGETS)
 
 default: eg
 

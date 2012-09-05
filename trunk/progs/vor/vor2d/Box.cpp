@@ -4,7 +4,7 @@
 
 extern int vor_build_option; //TODO: defined in vor2d.cpp, find a way to remove this
 
-#define CKY_SIMPLIFIED 1
+#define CKY_SIMPLIFIED 0
 
 //-----------------------------------------------------------------------------
 //
@@ -786,6 +786,16 @@ VorSegment Box::createVorSegment(const Point2d& n1, const Point2d& n2)
     return seg;
 }
 
+//see either cutBy_simplified or cutBy_complex
+char Box::cutBy(Feature * f, Feature * g, const Point2d& n1, const Point2d& n2)
+{
+#if CKY_SIMPLIFIED
+    return cutBy_simplified(f,g,n1,n2);
+#else
+    return cutBy_complex(f,g,n1,n2);
+#endif
+}
+
 //
 // check if the edge (n1,n2) is cut by the separator of features f and g
 //
@@ -819,15 +829,6 @@ char Box::cutBy_complex(Feature * f, Feature * g, const Point2d& n1, const Point
     if(d_n1f==d_n1g) return 't'; //the separator is go through n2...
 
     return '1'; //regular case
-}
-
-char Box::cutBy(Feature * f, Feature * g, const Point2d& n1, const Point2d& n2)
-{
-#if CKY_SIMPLIFIED
-    cutBy_simplified(f,g,n1,n2);
-#else
-    cutBy_complex(f,g,n1,n2);
-#endif
 }
 
 //
@@ -1093,7 +1094,7 @@ void Box::buildVor_complex(Feature * f, Feature * g)
     vector<BdSeg> Bd[4];
     short typeCount[5]={0,0,0,0,0}; //'0', 'r', 'p', '1','2'
 
-    int segSize=buildOnBdSegs(Bd);
+    int segSize=buildBdSegs(Bd);
 
     for(short i=0;i<4;i++)
     {
@@ -1101,7 +1102,12 @@ void Box::buildVor_complex(Feature * f, Feature * g)
         {
             BdSeg& seg=Bd[i][j];
             seg.type=cutBy(f,g,seg.n1,seg.n2);
-            buildVorNode(seg,f,g);
+
+            //this determines the voronoi node on the boundary of the box
+            if(seg.type!='0') buildVorNode(seg,f,g);
+            //else if(seg.type=='s') seg.x=seg.n1;
+            //else if(seg.type=='t') seg.x=seg.n2;
+
             //seg.approxX();
             switch(seg.type)
             {
@@ -1143,7 +1149,7 @@ void Box::buildVor_complex(Feature * f, Feature * g)
         return; //done
     }
 
-    /*
+
     //now we don't have 'p' cases
     //so the separator cuts through the corners of the box...
     list<Point2d> nodes;
@@ -1152,18 +1158,33 @@ void Box::buildVor_complex(Feature * f, Feature * g)
         for(short j=0;j<(short)Bd[i].size();j++)
         {
             BdSeg& seg=Bd[i][j];
+            if(seg.type=='0') continue;
             if(nodes.empty())
                 nodes.push_back(seg.x);
             else{
-                if(seg.x)
+                if( (seg.x-nodes.back()).normsqr()<1e-10 ) continue;
+                nodes.push_back(seg.x);
             }
         }//end j
     }//end i
 
-    assert(nodes.size()==2);
-    vor_segments.push_back(createVorSegment(nodes.front(),nodes.back()));
-    */
+    if(nodes.size()==1) return; //cut through the corner...
 
+    if(nodes.size()>1 && (nodes.front()-nodes.back()).normsqr()<1e-10 ) nodes.pop_back();
+
+    if(nodes.size()!=2)
+    {
+        cerr<<"! There are more than 2 Voronoi nodes from 2 features:"<<endl;
+        cout<<"nodes.size()="<<nodes.size()<<endl;
+        for(list<Point2d>::iterator i=nodes.begin();i!=nodes.end();i++)
+            cout<<"pos="<<*i<<endl;
+
+    }
+
+    vor_segments.push_back(createVorSegment(nodes.front(),nodes.back()));
+
+
+    /*
     //no regular cuts, some 's' cuts and some 't' cuts
     if(typeCount[1]==0 && typeCount[3]>0 && typeCount[4]>0)
     {
@@ -1206,6 +1227,7 @@ void Box::buildVor_complex(Feature * f, Feature * g)
 
     //
     printBuildVorWarning(typeCount);
+*/
 
     return; //done
 
@@ -1244,6 +1266,43 @@ void Box::buildVor_complex(Feature * f, Feature * g)
 }
 
 
+//build Voronoi vertex from 3 features
+Point2d Box::buildVorVertex(Feature * f, Feature * g, Feature * h)
+{
+    return o;
+
+    //build a segment that is a bisector and then call buildVorNode
+    BdSeg bisector;
+    Point2d o;
+    Vector2d v;
+    Feature * f1=NULL;
+    Feature * f2=NULL;
+
+    if(isWall(f)==isWall(g)){
+        getBisector(f,g,o,v);
+        f1=f;
+        f2=h;
+    }
+    else if(isWall(f)==isWall(h))
+    {
+        getBisector(f,h,o,v);
+        f1=f;
+        f2=g;
+    }
+    else //if(isWall(g)==isWall(h))
+    {
+        getBisector(g,h,o,v);
+        f1=g;
+        f2=f;
+    }
+
+    v=v.normalize();
+    bisector.n1=o+v*1000;
+    bisector.n2=o-v*1000;
+    buildVorNode(bisector,f1,f2);
+    return bisector.x;
+}
+
 // build a node (intersection between seg and Vor) from features f, g
 void Box::buildVorNode(BdSeg& seg, Feature * f, Feature * g)
 {
@@ -1268,8 +1327,7 @@ void Box::buildVorNode(BdSeg& seg, Feature * f, Feature * g)
         {
             Point2d z;
             Vector2d bv;
-            if(isWall(f)) getBisector((Wall*)f,(Wall*)g,z,bv);
-            else getBisector((Corner*)f,(Corner*)g,z,bv);
+            getBisector(f,g,z,bv);
 
             //bv=bv.normalize();
 
@@ -1409,12 +1467,14 @@ void Box::buildVor(Feature * f, Feature * g, Feature * h)
              }//end for j
          }//end for i
 
+         Point2d vv=buildVorVertex(f,g,h);
+
          //add voronoi curves between the computed nodes and the center of the box
          for(list<Point2d>::iterator j=nodes.begin();j!=nodes.end();j++)
          {
              VorSegment seg;
              seg.p=*j;
-             seg.q=this->o;
+             seg.q=vv;
              vor_segments.push_back(seg);
          }//end for j
      }
@@ -1480,7 +1540,7 @@ void Box::buildVor_VF()
     UnionFind UF;
 
     //this build sets of inseparable features
-    int count=separable_features_count();
+    separable_features_count();
 
     //find actual features of the box nodes
     BoxNode UL, LL, UR, LR; //upper left, lower left, upper right, lower right
@@ -1922,6 +1982,16 @@ char Box::VVT_ordered(Feature * f, Feature * g, Feature * h)
     if(all_closer_to_f) return 'f'; //all intersections are closer to f1&f2 then to f3
 
     return '1';
+}
+
+//get the bisector of two features f and g
+//f & g must have the same type (both Wall or Corner)
+void Box::getBisector(Feature * f, Feature * g, Point2d& bo, Vector2d& bv)
+{
+    assert(isWall(f)==isWall(g));
+
+    if(isWall(f)) getBisector((Wall*)f, (Wall*)g, bo, bv);
+    else getBisector((Corner*)f, (Corner*)g, bo, bv);
 }
 
 // compute the bisector of w1 and w2
