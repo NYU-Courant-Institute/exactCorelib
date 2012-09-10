@@ -455,7 +455,7 @@ public:
 protected:
 
     // build a node (intersection between seg and Vor) from features f, g
-    void buildVorNode(BdSeg& seg, Feature * f, Feature * g);
+    bool buildVorNode(BdSeg& seg, Feature * f, Feature * g);
 
     // build a node (intersection between seg and Vor) from features f, g
     // and checked by feature h

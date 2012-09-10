@@ -1110,7 +1110,14 @@ void Box::buildVor_complex(Feature * f, Feature * g)
             seg.type=cutBy(f,g,seg.n1,seg.n2);
 
             //this determines the voronoi node on the boundary of the box
-            if(seg.type!='0') buildVorNode(seg,f,g);
+            if(seg.type!='0')
+            {
+                //Feature * a=closestInISF(f,seg.n1,seg.n2);
+                //Feature * b=closestInISF(g,seg.n1,seg.n2);
+                bool r=buildVorNode(seg,f,g);
+                if(!r)  seg.type='0';
+            }
+
             //else if(seg.type=='s') seg.x=seg.n1;
             //else if(seg.type=='t') seg.x=seg.n2;
 
@@ -1185,6 +1192,16 @@ void Box::buildVor_complex(Feature * f, Feature * g)
         for(list<Point2d>::iterator i=nodes.begin();i!=nodes.end();i++)
             cout<<"pos="<<*i<<endl;
 
+        for(short i=0;i<4;i++)
+        {
+            for(short j=0;j<(short)Bd[i].size();j++)
+            {
+                BdSeg& seg=Bd[i][j];
+                cout<<"! "<<seg.n1<<","<<seg.n2<<" type="<<seg.type<<" x="<<seg.x<<endl;
+
+            }//end for j
+
+        }//end for i
     }
 
     vor_segments.push_back(createVorSegment(nodes.front(),nodes.back()));
@@ -1310,7 +1327,7 @@ Point2d Box::buildVorVertex(Feature * f, Feature * g, Feature * h)
 }
 
 // build a node (intersection between seg and Vor) from features f, g
-void Box::buildVorNode(BdSeg& seg, Feature * f, Feature * g)
+bool Box::buildVorNode(BdSeg& seg, Feature * f, Feature * g)
 {
     Point2d s=seg.n1;
     Point2d e=seg.n2;
@@ -1329,16 +1346,17 @@ void Box::buildVorNode(BdSeg& seg, Feature * f, Feature * g)
         bool found_intersection=false;
         Point2d x( (s[0]+e[0])/2, (s[1]+e[1])/2 );
 
+        /*
         if(isWall(f)==isWall(g))
         {
             Point2d z;
             Vector2d bv;
             getBisector(f,g,z,bv);
 
-            //bv=bv.normalize();
+            bv=bv.normalize();
 
-            double a[2]={z[0]+bv[0]*100000,z[1]+bv[1]*100000}; //TODO: replace 100000 with the root box width/height
-            double b[2]={z[0]-bv[0]*100000,z[1]-bv[1]*100000};
+            double a[2]={z[0]+bv[0]*10000,z[1]+bv[1]*10000}; //TODO: replace 100000 with the root box width/height
+            double b[2]={z[0]-bv[0]*10000,z[1]-bv[1]*10000};
             double c[2]={seg.n1[0],seg.n1[1]};
             double d[2]={seg.n2[0],seg.n2[1]};
             double p[2];
@@ -1349,13 +1367,13 @@ void Box::buildVorNode(BdSeg& seg, Feature * f, Feature * g)
                 //seg.x.set(p);
                 //found_intersection=true;
             }
+            //else return false;
         }
-
+        */
 
 
         if(found_intersection==false) //more general case but slower...
         {
-
 
             //cout<<"====="<<endl;
             //
@@ -1364,7 +1382,6 @@ void Box::buildVorNode(BdSeg& seg, Feature * f, Feature * g)
                 double d_xf=f->distance(x);
                 double d_xg=g->distance(x);
                 //double d_xh=h->distance(x);
-
 
     //            if( min(d_xf,d_xg)>d_xh ) //the closest point is closer to h...
     //                return false;
@@ -1376,13 +1393,19 @@ void Box::buildVorNode(BdSeg& seg, Feature * f, Feature * g)
                     break;
                 }
 
-                if( cutBy(f,g,s,x) == '1')
+                if( cutBy(f,g,s,x) != '0')
                 {
                     e=x;
                 }
-                else //if( cutBy(f,g,x,e) == '1')
+                else if( cutBy(f,g,x,e) != '0')
                 {
                     s=x;
+                }
+                else{
+                    return false;
+                    seg.x=x;
+                    found_intersection=true;
+                    break;
                 }
                 //else
                 //    assert(false);
@@ -1397,6 +1420,8 @@ void Box::buildVorNode(BdSeg& seg, Feature * f, Feature * g)
 
         //if(found_intersection==false) seg.approxX(); //failed to find intersection...
     }
+
+    return true;
 }
 
 
