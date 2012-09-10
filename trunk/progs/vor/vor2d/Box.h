@@ -469,6 +469,10 @@ protected:
     //build Voronoi vertex from 3 features
     Point2d buildVorVertex(Feature * f, Feature * g, Feature * h);
 
+    //find the closest feature in the inseparable features (ISF)
+    //to the end points in seg
+    Feature * closestInISF(Feature * g, const Point2d& n1, const Point2d& n2);
+
 private:
 
     //

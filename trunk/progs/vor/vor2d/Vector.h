@@ -117,11 +117,11 @@ Vector<T,D> Vector<T,D>::normalize() const     // normalize
 	T magnitude = norm();
 	int i;
 	for(i=0; i<D; i++){
-		newv.v[i] = v[i] / magnitude;
-		if(abs(v[i]) > magnitude * FLT_MAX){
+		if(v[i]==0){
 			cerr << "! taking the norm of a zero " << D << " vector" << endl;
 			break;
 		}
+		newv.v[i] = v[i] / magnitude;
 	}
 	for(; i < D; i++){
 		newv.v[i] = v[i] / magnitude;

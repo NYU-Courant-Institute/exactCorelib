@@ -815,7 +815,7 @@ void parseConfigFile(Box* b)
 	vector<double> pts(nPt*2);
 	for (int i = 0; i < nPt; ++i)
 	{
-		ifs >> pts[i*2] >> pts[i*2+1];
+		ifs >> pts[i*2] >> pts[i*2+1];;
 	}
 
 	//skip_comment_line ( ifs );	// again, clear white space

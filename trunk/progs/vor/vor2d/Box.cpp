@@ -814,6 +814,9 @@ char Box::cutBy(Feature * f, Feature * g, const Point2d& n1, const Point2d& n2)
 //
 char Box::cutBy_complex(Feature * f, Feature * g, const Point2d& n1, const Point2d& n2)
 {
+    f=closestInISF(f,n1,n2);
+    g=closestInISF(g,n1,n2);
+
     double d_n1f=f->distance(n1);
     double d_n1g=g->distance(n1);
     double d_n2f=f->distance(n2);
@@ -846,6 +849,9 @@ char Box::cutBy_complex(Feature * f, Feature * g, const Point2d& n1, const Point
 //
 char Box::cutBy_simplified(Feature * f, Feature * g, const Point2d& n1, const Point2d& n2)
 {
+    f=closestInISF(f,n1,n2);
+    g=closestInISF(g,n1,n2);
+
     double d_n1f=f->distance(n1);
     double d_n1g=g->distance(n1);
     double d_n2f=f->distance(n2);
@@ -1447,7 +1453,7 @@ void Box::buildVor(Feature * f, Feature * g, Feature * h)
      if(vvt_code=='1')
      {
          vector<BdSeg> Bd[4];
-         buildOnBdSegs(Bd);
+         buildBdSegs(Bd);
 
          list<Point2d> nodes;
          for(short i=0;i<4;i++)
@@ -2273,4 +2279,59 @@ bool Box::isNeighbor(Box * b)
     for(short i=0;i<4;i++) if(b->pChildren[i]==this) return true;
     return false;
 }
+
+
+//find the closest feature in the inseparable features (ISF)
+//to the end points in seg
+Feature * Box::closestInISF(Feature * f, const Point2d& n1, const Point2d& n2)
+{
+    typedef list<Wall*>::iterator   WIT;
+    typedef list<Corner*>::iterator CIT;
+
+    double min_d=f->distance(n1);
+    Feature * min_f=f;
+
+    //go through each wall
+    for (WIT iterW=walls.begin(); iterW != walls.end(); ++iterW)
+    {
+        Wall * w=*iterW;
+        if(UnionFind().Find(w)==UnionFind().Find(f))
+        {
+            double d=w->distance(n1);
+            if(d<min_d){
+                min_d=d;
+                min_f=w;
+            }
+
+            d=w->distance(n2);
+            if(d<min_d){
+                min_d=d;
+                min_f=w;
+            }
+        }
+    }
+
+    //go through each corner
+    for (CIT iterC=corners.begin(); iterC != corners.end(); ++iterC)
+    {
+        Corner * c=*iterC;
+        if(UnionFind().Find(c)==UnionFind().Find(f))
+        {
+            double d=c->distance(n1);
+            if(d<min_d){
+                min_d=d;
+                min_f=c;
+            }
+
+            d=c->distance(n2);
+            if(d<min_d){
+                min_d=d;
+                min_f=c;
+            }
+        }
+    }
+
+    return min_f;
+}
+
 
