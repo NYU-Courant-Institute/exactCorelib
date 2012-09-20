@@ -116,12 +116,12 @@ double triRobo[2] = {0.833333333, 1.0};
 //////////////////////////////////////////////////////////////////////////////////
 	double alpha[3] = {200, 350, 0};		// start configuration
 	double beta[3] = {30, 30, 0};		// goal configuration
-	double epsilon = 1;			// resolution parameter
+	double epsilon = 2;			// resolution parameter
 	Box* boxA;				// start box (containing alpha)
 	Box* boxB;				// goal box (containing beta)
 	double boxWidth = 512;			// Initial box width
 	double boxHeight = 512;			// Initial box height
-	double R0 = 19;				// Robot radius 
+	double R0 = 8;				// Robot radius 
 	int windowPosX = 400;			// X Position of Window
 	int windowPosY = 200;			// Y Position of Window
 	string fileName("bugtrap.txt"); 		// Input file name
@@ -186,12 +186,13 @@ void drawTri(Box*, double, double);
 
 //find path using simple heuristic:
 //use distance to beta as key in PQ, see dijkstraQueue
+template<typename Cmp>
 bool findPath(Box* a, Box* b, QuadTree* QT, int& ct)
 {
 	bool isPath = false;
 	vector<Box*> toReset;
 	a->dist2Source = 0;
-	dijkstraQueue dijQ;
+	dijkstraQueue<Cmp> dijQ;
 	dijQ.push(a);
 	toReset.push_back(a);
 	while(!dijQ.empty())
@@ -385,6 +386,8 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 		glui->add_radiobutton_to_group(radioQType, "Random");
 		glui->add_radiobutton_to_group(radioQType, "BFS");
 		glui->add_radiobutton_to_group(radioQType, "Greedy");
+        glui->add_radiobutton_to_group(radioQType, "dist+size");
+        glui->add_radiobutton_to_group(radioQType, "Vor Heuristic");
 		glui->add_separator();
 
 		radioQType->set_int_val(QType);
@@ -526,7 +529,7 @@ cout<<"   beta = (" << beta[0] << ", " << beta[1] << ", " << beta[2] << ")" << e
 			++ct;
 		}
 	} 
-	else if(QType == 2)
+	else if(QType == 2 || QType == 3 || QType == 4)
 	{
 		boxA = QT->getBox(alpha[0], alpha[1], alpha[2], ct);
 		if (!boxA)
@@ -543,7 +546,18 @@ cout<<"   beta = (" << beta[0] << ", " << beta[1] << ", " << beta[2] << ")" << e
 		}
 		if (!noPath)
 		{
-			noPath = !findPath(boxA, boxB, QT, ct);
+            if (QType == 2)
+            {
+                noPath = !findPath<DistCmp>(boxA, boxB, QT, ct);
+            }
+            else if (QType == 3)
+            {
+                noPath = !findPath<DistPlusSizeCmp>(boxA, boxB, QT, ct);
+            }
+            else if (QType == 4)
+            {
+                noPath = !findPath<VorCmp>(boxA, boxB, QT, ct);
+            }
 		}		
 	}	
 
@@ -840,7 +854,8 @@ void renderScene(void)
 
 	if (!noPath)
 	{
-		vector<Box*> path = Graph::dijkstraShortestPath(boxA, boxB);	
+        Graph graph;
+		vector<Box*> path = graph.dijkstraShortestPath(boxA, boxB);	
 		drawPath(path);
 		//Graph::bfsPath(boxA, boxB);
 	}
@@ -947,11 +962,13 @@ cout<< "nPolygons=" << nPolygons << endl;
 				ptVec.push_back(new Corner(pts[pt*2]*scale+deltaX,
 					    pts[pt*2+1]*scale+deltaY));
 				b->addCorner(ptVec.back());
+				b->vorCorners.push_back(ptVec.back());
 				ptSet.insert(pt);
 				if (ptVec.size() > 1)
 				{
 					Wall* w = new Wall(ptVec[ptVec.size()-2], ptVec[ptVec.size()-1]);
 					b->addWall(w);
+					b->vorWalls.push_back(w);
 				}				
 			}
 			//new pt already appeared, a loop is formed. should only happen on first and last pt
@@ -961,6 +978,7 @@ cout<< "nPolygons=" << nPolygons << endl;
 				{
 					Wall* w = new Wall(ptVec[ptVec.size()-1], ptVec[0]);
 					b->addWall(w);
+					b->vorWalls.push_back(w);
 					break;
 				}	
 			}

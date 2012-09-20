@@ -27,9 +27,11 @@ template <typename CmpFunctor>
 class distHeap
 {
 private:
-	static void siftDown(vector<Box*>& bv, int i)
+    CmpFunctor cmp; 
+
+	void siftDown(vector<Box*>& bv, int i)
 	{
-		CmpFunctor cmp;
+		//CmpFunctor cmp;
 		unsigned int l = 2*i + 1;
 		unsigned int r = 2*i + 2;
 		int smallest;
@@ -59,7 +61,7 @@ private:
 	}
 
 public:
-	static void makeHeap(vector<Box*>& bv)
+	void makeHeap(vector<Box*>& bv)
 	{
 		if (bv.size() <= 1)
 		{
@@ -75,9 +77,9 @@ public:
 		}
 	}
 
-	static void insert(vector<Box*>& bv, Box* b)
+	void insert(vector<Box*>& bv, Box* b)
 	{
-		CmpFunctor cmp;
+		//CmpFunctor cmp;
 		bv.push_back(b);
 		int bid = bv.size() - 1;
 		b->heapId = bid;
@@ -95,9 +97,9 @@ public:
 		}
 	}
 
-	static void decreaseKey(vector<Box*>& bv, Box* b, double dist)
+	void decreaseKey(vector<Box*>& bv, Box* b, double dist)
 	{
-		CmpFunctor cmp;
+		//CmpFunctor cmp;
 		assert(bv[b->heapId] == b);
 		assert(b->dist2Source > dist);
 
@@ -117,7 +119,7 @@ public:
 		}
 	}
 
-	static Box* extractMin(vector<Box*>& bv)
+	Box* extractMin(vector<Box*>& bv)
 	{
 		Box* minB = bv[0];
 		bv[0] = bv.back();
@@ -132,7 +134,7 @@ public:
 };
 
 //won't work with std pq, as this comparison is not transitional!
-class PQCmp3
+class VorCmp
 {
 public:
 	bool operator() (const Box* a, const Box* b)
@@ -141,27 +143,60 @@ public:
 		//	- ((b->x - beta[0])*(b->x - beta[0]) + (b->y - beta[1])*(b->y - beta[1]));		
 		//return distDiff > 0;	
 
-		//use c*d(B) + 1 / w(B) as the measure, instead of just d(B)
-		double distDiff = sqrt((a->x - beta[0])*(a->x - beta[0]) + (a->y - beta[1])*(a->y - beta[1]))
-			- sqrt(((b->x - beta[0])*(b->x - beta[0]) + (b->y - beta[1])*(b->y - beta[1])));	
-		double wDiff = 1 / a->width - 1 / b->width;
-		double c = 0.0001;
-		return c * distDiff + wDiff > 0;
+		////use c*d(B) + 1 / w(B) as the measure, instead of just d(B)
+		//double distDiff = sqrt((a->x - beta[0])*(a->x - beta[0]) + (a->y - beta[1])*(a->y - beta[1]))
+		//	- sqrt(((b->x - beta[0])*(b->x - beta[0]) + (b->y - beta[1])*(b->y - beta[1])));	
+		//double wDiff = 1 / a->width - 1 / b->width;
+		//double c = 0.0001;
+		//return c * distDiff + wDiff > 0;
 
+		//if #phi(B)=1 then the priority is zero.   We really do not want to expand such boxes.
+		//If #phi(B) is big, then we like to expand such boxes because they tend to lie on the Voronoi edges.
+		double dista = sqrt((a->x - beta[0])*(a->x - beta[0]) + (a->y - beta[1])*(a->y - beta[1]));
+		double distb = sqrt(((b->x - beta[0])*(b->x - beta[0]) + (b->y - beta[1])*(b->y - beta[1])));
+		return (a->vorCorners.size() + a->vorWalls.size() - 1) / dista < (b->vorCorners.size() + b->vorWalls.size() - 1) / distb;
 	}
+};
+
+class DistCmp
+{
+public:
+    bool operator() (const Box* a, const Box* b)
+    {
+        double distDiff = (a->x - beta[0])*(a->x - beta[0]) + (a->y - beta[1])*(a->y - beta[1]) 
+        	- ((b->x - beta[0])*(b->x - beta[0]) + (b->y - beta[1])*(b->y - beta[1]));		
+        return distDiff > 0;	
+    }
+};
+
+class DistPlusSizeCmp
+{
+public:
+    bool operator() (const Box* a, const Box* b)
+    {
+        //use c*d(B) + 1 / w(B) as the measure, instead of just d(B)
+        double distDiff = sqrt((a->x - beta[0])*(a->x - beta[0]) + (a->y - beta[1])*(a->y - beta[1]))
+        	- sqrt(((b->x - beta[0])*(b->x - beta[0]) + (b->y - beta[1])*(b->y - beta[1])));	
+        double wDiff = 1 / a->width - 1 / b->width;
+        double c = 0.0001;
+        return c * distDiff + wDiff > 0;
+    }
 };
 
 class Graph
 {
+private:
+    distHeap<distCmp> dist_heap;
+
 public:
-	static vector<Box*> dijkstraShortestPath(Box* a, Box* b)
+	vector<Box*> dijkstraShortestPath(Box* a, Box* b)
 	{
 		a->dist2Source = 0;
 		vector<Box*> bv;
-		distHeap<distCmp>::insert(bv, a);
+		dist_heap.insert(bv, a);
 		while(bv.size())
 		{
-			Box* current = distHeap<distCmp>::extractMin(bv);
+			Box* current = dist_heap.extractMin(bv);
 			current->visited = true;
 			if (current == b)
 			{				
@@ -181,14 +216,14 @@ public:
 						{
 							neighbor->prev = current;
 							neighbor->dist2Source = dist2src;
-							distHeap<distCmp>::insert(bv, neighbor);
+							dist_heap.insert(bv, neighbor);
 						}
 						else
 						{
 							if (neighbor->dist2Source > dist2src)
 							{
 								neighbor->prev = current;
-								distHeap<distCmp>::decreaseKey(bv, neighbor, dist2src);
+								dist_heap.decreaseKey(bv, neighbor, dist2src);
 							}
 						}
 					}

@@ -77,8 +77,14 @@ public:
 			PQ = new randQueue(s);
 			break;
 		case 2:
-			PQ = new dijkstraQueue();
+			PQ = new dijkstraQueue<DistCmp>();
 			break;
+        case 3:
+            PQ = new dijkstraQueue<DistPlusSizeCmp>();
+            break;
+        case 4:
+            PQ = new dijkstraQueue<VorCmp>();
+            break;
 		}
 		
 		//PQ = new randQueue();

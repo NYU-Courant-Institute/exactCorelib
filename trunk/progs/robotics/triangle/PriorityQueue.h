@@ -135,21 +135,23 @@ public:
 
 };
 
+template<typename Cmp>
 class dijkstraQueue : public BoxQueue
 {
 private:
 	vector<Box*> bv;
+    distHeap<Cmp> dist_heap;
 
 public:
 
 	void push(Box* b)
 	{
-		distHeap<PQCmp3>::insert(bv, b);
+		dist_heap.insert(bv, b);
 	}
 
 	Box* extract()
 	{
-		Box* current = distHeap<PQCmp3>::extractMin(bv);
+		Box* current = dist_heap.extractMin(bv);
 		return current;
 	}
 

@@ -179,6 +179,7 @@ public:
 	static double r0;
 	static double THETA_MIN;
 	double rB;
+	double cl_m; //clearance of the mid point of the box
 
 	static vector<Box*>* pAllLeaf;
 	
@@ -197,6 +198,8 @@ public:
 	Set* pSet;
 	list<Corner*> corners;
 	list<Wall*> walls;
+	list<Corner*> vorCorners;
+	list<Wall*> vorWalls;
 
 	//for shortest path
 	double dist2Source;
@@ -236,6 +239,175 @@ public:
 
 	//find the nearest feature, and check
 	Status checkChildStatus(double x, double y);
+
+	void distribute_features2box(Box * child)
+	{
+		typedef list<Wall*>::iterator   WIT;
+		typedef list<Corner*>::iterator CIT;
+
+		//center x,y
+		double x=child->x;
+		double y=child->y;
+
+		//clearance+2*radius of the box
+		double cl2r=child->rB*2+child->cl_m; //clearance + 2*rB
+
+		//
+		//compute the separation to walls
+		for (WIT iterW=vorWalls.begin(); iterW != vorWalls.end(); ++iterW)
+		{
+			Wall* w = *iterW;
+			double dist = w->distance(x, y); //w->distance_star(x, y); //w->distance(x, y);
+
+			if (dist < cl2r) //within the distance range
+			{
+				{
+					bool zone=w->inZone_star(child); //true; //w->inZone(child); //w->inZone_star(child);
+					if(zone)
+						child->vorWalls.push_back(w);
+				}
+			}//end if
+		}//end for
+
+		//compute the separation to corners
+		for (CIT iterC=vorCorners.begin(); iterC != vorCorners.end(); ++iterC)
+		{
+			Corner* c = *iterC;
+			double dist = c->distance(x, y);
+			//OK, close enough
+			if (dist < cl2r)
+			{
+				{
+					//check with the Zone of the previous wall
+					bool zone=c->inZone_star(child); //true; //c->inZone(child); //c->inZone_star(child);
+					if(zone)
+						child->vorCorners.push_back(c);
+				}
+			}//end if
+		}//end for
+
+		//        return;
+
+		//
+		//check the closest features of the box corner
+		//
+		//the closest feature of the box corner should be inside the features
+		//of this box
+		//
+		{
+
+			BoxNode mid;
+			mid.x=x;
+			mid.y=y;
+			determine_clearance(mid);
+			if(mid.nearest_feature==NULL) return;
+
+			list<Feature*> features;
+			features.insert(features.end(),child->vorCorners.begin(), child->vorCorners.end());
+			features.insert(features.end(),child->vorWalls.begin(), child->vorWalls.end());
+			if( std::find(features.begin(), features.end(), mid.nearest_feature)==features.end() )
+			{
+				//some closest feature is lost....
+				//this means the box is not in the zone of the closest feature....
+				child->vorCorners.clear();
+				child->vorWalls.clear();
+				return;
+			}
+		}
+	}
+
+
+	void determine_clearance(BoxNode& node)
+	{
+		double x=node.x;
+		double y=node.y;
+
+		//compute the closest wall
+		Wall* nearestWall=NULL;
+		double mindistW=FLT_MAX;
+		for (list<Wall*>::iterator iterW = vorWalls.begin(); iterW != vorWalls.end(); ++iterW)
+		{
+			Wall* w = *iterW;
+
+			double dist = w->distance(x, y);
+
+			if( fabs(dist-mindistW)<1e-10 )
+			{
+				if( w->distance_sign(x,y)==0 && w->isRight(x,y) ) //in zone
+					nearestWall = *iterW;
+			}
+			else if (dist < mindistW) //shorter distance
+			{
+				mindistW = dist;
+				nearestWall = *iterW;
+			}
+		}
+
+		//
+		// compute a closest corner that is closer than  (mindistW +1) (?? why +1)
+		//
+		double mindistC = FLT_MAX; //mindistC may not exist, so init to a bigger number
+		Corner* nearestCorner = NULL;
+		for (list<Corner*>::iterator iterC = vorCorners.begin(); iterC != vorCorners.end(); ++iterC)
+		{
+			Corner* c = *iterC;
+			double dist = c->distance(x, y);
+
+			if( fabs(dist-mindistC)<1e-5 ) //if(dist == mindistC)
+			{
+				if( c->inZone_star(x,y) ) //in the zone
+				{
+					nearestCorner = *iterC;
+				}
+
+			}
+			else if (dist < mindistC)  //shorter distance
+			{
+				mindistC = dist;
+				nearestCorner = *iterC;
+			}
+		}
+
+		//
+		// determine the feature and shortest
+		//
+
+		bool in_zone_w=false;
+		bool in_zone_c=false;
+
+		if(nearestWall!=NULL) in_zone_w=nearestWall->inZone_star(x,y);
+		if(nearestCorner!=NULL) in_zone_c=nearestCorner->inZone_star(x,y);
+
+		if( fabs(mindistW-mindistC)<1e-5 )
+		{
+			if(in_zone_w){
+				node.clearance=mindistW;
+				node.nearest_feature=nearestWall;
+			}
+
+			if(in_zone_c){
+				node.clearance=mindistC;
+				node.nearest_feature=nearestCorner;
+			}
+		}
+		else if (mindistW < mindistC)
+		{
+			node.clearance=mindistW;
+			if(nearestWall!=NULL){
+				node.nearest_feature=nearestWall;
+			}
+		}
+		else //mindistW > mindistC
+		{
+			node.clearance=mindistC;
+			if(nearestCorner!=NULL){
+				node.nearest_feature=nearestCorner;
+			}
+		}
+		//
+		//-----------------------------------
+		//
+	}
 
 	void addCorner(Corner* c)
 	{
