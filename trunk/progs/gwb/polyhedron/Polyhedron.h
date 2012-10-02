@@ -7,8 +7,21 @@
 #include <vector>
 #include <math.h>
 #include <X11/Xlib.h>
-#include <GL/glut.h>
-#include <GL/glui.h>
+
+// #include <GL/glut.h>
+// #include <GL/glui.h>
+
+#ifdef __CYGWIN32__
+#include "glui.h"
+#endif
+#ifdef _WIN32
+#include <gl/glui.h>
+#endif
+#ifdef __APPLE__
+#include "glui.h"
+#endif
+
+
 
 
 using namespace std;

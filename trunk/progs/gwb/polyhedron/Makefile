@@ -175,8 +175,14 @@ m:
 vi:
 	gvim vor2d.cpp
 
-gwb: $(OBJ_FILES)
+OLDgwb: $(OBJ_FILES)
 	${CXX} -o $@ $(MAIN_FILE) $(OBJ_FILES) $(LDFLAGS) $(CORE_LIB)
+
+gwb:
+	${CXX} $(MAIN_FILE) $(CXXFLAGS) $(CORE_INC) $(CORE_LIB) -c $< -o $@
+	cat $*.d >> Dependencies
+	rm -f $*.d 
+:
 
 #=================================================
 # Rules
