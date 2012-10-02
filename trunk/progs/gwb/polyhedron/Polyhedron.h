@@ -13,11 +13,17 @@
 
 using namespace std;
 
-typedef double coords[4];
+
 typedef float matrix[4][4];
 typedef short Id;
+typedef double Num;
+typedef Num coords[4];
+typedef Num Coords[4];
+typedef Num Dir[3];
+enum Pos {LEFT,ON,RIGHT,UP,DOWN,OUT,IN,UNKNOWN};
 #define Vec vector 
-
+#define DIM 3
+#define ZERO 0.0
 /*Declaration*/
 class Vertex;
 class HalfEdge;
@@ -123,6 +129,7 @@ class HalfEdge
 {
 public:
 
+  /*Parent Links*/
   Edge *edg;  /*pointer to parent edge*/
   Vertex *start;  /*pointer to starting vertex */
   Loop *wloop;  /*back pointer to loop*/
@@ -130,6 +137,9 @@ public:
   /*This is important for the loop, and actually it is a sequence*/
   HalfEdge *nxthe;  /*pointer to next halfedge*/
   HalfEdge *prvhe;/*pointer to previous halfedge*/
+
+  /*Direction*/
+  Num* d;
 
   /*Getters and Setters*/
   /*edg*/
@@ -176,9 +186,17 @@ public:
   HalfEdge(Loop *l);
   HalfEdge(Edge *e,Vertex *v,Loop *wloop,HalfEdge *prv,HalfEdge *nxt);/*Initiate all members*/
 
-
+  /*The other edge*/
   HalfEdge *mate();/*Find its mate*/
+
+  /*Printers*/
   void print();/*Print start -> end*/
+
+  /*Calculators*/
+  Num* compDir();
+
+  /*Intersections*/
+  Num *intersection(HalfEdge *);
 
 };
 
@@ -190,6 +208,7 @@ public:
   HalfEdge *he1;/*pointer to right halfedge*/
   HalfEdge *he2;/*pointer to left halfedge*/
   Solid *s;
+  Dir   *d;
 
   HalfEdge *getHe1(){return he1;}
   void setHe1(HalfEdge *he){he1=he;}
@@ -206,7 +225,15 @@ public:
   /*Destructors*/
   ~Edge();
 
+  /*Printers*/
+
   void print(){ if(he1) he1->print(); else if(he2) he2->print(); else cout<<"empty edge without halfedges"<<endl;}; /*print the start end end point*/
+
+  /*Calculators*/
+  /*Compute the coordinates*/
+
+  /*Intersections*/
+  Num *intersection(Edge *e);
 };
 
 
@@ -216,10 +243,29 @@ class Loop
 public:
   HalfEdge *ledg;/*Pointer to ring of half edges*/
   Face *lface;/*back to pointer to face*/
+
   Loop();/*Default constructor*/
   Loop(Face *f);/*Constructor with a face*/
   Loop(HalfEdge *he,Face *f);/*Constructor wigh face and leading edge*/
+
+  /*Printers*/
   void print();/*print the loop points in a circle*/
+
+  /*Length & size*/
+  int size();
+  int length();
+
+  /*Calculators*/
+  Num* compUpDir();
+  Num* compDownDir();
+
+  Num* compEq();
+
+  /*Positions*/
+  Pos position(Vertex* v);
+
+  /*Intersections*/
+  Loop intersection(Loop* l);
 };
 
 /*********************Loop and a inner loop vector********************/
@@ -269,8 +315,23 @@ public:
     this->flout=flout;
   }
 
-
+  /*Printers*/
   void print();
+
+  /*Calculators*/
+  Num* compUpDir(){
+      return flout->compUpDir();
+  }
+  Num* compDownDir(){
+      return flout->compDownDir();
+  }
+  Num* compEq(){
+      return flout->compEq();
+  }
+
+  /*Interesections*/
+  HalfEdge *intersection(Face *f);
+
 };
 
 /*******************Solid with vertices,edges and faces**********************/
@@ -288,7 +349,10 @@ public:
   Solid(vector<Face *> *sfaces, vector<Edge *> *sedges,vector<Vertex *> *sverts,Vec<Solid *> *solids);
   Solid(Id solidno,vector<Face *> *sfaces, vector<Edge *> *sedges,vector<Vertex *> *sverts,Vec<Solid *> *solids);
 
-    
+  /*Intersections*/
+  Loop* intersection(Face *f);
+  Loop* intersection(Loop *l);
+  Solid* intersection(Solid *s);
   
 
 
@@ -371,4 +435,18 @@ public:
   }
 
 };
+
+//Pos position(Vertex* v, Edge* e);
+//Pos position(Edge* e,Vertex* v);
+Pos position(Vertex* v, Face* f);
+Pos position(Face *f, Vertex* v);
+Pos position(Vertex *v, Solid *s);
+Pos position(Solid *s, Vertex* v);
+
+/*Products*/
+Num dotProduct(HalfEdge *he1,HalfEdge *he2);
+Num dotProduct(Num* v1,Num* v2);
+Num *crossProduct(HalfEdge *he1,HalfEdge *he2);
+Num *crossProduct(Num *v1, Num *v2);
+
 

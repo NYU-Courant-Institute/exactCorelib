@@ -12,12 +12,14 @@
  ***************************************************/
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string>
 #include <sstream>
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
 #include <cstring>
+#include <time.h>
 #include "Euler_Ops.h"
 #include <GL/glut.h>
 #include <math.h>
@@ -33,7 +35,7 @@ using namespace std;
  ***************************************************/
 #define SQRTWO sqrt(2)
 #define SQRTFIVE sqrt(5)
-#define fi ((1+SQRTFIVE)/2)
+#define PHI ((1+SQRTFIVE)/2)
 #define WIRE
 
 /**************************************************
@@ -42,7 +44,7 @@ using namespace std;
 int interactive=0;                  // mode of interaction
                                     //    =0 means non-interactive, >0 means interactive.
 string inputDir("inputs"); 		// Path for input files 
-string fileName("cube.txt"); 	      // Input file name
+string fileName("cube.gwb"); 	      // Input file name
 
 GLsizei windowWidth = 512;	      // initial configuration box size
 GLsizei windowHeight = 512;
@@ -66,6 +68,7 @@ double centerX=0.0;                 //Initialize the center of the polyhedron
 double centerY=0.0;
 double centerZ=0.0;
 
+double colorGap=1.0;               //This is for shading
 
 double scalar=1.0;                  //Initialize the scalar of the polyhedron
 /*Declaration of mouse operations*/
@@ -89,18 +92,12 @@ void MyInit(void){
   glOrtho(-100.0,(GLdouble)windowWidth,-100.0,(GLdouble)windowHeight,-1000,1000);
 }//MyInit
 
-
-/*Display the polyhedron*/
-void display(void){
-  glClear(GL_COLOR_BUFFER_BIT);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  
-  /*Get Edges and Faces*/
-  Solid *s=(*(eo->solids))[0]; 
+void displayPoly(Solid *s){
+  /*Get Edges */
   Vec<Edge *> *es=s->sedges;
 
-  //Vec<Face *> *fs=s->sfaces;
+  Vec<Face *> *fs=s->sfaces;
+  colorGap=1.0/(fs->size());
 
   /*center of the polyhedron*/
   Vec<double> *c=s->center();
@@ -110,14 +107,6 @@ void display(void){
   centerY=(*c)[1];
   centerZ=(*c)[2];
   
-  /*Modify Scalar*/
-  scalar=windowWidth/(s->diameter()+0.0);
-
-  glTranslatef(windowWidth/2.0,windowHeight/2.0,centerZ);
-  glScalef(scalar, scalar, scalar);
-  glRotatef(45,1,1,1);
-  glTranslatef(-centerX,-centerY,-centerZ);
-
 
   /*Wire Solids*/
   #ifdef WIRE
@@ -132,21 +121,63 @@ void display(void){
 
   }
   glEnd();
-  
-  #elif defined(SURFACE)
-  for (int i=0;i<fs->size();i++){
-    glBegin(GL_POLYGON);
-    Face *e=(*es)[i];
-    Vertex *v1=e->he1->start;
-    Vertex *v2=e->he2->start;
-    glVertex3f(v1->getX(),v1->getY(),v1->getZ());
-    glVertex3f(v2->getX(),v2->getY(),v2->getZ());
-    glEnd();
 
-  }
+  #elif defined(SURFACE)
+  /*Initialize the random seed*/
+  srand((unsigned)time(0));
+  for (unsigned int i=0;i<fs->size();i++){
+    /*Now we get the face*/
+    Face *f=(*fs)[i];
+
+    /*Now we have the loops*/
+    Vec< Loop *> *ls=f->floops;
+
+    for (unsigned int j=0;j<ls->size();j++){
+      
+      /*Leading HalfEdge*/
+      HalfEdge *lhe=(*ls)[j]->ledg;
+      HalfEdge *the=lhe->nxthe;
+
+      /*Reset the face color*/
+      glColor3f((0.0+rand())/RAND_MAX,(0.0+rand())/RAND_MAX,(0.0+rand())/RAND_MAX);
+      
+      glBegin(GL_POLYGON);
+
+      Vertex *v=lhe->start;
+      glVertex3f(v->getX(),v->getY(),v->getZ());
+
+      while(the!=lhe){
+            v=the->start;
+            glVertex3f(v->getX(),v->getY(),v->getZ());
+            the=the->nxthe;
+      }//while
+      
+      
+      glEnd();
+
+    }//for j
+
+
+  }//for i
 
   #endif
+}
+/*Display the polyhedron*/
+void display(void){
+  glClear(GL_COLOR_BUFFER_BIT);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
 
+  Solid *s=(*(eo->solids))[0]; 
+  
+  /*Modify Scalar*/
+  scalar=windowWidth/(s->diameter()+0.0);
+
+  glTranslatef(windowWidth/2.0,windowHeight/2.0,centerZ);
+  glScalef(scalar, scalar, scalar);
+  glRotatef(45,1,1,1);
+  glTranslatef(-centerX,-centerY,-centerZ);
+  displayPoly(s);
 
    glFlush();
 
@@ -199,8 +230,10 @@ void holdMouse(int x, int y){
   glRotatef(theta,rotX,rotY,rotZ);
   glTranslatef(-centerX,-centerY,-centerZ);
 
+      
+  displayPoly(s); 
 
-  glBegin(GL_LINES);
+  /*glBegin(GL_LINES);
   for (unsigned int i=0;i<es->size();i++){
     Edge *e=(*es)[i];
     Vertex *v1=e->he1->start;
@@ -209,11 +242,13 @@ void holdMouse(int x, int y){
    glVertex3f(v2->getX(),v2->getY(),v2->getZ());
 
   }
-   glEnd();
+   glEnd();*/
+
    glBegin(GL_POINTS);
    glPointSize(50);
    glVertex3f(centerX,centerY,centerZ);
    glEnd();
+
    glFlush();
   
 }//holdMouse
@@ -227,11 +262,12 @@ int main(int argc,char **argv){
 	if (argc > 1) interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
 	if (argc > 2) inputDir  = argv[2];		      // path for input files
 	if (argc > 3) fileName = argv[3]; 		      // Input file name
-	if (argc > 4) windowWidth = atof(argv[4]);		// windowWidth
-	if (argc > 5) windowHeight= atof(argv[5]);	      // windowHt
+	if (argc > 4) windowWidth = atof(argv[4]);	// windowWidth
+	if (argc > 5) windowHeight= atof(argv[5]);	// windowHt
 	if (argc > 6) windowPosX = atoi(argv[6]);	      // window X pos
 	if (argc > 7) windowPosY = atoi(argv[7]);	      // window Y pos
-
+cout << "winX = " << windowPosX << endl;
+cout << "winY = " << windowPosY << endl;
 
       eo=new Euler_Ops();
       /*Read from file*/  

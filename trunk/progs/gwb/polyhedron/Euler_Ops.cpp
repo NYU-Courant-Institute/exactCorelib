@@ -257,6 +257,7 @@ int Euler_Ops::kef(Id s,Id f,Id v1,Id v2){
   }
 
   lkef(he1,he2);
+  return SUCCESS;
 }
 /*Get solid*/
 Solid *Euler_Ops::getsolid(Id sn){
@@ -265,7 +266,7 @@ Solid *Euler_Ops::getsolid(Id sn){
   cout<<"solids size="<<(solids->size())<<endl;
   cout<<"solids before begin"<<solids<<endl;
   cout<<"it points to begin"<<endl;*/
-  for (int i=0;i<solids->size();i++){
+  for (unsigned int i=0;i<solids->size();i++){
     Solid *s=(*solids)[i];
     if(s->solidno==sn)
       return s;
@@ -289,7 +290,7 @@ HalfEdge *Euler_Ops::fhe(Face *f,Id vn1,Id vn2){
   Vec<Loop *> *ls=f->floops;
 
   /*Look through all loops*/
-  for (int i=0;i<ls->size();i++){
+  for (unsigned int i=0;i<ls->size();i++){
     HalfEdge *he=(*ls)[i]->ledg;
 
     /*Look through all half edges*/
@@ -309,7 +310,7 @@ HalfEdge *Euler_Ops::fhe(Face *f,Id vn){
   Vec<Loop *> *ls=f->floops;
 
   /*Look through all loops*/
-  for (int i=0;i<ls->size();i++){
+  for (unsigned int i=0;i<ls->size();i++){
     HalfEdge *he=(*ls)[i]->ledg;
 
     /*Look through all half edges*/
@@ -424,9 +425,11 @@ int Euler_Ops::mev(Id s,Id f1,Id v1,Id v4,double x,double y,double z){
   cout<<endl<<endl;*/
 
   lmev(he,he,v4,x,y,z);
+  return SUCCESS;
 }//mev
 
 int Euler_Ops::kev(Id s,Id f,Id v1,Id v2){
+  return SUCCESS;
 }//kev
 
 /*Higher level make edge face*/
