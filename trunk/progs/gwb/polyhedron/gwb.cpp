@@ -21,20 +21,8 @@
 #include <cstring>
 #include <time.h>
 #include "Euler_Ops.h"
+#include <GL/glut.h>
 #include <math.h>
-
-// #include <GL/glut.h>
-
-#ifdef __CYGWIN32__
-#include "glui.h"
-#endif
-#ifdef _WIN32
-#include <gl/glui.h>
-#endif
-#ifdef __APPLE__
-#include "glui.h"
-#endif
-
 
 /***************************************************
  * namespace:

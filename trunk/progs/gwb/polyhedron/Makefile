@@ -173,16 +173,10 @@ opt options:
 m:
 	gvim Makefile
 vi:
-	gvim vor2d.cpp
+	gvim gwb.cpp
 
-OLDgwb: $(OBJ_FILES)
+gwb: $(OBJ_FILES)
 	${CXX} -o $@ $(MAIN_FILE) $(OBJ_FILES) $(LDFLAGS) $(CORE_LIB)
-
-gwb:
-	${CXX} $(MAIN_FILE) $(CXXFLAGS) $(CORE_INC) $(CORE_LIB) -c $< -o $@
-	cat $*.d >> Dependencies
-	rm -f $*.d 
-:
 
 #=================================================
 # Rules
