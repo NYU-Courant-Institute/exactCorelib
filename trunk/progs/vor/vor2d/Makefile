@@ -531,7 +531,18 @@ eg15a :	$(VOR2D)
 		$(xtrans) $(ytrans) $(scale) $(closePoly) \
 		$(c1) $(c2) $(maxEps) \
 		&
-								
+	
+# Eg16: degenerate
+eg16 :	$(VOR2D)
+	@echo "Target 'eg16' :"
+	$(VOR2D) $(interactive) \
+		0.1 $(pseudo) $(interior) input7.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtrans) $(ytrans) $(scale) $(closePoly) \
+		$(c1) $(c2) $(maxEps) \
+		&
+										
 # Eg50: standard parabola
 eg50 parabola:	$(VOR2D)
 	@echo "Target 'eg50' or 'line': "
