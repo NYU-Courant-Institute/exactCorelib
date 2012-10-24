@@ -108,7 +108,7 @@ test: $(TARGETS)
 		$(c1) $(c2)
 
 #=================================================
-# Examples of running vor2d program
+# Examples of running polyhedron program
 #=================================================
 #
 # This is default, but every option may be changed at command line:
@@ -152,6 +152,7 @@ eg6 icosa:	./gwb
             $(winHt) $(winWid) $(winX) $(winY) \
             &
 
+test:eg eg2 eg3 eg4 eg5 eg6
 help:
 	@echo "HELP"
 
