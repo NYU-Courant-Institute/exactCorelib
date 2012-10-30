@@ -41,7 +41,7 @@
    HISTORY: March, 2012: Cong Wang, Chee Yap and Yi-Jen Chiang
 
    Since Core Library  Version 2.1
-   $Id: $
+   $Id: disc.cpp,v 1.1 2012/10/26 03:58:52 cheeyap Exp cheeyap $
  ************************************** */
 
 #include "QuadTree.h"
@@ -459,12 +459,17 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 	// stop timer
 	t.stop();
 	// print the elapsed time in millisec
-	cout << "Time used: " << t.getElapsedTimeInMilliSec() << " ms.\n";
+	cout << ">>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>\n";
+	cout << ">>\n";
+	cout << ">>     Time used: " << t.getElapsedTimeInMilliSec() << " ms\n";
+	cout << ">>\n";
 
 	glutPostRedisplay();
 
-	if (!noPath) cout << "Path found !" << endl;
-	else  cout << "No Path !" << endl;
+	if (!noPath) cout << ">>     Path found !" << endl;
+	else  cout << ">>     No Path !" << endl;
+	cout << ">>\n";
+	cout << ">>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>\n";
 	cout << "Expanded " << ct << " times" << endl;
 	cout << "total Free boxes: " << freeCount << endl;
 	cout << "total Stuck boxes: " << stuckCount << endl;

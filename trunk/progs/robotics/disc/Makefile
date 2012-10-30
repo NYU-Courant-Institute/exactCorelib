@@ -56,7 +56,7 @@
 # April 13, 2012
 #
 # Since Core Library 2.1
-# $Id:$
+# $Id: Makefile,v 1.1 2012/10/26 03:58:52 cheeyap Exp cheeyap $
 
 CORE_PATH=../../..
 include ../Make.options
@@ -145,7 +145,20 @@ help:
 	@echo "         > make eg"
 	@echo "         > make egX"
 	@echo "     where X is replaced by 0,1,2,3,4,5,6,100,200,300, etc."
-	@echo "     Some demos have variants, such as egXa, egXb or egXc."
+	@echo "     Some demos have variants, such as egXa, egXb or egXc:"
+	@echo "     LIST OF TARGETS:"
+	@echo "	ega, egb, egc"
+	@echo "	eg0,				-- no path example"
+	@echo "	eg1, eg1a, (bug, buga)		-- bugtrap"
+	@echo "	eg2, eg2a			-- like input2.txt, but with bounding box"
+	@echo "	eg3, eg3a, eg3b			-- 100 random triangles"
+	@echo "	eg4				-- maze"
+	@echo "	eg5, eg5a (bug2, bug2a)		-- double bugtrap"
+	@echo "	eg6, eg6a 			-- example from Kavraki's OOPSMP"
+	@echo "	eg100, eg100a, eg100b		-- 100 random triangles"
+	@echo "	eg200, eg200a			-- 200 random triangles"
+	@echo "	eg300				-- 300 random triangles"
+
 
 #=================================================
 # Examples of running disc program
@@ -372,7 +385,7 @@ eg6a: disc
 # eg7: this should be the tunnel example from triangle...
 
 # eg8: from Paper of Hsu-Lathombe-Kurniawati
-# 	THIS IS SLOW!!!
+# 	THIS IS SLOW under random strategy!!!
 #	          --------------------->>  PATH FOUND !
 #	Expanded 219159 times
 #	Time used: 94334.1 ms
