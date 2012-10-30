@@ -25,7 +25,8 @@
 #			$(epsilon) $(radius) $(fileName) \
 #			$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 #			$(Qtype) $(seed)  $(inputDir) \
-#			$(xtrans) $(ytrans) $(scale)
+#			$(xtrans) $(ytrans) $(scale) \
+#			$(verbose) $(title) \
 #
 #	where the arguments to tri correspond to the values $(var) of
 #	various Makefile variables.   
@@ -71,7 +72,7 @@ interactive = 0		# 0=interactive, >0 is non-interactive
 
 startX = 60		# start configuration
 startY = 350
-startTheta = 0		# in degrees
+startTheta = -30	# in degrees
 goalX = 300		# goal configuration
 goalY = 60
 goalTheta = 90		# in degrees
@@ -98,7 +99,7 @@ windowPosX = 500	# initial Window position
 windowPosY = 20	
 
 Qtype = 2		# type of priority queue
-			#  (0=random, 1 = BFS, 2 = Best First, 3 = A-star) 
+			#  (0=random, 1 = BFS, 2 = Greedy Best First, 3 = A-star) 
 seed = 11		# seed for random
 step = 0		# number of steps to run
 			#	(step=0 means run to completion)
@@ -106,8 +107,9 @@ xtrans = 0		# x-translation of input file
 ytrans = 0		# y-translation of input file
 scale = 1		# scaling of input file
 
-TRI = tri
-TRI = triangle
+verbose = 0		# if true, display statistics
+title = Demos		# Title of control panel
+
 #=================================================
 # Define target files (put all your files here)
 #=================================================
@@ -131,17 +133,18 @@ testb: $(TARGETS)
 		$(startX) $(startY)  $(startTheta) $(goalX) $(goalY) $(startBeta) \
 		$(epsilon)  $(radius)  input2.txt  $(boxWidth) $(boxHt) \
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
-		$(xtrans) $(ytrans) $(scale)
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 
 help:
 	@echo "USAGE:  The main program is called tri.  Demos can be invoked thus:"
 	@echo "              > make eg [...optional parameters...]"
 	@echo "     where parameters include fileName, radius, startX, startY,"
-	@echo "     goalX, goalY, etc.  Best to see the Makefile for examples."
+	@echo "     goalX, goalY, etc.  See the Makefile for examples."
 	@echo "     You can also call demos where these these parameters are prechosen:"
 	@echo "              > make egX"
 	@echo "     where X is replaced by 1, 2, 3, 4, 5, 6, 100, 150, 200, 300, etc."
-	@echo "     Demos have variants (such as egXa, egXb or egXc)"
+	@echo "     Some demos have variants (such as egXa, egXb or egXc)"
 	@echo "     or alternative names (such as bug, bug2, tunnal, etc): "
 	@echo "        ega, egb,"
 	@echo "        eg1, eg1a, eg1b, [simple environment with bounding box]"
@@ -166,13 +169,14 @@ help:
 eg:	./tri
 	@echo "Target 'eg':  runs tri with the default options of Makefile"
 	@echo "--  You can all of them in you 'make' command line, e.g.,"
-	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
+	@echo "--      > make eg radius=60 goalX=111 goalY=450 goalTheta=90 startY=200 startX=20"
 	./tri $(interactive) $(startX) $(startY)  $(startTheta) \
 	    	$(goalX) $(goalY) $(goalTheta) \
 		$(epsilon) $(radius) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # run with default compiled options:
@@ -188,50 +192,57 @@ ega:	./tri
 #
 egb:	./tri
 	@echo "Target 'egb':  runs tri with default Makefile options for file input.txt"
-	./tri $(interactive) 60 350 -0.17 300 60 0.5 \
+	./tri $(interactive) 60 350 -30 300 60 60 \
 		5 40 input.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # Simple NO PATH example:
 nopath eg0:	./tri
 	@echo "Target 'eg0':  runs tri with default options for file input0.txt"
 	@echo "--  this example has no path..."
-	./tri $(interactive) 400 400 0 200 200 0\
+	./tri $(interactive) 400 400 -60 200 200 90\
 		20 20 input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # eg1:	input2e.txt is like input2, but there is a bounding box
 eg1: ./tri
 	@echo "Target eg1:  runs tri on input2e.txt (which has a bounding box)"
-	./tri $(interactive) 150 260 0.5 40 40 0 \
+	./tri $(interactive) 150 260 90 40 40 -60 \
 		10 25 input2e.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir)
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
+		&
 
 # eg2: input 2.text, no bounding box
 eg2: ./tri
 	@echo "Target eg2e:  runs tri on input2.txt"
-	./tri $(interactive) 150 260 0 20 20 0 \
-		10 10 input2.txt \
+	./tri $(interactive) 150 260 -45 20 20 30 \
+		10 40 input2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # eg3: input3.txt is line input2e, but there is a narrow door
 eg3: ./tri
 	@echo "Target eg3:  runs tri on input3.txt"
-	./tri $(interactive) 150 260 0.5 450 450 0 \
+	./tri $(interactive) 150 260 90 450 450 -60 \
 		10 30 input3.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # BUG TRAPS:
@@ -247,11 +258,12 @@ eg4 egbug bug: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # Bugtrap example -- Existence of path, but barely!
 eg4a egbuga buga: ./tri
-	@echo "Target 'egbuga':  runs tri for bugtrap input, bugtrap.txt"
+	@echo "Target 'eg4a or buga':  runs tri for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is a PATH, but barely so!"
 	@echo "--  the only change from target 'egbug' is that epsilon is now 10, not 20"
 	@echo "--  that are NOT adjacent but shares a corner."
@@ -260,84 +272,45 @@ eg4a egbuga buga: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
-prm_bug: ./tri
-	@echo "Target 'egbuga':  runs tri for bugtrap input, bugtrap.txt"
-	@echo "--  this examples shows there is a PATH, but barely so!"
-	@echo "--  the only change from target 'egbug' is that epsilon is now 10, not 20"
-	@echo "--  that are NOT adjacent but shares a corner."
-	./tri 0  250 350 0 60 50 0 \
-		10 40 bugtrap.txt \
+
+# Bugtrap2 example -- Existance of path.
+# 	NEW DATA: Eps=4, radius=11:
+# 		with Greedy, takes 0.8 sec to find PATH 
+# 		with BFS, takes 2.7 ms to report PATH 
+# 		with Random, program hung up.
+# 	OLD DATA: Eps=1, radius=7:
+# 		with Greedy, takes 7.4 ms to find PATH 
+# 		with BFS, takes 3.6 ms to report PATH 
+eg5 egbug2 bug2: ./tri
+	@echo "Target 'eg5 or bug2':  runs tri on bugtrap2.txt"
+	@echo "--  this examples shows there is PATH, but barely so!"
+	./tri $(interactive) 180 210 0 30 30 0 \
+		4 11 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
-
-prm_200: ./tri
-	@echo "Target eg200:  runs tri on randomly generated obstacles"
-	@echo "--  This may take a noticeable amount bit of time!!!"
-	./tri $(interactive) 130 460 0 20 20 0 \
-		2 5 input1.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-
-prm_300: ./tri
-	@echo "Target eg300:  runs tri amidst 300 randomly generated triangles"
-	@echo "--  This may take a noticeable amount bit of time!!! "
-	./tri $(interactive) 230 210 0 480 10 0\
-		4 7 input300.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-
-prm_150: ./tri
-	@echo "Target eg150:  runs tri amidst 100 randomly generated triangles"
-	./tri $(interactive) 200 270 0 20 20 0\
-		5 7 input150.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-
-
-# Bugtrap2 example -- Non-existence of path.
-# 	SAMPLE values: Eps=1, radius=8:
-# 		with Best First, takes <1 ms to report NO PATH 
+# Bugtrap2 example -- Non-Existence of path.
+# 	NEW DATA: Eps=4, radius=12:
+# 		with Greedy, takes 0.9 sec to report NO PATH 
+# 		with BFS, process hung up...
+# 	OLD DATA: Eps=1, radius=8:
+# 		with Greedy, takes <1 ms to report NO PATH 
 # 		with BFS, takes 15 ms to report NO PATH
-eg5 egbug2 bug2: ./tri
-	@echo "Target 'egbug':  runs tri for bugtrap input, bugtrap.txt"
-	@echo "--  this examples shows there is NO PATH, but barely so!"
-	@echo "--  you could see a green path that must pass between two green boxes"
-	@echo "--  that are NOT adjacent but shares a corner."
-	./tri $(interactive) 180 210 0 30 30 0 \
-		1 8 bugtrap2.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-# Bugtrap2 example -- Existence of path.
-# 	SAMPLE values: Eps=1, radius=7:
-# 		with Best First, takes 7.4 ms to find PATH 
-# 		with BFS, takes 3.6 ms to report PATH 
 eg5a egbug2a bug2a: ./tri
-	@echo "Target 'egbug':  runs tri for bugtrap input, bugtrap.txt"
+	@echo "Target 'eg5a or bug2a':  runs tri on bugtrap2.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
-	@echo "--  you could see a green path that must pass between two green boxes"
-	@echo "--  that are NOT adjacent but shares a corner."
 	./tri $(interactive) 180 210 0 30 30 0 \
-		1 7 bugtrap2.txt \
+		4 12 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir) \
+		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # eg6: This environment is taken from Kavraki's groups Demo for OOPSMP:
@@ -463,6 +436,7 @@ eg100 100: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # eg100a: 100 random triangles
@@ -474,6 +448,7 @@ eg100a 100a: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # eg150: 150 random triangles (use radius=1)
@@ -484,6 +459,7 @@ eg150 150: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # eg200: 200 random triangles
@@ -495,6 +471,7 @@ eg200 200: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # eg200a: there is an obvious path but probabilistic methods might waste
@@ -509,6 +486,7 @@ eg200a 200a: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # eg200b: there is no path because eps=10
@@ -522,6 +500,7 @@ eg200b: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # eg300: 300 random triangles
@@ -534,6 +513,7 @@ eg300: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 
@@ -541,6 +521,10 @@ moretest: $(TARGETS)
 # nothing to do
 
 tri: $(OBJ_FILES) tri.o
+
+
+# under development...
+# (1) Run all series of examples using Qtypes=0,1,2 and compare timing
 
 
 #=================================================
@@ -561,6 +545,7 @@ ex-bug experiment-bug: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # Bugtrap example 
@@ -571,6 +556,7 @@ ex-buga: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # ex-150: 150 random triangles (use radius=1)
@@ -581,6 +567,7 @@ ex-150: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # ex-200: 200 random triangles
@@ -591,6 +578,7 @@ ex-200: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 	#
 # ex-300: 300 random triangles
@@ -602,6 +590,7 @@ ex-300: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 

@@ -15,8 +15,8 @@
 #
 ###################################################
 
-# 32 POINTS:
-32
+# 32+12=44 POINTS:
+44
 	# first long horizontal barrier
 	 1200 1200 7200 1200 7200 1350 1200 1350 
 	# second long horizontal barrier
@@ -33,9 +33,16 @@
 	# 2 triangles
 	 2400 1500 2550 1500 2400 1650
 	 2775 2250 2625 2250 2775 2100
-	
-# 10 POLYGONS
-10
+	# 12 more points
+	# BOUNDING BOX: 33 34 45 36
+	 300 225 8100 225 8100 3600 300 3600
+	# rectangular barrier: 37 38 39 40
+	 4125 2625 4425 2625 4425 3525 4125 3525
+	# rectangular barrier: 41 42 43 44
+	 4125 300 4425 300 4425 1200 4125 1200
+
+# 13 POLYGONS
+13
 	# 2 long horizontal barriers
 	1 2 3 4 1
 	5 6 7 8 5
@@ -51,4 +58,11 @@
 	# 2 triangles
 	27 28 29 27
 	30 31 32 30
+	#
+	# BOUNDING BOX (inside out!)
+	36 35 34 33 36
+	# rect barrier 1
+	37 38 39 40 37
+	# rect barrier 2
+	41 42 43 44 41
 

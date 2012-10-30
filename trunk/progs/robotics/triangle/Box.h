@@ -10,6 +10,7 @@
 #include <list>
 #include <limits>
 #include <algorithm>
+#include <float.h>
 #include "line2d.h"
 
 

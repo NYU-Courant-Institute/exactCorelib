@@ -40,7 +40,7 @@
    HISTORY: March, 2012: Cong Wang, Chee Yap and Yi-Jen Chiang
 
    Since Core Library  Version 2.1
-   $Id: $
+   $Id: tri.cpp,v 1.3 2012/10/26 04:26:52 cheeyap Exp cheeyap $
  ************************************** */
 
 #include "QuadTree.h"
@@ -138,7 +138,9 @@ double triRobo[2] = {0.833333333, 1.0};
 	double scale=1;				// scaling of input environment
 	bool noPath = true;			// True means there is "No path.
 
-	bool hideBoxBoundary = false;  //don't draw box boundary
+	bool hideBoxBoundary = false;  		// don't draw box boundary
+	bool verboseOption = false;		// don't print various statistics
+	string title("Triangle Robot Demos");	// title for control panel
 
 // GLOBAL VARIABLES ========================================
 //////////////////////////////////////////////////////////////////////////////////
@@ -155,6 +157,7 @@ double triRobo[2] = {0.833333333, 1.0};
 //////////////////////////////////////////////////////////////////////////////////
 	GLUI_RadioGroup* radioQType;
 	GLUI_RadioGroup* radioDrawOption;
+	GLUI_RadioGroup* radioVerboseOption;
 	GLUI_EditText* editInput;
 	GLUI_EditText* editDir;
 	GLUI_EditText* editRadius;
@@ -317,8 +320,10 @@ int main(int argc, char* argv[])
 	if (argc > 18) deltaX  = atof(argv[18]);	// x-translation of input file
 	if (argc > 19) deltaY  = atof(argv[19]);	// y-translation of input file
 	if (argc > 20) scale  = atof(argv[20]);		// scaling of input file
+	if (argc > 21) verboseOption = atoi(argv[21]);	// verboseOption
+	if (argc > 22) title = argv[22];		// title
 
-cout<<"before interactive, Qtype= " << QType << "\n";
+cout<<"Before interactive, Qtype= " << QType << "\n";
 
 	if (interactive > 0) {	// non-interactive
 	    // do something...
@@ -345,56 +350,104 @@ cout<<"before interactive, Qtype= " << QType << "\n";
 		int windowID = glutCreateWindow("Motion Planning");
 		glutDisplayFunc(renderScene);
 		GLUI_Master.set_glutIdleFunc( NULL );
-		GLUI *glui = GLUI_Master.create_glui( "control", 0, windowPosX + boxWidth + 20, windowPosY );
+
+	//Chee: trying to get demos to take a "title string"
+	std::stringstream sss;
+	sss << "Triangle Robot Control: " << title;	// create full file name 
+	std::string title_string = sss.str();
+	char * test ("Triangle Robot Demo");
+
+		GLUI *glui = GLUI_Master.create_glui( test,
+			0, windowPosX + boxWidth + 20, windowPosY );
 	
 		// SETTING UP THE CONTROL PANEL:
 		editInput = glui->add_edittext( "Input file:", GLUI_EDITTEXT_TEXT );
 		editInput->set_text((char*)fileName.c_str());
 		editDir = glui->add_edittext( "Input Directory:", GLUI_EDITTEXT_TEXT );
 		editDir->set_text((char*)inputDir.c_str());
-		editRadius = glui->add_edittext( "Radius:", GLUI_EDITTEXT_FLOAT );
-		editRadius->set_float_val(R0);
-		editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_FLOAT );
-		editEpsilon->set_float_val(epsilon);
+	// Chee added this "grouping" for Robot Specifications: 
+	GLUI_Panel * robot_box_panel = glui->add_panel("Robot Specs");
+	   editRadius = glui->add_edittext_to_panel(robot_box_panel,
+		   "Radius:", GLUI_EDITTEXT_FLOAT );
+	   editRadius->set_float_val(R0);
+	   editEpsilon = glui->add_edittext_to_panel(robot_box_panel,
+		   "Epsilon:", GLUI_EDITTEXT_FLOAT );
+	   editEpsilon->set_float_val(epsilon);
+		//editRadius = glui->add_edittext( "Radius:", GLUI_EDITTEXT_FLOAT );
+		//editRadius->set_float_val(R0);
+		//editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_FLOAT );
+		//editEpsilon->set_float_val(epsilon);
 
-		editAlphaX = glui->add_edittext( "alpha.x:", GLUI_EDITTEXT_FLOAT );
-		editAlphaX->set_float_val(alpha[0]);
-		editAlphaY = glui->add_edittext( "alpha.y:", GLUI_EDITTEXT_FLOAT );
-		editAlphaY->set_float_val(alpha[1]);
-		editAlphaTheta = glui->add_edittext( "alpha.theta:", GLUI_EDITTEXT_FLOAT );
-		editAlphaTheta->set_float_val(alpha[2]);
+	// Chee added this "grouping" for Alpha 
+	GLUI_Panel * alpha_box_panel = glui->add_panel("Alpha (start configuration)");
+	   editAlphaX = glui->add_edittext_to_panel(alpha_box_panel,
+		   	"x:", GLUI_EDITTEXT_FLOAT );
+	   editAlphaX->set_float_val(alpha[0]);
+	   editAlphaY = glui->add_edittext_to_panel(alpha_box_panel,
+		   	"y:", GLUI_EDITTEXT_FLOAT );
+	   editAlphaY->set_float_val(alpha[1]);
+	   editAlphaTheta = glui->add_edittext_to_panel(alpha_box_panel,
+		   	"theta (radians)", GLUI_EDITTEXT_FLOAT );
+	   editAlphaTheta->set_float_val(alpha[2]);
+	   	// ORIGINAL:
+		//editAlphaX = glui->add_edittext( "alpha.x:", GLUI_EDITTEXT_FLOAT );
+		//editAlphaX->set_float_val(alpha[0]);
+		//editAlphaY = glui->add_edittext( "alpha.y:", GLUI_EDITTEXT_FLOAT );
+		//editAlphaY->set_float_val(alpha[1]);
+		//editAlphaTheta = glui->add_edittext("alpha.theta:",GLUI_EDITTEXT_FLOAT);
+		//editAlphaTheta->set_float_val(alpha[2]);
 
-		editBetaX = glui->add_edittext( "beta.x:", GLUI_EDITTEXT_FLOAT );
-		editBetaX->set_float_val(beta[0]);
-		editBetaY = glui->add_edittext( "beta.y:", GLUI_EDITTEXT_FLOAT );
-		editBetaY->set_float_val(beta[1]);
-		editBetaTheta = glui->add_edittext( "beta.theta:", GLUI_EDITTEXT_FLOAT );
-		editBetaTheta->set_float_val(beta[2]);
+	// Chee added this "grouping" for Beta 
+	GLUI_Panel * beta_box_panel = glui->add_panel("Beta (goal configuration)");
+	   editBetaX = glui->add_edittext_to_panel(beta_box_panel,
+		   	"x:", GLUI_EDITTEXT_FLOAT );
+	   editBetaX->set_float_val(beta[0]);
+	   editBetaY = glui->add_edittext_to_panel(beta_box_panel,
+		   	"y:", GLUI_EDITTEXT_FLOAT );
+	   editBetaY->set_float_val(beta[1]);
+	   editBetaTheta = glui->add_edittext_to_panel(beta_box_panel,
+		   	"theta (radians)", GLUI_EDITTEXT_FLOAT );
+	   editBetaTheta->set_float_val(beta[2]);
+	   	// ORIGINAL:
+		//editBetaX = glui->add_edittext( "beta.x:", GLUI_EDITTEXT_FLOAT );
+		//editBetaX->set_float_val(beta[0]);
+		//editBetaY = glui->add_edittext( "beta.y:", GLUI_EDITTEXT_FLOAT );
+		//editBetaY->set_float_val(beta[1]);
+		//editBetaTheta =glui->add_edittext("beta.theta:",GLUI_EDITTEXT_FLOAT );
+		//editBetaTheta->set_float_val(beta[2]);
 
 		editSeed = glui->add_edittext( "seed:", GLUI_EDITTEXT_INT );
 		editSeed->set_int_val(seed);
 
 		GLUI_Button* buttonRun = glui->add_button( "Run", -1, (GLUI_Update_CB)run);
-		buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
-
+		buttonRun->set_name("Run me"); // Hack, to avoid "unused warning" (Chee)
 
 		// New column:
 		glui->add_column(true);
 
 		glui->add_separator();
 		radioQType = glui->add_radiogroup();
-		glui->add_radiobutton_to_group(radioQType, "Random");
+
+		glui->add_radiobutton_to_group(radioQType, "Random Heuristic");
 		glui->add_radiobutton_to_group(radioQType, "BFS");
 		glui->add_radiobutton_to_group(radioQType, "Greedy");
-        glui->add_radiobutton_to_group(radioQType, "dist+size");
-        glui->add_radiobutton_to_group(radioQType, "Vor Heuristic");
-		glui->add_separator();
+        glui->add_radiobutton_to_group(radioQType, "Dist+Size");
+        glui->add_radiobutton_to_group(radioQType, "Voronoi Heuristic");
 
+		glui->add_separator();
 		radioQType->set_int_val(QType);
 
 		radioDrawOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)renderScene);
 		glui->add_radiobutton_to_group(radioDrawOption, "Show Box Boundary");
 		glui->add_radiobutton_to_group(radioDrawOption, "Hide Box Boundary");
+
+		glui->add_separator();
+		radioVerboseOption = glui->add_radiogroup();
+
+		glui->add_radiobutton_to_group(radioVerboseOption, "Non-Verbose");
+		glui->add_radiobutton_to_group(radioVerboseOption, "Verbose (print statistics)");
+
+		radioVerboseOption->set_int_val(verboseOption);
 		glui->add_separator();
 
 		textBox = new GLUI_TextBox(glui,true);		
@@ -461,7 +514,8 @@ void genEmptyTree()
 	}
 	QT = new QuadTree(root, epsilon, QType, seed++);  // Note that seed keeps changing!
 
-cout<<"done genEmptyTree \n";
+	if (verboseOption) 
+	  cout<<"done genEmptyTree \n";
 }
 
 void run()
@@ -486,11 +540,13 @@ void run()
 		QType = radioQType->get_int_val();	
 	}
 
-
-cout<<"   inside run:  Qtype= " << QType << "\n";
-cout<<"   radius = " << R0 << ", eps = " << epsilon << endl;
-cout<<"   alpha = (" << alpha[0] << ", " << alpha[1] << ", " << alpha[2] << ")" << endl;
-cout<<"   beta = (" << beta[0] << ", " << beta[1] << ", " << beta[2] << ")" << endl;
+	if (verboseOption) {
+	  cout<<"   radius = " << R0 << ", eps = " << epsilon << endl;
+	  cout<<"   alpha = (" << alpha[0]
+	      << ", " << alpha[1] << ", " << alpha[2] << ")" << endl;
+	  cout<<"   beta = (" << beta[0]
+	      << ", " << beta[1] << ", " << beta[2] << ")" << endl;
+	}
 
 	genEmptyTree();
 
@@ -567,25 +623,52 @@ cout<<"   beta = (" << beta[0] << ", " << beta[1] << ", " << beta[2] << ")" << e
 	{
 		glutPostRedisplay();
 	}
-
-	if (!noPath) cout << "          --------------------->>  PATH FOUND !" << endl;
-	else  cout << "          --------------------->>  NO PATH !" << endl;
-	cout << "Expanded " << ct << " times" << endl;
-	cout << "Time used: " << t.getElapsedTimeInMilliSec() << " ms" << endl;
-	cout << "total Free boxes: " << freeCount << endl;
-	cout << "total Stuck boxes: " << stuckCount << endl;
-	cout << "total Mixed boxes smaller than epsilon: " << mixSmallCount << endl;
-	cout << "total Mixed boxes bigger than epsilon: " << mixCount - ct - mixSmallCount << endl;
-
+	if (verboseOption) 
+		cout << ">>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>\n";
+	cout << ">>\n";
+	if (!noPath) cout << ">>      ----->>  Path Found !" << endl;
+	else  cout << ">>      ----->>  No Path !" << endl;
+	cout << ">>\n";
+	cout << ">>      ----->>  Time used: "
+	    	<< t.getElapsedTimeInMilliSec() << " ms" << endl;
+	cout << ">>\n";
+	// cout << ">>      ----->>  Qtype: " << QType << "\n";
+	cout << ">>      ----->>  Qtype: ";
+		switch( QType ) 
+		{
+		    case 0:
+			cout << "Random Strategy\n"; break;
+		    case 1:
+			cout << "BFS Strategy\n"; break;
+		    case 2:
+			cout << "Greedy Strategy\n"; break;
+		    case 3:
+			cout << "Dist+Size Strategy\n"; break;
+		    case 4:
+			cout << "Voronoi Strategy\n"; break;
+		}
+	cout << ">>\n";
+	if (verboseOption) 
+	  cout << ">>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>\n";
+	if (verboseOption){
+	  cout << "Expanded " << ct << " times" << endl;
+	  cout << "total Free boxes: " << freeCount << endl;
+	  cout << "total Stuck boxes: " << stuckCount << endl;
+	  cout << "total Mixed boxes smaller than epsilon: " << mixSmallCount << endl;
+	  cout << "total Mixed boxes bigger than epsilon: " << mixCount - ct - mixSmallCount << endl;
+	}
 	stringstream ssout;
-	if (!noPath) ssout << "            PATH FOUND !" << endl;
-	else  ssout << "           NO PATH !" << endl;
-	ssout << "Expanded " << ct << " times" << endl;
-	ssout << "Time used: " << t.getElapsedTimeInMilliSec() << " ms" << endl;
-	ssout << "total Free boxes: " << freeCount << endl;
-	ssout << "total Stuck boxes: " << stuckCount << endl;
-	ssout << "total Mixed boxes smaller than epsilon: " << mixSmallCount << endl;
-	ssout << "total Mixed boxes bigger than epsilon: " << mixCount - ct - mixSmallCount << endl;
+	if (!noPath) ssout << "    ---->>   PATH FOUND !" << endl;
+	else  ssout << "    ---->>  NO PATH !" << endl;
+	ssout << "    ---->>   TIME USED: "
+	    	<< t.getElapsedTimeInMilliSec() << " ms" << endl;
+	if (verboseOption){
+	  ssout << "Expanded " << ct << " times" << endl;
+	  ssout << "total Free boxes: " << freeCount << endl;
+	  ssout << "total Stuck boxes: " << stuckCount << endl;
+	  ssout << "total Mixed boxes smaller than epsilon: " << mixSmallCount << endl;
+	  ssout << "total Mixed boxes bigger than epsilon: " << mixCount - ct - mixSmallCount << endl;
+	}
 	textBox->set_text(ssout.str().c_str());
 
 	freeCount = stuckCount = mixCount = mixSmallCount = 0;
@@ -782,6 +865,7 @@ void drawLine()
 void renderScene(void) 
 {
 	hideBoxBoundary = radioDrawOption->get_int_val();
+	verboseOption = radioVerboseOption->get_int_val();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -912,7 +996,6 @@ void parseConfigFile(Box* b)
 	std::stringstream ss;
 	ss << inputDir << "/" << fileName;	// create full file name 
 	std::string s = ss.str();
-cout << "input file name = " << s << endl;	
 
 	fileProcessor(s);	// this will clean the input and put in
 				// output-tmp.txt
@@ -929,7 +1012,6 @@ cout << "input file name = " << s << endl;
 
 	int nPt, nPolygons;	// previously, nPolygons was misnamed as nFeatures
 	ifs >> nPt;
-cout<< "nPt=" << nPt << endl;
 
 	//skip_comment_line ( ifs );	// again, clear white space
 	vector<double> pts(nPt*2);
@@ -941,7 +1023,6 @@ cout<< "nPt=" << nPt << endl;
 	//skip_comment_line ( ifs );	// again, clear white space
 	ifs >> nPolygons;
 	//skip_comment_line ( ifs );	// again, clear white space
-cout<< "nPolygons=" << nPolygons << endl;
 	string temp;
 	std::getline(ifs, temp);
 	for (int i = 0; i < nPolygons; ++i)
@@ -985,5 +1066,10 @@ cout<< "nPolygons=" << nPolygons << endl;
 		}
 	}
 	ifs.close();
+	if (verboseOption){
+	  cout << "input file name = " << s << endl;	
+	  cout<< "nPt=" << nPt << endl;
+	  cout<< "nPolygons=" << nPolygons << endl;
+	}
 
 }
