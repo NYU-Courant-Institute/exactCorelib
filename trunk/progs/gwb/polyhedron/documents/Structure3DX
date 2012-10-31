@@ -1,4 +1,6 @@
 \documentclass{article}
+
+\usepackage{verbatim}
 \title{Structure-3D}
 \author{Kai Cao}
 \date{Oct 2012}
@@ -24,36 +26,62 @@ Primitives:
       (Pseudo codes here)
       \subsubsection {Operations on "simple" Boxes}
       A simple Box contains at most one feature. A feature can be a segment, a corner, or an arc. There cannot be simpler features than that because we can only split a segment into segments and a corner cannot disappear if we split the box containing the corner into smaller ones. Same thing will happen when we are splitting an arc. 
-      \begin{enumerate} Now we have to define the classification of simple boxes:
-            \item {Empty Boxes: a Box contains no features}
-            \item {Segment Boxes: a Box contains a single segment and the endpoints lies on the boundary of the Box ( What if the boundary lies exactly on one of the boundary?)}
-            \item {Corner Boxes: a Box contains a single corner ( What if the Endpoint of the corner lies on the boundary?)}
-            \item {arc Boxes: a Box contains a single arc ( What if the arc passes though one of the corner of the box or tangent to the boundary of the Box?) } 
+      Now we have to define the classification of simple boxes:
+      \begin{enumerate} 
+            \item Empty Boxes: a Box contains no features
+            \item Segment Boxes: a Box contains a single segment and the endpoints lies on the boundary of the Box ( What if the boundary lies exactly on one of the boundary: check whether four points are on the same plane, this is not very complicated because we just need to check the x or y or z coordinate)
+            \item Corner Boxes: a Box contains a single corner ( What if the Endpoint of the corner lies on the boundary?)
+            \item Arc Boxes: a Box contains a single arc ( What if one or more of the box corners are on the arc? Or what if the arc is tangent to the one of the edge / face of the Box?)  
 
       \end{enumerate}
             
       Union:
       So finally boolean operation on trees will be simplified into boolean operation on simple boxes. There are 12 situations: 
-      \subsubsubsection { An empty box & An empty box: an empty box}
-      \subsubsubsection { An empty box & A segment box: a segment box}
-      \subsubsubsection { An empty box & A corner box: a corner box}
-      \subsubsubsection { An empty box & An arc box: an arc box}
-
-      \subsubsubsection { A segment box & A segment box: }
+      \begin{enumerate}
+            \item  An empty box \& An empty box: an empty box
+            \item  An empty box \& A segment box: a segment box
+            \item  An empty box \& A corner box: a corner box
+            \item  An empty box \& An arc box: an arc box
+            \item  A segment box \& A segment box: 
             \begin{enumerate}
-                  \item {A segment box: if one half plane contains another (a belongs to b)}
-                  \item {A corner box: if two segments crosses and the cross lies within the box (a intersect b is not empty)}
+                  \item A segment box: if one half plane contains another (a belongs to b)
+                  \item A corner box: if two segments crosses and the cross point lies within the box (a intersect b is not empty)
 
                   \item {Not a simple box: if there is no intersection between the two half planes, then the box will be divided into 3 parts and finally we have to subdivide the box until we get simple boxes. ( a and b are disjoint)}
             \end{enumerate}
-      \subsubsubsection { An empty box \& An empty box: an empty box}
-      \subsubsubsection { An empty box \& An empty box: an empty box}
-      \subsubsubsection { An empty box \& An empty box: an empty box}
-      \subsubsubsection { An empty box \& An empty box: an empty box}
-      \subsubsubsection { An empty box \& An empty box: an empty box}
-      \subsubsubsection { An empty box \& An empty box: an empty box}
-      \subsubsubsection { An empty box \& An empty box: an empty box}
 
+
+            \item  A segment box \& A corner box: This is the union of three half planes, we can check the end points of every segment on the boundary of the box. Let us say that segment s intersects with corner c which contains segment s1 and s2 
+                  
+                  \begin{enumerate}
+                        \item one cross point : 
+                        \\if the three segments intersects at the same point inside the box which means that the segment pass through the endpoint of the corner : a corner box
+                        \\if s contains s1 and s2: a segment box, which contains s
+                        \item two cross points : s intersects s1 or s2 but not both, then based on the half plane s decides, the box contains one or two corners. If it contains two corners, we have to subdivide the box.
+                        \item three cross points : s intersects both s1 and s2, then based on the the halp plane s decides, the box contais two or three corners. We have to subdivide the box int small ones.
+                  \end{enumerate}
+
+            \item  A corner box \& corner box: Let us suppose that we have corner c1 and c2. c1 is the union of segment s1 ans s2, while c2 is the union of sement t1 and t2. Then we have to compute the intersection of these segments. The algorithm is that we compute the union of c1 and t1 and subdivide the box into smaller ones if necessary. And then subdivide the box containing t2 into smaller ones if necessary and compute the union of small boxes. 
+            \\Finally, the computation of the union of two corners should be simplified to two union of a corner box and a segment box. 
+            \begin{comment}
+            \begin{enumerate}
+                  \item one cross point: 
+                  \\If s1, s2, t1 ,t2 intersects at the same point, the union should be a corner.
+                  \\If there is no intersection between si and tj ( i=1, i=2, j=1 j=2 ), then based on the halp plane c1 and c2 decides, the union of the two boxes should contain a corner or two corners. If we have two corners, we have to subdivide the box into smaller ones. 
+                  \\If 
+            \end{enumerate}
+            \end{comment}
+
+                  \begin{comment}
+            \item  An empty box \& An empty box: an empty box
+            \item  An empty box \& An empty box: an empty box
+            \item  An empty box \& An empty box: an empty box
+            \item  An empty box \& An empty box: an empty box
+            \item  An empty box \& An empty box: an empty box
+
+            \end{comment}
+      \end{enumerate}
+      
 
 \begin{enumerate}
       \item 2D Boxes
@@ -61,6 +89,8 @@ Primitives:
             
 
       \item 3d Boxes
+\end{enumerate}
+           
 \subsubsection {Relations between a box B and a primitive A:}
       \begin{enumerate}
             \item Box B belongs to A
