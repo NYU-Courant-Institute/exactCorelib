@@ -7,8 +7,8 @@
 \begin{document}
 
 \maketitle
-\section {3-Level Representation}
-\subsection {CSG objects (We should draw a tree here)}
+\part{3-Level Representation}
+\section {CSG objects (We should draw a tree here)}
 Primitives:
 \begin{enumerate}
       \item Half Spaces
@@ -17,81 +17,172 @@ Primitives:
       
 \end{enumerate}
 
-\subsection {Subdivision Trees(Double, Quad, Oct, Draw a tree here)}
-      \subsubsection {Operations on Box Quadtrees}
+\section {Subdivision Trees(Double, Quad, Oct, Draw a tree here)}
+      \subsection {2D Boxes: Operations on Box Quadtrees}
 
-      Box representation contains information used to construct a intersection , minus or union of the two graphs. We can assume that every root of the tree is the same one: The universe. Or,concretely we exclaim that the root of a 2-D Box-quad tree should be the whole r2 space and the root of a 3-D Box-cotree should be the whole r3 space. The boolean operation( Union, Intersection, and Difference) of two quadtree with same root ( two boxes in the same location and with same size) should be a new quadtree, with four children and each of them is the same operation of the two subbox in the same location. But sometimes the quantity of their children may be different:
-      Suppose we have two quadtree A and B with the same root. Tree A has been full-divided into four subboxes( Box 1, 2, 3, 4) but tree B was half-divided into two subboxes ( Box a, b), then Box a may be the a rectangle and a union of Box 1 and 2, and Box b may be the union of Box 3 and 4. In this situation, we have to divide the bigger box into small boxes. So Box a can be divided into Box a1 and Box a2, at the same time, Box b should be divided into Box b.1 and Box b.2. After the subdivision we can have boxes with in the same location and with the same size.
+      Box representation contains necessary information to construct a intersection , minus or union of the two graphs. We can assume that every root of the tree is the same one: The universe. Or,concretely we exclaim that the root of a 2-D Box-quad tree should be the whole r2 space and the root of a 3-D Box-cotree should be the whole r3 space. The boolean operation( Union, Intersection, and Difference) of two quadtree with same root ( two Boxes in the same location and with same size) should be a new quadtree, with four children and each of them is the same operation of the two subBox in the same location. But sometimes the quantity of their children may be different:
+      Suppose we have two quadtree A and B with the same root. Tree A has been full-divided into four subBoxes( Box 1, 2, 3, 4) but tree B was half-divided into two subBoxes ( Box a, b), then Box a may be the a rectangle and a union of Box 1 and 2, and Box b may be the union of Box 3 and 4. In this situation, we have to divide the bigger Box into small Boxes. So Box a can be divided into Box a1 and Box a2, at the same time, Box b should be divided into Box b.1 and Box b.2. After the subdivision we can have Boxes with in the same location and with the same size.
 
       (Pseudo codes here)
-      \subsubsection {Operations on "simple" Boxes}
-      A simple Box contains at most one feature. A feature can be a segment, a corner, or an arc. There cannot be simpler features than that because we can only split a segment into segments and a corner cannot disappear if we split the box containing the corner into smaller ones. Same thing will happen when we are splitting an arc. 
-      Now we have to define the classification of simple boxes:
+      \subsection {Operations on "simple" Boxes}
+      A simple Box contains at most one feature. A feature can be a segment, a corner, or an arc. There cannot be simpler features than that because we can only split a segment into segments and a corner cannot disappear if we split the Box containing the corner into smaller ones. Same thing will happen when we are splitting an arc. 
+      Now we have to define the classification of simple Boxes:
       \begin{enumerate} 
-            \item Empty Boxes: a Box contains no features
-            \item Segment Boxes: a Box contains a single segment and the endpoints lies on the boundary of the Box ( What if the boundary lies exactly on one of the boundary: check whether four points are on the same plane, this is not very complicated because we just need to check the x or y or z coordinate)
-            \item Corner Boxes: a Box contains a single corner ( What if the Endpoint of the corner lies on the boundary?)
-            \item Arc Boxes: a Box contains a single arc ( What if one or more of the box corners are on the arc? Or what if the arc is tangent to the one of the edge / face of the Box?)  
+            \item Empty Boxes: a Box containing no features
+            \item Segment Boxes: a Box containing a single segment and the endpoints lies on the boundary of the Box ( What if the boundary lies exactly on one of the boundary: check whether four points are on the same plane, this is not very complicated because we just need to check the x or y or z coordinate)
+            \item Corner Boxes: a Box containing a single corner ( What if the Endpoint of the corner lies on the boundary?)
+            \item Arc Boxes: a Box containing a single arc ( What if one or more of the Box corners are on the arc? Or what if the arc is tangent to the one of the edge / face of the Box?)  
+            \item Curve Box: a Box containing a single nonsingular curve
+            \item Feature Box: A Box containing exact one feature 
 
       \end{enumerate}
             
-      Union:
-      So finally boolean operation on trees will be simplified into boolean operation on simple boxes. There are 12 situations: 
+      \paragraph{Union:
+      So finally boolean operation on trees will be simplified into boolean operation on simple Boxes. There are 7 situations ( arc Box has not been considered) : }
       \begin{enumerate}
-            \item  An empty box \& An empty box: an empty box
-            \item  An empty box \& A segment box: a segment box
-            \item  An empty box \& A corner box: a corner box
-            \item  An empty box \& An arc box: an arc box
-            \item  A segment box \& A segment box: 
+            \item  An empty Box \& An empty Box: an empty Box
+            \item  An empty Box \& A segment Box: a segment Box
+            \item  An empty Box \& A corner Box: a corner Box
+            \item  An empty Box \& An arc Box: an arc Box
+            \item  A segment Box \& A segment Box: 
             \begin{enumerate}
-                  \item A segment box: if one half plane contains another (a belongs to b)
-                  \item A corner box: if two segments crosses and the cross point lies within the box (a intersect b is not empty)
+                  \item A segment Box: if one half plane contains another (a belongs to b)
+                  \item A corner Box: if two segments crosses and the cross point lies within the Box (a intersect b is not empty)
 
-                  \item {Not a simple box: if there is no intersection between the two half planes, then the box will be divided into 3 parts and finally we have to subdivide the box until we get simple boxes. ( a and b are disjoint)}
+                  \item {Not a simple Box: if there is no intersection between the two half planes, then the Box will be divided into 3 parts and finally we have to subdivide the Box until we get simple Boxes. ( a and b are disjoint)}
             \end{enumerate}
 
 
-            \item  A segment box \& A corner box: This is the union of three half planes, we can check the end points of every segment on the boundary of the box. Let us say that segment s intersects with corner c which contains segment s1 and s2 
+            \item  A segment Box \& A corner Box: This is the union of three half planes, we can check the end points of every segment on the boundary of the Box. Let us say that segment s intersects with corner c which contains segment s1 and s2 
                   
                   \begin{enumerate}
                         \item one cross point : 
-                        \\if the three segments intersects at the same point inside the box which means that the segment pass through the endpoint of the corner : a corner box
-                        \\if s contains s1 and s2: a segment box, which contains s
-                        \item two cross points : s intersects s1 or s2 but not both, then based on the half plane s decides, the box contains one or two corners. If it contains two corners, we have to subdivide the box.
-                        \item three cross points : s intersects both s1 and s2, then based on the the halp plane s decides, the box contais two or three corners. We have to subdivide the box int small ones.
+                        \\if the three segments intersects at the same point inside the Box which means that the segment pass through the endpoint of the corner : a corner Box
+                        \\if s contains s1 and s2: a segment Box, which contains s
+                        \item two cross points : s intersects s1 or s2 but not both, then based on the half plane s decides, the Box contains one or two corners. If it contains two corners, we have to subdivide the Box.
+                        \item three cross points : s intersects both s1 and s2, then based on the the halp plane s decides, the Box contais two or three corners. We have to subdivide the Box int small ones.
                   \end{enumerate}
 
-            \item  A corner box \& corner box: Let us suppose that we have corner c1 and c2. c1 is the union of segment s1 ans s2, while c2 is the union of sement t1 and t2. Then we have to compute the intersection of these segments. The algorithm is that we compute the union of c1 and t1 and subdivide the box into smaller ones if necessary. And then subdivide the box containing t2 into smaller ones if necessary and compute the union of small boxes. 
-            \\Finally, the computation of the union of two corners should be simplified to two union of a corner box and a segment box. 
+            \item  A corner Box \& corner Box: Let us suppose that we have corner c1 and c2. c1 is the union of segment s1 ans s2, while c2 is the union of sement t1 and t2.\ Then we have to compute the intersection of these segments. The algorithm is that we compute the union of c1 and t1 and subdivide the Box into smaller ones if necessary. And then subdivide the Box containing t2 into smaller ones if necessary and compute the union of small Boxes. 
+            \\Finally, the computation of the union of two corners should be simplified to two union of a corner Box and a segment Box. 
             \begin{comment}
             \begin{enumerate}
                   \item one cross point: 
                   \\If s1, s2, t1 ,t2 intersects at the same point, the union should be a corner.
-                  \\If there is no intersection between si and tj ( i=1, i=2, j=1 j=2 ), then based on the halp plane c1 and c2 decides, the union of the two boxes should contain a corner or two corners. If we have two corners, we have to subdivide the box into smaller ones. 
+                  \\If there is no intersection between si and tj ( i=1, i=2, j=1 j=2 ), then based on the halp plane c1 and c2 decides, the union of the two Boxes should contain a corner or two corners. If we have two corners, we have to subdivide the Box into smaller ones. 
                   \\If 
             \end{enumerate}
             \end{comment}
 
                   \begin{comment}
-            \item  An empty box \& An empty box: an empty box
-            \item  An empty box \& An empty box: an empty box
-            \item  An empty box \& An empty box: an empty box
-            \item  An empty box \& An empty box: an empty box
-            \item  An empty box \& An empty box: an empty box
+            \item  An empty Box \& An empty Box: an empty Box
+            \item  An empty Box \& An empty Box: an empty Box
+            \item  An empty Box \& An empty Box: an empty Box
+            \item  An empty Box \& An empty Box: an empty Box
+            \item  An empty Box \& An empty Box: an empty Box
 
             \end{comment}
       \end{enumerate}
       
 
+      Generally speaking, all Boxes containing a single feature can be treated as Boxes at the same position, which contains a single curve. So Operation on Boxes can be divided into the computation between a feature Box and a curve Box.  
+
+
+
+
+      \paragraph {Intersection: So finally boolean operation on trees will be simplified into boolean operation on simple Boxes. There are 7 situations ( arc Box has not been considered) :} 
+      
+      \begin{enumerate}
+            \item  An empty Box \& An empty Box: an empty Box
+            \item  An empty Box \& A segment Box: an empty Box
+            \item  An empty Box \& A empty Box: a empty Box
+            \item  An empty Box \& An arc Box: an empty Box
+            \item  A segment Box \& A segment Box: 
+            \begin{enumerate}
+                  \item A cross point :A corner Box: if two segments crosses and the cross point lies within the Box (a intersect b is not empty). These corner box is different from the union of two segment boxes, whose degree of the corner is less tan 180 while the other one is more than 180. 
+
+                  \item No cross points :If there is no intersection between the two half planes, then the Box will be divided into 3 parts and finally we have to subdivide the Box until we get simple Boxes. ( a and b are disjoint)
+                  \\ Or if one half plane contains another (a belongs to b), the intersection should be a segment box containing a.
+            \end{enumerate}
+
+
+            \item  A segment Box \& A corner Box: This is the union of three half planes, we can check the end points of every segment on the boundary of the Box. Let us say that segment s intersects with corner c which contains segment s1 and s2 
+                  \\
+                  \\Finally we have several half planes and operations on them (union or intersection).
+                  \\
+
+                  \begin{enumerate}
+                        \item one cross point : 
+                        \\if the three segments intersects at the same point inside the Box which means that the segment pass through the endpoint of the corner : a corner Box
+                        \\if s contains s1 and s2: a segment Box, which contains s
+                        \item two cross points : s intersects s1 or s2 but not both, then based on the half plane s decides, the Box contains one or two corners. If it contains two corners, we have to subdivide the Box.
+                        \item three cross points : s intersects both s1 and s2, then based on the the halp plane s decides, the Box contais two or three corners. We have to subdivide the Box int small ones.
+                  \end{enumerate}
+
+            \item  A corner Box \& corner Box: Let us suppose that we have corner c1 and c2. c1 is the union of segment s1 ans s2, while c2 is the union of sement t1 and t2.\ Then we have to compute the intersection of these segments. The algorithm is that we compute the union of c1 and t1 and subdivide the Box into smaller ones if necessary. And then subdivide the Box containing t2 into smaller ones if necessary and compute the union of small Boxes. 
+            \\Finally, the computation of the union of two corners should be simplified to two union of a corner Box and a segment Box. 
+
+            \end{enumerate}
+
+
+
+
+      \subsection {Operations on "simple" Boxes}
+      A simple 3D-Box contains at most one feature. A feature can be a polygon, a 3D corner, a partial sphere. There cannot be simpler features than that because we can only split a polygon into several polygons and a corner cannot disappear if we split the Box containing the corner into smaller ones. Same thing will happen when we are splitting an partial sphere. 
+      Now we have to define the classification of simple Boxes:
+      \begin{enumerate} 
+            \item Empty Boxes: a Box containing no features
+            \item Polygon Boxes: a Box containing a single polygon and the endpoints lies on the boundary of the Box ( What if the polygon lies exactly on one of the boundary: check whether four points are on the same plane, this is not very complicated because we just need to check the x or y or z coordinate. But finally we need a infinitesimal perturbation to make sure that this polygon is exactly inside the box). Actually the polygon should be a parallelogram or a triangle.
+
+            \item Corner Boxes: a Box containing a single corner ( If the Endpoint of the corner lies on the boundary, we need a infinitesimal perturbation)
+            \item Sphere Boxes: a Box containing a partial sphere ( What if one or more of the Box corners are on the sphere? Or what if the sphere is tangent to the one of the edge / face of the Box?, infinitesimal perturbation)  
+            \item Curve Box: a Box containing a single nonsingular curve
+            \item Feature Box: A Box containing exact one feature 
+
+      \end{enumerate}
+
+\begin{comment}
 \begin{enumerate}
       \item 2D Boxes
-            \subsubsection{Representation}
+            \subsection{Representation}
             
 
       \item 3d Boxes
 \end{enumerate}
+\end{comment}
            
-\subsubsection {Relations between a box B and a primitive A:}
+\subsection {3D Boxes: subdivion on Box Octrees}
+      \paragraph{ Our main algorithmic paradigm is subdivision where an initial axes-parallel Box B0 belongs to R3 is repeatedly subdivided into smaller Boxes, forming an octree at B0. }
+      Union:
+      So finally boolean operation on trees will be simplified into boolean operation on simple Boxes. There are 7 situations ( arc Box has not been considered) : 
+      \begin{enumerate}
+            \item  An empty Box \& An empty Box: an empty Box
+            \item  An empty Box \& A polygon Box: a polygonBox
+            \item  An empty Box \& A corner Box: a corner Box
+            \item  An empty Box \& An sphere Box: an arc Box
+            \item  A polygon Box \& A polygon Box: 
+            \begin{enumerate}
+                  \item A segment Box: if one half plane contains another (a belongs to b)
+                  \item A corner Box: if two segments crosses and the cross point lies within the Box (a intersect b is not empty)
+
+                  \item {Not a simple Box: if there is no intersection between the two half planes, then the Box will be divided into 3 parts and finally we have to subdivide the Box until we get simple Boxes. ( a and b are disjoint)}
+            \end{enumerate}
+
+
+            \item  A polygon Box \& A corner Box: This is the union of three half planes, we can check the end points of every segment on the boundary of the Box. Let us say that segment s intersects with corner c which contains segment s1 and s2 
+                  
+                  \begin{enumerate}
+                        \item one cross point : 
+                        \\if the three segments intersects at the same point inside the Box which means that the segment pass through the endpoint of the corner : a corner Box
+                        \\if s contains s1 and s2: a segment Box, which contains s
+                        \item two cross points : s intersects s1 or s2 but not both, then based on the half plane s decides, the Box contains one or two corners. If it contains two corners, we have to subdivide the Box.
+                        \item three cross points : s intersects both s1 and s2, then based on the the halp plane s decides, the Box contais two or three corners. We have to subdivide the Box int small ones.
+                  \end{enumerate}
+
+            \item  A corner Box \& corner Box: Let us suppose that we have corner c1 and c2. c1 is the union of segment s1 ans s2, while c2 is the union of sement t1 and t2.\ Then we have to compute the intersection of these segments. The algorithm is that we compute the union of c1 and t1 and subdivide the Box into smaller ones if necessary. And then subdivide the Box containing t2 into smaller ones if necessary and compute the union of small Boxes. 
+            \\Finally, the computation of the union of two corners should be simplified to two union of a corner Box and a segment Box. 
+      \end{enumerate}
+\subsection {Relations between a Box B and a primitive A:}
       \begin{enumerate}
             \item Box B belongs to A
             \item Box B is out of A
@@ -99,13 +190,13 @@ Primitives:
             \item Box B intersects A
       \end{enumerate}
 
-\subsubsection {Features in a Box}
+\subsection {Features in a Box}
       \begin{enumerate}
             \item Half Plane
             \item Corner
       \end{enumerate}
-\subsection {Euler Representation(Draw a graph here)}
-We need to include a pointer in every vertex pointing to the box it belongs to because the box contains all information needded.
+\section {Euler Representation(Draw a graph here)}
+We need to include a pointer in every vertex pointing to the Box it belongs to because the Box contains all information needded.
 
 \section {Relation between these 3 Levels (Draw a picture here)}
 
