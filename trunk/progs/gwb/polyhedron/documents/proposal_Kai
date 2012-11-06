@@ -8,12 +8,13 @@
 
 \begin{enumerate}
       \item Introduction
+      Geometric modeling embraces computational geometry and extends beyond this to the newer field of solid modeling,creating an elegant sythesis of geometry and the computer.
 
-      Solid modeling is the mathematical study of computational modeling of 3D solids. Solid modeling is distinguished from related areas of geometric modeling and computer graphics by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange ,visualization, animation, interrogation, and annotation of digital models of physical objects.
+      Solid modeling is distinguished from related areas of geometric modeling and computer graphics by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange ,visualization, animation, interrogation, and annotation of digital models of physical objects.
       
       \item What is included:
       \begin{enumerate}
-            \item HalfEdge data structure recording the structure of solids like polyhedons. 
+            \item Euler representation data structure recording the structure of solids like polyhedons. 
             All the cpp files are in the core library. Every halfedge has its mate and we can find a "neighbor" of a face through the mate of a halfedge.Every halfedge belongs to a loop and every loop belongs to a face. A face contains at least a loop, which is its outer loop,and some inner loops wheneverthe solid contains a hole. 
 
             \item Computations on HalfEdge solid models:
