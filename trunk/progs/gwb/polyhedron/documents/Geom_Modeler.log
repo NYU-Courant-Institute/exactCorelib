@@ -1,8 +1,8 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2012.10.2)  15 NOV 2012 21:42
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2012.10.2)  15 NOV 2012 23:25
 entering extended mode
  %&-line parsing enabled.
-**Structure3DX
-(./Structure3DX
+**Geom_Modeler
+(./Geom_Modeler
 LaTeX2e <2009/09/24>
 Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
 yphenation, loaded.
@@ -168,21 +168,21 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
 \mathdisplay@stack=\toks23
 LaTeX Info: Redefining \[ on input line 2666.
 LaTeX Info: Redefining \] on input line 2667.
-) (./Structure3DX.aux)
-\openout1 = `Structure3DX.aux'.
+) (./Geom_Modeler.aux)
+\openout1 = `Geom_Modeler.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
 
 *geometry auto-detecting driver*
 *geometry detected driver: dvips*
@@ -225,39 +225,25 @@ driver: dvips
 
 (1in=72.27pt, 1cm=28.45pt)
 -----------------------
-LaTeX Font Info:    Try loading font information for U+msa on input line 12.
+LaTeX Font Info:    Try loading font information for U+msa on input line 13.
 (/usr/share/texmf-texlive/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2009/06/22 v3.00 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 12.
+LaTeX Font Info:    Try loading font information for U+msb on input line 13.
 
 (/usr/share/texmf-texlive/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 ) [1
 
-] [2] [3]
-Underfull \hbox (badness 10000) in paragraph at lines 146--150
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 146--150
-
- []
-
-[4] [5]
-Overfull \hbox (1.96606pt too wide) in paragraph at lines 248--248
-[]\OT1/cmr/bx/n/14.4 Euler Rep-re-sen-ta-tion(Draw
- []
-
-[6] (./Structure3DX.aux) ) 
+] [2]
+(./Geom_Modeler.aux) ) 
 Here is how much of TeX's memory you used:
- 1648 strings out of 495062
- 20158 string characters out of 1182644
- 87157 words of memory out of 3000000
- 4843 multiletter control sequences out of 15000+50000
- 11520 words of font info for 44 fonts, out of 3000000 for 9000
+ 1644 strings out of 495062
+ 20110 string characters out of 1182644
+ 81157 words of memory out of 3000000
+ 4841 multiletter control sequences out of 15000+50000
+ 11044 words of font info for 42 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
- 27i,6n,32p,723b,377s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,6n,32p,547b,378s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on Structure3DX.dvi (6 pages, 26580 bytes).
+Output written on Geom_Modeler.dvi (2 pages, 7412 bytes).

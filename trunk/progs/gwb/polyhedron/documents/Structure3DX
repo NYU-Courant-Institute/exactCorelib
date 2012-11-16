@@ -1,25 +1,50 @@
-\documentclass{article}
+\documentclass[11pt]{article}
 
 \usepackage{verbatim}
+\usepackage[margin=1.2in]{geometry}
+\usepackage{multicol}
 \usepackage{amssymb}
-\title{3-Level Geometric Modeling:CSG, Box Subdivision and Euler Representation}
+\usepackage{amsmath}
+\title{3-Level Geometric Modeler: CSG, Subdivision Trees and Boudary Representation}
 \author{Kai Cao}
 \date{Oct 2012}
 \begin{document}
-
 \maketitle
-\part{Introduction}
-\part{3-Level Representation}
+\begin{multicols}{2}
 
+
+\section {Definitions:}
+      \subsection {Regularized Set}
+      A regularized set is a set $S$ that belongs to the closure of the interior of set $S$, which means that  $S\subset \overline{int(S)}$.
+      \subsection {Solid}
+      Our algorithm is mainly focusing on solids. So what is a solid? I will define a solid $S$ as a regularized subset of $\mathbb{R}^3$($S\subset\mathbb{R}^3$)
+      \subsection {Regularized Solid}
+      A regularized solid S should be a solid which is also a regularized subset of $\mathbb{R}^3$.
 %CSG LEVEL
 \section {CSG objects (We should draw a tree here)}
+Like a polyhedron can be described as intersection of half spaces, A CSG(Constructive Solid Geometry) model describes a polyhedron as boolean operation on primitives which are the simplest solid objects used for the representation. The boolean operations on should be intersection, union and difference and complement. The primitives are actually subsets of $\mathbb{R}^3$. For a polyhedron we define primitives as half spaces. But in more complicated situation, we need complex primitives like a cylinder, a sphere and so on.
 \subsection {Primitives:}
+These primitives comes from semigeometric definition and all these primitives are subsets of $\mathbb{R}^3$. 
 \begin{enumerate}
-      \item Half Spaces
-      \item Spheres
+      \item Half Spaces: A half space $H$ is a subset of $\mathbb{R}^3$, H was defined by an inequation. Suppose the equation of a plane in $\mathbb{R}^3$ is $f(x,y,z)=a*x+b*y+c*z-d=0$ ,which is a linear function of coordinates$(x,y,z)$, then the upper half space defined by equation $f(x,y,z)=0$ should be $f(x,y,z)=a*x+b*y+c*z-d\ge0$, likewise the lower half space defined by equation $f(x,y,z)=0$ should be $f(x,y,z)=a*x+b*y+c*z-d\le0$.
+      \item Spheres: A sphere $S$ should also be a subset of $\mathbb{R}^3$. The boundary of the sphere should be defined by an equation $f(x,y,z)=(x-x_0)^2+(y-y_0)^2+(z-z_0)^2-r^2=0$. When $f(x,y,z)\ge0$, we define the outer space of the sphere including the boundary. Or when $f(x,y,z)\le0$, we define the inner halp space including the boundary. 
       \item Cylinders
       
 \end{enumerate}
+\subsection {Subdivision trees:}
+      \begin{enumerate}
+            \item Box: a Box B in $\mathbb{R}^3$ is a subset of $\mathbb{R}^3$, $B={(x,y,z}|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2}$
+            \itme ? Box:
+                  \begin{enumerate} 
+            \item Empty Box: a box with no intersection with the polyhedron, which means that all points inside the Box are exterior points of the polyhedron. 
+            \item Edge Box: An edge $e$ bounds two faces $f_1, f_2$, the edge and these two corresponding faces cannot disappear even if we subdivide the box into smaller ones. The endpoints of the edge lies on the boundary of the box. The intersection between the box and vertices or edges or faces of a polygon other than $f_1,f_2 and e$ should be an empty set. 
+            \item Vertex Box: A vertex $v$ bounds an edge and also bounds several faces $(f_1,f_2,...f_n)$. And the vertex and the corresponding faces canot disappear even if we subdivide the box into smaller ones. $v$ is inside the box. The intersection between the box and vertices or edges or faces of a polygon other than $v,f_1,f_2,...,f_n$ should be an empty set.   
+            \item Face Box: A face $f$ bounds a polyhedron. This box should contain exactly a face cutting though the box into two parts. The intersection of the face and the boundary of the box should be either a triangle or a parallelagram. The intersection between the box and vertices or edges or faces of a polygon other than $f$ should be an empty set.
+            \item Full Box: a box wholly inside the polyhedron, which means that all points inside the Box are interior points of the polyhedron.
+
+                  \end{enumerate}
+            \item adequate subdivision tree: In $\mathbb{R}^3$, a subdivision tree should be a octree in which each node of the tree whould be a finite Box. The root should be a finite box $B_0$. We begin with the $B_0$, and subdivide the tree until all leaves hould be ? Boxes.
+      \end{enumerate}
 
 \subsection {Location of points}
       Checking the location of points is necessary when implementing the boolean operation on polyhedra. We have to make sure that whether a point is inside, outside or exactly on the surface of a polyhedron.      
@@ -273,6 +298,6 @@ BigFloat *y;
 \end{verbatim}
 
 Information in extlong?
+\end{multicols}
 \end{document}
-
       
