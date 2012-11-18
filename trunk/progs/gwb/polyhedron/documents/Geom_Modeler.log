@@ -1,15 +1,25 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2012.10.2)  18 NOV 2012 13:21
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  18 NOV 2012 16:44
 entering extended mode
+ restricted \write18 enabled.
  %&-line parsing enabled.
 **Geom_Modeler
-(./Geom_Modeler
-LaTeX2e <2009/09/24>
-Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
-yphenation, loaded.
-(/usr/share/texmf-texlive/tex/latex/base/article.cls
+(./Geom_Modeler.tex
+LaTeX2e <2011/06/27>
+Babel <v3.8m> and hyphenation patterns for english, dumylang, nohyphenation, ge
+rman-x-2012-05-30, ngerman-x-2012-05-30, afrikaans, ancientgreek, ibycus, arabi
+c, armenian, basque, bulgarian, catalan, pinyin, coptic, croatian, czech, danis
+h, dutch, ukenglish, usenglishmax, esperanto, estonian, ethiopic, farsi, finnis
+h, french, friulan, galician, german, ngerman, swissgerman, monogreek, greek, h
+ungarian, icelandic, assamese, bengali, gujarati, hindi, kannada, malayalam, ma
+rathi, oriya, panjabi, tamil, telugu, indonesian, interlingua, irish, italian, 
+kurmanji, latin, latvian, lithuanian, mongolian, mongolianlmc, bokmal, nynorsk,
+ polish, portuguese, romanian, romansh, russian, sanskrit, serbian, serbianc, s
+lovak, slovenian, spanish, swedish, turkish, turkmen, ukrainian, uppersorbian, 
+welsh, loaded.
+(/usr/local/texlive/2012/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
-(/usr/share/texmf-texlive/tex/latex/base/size11.clo
-File: size11.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
 )
 \c@part=\count79
 \c@section=\count80
@@ -23,52 +33,84 @@ File: size11.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
 \belowcaptionskip=\skip42
 \bibindent=\dimen102
 )
-(/usr/share/texmf-texlive/tex/latex/tools/verbatim.sty
-Package: verbatim 2003/08/22 v1.5q LaTeX2e package for verbatim enhancements
-\every@verbatim=\toks14
-\verbatim@line=\toks15
-\verbatim@in@stream=\read1
+(/usr/local/texlive/2012/texmf-dist/tex/latex/lipsum/lipsum.sty
+Package: lipsum 2011/04/14 v1.2 150 paragraphs of Lorem Ipsum dummy text
+\c@lips@count=\count87
 )
-(/usr/share/texmf-texlive/tex/latex/geometry/geometry.sty
-Package: geometry 2008/12/21 v4.2 Page Geometry
+(/usr/local/texlive/2012/texmf-dist/tex/latex/psnfss/mathpazo.sty
+Package: mathpazo 2005/04/12 PSNFSS-v9.2a Palatino w/ Pazo Math (D.Puga, WaS) 
+\symupright=\mathgroup4
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2005/09/27 v1.99g Standard LaTeX package
 
-(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty
+(/usr/local/texlive/2012/texmf-dist/tex/latex/base/t1enc.def
+File: t1enc.def 2005/09/27 v1.99g Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding T1 on input line 43.
+))
+(/usr/local/texlive/2012/texmf-dist/tex/latex/microtype/microtype.sty
+Package: microtype 2010/01/10 v2.4 Micro-typography with pdfTeX (RS)
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/graphics/keyval.sty
 Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
-\KV@toks@=\toks16
+\KV@toks@=\toks14
 )
-(/usr/share/texmf-texlive/tex/generic/oberdiek/ifpdf.sty
-Package: ifpdf 2009/04/10 v2.0 Provides the ifpdf switch (HO)
-Package ifpdf Info: pdfTeX in pdf mode not detected.
+\MT@toks=\toks15
+\MT@count=\count88
+LaTeX Info: Redefining \lsstyle on input line 1597.
+LaTeX Info: Redefining \lslig on input line 1597.
+\MT@outer@space=\skip43
+LaTeX Info: Redefining \textls on input line 1605.
+\MT@outer@kern=\dimen103
+LaTeX Info: Redefining \textmicrotypecontext on input line 2156.
+Package microtype Info: Loading configuration file microtype.cfg.
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/microtype/microtype.cfg
+File: microtype.cfg 2010/01/10 v2.4 microtype main configuration file (RS)
+))
+(/usr/local/texlive/2012/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2010/09/12 v5.6 Page Geometry
+
+(/usr/local/texlive/2012/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is detected.
 )
-(/usr/share/texmf-texlive/tex/generic/oberdiek/ifvtex.sty
-Package: ifvtex 2008/11/04 v1.4 Switches for detecting VTeX and its modes (HO)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/oberdiek/ifvtex.sty
+Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
 Package ifvtex Info: VTeX not detected.
 )
-\Gm@cnth=\count87
-\Gm@cntv=\count88
-\c@Gm@tempcnt=\count89
-\Gm@bindingoffset=\dimen103
-\Gm@wd@mp=\dimen104
-\Gm@odd@mp=\dimen105
-\Gm@even@mp=\dimen106
-\Gm@dimlist=\toks17
+(/usr/local/texlive/2012/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 )
-(/usr/share/texmf-texlive/tex/latex/tools/multicol.sty
-Package: multicol 2008/12/05 v1.6h multicolumn formatting (FMi)
-\c@tracingmulticols=\count90
+\Gm@cnth=\count89
+\Gm@cntv=\count90
+\c@Gm@tempcnt=\count91
+\Gm@bindingoffset=\dimen104
+\Gm@wd@mp=\dimen105
+\Gm@odd@mp=\dimen106
+\Gm@even@mp=\dimen107
+\Gm@layoutwidth=\dimen108
+\Gm@layoutheight=\dimen109
+\Gm@layouthoffset=\dimen110
+\Gm@layoutvoffset=\dimen111
+\Gm@dimlist=\toks16
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/tools/multicol.sty
+Package: multicol 2011/06/27 v1.7a multicolumn formatting (FMi)
+\c@tracingmulticols=\count92
 \mult@box=\box26
-\multicol@leftmargin=\dimen107
-\c@unbalance=\count91
-\c@collectmore=\count92
-\doublecol@number=\count93
-\multicoltolerance=\count94
-\multicolpretolerance=\count95
-\full@width=\dimen108
-\page@free=\dimen109
-\premulticols=\dimen110
-\postmulticols=\dimen111
-\multicolsep=\skip43
-\multicolbaselineskip=\skip44
+\multicol@leftmargin=\dimen112
+\c@unbalance=\count93
+\c@collectmore=\count94
+\doublecol@number=\count95
+\multicoltolerance=\count96
+\multicolpretolerance=\count97
+\full@width=\dimen113
+\page@free=\dimen114
+\premulticols=\dimen115
+\postmulticols=\dimen116
+\multicolsep=\skip44
+\multicolbaselineskip=\skip45
 \partial@page=\box27
 \last@line=\box28
 \mult@rightbox=\box29
@@ -92,167 +134,409 @@ Package: multicol 2008/12/05 v1.6h multicolumn formatting (FMi)
 \@tempa=\box47
 \@tempa=\box48
 \@tempa=\box49
-\c@columnbadness=\count96
-\c@finalcolumnbadness=\count97
-\last@try=\dimen112
-\multicolovershoot=\dimen113
-\multicolundershoot=\dimen114
+\c@columnbadness=\count98
+\c@finalcolumnbadness=\count99
+\last@try=\dimen117
+\multicolovershoot=\dimen118
+\multicolundershoot=\dimen119
 \mult@nat@firstbox=\box50
 \colbreak@box=\box51
+\multicol@sort@counter=\count100
 )
-(/usr/share/texmf-texlive/tex/latex/amsfonts/amssymb.sty
-Package: amssymb 2009/06/22 v3.00
+(/usr/local/texlive/2012/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2012/05/13 v6.82q Hypertext links for LaTeX
 
-(/usr/share/texmf-texlive/tex/latex/amsfonts/amsfonts.sty
-Package: amsfonts 2009/06/22 v3.00 Basic AMSFonts support
-\@emptytoks=\toks18
-\symAMSa=\mathgroup4
-\symAMSb=\mathgroup5
-LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
-(Font)                  U/euf/m/n --> U/euf/b/n on input line 96.
-))
-(/usr/share/texmf-texlive/tex/latex/amsmath/amsmath.sty
-Package: amsmath 2000/07/18 v2.13 AMS math features
-\@mathmargin=\skip45
+(/usr/local/texlive/2012/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
+Package: hobsub-hyperref 2012/05/28 v1.13 Bundle oberdiek, subset hyperref (HO)
 
-For additional information on amsmath, use the `?' option.
-(/usr/share/texmf-texlive/tex/latex/amsmath/amstext.sty
-Package: amstext 2000/06/29 v2.01
 
-(/usr/share/texmf-texlive/tex/latex/amsmath/amsgen.sty
-File: amsgen.sty 1999/11/30 v2.0
-\@emptytoks=\toks19
-\ex@=\dimen115
-))
-(/usr/share/texmf-texlive/tex/latex/amsmath/amsbsy.sty
-Package: amsbsy 1999/11/29 v1.2d
-\pmbraise@=\dimen116
+(/usr/local/texlive/2012/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty
+Package: hobsub-generic 2012/05/28 v1.13 Bundle oberdiek, subset generic (HO)
+Package: hobsub 2012/05/28 v1.13 Construct package bundles (HO)
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+Package hobsub Info: Skipping package `ifvtex' (already loaded).
+Package: intcalc 2007/09/27 v1.1 Expandable calculations with integers (HO)
+Package hobsub Info: Skipping package `ifpdf' (already loaded).
+Package: etexcmds 2011/02/16 v1.5 Avoid name clashes with e-TeX commands (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+Package: kvsetkeys 2012/04/25 v1.16 Key value parser (HO)
+Package: kvdefinekeys 2011/04/07 v1.3 Define keys (HO)
+Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
 )
-(/usr/share/texmf-texlive/tex/latex/amsmath/amsopn.sty
-Package: amsopn 1999/12/14 v2.01 operator names
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+Package: pdfescape 2011/11/25 v1.13 Implements pdfTeX's escape features (HO)
+Package: bigintcalc 2012/04/08 v1.3 Expandable calculations on big integers (HO
 )
-\inf@bad=\count98
-LaTeX Info: Redefining \frac on input line 211.
-\uproot@=\count99
-\leftroot@=\count100
-LaTeX Info: Redefining \overline on input line 307.
-\classnum@=\count101
-\DOTSCASE@=\count102
-LaTeX Info: Redefining \ldots on input line 379.
-LaTeX Info: Redefining \dots on input line 382.
-LaTeX Info: Redefining \cdots on input line 467.
-\Mathstrutbox@=\box52
-\strutbox@=\box53
-\big@size=\dimen117
-LaTeX Font Info:    Redeclaring font encoding OML on input line 567.
-LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
-\macc@depth=\count103
-\c@MaxMatrixCols=\count104
-\dotsspace@=\muskip10
-\c@parentequation=\count105
-\dspbrk@lvl=\count106
-\tag@help=\toks20
-\row@=\count107
-\column@=\count108
-\maxfields@=\count109
-\andhelp@=\toks21
-\eqnshift@=\dimen118
-\alignsep@=\dimen119
-\tagshift@=\dimen120
-\tagwidth@=\dimen121
-\totwidth@=\dimen122
-\lineht@=\dimen123
-\@envbody=\toks22
-\multlinegap=\skip46
-\multlinetaggap=\skip47
-\mathdisplay@stack=\toks23
-LaTeX Info: Redefining \[ on input line 2666.
-LaTeX Info: Redefining \] on input line 2667.
-) (./Geom_Modeler.aux)
+Package: bitset 2011/01/30 v1.1 Handle bit-vector datatype (HO)
+Package: uniquecounter 2011/01/30 v1.2 Provide unlimited unique counter (HO)
+)
+Package hobsub Info: Skipping package `hobsub' (already loaded).
+Package: letltxmacro 2010/09/02 v1.4 Let assignment for LaTeX macros (HO)
+Package: hopatch 2012/05/28 v1.2 Wrapper for package hooks (HO)
+Package: xcolor-patch 2011/01/30 xcolor patch
+Package: atveryend 2011/06/30 v1.8 Hooks at the very end of document (HO)
+Package atveryend Info: \enddocument detected (standard20110627).
+Package: atbegshi 2011/10/05 v1.16 At begin shipout hook (HO)
+Package: refcount 2011/10/16 v3.4 Data extraction from label references (HO)
+Package: hycolor 2011/01/30 v1.7 Color options for hyperref/bookmark (HO)
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
+)
+\@linkdim=\dimen120
+\Hy@linkcounter=\count101
+\Hy@pagecounter=\count102
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2012/05/13 v6.82q Hyperref: PDFDocEncoding definition (HO)
+)
+\Hy@SavedSpaceFactor=\count103
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/latexconfig/hyperref.cfg
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
+)
+Package hyperref Info: Hyper figures OFF on input line 4062.
+Package hyperref Info: Link nesting OFF on input line 4067.
+Package hyperref Info: Hyper index ON on input line 4070.
+Package hyperref Info: Plain pages OFF on input line 4077.
+Package hyperref Info: Backreferencing OFF on input line 4082.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4300.
+\c@Hy@tempcnt=\count104
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip10
+Package: url 2006/04/12  ver 3.3  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 4653.
+\Fld@menulength=\count105
+\Field@Width=\dimen121
+\Fld@charsize=\dimen122
+Package hyperref Info: Hyper figures OFF on input line 5773.
+Package hyperref Info: Link nesting OFF on input line 5778.
+Package hyperref Info: Hyper index ON on input line 5781.
+Package hyperref Info: backreferencing OFF on input line 5788.
+Package hyperref Info: Link coloring OFF on input line 5793.
+Package hyperref Info: Link coloring with OCG OFF on input line 5798.
+Package hyperref Info: PDF/A mode OFF on input line 5803.
+LaTeX Info: Redefining \ref on input line 5843.
+LaTeX Info: Redefining \pageref on input line 5847.
+\Hy@abspage=\count106
+\c@Item=\count107
+\c@Hfootnote=\count108
+)
+
+Package hyperref Message: Driver (autodetected): hpdftex.
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2012/05/13 v6.82q Hyperref driver for pdfTeX
+\Fld@listcount=\count109
+\c@bookmark@seq@number=\count110
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty
+Package: rerunfilecheck 2011/04/15 v1.7 Rerun checks for auxiliary files (HO)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+82.
+)
+\Hy@SectionHShift=\skip46
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2012/02/19 v3.2f Customizing captions (AR)
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2012/01/12 v1.4b caption3 kernel (AR)
+\captionmargin=\dimen123
+\captionmargin@=\dimen124
+\captionwidth=\dimen125
+\caption@indent=\dimen126
+\caption@parindent=\dimen127
+\caption@hangindent=\dimen128
+)
+\c@ContinuedFloat=\count111
+Package caption Info: hyperref package is loaded.
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2005/04/14 v1.61803 publication quality tables
+\heavyrulewidth=\dimen129
+\lightrulewidth=\dimen130
+\cmidrulewidth=\dimen131
+\belowrulesep=\dimen132
+\belowbottomsep=\dimen133
+\aboverulesep=\dimen134
+\abovetopsep=\dimen135
+\cmidrulesep=\dimen136
+\cmidrulekern=\dimen137
+\defaultaddspace=\dimen138
+\@cmidla=\count112
+\@cmidlb=\count113
+\@aboverulesep=\dimen139
+\@belowrulesep=\dimen140
+\@thisruleclass=\count114
+\@lastruleclass=\count115
+\@thisrulewidth=\dimen141
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count116
+\float@exts=\toks17
+\float@box=\box52
+\@float@everytoks=\toks18
+\@floatcapt=\box53
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/lettrine/lettrine.sty
+File: lettrine.sty 2007/08/08 v1.62 (Daniel Flipo)
+\c@DefaultLines=\count117
+\DefaultFindent=\dimen142
+\DefaultNindent=\dimen143
+\DefaultSlope=\dimen144
+\L@lbox=\box54
+\L@tbox=\box55
+\c@L@lines=\count118
+\L@Pindent=\dimen145
+\L@Findent=\dimen146
+\L@Nindent=\dimen147
+\L@lraise=\dimen148
+\L@first=\dimen149
+\L@next=\dimen150
+\L@slope=\dimen151
+\L@height=\dimen152
+\LettrineWidth=\dimen153
+
+Loading lettrine.cfg
+(/usr/local/texlive/2012/texmf-dist/tex/latex/lettrine/lettrine.cfg))
+(/usr/local/texlive/2012/texmf-dist/tex/latex/paralist/paralist.sty
+Package: paralist 2002/03/18 v2.3b Extended list environments (BS)
+\pltopsep=\skip47
+\plpartopsep=\skip48
+\plitemsep=\skip49
+\plparsep=\skip50
+\pl@lab=\toks19
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/abstract/abstract.sty
+Package: abstract 2009/06/08 v1.2a configurable abstracts
+\abstitleskip=\skip51
+\absleftindent=\skip52
+\absrightindent=\skip53
+\absparindent=\skip54
+\absparsep=\skip55
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/titlesec/titlesec.sty
+Package: titlesec 2011/12/15 v2.10.0 Sectioning titles
+\ttl@box=\box56
+\beforetitleunit=\skip56
+\aftertitleunit=\skip57
+\ttl@plus=\dimen154
+\ttl@minus=\dimen155
+\ttl@toksa=\toks20
+\titlewidth=\dimen156
+\titlewidthlast=\dimen157
+\titlewidthfirst=\dimen158
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/titlesec/block.tss
+File: block.tss 2011/12/15
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
+\fancy@headwidth=\skip58
+\f@ncyO@elh=\skip59
+\f@ncyO@erh=\skip60
+\f@ncyO@olh=\skip61
+\f@ncyO@orh=\skip62
+\f@ncyO@elf=\skip63
+\f@ncyO@erf=\skip64
+\f@ncyO@olf=\skip65
+\f@ncyO@orf=\skip66
+)
+(./Geom_Modeler.aux)
 \openout1 = `Geom_Modeler.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Try loading font information for T1+pplx on input line 72.
 
-*geometry auto-detecting driver*
-*geometry detected driver: dvips*
--------------------- Geometry parameters
-paper: class default
-landscape: --
-twocolumn: --
-twoside: --
-asymmetric: --
-h-parts: 86.72377pt, 440.84746pt, 86.72377pt
-v-parts: 86.72377pt, 621.52245pt, 86.72377pt
-hmarginratio: --
-vmarginratio: --
-lines: --
-heightrounded: --
-bindingoffset: 0.0pt
-truedimen: --
-includehead: --
-includefoot: --
-includemp: --
-driver: dvips
--------------------- Page layout dimensions and switches
-\paperwidth  614.295pt
-\paperheight 794.96999pt
-\textwidth  440.84746pt
-\textheight 621.52245pt
-\oddsidemargin  14.45378pt
-\evensidemargin 14.45378pt
-\topmargin  -22.54622pt
-\headheight 12.0pt
-\headsep    25.0pt
-\footskip   30.0pt
-\marginparwidth 59.0pt
-\marginparsep   10.0pt
-\columnsep  10.0pt
-\skip\footins  10.0pt plus 4.0pt minus 2.0pt
-\hoffset 0.0pt
-\voffset 0.0pt
-\mag 1000
-
-(1in=72.27pt, 1cm=28.45pt)
------------------------
-LaTeX Font Info:    Try loading font information for U+msa on input line 13.
-(/usr/share/texmf-texlive/tex/latex/amsfonts/umsa.fd
-File: umsa.fd 2009/06/22 v3.00 AMS symbols A
+(/usr/local/texlive/2012/texmf-dist/tex/latex/psnfss/t1pplx.fd
+File: t1pplx.fd 2004/09/06 font definitions for T1/pplx.
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 13.
+\big@size=\dimen159
+LaTeX Info: Redefining \microtypecontext on input line 72.
+Package microtype Info: Generating PDF output.
+Package microtype Info: Character protrusion enabled (level 2).
+Package microtype Info: Using default protrusion set `alltext'.
+Package microtype Info: Automatic font expansion enabled (level 2),
+(microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
+Package microtype Info: Using default expansion set `basictext'.
+Package microtype Info: No tracking.
+Package microtype Info: No adjustment of interword spacing.
+Package microtype Info: No adjustment of character kerning.
 
-(/usr/share/texmf-texlive/tex/latex/amsfonts/umsb.fd
-File: umsb.fd 2009/06/22 v3.00 AMS symbols B
+(/usr/local/texlive/2012/texmf-dist/tex/latex/microtype/mt-ppl.cfg
+File: mt-ppl.cfg 2005/11/16 v1.6 microtype config. file: Palatino (RS)
 )
-Underfull \hbox (badness 10000) in paragraph at lines 25--26
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: <default>
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* hratio: 1:1
+* modes: twoside 
+* h-part:(L,W,R)=(92.14519pt, 430.00462pt, 92.14519pt)
+* v-part:(T,H,B)=(91.04881pt, 608.5238pt, 95.39737pt)
+* \paperwidth=614.295pt
+* \paperheight=794.96999pt
+* \textwidth=430.00462pt
+* \textheight=608.5238pt
+* \oddsidemargin=19.8752pt
+* \evensidemargin=19.8752pt
+* \topmargin=-18.22118pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=10.0pt
+* \footskip=30.0pt
+* \marginparwidth=121.0pt
+* \marginparsep=11.0pt
+* \columnsep=20.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+\AtBeginShipoutBox=\box57
+Package hyperref Info: Link coloring OFF on input line 72.
+(/usr/local/texlive/2012/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2010/04/30 v2.40 Cross-referencing by name of section
+
+(/usr/local/texlive/2012/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
+Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
+)
+\c@section@level=\count119
+)
+LaTeX Info: Redefining \ref on input line 72.
+LaTeX Info: Redefining \pageref on input line 72.
+LaTeX Info: Redefining \nameref on input line 72.
+
+(./Geom_Modeler.out) (./Geom_Modeler.out)
+\@outlinefile=\write3
+\openout3 = `Geom_Modeler.out'.
+
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
+Package caption Info: End \AtBeginDocument code.
+LaTeX Font Info:    Font shape `T1/pplx/bx/n' in size <20> not available
+(Font)              Font shape `T1/pplx/b/n' tried instead on input line 75.
+LaTeX Font Info:    Try loading font information for OT1+pplx on input line 75.
+
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/psnfss/ot1pplx.fd
+File: ot1pplx.fd 2004/09/06 font definitions for OT1/pplx.
+)
+LaTeX Font Info:    Try loading font information for OML+zplm on input line 75.
+
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/psnfss/omlzplm.fd
+File: omlzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OML/zplm.
+)
+LaTeX Font Info:    Try loading font information for OMS+zplm on input line 75.
+
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/psnfss/omszplm.fd
+File: omszplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMS/zplm.
+)
+LaTeX Font Info:    Try loading font information for OMX+zplm on input line 75.
+
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/psnfss/omxzplm.fd
+File: omxzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMX/zplm.
+)
+LaTeX Font Info:    Try loading font information for OT1+zplm on input line 75.
+
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/psnfss/ot1zplm.fd
+File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
+)
+Package microtype Info: Character `029' is missing
+(microtype)             in font `T1/pplx/m/sc/12'.
+(microtype)             Ignoring protrusion settings for this character.
+LaTeX Font Info:    Font shape `T1/pplx/bx/n' in size <10> not available
+(Font)              Font shape `T1/pplx/b/n' tried instead on input line 82.
+LaTeX Font Info:    Font shape `T1/pplx/bx/n' in size <12> not available
+(Font)              Font shape `T1/pplx/b/n' tried instead on input line 102.
+LaTeX Font Info:    Try loading font information for U+fplmbb on input line 103
+.
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/psnfss/ufplmbb.fd
+File: ufplmbb.fd 2003/10/30 Fontinst v1.914 font definitions for U/fplmbb.
+)
+Underfull \hbox (badness 10000) in paragraph at lines 105--106
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 27--28
+Underfull \hbox (badness 10000) in paragraph at lines 107--108
 
  []
 
-[1
+[1{/usr/local/texlive/2012/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
-] [2] (./Geom_Modeler.aux) ) 
+]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 154.
+
+[2]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 154.
+ (./Geom_Modeler.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 154.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 154.
+Package rerunfilecheck Info: File `Geom_Modeler.out' has not changed.
+(rerunfilecheck)             Checksum: 3AE619246A469E57C5833837871F6C16;429.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 154.
+ ) 
 Here is how much of TeX's memory you used:
- 1644 strings out of 495062
- 20110 string characters out of 1182644
- 88157 words of memory out of 3000000
- 4841 multiletter control sequences out of 15000+50000
- 11044 words of font info for 42 fonts, out of 3000000 for 9000
- 28 hyphenation exceptions out of 8191
- 27i,6n,32p,656b,306s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 8480 strings out of 493488
+ 131198 string characters out of 3141326
+ 342515 words of memory out of 3000000
+ 11516 multiletter control sequences out of 15000+200000
+ 52019 words of font info for 184 fonts, out of 3000000 for 9000
+ 957 hyphenation exceptions out of 8191
+ 36i,10n,43p,656b,583s stack positions out of 5000i,500n,10000p,200000b,50000s
+{/usr/local/texlive/2012/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
+exlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/tex
+live/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texl
+ive/2012/texmf-dist/fonts/type1/public/mathpazo/fplmbb.pfb></usr/local/texlive/
+2012/texmf-dist/fonts/type1/public/mathpazo/fplmr.pfb></usr/local/texlive/2012/
+texmf-dist/fonts/type1/public/fpl/fplrc8a.pfb></usr/local/texlive/2012/texmf-di
+st/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2012/texmf-dist/font
+s/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1
+/urw/palatino/uplri8a.pfb>
+Output written on Geom_Modeler.pdf (2 pages, 95153 bytes).
+PDF statistics:
+ 99 PDF objects out of 1000 (max. 8388607)
+ 86 compressed objects within 1 object stream
+ 22 named destinations out of 1000 (max. 500000)
+ 37953 words of extra memory for PDF output out of 42996 (max. 10000000)
 
-Output written on Geom_Modeler.dvi (2 pages, 8212 bytes).
