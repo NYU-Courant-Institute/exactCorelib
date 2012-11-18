@@ -13,7 +13,11 @@
 \maketitle
 \begin{multicols}{2}
 
+\section {Introduction}
 
+      Geometric modeling embraces computational geometry and extends beyond this to the newer field of solid modeling,creating an elegant sythesis of geometry and the computer.
+
+      Solid modeling is distinguished from related areas of geometric modeling and computer graphics by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange ,visualization, animation, interrogation, and annotation of digital models of physical objects.
 \section {Definitions}
       \subsection {Regularized Set}
       A set $S\subset \mathbb{R}^3$ is a regularized set $\iff S=\overline{int (S)}$.
@@ -36,21 +40,24 @@ These primitives comes from semigeometric definition and all these primitives ar
 \end{enumerate}
 \section {Subdivision trees:}
       \begin{enumerate}
-            \item Box: a Box is a solid. A box B in $\mathbb{R}^3$ is a subset of $\mathbb{R}^3$, $B=\{ (x,y,z)|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2\}$, which is a regularized subset of $\mathbb{R}^3$
+            \item Box: B is a box $\iff B \subset \mathbb{R}^3$, $B=\{ (x,y,z)|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2\}$, which is a regularized subset of $\mathbb{R}^3$
             \item ? Box of a polyhedron $P$: 
                   \begin{enumerate} 
-            \item Empty Box: a box with no intersection with the polyhedron $P$, which means that all points inside the Box are exterior points of the polyhedron $P$. \\
+            \item Empty box:
             A box $B$ is an empty box $\iff B\cap P=\phi$.
-            \item Edge Box: An edge $e\in E$ bounds two faces $f_i, f_j\in F$, the edge and these two corresponding faces cannot disappear even if we subdivide the box into smaller ones. The endpoints of the edge lies on the boundary of the box. The intersection between the box and features of $P$ other than $e,f_i,f_j$ are an empty set.\\
-            So a box B is an edge box $\iff \exists e\in E$, $f_i,f_j\in F$,
+            \item Full box: 
+            A box B is a full box of Polyhedron $P$ $\iff B\cap P = B$
+            \item Vertex box: 
+            A box B is a vertex box $\iff \exists ! v \in V$, and $v \in B$, s.t. $\forall e \in E$, if $e \cap B \not= \phi$, $v$ bounds $e$, and $\forall f \in F$, if $f \cap B \not= \phi$, $v$ bounds $F$.    
+            \item Edge Box: 
+            A box B is an edge box $\iff V \cap B = \phi and \exists! e\in E$, e\cap B \not= \phi, \forall f \in F, if f \cap B \not= \phi$, e bounds f. 
+            \item Face box:
+            A box B is a face box $\iff \forall e \in E, e \cap B = \phi, and \exists ! f \in F$, and f \cap B \not= \phi$. 
+
 s.t. $B\cap e\not= \phi$, $B\cap f_i\not=\phi, B\cap f_j\not=\phi, \forall e_k\in E, e_k\not= e, B\cap e_k=\phi, \forall f_l\in F, f_l\not= f_i, f_l\not= f_j, B\cap f_l=\phi$.    
-            \item Vertex Box: A vertex $v$ bounds edges and also bounds several faces $ (f_1,f_2,...f_n)$. And the vertex and the corresponding faces cannot disappear even if we subdivide the box into smaller ones. $v$ is inside the box. The intersection between the box and features of $P$ other than $v,f_1,f_2,...,f_n$ are an empty set. \\ 
-            So a box B is a vertex box $\iff$
             \item Face Box: A face $f$ bounds a polyhedron $P$. This box should contain exactly a face cutting though the box into two parts. The intersection of the face and the boundary of the box are either a triangle or a parallelogram. \\
             A box B is a Face Box $\iff \exists f \in F$,s.t.$B \cap f \not= \phi$,
             $\forall f_i\in F$, if $f_i \not= f, B \cap f_i = \phi$.
-            \item Full Box: a box wholly inside the polyhedron, which means that all points inside the Box are interior points of the polyhedron.\\
-            A box B is a full box of Polyhedron $P$ $\iff B\cap P = B$
 
 
                   \end{enumerate}
