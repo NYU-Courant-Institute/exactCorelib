@@ -20,7 +20,7 @@
       Solid modeling is distinguished from related areas of geometric modeling and computer graemptysetcs by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange ,visualization, animation, interrogation, and annotation of digital models of physical objects.
 \section {Definitions}
       \subsection {Regularized Set}
-      A set $S\subset \mathbb{R}^3$ is a regularized set $\textrm{iff}$ $S=\overline{int (S)}$.
+      A set $S\subset \mathbb{R}^3$ is a regularized set $\mathrm{iff}$ $S=\overline{int (S)}$.
       \subsection {Solid}
       Our goal is mainly focused on solids. A solid $S$ is defined as a regularized subset of $\mathbb{R}^3$  ($S\subset\mathbb{R}^3$)\\
       \subsection {Polyhedron}
@@ -48,11 +48,11 @@ These primitives comes from semigeometric definition and all these primitives ar
             \item Full Box: 
             a box $B$ is a Full Box of Polyhedron $P$ $\mathrm{iff}$ $B\cap P = B$
             \item Vertex Box: 
-            a box $B$ is a Vertex Box $\mathrm{iff}$  there exists only one vertex $v \in V \cap B$, s.t.\ $\forall e \in E$, if $e \cap B \not= \emptyset$, $v$ bounds $e$, and $\forall f \in F$, if $f \cap B \not= \emptyset$, $v$ bounds $F$. 
+            a box $B$ is a Vertex Box $\mathrm{iff}$  there exists only one $v \in V \cap B$, s.t. $\forall e \in E$, if $e \cap B \not= \emptyset$, $v$ bounds $e$, and $\forall f \in F$, if $f \cap B \not= \emptyset$, $v$ bounds $F$. 
             \item Edge Box: 
-            a box $B$ is an Edge Box $\mathrm{iff}$ $V \cap B = \emptyset$ and there exists only one edge $ e\in E$, $e\cap B \not= \emptyset, \forall f \in F$, if $f \cap B \not= \emptyset$, e bounds f. 
+            a box $B$ is an Edge Box $\mathrm{iff}$ $V \cap B = \emptyset$ and $\exists! e\in E$, $e\cap B \not= \emptyset, \forall f \in F, if f \cap B \not= \emptyset$, e bounds f. 
             \item Face Box:
-            a box $B$ is a Face Box $\mathrm{iff}$ $\forall e \in E$ , $e \cap B = \emptyset$, and there exists one face $f \in F$, and $f \cap B \not= \emptyset$. 
+            a box $B$ is a Face Box $\mathrm{iff}$ $\forall e \in E$ , $e \cap B = \emptyset$, and $\exists ! f \in F$, and $f \cap B \not= \emptyset$. 
 
 
 
@@ -60,7 +60,6 @@ These primitives comes from semigeometric definition and all these primitives ar
             \item Adequate subdivision tree: In $\mathbb{R}^3$, a subdivision tree are a octree in which each node of the tree would be a finite Box. The root are a finite box $B_0$. We can construct the tree by beginning with the $B_0$, and subdividing the tree until all leaves are ? Boxes.
       \end{enumerate}
 \end{multicols}
-
 \end{document}
       
 

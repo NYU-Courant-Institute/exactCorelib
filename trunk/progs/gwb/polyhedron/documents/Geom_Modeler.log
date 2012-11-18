@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2012.10.2)  17 NOV 2012 18:55
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2012.10.2)  18 NOV 2012 13:21
 entering extended mode
  %&-line parsing enabled.
 **Geom_Modeler
@@ -249,10 +249,10 @@ Underfull \hbox (badness 10000) in paragraph at lines 27--28
 Here is how much of TeX's memory you used:
  1644 strings out of 495062
  20110 string characters out of 1182644
- 91157 words of memory out of 3000000
+ 88157 words of memory out of 3000000
  4841 multiletter control sequences out of 15000+50000
  11044 words of font info for 42 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
  27i,6n,32p,656b,306s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on Geom_Modeler.dvi (2 pages, 9300 bytes).
+Output written on Geom_Modeler.dvi (2 pages, 8212 bytes).
