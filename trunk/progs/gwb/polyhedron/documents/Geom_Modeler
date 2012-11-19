@@ -15,33 +15,40 @@
 
 \section {Introduction}
 
-      Geometric modeling embraces computational geometry and extends beyond this to the newer field of solid modeling,creating an elegant sythesis of geometry and the computer.
+      Geometric modeling embraces computational geometry and extends beyond this to the newer field of solid modeling,creating an elegant synthesis of geometry and the computer.
 
-      Solid modeling is distinguished from related areas of geometric modeling and computer graemptysetcs by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange ,visualization, animation, interrogation, and annotation of digital models of physical objects.
+      Solid modeling is distinguished from related areas of geometric modeling and computer  by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange ,visualization, animation, interrogation, and annotation of digital models of physical objects.
 \section {Definitions}
       \subsection {Regularized Set}
       A set $S\subset \mathbb{R}^3$ is a regularized set $\textrm{iff}$ $S=\overline{int (S)}$.
+      \subsection {Regularized Operation}
+      \begin{enumerate}
+	\item Regularized Union \\
+	A regularized union on set A and B is defined as the 
+	\item
+	\item
+      \end{enumerate}
       \subsection {Solid}
       Our goal is mainly focused on solids. A solid $S$ is defined as a regularized subset of $\mathbb{R}^3$  ($S\subset\mathbb{R}^3$)\\
       \subsection {Polyhedron}
-      A polyhedron $P$ is the intersection of several half spaces. And the half spaces can be descirbed as a set $H=\{h_1,h_2,h_3,...h_n\}$\\
+      A polyhedron $P$ is the intersection of several half spaces. The the half spaces can be described as a set $H=\{h_1,h_2,h_3,...h_n\}$\\
 
       A polyhedron $P$ contains features which can be described as three sets: a Vertex Set $V=\{v_1,v_2,...,v_m\}$ in which $v_i  (1\le i\le m)$ represents a vertex of the polyhedron $P$, $E=\{e_1,e_2,...,e_n\}$ in which $e_j  (1\le j\le n)$ represents an edge of $P$, $F=\{f_1,f_2,...,f_p\}$ in which $f_k  (1\le k\le p)$ represents a face of $P$.
 %CSG LEVEL
 \section {CSG objects} 
-Just as a polyhedron can be described as the intersection of half spaces, a CSG (Constructive Solid Geometry) model describes a polyhedron as Boolean operation on primitives which are the simplest solid objects used for the representation. The Boolean operations on primitives are intersection, union, difference and complement. The primitives are solids. Suppose the equation of a surface is $f (x,y,z)=0$, the primitive decided by this surface are either $f (x,y,z)\le0$ or $f (x,y,z)\ge0$. For a polyhedron we define primitives as half spaces. But in more complicated cases, we need complex primitives like a cylinder, a sphere and so on.
+Just as a polyhedron can be described as the intersection of half spaces, A CSG (Constructive Solid Geometry) model describes a polyhedron as Boolean operation on primitives which are the simplest solid objects used for the representation. The Boolean operations on primitives are intersection, union, difference and complement. The primitives are solids. Suppose the equation of a surface is $f (x,y,z)=0$, the primitive decided by this surface are either $f (x,y,z)\le0$ or $f (x,y,z)\ge0$. For a polyhedron we define primitives as half spaces. But in more complicated cases, we need complex primitives like a cylinder, a sphere and so on.
 \subsection {Primitives:}
-These primitives comes from semigeometric definition and all these primitives are subsets of $\mathbb{R}^3$. 
+These primitives comes from semialgebraic definition and all these primitives are subsets of $\mathbb{R}^3$. 
 \begin{enumerate}
-      \item Half Space: A half space $H$ is a subset of $\mathbb{R}^3$, $H$ is defined by an inequation. Suppose the equation of a plane in $\mathbb{R}^3$ is $f (x,y,z)=a*x+b*y+c*z-d=0$ ,which is a linear function of coordinates$ (x,y,z)$, then the upper half space defined by equation $f (x,y,z)=0$ are $f (x,y,z)=a*x+b*y+c*z-d\ge0$, likewise the lower half space defined by equation $f (x,y,z)=0$ are $f (x,y,z)=a*x+b*y+c*z-d\le0$.
-      \item Sphere : A sphere $S$ should also be a subset of $\mathbb{R}^3$. The boundary of the sphere are defined by an equation $f (x,y,z)= (x-x_0)^2+ (y-y_0)^2+ (z-z_0)^2-r^2=0$. When $f (x,y,z)\ge0$, we define the outer space of the sphere including the boundary. Or when $f (x,y,z)\le0$, we define the inner halp space including the boundary. 
+      \item Half Space: A half space $H$ is a subset of $\mathbb{R}^3$, $H$ is defined by an inequality. Suppose the equation of a plane in $\mathbb{R}^3$ is $f (x,y,z)=a*x+b*y+c*z-d=0$ ,which is a linear function of coordinates$ (x,y,z)$, then the upper half space defined by equation $f (x,y,z)=0$ are $f (x,y,z)=a*x+b*y+c*z-d\ge0$, likewise the lower half space defined by equation $f (x,y,z)=0$ are $f (x,y,z)=a*x+b*y+c*z-d\le0$.
+      \item Sphere : A sphere $S$ is also a subset of $\mathbb{R}^3$. The boundary of the sphere are defined by an equation $f (x,y,z)= (x-x_0)^2+ (y-y_0)^2+ (z-z_0)^2-r^2=0$. When $f (x,y,z)\ge0$, we define the outer space of the sphere including the boundary. Or when $f (x,y,z)\le0$, we define the inner half space including the boundary. 
       \item Cylinder : A Cylinder $C$ are a subset of $\mathbb{R}^3$. The boundary of this cylinder are defined by an equation $f (x,y,z)=0$ 
       
 \end{enumerate}
 \section {Subdivision trees:}
       \begin{enumerate}
             \item Box: B is a box $\mathrm{iff}$ $B \subset \mathbb{R}^3$, $B=\{ (x,y,z)|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2\}$, which is a regularized subset of $\mathbb{R}^3$
-            \item ? Box of a polyhedron $P$: 
+            \item Elementary Box of a polyhedron $P$
                   \begin{enumerate} 
             \item Empty Box:
             a box $B$ is an Empty Box $\mathrm{iff}$ $B\cap P=\emptyset$.

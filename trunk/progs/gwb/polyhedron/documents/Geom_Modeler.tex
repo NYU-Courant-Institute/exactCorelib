@@ -99,10 +99,18 @@ Geometric modeling embraces computational geometry and extends beyond this to th
 
 \section{Definitions}
 
- \subsection {Regularized Set}
-      A set $S\subset \mathbb{R}^3$ is a regularized set $\textrm{iff}$ $S=\overline{int (S)}$.
+ \subsection {Regularized set}
+      A set $S\subset \mathbb{R}^3$ is a regularized set $\textrm{iff}$ $S=\overline{int (S)}$. All of our operations are on Regularized sets.
+\subsection {Regularized set operation on regularized sets $A$ and $B$}
+
+	\begin{itemize}
+		\item $A \cup^* B = \overline{int (A \cup B)}$
+		\item $A \cap^* B = \overline{int (A \cap B)}$
+		\item $A -^* B = \overline{int (A - B)}$
+		\item $A^{c*} B = \overline{int (A^c)}$
+	\end{itemize} 
       \subsection {Solid}
-      Our goal is mainly focused on solids. A solid $S$ is defined as a regularized subset of $\mathbb{R}^3$  ($S\subset\mathbb{R}^3$)\\
+      A solid $S$ is defined as a regularized subset of $\mathbb{R}^3$  ($S\subset\mathbb{R}^3$)\\
       \subsection {Polyhedron}
       A polyhedron $P$ is the intersection of several half spaces. And the half spaces can be descirbed as a set $H=\{h_1,h_2,h_3,...h_n\}$\\
 
