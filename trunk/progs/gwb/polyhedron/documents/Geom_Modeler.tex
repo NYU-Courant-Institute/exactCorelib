@@ -79,11 +79,6 @@
 %	ABSTRACT
 %----------------------------------------------------------------------------------------
 
-\begin{abstract}
-
-\noindent Geometric modeling embraces computational geometry and extends beyond this to the newer field of solid modeling,creating an elegant sythesis of geometry and the computer. Solid modeling is distinguished from related areas of geometric modeling and computer graemptysetcs by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange, visualization, animation, interrogation, and annotation of digital models of physical objects.
-
-\end{abstract}
 
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
@@ -93,7 +88,9 @@
 
 \section{Introduction}
 
-Geometric modeling embraces computational geometry and extends beyond this to the newer field of solid modeling,creating an elegant sythesis of geometry and the computer. Solid modeling is distinguished from related areas of geometric modeling and computer graemptysetcs by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange, visualization, animation, interrogation, and annotation of digital models of physical objects.
+Solid modeling is distinguished from related areas of geometric modeling and computer graphics by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange, visualization, animation, interrogation, and annotation of digital models of physical objects. 
+
+We will describe a polyhedron as three sets : $(V, E, F)$. $V$ represents set of vertices of the polyhedron. $E$ represents the set of edges of the polyhedron. $F$ represents the set of faces of the polyhedron.
 
 %------------------------------------------------
 
@@ -117,22 +114,23 @@ Geometric modeling embraces computational geometry and extends beyond this to th
 
 \section{CSG objects}
 
-Just as a polyhedron can be described as the intersection of half spaces, a CSG (Constructive Solid Geometry) model describes a polyhedron as Boolean operation on primitives which are the simplest solid objects used for the representation. The Boolean operations on primitives are intersection, union, difference and complement. The primitives are solids. Suppose the equation of a surface is $f (x,y,z)=0$, the primitive decided by this surface are either $f (x,y,z)\le0$ or $f (x,y,z)\ge0$. For a polyhedron we define primitives as half spaces. But in more complicated cases, we need complex primitives like a cylinder, a sphere and so on.
-\subsection {Primitives}
+Just as a polyhedron can be described as the intersection of half spaces, a CSG (Constructive Solid Geometry) model describes a polyhedron as Boolean operation on primitives which are the simplest solid objects used for the representation. The Boolean operations on primitives are intersection, union, difference and complement. 
 
+\subsection {Primitives}
+Primitives in CSG models are all semialgebraic sets as follows:
 \begin{enumerate}
       \item Half Space: $H=\{(x,y,z)| a*x+b*y+c*z-d\ge0\}$
       \item Sphere : $S=\{(x,y,z)| (x-x_0)^2+ (y-y_0)^2+ (z-z_0)^2-r^2\le0\}$. 
-      \item Cylinder : A Cylinder $C$ are a subset of $\mathbb{R}^3$. The boundary of this cylinder are defined by an equation $f (x,y,z)=0$ 
+
       
 \end{enumerate}
 
 %------------------------------------------------
 
-\section {Subdivision trees:}
+\section {Subdivision trees}
       \begin{enumerate}
             \item Box: B is a box $\mathrm{iff}$ $B \subset \mathbb{R}^3$, $B=\{ (x,y,z)|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2\}$, which is a regularized subset of $\mathbb{R}^3$
-            \item ? Box of a polyhedron $P$: 
+            \item Elementary Box of a polyhedron $P$: 
                   \begin{enumerate} 
             \item Empty Box:
             a box $B$ is an Empty Box $\mathrm{iff}$ $B\cap P=\emptyset$.
@@ -148,7 +146,14 @@ Just as a polyhedron can be described as the intersection of half spaces, a CSG 
 
 
                   \end{enumerate}
-            \item Adequate subdivision tree: In $\mathbb{R}^3$, a subdivision tree are a octree in which each node of the tree would be a finite Box. The root are a finite box $B_0$. We can construct the tree by beginning with the $B_0$, and subdividing the tree until all leaves are ? Boxes.
+	    \item Subdivision tree :  A subdivision tree in $\mathbb{R}^3$ is an octree, in which each node points to a box and we devide the each box pointed by a inner node into 8 children pointing to 8 subboxes. 
+            \item Adequate subdivision tree of a polyhedron $P$: A subdivision tree whose leaves are all elementary boxes of the polyhedron $P$.  
+	    \item Subdivision Rules of a box $B_0$ corresponding to a polyhedron $P$:
+		\begin{enumerate}
+			\item 
+			\item
+		\end{enumerate}
+			
       \end{enumerate}
 
 %----------------------------------------------------------------------------------------
