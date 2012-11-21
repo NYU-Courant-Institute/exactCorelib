@@ -50,7 +50,7 @@
 \fancyhead{} % Blank out the default header
 \fancyfoot{} % Blank out the default footer
 \fancyhead[C]{ $\bullet$ November 2012 $\bullet$ } % Custom header text
-\fancyfoot[RO,LE]{\thepage} % Custom footer text
+\fancyfoot[RI,LE]{\thepage} % Custom footer text
 
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
@@ -60,7 +60,7 @@
 
 \author{
 \large
-\textsc{Kao Cao}\iffalse \thanks{Thanks to Chee Yap for his help}\fi \\[2mm] % Your name
+\textsc{Kai Cao}\iffalse \thanks{Thanks to Chee Yap for his help}\fi \\[2mm] % Your name
 \normalsize New York University \\ % Your institution
 \normalsize \href{mailto:kcao@cs.nyu.edu}{kcao@cs.nyu.edu} % Your email address
 \vspace{-5mm}
@@ -117,7 +117,7 @@ We will describe a polyhedron as three sets : $(V, E, F)$. $V$ represents set of
 Just as a polyhedron can be described as the intersection of half spaces, a CSG (Constructive Solid Geometry) model describes a polyhedron as Boolean operation on primitives which are the simplest solid objects used for the representation. The Boolean operations on primitives are intersection, union, difference and complement. 
 
 \subsection {Primitives}
-Primitives in CSG models are all semialgebraic sets as follows:
+Primitives in CSG models are all semi-algebraic sets as follows:
 \begin{enumerate}
       \item Half Space: $H=\{(x,y,z)| a*x+b*y+c*z-d\ge0\}$
       \item Sphere : $S=\{(x,y,z)| (x-x_0)^2+ (y-y_0)^2+ (z-z_0)^2-r^2\le0\}$. 
@@ -146,7 +146,7 @@ Primitives in CSG models are all semialgebraic sets as follows:
 
 
                   \end{enumerate}
-	    \item Subdivision tree :  A subdivision tree in $\mathbb{R}^3$ is an octree, in which each node points to a box and we devide the each box pointed by a inner node into 8 children pointing to 8 subboxes. 
+	    \item Subdivision tree :  A subdivision tree in $\mathbb{R}^3$ is an octree, in which each node points to a box and we divide the each box pointed by a inner node into 8 children pointing to 8 subboxes. 
             \item Adequate subdivision tree of a polyhedron $P$: A subdivision tree whose leaves are all elementary boxes of the polyhedron $P$.  
 	    \item Subdivision Rules of a box $B_0$ corresponding to a polyhedron $P$:
 		\begin{enumerate}
