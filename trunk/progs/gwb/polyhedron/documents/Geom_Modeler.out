@@ -1,8 +1,8 @@
-\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
-\BOOKMARK [1][-]{section.2}{Definitions}{}% 2
-\BOOKMARK [2][-]{subsection.2.1}{Regularized set}{section.2}% 3
-\BOOKMARK [2][-]{subsection.2.2}{Regularized set operation on regularized sets A and B}{section.2}% 4
-\BOOKMARK [2][-]{subsection.2.3}{Solid}{section.2}% 5
-\BOOKMARK [1][-]{section.3}{CSG objects}{}% 6
-\BOOKMARK [2][-]{subsection.3.1}{Primitives}{section.3}% 7
-\BOOKMARK [1][-]{section.4}{Subdivision trees}{}% 8
+\BOOKMARK [1][-]{section.1}{Introduction}{}
+\BOOKMARK [1][-]{section.2}{Definitions}{}
+\BOOKMARK [2][-]{subsection.2.1}{Regularized set}{section.2}
+\BOOKMARK [2][-]{subsection.2.2}{Regularized set operation on regularized sets A and B}{section.2}
+\BOOKMARK [2][-]{subsection.2.3}{Solid}{section.2}
+\BOOKMARK [1][-]{section.3}{CSG objects}{}
+\BOOKMARK [2][-]{subsection.3.1}{Primitives}{section.3}
+\BOOKMARK [1][-]{section.4}{Subdivision trees}{}

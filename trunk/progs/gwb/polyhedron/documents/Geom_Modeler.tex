@@ -50,7 +50,7 @@
 \fancyhead{} % Blank out the default header
 \fancyfoot{} % Blank out the default footer
 \fancyhead[C]{ $\bullet$ November 2012 $\bullet$ } % Custom header text
-\fancyfoot[RI,LE]{\thepage} % Custom footer text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
 
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
@@ -90,7 +90,7 @@
 
 Solid modeling is distinguished from related areas of geometric modeling and computer graphics by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange, visualization, animation, interrogation, and annotation of digital models of physical objects. 
 
-We will describe a polyhedron as three sets : $(V, E, F)$. $V$ represents set of vertices of the polyhedron. $E$ represents the set of edges of the polyhedron. $F$ represents the set of faces of the polyhedron.
+We will describe a polyhedron as three sets : $(V, E, F)$. $V$ represents the set of vertices of the polyhedron. $E$ represents the set of edges of the polyhedron. $F$ represents the set of faces of the polyhedron.
 
 %------------------------------------------------
 
@@ -114,7 +114,7 @@ We will describe a polyhedron as three sets : $(V, E, F)$. $V$ represents set of
 
 \section{CSG objects}
 
-Just as a polyhedron can be described as the intersection of half spaces, a CSG (Constructive Solid Geometry) model describes a polyhedron as Boolean operation on primitives which are the simplest solid objects used for the representation. The Boolean operations on primitives are intersection, union, difference and complement. 
+Just as a polyhedron can be described as the intersection of half spaces, a CSG (Constructive Solid Geometry) model describes a polyhedron as regularized set operation on primitives which are the simplest solid objects used for the representation. 
 
 \subsection {Primitives}
 Primitives in CSG models are all semi-algebraic sets as follows:
@@ -130,7 +130,7 @@ Primitives in CSG models are all semi-algebraic sets as follows:
 \section {Subdivision trees}
       \begin{enumerate}
             \item Box: B is a box $\mathrm{iff}$ $B \subset \mathbb{R}^3$, $B=\{ (x,y,z)|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2\}$, which is a regularized subset of $\mathbb{R}^3$
-            \item Elementary Box of a polyhedron $P$: 
+            \item Elementary Box for a polyhedron $P$: 
                   \begin{enumerate} 
             \item Empty Box:
             a box $B$ is an Empty Box $\mathrm{iff}$ $B\cap P=\emptyset$.
@@ -146,12 +146,37 @@ Primitives in CSG models are all semi-algebraic sets as follows:
 
 
                   \end{enumerate}
-	    \item Subdivision tree :  A subdivision tree in $\mathbb{R}^3$ is an octree, in which each node points to a box and we divide the each box pointed by a inner node into 8 children pointing to 8 subboxes. 
-            \item Adequate subdivision tree of a polyhedron $P$: A subdivision tree whose leaves are all elementary boxes of the polyhedron $P$.  
-	    \item Subdivision Rules of a box $B_0$ corresponding to a polyhedron $P$:
+	   	 \item Subdivision tree :  A subdivision tree in $\mathbb{R}^3$ is an octree, in which each node points to a box and we divide each box pointed by a inner node into 8 children pointing to 8 subboxes. 
+           	 \item Adequate subdivision tree for box $B$ and polyhedron $P$ $T = SD (B_0, P)$ in which SD is a function on a  box $B$ and a polyhedron $P$, the root of the tree  points to box $B_0$.  All leaves of $T$ point to an elementary box of the polyhedron $P$.
+
+		\item Boolean operations on two adequate subdivision trees $T_1 = SD (B_1, P_1)$ and $T_2 = SD (B_2, P_2)$: 
+		$T = M (BO, T_1, T_2)$ in which B is a Boolean operation  and  $T_1$ and $T_2$ are adequate subdivision trees. The result of the function $M$ is an adequate subdivision tree $T$.\\
+		if $B_1 \not= B_2$, $T=Null$.\\
+		if $B_1 = B_2 = B_0$, $T$ is an adequate subdivision tree whose root points to $B _0$.
+		$BO$ are Boolean operations as union $(\cup)$ , intersection $(\cap)$  and difference $(-)$.\\
+	 	
+		We can also define:\\
+		\begin{itemize}
+			\item $T_1 \cup T_2 = M\ (\cup, T_1, T_2)$
+			\item $T_1 \cap T_2 = M\ (\cap, T_1, T_2)$
+			\item $T_1 - T_2 = M\ (-, T_1, T_2)$
+		\end{itemize}
+		
+		
+			
+		
+	  \item Subdivision Rules of a box $B_0$ corresponding to a polyhedron $P$:
 		\begin{enumerate}
 			\item 
 			\item
+		\end{enumerate}
+	 	
+
+% Operations on elementary boxes
+	\item Boolean operation on an elementary box for two polyhedra $P_1$ and $P_2$\\
+	Suppose box $B_e$ is an elementary box for both $P_1$ and $P_2$. The the result of the Boolean operation on an an elementary box for two polyhedra $P_1$ and $P_2$ is an adequate subdivision tree. 
+		\begin{enumerate}
+			\item 
 		\end{enumerate}
 			
       \end{enumerate}
