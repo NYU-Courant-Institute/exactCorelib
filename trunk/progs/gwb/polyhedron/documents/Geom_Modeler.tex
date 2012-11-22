@@ -53,6 +53,11 @@
 \fancyfoot[RO,LE]{\thepage} % Custom footer text
 
 %----------------------------------------------------------------------------------------
+%	Kai's 	Macro
+%----------------------------------------------------------------------------------------
+\usepackage{verbatim}
+
+%----------------------------------------------------------------------------------------
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
 
@@ -147,7 +152,8 @@ Primitives in CSG models are all semi-algebraic sets as follows:
 
                   \end{enumerate}
 	   	 \item Subdivision tree :  A subdivision tree in $\mathbb{R}^3$ is an octree, in which each node points to a box and we divide each box pointed by a inner node into 8 children pointing to 8 subboxes. 
-           	 \item Adequate subdivision tree for box $B$ and polyhedron $P$ $T = SD (B_0, P)$ in which SD is a function on a  box $B$ and a polyhedron $P$, the root of the tree  points to box $B_0$.  All leaves of $T$ point to an elementary box of the polyhedron $P$.
+           	 \item Adequate subdivision tree for box $B$ and polyhedron $P$:\\
+ $T = SD (B_0, P)$ in which SD is a function on a  box $B$ and a polyhedron $P$, the root of the tree  points to box $B_0$.  All leaves of $T$ point to an elementary box of the polyhedron $P$.
 
 		\item Boolean operations on two adequate subdivision trees $T_1 = SD (B_1, P_1)$ and $T_2 = SD (B_2, P_2)$: 
 		$T = M (BO, T_1, T_2)$ in which B is a Boolean operation  and  $T_1$ and $T_2$ are adequate subdivision trees. The result of the function $M$ is an adequate subdivision tree $T$.\\
@@ -174,13 +180,60 @@ Primitives in CSG models are all semi-algebraic sets as follows:
 
 % Operations on elementary boxes
 	\item Boolean operation on an elementary box for two polyhedra $P_1$ and $P_2$\\
-	Suppose box $B_e$ is an elementary box for both $P_1$ and $P_2$. The the result of the Boolean operation on an an elementary box for two polyhedra $P_1$ and $P_2$ is an adequate subdivision tree. 
+	Suppose box $B_e$ is an elementary box for both $P_1$ and $P_2$. The the result of the Boolean operation on an an elementary box for two polyhedra $P_1$ and $P_2$ is an adequate subdivision tree. \\
+	We define a function $m$ as:
+		$T = m (BO, B_e, P_1, P_2)$ in which BO is a Boolean operation as $\cup$, $\cap$ and $-$, $P_1$ and $P_2$ are two polyhedra. The result of the function is an adequate subdivision tree.\\
+		What is more, we define a generalized function $m$ , when $BO$ is a complement, which is also a boolean operation, one of the two polyhedron should be null ( because the complement $^c$ is a unary operator). Arbitrarily  we define $P_2=Null$, then $T = m ( ^c, B_s, P_1)$. \\
+		$P_1$ and $P_2$ are commutative in this function.
+	
+		
 		\begin{enumerate}
 			\item 
 		\end{enumerate}
 			
       \end{enumerate}
 
+\section{ Boolean operation on an elementary box $B_e$ for two polyhedra $P_1$ and $P_2$ }
+      \subsection Union
+      \begin{enumerate}
+            \item  If  $B_e$  is an empty box of either $P_1$ or $P_2$ ( let us say $P_1$), the result $T=m\ ( \cup, B_e, P_1, P_2)$  is a subdivision tree whose root points to  $B_e$ and has no children.  $B_s$ is an elementary box for $P_2$.
+            \item if $B_e$ is a full box of either $P_1$ or $P_2$ ( let us say $P_1$) , $T=m\ ( \cup, B_e, P_1, P_2)$  is a subdivision tree whose root points to  $B_e$ and has no children. $B_s$ is an elementary box for $P_1$.
+	
+            \item  A polygon Box \& A polygon Box: 
+            \begin{enumerate}
+                  \item A polygon Box: if one half plane contains another (a belongs to b)
+                  \item A corner Box: if two segments crosses and the cross point lies within the Box (the intersection of a and b is not empty)
+
+                  \item {Not a simple Box: if there is no intersection between the two half planes, then the Box will be divided into 3 parts and finally we have to subdivide the Box until we get simple Boxes. ( a and b are disjoint)}
+            \end{enumerate}
+
+
+            \item  A polygon Box \& A corner Box: This is the union of several half planes. Let us say that the half space containing this polygon is p. And the corner c is the intersection of half spaces $s_1, s_2, ..., s_n$
+                  
+                  \begin{enumerate}
+                        \item if p passes through the end point of corner c:a corner box or a half plane 
+
+                        %not really sure
+                        \begin{comment}
+                        \\if s contains $s_1$ and $s_2$: a segment Box, which contains s
+                        \item two cross points : s intersects $s_1$ or $s_2$ but not both, then based on the half plane s decides, the Box contains one or two corners. If it contains two corners, we have to subdivide the Box.
+                        \item three cross points : s intersects both $s_1$ and $s_2$, then based on the half plane s decides, the Box contains two or three corners. We have to subdivide the Box int small ones.
+                        \end{comment}
+
+                  \end{enumerate}
+
+            \item  A corner Box \& corner Box: Let us suppose that we have corner $c_1$ and $c_2$. $c_1$ is the intersection of half space $s_1, s_2, ..., s_n$, while $c_2$ is the intersection of half space $t_1, t_2, ..., s_n$. 
+
+
+            %not very sure
+            \begin{comment}
+            Then we have to compute the intersection of these segments. The algorithm is that we compute the union of $c_1$ and $t_1$ and subdivide the Box into smaller ones if necessary. And then subdivide the Box containing $t_2$ into smaller ones if necessary and compute the union of small Boxes. 
+            \\Finally, the computation of the union of two corners should be simplified to two union of a corner Box and a segment Box. 
+            \end{comment}
+
+
+
+      \end{enumerate}
 %----------------------------------------------------------------------------------------
 
 \end{multicols}
