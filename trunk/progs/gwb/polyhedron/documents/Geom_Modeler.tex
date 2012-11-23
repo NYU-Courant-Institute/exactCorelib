@@ -160,13 +160,16 @@ Primitives in CSG models are all semi-algebraic sets as follows:
 
 %-------------feature function-----------------------
 	\item Feature of a box corresponding to a vertex\\
-		$\forall v \in V$, $\phi_0^*\ (B,v)$ is the coordinates of $v$ if $v\in B$.
+		$\forall v \in V$, $\phi_0^*\ (B,v)$ is the coordinates of $v$ if $v\in B$.\\
+		$\Phi_0^*\ (B, P)=\{\phi_0^*\ (B,v) | v \in V\}$
 	\item Feature of a box corresponding to an edge\\
-		$\forall e \in E$, $\phi_1^*\ (B,e)$ is the coordinates of the two endpoints of $e$ and the cross points of $e$ and $B$ if they exist.
+		$\forall e \in E$, $\phi_1^*\ (B,e)$ is the coordinates of the two endpoints of $e$ and the cross points of $e$ and $B$ if they exist.\\
+		$\Phi_1^*\ (B, P)=\{\phi_1^*\ (B,e) | e \in E\}$
 	\item Feature of a box corresponding to a face\\
-		$\forall f \in F$, $\phi_1^*\ (B,f)$ is the coordinates of the all vertices of $f$ and the polygon
+		$\forall f \in F$, $\phi_1^*\ (B,f)$ is the coordinates of the all vertices of $f$ and the polygon $B\cap^* f$.\\
+		$\Phi_2^*\ (B, P)=\{\phi_2^*\ (B,f) | f \in F\}$
 		
-	\item Feature of 	
+		
 	\item Feature of a box corresponding to polyhedron $P$, the corresponding sets of $P$ are $(V, E, F)$\\
 		$\Phi^*\ (B, P) = ( \Phi_0^*\ (B, P), \Phi_1^*\ (B, P), \Phi_2^*\ (B, P) )$, in which $\Phi_x^*\ (B, P)$ represents the feature in $x$-dimension.  
 		\begin{itemize}
