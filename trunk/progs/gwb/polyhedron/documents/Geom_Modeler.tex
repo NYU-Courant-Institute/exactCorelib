@@ -111,8 +111,10 @@ We will describe a polyhedron as three sets : $(V, E, F)$. $V$ represents the se
 		\item $A -^* B = \overline{int (A - B)}$
 		\item $A^{c*} B = \overline{int (A^c)}$
 	\end{itemize} 
-      \subsection {Solid}
-      A solid $S$ is defined as a regularized subset of $\mathbb{R}^3$  ($S\subset\mathbb{R}^3$)\\
+      	\subsection {Solid}
+      	A solid $S$ is defined as a regularized subset of $\mathbb{R}^3$  ($s\subset\mathbb{R}^3$)\\
+	We define the set containing all solids as $\mathbb{S}$.
+	
       
 
 %------------------------------------------------
@@ -129,28 +131,51 @@ Primitives in CSG models are all semi-algebraic sets as follows:
 
       
 \end{enumerate}
+\subsection {Polyhedron}
+	A polyhedron$P$ is a finite solid that is the intersection of several half planes.
+	We define the set containing all polyhedra as $\mathbb{P}$.
+
 
 %------------------------------------------------
 
 \section {Subdivision trees}
       \begin{enumerate}
-            \item Box: B is a box $\mathrm{iff}$ $B \subset \mathbb{R}^3$, $B=\{ (x,y,z)|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2\}$, which is a regularized subset of $\mathbb{R}^3$
-            \item Elementary Box for a polyhedron $P$: 
-                  \begin{enumerate} 
-            \item Empty Box:
-            a box $B$ is an Empty Box $\mathrm{iff}$ $B\cap P=\emptyset$.
-            \item Full Box: 
-            a box $B$ is a Full Box of Polyhedron $P$ $\mathrm{iff}$ $B\cap P = B$
-            \item Vertex Box: 
-            a box $B$ is a Vertex Box $\mathrm{iff}$  there exists only one vertex $v \in V \cap B$, s.t.\ $\forall e \in E$, if $e \cap B \not= \emptyset$, $v$ bounds $e$, and $\forall f \in F$, if $f \cap B \not= \emptyset$, $v$ bounds $F$. 
-            \item Edge Box: 
-            a box $B$ is an Edge Box $\mathrm{iff}$ $V \cap B = \emptyset$ and there exists only one edge $ e\in E$, $e\cap B \not= \emptyset, \forall f \in F$, if $f \cap B \not= \emptyset$, e bounds f. 
-            \item Face Box:
-            a box $B$ is a Face Box $\mathrm{iff}$ $\forall e \in E$ , $e \cap B = \emptyset$, and there exists one face $f \in F$, and $f \cap B \not= \emptyset$. 
+            	\item Box: $B$ is a box $\mathrm{iff}$ $B \subset \mathbb{R}^3$, $B=\{ (x,y,z)|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2\}$, which is a regularized subset of $\mathbb{R}^3$\\
+		We define the set containing all boxes as $\mathbb{B}$.
 
-
-
+%------------elementary boxes---------------------
+	\item Elementary Box for a polyhedron $P$: 
+		\begin{enumerate} 
+           		\item Empty Box:
+           			 a box $B$ is an Empty Box $\mathrm{iff}$ $B\cap P=\emptyset$.
+           		\item Full Box: 
+            			a box $B$ is a Full Box of Polyhedron $P$ $\mathrm{iff}$ $B\cap P = B$
+            		\item Vertex Box: 
+           			 a box $B$ is a Vertex Box $\mathrm{iff}$  there exists only one vertex $v \in V \cap B$, s.t.\ $\forall e \in E$, if $e \cap B \not= \emptyset$, $v$ bounds $e$, and $\forall f \in F$, if $f \cap B \not= \emptyset$, $v$ bounds $F$. 
+            		\item Edge Box: 
+            			a box $B$ is an Edge Box $\mathrm{iff}$ $V \cap B = \emptyset$ and there exists only one edge $ e\in E$, $e\cap B \not= \emptyset, \forall f \in F$, if $f \cap B \not= \emptyset$, e bounds f. 
+            		\item Face Box:
+            			a box $B$ is a Face Box $\mathrm{iff}$ $\forall e \in E$ , $e \cap B = \emptyset$, and there exists one face $f \in F$, and $f \cap B \not= \emptyset$. 
                   \end{enumerate}
+
+%-------------feature function-----------------------
+	\item Feature of a box corresponding to a vertex\\
+		$\forall v \in V$, $\phi_0^*\ (B,v)$ is the coordinates of $v$ if $v\in B$.
+	\item Feature of a box corresponding to an edge\\
+		$\forall e \in E$, $\phi_1^*\ (B,e)$ is the coordinates of the two endpoints of $e$ and the cross points of $e$ and $B$ if they exist.
+	\item Feature of a box corresponding to a face\\
+		$\forall f \in F$, $\phi_1^*\ (B,f)$ is the coordinates of the all vertices of $f$ and the polygon
+		
+	\item Feature of 	
+	\item Feature of a box corresponding to polyhedron $P$, the corresponding sets of $P$ are $(V, E, F)$\\
+		$\Phi^*\ (B, P) = ( \Phi_0^*\ (B, P), \Phi_1^*\ (B, P), \Phi_2^*\ (B, P) )$, in which $\Phi_x^*\ (B, P)$ represents the feature in $x$-dimension.  
+		\begin{itemize}
+			\item $\Phi_0^*\ (B, P)$ contains the coordinates of every element in $V \cap B$
+			\item $\Phi_1^*\ (B, P)$ contians the 
+			\item $\Phi$
+		\end{itemize}
+		
+
 	   	 \item Subdivision tree :  A subdivision tree in $\mathbb{R}^3$ is an octree, in which each node points to a box and we divide each box pointed by a inner node into 8 children pointing to 8 subboxes. 
            	 \item Adequate subdivision tree for box $B$ and polyhedron $P$:\\
  $T = SD (B_0, P)$ in which SD is a function on a  box $B$ and a polyhedron $P$, the root of the tree  points to box $B_0$.  All leaves of $T$ point to an elementary box of the polyhedron $P$.
@@ -194,7 +219,7 @@ Primitives in CSG models are all semi-algebraic sets as follows:
       \end{enumerate}
 
 \section{ Boolean operation on an elementary box $B_e$ for two polyhedra $P_1$ and $P_2$ }
-      \subsection Union
+      \subsection {Union}
       \begin{enumerate}
             \item  If  $B_e$  is an empty box of either $P_1$ or $P_2$ ( let us say $P_1$), the result $T=m\ ( \cup, B_e, P_1, P_2)$  is a subdivision tree whose root points to  $B_e$ and has no children.  $B_s$ is an elementary box for $P_2$.
             \item if $B_e$ is a full box of either $P_1$ or $P_2$ ( let us say $P_1$) , $T=m\ ( \cup, B_e, P_1, P_2)$  is a subdivision tree whose root points to  $B_e$ and has no children. $B_s$ is an elementary box for $P_1$.
