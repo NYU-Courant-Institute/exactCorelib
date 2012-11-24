@@ -170,12 +170,12 @@ Primitives in CSG models are all semi-algebraic sets as follows:
 		$\Phi_2^*\ (B, P)=\{\phi_2^*\ (B,f) | f \in F\}$
 		
 		
-	\item Feature of a box corresponding to polyhedron $P$, the corresponding sets of $P$ are $(V, E, F)$\\
+	\item Feature of a box corresponding to polyhedron $P$\\
 		$\Phi^*\ (B, P) = ( \Phi_0^*\ (B, P), \Phi_1^*\ (B, P), \Phi_2^*\ (B, P) )$
 		
 		
 
-	   	 \item Subdivision tree :  A subdivision tree in $\mathbb{R}^3$ is an octree, in which each node points to a box and we divide each box pointed by a inner node into 8 children pointing to 8 subboxes. 
+	   	 \item Adequate subdivision tree for box $B_0$ and polyhedron $P$ :  A subdivision tree in $\mathbb{R}^3$ is an octree, in which each node combines a box $B$ and $\Phi^*\ (B, P)$. 
            	 \item Adequate subdivision tree for box $B$ and polyhedron $P$:\\
  $T = SD (B_0, P)$ in which SD is a function on a  box $B$ and a polyhedron $P$, the root of the tree  points to box $B_0$.  All leaves of $T$ point to an elementary box of the polyhedron $P$.
 

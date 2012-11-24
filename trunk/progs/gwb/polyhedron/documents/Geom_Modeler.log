@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  23 NOV 2012 19:27
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  23 NOV 2012 23:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -595,11 +595,11 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 265.
  ) 
 Here is how much of TeX's memory you used:
- 8537 strings out of 493488
- 131916 string characters out of 3141326
+ 8541 strings out of 493488
+ 131947 string characters out of 3141326
  346124 words of memory out of 3000000
  11547 multiletter control sequences out of 15000+200000
- 49700 words of font info for 186 fonts, out of 3000000 for 9000
+ 49923 words of font info for 189 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
  36i,10n,43p,396b,669s stack positions out of 5000i,500n,10000p,200000b,50000s
 {/usr/local/texlive/2012/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
@@ -612,7 +612,7 @@ f-dist/fonts/type1/public/fpl/fplrc8a.pfb></usr/local/texlive/2012/texmf-dist/f
 onts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/ty
 pe1/urw/palatino/uplr8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/urw
 /palatino/uplri8a.pfb>
-Output written on Geom_Modeler.pdf (3 pages, 105241 bytes).
+Output written on Geom_Modeler.pdf (3 pages, 105161 bytes).
 PDF statistics:
  145 PDF objects out of 1000 (max. 8388607)
  129 compressed objects within 2 object streams
