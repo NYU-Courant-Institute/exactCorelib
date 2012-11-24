@@ -163,20 +163,16 @@ Primitives in CSG models are all semi-algebraic sets as follows:
 		$\forall v \in V$, $\phi_0^*\ (B,v)$ is the coordinates of $v$ if $v\in B$.\\
 		$\Phi_0^*\ (B, P)=\{\phi_0^*\ (B,v) | v \in V\}$
 	\item Feature of a box corresponding to an edge\\
-		$\forall e \in E$, $\phi_1^*\ (B,e)$ is the coordinates of the two endpoints of $e$ and the cross points of $e$ and $B$ if they exist.\\
+		$\forall e \in E$, $\phi_1^*\ (B,e)$ is the coordinates of the two endpoints of $e$ and $B\cap^ e$ which can a segment or a vertex.
 		$\Phi_1^*\ (B, P)=\{\phi_1^*\ (B,e) | e \in E\}$
 	\item Feature of a box corresponding to a face\\
-		$\forall f \in F$, $\phi_1^*\ (B,f)$ is the coordinates of the all vertices of $f$ and the polygon $B\cap^* f$.\\
+		$\forall f \in F$, $\phi_2^*\ (B,f)$ is the coordinates of the all vertices of $f$ and $B\cap^ f$ which can be a polygon, an edge or a vertex.
 		$\Phi_2^*\ (B, P)=\{\phi_2^*\ (B,f) | f \in F\}$
 		
 		
 	\item Feature of a box corresponding to polyhedron $P$, the corresponding sets of $P$ are $(V, E, F)$\\
-		$\Phi^*\ (B, P) = ( \Phi_0^*\ (B, P), \Phi_1^*\ (B, P), \Phi_2^*\ (B, P) )$, in which $\Phi_x^*\ (B, P)$ represents the feature in $x$-dimension.  
-		\begin{itemize}
-			\item $\Phi_0^*\ (B, P)$ contains the coordinates of every element in $V \cap B$
-			\item $\Phi_1^*\ (B, P)$ contians the 
-			\item $\Phi$
-		\end{itemize}
+		$\Phi^*\ (B, P) = ( \Phi_0^*\ (B, P), \Phi_1^*\ (B, P), \Phi_2^*\ (B, P) )$
+		
 		
 
 	   	 \item Subdivision tree :  A subdivision tree in $\mathbb{R}^3$ is an octree, in which each node points to a box and we divide each box pointed by a inner node into 8 children pointing to 8 subboxes. 
