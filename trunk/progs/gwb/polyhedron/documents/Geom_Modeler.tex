@@ -84,6 +84,11 @@
 %	ABSTRACT
 %----------------------------------------------------------------------------------------
 
+\begin{abstract}
+
+\noindent The problem of computing geometry modeling in 3D is fundamental to computer graphics, path finding, motion planning and numerous branches of computer science. Given a polyhedron P defined by CSG (Constructive Solid Geometry) model, we raise a new idea to present the boundary features (vertices, edges and faces) of P using subdivision method; it has the following steps: 1) define a polyhedron P in CSG model, 2) predicate and subdivide a given box $B_0$ recursively until all sub-boxes are elementary 3) generate the adequate Subdivision Tree, 4) represent the boundary features based on the Subdivision Tree. Since the great generality and scalability of subdivision method, this idea can also be expanded to support more complex shape with higher order surfaces in 3D.
+
+\end{abstract}
 
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
@@ -94,15 +99,17 @@
 \section{Introduction}
 
 Solid modeling is distinguished from related areas of geometric modeling and computer graphics by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange, visualization, animation, interrogation, and annotation of digital models of physical objects. 
-
-We will describe a polyhedron as three sets : $(V, E, F)$. $V$ represents the set of vertices of the polyhedron. $E$ represents the set of edges of the polyhedron. $F$ represents the set of faces of the polyhedron.
+\\
+\\
+\indent
+We describe a polyhedron as three sets : $(V, E, F)$. $V$ represents the set of vertices of the polyhedron. $E$ represents the set of edges of the polyhedron. $F$ represents the set of faces of the polyhedron.
 
 %------------------------------------------------
 
 \section{Definitions}
 
  \subsection {Regularized set}
-      A set $S\subset \mathbb{R}^3$ is a regularized set $\textrm{iff}$ $S=\overline{int (S)}$. All of our operations are on Regularized sets.
+      A set $S\subset \mathbb{R}^3$ is a \textbf{regularized set} $\textrm{iff}$ $S=\overline{int (S)}$. %All of our operations are on Regularized sets.
 \subsection {Regularized set operation on regularized sets $A$ and $B$}
 
 	\begin{itemize}
@@ -111,9 +118,15 @@ We will describe a polyhedron as three sets : $(V, E, F)$. $V$ represents the se
 		\item $A -^* B = \overline{int (A - B)}$
 		\item $A^{c*} B = \overline{int (A^c)}$
 	\end{itemize} 
+
       	\subsection {Solid}
-      	A solid $S$ is defined as a regularized subset of $\mathbb{R}^3$  ($s\subset\mathbb{R}^3$)\\
-	We define the set containing all solids as $\mathbb{S}$.
+      	A \textbf{solid} is defined as a regularized subset of $\mathbb{R}^3$.  %($s\subset\mathbb{R}^3$).
+
+\begin{comment}
+        \\
+      	\\
+      	\indent We define the set containing all solids as $\mathbb{S}$. 
+\end{comment}
 	
       
 
@@ -121,66 +134,106 @@ We will describe a polyhedron as three sets : $(V, E, F)$. $V$ represents the se
 
 \section{CSG objects}
 
-Just as a polyhedron can be described as the intersection of half spaces, a CSG (Constructive Solid Geometry) model describes a polyhedron as regularized set operation on primitives which are the simplest solid objects used for the representation. 
+\begin{comment}Just as a polyhedron can be described as the intersection of half spaces, 
+\end{comment}
+A CSG (Constructive Solid Geometry) model describes a polyhedron as regularized set operation on primitives which are the simplest solid objects used for the representation. 
 
 \subsection {Primitives}
 Primitives in CSG models are all semi-algebraic sets as follows:
 \begin{enumerate}
-      \item Half Space: $H=\{(x,y,z)| a*x+b*y+c*z-d\ge0\}$
-      \item Sphere : $S=\{(x,y,z)| (x-x_0)^2+ (y-y_0)^2+ (z-z_0)^2-r^2\le0\}$. 
+      \item \textbf{Half Space}: $H=\{(x,y,z)|a*x+b*y+c*z+d\ge0\}$.
+      \item \textbf{Sphere} : $S=\{(x,y,z)|(x-x_0)^2+(y-y_0)^2+(z-z_0)^2-r^2\le0\}$. 
+      \item \textbf{Cylinder} : $C=\{(x,y,z)|A=-x\sin(\theta)+y\cos(\theta)\cos(\phi)+z\cos(\theta)\sin(\phi), B=-y\sin(\phi)+ z\cos(\phi),A^2+B^2\le R^2\}$.
+      \item \textbf{Torus} : $T=\{(x,y,z)|(R-\sqrt{x^2+y^2})^2+z^2\le r^2\}$. 
 
       
 \end{enumerate}
 \subsection {Polyhedron}
-	A polyhedron$P$ is a finite solid that is the intersection of several half planes.
+	A \textbf{polyhedron} $P$ is a finite solid that is the intersection of half spaces.
 	We define the set containing all polyhedra as $\mathbb{P}$.
 
 
 %------------------------------------------------
 
 \section {Subdivision trees}
-      \begin{enumerate}
-            	\item Box: $B$ is a box $\mathrm{iff}$ $B \subset \mathbb{R}^3$, $B=\{ (x,y,z)|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2\}$, which is a regularized subset of $\mathbb{R}^3$\\
-		We define the set containing all boxes as $\mathbb{B}$.
 
-%------------elementary boxes---------------------
-	\item Elementary Box for a polyhedron $P$: 
-		\begin{enumerate} 
-           		\item Empty Box:
-           			 a box $B$ is an Empty Box $\mathrm{iff}$ $B\cap P=\emptyset$.
-           		\item Full Box: 
-            			a box $B$ is a Full Box of Polyhedron $P$ $\mathrm{iff}$ $B\cap P = B$
-            		\item Vertex Box: 
-           			 a box $B$ is a Vertex Box $\mathrm{iff}$  there exists only one vertex $v \in V \cap B$, s.t.\ $\forall e \in E$, if $e \cap B \not= \emptyset$, $v$ bounds $e$, and $\forall f \in F$, if $f \cap B \not= \emptyset$, $v$ bounds $F$. 
-            		\item Edge Box: 
-            			a box $B$ is an Edge Box $\mathrm{iff}$ $V \cap B = \emptyset$ and there exists only one edge $ e\in E$, $e\cap B \not= \emptyset, \forall f \in F$, if $f \cap B \not= \emptyset$, e bounds f. 
-            		\item Face Box:
-            			a box $B$ is a Face Box $\mathrm{iff}$ $\forall e \in E$ , $e \cap B = \emptyset$, and there exists one face $f \in F$, and $f \cap B \not= \emptyset$. 
-                  \end{enumerate}
+\subsection {Box}
+            	$B$ is a \textbf{box} $\mathrm{iff}$ $B \subset \mathbb{R}^3$, $B=\{ (x,y,z)|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2\}$, which is a regularized subset of $\mathbb{R}^3$.
+            	\\
+            	\\
+		\indent We name the set containing all boxes as $\mathbb{B}$.
+		
+		
+\subsection {Features}
 
+To a polyhedron $P \subset \mathbb{R}^3$, we use set V, E and F to represent its vertices, edges and faces respectively. The \textbf{features} $\Phi(P) = (V, E, F)$.
+\\
+\\
+\indent Then we define the features of a box $B$ corresponding to polyhedron $P$ as follows:
+\begin{itemize}
 %-------------feature function-----------------------
-	\item Feature of a box corresponding to a vertex\\
+	\item $\Phi_0^*\ (B, P)= B\cap V$
+	\item $\Phi_1^*\ (B, P)=\{e | e \in E, e\cap B \notin \emptyset\}$
+	\item $\Phi_2^*\ (B, P)=\{f | f \in F, f\cap B \notin \emptyset\}$
+\end{itemize}
+
+\begin{comment}
+\begin{itemize}
+%-------------feature function-----------------------
+	\item The features of a box corresponding to a vertex\\
 		$\forall v \in V$, $\phi_0^*\ (B,v)$ is the coordinates of $v$ if $v\in B$.\\
 		$\Phi_0^*\ (B, P)=\{\phi_0^*\ (B,v) | v \in V\}$
-	\item Feature of a box corresponding to an edge\\
+	\item The features of a box corresponding to an edge\\
 		$\forall e \in E$, $\phi_1^*\ (B,e)$ is the coordinates of the two endpoints of $e$ and $B\cap^ e$ which can a segment or a vertex.
 		$\Phi_1^*\ (B, P)=\{\phi_1^*\ (B,e) | e \in E\}$
-	\item Feature of a box corresponding to a face\\
+	\item The features of a box corresponding to a face\\
 		$\forall f \in F$, $\phi_2^*\ (B,f)$ is the coordinates of the all vertices of $f$ and $B\cap^ f$ which can be a polygon, an edge or a vertex.
 		$\Phi_2^*\ (B, P)=\{\phi_2^*\ (B,f) | f \in F\}$
-		
-		
-	\item Feature of a box corresponding to polyhedron $P$\\
+\end{itemize}
+\end{comment}
+	
 		$\Phi^*\ (B, P) = ( \Phi_0^*\ (B, P), \Phi_1^*\ (B, P), \Phi_2^*\ (B, P) )$
-		
-		
 
-	   	 \item Adequate subdivision tree for box $B_0$ and polyhedron $P$ :  A subdivision tree in $\mathbb{R}^3$ is an octree, in which each node combines a box $B$ and $\Phi^*\ (B, P)$. 
-           	 \item Adequate subdivision tree for box $B$ and polyhedron $P$:\\
- $T = SD (B_0, P)$ in which SD is a function on a  box $B$ and a polyhedron $P$, the root of the tree  points to box $B_0$.  All leaves of $T$ point to an elementary box of the polyhedron $P$.
+\subsection{Elementary Box}
+%------------elementary boxes---------------------
+	Then we define the \textbf{elementary box} $B_e$ for a polyhedron $P$: 
+		\begin{enumerate} 
+           		\item \textbf{Empty Box}:
+           			 a box $B_e$ is an empty box $\mathrm{iff}$ $B_e\cap P=\emptyset$.
+           		\item \textbf{Full Box}: 
+            			a box $B_e$ is a full box of Polyhedron $P$ $\mathrm{iff}$ $B_e\cap P = B_e$
+            		\item \textbf{Vertex Box}: 
+           			 a box $B_e$ is a vertex box $\mathrm{iff}$  there exists only one vertex $v \in V \cap B_e$, s.t.\ $\forall e \in E$, if $e \cap B_e \not= \emptyset$, $v$ bounds $e$, and $\forall f \in F$, if $f \cap B_e \not= \emptyset$, $v$ bounds $F$. 
+            		\item \textbf{Edge Box}: 
+            			a box $B_e$ is an edge box $\mathrm{iff}$ $V \cap B_e = \emptyset$ and there exists only one edge $ e\in E$, $e\cap B_e \not= \emptyset, \forall f \in F$, if $f \cap B_e \not= \emptyset$, e bounds f. 
+            		\item \textbf{Face Box}:
+            			a box $B_e$ is a face box $\mathrm{iff}$ $V \cap B_e = \emptyset$, $E \cap B_e = \emptyset$ and there exists only one face $f \in F$, and $f \cap B_e \not= \emptyset$. 
+                  \end{enumerate}
+\subsection{Defination of S-Tree and AS-Tree}
+\indent  Given a box $B_0$ and polyhedron $P$, we subdivide $B_0$ recursively and to each subbox we compute $\Phi^*\ (B, P)$. During the subdivision process, we get the \textbf{subdivision tree(S-Tree)} for $P$ rooted at $B_0$. A subdivision tree is an octree, in which each node keeps the info of $\Phi^*\ (B, P)$. 
+\\
+\\
+\indent The \textbf{adequate subdivision tree(AS-Tree)} $T$ of box $B_0$ for polyhedron $P$ is a subdivision tree in which each leave of $T$ represents an elementary box for the polyhedron $P$.
+\\
+\\
+\indent We define $T = SD (B_0, P)$. \begin{comment}in which SD is a function on a  box $B$ and a polyhedron $P$ \end{comment}
+\\
+\\
+\indent Each node n of AS-Tree has the following info:
+\begin{itemize}
+	\item pointer to the parent of n(to $B_0$)
+	\item pointer to 
 
-		\item Boolean operations on two adequate subdivision trees $T_1 = SD (B_1, P_1)$ and $T_2 = SD (B_2, P_2)$: 
-		$T = M (BO, T_1, T_2)$ in which B is a Boolean operation  and  $T_1$ and $T_2$ are adequate subdivision trees. The result of the function $M$ is an adequate subdivision tree $T$.\\
+\end{itemize}
+      	
+\subsection{Boolean Operations on AS-Tree}
+
+	   	 %\item Adequate subdivision tree for box $B_0$ and polyhedron $P$ :  A subdivision tree in $\mathbb{R}^3$ is an octree, in which each node combines a box $B$ and $\Phi^*\ (B, P)$. 
+           	 %\item Adequate subdivision tree for box $B$ and polyhedron $P$:\\
+ %$T = SD (B_0, P)$ in which SD is a function on a  box $B$ and a polyhedron $P$, the root of the tree  points to box $B_0$.  All leaves of $T$ point to an elementary box of the polyhedron $P$.
+
+		Boolean operations on two adequate subdivision trees $T_1 = SD (B_1, P_1)$ and $T_2 = SD (B_2, P_2)$: 
+		$T = M (BO, T_1, T_2)$ in which BO is a Boolean operation  and  $T_1$ and $T_2$ are adequate subdivision trees. The result of the function $M$ is an adequate subdivision tree $T$.\\
 		if $B_1 \not= B_2$, $T=Null$.\\
 		if $B_1 = B_2 = B_0$, $T$ is an adequate subdivision tree whose root points to $B _0$.
 		$BO$ are Boolean operations as union $(\cup)$ , intersection $(\cap)$  and difference $(-)$.\\
@@ -194,7 +247,7 @@ Primitives in CSG models are all semi-algebraic sets as follows:
 		
 		
 			
-		
+\begin{enumerate} 
 	  \item Subdivision Rules of a box $B_0$ corresponding to a polyhedron $P$:
 		\begin{enumerate}
 			\item 
@@ -204,10 +257,10 @@ Primitives in CSG models are all semi-algebraic sets as follows:
 
 % Operations on elementary boxes
 	\item Boolean operation on an elementary box for two polyhedra $P_1$ and $P_2$\\
-	Suppose box $B_e$ is an elementary box for both $P_1$ and $P_2$. The the result of the Boolean operation on an an elementary box for two polyhedra $P_1$ and $P_2$ is an adequate subdivision tree. \\
+	Suppose box $B_e$ is an elementary box for both $P_1$ and $P_2$. The result of the Boolean operation on an elementary box for two polyhedra $P_1$ and $P_2$ is an adequate subdivision tree. \\
 	We define a function $m$ as:
 		$T = m (BO, B_e, P_1, P_2)$ in which BO is a Boolean operation as $\cup$, $\cap$ and $-$, $P_1$ and $P_2$ are two polyhedra. The result of the function is an adequate subdivision tree.\\
-		What is more, we define a generalized function $m$ , when $BO$ is a complement, which is also a boolean operation, one of the two polyhedron should be null ( because the complement $^c$ is a unary operator). Arbitrarily  we define $P_2=Null$, then $T = m ( ^c, B_s, P_1)$. \\
+		What is more, we define a generalized function $m$ , when $BO$ is a complement, which is also a boolean operation, one of the two polyhedron should be null ( because the complement $^c$ is a unary operator). Arbitrarily we define $P_2=Null$, then $T = m ( ^c, B_s, P_1)$. \\
 		$P_1$ and $P_2$ are commutative in this function.
 	
 		
