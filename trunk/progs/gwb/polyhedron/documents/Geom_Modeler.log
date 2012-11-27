@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.11.25)  26 NOV 2012 18:50
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.11.25)  27 NOV 2012 00:23
 entering extended mode
  %&-line parsing enabled.
-**Geom_Modeler.tex
+**Geom_Modeler
 (./Geom_Modeler.tex
 LaTeX2e <2009/09/24>
 Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
@@ -555,55 +555,48 @@ n/10 ^^H[] (\OML/zplm/m/it/10 B\OT1/pplx/m/n/10 (-20) , \OML/zplm/m/it/10 P\OT1
  []
 
 [2]
-Underfull \hbox (badness 10000) in paragraph at lines 244--245
-[]\T1/pplx/m/n/10 (+20) Compute $\OT1/zplm/m/n/10 ^^H[](\OML/zplm/m/it/10 B[]\O
-T1/pplx/m/n/10 (+20) , \OML/zplm/m/it/10 P\OT1/zplm/m/n/10 )(\OML/zplm/m/it/10 
-i \OT1/zplm/m/n/10 =
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 246--247
+Underfull \hbox (badness 10000) in paragraph at lines 250--251
 []\T1/pplx/m/n/10 (+20) Set $\OML/zplm/m/it/10 p[]$ \T1/pplx/m/n/10 (+20) of $\
 OML/zplm/m/it/10 n\OT1/zplm/m/n/10 (\OML/zplm/m/it/10 B\OT1/pplx/m/n/10 (+20) ,
  \OML/zplm/m/it/10 P\OT1/zplm/m/n/10 )$ \T1/pplx/m/n/10 (+20) point to
  []
 
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 332.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `subscript' on input line 332.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `subscript' on input line 332.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 332.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 332.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `subscript' on input line 332.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `subscript' on input line 332.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 332.
+
 [3]
+Underfull \hbox (badness 10000) in paragraph at lines 339--341
 
-Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `math shift' on input line 326.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `subscript' on input line 326.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `math shift' on input line 326.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `math shift' on input line 326.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `subscript' on input line 326.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `math shift' on input line 326.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `math shift' on input line 326.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `subscript' on input line 326.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
-(hyperref)                removing `math shift' on input line 326.
+ []
 
 [4] (./Geom_Modeler.aux)
 
@@ -611,13 +604,13 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 7766 strings out of 495061
- 118419 string characters out of 1182620
- 324681 words of memory out of 3000000
+ 7735 strings out of 495061
+ 118170 string characters out of 1182620
+ 325681 words of memory out of 3000000
  10560 multiletter control sequences out of 15000+50000
- 61661 words of font info for 231 fonts, out of 3000000 for 9000
+ 60481 words of font info for 211 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
- 38i,10n,43p,843b,615s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 38i,10n,43p,839b,615s stack positions out of 5000i,500n,10000p,200000b,50000s
 {/usr/share/texmf-texlive/fonts/enc/dvips/base/8r.enc}</usr/share/texmf-texli
 ve/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texmf-texlive/fonts/ty
 pe1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-texlive/fonts/type1/public/a
@@ -627,9 +620,9 @@ hare/texmf-texlive/fonts/type1/public/mathpazo/fplmri.pfb></usr/share/texmf-tex
 live/fonts/type1/public/fpl/fplrc8a.pfb></usr/share/texmf-texlive/fonts/type1/u
 rw/palatino/uplb8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/palatino/uplr8
 a.pfb></usr/share/texmf-texlive/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on Geom_Modeler.pdf (4 pages, 139574 bytes).
+Output written on Geom_Modeler.pdf (4 pages, 134779 bytes).
 PDF statistics:
- 177 PDF objects out of 1000 (max. 8388607)
- 54 named destinations out of 1000 (max. 500000)
- 43145 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 172 PDF objects out of 1000 (max. 8388607)
+ 49 named destinations out of 1000 (max. 500000)
+ 45193 words of extra memory for PDF output out of 51595 (max. 10000000)
 

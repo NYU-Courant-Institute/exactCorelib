@@ -219,13 +219,17 @@ For a polyhedron $P \subset \mathbb{R}^3$, we use set V, E and F to represent it
            		\item \textbf{Full Box}: 
             			a box $B_e$ is a full box of Polyhedron $P$ $\mathrm{iff}$ $B_e\cap P = B_e$
             		\item \textbf{Vertex Box}: 
-           			 a box $B_e$ is a vertex box $\mathrm{iff}$  there exists only one vertex $v \in V \cap B_e$, s.t.\ $\forall e \in E$, if $e \cap B_e \not= \emptyset$, $v$ bounds $e$, and $\forall f \in F$, if $f \cap B_e \not= \emptyset$, $v$ bounds $F$. 
+           			 a box $B_e$ is a vertex box $\mathrm{iff}$  there exists only one vertex $v \in V \cap B_e$, s.t.\ $\forall e \in E$, if $e \cap B_e \not= \emptyset$, $v$ bounds $e$, and $\forall f \in F$, if $f \cap B_e \not= \emptyset$, $v$ bounds $F$. \\
+			Because $|\Phi_0^*\ (B_e, P)|=1$, we can specify the only one vertex in the set as $v$
+			We name the Edges bounded by $v$ as $(e_1,e_2,...)$. 
+			We define $\bar{e_i}=e_i\cap B_s$.
+			
             		\item \textbf{Edge Box}: 
             			a box $B_e$ is an edge box $\mathrm{iff}$ $V \cap B_e = \emptyset$ and there exists only one edge $ e\in E$, $e\cap B_e \not= \emptyset, \forall f \in F$, if $f \cap B_e \not= \emptyset$, e bounds f. 
             		\item \textbf{Face Box}:
             			a box $B_e$ is a face box $\mathrm{iff}$ $V \cap B_e = \emptyset$, $E \cap B_e = \emptyset$ and there exists only one face $f \in F$, and $f \cap B_e \not= \emptyset$. 
                   \end{enumerate}
-\subsection{Defination of S-Tree and AS-Tree}
+\subsection{Definition of S-Tree and AS-Tree}
 \begin{enumerate}
 
 %subdivision tree node
@@ -237,11 +241,11 @@ For a polyhedron $P \subset \mathbb{R}^3$, we use set V, E and F to represent it
 			\item  $\Phi^*\ (B, P)$
 		\end{itemize}
 	%\indent We represent the Subdivision Tree box $B$ and polyhedron $P$ as $n(B,P)$.\\
-	\indent If $B$ is an Elementary Box for $P$ in node $n(B,P)$, then $n(B,P)$ is called an Elementary Subdivistion Tree Node (EST-Node). 
+	\indent If $B$ is an Elementary Box for $P$ in node $n(B,P)$, then $n(B,P)$ is called an Elementary Subdivision Tree Node (EST-Node). 
 	\indent Subdivision on a Subdivision Tree Node $n(B,P)$ is defined as :
 		\begin{enumerate}
 			\item Subdivide box $B$ into 8 subboxes $(B_0, B_1,\ldots ,B_7)$
-			\item Compute $\Phi^*(B_i, P)(i=0,1,2,\ldots,7)$
+			\item Compute $\Phi^*(B_i, P)$\\$(i=0,1,2,\ldots,7)$
 			\item Construct eight ST-Nodes $n(B_i,P)$ and set each $pp$ of $n(B_i,P)$ point to $B$
 			\item Set $p_i$ of $n(B,P)$ point to $n(B_i,P)\ (i=0,1,2,\ldots,7)$
 
@@ -308,12 +312,13 @@ For a given box $B_s$ and a polyhedron $P$, we subdivide $B_s$ recursively and t
 
 %--------------------------------------Boolean Operations on EST-Nodes------------------------------------
 % Operations on EST-Nodes
+\begin{comment}
 \begin{enumerate} 
 	\item Boolean operation on an elementary box for two polyhedra $P_1$ and $P_2$
 	Suppose box $B_e$ is an elementary box for both $P_1$ and $P_2$. The result of the Boolean operation on an elementary box for two polyhedra $P_1$ and $P_2$ is an adequate subdivision tree. \\
 	We define a function $m$ as:
 		$T = m (BO, B_e, P_1, P_2)$ in which BO is a Boolean operation as $\cup$, $\cap$ and $-$, $P_1$ and $P_2$ are two polyhedra. The result of the function is an adequate subdivision tree.\\
-		What is more, we define a generalized function $m$ , when $BO$ is a complement, which is also a boolean operation, one of the two polyhedron should be null ( because the complement $^c$ is a unary operator). Arbitrarily we define $P_2=Null$, then $T = m ( ^c, B_s, P_1)$. \\
+		What is more, we define a generalized function $m$ , when $BO$ is a complement, which is also a Boolean operation, one of the two polyhedron should be null ( because the complement $^c$ is a unary operator). Arbitrarily we define $P_2=Null$, then $T = m ( ^c, B_s, P_1)$. \\
 		$P_1$ and $P_2$ are commutative in this function.
 	
 		
@@ -322,13 +327,24 @@ For a given box $B_s$ and a polyhedron $P$, we subdivide $B_s$ recursively and t
 		\end{enumerate}
 			
       \end{enumerate}
+\end{comment}
 
-\section{ Boolean operation on an elementary box $B_e$ for two polyhedra $P_1$ and $P_2$ }
+\section{ Boolean operation two EST-Nodes $n(B_e,P_1)$ and $n(B_e,P_2)$}
       \subsection {Union}
       \begin{enumerate}
-            \item  If  $B_e$  is an empty box of either $P_1$ or $P_2$ ( let us say $P_1$), the result $T=m\ ( \cup, B_e, P_1, P_2)$  is a subdivision tree whose root points to  $B_e$ and has no children.  $B_s$ is an elementary box for $P_2$.
-            \item if $B_e$ is a full box of either $P_1$ or $P_2$ ( let us say $P_1$) , $T=m\ ( \cup, B_e, P_1, P_2)$  is a subdivision tree whose root points to  $B_e$ and has no children. $B_s$ is an elementary box for $P_1$.
-	
+     	\item  If  $B_e$  is an empty box for either $P_1$ or $P_2$ ( let us say $P_1$):\\
+$n(B_e,P_1) \cup n(b_e,P_2)=n(B_e,P_1\cup P_2)=n(B_e,P_2)$ 
+      	 \item If $B_e$ is a full box for either $P_1$ or $P_2$ ( let us say $P_1$):\\
+$n(B_e,P_1) \cup n(b_e,P_2)=n(B_e,P_1\cup P_2)=n(B_e,P_1)$ 
+	\item If $B_e$ is a face box for both $P_1$ and $P_2$:\\
+		\begin{enumerate}
+			\item 
+			\item
+			\item
+		\end{enumerate}
+
+\begin{comment}
+$T=m\ ( \cup, B_e, P_1, P_2)$  is a subdivision tree whose root points to  $B_e$ and has no children. $B_s$ is an elementary box for $P_1$.
             \item  A polygon Box \& A polygon Box: 
             \begin{enumerate}
                   \item A polygon Box: if one half plane contains another (a belongs to b)
@@ -344,24 +360,25 @@ For a given box $B_s$ and a polyhedron $P$, we subdivide $B_s$ recursively and t
                         \item if p passes through the end point of corner c:a corner box or a half plane 
 
                         %not really sure
-                        \begin{comment}
+                        
                         \\if s contains $s_1$ and $s_2$: a segment Box, which contains s
                         \item two cross points : s intersects $s_1$ or $s_2$ but not both, then based on the half plane s decides, the Box contains one or two corners. If it contains two corners, we have to subdivide the Box.
                         \item three cross points : s intersects both $s_1$ and $s_2$, then based on the half plane s decides, the Box contains two or three corners. We have to subdivide the Box int small ones.
-                        \end{comment}
+                       
 
                   \end{enumerate}
 
             \item  A corner Box \& corner Box: Let us suppose that we have corner $c_1$ and $c_2$. $c_1$ is the intersection of half space $s_1, s_2, ..., s_n$, while $c_2$ is the intersection of half space $t_1, t_2, ..., s_n$. 
+\end{comment}
 
 
             %not very sure
             \begin{comment}
             Then we have to compute the intersection of these segments. The algorithm is that we compute the union of $c_1$ and $t_1$ and subdivide the Box into smaller ones if necessary. And then subdivide the Box containing $t_2$ into smaller ones if necessary and compute the union of small Boxes. 
             \\Finally, the computation of the union of two corners should be simplified to two union of a corner Box and a segment Box. 
-            \end{comment}
+            
 
-
+\end{comment}
 
       \end{enumerate}
 %----------------------------------------------------------------------------------------
