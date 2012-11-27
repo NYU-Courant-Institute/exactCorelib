@@ -156,7 +156,7 @@ B=-y\sin(\phi)+ z\cos(\phi),A^2+B^2\le R^2\}$.
 
 %------------------------------------------------
 
-\section {Subdivision trees}
+\section {Subdivision trees (S-Tree)}
 
 \subsection {Box}
             	$B$ is a \textbf{box} $\mathrm{iff}$ $B \subset \mathbb{R}^3$, $B=\{ (x,y,z)|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2\}$, which is a regularized subset of $\mathbb{R}^3$.\\
@@ -166,7 +166,7 @@ B=-y\sin(\phi)+ z\cos(\phi),A^2+B^2\le R^2\}$.
 		\indent We name the set containing all boxes as $\mathbb{B}$.
 		
 \subsection {Subdivision on box $B$}
-Suppose $B=([x_1,x_2],[y_1,y_2],[z_1,z_2])$, let $\bar{x} = \frac {x_1+x_2}{2}$, $\bar{y} = \frac {y_1+y_2}{2}$, $\bar{z} = \frac {z_1+z_2}{2}$. The subdivision on $B$ is to subdivide to box $B$ into eight smaller boxes:
+Suppose $B=([x_1,x_2],[y_1,y_2],[z_1,z_2])$, let $\bar{x} = \frac {x_1+x_2}{2}$, $\bar{y} = \frac {y_1+y_2}{2}$, $\bar{z} = \frac {z_1+z_2}{2}$. The subdivision on $B$ is to subdivide $B$ into eight subboxes:
 
 \begin{itemize}
 	\item $B_0=([x_1,\bar{x}],[y_1,\bar{y}],[z_1,\bar{z}])$
@@ -179,7 +179,7 @@ Suppose $B=([x_1,x_2],[y_1,y_2],[z_1,z_2])$, let $\bar{x} = \frac {x_1+x_2}{2}$,
 	\item $B_7=([\bar{x},x_2],[\bar{y},y_2],[\bar{z},z_2])$
 \end{itemize}	
 
-We name $B_i\ (i=0,1,2,\ldots,7)$ a subbox of $B$.
+%We name $B_i\ (i=0,1,2,\ldots,7)$ a subbox of $B$.
 	
 \subsection {Features}
 
@@ -229,7 +229,7 @@ For a polyhedron $P \subset \mathbb{R}^3$, we use set V, E and F to represent it
 \begin{enumerate}
 
 %subdivision tree node
-	\item Subdivision Tree Node (ST-Node) for box $B$ and polyhedron $P$, represented as $n(B,P)$ : a Subdivision Tree Node is a node contains the following information:
+	\item Subdivision Tree Node \iffalse(ST-Node)\fi for box $B$ and polyhedron $P$, represented as $n(B,P)$ : a Subdivision Tree Node is a node contains the following information:
 		\begin{itemize}
 			\item pointer to the parent of $n$: $pp$
 			\item a list of pointers to the eight children of node $n$: $p_i ( i=0,1,2, \ldots, 7)$ 
