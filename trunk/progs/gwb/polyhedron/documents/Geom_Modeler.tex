@@ -86,7 +86,7 @@
 
 \begin{abstract}
 
-\noindent The problem of computing geometry modeling in 3D is fundamental to computer graphics, path finding, motion planning and numerous branches of computer science. Given a polyhedron P defined by CSG (Constructive Solid Geometry) model, we raise a new idea to present the boundary features (vertices, edges and faces) of P using subdivision method; it has the following steps: 1) define a polyhedron P in CSG model, 2) predicate and subdivide a given box $B_0$ recursively until all sub-boxes are elementary 3) generate the adequate Subdivision Tree, 4) represent the boundary features based on the Subdivision Tree. Since the great generality and scalability of subdivision method, this idea can also be expanded to support more complex shape with higher order surfaces in 3D.
+\noindent The problem of computing geometry modeling in $R^3$ is fundamental to computer graphics, path finding, motion planning and numerous branches of computer science. Given a polyhedron P defined by Constructive Solid Geometry (CSG) model, we raise a new idea to present the boundary features (vertices, edges and faces) of P using subdivision method; it has the following steps: 1) define P in CSG model, 2) subdivide a given box $B_0$ for P and construct the adequate subdivision tree T, 3) represent the boundary features based on the subdivision tree T. We could also compute the boolean operations on 2 subdivision trees. Since the great generality and scalability of subdivision method, this idea can also be expanded to support more complex shape with higher order surfaces in $R^3$.
 
 \end{abstract}
 
@@ -97,24 +97,28 @@
 \begin{multicols}{2} % Two-column layout throughout the main article text
 
 \section{Introduction}
+\noindent In this paper, we focus on the geometric modeling of solids (especially polyhedra) in $R^3$. The traditional definition of a polyhedron in $R^3$ is by the boolean union of half spaces (CSG).  The faces of a polyhedron P are the plains which bounds the half spaces. Meanwhile the edges are the intersection of two unparallel plains and the vertices are the intersection of three. Faces, edges and vertices constitute the features of a polyhedron. By CSG definition, these features are not obvious. To present them more efficiently and make them more operable, we keep subdividing a box $B_0$ containing P until the boundary features are kept in certain subboxes. Then we can compute the features by operating the subdivision tree instead. 
 
-Solid modeling is distinguished from related areas of geometric modeling and computer graphics by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange, visualization, animation, interrogation, and annotation of digital models of physical objects. 
+\iffalse
+Solid modeling is distinguished from related areas of geometric modeling and computer graphics by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange, visualization, animation, interrogation, and annotation of digital models of physical objects.
+
 \\
 \\
 \indent
 We describe a polyhedron as three sets : $(V, E, F)$. $V$ represents the set of vertices of the polyhedron. $E$ represents the set of edges of the polyhedron. $F$ represents the set of faces of the polyhedron.
+\fi
 
 \section{Regularized set}
 
- \subsection {Definitions}
-      A set $S\subset \mathbb{R}^3$ is a \textbf{regularized set} $\textrm{iff}$ $S=\overline{int (S)}$. 
+      A set $S\subset \mathbb{R}^3$ is a \textbf{regularized set} $\textrm{if}$ $S=\overline{int (S)}$. 
       \\
       \\
       \indent
-      A \textbf{solid} is defined as a regularized subset of $\mathbb{R}^3$.  %($s\subset\mathbb{R}^3$).
-      %All of our operations are on Regularized sets.
-\subsection {Operation on regularized sets}
- Suppose $A$ and $B$ are regularized sets, we define:
+      A \textbf{solid} is defined as a regularized subset of $\mathbb{R}^3$. Obviously a polyhedron $P$ is a finite solid.
+      \\
+      \\
+      \indent
+ Suppose $A$ and $B$ are regularized sets, we define the boolean operations:
  \begin{itemize}
 
   \item $A \cup^* B = \overline{int (A \cup B)}$
@@ -123,42 +127,17 @@ We describe a polyhedron as three sets : $(V, E, F)$. $V$ represents the set of 
   \item $A^{c*} B = \overline{int (A^c)}$
  \end{itemize}
 
-
-%------------------------------------------------
-\begin{comment}
-\section{Definitions}
-
- \subsection {Regularized set}
-      A set $S\subset \mathbb{R}^3$ is a \textbf{regularized set} $\textrm{iff}$ $S=\overline{int (S)}$. %All of our operations are on Regularized sets.
-\subsection {Regularized set operation on regularized sets $A$ and $B$}
-
-	\begin{itemize}
-		\item $A \cup^* B = \overline{int (A \cup B)}$
-		\item $A \cap^* B = \overline{int (A \cap B)}$
-		\item $A -^* B = \overline{int (A - B)}$
-		\item $A^{c*} B = \overline{int (A^c)}$
-	\end{itemize} 
-
-      	\subsection {Solid}
-      	A \textbf{solid} is defined as a regularized subset of $\mathbb{R}^3$.  %($s\subset\mathbb{R}^3$).
-\end{comment}
-\begin{comment}
-        \\
-      	\\
-      	\indent We define the set containing all solids as $\mathbb{S}$. 
-\end{comment}
-	
-      
-
 %------------------------------------------------
 
 \section{CSG objects}
 
 \begin{comment}Just as a polyhedron can be described as the intersection of half spaces, 
 \end{comment}
-A CSG (Constructive Solid Geometry) model describes a polyhedron as regularized set operation on primitives which are the simplest solid objects used for the representation. 
 
-\subsection {Primitives}
+A Constructive Solid Geometry (CSG) model describes a polyhedron as regularized set operation on primitives which are the simplest solid objects used for the representation.
+      \\
+      \\
+      \indent
 Primitives in CSG models are all semi-algebraic sets as follows:
 \begin{enumerate}
       \item \textbf{Half Space}: $H=\{(x,y,z)|a*x+b*y+c*z+d\ge0\}$.
@@ -169,9 +148,7 @@ B=-y\sin(\phi)+ z\cos(\phi),A^2+B^2\le R^2\}$.
 
       
 \end{enumerate}
-\subsection {Polyhedron}
-	A \textbf{polyhedron} $P$ is a finite solid that is the intersection of half spaces.
-	We define the set containing all polyhedra as $\mathbb{P}$.
+A polyhedron is the intersection of half spaces.
 
 
 %------------------------------------------------
@@ -179,15 +156,21 @@ B=-y\sin(\phi)+ z\cos(\phi),A^2+B^2\le R^2\}$.
 \section {Subdivision trees (S-Tree)}
 
 \subsection {Box}
-            	$B$ is a \textbf{box} $\mathrm{iff}$ $B \subset \mathbb{R}^3$, $B=\{ (x,y,z)|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2\}$, which is a regularized subset of $\mathbb{R}^3$.\\
+            	$B$ is a \textbf{box} $\mathrm{if}$ $B \subset \mathbb{R}^3$, $B=\{ (x,y,z)|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2\}$, or simplified as $B=([x_1,x_2],[y_1,y_2],[z_1,z_2])$, which is a regularized subset of $\mathbb{R}^3$.
+            	\iffalse
+        \\
 		\\
-		\indent Another representation of $B$ is $B=([x_1,x_2],[y_1,y_2],[z_1,z_2])$.\\
-            	\\
+		\indent Another representation of $B$ is $B=([x_1,x_2],[y_1,y_2],[z_1,z_2])$.
+		\\
+        \\
+        
 		\indent We name the set containing all boxes as $\mathbb{B}$.
+		\fi
 		
-\subsection {Subdivision on box $B$}
-Suppose $B=([x_1,x_2],[y_1,y_2],[z_1,z_2])$, let $\bar{x} = \frac {x_1+x_2}{2}$, $\bar{y} = \frac {y_1+y_2}{2}$, $\bar{z} = \frac {z_1+z_2}{2}$. The subdivision on $B$ is to subdivide $B$ into eight subboxes:
+\subsection {Subdivision on box}
+Suppose $B=([x_1,x_2],[y_1,y_2],[z_1,z_2])$, let $\bar{x} = \frac {x_1+x_2}{2}$, $\bar{y} = \frac {y_1+y_2}{2}$, $\bar{z} = \frac {z_1+z_2}{2}$. The subdivision on $B$ is to subdivide $B$ into eight subboxes by splitting at $x = \bar{x}$, $y = \bar{y}$ and $z = \bar{z}$.
 
+\iffalse
 \begin{itemize}
 	\item $B_0=([x_1,\bar{x}],[y_1,\bar{y}],[z_1,\bar{z}])$
 	\item $B_1=([x_1,\bar{x}],[y_1,\bar{y}],[\bar{z},z_2])$
@@ -198,7 +181,7 @@ Suppose $B=([x_1,x_2],[y_1,y_2],[z_1,z_2])$, let $\bar{x} = \frac {x_1+x_2}{2}$,
 	\item $B_6=([\bar{x},x_2],[\bar{y},y_2],[z_1,\bar{z}])$
 	\item $B_7=([\bar{x},x_2],[\bar{y},y_2],[\bar{z},z_2])$
 \end{itemize}	
-
+\fi
 %We name $B_i\ (i=0,1,2,\ldots,7)$ a subbox of $B$.
 	
 \subsection {Features}
@@ -206,48 +189,53 @@ Suppose $B=([x_1,x_2],[y_1,y_2],[z_1,z_2])$, let $\bar{x} = \frac {x_1+x_2}{2}$,
 For a polyhedron $P \subset \mathbb{R}^3$, we use set V, E and F to represent its vertices, edges and faces respectively. The \textbf{features} $\Phi(P) = (V, E, F)$.\\
 \\
 \indent Then we define the features of a box $B$ corresponding to polyhedron $P$ as follows:
+
 \begin{itemize}
 %-------------feature function-----------------------
-	\item $\Phi_0^*\ (B, P)= B\cap V$
-	\item $\Phi_1^*\ (B, P)=\{(e, e\cap B) | e \in E\}$
-	\item $\Phi_2^*\ (B, P)=\{(f, f\cap B) | f \in F\}$
+	\item $\Phi_0(B, P)= B\cap V$
+	\item $\Phi_1(B, P)=\{\ e\ |\ e \in E,\ e \cap B \not= \emptyset\}$
+	\item $\Phi_2(B, P)=\{\ f\ |\ f \in F,\ f \cap B \not= \emptyset\}$
+	\newline
 \end{itemize}
 
-\begin{comment}
-\begin{itemize}
-%-------------feature function-----------------------
-	\item The features of a box corresponding to a vertex\\
-		$\forall v \in V$, $\phi_0^*\ (B,v)$ is the coordinates of $v$ if $v\in B$.\\
-		$\Phi_0^*\ (B, P)=\{\phi_0^*\ (B,v) | v \in V\}$
-	\item The features of a box corresponding to an edge\\
-		$\forall e \in E$, $\phi_1^*\ (B,e)$ is the coordinates of the two endpoints of $e$ and $B\cap^ e$ which can a segment or a vertex.
-		$\Phi_1^*\ (B, P)=\{\phi_1^*\ (B,e) | e \in E\}$
-	\item The features of a box corresponding to a face\\
-		$\forall f \in F$, $\phi_2^*\ (B,f)$ is the coordinates of the all vertices of $f$ and $B\cap^ f$ which can be a polygon, an edge or a vertex.
-		$\Phi_2^*\ (B, P)=\{\phi_2^*\ (B,f) | f \in F\}$
-\end{itemize}
-\end{comment}
-	
-		$\Phi^*\ (B, P) = ( \Phi_0^*\ (B, P), \Phi_1^*\ (B, P), \Phi_2^*\ (B, P) )$
+$\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$
 
 \subsection{Elementary Box}
 %------------elementary boxes---------------------
-	Then we define the \textbf{elementary box} $B_e$ for a polyhedron $P$: 
+	We define a box $B$ to be \textbf{elementary box} for a polyhedron $P$ if one of the following conditions hold: 
 		\begin{enumerate} 
-           		\item \textbf{Empty Box}:
-           			 a box $B_e$ is an empty box $\mathrm{iff}$ $B_e\cap P=\emptyset$.
-           		\item \textbf{Full Box}: 
-            			a box $B_e$ is a full box of Polyhedron $P$ $\mathrm{iff}$ $B_e\cap P = B_e$
-            		\item \textbf{Vertex Box}: 
+           		\item $B\cap P=\emptyset$. 
+           		\\
+           		\\
+           		Call $B$ an \textbf{Empty Box} for $P$.
+           		\item $B \subseteq P$. 
+           		\\
+           		\\
+           		Call $B$ a \textbf{Full Box} for $P$.
+            	\item Exists only one $v$ st. $\Phi_0(B,P)=\{v\}$ and $\forall e \in \Phi_1(B,P)$ $e$ is bounded by $v$ and $\forall f \in \Phi_2(B,P)$ $f$ is bounded by $v$.
+            	\\
+            	\\
+            	Call $B$ a \textbf{Vertex Box} for $P$.
+            		\iffalse
            			 a box $B_e$ is a vertex box $\mathrm{iff}$  there exists only one vertex $v \in V \cap B_e$, s.t.\ $\forall e \in E$, if $e \cap B_e \not= \emptyset$, $v$ bounds $e$, and $\forall f \in F$, if $f \cap B_e \not= \emptyset$, $v$ bounds $F$. \\
 			Because $|\Phi_0^*\ (B_e, P)|=1$, we can specify the only one vertex in the set as $v$
 			We name the Edges bounded by $v$ as $(e_1,e_2,...)$. 
 			We define $\bar{e_i}=e_i\cap B_s$.
-			
-            		\item \textbf{Edge Box}: 
+			\fi
+            		\item $V \cap B = \emptyset$, exists only one $e$ st. $\Phi_1(B,P)=\{e\}$ and $\forall f \in \Phi_2(B,P)$ $f$ is bounded by $v$.
+            		\\
+            		\\ 
+            		Call $B$ a \textbf{Edge Box} for $P$. 
+            		\iffalse
             			a box $B_e$ is an edge box $\mathrm{iff}$ $V \cap B_e = \emptyset$ and there exists only one edge $ e\in E$, $e\cap B_e \not= \emptyset, \forall f \in F$, if $f \cap B_e \not= \emptyset$, e bounds f. 
-            		\item \textbf{Face Box}:
+            		\fi
+            		\item $V \cap B = \emptyset$, $E \cap B = \emptyset$, exists only one $f$ st. $\Phi_2(B,P)=\{f\}$.
+            		\\
+            		\\
+            		Call $B$ a \textbf{Face Box} for $P$.
+            		\iffalse
             			a box $B_e$ is a face box $\mathrm{iff}$ $V \cap B_e = \emptyset$, $E \cap B_e = \emptyset$ and there exists only one face $f \in F$, and $f \cap B_e \not= \emptyset$. 
+            		\fi
                   \end{enumerate}
 \subsection{Definition of S-Tree and AS-Tree}
 \begin{enumerate}
