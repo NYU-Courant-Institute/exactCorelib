@@ -104,8 +104,28 @@ Solid modeling is distinguished from related areas of geometric modeling and com
 \indent
 We describe a polyhedron as three sets : $(V, E, F)$. $V$ represents the set of vertices of the polyhedron. $E$ represents the set of edges of the polyhedron. $F$ represents the set of faces of the polyhedron.
 
-%------------------------------------------------
+\section{Regularized set}
 
+ \subsection {Definitions}
+      A set $S\subset \mathbb{R}^3$ is a \textbf{regularized set} $\textrm{iff}$ $S=\overline{int (S)}$. 
+      \\
+      \\
+      \indent
+      A \textbf{solid} is defined as a regularized subset of $\mathbb{R}^3$.  %($s\subset\mathbb{R}^3$).
+      %All of our operations are on Regularized sets.
+\subsection {Operation on regularized sets}
+ Suppose $A$ and $B$ are regularized sets, we define:
+ \begin{itemize}
+
+  \item $A \cup^* B = \overline{int (A \cup B)}$
+  \item $A \cap^* B = \overline{int (A \cap B)}$
+  \item $A -^* B = \overline{int (A - B)}$
+  \item $A^{c*} B = \overline{int (A^c)}$
+ \end{itemize}
+
+
+%------------------------------------------------
+\begin{comment}
 \section{Definitions}
 
  \subsection {Regularized set}
@@ -121,7 +141,7 @@ We describe a polyhedron as three sets : $(V, E, F)$. $V$ represents the set of 
 
       	\subsection {Solid}
       	A \textbf{solid} is defined as a regularized subset of $\mathbb{R}^3$.  %($s\subset\mathbb{R}^3$).
-
+\end{comment}
 \begin{comment}
         \\
       	\\
@@ -233,15 +253,15 @@ For a polyhedron $P \subset \mathbb{R}^3$, we use set V, E and F to represent it
 \begin{enumerate}
 
 %subdivision tree node
-	\item Subdivision Tree Node \iffalse(ST-Node)\fi for box $B$ and polyhedron $P$, represented as $n(B,P)$ : a Subdivision Tree Node is a node contains the following information:
+	\item \textbf {Subdivision Tree Node}:  \iffalse(ST-Node)\fi A Subdivision Tree Node for a box $B$ and a polyhedron $P$, named $n(B,P)$, has the following information:
 		\begin{itemize}
-			\item pointer to the parent of $n$: $pp$
-			\item a list of pointers to the eight children of node $n$: $p_i ( i=0,1,2, \ldots, 7)$ 
-			\item a box $B$
+			\item Pointer to the parent of $n$: $pp$
+			\item Pointers to the eight children of node $n$: $p_i ( i=0,1,2, \ldots, 7)$ 
+			\item The box $B$
 			\item  $\Phi^*\ (B, P)$
 		\end{itemize}
 	%\indent We represent the Subdivision Tree box $B$ and polyhedron $P$ as $n(B,P)$.\\
-	\indent If $B$ is an Elementary Box for $P$ in node $n(B,P)$, then $n(B,P)$ is called an Elementary Subdivision Tree Node (EST-Node). 
+	\indent If $B$ is an Elementary Box for $P$ in node $n(B,P)$, then $n(B,P)$ is called an \textbf{Elementary Subdivision Tree Node (EST-Node)}. 
 	\indent Subdivision on a Subdivision Tree Node $n(B,P)$ is defined as :
 		\begin{enumerate}
 			\item Subdivide box $B$ into 8 subboxes $(B_0, B_1,\ldots ,B_7)$
