@@ -86,7 +86,7 @@
 
 \begin{abstract}
 
-\noindent The problem of computing geometry modeling in $R^3$ is fundamental to computer graphics, path finding, motion planning and numerous branches of computer science. Given a polyhedron P defined by Constructive Solid Geometry (CSG) model, we raise a new idea to present the boundary features (vertices, edges and faces) of P using subdivision method; it has the following steps: 1) define P in CSG model, 2) subdivide a given box $B_0$ for P and construct the adequate subdivision tree T, 3) represent the boundary features based on the subdivision tree T. We could also compute the boolean operations on 2 subdivision trees. Since the great generality and scalability of subdivision method, this idea can also be expanded to support more complex shape with higher order surfaces in $R^3$.
+\noindent The problem of computing geometry modeling in $R^3$ is fundamental to computer graphics, path finding, motion planning and numerous branches of computer science. Given a polyhedron P defined by constructive solid geometry (CSG) model, we raise a new idea to present the boundary features (vertices, edges and faces) of P using subdivision method; it has the following steps: 1) define P in CSG model, 2) subdivide a given box $B_0$ for P and construct the adequate subdivision tree T, 3) represent the boundary features based on the subdivision tree T. We could also compute the boolean operations of 2 subdivision trees. Since the great generality and scalability of subdivision method, this idea can also be expanded to support more complex shape with higher order surfaces in $R^3$.
 
 \end{abstract}
 
@@ -97,7 +97,7 @@
 \begin{multicols}{2} % Two-column layout throughout the main article text
 
 \section{Introduction}
-\noindent In this paper, we focus on the geometric modeling of solids (especially polyhedra) in $R^3$. The traditional definition of a polyhedron in $R^3$ is by the boolean union of half spaces (CSG).  The faces of a polyhedron P are the plains which bounds the half spaces. Meanwhile the edges are the intersection of two unparallel plains and the vertices are the intersection of three. Faces, edges and vertices constitute the features of a polyhedron. By CSG definition, these features are not obvious. To present them more efficiently and make them more operable, we keep subdividing a box $B_0$ containing P until the boundary features are kept in certain subboxes. Then we can compute the features by operating the subdivision tree instead. 
+\noindent In this paper, we focus on the geometric modeling of solids (especially polyhedra) in $R^3$. The traditional definition of a polyhedron in $R^3$ is by the boolean union of half spaces (CSG).  The faces of a polyhedron P are the plains which bounds the half spaces. Meanwhile the edges are the intersection of two unparallel plains and the vertices are the intersection of three. Faces, edges and vertices constitute the features of a polyhedron. By CSG definition, these features are not obvious. To present them more efficiently and make them more operable, we keep subdividing a box $B_0$ containing P until the boundary features are kept in certain subboxes. Then we can compute the features by manipulating the subdivision tree instead. 
 
 \iffalse
 Solid modeling is distinguished from related areas of geometric modeling and computer graphics by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange, visualization, animation, interrogation, and annotation of digital models of physical objects.
@@ -129,12 +129,12 @@ We describe a polyhedron as three sets : $(V, E, F)$. $V$ represents the set of 
 
 %------------------------------------------------
 
-\section{CSG objects}
+\section{CSG primitives}
 
 \begin{comment}Just as a polyhedron can be described as the intersection of half spaces, 
 \end{comment}
 
-A Constructive Solid Geometry (CSG) model describes a polyhedron as regularized set operation on primitives which are the simplest solid objects used for the representation.
+A \textbf{constructive solid geometry} (CSG) model describes a polyhedron as regularized set operation on primitives which are the simplest solid objects used for the representation.
       \\
       \\
       \indent
@@ -148,12 +148,12 @@ B=-y\sin(\phi)+ z\cos(\phi),A^2+B^2\le R^2\}$.
 
       
 \end{enumerate}
-A polyhedron is the intersection of half spaces.
+A polyhedron is limited by the intersection of half spaces.
 
 
 %------------------------------------------------
 
-\section {Subdivision trees (S-Tree)}
+\section {Subdivision tree}
 
 \subsection {Box}
             	$B$ is a \textbf{box} $\mathrm{if}$ $B \subset \mathbb{R}^3$, $B=\{ (x,y,z)|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2\}$, or simplified as $B=([x_1,x_2],[y_1,y_2],[z_1,z_2])$, which is a regularized subset of $\mathbb{R}^3$.
@@ -237,11 +237,18 @@ $\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$
             			a box $B_e$ is a face box $\mathrm{iff}$ $V \cap B_e = \emptyset$, $E \cap B_e = \emptyset$ and there exists only one face $f \in F$, and $f \cap B_e \not= \emptyset$. 
             		\fi
                   \end{enumerate}
-\subsection{Definition of S-Tree and AS-Tree}
-\begin{enumerate}
+                  
+\subsection{Definition}
 
+
+\begin{enumerate}
+%subdivision tree
+	\item A \textbf{subdivision tree} is a tree where each interior node has degree 8 (Octree) and each node $u$ is associated with a box $u.box$ st. if $u_0,...,u_7$ are the children of $u$. Then $\{u.Box: i = 0..7\}$ is the split of $u.box$.
+	\item An \textbf{adequate} subdivision tree of a box $B_0$ for a polyhedron $P$ is a subdivision tree rooted at $B_0$, in which all leaves are associated with elementary boxes for $P$.\\
+
+\iffalse
 %subdivision tree node
-	\item \textbf {Subdivision Tree Node}:  \iffalse(ST-Node)\fi A Subdivision Tree Node for a box $B$ and a polyhedron $P$, named $n(B,P)$, has the following information:
+	\item : A \textbf {subdivision tree node} has the following information:
 		\begin{itemize}
 			\item Pointer to the parent of $n$: $pp$
 			\item Pointers to the eight children of node $n$: $p_i ( i=0,1,2, \ldots, 7)$ 
@@ -258,23 +265,7 @@ $\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$
 			\item Set $p_i$ of $n(B,P)$ point to $n(B_i,P)\ (i=0,1,2,\ldots,7)$
 
 		\end{enumerate}
-
-
-%subdivision tree
-	\item Subdivision Tree (S-Tree) for box $B_s$ and polyhedron $P$: A Subdivision Tree (S-Tree ) is  an octree rooted at $n(B_s,P)$ and in which each node is a Subdivision Tree Node for a box $B$ and polyhedron $P$ . For each inner node $n(B,P)$,  the eight children of $n(B,P)$ are $n(B_i,P)\ (i=0,1,2,\ldots, 7)$. 
-	\item Adequate Subdivision Tree (AS-Tree) for box $B_s$ and polyhedron $P$ : An Adequate Subdivision Tree(AS-Tree) for box $B_s$ and polyhedron $P$ is a S-Tree whose leaves are EST- Nodes.\\
-\indent We represent an AS-Tree for box $B_s$ and polyhedron $P$ as $AST(B_s,P)$
-	\item Simplest Adequate Subdivision Tree (SAS-Tree) for a box $B_s$ and polyhedron $P$ : 
-		\begin{enumerate}
-			\item Construct a ST-node $n(B_s,P)$ and let it be the root of S-Tree.
-			\item Subdivide $n(B_s,P)$ if it is not an EST-node.
-			\item Keep subdividing every leaf of the S-Tree until it is an AS-Tree, which means that every leaf of the S-Tree is an EST-Node.
-			\item Now the AS-Tree we have is an SAS-Tree.
-Finally we get an AS-Tree. This tree is an SAS-Tree. \\
-We represent an SAS-Tree constructed by box $B_s$ and polyhedron $P$ as $SAST(B_s,P)$.
-
-		\end{enumerate}
-
+\fi
 \end{enumerate}
 
 \begin{comment}
@@ -287,11 +278,27 @@ For a given box $B_s$ and a polyhedron $P$, we subdivide $B_s$ recursively and t
 \indent We define $T = ASD (B_0, P)$. in which SD is a function on a  box $B$ and a polyhedron $P$ \end{comment}
 
 %-----------------Boolean Operation on AS-Trees--------------------------------------------------------------      	
-\subsection{Boolean Operations on AS-Trees}
+\section{Boolean Operations on subdivision trees}
 
-	   	 %\item Adequate subdivision tree for box $B_0$ and polyhedron $P$ :  A subdivision tree in $\mathbb{R}^3$ is an octree, in which each node combines a box $B$ and $\Phi^*\ (B, P)$. 
-           	 %\item Adequate subdivision tree for box $B$ and polyhedron $P$:\\
- %$T = SD (B_0, P)$ in which SD is a function on a  box $B$ and a polyhedron $P$, the root of the tree  points to box $B_0$.  All leaves of $T$ point to an elementary box of the polyhedron $P$.
+To compute the features of the union, intersection or difference of two polyhedra. We could compute the boolean operations on their subdivision trees.
+\\
+\\
+\indent
+Give box $B_0$ and polyhedron $P_1$, $P_2$. We have two adequate subdivision trees $T_1$ for $P_1$, $T_2$ for $P_2$. 
+\\
+\\
+\indent
+Before we do the boolean operation on $T_1$, $T_2$, we need to make them congruent, which means $\forall$ node $n_1$ in $T_1$, $\exists$ $n_2$ in $T_2$ st. $n_1.box = n_2.box$, $\forall$ node $n_2$ in $T_2$, $\exists$ $n_1$ in $T_1$ st. $n_2.box = n_1.box$. We name this process \textbf{further subdivision}.
+
+
+
+\begin{enumerate} 
+
+     
+	 \item Union
+
+
+
 
 		Boolean operations on two adequate subdivision trees $T_1 = AST (B_s, P_1)$ and $T_2 = AST(B_s, P_2)$ rooted at the same box $B_s$:\\ 
 		$T = M (BO, T_1, T_2)$ in which BO is a Boolean operation  and  $T_1$ and $T_2$ are adequate subdivision trees. The result of the function $M$ is an AS-Tree $T$.\\
@@ -308,7 +315,7 @@ For a given box $B_s$ and a polyhedron $P$, we subdivide $B_s$ recursively and t
 			
 
 
-
+\end{enumerate}
 %--------------------------------------End of AS-Trees----------------------------------------------------------------
 	\begin{comment}
 	  \item Subdivision Rules of a box $B_0$ corresponding to a polyhedron $P$:
