@@ -1,16 +1,13 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}
 \BOOKMARK [1][-]{section.2}{Regularized set}{}
-\BOOKMARK [2][-]{subsection.2.1}{Definitions}{section.2}
-\BOOKMARK [2][-]{subsection.2.2}{Operation on regularized sets}{section.2}
-\BOOKMARK [1][-]{section.3}{CSG objects}{}
-\BOOKMARK [2][-]{subsection.3.1}{Primitives}{section.3}
-\BOOKMARK [2][-]{subsection.3.2}{Polyhedron}{section.3}
-\BOOKMARK [1][-]{section.4}{Subdivision trees \(S-Tree\)}{}
+\BOOKMARK [1][-]{section.3}{CSG primitives}{}
+\BOOKMARK [1][-]{section.4}{Subdivision tree}{}
 \BOOKMARK [2][-]{subsection.4.1}{Box}{section.4}
-\BOOKMARK [2][-]{subsection.4.2}{Subdivision on box B}{section.4}
+\BOOKMARK [2][-]{subsection.4.2}{Subdivision on box}{section.4}
 \BOOKMARK [2][-]{subsection.4.3}{Features}{section.4}
 \BOOKMARK [2][-]{subsection.4.4}{Elementary Box}{section.4}
-\BOOKMARK [2][-]{subsection.4.5}{Definition of S-Tree and AS-Tree}{section.4}
-\BOOKMARK [2][-]{subsection.4.6}{Boolean Operations on AS-Trees}{section.4}
-\BOOKMARK [1][-]{section.5}{ Boolean operation two EST-Nodes n\(Be,P1\) and n\(Be,P2\)}{}
-\BOOKMARK [2][-]{subsection.5.1}{Union}{section.5}
+\BOOKMARK [2][-]{subsection.4.5}{Definition}{section.4}
+\BOOKMARK [2][-]{subsection.4.6}{Classification of elementary boxes}{section.4}
+\BOOKMARK [1][-]{section.5}{Boolean Operations on subdivision trees}{}
+\BOOKMARK [1][-]{section.6}{ Boolean operation two EST-Nodes n\(Be,P1\) and n\(Be,P2\)}{}
+\BOOKMARK [2][-]{subsection.6.1}{Union}{section.6}
