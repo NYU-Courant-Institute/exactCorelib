@@ -20,6 +20,7 @@
 
 \documentclass[twoside]{article}
 
+\usepackage{boxedminipage}
 \usepackage{lipsum} % Package to generate dummy text throughout this template
 
 \usepackage[sc]{mathpazo} % Use the Palatino font
@@ -70,6 +71,7 @@
 \textsc{Kai Cao, Zhongdi Luo}\iffalse \thanks{Thanks to Chee Yap for his help}\fi \\[2mm] % Your name
 \normalsize New York University \\ % Your institution
 \normalsize \href{mailto:kcao@cs.nyu.edu}{kcao@cs.nyu.edu} % Your email address
+\normalsize \href{mailto:zl562@nyu.edu}{zl562@nyu.edu} % Your email address
 \vspace{-5mm}
 }
 \date{}
@@ -99,7 +101,7 @@
 \begin{multicols}{2} % Two-column layout throughout the main article text
 
 \section{Introduction}
-\noindent In this paper, we focus on the geometric modeling of solids (especially polyhedra) in $R^3$. The traditional definition of a polyhedron in $R^3$ is the boolean union of half spaces (CSG).  The faces of a polyhedron P are the plains which bounds the half spaces. Meanwhile the edges are the intersection of two unparallel plains and the vertices are the intersection of three. Faces, edges and vertices constitute the features of a polyhedron. By CSG definition, these features are not obvious. To present them more efficiently and make them more operable, we keep subdividing a box $B_0$ containing P until the boundary features are kept in certain subboxes. Then we can compute the features by manipulating the subdivision tree instead. 
+\noindent In this paper, we focus on the geometric modeling of solids (especially polyhedra) in $\mathbb{R}^3$. The traditional definition of a polyhedron in $\mathbb{R}^3$ is the boolean union of half spaces (CSG).  The faces of a polyhedron P are the plains which bounds the half spaces. Meanwhile the edges are the intersection of two unparallel plains and the vertices are the intersection of three. Faces, edges and vertices constitute the features of a polyhedron. By CSG definition, these features are not obvious. To present them more efficiently and make them more operable, we keep subdividing a box $B_0$ containing P until the boundary features are kept in certain subboxes. Then we can compute the features by manipulating the subdivision tree instead. 
 
 \iffalse
 Solid modeling is distinguished from related areas of geometric modeling and computer graphics by its emphasis on physical fidelity. Together, the principles of geometric and solid modeling form the foundation of computer-aided design and in general support the creation, exchange, visualization, animation, interrogation, and annotation of digital models of physical objects.
@@ -269,7 +271,9 @@ $\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$
 		\end{enumerate}
 \fi
 \end{enumerate}
+
 \subsection {Classification of elementary boxes}
+\iffalse
 \begin{enumerate}
 	\item {Face box $B$ for polyhedron $P$, the face $f\cap B\not=\emptyset$}
 		\begin{enumerate}
@@ -277,6 +281,7 @@ $\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$
 			\input{cube.tex}
 		\end{enumerate}
 \end{enumerate}
+\fi
 \begin{comment}
 For a given box $B_s$ and a polyhedron $P$, we subdivide $B_s$ recursively and to each subbox $B$ we compute $\Phi^*\ (B, P)$. During the subdivision process, we get the \textbf{subdivision tree(S-Tree)} for $P$ rooted at $B_0$. A subdivision tree is an octree, in which each node keeps the info of $\Phi^*\ (B, P)$.\\
 
@@ -297,8 +302,51 @@ Give box $B_0$ and polyhedron $P_1$, $P_2$. We have two adequate subdivision tre
 \\
 \\
 \indent
-Before we do the boolean operation on $T_1$, $T_2$, we need to make them congruent, which means $\forall$ node $n_1$ in $T_1$, $\exists$ $n_2$ in $T_2$ st. $n_1.box = n_2.box$, $\forall$ node $n_2$ in $T_2$, $\exists$ $n_1$ in $T_1$ st. $n_2.box = n_1.box$. We name this process \textbf{further subdivision}.
+Before we do the boolean operation on $T_1$, $T_2$, it's necessary to make them congruent, which means $\forall$ node $n_1$ in $T_1$, $\exists$ $n_2$ in $T_2$ st. $n_1.box = n_2.box$, $\forall$ node $n_2$ in $T_2$, $\exists$ $n_1$ in $T_1$ st. $n_2.box = n_1.box$. We name this process \textbf{even up}.
 
+The process of even up using BFS:
+\\
+\\
+\indent \begin{boxedminipage}{.47\textwidth}
+
+Input: $T_1$, $T_2$ are two adequate subdivision trees for $P_1$, $P_2$ respectively and both rooted at $B_0$.
+\\
+%\\
+%\indent
+%\ \ \ \ Color all nodes as initially \textbf{unseen}.
+\\ \indent \ \ \ \ 
+$n_1 \leftarrow T_1.root$.
+\\ \indent \ \ \ \ 
+$n_2 \leftarrow T_2.root$.
+\\ \indent \ \ \ \ 
+insert $n_1$ into queue $Q_1$, $n_1$ into queue $Q_2$.
+\\ \indent \ \ \ \ 
+while $Q_1 \neq \emptyset$ and $Q_2 \neq \emptyset$ do:
+\\ \indent \ \ \ \ \ \ \ \ 
+$n_1 \leftarrow Q_1$.dequeue().
+\\ \indent \ \ \ \ \ \ \ \ 
+$n_2 \leftarrow Q_2$.dequeue().
+\\ \indent \ \ \ \ \ \ \ \ 
+if ($n_1$.box is elementary for $T_1$
+\\ \indent \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+and $n_2$.box is elementary for $T_2$)
+\\ \indent \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+then
+\\ \indent \ \ \ \ \ \ \ \ \ \ \ \ 
+continue.
+\\ \indent \ \ \ \ \ \ \ \ 
+if ($n_1$.children = $\emptyset$) then
+\\ \indent \ \ \ \ \ \ \ \ \ \ \ \ 
+$n_1$.children $\leftarrow n_1$.subdivide().
+\\ \indent \ \ \ \ \ \ \ \ 
+elif ($n_2$.children = $\emptyset$) then
+\\ \indent \ \ \ \ \ \ \ \ \ \ \ \ 
+$n_2$.children $\leftarrow n_2$.subdivide().
+\\ \indent \ \ \ \ \ \ \ \ 
+$Q_1$.enqueue($n_1$.children).
+\\ \indent \ \ \ \ \ \ \ \ 
+$Q_2$.enqueue($n_2$.children).
+\end{boxedminipage}
 
 
 \begin{enumerate} 
