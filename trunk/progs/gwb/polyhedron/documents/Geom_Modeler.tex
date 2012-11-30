@@ -337,11 +337,15 @@ continue.
 \\ \indent \ \ \ \ \ \ \ \ 
 if ($n_1$.children = $\emptyset$) then
 \\ \indent \ \ \ \ \ \ \ \ \ \ \ \ 
-$n_1$.children $\leftarrow n_1$.subdivide().
+$n_1$.children $\leftarrow n_1$.split().
+\\ \indent \ \ \ \ \ \ \ \ \ \ \ \ 
+$T_1$.attach($n_1$.children, $n_1$).
 \\ \indent \ \ \ \ \ \ \ \ 
 elif ($n_2$.children = $\emptyset$) then
 \\ \indent \ \ \ \ \ \ \ \ \ \ \ \ 
-$n_2$.children $\leftarrow n_2$.subdivide().
+$n_2$.children $\leftarrow n_2$.split().
+\\ \indent \ \ \ \ \ \ \ \ \ \ \ \ 
+$T_2$.attach($n_2$.children, $n_2$).
 \\ \indent \ \ \ \ \ \ \ \ 
 $Q_1$.enqueue($n_1$.children).
 \\ \indent \ \ \ \ \ \ \ \ 
