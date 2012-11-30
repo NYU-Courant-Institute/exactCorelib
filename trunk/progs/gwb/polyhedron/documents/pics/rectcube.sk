@@ -1,0 +1,2 @@
+input{cube.sk}
+put { view((eye), (look_at)) } { {rectangle}}
