@@ -1,2 +1,2 @@
 input{cube.sk}
-put { view((eye), (look_at)) } { {hexagon}}
+put { scale([Norm]) then view((eye), (look_at)) } { {hexagon}}
