@@ -11,7 +11,7 @@ def axes {
     special |\uput[r]#1{$x$}\uput[u]#2{$y$}\uput[l]#3{$z$}|
       (sz,0,0)(0,sz,0)(0,0,sz)
   }
-def Norm [0.5,0.5,0.5]    
+def Norm [2,2,2]    
 def cube {sweep[cull=false,opacity=0.7]{rotN<>,rotate(360/rotN,[0,1,0])}{line(1,1,1)(1,-1,1)}}
 def solidcube {sweep[cull=false,opacity=1]{rotN<>,rotate(360/rotN,[0,1,0])}{line(1,1,1)(1,-1,1)}}
 
@@ -35,6 +35,52 @@ def pentagon polygon[cull=false,fillcolor=red!100,opacity=0.3](0.5,-1,1)(-0.5,1,
 
 %--------------Hexagon-----------------
 def hexagon polygon[cull=false,fillcolor=red!100,opacity=0.3](1,-1,0)(1,0,-1)(0,1,-1)(-1,1,0)(-1,0,1)(0,-1,1)
+
+
+%--------------Triangle----------------
+def btriangle polygon[cull=false,fillcolor=blue!100,opacity=0.3](1,1,0.3)(1,0,1)(-0.7,1,1)
+def bequitriangle polygon[cull=false,fillcolor=blue!100,opacity=0.3](1,1,0)(1,0,1)(0,1,1)
+
+
+%--------------Trapezoidal----------------
+def btrape polygon[cull=false,fillcolor=blue!100,opacity=0.3](1,1,0)(0,1,1)(-0.5,-1,1)(1,-1,-0.5)
+%--------------Parallelogram----------------
+def bparallel polygon[cull=false,fillcolor=blue!100,opacity=0.3](0.5,-1,-1)(0,1,-1)(-0.5,1,1)(0,-1,1)
+%--------------Rectangle----------------
+def brectangle polygon[cull=false,fillcolor=blue!100,opacity=0.3](1,1,0)(0,1,1)(0,-1,1)(1,-1,0)
+%--------------Square----------------
+def bsquare polygon[cull=false,fillcolor=blue!100,opacity=0.3](1,1,0)(1,-1,0)(-1,-1,1)(-1,1,0)
+
+%--------------Pentagon-----------------
+def bpentagon polygon[cull=false,fillcolor=blue!100,opacity=0.3](0.5,-1,1)(-0.5,1,1)(0.5,1,-1)(1,0,-1)(1,-1,0)
+
+
+%--------------Hexagon-----------------
+def bhexagon polygon[cull=false,fillcolor=blue!100,opacity=0.3](1,-1,0)(1,0,-1)(0,1,-1)(-1,1,0)(-1,0,1)(0,-1,1)
+
+%--------------Triangle----------------
+def gtriangle polygon[cull=false,fillcolor=green!100,opacity=0.3](1,1,0.3)(1,0,1)(-0.7,1,1)
+def gequitriangle polygon[cull=false,fillcolor=green!100,opacity=0.3](1,1,0)(1,0,1)(0,1,1)
+
+
+%--------------Trapezoidal----------------
+def gtrape polygon[cull=false,fillcolor=green!100,opacity=0.3](1,1,0)(0,1,1)(-0.5,-1,1)(1,-1,-0.5)
+%--------------Parallelogram----------------
+def gparallel polygon[cull=false,fillcolor=green!100,opacity=0.3](0.5,-1,-1)(0,1,-1)(-0.5,1,1)(0,-1,1)
+%--------------Rectangle----------------
+def grectangle polygon[cull=false,fillcolor=green!100,opacity=0.3](1,1,0)(0,1,1)(0,-1,1)(1,-1,0)
+%--------------Square----------------
+def gsquare polygon[cull=false,fillcolor=green!100,opacity=0.3](1,1,0)(1,-1,0)(-1,-1,1)(-1,1,0)
+
+%--------------Pentagon-----------------
+def gpentagon polygon[cull=false,fillcolor=green!100,opacity=0.3](0.5,-1,1)(-0.5,1,1)(0.5,1,-1)(1,0,-1)(1,-1,0)
+
+
+%--------------Hexagon-----------------
+def ghexagon polygon[cull=false,fillcolor=green!100,opacity=0.3](1,-1,0)(1,0,-1)(0,1,-1)(-1,1,0)(-1,0,1)(0,-1,1)
+
+%----------------------------------------------------------------------subdivision---------------------------------------------------------
+
 %-------------1st level subdivision----
 %-------------x=0 cut------------------
 %def x1cut polygon[cull=false,fillcolor=red!100,opacity=1](0,1,1)(0,1,-1)(0,-1,-1)(0,-1,1)
@@ -77,4 +123,56 @@ def z2cut {
 	line(1,1,0.5)(1,0,0.5)
 	line(1,1,0.5)(0,1,0.5)
 }
+
 def second{{x2cut}{y2cut}{z2cut}}
+%------------------------------------------------------------------End of Subdivision-------------------------------------------------
+
+
+%-------------------------------------------------------------------Edge boxes--------------------------------------------------------
+%-------------2 face cross an edge-----------------
+def f2e{
+	polygon[cull=false,fillcolor=red!100,opacity=0.3](-0.5,1,1)(-0.5,1,-1)(0.5,-1,-1)(0.5,-1,1)
+	polygon[cull=false,fillcolor=green!100,opacity=1](-0.5,-1,1)(-0.5,-1,-1)(0.5,1,-1)(0.5,1,1)
+	line(0,0,1)(0,0,-1)
+}
+%-------------2 face cross a vertex-----------------
+def f2v{
+	polygon[cull=false,fillcolor=red!100,opacity=0.3](1,0,1)(1,-1,0)(0,-1,1)
+	polygon[cull=false,fillcolor=green!100,opacity=1](1,0,1)(-1,1,1)(1,1,-1)
+}
+%-------------2 face cross nothing-----------------
+def f2n {
+	{hexagon}
+	polygon[cull=false,fillcolor=green!100,opacity=1](1,1,0)(1,0,1)(0,1,1)
+}
+%	polygon[cull=false,fillcolor=red!100,opacity=0.3](1,1,1)(1,1,-1)(0,-1,1)
+%	polygon[cull=false,fillcolor=green!100,opacity=0.3](-1,1,1)(-1,1,-1)(0,-1,1)
+
+%-------------------------------------------------------------------Vertex boxes--------------------------------------------------------
+%-------------3 face cross a vertex-----------------
+def f3v{
+	polygon[cull=false,fillcolor=red!100,opacity=0.3](-0.5,1,1)(-0.5,1,-1)(0.5,-1,-1)(0.5,-1,1)
+	polygon[cull=false,fillcolor=green!100,opacity=0.3](-0.5,-1,1)(-0.5,-1,-1)(0.5,1,-1)(0.5,1,1)
+	polygon[cull=false,fillcolor=blue!100,opacity=0.3](1,1,0)(1,-1,0)(-1,-1,0)(-1,1,0)
+	line(0,0,1)(0,0,-1)
+	line(-0.5,1,0)(0.5,-1,0)
+	line(0.5,1,0)(-0.5,-1,0)
+	dots(0,0,0)
+}
+
+
+
+
+
+
+
+
+
+def f3e{
+	polygon[cull=false,fillcolor=red!100,opacity=0.3](-0.5,1,1)(-0.5,1,-1)(0.5,-1,-1)(0.5,-1,1)
+	polygon[cull=false,fillcolor=green!100,opacity=0.3](-0.5,-1,1)(-0.5,-1,-1)(0.5,1,-1)(0.5,1,1)
+	polygon[cull=false,fillcolor=blue!100,opacity=0.3](1,0,1)(1,0,-1)(-1,0,-1)(-1,0,1)
+}
+%	polygon[cull=false,fillcolor=red!100,opacity=0.3](1,1,1)(1,1,-1)(0,-1,1)
+%	polygon[cull=false,fillcolor=green!100,opacity=0.3](-1,1,1)(-1,1,-1)(0,-1,1)
+

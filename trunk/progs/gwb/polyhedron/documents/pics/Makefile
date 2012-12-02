@@ -7,9 +7,13 @@ CUBESK=cube.sk
 CUBETEX=cube.tex
 
 CUBEDERSK=tricube.sk equitricube.sk trapecube.sk\
-parallelcube.sk rectcube.sk squarecube.sk pentacube.sk hexacube.sk
+parallelcube.sk rectcube.sk squarecube.sk pentacube.sk hexacube.sk\
+f2ebox.sk f2vbox.sk f2nbox.sk\
+f3vbox.sk f3ebox.sk
 CUBEDERTEX=tricube.tex equitricube.tex trapecube.tex\
-parallelcube.tex rectcube.tex squarecube.tex pentacube.tex hexacube.tex
+parallelcube.tex rectcube.tex squarecube.tex pentacube.tex hexacube.tex\
+f2ebox.tex f2vbox.tex f2nbox.tex\
+f3vbox.tex f3ebox.tex
 
 SOLIDSK=solidcube.sk
 SOLIDSUBSK=firstsubcube.sk secondsubcube.sk
