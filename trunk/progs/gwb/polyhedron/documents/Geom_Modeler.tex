@@ -219,15 +219,15 @@ $\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$
            		\item $B\cap P=\emptyset$. 
            		\\
            		\\
-           		Call $B$ an \textbf{Empty Box} for $P$.
+           		Call $B$ an \textbf{empty box} for $P$.
            		\item $B \subseteq P$. 
            		\\
            		\\
-           		Call $B$ a \textbf{Full Box} for $P$.
+           		Call $B$ a \textbf{full box} for $P$.
             	\item Exists only one $v$ st. $\Phi_0(B,P)=\{v\}$ and $\forall e \in \Phi_1(B,P)$ $e$ is bounded by $v$ and $\forall f \in \Phi_2(B,P)$ $f$ is bounded by $v$.
             	\\
             	\\
-            	Call $B$ a \textbf{Vertex Box} for $P$.
+            	Call $B$ a \textbf{vertex box} for $P$.
             		\iffalse
            			 a box $B_e$ is a vertex box $\mathrm{iff}$  there exists only one vertex $v \in V \cap B_e$, s.t.\ $\forall e \in E$, if $e \cap B_e \not= \emptyset$, $v$ bounds $e$, and $\forall f \in F$, if $f \cap B_e \not= \emptyset$, $v$ bounds $F$. \\
 			Because $|\Phi_0^*\ (B_e, P)|=1$, we can specify the only one vertex in the set as $v$
@@ -237,14 +237,14 @@ $\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$
             		\item $V \cap B = \emptyset$, exists only one $e$ st. $\Phi_1(B,P)=\{e\}$ and $\forall f \in \Phi_2(B,P)$ $f$ is bounded by $v$.
             		\\
             		\\ 
-            		Call $B$ a \textbf{Edge Box} for $P$. 
+            		Call $B$ a \textbf{edge box} for $P$. 
             		\iffalse
             			a box $B_e$ is an edge box $\mathrm{iff}$ $V \cap B_e = \emptyset$ and there exists only one edge $ e\in E$, $e\cap B_e \not= \emptyset, \forall f \in F$, if $f \cap B_e \not= \emptyset$, e bounds f. 
             		\fi
             		\item $V \cap B = \emptyset$, $E \cap B = \emptyset$, exists only one $f$ st. $\Phi_2(B,P)=\{f\}$.
             		\\
             		\\
-            		Call $B$ a \textbf{Face Box} for $P$.
+            		Call $B$ a \textbf{face box} for $P$.
             		\iffalse
             			a box $B_e$ is a face box $\mathrm{iff}$ $V \cap B_e = \emptyset$, $E \cap B_e = \emptyset$ and there exists only one face $f \in F$, and $f \cap B_e \not= \emptyset$. 
             		\fi
@@ -301,10 +301,8 @@ For a given box $B_s$ and a polyhedron $P$, we subdivide $B_s$ recursively and t
 
 %-----------------Boolean Operation on AS-Trees--------------------------------------------------------------      	
 \section{Boolean Operations on subdivision trees}
-
 To compute the features of the union, intersection or difference of two polyhedra. We could compute the boolean operations on their subdivision trees.
-\\
-\\
+\subsection {Even up two trees}
 \indent
 Give box $B_0$ and polyhedron $P_1$, $P_2$. We have two adequate subdivision trees $T_1$ for $P_1$, $T_2$ for $P_2$. 
 \\
@@ -315,7 +313,7 @@ Before we do the boolean operation on $T_1$, $T_2$, it's necessary to make them 
 The process of even up using BFS:
 \\
 \\
-\indent \begin{boxedminipage}{.47\textwidth}
+\begin{boxedminipage}{.47\textwidth}
 
 Input: $T_1$, $T_2$ are two adequate subdivision trees for $P_1$, $P_2$ respectively and both rooted at $B_0$.
 \\
@@ -401,7 +399,7 @@ Given a Box $B$ and a polyhedron $P$, we get its adequate subdivision tree in li
 \textit{proof}. We get its adequate subdivision tree, that is to say, we would get a state that all \textbf{leaf} subboxes of $B$ are elementary for $P$.
 \\
 \\
-We define $d(x,y)$ to be Euclidean distance between $x$ and $y$ ($x,y$ can be vertex, edge or face). Given a non-elementary subbox $B^\prime$ having features $\Phi\ (B^\prime, P)$ for $P$, we discuss the following 6 simplest cases ($P_3^2$):
+\indent We define $d(x,y)$ to be Euclidean distance between $x$ and $y$ ($x,y$ can be vertex, edge or face). Given a non-elementary subbox $B^\prime$ having features $\Phi\ (B^\prime, P)$ for $P$, we discuss the following 6 simplest cases:
 \\
 \\
 $\Phi\ (B^\prime, P)$ has (at least)
@@ -417,7 +415,7 @@ $\Phi\ (B^\prime, P)$ has (at least)
 We define $l(B)$ is the side length of $B$. Then the diameter of $B$ equals $\sqrt{3} * l(B)$.
 \\
 \\
-\indent To cases (1), (4) and (5), we simply keep subdividing $B^\prime$. Then we choose the biggest box $B_m^\prime$ of its leaf subboxes. When the following conditions hold, 
+\indent For cases (1), (4) and (5), we simply keep subdividing $B^\prime$. Then we choose the biggest box $B_m^\prime$ of its leaf subboxes. When the following conditions hold, 
 \begin{itemize}
 \item $\sqrt{3} * l(B_m^\prime) < d(v_1,v_2)$ \hfill (1)
 \item $\sqrt{3} * l(B_m^\prime) < d(v,e)$ \hfill (4)
@@ -426,7 +424,7 @@ We define $l(B)$ is the side length of $B$. Then the diameter of $B$ equals $\sq
 \indent We guarantee none of the leaf subboxes contains both features.
 \\
 \\
-\indent To cases (2), (3) and (6), the process is similar except we can't simply use the Euclidean distance between edges and faces since they may intersect outside the box $B^\prime$. First we compute the line segments of edges and polygons of faces cut by $B^\prime$, then similarly when
+\indent For cases (2), (3) and (6), the process is similar except we can't simply use the Euclidean distance between edges and faces since they may intersect outside the box $B^\prime$. First we compute the line segments of edges and polygons of faces cut by $B^\prime$, then similarly when
  \begin{itemize}
  \item $\sqrt{3} * l(B_m^\prime) < d(e_1\cap B^\prime,e_2\cap B^\prime)$ \hfill (2)
  \item $\sqrt{3} * l(B_m^\prime) < d(f_1\cap B^\prime,f_2\cap B^\prime)$ \hfill (3)
@@ -444,115 +442,43 @@ We define $l(B)$ is the side length of $B$. Then the diameter of $B$ equals $\sq
 \begin{lemma}
 Given a Box $B$, its adequate subdivision tree $T_1$ for polyhedron $P_1$ and adequate subdivision tree $T_2$ for polyhedron $P_2$, we even $T_1$ and $T_2$ up in limited steps.
 \end{lemma}
+\indent Now we have two congruent adequate subdivision trees and then can step forward to the boolean operations.
+\subsection {Boolean operations}
+When we do boolean operations on two trees, we care about the leaves since they show the boundary condition. For simplification, we turn the boolean operations on trees to the same operations on two corresponding nodes (corresponding means two nodes are at the same position of their congruent trees).
+Suppose $n_1$, $n_2$ are two corresponding elementary leaf nodes of $T_1$, $T_2$ for $P_1$, $P_2$ respectively. Each of them represents one of the five types: empty box (EMB), full box (FUB), vertex box (VB), edge box (EDB), face box (FAB). We have the following rules (left operand is of $n_1$, right operand is of $n_2$):
 
+\subsubsection{Empty boxes}
+\begin{itemize}
+\item $EMB \cup B^* = B^*$
+\item $EMB \cap B^* = EMB$
+\item $EMB - B^* = EMB$
+\item $B^* - EMB = B^*$
+\end{itemize}
 
+\subsubsection{Full boxes}
+\begin{itemize}
+\item $FUB \cup B^* = FUB$
+\item $FUB \cap B^* = B^*$
+\item $\left\{
+\begin{array}{l}
+FUB - FUB = EMB\\
+FUB - VB = VB\\
+FUB - EDB = EDB\\
+FUB - FAB = FAB\\
+FUB - EMB = FUB
+\end{array}
+\right.$
+\item $B^* - FUB = EMB$
+\end{itemize}
 
+\subsubsection{Vertex boxes}
+\begin{itemize}
+\item $VB_1 \cup VB_2$
+\\
+If $VB_1$ and $VB_2$ share the same vertex, the result is a vertex box. Otherwise the result is a non-elementary box which needs further subdivision.
 
-When $T_1$, $T_2$ are congruent.
-\begin{enumerate} 
-
-     
-	 \item Union
-
-
-
-
-		Boolean operations on two adequate subdivision trees $T_1 = AST (B_s, P_1)$ and $T_2 = AST(B_s, P_2)$ rooted at the same box $B_s$:\\ 
-		$T = M (BO, T_1, T_2)$ in which BO is a Boolean operation  and  $T_1$ and $T_2$ are adequate subdivision trees. The result of the function $M$ is an AS-Tree $T$.\\
-		%if $B_1 = B_2 = B_0$, $T$ is an adequate subdivision tree whose root points to $B _0$.
-		$BO$ are Boolean operations as union $(\cup)$ , intersection $(\cap)$  and difference $(-)$.\\
-		We also define:
-		\begin{itemize}
-			\item $T_1 \cup T_2 = M\ (\cup, T_1, T_2)$
-			\item $T_1 \cap T_2 = M\ (\cap, T_1, T_2)$
-			\item $T_1 - T_2 = M\ (-, T_1, T_2)$
-		\end{itemize}
-		
-		The result $T=AST(B_s, P_1$ $BO$ $P_2)$.
-			
-
-
-\end{enumerate}
-%--------------------------------------End of AS-Trees----------------------------------------------------------------
-	\begin{comment}
-	  \item Subdivision Rules of a box $B_0$ corresponding to a polyhedron $P$:
-		\begin{enumerate}
-			\item 
-			\item
-		\end{enumerate}
-	 \end{comment}
-
-%--------------------------------------Boolean Operations on EST-Nodes------------------------------------
-% Operations on EST-Nodes
-\begin{comment}
-\begin{enumerate} 
-	\item Boolean operation on an elementary box for two polyhedra $P_1$ and $P_2$
-	Suppose box $B_e$ is an elementary box for both $P_1$ and $P_2$. The result of the Boolean operation on an elementary box for two polyhedra $P_1$ and $P_2$ is an adequate subdivision tree. \\
-	We define a function $m$ as:
-		$T = m (BO, B_e, P_1, P_2)$ in which BO is a Boolean operation as $\cup$, $\cap$ and $-$, $P_1$ and $P_2$ are two polyhedra. The result of the function is an adequate subdivision tree.\\
-		What is more, we define a generalized function $m$ , when $BO$ is a complement, which is also a Boolean operation, one of the two polyhedron should be null ( because the complement $^c$ is a unary operator). Arbitrarily we define $P_2=Null$, then $T = m ( ^c, B_s, P_1)$. \\
-		$P_1$ and $P_2$ are commutative in this function.
-	
-		
-		\begin{enumerate}
-			\item 
-		\end{enumerate}
-			
-      \end{enumerate}
-\end{comment}
-
-\section{ Boolean operation two EST-Nodes $n(B_e,P_1)$ and $n(B_e,P_2)$}
-      \subsection {Union}
-      \begin{enumerate}
-     	\item  If  $B_e$  is an empty box for either $P_1$ or $P_2$ ( let us say $P_1$):\\
-$n(B_e,P_1) \cup n(b_e,P_2)=n(B_e,P_1\cup P_2)=n(B_e,P_2)$ 
-      	 \item If $B_e$ is a full box for either $P_1$ or $P_2$ ( let us say $P_1$):\\
-$n(B_e,P_1) \cup n(b_e,P_2)=n(B_e,P_1\cup P_2)=n(B_e,P_1)$ 
-	\item If $B_e$ is a face box for both $P_1$ and $P_2$:\\
-		\begin{enumerate}
-			\item 
-			\item
-			\item
-		\end{enumerate}
-
-\begin{comment}
-$T=m\ ( \cup, B_e, P_1, P_2)$  is a subdivision tree whose root points to  $B_e$ and has no children. $B_s$ is an elementary box for $P_1$.
-            \item  A polygon Box \& A polygon Box: 
-            \begin{enumerate}
-                  \item A polygon Box: if one half plane contains another (a belongs to b)
-                  \item A corner Box: if two segments crosses and the cross point lies within the Box (the intersection of a and b is not empty)
-
-                  \item {Not a simple Box: if there is no intersection between the two half planes, then the Box will be divided into 3 parts and finally we have to subdivide the Box until we get simple Boxes. ( a and b are disjoint)}
-            \end{enumerate}
-
-
-            \item  A polygon Box \& A corner Box: This is the union of several half planes. Let us say that the half space containing this polygon is p. And the corner c is the intersection of half spaces $s_1, s_2, ..., s_n$
-                  
-                  \begin{enumerate}
-                        \item if p passes through the end point of corner c:a corner box or a half plane 
-
-                        %not really sure
-                        
-                        \\if s contains $s_1$ and $s_2$: a segment Box, which contains s
-                        \item two cross points : s intersects $s_1$ or $s_2$ but not both, then based on the half plane s decides, the Box contains one or two corners. If it contains two corners, we have to subdivide the Box.
-                        \item three cross points : s intersects both $s_1$ and $s_2$, then based on the half plane s decides, the Box contains two or three corners. We have to subdivide the Box int small ones.
-                       
-
-                  \end{enumerate}
-
-            \item  A corner Box \& corner Box: Let us suppose that we have corner $c_1$ and $c_2$. $c_1$ is the intersection of half space $s_1, s_2, ..., s_n$, while $c_2$ is the intersection of half space $t_1, t_2, ..., s_n$. 
-\end{comment}
-
-
-            %not very sure
-            \begin{comment}
-            Then we have to compute the intersection of these segments. The algorithm is that we compute the union of $c_1$ and $t_1$ and subdivide the Box into smaller ones if necessary. And then subdivide the Box containing $t_2$ into smaller ones if necessary and compute the union of small Boxes. 
-            \\Finally, the computation of the union of two corners should be simplified to two union of a corner Box and a segment Box. 
-            
-
-\end{comment}
-
-      \end{enumerate}
+\item $VB \cup EDB$
+\end{itemize}
 %----------------------------------------------------------------------------------------
 
 \end{multicols}
