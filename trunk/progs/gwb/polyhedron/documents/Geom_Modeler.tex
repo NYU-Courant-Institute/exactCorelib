@@ -20,7 +20,7 @@
 
 \documentclass[twoside]{article}
 
-\usepackage{boxedminipage}
+
 \usepackage{lipsum} % Package to generate dummy text throughout this template
 
 \usepackage[sc]{mathpazo} % Use the Palatino font
@@ -59,6 +59,14 @@
 \usepackage{verbatim}
 \usepackage{tikz}
 \usepackage{pstricks}
+%----------------------------------------------------------------------------------------
+%	Zhongdi's 	Macro
+%----------------------------------------------------------------------------------------
+\usepackage{etex}
+\usepackage{amsmath}
+\usepackage{boxedminipage}
+\usepackage{cases}
+\usepackage{array}
 
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
@@ -311,6 +319,8 @@ The process of even up using BFS:
 
 Input: $T_1$, $T_2$ are two adequate subdivision trees for $P_1$, $P_2$ respectively and both rooted at $B_0$.
 \\
+Output: The modified $T_1$ and $T_2$ which are compatible.
+\\
 %\\
 %\indent
 %\ \ \ \ Color all nodes as initially \textbf{unseen}.
@@ -351,8 +361,94 @@ $Q_1$.enqueue($n_1$.children).
 \\ \indent \ \ \ \ \ \ \ \ 
 $Q_2$.enqueue($n_2$.children).
 \end{boxedminipage}
+\\
+\\
+\indent
+Using this algorithm we should pay attention that we supposed the algorithm would stop. Otherwise we may never get the two trees congruent.
+\\
+\newtheorem{lemma}{Lemma}
+\begin{lemma}
+Suppose $B^\prime$ is a subbox of $B$, $P$ is a polyhedron, $\Phi\ (B^\prime, P) \subseteq \Phi\ (B, P)$.
+\end{lemma}
+\textit{proof}. According to the definition of $\Phi\ (B, P)$:
+\\
+\indent
+$\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$.
+\\
+\\
+\indent Since $B^\prime$ is a subbox of $B$, we also have:
+\\
+\indent
+$
+    \left\{
+    \begin{array}{c}
+\Phi_0^\prime\ (B, P) \subseteq \Phi_0\ (B, P) \\
+\Phi_1^\prime\ (B, P) \subseteq \Phi_1\ (B, P) \\
+\Phi_2^\prime\ (B, P) \subseteq \Phi_2\ (B, P)
+    \end{array}
+    \right.
+$
+\\
+\\
+\indent
+Hence we get $\Phi\ (B^\prime, P) \subseteq \Phi\ (B, P)$.
+\\
+\\
+$Lemma$ 1 shows when a box gets smaller, the features has the trend to get less. We could extend it to
+\begin{lemma}
+Given a Box $B$ and a polyhedron $P$, we get its adequate subdivision tree in limited subdivisions.
+\end{lemma}
+\textit{proof}. We get its adequate subdivision tree, that is to say, we would get a state that all \textbf{leaf} subboxes of $B$ are elementary for $P$.
+\\
+\\
+We define $d(x,y)$ to be Euclidean distance between $x$ and $y$ ($x,y$ can be vertex, edge or face). Given a non-elementary subbox $B^\prime$ having features $\Phi\ (B^\prime, P)$ for $P$, we discuss the following 6 simplest cases ($P_3^2$):
+\\
+\\
+$\Phi\ (B^\prime, P)$ has (at least)
+		\begin{itemize}
+			\item two vertices $v_1$ and $v_2$, $v_1 \neq v_2$.\hfill (1)
+			\item two edges $e_1$ and $e_2$, $e_1 \cap e_2 \cap B^\prime = \emptyset$.\hfill (2)
+			\item two faces $f_1$ and $f_2$, $f_1 \cap f_2 \cap B^\prime = \emptyset$.\hfill (3)
+			\item a vertex $v$ and an edge $e$, $v \notin e \cap B^\prime$.\hfill (4)
+			\item a vertex $v$ and a face $f$, $v \notin f \cap B^\prime$.\hfill (5)
+			\item an edge $e$ and a face $f$, $e \cap f \cap B^\prime = \emptyset$.\hfill (6)
+		\end{itemize}
+
+We define $l(B)$ is the side length of $B$. Then the diameter of $B$ equals $\sqrt{3} * l(B)$.
+\\
+\\
+\indent To cases (1), (4) and (5), we simply keep subdividing $B^\prime$. Then we choose the biggest box $B_m^\prime$ of its leaf subboxes. When the following conditions hold, 
+\begin{itemize}
+\item $\sqrt{3} * l(B_m^\prime) < d(v_1,v_2)$ \hfill (1)
+\item $\sqrt{3} * l(B_m^\prime) < d(v,e)$ \hfill (4)
+\item $\sqrt{3} * l(B_m^\prime) < d(v,f)$ \hfill (5)
+\end{itemize}
+\indent We guarantee none of the leaf subboxes contains both features.
+\\
+\\
+\indent To cases (2), (3) and (6), the process is similar except we can't simply use the Euclidean distance between edges and faces since they may intersect outside the box $B^\prime$. First we compute the line segments of edges and polygons of faces cut by $B^\prime$, then similarly when
+ \begin{itemize}
+ \item $\sqrt{3} * l(B_m^\prime) < d(e_1\cap B^\prime,e_2\cap B^\prime)$ \hfill (2)
+ \item $\sqrt{3} * l(B_m^\prime) < d(f_1\cap B^\prime,f_2\cap B^\prime)$ \hfill (3)
+ \item $\sqrt{3} * l(B_m^\prime) < d(e\cap B^\prime,f\cap B^\prime)$ \hfill (6)
+ \end{itemize}
+ 
+\indent We split the features into two different subboxes.
+ \\
+ \\
+\indent Therefore we have proved that during subdivision we would split all the unrelated features into different subboxes. $Lemma$ 2 holds.
+\\
+\\
+\indent Furthermore, we consider using the process above to compute $\Phi\ (B^\prime, P_1) \cup \Phi\ (B^\prime, P_2)$. We would get an adequate subdivision tree $T_3$ for both $P_1$ and $P_2$. When we extend both $T_1$ and $T_2$ to $T_3$, we make them compatible. We proved
+
+\begin{lemma}
+Given a Box $B$, its adequate subdivision tree $T_1$ for polyhedron $P_1$ and adequate subdivision tree $T_2$ for polyhedron $P_2$, we even $T_1$ and $T_2$ up in limited steps.
+\end{lemma}
 
 
+
+
+When $T_1$, $T_2$ are congruent.
 \begin{enumerate} 
 
      
