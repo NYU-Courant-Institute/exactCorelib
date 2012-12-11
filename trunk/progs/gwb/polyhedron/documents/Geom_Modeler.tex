@@ -18,7 +18,7 @@
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
-\documentclass[twoside,twocolumn]{article}
+\documentclass[twoside]{article}
 
 
 \usepackage{lipsum} % Package to generate dummy text throughout this template
@@ -59,23 +59,6 @@
 \usepackage{verbatim}
 \usepackage{tikz}
 \usepackage{pstricks}
-\usepackage{etex}
-\usepackage{verbatim}
-\usepackage{tikz}
-\usepackage{pstricks}
-\usepackage{float}
-\floatstyle{boxed}
-\restylefloat{figure}
-\usepackage{graphicx}
-\usepackage{caption}
-\usepackage{subcaption}
-\usepackage{pst-plot}
-\usepackage{subcaption}
-\usepackage{pst-plot}
-\usepackage{pstricks}
-\usepackage{pst-node}
-\usepackage{pst-tree}
-\usepackage{pstricks-add}
 %----------------------------------------------------------------------------------------
 %	Zhongdi's 	Macro
 %----------------------------------------------------------------------------------------
@@ -123,7 +106,7 @@
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
 
-%\begin{multicols}{2} % Two-column layout throughout the main article text
+\begin{multicols}{2} % Two-column layout throughout the main article text
 
 \section{Introduction}
 \noindent In this paper, we focus on the geometric modeling of solids (especially polyhedra) in $\mathbb{R}^3$. The traditional definition of a polyhedron in $\mathbb{R}^3$ is the boolean union of half spaces (CSG).  The faces of a polyhedron P are the plains which bounds the half spaces. Meanwhile the edges are the intersection of two unparallel plains and the vertices are the intersection of three. Faces, edges and vertices constitute the features of a polyhedron. By CSG definition, these features are not obvious. To present them more efficiently and make them more operable, we keep subdividing a box $B_0$ containing P until the boundary features are kept in certain subboxes. Then we can compute the features by manipulating the subdivision tree instead. 
@@ -230,45 +213,6 @@ For a polyhedron $P \subset \mathbb{R}^3$, we use set V, E and F to represent it
 $\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$
 
 \subsection{Elementary Box}
-
-\begin{figure}[h!]
-        \centering
-        \begin{subfigure}[b]{0.2\textwidth}
-                \centering
-                \includegraphics[width=0.5\textwidth,natwidth=600,natheight=10]{emptybox.pdf}
-                \caption{Empty box}
-                \label{fig:empty}
-        \end{subfigure}%
-        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc. 
-          %(or a blank line to force the subfigure onto a new line)
-        \begin{subfigure}[b]{0.2\textwidth}
-                \centering
-                \includegraphics[width=0.5\textwidth,natwidth=600,natheight=10]{fullbox.pdf}
-                \caption{Full box}
-                \label{fig:full}
-        \end{subfigure}
-        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc. 
-          %(or a blank line to force the subfigure onto a new line)
-        \begin{subfigure}[b]{0.2\textwidth}
-                \centering
-                \includegraphics[width=0.5\textwidth,natwidth=600,natheight=10]{facebox.pdf}
-                \caption{Face box}
-                \label{fig:face}
-        \end{subfigure}
-        \begin{subfigure}[b]{0.2\textwidth}
-                \centering
-                \includegraphics[width=0.5\textwidth,natwidth=600,natheight=10]{edgebox.pdf}
-                \caption{Edge box}
-                \label{fig:edge}
-        \end{subfigure}%
-        \begin{subfigure}[b]{0.2\textwidth}
-                \centering
-                \includegraphics[width=0.5\textwidth,natwidth=600,natheight=10]{vertbox.pdf}
-                \caption{Vertex box}
-                \label{fig:vert}
-        \end{subfigure}%
-        \caption{Elementary boxes}\label{fig:elementary}
-\end{figure}
 %------------elementary boxes---------------------
 	We define a box $B$ to be \textbf{elementary box} for a polyhedron $P$ if one of the following conditions hold: 
 		\begin{enumerate} 
@@ -276,6 +220,7 @@ $\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$
            		\\
            		\\
            		Call $B$ an \textbf{empty box} for $P$.
+           		%\input{cube.tex}
            		\item $B \subseteq P$. 
            		\\
            		\\
@@ -305,7 +250,7 @@ $\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$
             			a box $B_e$ is a face box $\mathrm{iff}$ $V \cap B_e = \emptyset$, $E \cap B_e = \emptyset$ and there exists only one face $f \in F$, and $f \cap B_e \not= \emptyset$. 
             		\fi
                   \end{enumerate}
-                  
+   \indent If none of the above conditions holds, we call the box \textbf{mixed box}.
 \subsection{Definition}
 
 
@@ -336,16 +281,6 @@ $\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$
 \fi
 \end{enumerate}
 
-\subsection {Classification of elementary boxes}
-\iffalse
-\begin{enumerate}
-	\item {Face box $B$ for polyhedron $P$, the face $f\cap B\not=\emptyset$}
-		\begin{enumerate}
-			\item $f\cap P$ is a hexagon:
-			\input{cube.tex}
-		\end{enumerate}
-\end{enumerate}
-\fi
 \begin{comment}
 For a given box $B_s$ and a polyhedron $P$, we subdivide $B_s$ recursively and to each subbox $B$ we compute $\Phi^*\ (B, P)$. During the subdivision process, we get the \textbf{subdivision tree(S-Tree)} for $P$ rooted at $B_0$. A subdivision tree is an octree, in which each node keeps the info of $\Phi^*\ (B, P)$.\\
 
@@ -455,7 +390,7 @@ Given a Box $B$ and a polyhedron $P$, we get its adequate subdivision tree in li
 \textit{proof}. We get its adequate subdivision tree, that is to say, we would get a state that all \textbf{leaf} subboxes of $B$ are elementary for $P$.
 \\
 \\
-\indent We define $d(x,y)$ to be Euclidean distance between $x$ and $y$ ($x,y$ can be vertex, edge or face). Given a non-elementary subbox $B^\prime$ having features $\Phi\ (B^\prime, P)$ for $P$, we discuss the following 6 simplest cases:
+\indent We define $d(x,y)$ to be Euclidean distance between $x$ and $y$ ($x,y$ can be vertex, edge or face). Given a mixed subbox $B^\prime$ having features $\Phi\ (B^\prime, P)$ for $P$, we discuss the following 6 simplest cases:
 \\
 \\
 $\Phi\ (B^\prime, P)$ has (at least)
@@ -501,7 +436,10 @@ Given a Box $B$, its adequate subdivision tree $T_1$ for polyhedron $P_1$ and ad
 \indent Now we have two congruent adequate subdivision trees and then can step forward to the boolean operations.
 \subsection {Boolean operations}
 When we do boolean operations on two trees, we care about the leaves since they show the boundary condition. For simplification, we turn the boolean operations on trees to the same operations on two corresponding nodes (corresponding means two nodes are at the same position of their congruent trees).
-Suppose $n_1$, $n_2$ are two corresponding elementary leaf nodes of $T_1$, $T_2$ for $P_1$, $P_2$ respectively. Each of them represents one of the five types: empty box (EMB), full box (FUB), vertex box (VB), edge box (EDB), face box (FAB). We have the following rules (left operand is of $n_1$, right operand is of $n_2$):
+\\
+\\
+\indent
+Suppose $n_1$, $n_2$ are two corresponding elementary leaf nodes of $T_1$, $T_2$ for $P_1$, $P_2$ respectively. Each of them belongs to one of the five types: empty box (EMB), full box (FUB), vertex box (VB), edge box (EDB), face box (FAB). We have the following rules (left operand is of $n_1$, right operand is of $n_2$):
 
 \subsubsection{Empty boxes}
 \begin{itemize}
@@ -531,12 +469,98 @@ FUB - EMB = FUB
 \begin{itemize}
 \item $VB_1 \cup VB_2$
 \\
-If $VB_1$ and $VB_2$ share the same vertex, the result is a vertex box. Otherwise the result is a non-elementary box which needs further subdivision.
+If $VB_1$ and $VB_2$ share the same vertex, the result is a vertex box, otherwise the result is a mixed box (MB) which needs further subdivision.
 
 \item $VB \cup EDB$
+\\
+If $VB \cup P_1 \subset EDB \cup P_2$, the result is a edge box, else if $EDB \cup P_2 \subset VB \cup P_1$, the result is a vertex box, else if the vertex of $VB$ bounds the edge of $EDB$, the result is a vertex box, otherwise the result is a mixed box.
+
+\item $VB \cup FAB$
+\\
+If $VB \cup P_1 \subset FAB \cup P_2$, the result is a face box, else if $FAB \cup P_2 \subset VB \cup P_1$, the result is a vertex box, else if the vertex of $VB$ bounds the face of $FAB$, the result is a vertex box, otherwise the result is a mixed box.
+
+\item $VB_1 \cap VB_2$
+\\
+Todo
+
+\item $VB \cap EDB$
+\\
+Todo
+
+\item $VB \cap FAB$
+\\
+Todo
+
+\item $VB_1 - VB_2$
+\\
+Todo
+
+\item $VB - EDB$
+\\
+Todo
+
+\item $VB - FAB$
+\\
+Todo
+
+\item $EDB - VB$
+\\
+Todo
+
+\item $FAB - VB$
+\\
+Todo
+
+\end{itemize}
+
+\subsubsection{Edge boxes}
+\begin{itemize}
+\item $EDB_1 \cup EDB_2$
+\\
+Todo
+
+\item $EDB \cup FAB$
+\\
+Todo
+
+\item $EDB_1 \cap EDB_2$
+\\
+Todo
+
+\item $EDB \cap FAB$
+\\
+Todo
+
+\item $EDB_1 - EDB_2$
+\\
+Todo
+
+\item $EDB - FAB$
+\\
+Todo
+
+\item $FAB - EDB$
+\\
+Todo
+\end{itemize}
+
+\subsubsection{Edge boxes}
+\begin{itemize}
+\item $FAB \cup FAB$
+\\
+Todo
+
+\item $FAB \cap FAB$
+\\
+Todo
+
+\item $FAB - FAB$
+\\
+Todo
+
 \end{itemize}
 %----------------------------------------------------------------------------------------
 
-%\end{multicols}
+\end{multicols}
 
 \end{document}
