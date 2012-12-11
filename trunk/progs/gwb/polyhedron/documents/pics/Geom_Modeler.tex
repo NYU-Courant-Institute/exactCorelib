@@ -18,17 +18,17 @@
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
-\documentclass[twoside]{article}
+\documentclass[twoside,twocolumn]{article}
 
 \usepackage{lipsum} % Package to generate dummy text throughout this template
-
+\usepackage{graphicx}
 \usepackage[sc]{mathpazo} % Use the Palatino font
 \usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
 \linespread{1.05} % Line spacing - Palatino needs more space between lines
 \usepackage{microtype} % Slightly tweak font spacing for aesthetics
 
 \usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
-\usepackage{multicol} % Used for the two-column layout of the document
+%\usepackage{multicol} % Used for the two-column layout of the document
 \usepackage{hyperref} % For hyperlinks in the PDF
 
 \usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
@@ -44,20 +44,27 @@
 
 \usepackage{titlesec} % Allows customization of titles
 \titleformat{\section}[block]{\large\scshape\centering{\Roman{section}.}}{}{1em}{} % Change the look of the section titles 
-
+\usepackage{verbatim}
 \usepackage{fancyhdr} % Headers and footers
+\begin{comment}
 \pagestyle{fancy} % All pages have headers and footers
 \fancyhead{} % Blank out the default header
 \fancyfoot{} % Blank out the default footer
 \fancyhead[C]{ $\bullet$ November 2012 $\bullet$ } % Custom header text
 \fancyfoot[RO,LE]{\thepage} % Custom footer text
-
+\end{comment}
 %----------------------------------------------------------------------------------------
 %	Kai's 	Macro
 %----------------------------------------------------------------------------------------
 \usepackage{verbatim}
 \usepackage{tikz}
 \usepackage{pstricks}
+\usepackage{float}
+\floatstyle{boxed}
+\restylefloat{figure}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
@@ -95,16 +102,55 @@
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
 
-\begin{multicols}{2} % Two-column layout throughout the main article text
+%\begin{multicols}{2} % Two-column layout throughout the main article text%
+%\input{cube.tex}\\
+%\begin{comment}
+\begin{figure}
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth}
+                \centering
+					\input{tricube.tex}
+                \caption{1}
+                \label{fig:triangle}
+        \end{subfigure}
+		\begin{comment}
+        \begin{subfigure}[b]{0.3\textwidth}
+                \centering
+				\input{equitricube.tex}
+                \caption{2}
+                \label{fig:equitriangle}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc. 
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.3\textwidth}
+                \centering
+				\input{trapecube.tex}
+                \caption{3}
+                \label{fig:trape}
+        \end{subfigure}
+		\end{comment}
+        \caption{Face boxes}\label{fig:face}
+\end{figure}
+
+\begin{figure}
 \input{cube.tex}
-\input{tricube.tex}
+\end{figure}
+%\end{comment}
+
+
+%----------------------Facebox---------------------------
+
+
+%--------------------------------------------------------------
+
+\input{cube.tex}
 \input{equitricube.tex}
 \input{trapecube.tex}
 \input{parallelcube.tex}
 \input{rectcube.tex}
 \input{squarecube.tex}
 \input{pentacube.tex}
-\input{hexacube.tex}
+%\input{hexacube.tex}
 \input{examples/kai_octree.tex}
 \input{solidcube.tex}
 \input{firstsubcube.tex}
@@ -113,7 +159,13 @@
 \input{f2vbox.tex}
 \input{f2nbox.tex}
 \input{f3vbox.tex}
-\end{multicols}
+\input{fenbox.tex}
+\input{fe1ebox.tex}
+\input{fe2ebox.tex}
+\input{fe3ebox.tex}
+\input{e2nbox.tex}
 
-\end{document}
+%\end{multicols}
+
+
 

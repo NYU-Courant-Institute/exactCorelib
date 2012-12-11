@@ -1,4 +1,5 @@
 %basic definitions
+
 def O (0,0,0)
 def rotN 4
 def eye (10,4,10)
@@ -11,8 +12,22 @@ def axes {
     special |\uput[r]#1{$x$}\uput[u]#2{$y$}\uput[l]#3{$z$}|
       (sz,0,0)(0,sz,0)(0,0,sz)
   }
-def Norm [2,2,2]    
+def Norm [5,5,5]    
+def opacp3 0.3
+def opac1 1 
+def cubeopac opac1
+%---------------Faces------------------
+def ff{polygon[cull=false,fillcolor=red!100,opacity=0.3](1,1,1)(1,-1,1)(-1,-1,1)(-1,1,1)}
+def bf{polygon[cull=false,fillcolor=red!100,opacity=0.3](1,1,-1)(1,-1,-1)(-1,-1,-1)(-1,1,-1)}
+def lf{polygon[cull=false,fillcolor=red!100,opacity=0.3](-1,1,1)(-1,-1,1)(-1,-1,-1)(-1,1,-1)}
+def rf{polygon[cull=false,fillcolor=red!100,opacity=0.3](1,1,1)(1,-1,1)(1,-1,-1)(1,1,-1)}
+def uf{polygon[cull=false,fillcolor=red!100,opacity=0.3](1,1,1)(1,1,-1)(-1,1,-1)(-1,1,1)}
+def df{polygon[cull=false,fillcolor=red!100,opacity=0.3](1,-1,1)(1,-1,-1)(-1,-1,-1)(-1,-1,1)}
+%---------------Cube-------------------
 def cube {sweep[cull=false,opacity=0.7]{rotN<>,rotate(360/rotN,[0,1,0])}{line(1,1,1)(1,-1,1)}}
+def cube2 {{ff}{bf}{lf}{rf}{uf}{df}}
+def colorcube{{cube2}}
+%def colorcube {sweep[cull=false,opacity=0.7,color=red!100]{rotN<>,rotate(360/rotN,[0,1,0])}{line(1,1,1)(1,-1,1)}}
 def solidcube {sweep[cull=false,opacity=1]{rotN<>,rotate(360/rotN,[0,1,0])}{line(1,1,1)(1,-1,1)}}
 
 %--------------Triangle----------------
@@ -129,6 +144,12 @@ def second{{x2cut}{y2cut}{z2cut}}
 
 
 %-------------------------------------------------------------------Edge boxes--------------------------------------------------------
+def ebox{
+	polygon[cull=false,fillcolor=red!100,opacity=0.3](0,0,1)(0,0,-1)(1,0.5,-1)(1,0.5,1)
+	polygon[cull=false,fillcolor=green!100,opacity=0.3](0,0,1)(0,0,-1)(1,-0.5,-1)(1,-0.5,1)
+	line(0,0,1)(0,0,-1)
+	dots(0,0,1)(0,0,-1)
+}
 %-------------2 face cross an edge-----------------
 def f2e{
 	polygon[cull=false,fillcolor=red!100,opacity=0.3](-0.5,1,1)(-0.5,1,-1)(0.5,-1,-1)(0.5,-1,1)
@@ -148,6 +169,54 @@ def f2n {
 %	polygon[cull=false,fillcolor=red!100,opacity=0.3](1,1,1)(1,1,-1)(0,-1,1)
 %	polygon[cull=false,fillcolor=green!100,opacity=0.3](-1,1,1)(-1,1,-1)(0,-1,1)
 
+%-----------------------------------------------Face cross Edge boxes--------------------------------------------------------
+def fen{
+	polygon[cull=false,fillcolor=red!100,opacity=0.3](-0.5,1,1)(-0.5,1,-1)(0,-1,-1)(0,-1,1)
+	polygon[cull=false,fillcolor=green!100,opacity=1](-0.5,-1,1)(-0.5,-1,-1)(0.5,1,-1)(0.5,1,1)
+	polygon[cull=false,fillcolor=blue!100,opacity=0.3](0.5,-1,1)(0.5,-1,-1)(0.75,1,-1)(0.75,1,1)
+	line(-1.0/3,-1.0/3,1)(-1.0/3,-1.0/3,-1)
+}
+def fe1e{
+	polygon[cull=false,fillcolor=red!100,opacity=0.3](-0.5,1,1)(-0.5,1,-1)(1,-1,-1)(1,-1,1)
+	polygon[cull=false,fillcolor=green!100,opacity=1](-1,-1,1)(-1,-1,-1)(0,1,-1)(0,1,1)
+	polygon[cull=false,fillcolor=blue!100,opacity=0.3](0.5,-1,1)(0.5,-1,-1)(0.5,1,-1)(0.5,1,1)
+	line(-0.2,0.6,1)(-0.2,0.6,-1)
+	line(0.5,-1.0/3,1)(0.5,-1.0/3,-1)
+}
+def fe2e{
+	polygon[cull=false,fillcolor=red!100,opacity=0.3](-1,1,1)(-1,1,-1)(1,-1,-1)(1,-1,1)
+	polygon[cull=false,fillcolor=green!100,opacity=1](-1,-1,1)(-1,-1,-1)(1,1,-1)(1,1,1)
+	polygon[cull=false,fillcolor=blue!100,opacity=0.3](0.5,-1,1)(0.5,-1,-1)(0.5,1,-1)(0.5,1,1)
+	line(0,0,1)(0,0,-1)
+	line(0.5,0.5,1)(0.5,0.5,-1)
+	line(0.5,-0.5,1)(0.5,-0.5,-1)
+}
+def fe3e{
+	polygon[cull=false,fillcolor=red!100,opacity=0.3](-0.5,1,1)(-0.5,1,-1)(0.5,-1,-1)(0.5,-1,1)
+	polygon[cull=false,fillcolor=green!100,opacity=0.3](-0.5,-1,1)(-0.5,-1,-1)(0.5,1,-1)(0.5,1,1)
+	polygon[cull=false,fillcolor=blue!100,opacity=0.3](1,0,1)(1,0,-1)(-1,0,-1)(-1,0,1)
+	line(0,0,1)(0,0,-1)
+}
+
+%-------------------------------------------------Edge cross Edge boxes--------------------------------------------------------
+def e2n{
+	polygon[cull=false,fillcolor=red!100,opacity=0.3](-0.5,1,1)(-0.5,1,-1)(0,-1,-1)(0,-1,1)
+	polygon[cull=false,fillcolor=green!100,opacity=1](-0.5,-1,1)(-0.5,-1,-1)(0.5,1,-1)(0.5,1,1)
+	polygon[cull=false,fillcolor=blue!100,opacity=0.3](0.5,-1,1)(0.5,-1,-1)(0.75,1,-1)(0.75,1,1)
+	polygon[cull=false,fillcolor=brown!100,opacity=1](0.25,-1,1)(0.25,-1,-1)(1,0,-1)(1,0,1)
+	line(0,0,1)(0,0,-1)
+	line(11.0/20,-3.0/5,1)(11.0/20,-3.0/5,-1)
+}
+def e21e{
+	polygon[cull=false,fillcolor=red!100,opacity=0.3](-0.5,1,1)(-0.5,1,-1)(0,-1,-1)(0,-1,1)
+	polygon[cull=false,fillcolor=green!100,opacity=1](-0.5,-1,1)(-0.5,-1,-1)(0.5,1,-1)(0.5,1,1)
+	polygon[cull=false,fillcolor=blue!100,opacity=0.3](0.5,-1,1)(0.5,-1,-1)(0.75,1,-1)(0.75,1,1)
+	polygon[cull=false,fillcolor=brown!100,opacity=1](0.25,-1,1)(0.25,-1,-1)(1,0,-1)(1,0,1)
+	line(0,0,1)(0,0,-1)
+	line(11.0/20,-3.0/5,1)(11.0/20,-3.0/5,-1)
+}
+
+
 %-------------------------------------------------------------------Vertex boxes--------------------------------------------------------
 %-------------3 face cross a vertex-----------------
 def f3v{
@@ -159,7 +228,44 @@ def f3v{
 	line(0.5,1,0)(-0.5,-1,0)
 	dots(0,0,0)
 }
+def vert{
+	polygon[cull=false,fillcolor=red!100,opacity=0.3](0,1,1)(0,1,0)(0,0,0)(0,0,1)
+	polygon[cull=false,fillcolor=green!100,opacity=0.3](1,0,1)(1,0,0)(0,0,0)(0,0,1)
+	polygon[cull=false,fillcolor=blue!100,opacity=0.3](1,1,0)(1,0,0)(0,0,0)(0,1,0)
+	line(0,0,1)(0,0,0)
+	line(0,1,0)(0,0,0)
+	line(0,1,0)(0,0,0)
+	dots(0,0,0)
+}
 
+def vert2{
+sweep[cull=false,opacity=0.3,fillcolor=red!100]{rotN<>,rotate(360/rotN,[0,1,0])}{
+	line(0,0,0)(1,-1,0)
+}
+}
+
+%---------------Vertex Box----------------------------
+
+def vbox{
+	polygon[cull=false,fillcolor=red!100,opacity=0.3](0,0,1)(0,0,-1)(1,0.5,-1)(1,0.5,1)
+	polygon[cull=false,fillcolor=green!100,opacity=0.3](0,0,1)(0,0,-1)(1,-0.5,-1)(1,-0.5,1)
+	polygon[cull=false,fillcolor=blue!100,opacity=0.3](1,1,0)(1,-1,0)(-1,-1,0)(-1,1,0)
+	line(0,0,1)(0,0,-1)
+	dots(0,0,1)(0,0,-1)
+	line(0,0,1)(0,0,-1)
+	line(-0.5,1,0)(0.5,-1,0)
+	line(0.5,1,0)(-0.5,-1,0)
+	dots(0,0,0)
+}
+
+%---------------Subdivide a Vertex Box------------------
+def subvbox{
+	%-------Draw Subdivision planes-----------
+	polygon[cull=false,fillcolor=red!100,opacity=0.3](0,1,1)(0,1,-1)(0,-1,-1)(0,-1,1)
+	polygon[cull=false,fillcolor=green!100,opacity=0.3](1,0,1)(1,0,-1)(-1,0,-1)(-1,0,1)
+	polygon[cull=false,fillcolor=blue!100,opacity=0.3](1,1,0)(1,-1,0)(-1,-1,0)(-1,1,0)
+
+}
 
 
 

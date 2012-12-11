@@ -18,7 +18,7 @@
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
-\documentclass[twoside]{article}
+\documentclass[twoside,twocolumn]{article}
 
 
 \usepackage{lipsum} % Package to generate dummy text throughout this template
@@ -59,6 +59,23 @@
 \usepackage{verbatim}
 \usepackage{tikz}
 \usepackage{pstricks}
+\usepackage{etex}
+\usepackage{verbatim}
+\usepackage{tikz}
+\usepackage{pstricks}
+\usepackage{float}
+\floatstyle{boxed}
+\restylefloat{figure}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{pst-plot}
+\usepackage{subcaption}
+\usepackage{pst-plot}
+\usepackage{pstricks}
+\usepackage{pst-node}
+\usepackage{pst-tree}
+\usepackage{pstricks-add}
 %----------------------------------------------------------------------------------------
 %	Zhongdi's 	Macro
 %----------------------------------------------------------------------------------------
@@ -106,7 +123,7 @@
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
 
-\begin{multicols}{2} % Two-column layout throughout the main article text
+%\begin{multicols}{2} % Two-column layout throughout the main article text
 
 \section{Introduction}
 \noindent In this paper, we focus on the geometric modeling of solids (especially polyhedra) in $\mathbb{R}^3$. The traditional definition of a polyhedron in $\mathbb{R}^3$ is the boolean union of half spaces (CSG).  The faces of a polyhedron P are the plains which bounds the half spaces. Meanwhile the edges are the intersection of two unparallel plains and the vertices are the intersection of three. Faces, edges and vertices constitute the features of a polyhedron. By CSG definition, these features are not obvious. To present them more efficiently and make them more operable, we keep subdividing a box $B_0$ containing P until the boundary features are kept in certain subboxes. Then we can compute the features by manipulating the subdivision tree instead. 
@@ -213,6 +230,45 @@ For a polyhedron $P \subset \mathbb{R}^3$, we use set V, E and F to represent it
 $\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$
 
 \subsection{Elementary Box}
+
+\begin{figure}[h!]
+        \centering
+        \begin{subfigure}[b]{0.2\textwidth}
+                \centering
+                \includegraphics[width=0.5\textwidth,natwidth=600,natheight=10]{emptybox.pdf}
+                \caption{Empty box}
+                \label{fig:empty}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc. 
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.2\textwidth}
+                \centering
+                \includegraphics[width=0.5\textwidth,natwidth=600,natheight=10]{fullbox.pdf}
+                \caption{Full box}
+                \label{fig:full}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc. 
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.2\textwidth}
+                \centering
+                \includegraphics[width=0.5\textwidth,natwidth=600,natheight=10]{facebox.pdf}
+                \caption{Face box}
+                \label{fig:face}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.2\textwidth}
+                \centering
+                \includegraphics[width=0.5\textwidth,natwidth=600,natheight=10]{edgebox.pdf}
+                \caption{Edge box}
+                \label{fig:edge}
+        \end{subfigure}%
+        \begin{subfigure}[b]{0.2\textwidth}
+                \centering
+                \includegraphics[width=0.5\textwidth,natwidth=600,natheight=10]{vertbox.pdf}
+                \caption{Vertex box}
+                \label{fig:vert}
+        \end{subfigure}%
+        \caption{Elementary boxes}\label{fig:elementary}
+\end{figure}
 %------------elementary boxes---------------------
 	We define a box $B$ to be \textbf{elementary box} for a polyhedron $P$ if one of the following conditions hold: 
 		\begin{enumerate} 
@@ -481,6 +537,6 @@ If $VB_1$ and $VB_2$ share the same vertex, the result is a vertex box. Otherwis
 \end{itemize}
 %----------------------------------------------------------------------------------------
 
-\end{multicols}
+%\end{multicols}
 
 \end{document}
