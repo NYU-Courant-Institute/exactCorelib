@@ -1,0 +1,17 @@
+README
+
+This directory is for student projects with Core Library.
+
+Please work in your own directories only.
+
+Make sure that every directory has a "Makefile" with these targets:
+
+	> make		-- the default target will compile the programs
+	> make test	-- to test your programs
+	> make help	-- give some help on running your programs
+
+Include a README file in your directory giving details about your project
+	and conclusion.  Give your name and contact information there.
+
+Feel free to explore other projects and other sample programs
+	under progs (if you find any program not compiling,
