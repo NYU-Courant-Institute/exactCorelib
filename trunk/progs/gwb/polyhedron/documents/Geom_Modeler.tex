@@ -135,7 +135,7 @@ We describe a polyhedron as three sets : $(V, E, F)$. $V$ represents the set of 
 
   \item $A \cup^* B = \overline{int (A \cup B)}$
   \item $A \cap^* B = \overline{int (A \cap B)}$
-  \item $A -^* B = \overline{int (A - B)}$
+  \item $A \setminus^* B = \overline{int (A \setminus B)}$
   \item $A^{c*} B = \overline{int (A^c)}$
  \end{itemize}
 
@@ -166,6 +166,8 @@ A polyhedron is limited by the intersection of half spaces.
 %------------------------------------------------
 
 \section {Subdivision tree}
+
+Subdivision tree is an octree which is very efficient to maintain the features of a polyhedron in a hierarchical structure.
 
 \subsection {Box}
             	$B$ is a \textbf{box} $\mathrm{if}$ $B \subset \mathbb{R}^3$, $B=\{ (x,y,z)|x_1\le x\le x_2, y_1\le y\le y_2, z_1\le z\le z_2\}$, or simplified as $B=([x_1,x_2],[y_1,y_2],[z_1,z_2])$, which is a regularized subset of $\mathbb{R}^3$.
@@ -198,23 +200,24 @@ Suppose $B=([x_1,x_2],[y_1,y_2],[z_1,z_2])$, let $\bar{x} = \frac {x_1+x_2}{2}$,
 	
 \subsection {Features}
 
-For a polyhedron $P \subset \mathbb{R}^3$, we use set V, E and F to represent its vertices, edges and faces respectively. The \textbf{features} $\Phi(P) = (V, E, F)$.\\
-\\
-\indent Then we define the features of a box $B$ corresponding to polyhedron $P$ as follows:
+For a polyhedron $P \subset \mathbb{R}^3$, we use the sets V, E and F to represent its vertices, edges and faces respectively. Let
 
 \begin{itemize}
 %-------------feature function-----------------------
-	\item $\Phi_0(B, P)= B\cap V$
-	\item $\Phi_1(B, P)=\{\ e\ |\ e \in E,\ e \cap B \not= \emptyset\}$
-	\item $\Phi_2(B, P)=\{\ f\ |\ f \in F,\ f \cap B \not= \emptyset\}$
-	\newline
+	\item $\Phi_0(P):=V$
+	\item $\Phi_1(P):=E$
+	\item $\Phi_2(P):=F$
+	\\
+	\\ and
+	\item $\Phi(P):=\displaystyle\mathop{\cup}_{i=1}^2\Phi_i(P)$
 \end{itemize}
 
-$\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$
+Elements in $\Phi(P)$ are called \textbf{features}. Also let $\Phi_i(P,B)$ denote the set $\{f\in\Phi_i(p): f\cup B\neq \emptyset\ and\ \Phi_i(P,B)=\displaystyle\mathop{\cup}_{i=1}^2\Phi_i(P,B)\}$
+
 
 \subsection{Elementary Box}
 %------------elementary boxes---------------------
-	We define a box $B$ to be \textbf{elementary box} for a polyhedron $P$ if one of the following conditions hold: 
+	We call a box $B$ to be \textbf{elementary} for a polyhedron $P$ if one of the following conditions hold: 
 		\begin{enumerate} 
            		\item $B\cap P=\emptyset$. 
            		\\
@@ -251,57 +254,35 @@ $\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$
             		\fi
                   \end{enumerate}
    \indent If none of the above conditions holds, we call the box \textbf{mixed box}.
-\subsection{Definition}
-
+\subsection{Adequate subdivision tree}
 
 \begin{enumerate}
 %subdivision tree
-	\item A \textbf{subdivision tree} is a tree where each interior node has degree 8 (Octree) and each node $u$ is associated with a box $u.box$ st. if $u_0,...,u_7$ are the children of $u$. Then $\{u.Box: i = 0..7\}$ is the split of $u.box$.
-	\item An \textbf{adequate} subdivision tree of a box $B_0$ for a polyhedron $P$ is a subdivision tree rooted at $B_0$, in which all leaves are associated with elementary boxes for $P$.\\
+	\item A \textbf{subdivision tree} is a tree where each interior node has degree 8 (octree) and each node $u$ is associated with a box $u.box$ such that if $u_0,\ldots,u_7$ are the children of $u$. Then $\{u.box: i = 0,\ldots,7\}$ is the split of $u.box$.
+	\item An \textbf{adequate} subdivision tree for a box $B_0$ and a polyhedron $P$ is a subdivision tree rooted at $B_0$, in which all leaves are associated with elementary boxes for $P$.\\
 
-\iffalse
-%subdivision tree node
-	\item : A \textbf {subdivision tree node} has the following information:
-		\begin{itemize}
-			\item Pointer to the parent of $n$: $pp$
-			\item Pointers to the eight children of node $n$: $p_i ( i=0,1,2, \ldots, 7)$ 
-			\item The box $B$
-			\item  $\Phi^*\ (B, P)$
-		\end{itemize}
-	%\indent We represent the Subdivision Tree box $B$ and polyhedron $P$ as $n(B,P)$.\\
-	\indent If $B$ is an Elementary Box for $P$ in node $n(B,P)$, then $n(B,P)$ is called an \textbf{Elementary Subdivision Tree Node (EST-Node)}. 
-	\indent Subdivision on a Subdivision Tree Node $n(B,P)$ is defined as :
-		\begin{enumerate}
-			\item Subdivide box $B$ into 8 subboxes $(B_0, B_1,\ldots ,B_7)$
-			\item Compute $\Phi^*(B_i, P)$\\$(i=0,1,2,\ldots,7)$
-			\item Construct eight ST-Nodes $n(B_i,P)$ and set each $pp$ of $n(B_i,P)$ point to $B$
-			\item Set $p_i$ of $n(B,P)$ point to $n(B_i,P)\ (i=0,1,2,\ldots,7)$
-
-		\end{enumerate}
-\fi
 \end{enumerate}
-
-\begin{comment}
-For a given box $B_s$ and a polyhedron $P$, we subdivide $B_s$ recursively and to each subbox $B$ we compute $\Phi^*\ (B, P)$. During the subdivision process, we get the \textbf{subdivision tree(S-Tree)} for $P$ rooted at $B_0$. A subdivision tree is an octree, in which each node keeps the info of $\Phi^*\ (B, P)$.\\
-
-
-\indent The \textbf{adequate subdivision tree(AS-Tree)} $T$ of box $B_0$ for polyhedron $P$ is a subdivision tree in which each leave of $T$ represents an elementary box for the polyhedron $P$.
-\\
-
-\indent We define $T = ASD (B_0, P)$. in which SD is a function on a  box $B$ and a polyhedron $P$ \end{comment}
 
 %-----------------Boolean Operation on AS-Trees--------------------------------------------------------------      	
 \section{Boolean Operations on subdivision trees}
-To compute the features of the union, intersection or difference of two polyhedra. We could compute the boolean operations on their subdivision trees.
-\subsection {Even up two trees}
+Suppose we already have $\Phi(P,B)$ and $\Phi(P^\prime,B)$ for two polyhedra $P$, $P^\prime$. We now address the question of computing $\Phi(Q,B)$ where $Q$ is the union or intersection of $P$ and $P^\prime$.
+
+\subsection {Make two trees compatible}
 \indent
 Give box $B_0$ and polyhedron $P_1$, $P_2$. We have two adequate subdivision trees $T_1$ for $P_1$, $T_2$ for $P_2$. 
 \\
 \\
 \indent
+\iffalse
 Before we do the boolean operation on $T_1$, $T_2$, it's necessary to make them congruent, which means $\forall$ node $n_1$ in $T_1$, $\exists$ $n_2$ in $T_2$ st. $n_1.box = n_2.box$, $\forall$ node $n_2$ in $T_2$, $\exists$ $n_1$ in $T_1$ st. $n_2.box = n_1.box$. We name this process \textbf{even up}.
+\fi
 
-The process of even up using BFS:
+\indent We say $T_1$, $T_2$ are congruent if they are isomorphic. Our approach is to organize $\Phi(B,P)$ using a subdivision tree that is adequate for $B$ and $P$.
+
+
+
+
+The process of \textbf{Make Compatible}($T_1,T_2$) using BFS:
 \\
 \\
 \begin{boxedminipage}{.47\textwidth}
@@ -318,7 +299,7 @@ $n_1 \leftarrow T_1.root$.
 \\ \indent \ \ \ \ 
 $n_2 \leftarrow T_2.root$.
 \\ \indent \ \ \ \ 
-insert $n_1$ into queue $Q_1$, $n_1$ into queue $Q_2$.
+insert $n_1$ into queue $Q_1$, $n_2$ into queue $Q_2$.
 \\ \indent \ \ \ \ 
 while $Q_1 \neq \emptyset$ and $Q_2 \neq \emptyset$ do:
 \\ \indent \ \ \ \ \ \ \ \ 
@@ -334,17 +315,13 @@ then
 \\ \indent \ \ \ \ \ \ \ \ \ \ \ \ 
 continue.
 \\ \indent \ \ \ \ \ \ \ \ 
-if ($n_1$.children = $\emptyset$) then
+if ($n_1$ is a leaf) then
 \\ \indent \ \ \ \ \ \ \ \ \ \ \ \ 
-$n_1$.children $\leftarrow n_1$.split().
-\\ \indent \ \ \ \ \ \ \ \ \ \ \ \ 
-$T_1$.attach($n_1$.children, $n_1$).
+$T_1$.expand($n_1$).
 \\ \indent \ \ \ \ \ \ \ \ 
-elif ($n_2$.children = $\emptyset$) then
+elif ($n_2$ is a leaf) then
 \\ \indent \ \ \ \ \ \ \ \ \ \ \ \ 
-$n_2$.children $\leftarrow n_2$.split().
-\\ \indent \ \ \ \ \ \ \ \ \ \ \ \ 
-$T_2$.attach($n_2$.children, $n_2$).
+$T_2$.expand($n_1$).
 \\ \indent \ \ \ \ \ \ \ \ 
 $Q_1$.enqueue($n_1$.children).
 \\ \indent \ \ \ \ \ \ \ \ 
@@ -353,44 +330,18 @@ $Q_2$.enqueue($n_2$.children).
 \\
 \\
 \indent
-Using this algorithm we should pay attention that we supposed the algorithm would stop. Otherwise we may never get the two trees congruent.
+Note that the termination of this algorithm is obvious.
 \\
+Observe that suppose $B^\prime$ is a subbox of $B$, $P$ is a polyhedron, $\Phi\ (B^\prime, P) \subseteq \Phi\ (B, P)$.
 \newtheorem{lemma}{Lemma}
 \begin{lemma}
-Suppose $B^\prime$ is a subbox of $B$, $P$ is a polyhedron, $\Phi\ (B^\prime, P) \subseteq \Phi\ (B, P)$.
-\end{lemma}
-\textit{proof}. According to the definition of $\Phi\ (B, P)$:
-\\
-\indent
-$\Phi\ (B, P) = ( \Phi_0\ (B, P), \Phi_1\ (B, P), \Phi_2\ (B, P) )$.
-\\
-\\
-\indent Since $B^\prime$ is a subbox of $B$, we also have:
-\\
-\indent
-$
-    \left\{
-    \begin{array}{c}
-\Phi_0^\prime\ (B, P) \subseteq \Phi_0\ (B, P) \\
-\Phi_1^\prime\ (B, P) \subseteq \Phi_1\ (B, P) \\
-\Phi_2^\prime\ (B, P) \subseteq \Phi_2\ (B, P)
-    \end{array}
-    \right.
-$
-\\
-\\
-\indent
-Hence we get $\Phi\ (B^\prime, P) \subseteq \Phi\ (B, P)$.
-\\
-\\
-$Lemma$ 1 shows when a box gets smaller, the features has the trend to get less. We could extend it to
-\begin{lemma}
-Given a Box $B$ and a polyhedron $P$, we get its adequate subdivision tree in limited subdivisions.
+Given a box $B$ and a polyhedron $P$, we get its adequate subdivision tree in limited subdivisions.
 \end{lemma}
 \textit{proof}. We get its adequate subdivision tree, that is to say, we would get a state that all \textbf{leaf} subboxes of $B$ are elementary for $P$.
 \\
 \\
-\indent We define $d(x,y)$ to be Euclidean distance between $x$ and $y$ ($x,y$ can be vertex, edge or face). Given a mixed subbox $B^\prime$ having features $\Phi\ (B^\prime, P)$ for $P$, we discuss the following 6 simplest cases:
+\indent We define $d(x,y)$ to be Euclidean distance between $x$ and $y$ ($x,y$ can be vertex, edge or face). Given a subbox $B^\prime$.
+\iffalse we discuss the following 6 simplest cases:
 \\
 \\
 $\Phi\ (B^\prime, P)$ has (at least)
@@ -423,6 +374,7 @@ We define $l(B)$ is the side length of $B$. Then the diameter of $B$ equals $\sq
  \end{itemize}
  
 \indent We split the features into two different subboxes.
+ \fi
  \\
  \\
 \indent Therefore we have proved that during subdivision we would split all the unrelated features into different subboxes. $Lemma$ 2 holds.
