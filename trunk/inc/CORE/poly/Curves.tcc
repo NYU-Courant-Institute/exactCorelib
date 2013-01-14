@@ -732,7 +732,7 @@ Polynomial<NT> BiPoly<NT>::getCoeff(int i) const{
 ////
 ////  (3) eval2 -- using the second order mean value form
 ////
-////  		f(I,J) = f(mx,my + fx(mx,my).I' + fy(mx,my).J'
+////  		f(I,J) = f(mx,my) + fx(mx,my).I' + fy(mx,my).J'
 ////  			 + fxx(I,J).I'^2  + fyy(I,J).J'^2  + 2.fxy(I,J).I'.J'
 ////
 ////		THIS VERSION HAS QUADRATIC CONVERGENCE!
@@ -741,6 +741,12 @@ Polynomial<NT> BiPoly<NT>::getCoeff(int i) const{
 ////
 ////		eval2(f, I, J) = eval0(f, mx, my) + eval1(fx, I, J).I' + eval1(fy, I, J).J'.
 ////
+////  (4) eval3 -- successive slope form; also has quadratic convergence. 
+////		The polynomial f(x,y) can be expressed as 
+////			f(x,y) = f(x,b) + g(x,y)(y-b)
+////		where g(x,y) is the slope function treating f(x,y) \in \ZZ[x][y]. The interval version
+////		is obtained as
+////		eval3(f, I, J) = eval1(f(x, my), I) + eval(g, I, J)*(J-my)
 ////////////////////////////////////////////////////
 //
 
@@ -805,6 +811,32 @@ IntervalT<T> BiPoly<NT>::eval2 (const IntervalT<T> &x, const IntervalT<T> &y) co
   return (f_m + fx_term + fy_term);
 }
 
+	// eval3 for Interval implementation only
+template <class NT> template <class T>
+IntervalT<T> BiPoly<NT>::eval3 (const IntervalT<T> &x, const IntervalT<T> &y) const {
+	// f(y) = f(m) + (y-m) * g(y).
+	// If g(y) = \sum_{i=0}^{n-1} b_i y^i and f(y) = \sum_{i=0}^n a_i y^i then
+	// a_n = b_{n-1}, a_{n-1} = b_{n-2}-mb_{n-1}, a_{n-2} = b_{n-3} -mb_{n-1}, ..., a_1 = b_0 - mb_1, a_0 = f(m)-mb_0
+	unsigned int n = ydeg;
+	const T ymid =y.mid();
+	
+	BiPoly<T> g(n-1);
+	g.setCoeff(n-1, coeffX[n]);
+	for (int i=n-1; i > 0; i--) {
+		g.setCoeff(i-1, coeffX[i] + g.getCoeff(i).mulScalar(ymid));
+	}
+	
+		// P is the univariate polynomial in X obtain by evaluating (*this) at ymid
+	Polynomial<T> P((*this).getXdegree());
+	P = coeffX[n];
+	for(int i = n - 1; i >= 0 ; --i){
+		P.mulScalar(ymid);
+		P += coeffX[i];
+    }
+	
+	return P.evalCF(x)+(y-IntervalT<T>(ymid))*g.eval(x,y);		
+	
+}
   //eval(x,y)
 template <class NT>
 Expr BiPoly<NT>::eval(Expr x, Expr y){//Evaluate the polynomial at (x,y)

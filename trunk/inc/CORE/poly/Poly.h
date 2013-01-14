@@ -6,6 +6,10 @@
 #include <string>
 #include <iostream>
 
+// NOTE: This IntervalT.h is  used in evalH and evalCF method(see below)
+//	Vikram, Sept. 2012
+#include "CORE/IntervalT.h"
+
 CORE_BEGIN_NAMESPACE
 
 /// \class Polynomial Poly.h
@@ -1040,6 +1044,50 @@ T eval(const T& x) const {	// evaluation
   return val;
 }//eval
 
+///Evaluation: Assumes that the interval type is the same
+///type as the coefficients.
+// Horner's rule based interval evaluation scheme
+template<typename T>
+IntervalT<T> evalH(const IntervalT<T> & x) const {	// interval evaluation
+	int deg = degree();
+	if (deg == -1)
+		return IntervalT<T>(0);
+	if (deg == 0)
+		return IntervalT<T>(coeff()[0]);
+
+	IntervalT<T> val(coeff()[deg]);
+	for (int i = deg-1; i>=0; i--) {
+		val *= x;
+		val += IntervalT<T>(coeff()[i]);	
+	}
+	return val;
+		
+}//evalH
+	
+///Evaluation: Assumes that the interval type is the same
+///type as the coefficients.
+// Centered form based interval evaluation scheme
+template<typename T>
+IntervalT<T> evalCF(const IntervalT<T> & x) const {	// interval evaluation
+	int deg = degree();
+	if (deg == -1)
+		return IntervalT<T>(0);
+	if (deg == 0)
+		return IntervalT<T>(coeff()[0]);
+	T xmid = x.mid();
+	
+	Polynomial<T> tmp(deg-1);
+	tmp.coeff()[deg-1] = (*this).coeff()[deg];
+	for (int i=deg-1; i>0; i--) {
+		tmp.coeff()[i-1] = (*this).coeff()[i]+xmid*tmp.coeff()[i];
+	}
+	
+	IntervalT<T> val = IntervalT<T>( (*this).eval(xmid))+(x-IntervalT<T>(xmid))*tmp.evalH(x);
+	
+	return val;
+		
+	}//eval
+	
 template<typename T>
 int evalSign(const T& f) {
   int deg = getTrueDegree();

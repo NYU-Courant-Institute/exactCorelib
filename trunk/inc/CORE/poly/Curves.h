@@ -142,7 +142,7 @@ class Monomial{
 }; // Monomial Class
 
 
-//Class of Bivariate polynomials
+//	Class of Bivariate polynomials
 //	Viewed as a polynomial in Y with
 //	coefficients which are polynomials in X
 template <class NT>
@@ -312,7 +312,7 @@ class BiPoly{
 ////
 ////  (2) eval1 -- using the mean value form
 ////
-////  		f(I,J) = f(mx,my + fx(I,J).I' + fy(I,J).J'
+////  		f(I,J) = f(mx,my) + fx(I,J).I' + fy(I,J).J'
 ////
 ////  		where m(I)=mx,  m(J)=my, I' = I-mx,  J' = J-my
 ////
@@ -330,7 +330,15 @@ class BiPoly{
 ////		We can rewrite eval2 in terms of eval1 and eval0:
 ////
 ////		eval2(f, I, J) = eval0(f, mx, my) + eval1(fx, I, J).I' + eval1(fy, I, J).J'.
-
+////
+////  (3) eval3 -- using the slop form (see Stahl's thesis)
+////
+////  		f(I,J) = f(mx,my) + (I-mx)*eval(g(x)) + (Y-my)*eval0(h(I,J)).
+////        This is based upon the slope form of a function: F(y) = F(my) + (Y-my)*G(y),
+////        where G(y) is the slope function. 
+////		THIS VERSION ALSO HAS QUADRATIC CONVERGENCE!
+////		
+	
 
   // templated eval(also known as eval0)
   // assume NT \subseteq T 
@@ -349,6 +357,9 @@ class BiPoly{
   template < class T >
   IntervalT<T> eval2( const IntervalT<T> &x, const IntervalT<T> &y ) const;
   
+  template < class T >
+  IntervalT<T> eval3( const IntervalT<T> &x, const IntervalT<T> &y ) const;
+
   // operator version of eval
   template< class T >
     T operator() ( const T &x, const T &y ) const { return eval( x, y ); } 
@@ -444,9 +455,10 @@ class BiPoly{
   //Needed to calculate resultant wrt X.
   BiPoly<NT> & convertXpoly();
 
-  //Set Coeffecient to the polynomial passed as a parameter
   Polynomial<NT> getCoeffY( int i ) const;
   Polynomial<NT>& getCoeffY( int i );
+  
+  //Set Coeffecient to the polynomial passed as a parameter
   bool setCoeff(int i, Polynomial<NT> p);
 
   void reverse();
