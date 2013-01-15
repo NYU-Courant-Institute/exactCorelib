@@ -85,6 +85,9 @@ public:
   const bool zero() const {
     return (left_ <= 0) && (right_ >= 0);
   }
+  
+  enum SignCondition {_ZERO, _POS, _NEG, _UNKNOWN}; 
+  
   // Return a sign condition (_ZERO, _POS, _NEG, _UNKNOWN):
   const SignCondition sign() const {
     if (left_ <= 0) {
