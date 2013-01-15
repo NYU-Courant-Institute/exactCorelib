@@ -146,13 +146,13 @@ int main(int argc, char **argv) {
     return -1;
   }
   
-  if((f_xy.getValue() != 0) && (g_xy.getValue() != 0)) {
-    fxy_str = f_xy.getValue();
+  if(!(f_xy.getValue()).empty() && !(g_xy.getValue()).empty()) {
+	fxy_str = f_xy.getValue();
     gxy_str = g_xy.getValue();
-    fxy = fxy.getbipoly(fxy_str);
+	fxy = fxy.getbipoly(fxy_str);
     gxy = gxy.getbipoly(gxy_str);
   }
-  else if(Poly.getValue() != 0) {
+  else if(!(Poly.getValue()).empty()) {
     benchmark::GetBiPoly(Poly.getValue().c_str(), &fxy, &gxy);
   }
   else {
@@ -160,6 +160,7 @@ int main(int argc, char **argv) {
     return -1;
   }
 
+	
   x_min = x_minimum.getValue();
   x_max = x_maximum.getValue();
   y_min = y_minimum.getValue();
@@ -178,6 +179,7 @@ int main(int argc, char **argv) {
   // start time
   gettimeofday(&start, NULL);
   
+cout << "Starting Algorithm"<<endl;
   // get the algorithm running
   MKPredicates<DT,NT> *const pred = 
       new MKPredicates<DT,NT>(fxy, gxy, min_size, max_size, max_gen);
