@@ -376,6 +376,7 @@ int BiPoly<NT>::getterm(string s, BiPoly<NT> & P){
   }
   unsigned int ind, oind;
   const char* cstr =s.c_str();
+
   string t;
   //P will be used to accumulate the product of basic terms.
   ind = getbasicterm(s, P);
@@ -395,14 +396,14 @@ int BiPoly<NT>::getterm(string s, BiPoly<NT> & P){
                                      //t
     P *= R;
   }
-
+	
   return ind;
 }
 
 template <class NT>
 BiPoly<NT> BiPoly<NT>::getbipoly(string s){
-
-    //Remove white spaces from the string
+	
+	//Remove white spaces from the string
     unsigned int cnt=s.find(' ',0);
     while(cnt < s.length()){
       s.erase(cnt, 1);
@@ -441,21 +442,23 @@ BiPoly<NT> BiPoly<NT>::getbipoly(string s){
       P.mulScalar(negone);
     }else{
       ind = getterm(s, P);
-    }
+	}
 
     unsigned int oind =0;//the string between oind and ind is a term
-    while(ind != len -1){
+    while(ind != len -1)
+	{
       BiPoly<NT> R;
       t = s.substr(ind + 2, len -ind -2);
       oind = ind;
       ind = oind + 2 + getterm(t, R);
+		
       if(cstr[oind + 1] == '+')
-	P += R;
+		  P += R;
       else if(cstr[oind + 1] == '-')
-	P -= R;
+		  P -= R;
       else
-	std::cout << "ERROR IN PARSING BIPOLY! " << std::endl;
-    }
+		  std::cout << "ERROR IN PARSING BIPOLY! " << std::endl;		
+	}
 
     return P;
 }
@@ -533,20 +536,25 @@ std::string BiPoly<NT>::toString(char xvar, char yvar) {
 			else // c has degree at least 1
 				oss << " + (" << c.toString(xvar) << ")" << yvar; }
 	  	}// linear term if d>1
-	  if (d > 0) { // process constant term, but only if d>0
+	  if (d > 0) 
+		{ // process constant term, but only if d>0
 	  	  c = getCoeff(0); // constant term
-	   	  if (c != Polynomial<NT>().Zero()) {
-			if (c.getTrueDegree() == 0) {
-				cc = c.getCoeff(0);
-				if (cc > 0) oss << " + " << cc;
-				else { // cc < 0
-					cc *= NT(-1);
-					oss << " - " << cc; } }
-			else  // c has degree at least 1
-	  			oss << " + (" << c.toString(xvar) << ")"; }
-		  }// constant term if d>0
+			  // if (!zeroP(c)) {		  
+			if (c != Polynomial<NT>().Zero()) {
+				if (c.getTrueDegree() == 0) {
+					cc = c.getCoeff(0);
+					if (cc > 0) oss << " + " << cc;
+					else { // cc < 0
+						cc *= NT(-1);
+						oss << " - " << cc; } }
+				else  // c has degree at least 1
+					oss << " + (" << c.toString(xvar) << ")"; }
+		}// constant term if d>0
+
 	  s=oss.str();
+
 	  return s;
+	
 	}//toString(BiPoly,x,y)
 
 
@@ -908,11 +916,12 @@ std::ostream& operator<<(std::ostream& o, BiPoly<NT>& p) {
 	o << "0" << std::endl;
   } else {
 	int i=0;
-	while (p.coeffX[i++].getTrueDegree() == -1);
-	if (i > 0) o << "y^" << i;
-	o << "(" << p.coeffX[i++].toString() << ")";
-	for (; i<= d; i++)
-		o << " + y^" << i << "(" << p.coeffX[i].toString() << ")";
+		  //	while (p.coeffX[i++].getTrueDegree() == -1); // This is pushing the index one more than necessary; e.g., if i=0 then we start from 1
+	  while (zeroP(p.coeffX[i])) i++;
+	  if (i > 0) o << "y^" << i; // We are not outputing the constant coefficient -- Vikram Jan 2013
+	o << "(" << p.coeffX[i].toString() << ")";
+	for (int j=i+1; j<= d; j++)
+		o << " + y^" << j << "(" << p.coeffX[j].toString() << ")";
   }
 /*
   o <<   "BiPoly<NT> ( deg = " << d ;
