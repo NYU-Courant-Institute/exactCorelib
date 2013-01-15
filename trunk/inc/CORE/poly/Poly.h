@@ -350,11 +350,14 @@ public:
   int getTrueDegree() const {
     int i = getDegree();
     //while (i>=0 && sign(coeff()[i]) == 0) --i;
-    	NT c = coeff()[i];
+	  if(i >= 0) // The commented line above is correct. We need to check before the while loop whether i >= 0. Vikram Jan 2013
+	  {
+		  NT c = coeff()[i];// This will not work if i=-1. Vikram Jan 2013
     	while (i>=0 && sign(c) == 0) {
 	    --i;
 	    c = coeff()[i];
-	}
+		}
+	  }
     return i;
   }
 
@@ -1422,8 +1425,11 @@ Polynomial<NT> differentiate(const Polynomial<NT> & p, int n) {//multi-different
 template <class NT>
 inline 
 bool operator==(const Polynomial<NT>& p, const Polynomial<NT>& q) {	// ==
+
   int d = p.getTrueDegree();
+	
   if (d != q.getTrueDegree()) return false;	// not equal degree
+	
   if (d == -1) return true;			// zero polynomial
   // ASSERT(d >= 0)
   for (int i = 0; i <= d; i++)
