@@ -146,7 +146,9 @@ int main(int argc, char **argv) {
     return -1;
   }
   
-  if(!(f_xy.getValue()).empty() && !(g_xy.getValue()).empty()) {
+	std::cout << "Reading poly " << Poly.getValue()<< endl;
+
+  if(!(f_xy.getValue()).empty() && !(g_xy.getValue()).empty() && (Poly.getValue()).empty()) {
 	fxy_str = f_xy.getValue();
     gxy_str = g_xy.getValue();
 	fxy = fxy.getbipoly(fxy_str);
