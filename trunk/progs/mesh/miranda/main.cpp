@@ -118,9 +118,8 @@ int main(int argc, char **argv) {
   DT min_size = 0.0001;
   DT max_size = 0.01;
   int max_gen = 15;
-  string fxy_str = "y - (x-1)^2 - 1";	// default fxy
-  // string gxy_str = "x - 1";		// default gxy
-  string gxy_str = "x^2 + y^2 - 4";	// default gxy
+  string fxy_str = "y - (x-1)^2 - 1"; // default fxy
+  string gxy_str = "x^2 + y^2 - 4";	  // default gxy
   poly fxy;
   poly gxy;
 
@@ -147,24 +146,25 @@ int main(int argc, char **argv) {
   }
 cout << "after tclap" << endl;
 
-  if((f_xy.getValue() != 0) && (g_xy.getValue() != 0)) {
-cout << "inside getValue !=0 " << endl;
+  if((f_xy.getValue() != 0) && (g_xy.getValue() != 0)) 
+  {
+    cout << "inside getValue !=0 " << endl;
     fxy_str = f_xy.getValue();
     gxy_str = g_xy.getValue();
     fxy = fxy.getbipoly(fxy_str);
     gxy = gxy.getbipoly(gxy_str);
   }
   else if(Poly.getValue() != 0) {
-cout << "before GetBiPoly.Poly.getValue " << endl;
+    cout << "before GetBiPoly.Poly.getValue " << endl;
     benchmark::GetBiPoly(Poly.getValue().c_str(), &fxy, &gxy);
-cout << "after GetBiPoly.Poly.getValue " << endl;
+    cout << "after GetBiPoly.Poly.getValue " << endl;
   }
   else {
     cout << "you should either specify a file name or provide 2 bipolynomials!" << endl;
     return -1;
   }
 
-cout << "after fxy" << endl;
+  cout << "after fxy" << endl;
 
   x_min = x_minimum.getValue();
   x_max = x_maximum.getValue();
@@ -181,15 +181,14 @@ cout << "after fxy" << endl;
 
   struct timeval start;
   struct timeval end;
+  
   // start time
   gettimeofday(&start, NULL);
   
   // get the algorithm running
-  MKPredicates<DT,NT> *const pred = 
-      new MKPredicates<DT,NT>(fxy, gxy, min_size, max_size, max_gen);
+  MKPredicates<DT,NT> *const pred = new MKPredicates<DT,NT>(fxy, gxy, min_size, max_size, max_gen);
 
-  Algorithm::Run<DT,NT>(*pred, box, 
-      &output, &ambiguous, &exclude);
+  Algorithm::Run<DT,NT>(*pred, box, &output, &ambiguous, &exclude);
 
   // end time
   gettimeofday(&end, NULL);

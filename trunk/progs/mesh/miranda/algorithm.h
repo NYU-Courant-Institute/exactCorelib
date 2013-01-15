@@ -21,6 +21,7 @@
  * Author: Shang Wang, July 17, 2011
  *
  * Since Core 2.1.
+ *
 ************************************************** */
 
 #ifndef MK_ALGORITHM_H_
