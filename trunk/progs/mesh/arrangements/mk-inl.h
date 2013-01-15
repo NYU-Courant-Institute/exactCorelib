@@ -72,8 +72,8 @@ public:
     // o not in f(B) \/ 0 not in g(B)
     const IntervalNT &x_range = box->x_range;
     const IntervalNT &y_range = box->y_range;
-    IntervalNT c_f = fxy_.eval2(x_range, y_range);
-    IntervalNT c_g = gxy_.eval2(x_range, y_range);
+    IntervalNT c_f = fxy_.eval3(x_range, y_range);
+    IntervalNT c_g = gxy_.eval3(x_range, y_range);
     if(!c_f.zero() || !c_g.zero()) 
       return true;
     else
