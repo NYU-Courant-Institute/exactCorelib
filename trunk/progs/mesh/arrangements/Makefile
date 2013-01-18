@@ -101,6 +101,18 @@ eg10: ${TARGETS}
 eg11: ${TARGETS}
 	./mk --poly data/chebyshev20.pol \
     --x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+
+eg12: ${TARGETS}
+	./mk --poly data/wilk20.pol \
+    --x_min -30 --x_max 30 --y_min -30 --y_max 30 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+
+eg13: ${TARGETS}
+	./mk --poly data/laguerre4.pol \
+    --x_min -30 --x_max 30 --y_min -30 --y_max 30 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+
+eg13: ${TARGETS}
+	./mk --poly data/laguerre5.pol \
+    --x_min -30 --x_max 30 --y_min -30 --y_max 30 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 	
 
 

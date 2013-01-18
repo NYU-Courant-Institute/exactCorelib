@@ -50,12 +50,17 @@ namespace Algorithm {
 
     // main process queue
     vector<const Box *> Q_tmp;
-    // Jacobian queue
+
+	// Jacobian queue
     vector<const Box *> Q_confirm;
-    // here we make a final queue for refinement processing
+    
+	// here we make a final queue for refinement processing
     // it is only used when we find a box that passes MK test(a.k.a root box)
     // we will make a Rootbox structure to hold vaious useful information
     vector<RootBox *> Q_final;
+	   
+	   
+	int mk_ret;// Used to store the return value of MK-test
 
     if(!pred.Exclude(initial)) { // current box fails C0
       Q_tmp.push_back(initial);
@@ -68,7 +73,7 @@ namespace Algorithm {
     while(!Q_tmp.empty()) { 
       const Box *current = Q_tmp.back();
       Q_tmp.pop_back();
-      // (current box)X2 passes the Jacobian test
+      // (current box)*2 passes the Jacobian test
       const Box *double_current = current->Dilate(2);
       if(pred.JTest(double_current)) {
         Q_confirm.push_back(current);  // wait for further confirmation
@@ -82,17 +87,19 @@ namespace Algorithm {
       while(!Q_confirm.empty()) {
         const Box *box = Q_confirm.back();
         Q_confirm.pop_back();
-        // box too small
-        if(pred.Min(box)) {
+			  //box too small
+		/*if(pred.Min(box)) {
           Q_ambiguous->push_back(box);
           continue;
-        }
-        // also do MK test on (box)X2
+        }*/
+        // also do MK test on (box)*2
         const Box *double_box = box->Dilate(2);
-        if(pred.MKTest(double_box)) {
+		mk_ret = pred.MKTest(double_box);
+		if(mk_ret == 1) {// MK-test succeeded
+
           // already found a root box, put it in Q_final queue for refinement
-          // rootbox creation based on double_box's demension
-          Q_final.push_back(new RootBox(double_box)); 
+          // rootbox creation based on double_box's dimension
+		  Q_final.push_back(new RootBox(box, double_box)); // Why do we push dilated box?
           Q_exclude->insert(Q_exclude->end(), Q_confirm.begin(), Q_confirm.end());
           Q_confirm.clear();  // include area already found in region, clean Q_confirm
           // both box and double_box can be deleted because the constructor of RootBox 
@@ -100,8 +107,10 @@ namespace Algorithm {
           delete box;
           delete double_box; 
           break;
-        }
-        else {
+        }else if (mk_ret == 0) {// MK-test detected an exclusion box
+			Q_exclude->push_back(box);
+		}
+        else {// MK-test failed
           pred.Split_Exclude(box, &Q_confirm, Q_exclude);
           delete double_box;
         }
@@ -112,40 +121,45 @@ namespace Algorithm {
     // the next step would be to refine root boxes until they are strongly isolated 
     // and place them into Q_output for display, and we are also cleaning
     // boxes in Q_final. In the end, Q_final should be empty
-    while(!Q_final.empty()) {
-      RootBox *current = Q_final.back();
-      Q_final.pop_back();
-      // fail to make the inner box strongly isolated
-      // for now just put it back to Q_output???????
-      if(!current->StrongIsol(pred)) {
-        Q_output->push_back(current);
-        continue;
-      }
-      else {
-        // succeeded in making the root box strongly isolated
-        // (all boxes in Q_output are the inner boxes for RootBoxes
-        // because the Q_output has type of Box not RootBox)
-        
-        // this flag is to check whether a joint case happens. if found = true,
-        // we can discard "current", because all boxes in Q_output are strongly isolated,
-        // thus we can be sure that "current" contains the same root as the joint one, and
-        // we can discard "current"
-        bool found = false;
-        for(unsigned int i = 0; i != Q_output->size(); i++) {
-          if(!current->Disjoint(Q_output->at(i)->innerBox_)) { // not disjoint, discard current
-            delete current;
-            found = true;
-            break;
-          }
-        }
-        if(!found) { // gone though all elements in Q_output, still not found
-          Q_output->push_back(current);
-        }
-      }
 
-    } // (Q_final)
+	// Vikram: Why do we need to do strong root isolation? Since the 
+	// sign of the jacobian is the same on overlaping boxes, we 
+	// only have to output one box from a set of overlapping 
+	// boxes corresponding to a root.
+	typename std::vector <RootBox *>::iterator new_end;
+	vector <RootBox *> Q_temp;
+	RootBox *current;
+	/*	
+	std::cout <<"Printing Final Queue"<<std::endl;
+	for (unsigned int i=0; i<Q_final.size(); i++) {
+		std::cout<< (*Q_final[i]) << std::endl;
+	}
+	std::cout <<"Clearing Final Queue"<<std::endl;
+	*/
+	while(!Q_final.empty()) {
+		current = Q_final.back();
+		Q_final.pop_back();
+	//std::cout << " current box = "<< (*current) << std::endl;
+		for (unsigned int i=0; i<Q_final.size(); i++) {
+			if (current->Disjoint(Q_final[i])) {
+				Q_temp.push_back(Q_final[i]);
+			}
+		}
 
+	//	for (unsigned int i=0; i<Q_temp.size(); i++) {
+	//		std::cout<< (*Q_temp[i]) << std::endl;
+	//	}
+		
+			// Search if any other box in Q_final overlaps with current.
+			// Discard any such box.
+			// It will help to start with smaller boxes first, but now
+			// we do a starightforward quadratic time algorithm
+		Q_output->push_back(current);
+		Q_final=Q_temp;
+		Q_temp.clear();				
+	} // (Q_final)
   }//Run
 }  // end of namespace algorithm
 
 #endif
+

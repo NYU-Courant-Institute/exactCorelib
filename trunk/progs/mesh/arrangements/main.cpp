@@ -181,7 +181,7 @@ int main(int argc, char **argv) {
   // start time
   gettimeofday(&start, NULL);
   
-cout << "Starting Algorithm"<<endl;
+  cout << "Starting Algorithm"<<endl;
   // get the algorithm running
   MKPredicates<DT,NT> *const pred = 
       new MKPredicates<DT,NT>(fxy, gxy, min_size, max_size, max_gen);
@@ -197,7 +197,6 @@ cout << "Starting Algorithm"<<endl;
   cout << "Polynomial gxy = " << gxy.toString() << endl;
 
   unsigned int num_includes = output.size();      // statistic collections
-  cout << endl << "Output regions: " << endl;
 
   cout << endl << "Output regions: " << endl;
   for(unsigned int i = 0; i < output.size(); i++) {
@@ -229,7 +228,7 @@ cout << "Starting Algorithm"<<endl;
   cout << "output regions: " << num_includes << endl;
   cout << "ambiguous regions: " << num_ambiguous << endl; 
   cout << "exclusion regions: " << num_excludes << endl; 
-  cout << "maximum generation: " << largest_gen << endl;
+  cout << "maximum subdivision depth: " << largest_gen << endl;
   cout << endl;
 
   // display preparation

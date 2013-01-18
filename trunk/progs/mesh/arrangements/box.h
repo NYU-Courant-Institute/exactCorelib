@@ -59,4 +59,9 @@ public:
   const IntervalT<NT> y_range;
 };
 
+template <typename NT>
+inline std::ostream& operator<<(std::ostream& o, const BoxT<NT>& B) {
+	o << B.x_range << " * "<< B.y_range;
+	return o;	
+}
 #endif /* BOX_H_ */

@@ -69,14 +69,22 @@ public:
   // This is essentially the C0 test for F=(f, g) on a box B
   // uses centered form to achieve quadratic convergence 
   bool Exclude(const Box *box) const {
-    // o not in f(B) \/ 0 not in g(B)
+    // zero not in f(B) or 0 not in g(B)
+	// This would be invoked for most boxes and hence
+	// we need a very tight implementation of interval evaluation
+	//std::cout << (*box) << std::endl;
     const IntervalNT &x_range = box->x_range;
     const IntervalNT &y_range = box->y_range;
-    IntervalNT c_f = fxy_.eval3(x_range, y_range);
+	IntervalNT c_f = fxy_.eval3(x_range, y_range);// Faster than eval2
     IntervalNT c_g = gxy_.eval3(x_range, y_range);
-    if(!c_f.zero() || !c_g.zero()) 
-      return true;
-    else
+	if(!c_f.zero() || !c_g.zero()){ 
+	//	std::cout << sign(c_f.getL()) << " , "<< sign(c_f.getR()) 
+	//				<< std:: endl;
+	//	std::cout << sign(c_g.getL()) << " , "<< sign(c_g.getR()) 
+	//	<< std:: endl;
+
+		return true;
+    }else
       return false;
   }
 
@@ -86,6 +94,7 @@ public:
   bool JTest(const Box *box) const {
    const IntervalNT &x_range = box->x_range;
    const IntervalNT &y_range = box->y_range;
+	// Becomes slower if we switch from eval to eval3 
    IntervalNT a = jacobian_(0, 0).eval<IntervalDT>(x_range, y_range);
    IntervalNT b = jacobian_(0, 1).eval<IntervalDT>(x_range, y_range);
    IntervalNT c = jacobian_(1, 0).eval<IntervalDT>(x_range, y_range);
@@ -99,115 +108,124 @@ public:
 
   // MK test  (MK stands for Moore-Kioustelides)
   //    Given a box B, it returns true iff MK(B) holds.
-  bool MKTest(const Box *box) const {
-    const IntervalNT &x_range = box->x_range;
-    const IntervalNT &y_range = box->y_range;
-    const NT &x_l = x_range.getL();
-    const NT &x_r = x_range.getR();
-    const NT &y_l = y_range.getL();
-    const NT &y_r = y_range.getR();
-    const NT &x_mid = x_range.mid();
-    const NT &y_mid = y_range.mid();
-    // width of the box on x and y directions
-    const NT &w_x   = x_range.getR() - x_mid;
-    const NT &w_y   = y_range.getR() - y_mid;
+int MKTest(const Box *box) const {
+	const IntervalNT &x_range = box->x_range;
+	const IntervalNT &y_range = box->y_range;
+	const NT &x_l = x_range.getL();
+	const NT &x_r = x_range.getR();
+	const NT &y_l = y_range.getL();
+	const NT &y_r = y_range.getR();
+	const NT &x_mid = x_range.mid();
+	const NT &y_mid = y_range.mid();
+	
+	NT j00, j01, j10, j11;
+		// evaluate at center of the box
+	j00 = jacobian_(0, 0).eval<NT>(x_mid, y_mid);
+	j01 = jacobian_(0, 1).eval<NT>(x_mid, y_mid);
+	j10 = jacobian_(1, 0).eval<NT>(x_mid, y_mid);
+	j11 = jacobian_(1, 1).eval<NT>(x_mid, y_mid);
+	NT det = j00*j11 - j01*j10;
+	// if det = 0, fail
+//	out << "Inside MK-test sign of det at center = "<< sign(det)<< std::endl;
+//	if(det == 0) {// This cannot be possible since Jacobian test passed
+			//cout << "sign = 0" << endl;
+//		return -1;
+//	}
+//	std::cout<<"Box  " << x_range << " * " << y_range << " "<<std::endl;
+	
+	
+	// F, G is the system obtained after pre-conditioning
+	// that is, multiplying by the inverse of the Jacobian at midpoint.
+	// Note that we have not divided by the determinant.
+	BiPoly<DT> F, G, tmp1(fxy_), tmp2(gxy_), tmp3(fxy_), tmp4(gxy_);
+	
+	// Somehow, mulScalar for BiPoly is causing compilation error
+	for (int i = 0; i<=tmp1.getYdegree() ; i++)
+		tmp1.coeffX[i].mulScalar(j11);
+	for (int i = 0; i<=tmp2.getYdegree() ; i++)
+		tmp2.coeffX[i].mulScalar(j01);
+	for (int i = 0; i<=tmp3.getYdegree() ; i++)
+		tmp3.coeffX[i].mulScalar(j10);
+	for (int i = 0; i<=tmp4.getYdegree() ; i++)
+		tmp4.coeffX[i].mulScalar(j00);
 
-    MatrixT<NT> j_center(2); // JF(m(B))
-    int sign = JSign(&j_center, box);
-    // if det = 0, fail
-    if(sign == 0) {
-//cout << "sign = 0" << endl;
-      return false;
-    }
-    /*================== MK prediate No.1 ================*/
-    /*       
-              +x2
-           _________
-          |    |    |       a = fx(m)   b = fy(m)
-      -x1 |____|____| +x1   
-          |    |    |       c = gx(m)   d = gy(m)
-          |____|____|
-              -x2
-    */
-    NT f_left_cen  = fxy_.eval<DT>(x_l, y_mid); // f(m(-x1))
-    NT g_left_cen  = gxy_.eval<DT>(x_l, y_mid); // g(m(-x1))
-    NT f_right_cen = fxy_.eval<DT>(x_r, y_mid); // f(m(+x1))
-    NT g_right_cen = gxy_.eval<DT>(x_r, y_mid); // g(m(+x1))
+	F = tmp1 - tmp2;
+	G = tmp4 - tmp3;
+	
+//	std::cout << "F = "<< F.toString() << std::endl;
+//	std::cout << "G = "<< G.toString() << std::endl;
+	
+	// These are the univariate polynomials corresponding to the boundaries
+/*	Polynomial<NT> f_l = F.yPolynomial(x_l);
+	Polynomial<NT> f_r = F.yPolynomial(x_r);
+	Polynomial<NT> g_l = G.xPolynomial(y_l);
+	Polynomial<NT> g_r = G.xPolynomial(y_r);
 
-    // ^f- = d*f(m(-x1)) - b*g(m(-x1))
-    NT f_left  = j_center(1, 1)*f_left_cen -
-      j_center(0, 1)*g_left_cen;
-    // ^f+ = d*f(m(+x1)) - b*g(m(+x1))
-    NT f_right = j_center(1, 1)*f_right_cen -
-      j_center(0, 1)*g_right_cen;
+*/	
+	// FILTER: Check if f_l or f_r changes sign on y_range,
+	// or f_l and f_r have the same sign on y_range;
+	// similarly check if  g_l, g_r change sign on x_range.
+	// If so then we do not need to do interval evaluation.
+	NT f_ltop = sign(F.eval(x_l, y_r));
+	NT f_lbot = sign(F.eval(x_l, y_l));
+	NT f_rtop = sign(F.eval(x_r, y_r));
+	NT f_rbot = sign(F.eval(x_r, y_l));
+	
+//	std::cout << "fltop flbot frtop frbot = "<< f_ltop <<" " 
+//				<< f_lbot<< " " << f_rtop << " "<< f_rbot<< std::endl;
+	if (f_ltop * f_lbot <= 0 || // f_l changes sign on y_range
+		f_rtop * f_rbot <= 0 || // f_r changes sign on y_range
+		f_ltop * f_rtop >=0) {  // f_l and f_r have same sign at corners
+		return false;
+	}
 
-    NT f_down_cen = fxy_.eval<DT>(x_mid, y_l);  // f(m(-x2))
-    NT g_down_cen = gxy_.eval<DT>(x_mid, y_l);  // g(m(-x2))
-    NT f_up_cen   = fxy_.eval<DT>(x_mid, y_r);  // f(m(+x2))
-    NT g_up_cen   = gxy_.eval<DT>(x_mid, y_r);  // g(m(+x2))
+	NT g_ltop = sign(G.eval(x_r, y_l));
+	NT g_lbot = sign(G.eval(x_l, y_l));
+	NT g_rtop = sign(G.eval(x_r, y_r));
+	NT g_rbot = sign(G.eval(x_l, y_r));
 
-    // ^g- = a*g(m(-x2)) - c*f(m(-x2))
-    NT g_left = j_center(0, 0)*g_down_cen - 
-      j_center(1, 0)*f_down_cen;
-    // ^g+ = a*g(m(+x2)) - c*f(m(+x2))
-    NT g_right = j_center(0, 0)*g_up_cen - 
-      j_center(1, 0)*f_up_cen;
+//	std::cout << "gltop glbot grtop grbot = "<< g_ltop<< " " 
+//	<< g_lbot <<" " << g_rtop << " "<< g_rbot<< std::endl;
 
-    // print debug information
-    if(debug_) {
-      cout << "^f- = " << f_left << endl;
-      cout << "^f+ = " << f_right << endl;
-      cout << "^g- = " << g_left << endl;
-      cout << "^g+ = " << g_right << endl;
-    }
-    // ^f- and ^f+ same sign || ^g- and ^g+ same sign
-    if((f_left * f_right >= 0) || (g_left * g_right >= 0))
-      return false;
+	if (g_ltop * g_lbot <= 0 || // g_l changes sign on y_range
+		g_rtop * g_rbot <= 0 ||	// g_r changes sign on y_range
+		g_ltop * g_rtop >=0  ) {// g_l and g_r have same sign at corners
+		return false;
+	}
+	// END OF FILTER
+	
+	// Evaluate F, G at the boundaries: F on the left and right
+	// boundaries, and G on the top and bottom.
+	IntervalNT I_l = F.eval3(IntervalNT(x_l), y_range);
+	IntervalNT I_r = F.eval3(IntervalNT(x_r), y_range);
+	IntervalNT I_u = G.eval3(x_range, IntervalNT(y_l));
+	IntervalNT I_d = G.eval3(x_range, IntervalNT(y_r));
 
-    /*================== MK prediate No.2 ================*/
 
-    IntervalNT fy_l = jacobian_(0, 1).eval<IntervalDT>(
-      IntervalNT(x_l), y_range);  // fy(-x1)
-    IntervalNT gy_l = jacobian_(1, 1).eval<IntervalDT>(
-      IntervalNT(x_l), y_range);  // gy(-x1)
-    // ^fy(-x1) = d*fy(-x1) - b*gy(-x1)
-    IntervalNT fy_left = fy_l*j_center(1, 1) - gy_l*j_center(0, 1);
+/*	std::cout << "Il Ir Id Iu = "<< sign(I_l.getR()) << " " 
+	<< sign(I_r.getR()) << " " << sign(I_d.getR()) 
+	<< " "<< sign(I_u.getR())<< std::endl;
+*/
+	if (!I_l.zero() && !I_r.zero() && !I_d.zero() && !I_u.zero()) {
+//		std::cout << "Boundaries have fixed sign "<< std::endl;
+		
+		if (sign(I_l.getR()) *sign(I_r.getR()) < 0 &&
+			sign(I_d.getR()) *sign(I_u.getR()) < 0 )  {
+//			std::cout <<" MK Test successful " << std::endl;
+				return 1;
+		}else if (sign(I_l.getR()) *sign(I_r.getR()) < 0 &&
+				  sign(I_d.getR()) *sign(I_u.getR()) > 0) {
+			return 0;
+		} else if (sign(I_l.getR()) *sign(I_r.getR()) > 0 &&
+				   sign(I_d.getR()) *sign(I_u.getR()) < 0) {
+			return 0;	
+		}else {
+			return -1;
+		}
+	}
+	return -1;
 
-    IntervalNT fy_r = jacobian_(0, 1).eval<IntervalDT>(
-      IntervalNT(x_r), y_range);  // fy(+x1)
-    IntervalNT gy_r = jacobian_(1, 1).eval<IntervalDT>(
-      IntervalNT(x_r), y_range);  // gy(+x1)
-    // ^fy(+x1) = d*fy(+x1) - b*gy(+x1)
-    IntervalNT fy_right = fy_r*j_center(1, 1) - gy_r*j_center(0, 1);
-
-    IntervalNT gx_l = jacobian_(1, 0).eval<IntervalDT>(
-      x_range, IntervalNT(y_l));  // gx(-x2)
-    IntervalNT fx_l = jacobian_(0, 0).eval<IntervalDT>(
-      x_range, IntervalNT(y_l));  // fx(-x2)
-    // ^gx(-x1) = a*gx(-x2) - c*fx(-x2)
-    IntervalNT gx_left = gx_l*j_center(0, 0) - fx_l*j_center(1, 0);
-
-    IntervalNT gx_r = jacobian_(1, 0).eval<IntervalDT>(
-      x_range, IntervalNT(y_r));  // gx(+x2)
-    IntervalNT fx_r = jacobian_(0, 0).eval<IntervalDT>(
-      x_range, IntervalNT(y_r));  // gx(+x2)
-    // ^gx(+x1) = a*gx(+x2) - c*fx(+x2)
-    IntervalNT gx_right = gx_r*j_center(0, 0) - fx_r*j_center(1, 0);
-    
-    if(debug_) {
-      cout << "mag(^fy(-x1)) = " << Mag(fy_left) << endl;
-      cout << "mag(^fy(+x1)) = " << Mag(fy_right) << endl;
-      cout << "mag(^gx(-x1)) = " << Mag(gx_left) << endl;
-      cout << "mag(^gx(+x1)) = " << Mag(gx_right) << endl;
-    }
-
-    if((absolute(f_left)  <= Mag(fy_left)*w_x)  ||
-       (absolute(f_right) <= Mag(fy_right)*w_x) || 
-       (absolute(g_left)  <= Mag(gx_left)*w_y)  || 
-       (absolute(g_right) <= Mag(gx_right)*w_y)  )
-      return false;
-    return true;
-  }
+}
 
   // compute JF(m(B)), m(B) is the center of box, and return the sign of det(JF(m(B)))
   int JSign(MatrixT<NT> *output,
@@ -285,9 +303,10 @@ public:
     // statistic collection only
     extern unsigned int largest_gen;
     const unsigned int gen_id = region->generation_id + 1;
-    if(largest_gen < gen_id)
-      largest_gen = gen_id;
-
+	if(largest_gen < gen_id){
+		largest_gen = gen_id;
+//		std::cout << "Depth Updated" << largest_gen << std::endl;
+	}
     queue->push_back(new Box(gen_id, 
       IntervalDT(x_start, x_mid), IntervalDT(y_start, y_mid)));
     queue->push_back(new Box(gen_id, 
@@ -300,8 +319,8 @@ public:
   }
 
   /// Split_Exclude(Box B, Queue Q, Queue ExcludeQ)
-  ///   Splits B into 4 children, and push each child into Q if it fails C0 test
-  ///	and push into ExcludeQ if C0 holds.
+  ///   Splits B into 4 children, and push each child into Q if it fails 
+  //	C0 test	and push into ExcludeQ if C0 holds.
   void Split_Exclude(const Box *region,
     vector<const Box *> *queue,
     vector<const Box *> *exclude) const {

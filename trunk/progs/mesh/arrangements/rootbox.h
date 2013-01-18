@@ -56,6 +56,18 @@ public:
       outerBox_ = new BoxT<DT>(gen_id, xRange, yRange);
   }
 
+	// Constructor from a pair of inner box and outer box
+	RootBoxT(const BoxT<DT> *IB, const BoxT<DT> *OB) : 
+    strongIsolFlag_(false),
+    failRefineFlag_(false) {
+		unsigned int gen_id = IB->generation_id;
+		const IntervalT<DT> &xRange = IB->x_range;
+		const IntervalT<DT> &yRange = IB->y_range;
+		innerBox_ = new BoxT<DT>(gen_id, xRange, yRange);
+		const IntervalT<DT> &xxRange = OB->x_range;
+		const IntervalT<DT> &yyRange = OB->y_range;
+		outerBox_ = new BoxT<DT>(gen_id, xxRange, yyRange);
+	}
   ~RootBoxT() {
     delete outerBox_;
     delete innerBox_;
@@ -203,6 +215,14 @@ cout << "reached the minimum size, fail refine" << endl;
     return (!Overlap(inner_x, other_x) || !Overlap(inner_y, other_y));
   }
 
+	// check if two root boxes are disjoint
+	const bool Disjoint(const RootBoxT *other) {
+		return Disjoint(other->innerBox_);
+	}
+
+
+	
+	
   /**************  members  ***********************/
   const Box *outerBox_;
   const Box *innerBox_;
@@ -210,4 +230,11 @@ cout << "reached the minimum size, fail refine" << endl;
   bool      failRefineFlag_;
 };
 
+template <typename DT, typename NT>
+inline std::ostream& operator<<(std::ostream& o, const RootBoxT<DT, NT>& RB) {
+	//o << RB.innerBox_->x_range << " * "<< RB.innerBox_->y_range;
+	o << (*RB.innerBox_);
+	return o;
+	
+}
 #endif
