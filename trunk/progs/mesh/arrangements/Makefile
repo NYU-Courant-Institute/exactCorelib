@@ -110,7 +110,7 @@ eg13: ${TARGETS}
 	./mk --poly data/laguerre4.pol \
     --x_min -30 --x_max 30 --y_min -30 --y_max 30 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
-eg13: ${TARGETS}
+eg14: ${TARGETS}
 	./mk --poly data/laguerre5.pol \
     --x_min -30 --x_max 30 --y_min -30 --y_max 30 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 	
@@ -136,7 +136,7 @@ clean:
 #=================================================
 EXEPROGS=$(TARGETS:=$(EXETYPE))
 
-veryclean: clean
+vclean veryclean: clean
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
 
 #=================================================
