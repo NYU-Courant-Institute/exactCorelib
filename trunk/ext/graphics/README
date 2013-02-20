@@ -1,4 +1,4 @@
-Drawpoly Files:
+README for Drawpoly Program:
 
 1.  FILES:
 	Makefile
@@ -81,7 +81,6 @@ Drawpoly Files:
 	    into something that is reasonable
 
 4. OPENGL/GLUT INSTALLATION NOTES:
-
 	-- For you may need to set the correct LD_LIBRARY_PATH to get OpenGL.
 		E.g., on the NYU Computer Science machines, get the
 		free version of openGL called Mesa as follows:

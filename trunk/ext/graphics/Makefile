@@ -2,15 +2,21 @@
 # graphics subdirectory
 #   whose source is exactly one .cpp file.
 #
-# To compile the main program, you can simply type "make"
-# If you prefer to choose you own file to compile, type
+# To compile the main program, you can simply type "make".
+# 	Or, you can compile a program called "zzz" using:
 #
-#        make p=zzz
+#        	> make p=zzz
 #
-# where
+# 	where
 #       zzz.cc (or zzz.cpp) is the name of the program.
 # 
+# To some other targets
 #
+# 		> make help
+# 		> make eg
+#
+# Author: Chee Yap
+# Since Corelib 1.2.
 #######################################################
 
 #######################################################
@@ -48,7 +54,9 @@ ext=.cpp
 	exe=
    endif
 
+#######################################################
 # Runtime libraries (various alternatives are kept around!)
+#######################################################
 
 	SRCS = drawCurve.cpp
 	OBJS = $(SRCS:.c=.o)
@@ -93,7 +101,9 @@ CORE_INC=-I. -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
         endif
    endif
 
+#######################################################
 # Include headers files
+#######################################################
    ifeq ($(pf),cyg)
 	INC= -I\usr\include
    else
@@ -114,7 +124,9 @@ CORE_INC=-I. -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
    	LDFLAGS =
    endif
 
+#######################################################
 # program base is "p"
+#######################################################
 p=drawCurve
 
 # program version is "v"
@@ -124,12 +136,13 @@ v=
 pv=$(p)$(v)
 
 # data
-DATA=/home/visual/tools/drawpoly/data/
+DATA=/home/visual/tools/drawpoly/data
 DATA=
-DATA=data/
+DATA=data
 
 ifile=input
 ifile=cissoid
+ifile=butterfly
 
 # tar files
 fn=DRAW
@@ -162,40 +175,54 @@ curve: drawCurve
 draw.orig: draw.orig.cc
 	$(CC) -g $(INC) draw.orig.cc \
 	    $(LDFLAGS) $(LIBS) -o draw.orig
+help:
+	@echo "USAGE: Type the following"
+	@echo "  > make eg                 -- to see an example (also try eg0, eg1, eg2, eg3, eg4)"
+	@echo "  > make params             -- to see default parameters of eg"
+	@echo "  > make eg ifile=XXX       -- to display file XXX in local directory ${DATA}"
 
-# main test
-test test0 testcurve:
-	./drawCurve < ${DATA}test0
+opt params:
+	@echo "================ Parameters =================="
+	@echo "    DATA = " ${DATA}
+	@echo "    ifile = " ${ifile}
+	@echo "=============================================="
 
-test1:
-	./drawCurve < ${DATA}test1
+#######################################################
+# Targets
+#######################################################
 
-test2 butterfly:
-	./drawCurve < ${DATA}butterfly
+eg test testcurve:
+	./drawCurve < ${DATA}/${ifile}
 
-test3 cissoid:
-	./drawCurve < ${DATA}cissoid
+eg0 test0 testcurve:
+	./drawCurve < ${DATA}/test0
+
+eg1 test1:
+	./drawCurve < ${DATA}/test1
+
+eg2 test2 butterfly:
+	./drawCurve < ${DATA}/butterfly
+
+eg3 test3 cissoid:
+	./drawCurve < ${DATA}/cissoid
+
+eg4 test4 ny:
+	./${pv} < ${DATA}/nylines
 
 t:
-	./drawCurve < ${DATA}${ifile}
+	./drawCurve < ${DATA}/${ifile}
 
 t1:
-	./drawCurve 1 < ${DATA}plot
+	./drawCurve 1 < ${DATA}/plot
 
 testpoly:
-	./drawpoly < ${DATA}${ifile}
+	./drawpoly < ${DATA}/${ifile}
 
 testdraw:
-	./draw < ${DATA}${ifile}
+	./draw < ${DATA}/${ifile}
 
 testnew:
-	./newdraw < ${DATA}${ifile}
-
-but:
-	./${pv} < ${DATA}butterfly
-
-ny:
-	./${pv} < ${DATA}nylines
+	./newdraw < ${DATA}/${ifile}
 
 teapot: teapot.cpp
 	$(CC) $(COMPILERFLAGS) -g $(INC) teapot.cpp \
