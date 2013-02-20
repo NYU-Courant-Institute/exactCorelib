@@ -231,6 +231,9 @@ teapot4: teapot4.cpp
 pf platform:
 	-@echo Platform is $(PLATFORM)
 
+m:
+	gvim Makefile
+
 save:
 	ci -l draw.cc drawpoly.cc newdraw.cc Makefile README 
 
