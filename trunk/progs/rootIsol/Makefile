@@ -18,11 +18,18 @@ all: $(TARGETS)
 
 test: $(TARGETS)
 	./tRobust.sh
-
 moretest:
 
 eval: tEval
 	./tEval
+
+# help
+help:
+	-@echo "root isolation targets:"
+	-@echo "Possible targets:"
+	-@echo "    eval, t, tmr, tm"
+	-@echo "Generic targets:"
+	-@echo "    all (=testSturm, tDescartes, tRootIsol), test"
 
 # nothing to do
 

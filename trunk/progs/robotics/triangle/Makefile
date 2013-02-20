@@ -247,30 +247,30 @@ eg3: ./tri
 
 # BUG TRAPS:
 # 
-# Bugtrap example -- Non-existence of path, but barely!
+# Bugtrap example -- Existence of path, but barely!
 eg4 egbug bug: ./tri
 	@echo "Target 'egbug':  runs tri for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
 	@echo "--  that are NOT adjacent but shares a corner."
 	./tri $(interactive) 200 350 0 30 30 90 \
-		1 14 bugtrap.txt \
+		8 14 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir) \
+		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&
 
-# Bugtrap example -- Existence of path, but barely!
+# Bugtrap example -- Non-existence of path, but barely!
 eg4a egbuga buga: ./tri
 	@echo "Target 'eg4a or buga':  runs tri for bugtrap input, bugtrap.txt"
 	@echo "--  this examples shows there is a PATH, but barely so!"
 	@echo "--  the only change from target 'egbug' is that epsilon is now 10, not 20"
 	@echo "--  that are NOT adjacent but shares a corner."
 	./tri $(interactive) 200 350 0 30 30 0 \
-		1 14 bugtrap.txt \
+		9 14 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir) \
+		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&

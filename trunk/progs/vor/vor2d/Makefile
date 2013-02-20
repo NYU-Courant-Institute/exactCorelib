@@ -242,6 +242,27 @@ help:
 	@echo "  > make eg epsilon=7 [...] -- change the default epsilon [...] of eg"
 	@echo "  > make egN                -- where N = 0, 1, 2, ..., 14, 15, 150, 200"
 	@echo "                               to see various examples "
+	@echo " LIST of TARGETS:"
+	@echo "		eg0 (annulus)"
+	@echo "		eg1 (simple)	-- variant: eg1a (for medial axis)"
+	@echo "		eg2 (simple2)"
+	@echo "		eg3 (dog)"
+	@echo "		eg4 (line)	-- variant: eg4a, eg4b (linea, lineb) "
+	@echo "		eg5 (boxes)	-- variant: eg5a (boxesa) "
+	@echo "		eg6 (boundedstar)"
+	@echo "		eg7 (bug)	-- a bug trap"
+	@echo "		eg8 (overlap)"
+	@echo "		eg9 (2color)	-- variant: eg9a, eg9b"
+	@echo "		eg10 (2tri)"
+	@echo "		eg11 (star) 	-- variant: eg11a (stara)"
+	@echo "		eg12 (bug2) 	-- a double bug trap"
+	@echo "		eg13 (monkey)"
+	@echo "		eg14 (mammoth)"	
+	@echo "		eg15 	 	-- Vikram's degenerate example"
+	@echo "		eg150		-- 150 random overlapping triangles "
+	@echo "		eg200		-- 200 random overlapping triangles "
+
+
 
 #=================================================
 # TARGETS with demos (examples) of running vor2d program

@@ -86,6 +86,7 @@ public:
     return (left_ <= 0) && (right_ >= 0);
   }
   
+  // This definition of SignCondition should be used more widely!
   enum SignCondition {_ZERO, _POS, _NEG, _UNKNOWN}; 
   
   // Return a sign condition (_ZERO, _POS, _NEG, _UNKNOWN):

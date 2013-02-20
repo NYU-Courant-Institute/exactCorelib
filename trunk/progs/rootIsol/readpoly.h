@@ -5,7 +5,7 @@
 #include <fstream>
 #include<vector>
 
-/* THIS SHOULD BE INCORPORATED INTO CORE LIB:
+/* THIS HAS BEEN INCORPORATED INTO CORE LIB:
  * it reads polynomials as string as well as Frisco format
  * */
 
@@ -46,8 +46,6 @@ void readString(char *file, VecString &v, int option){
       (*it).insert(0,TESTDIR);// Insert TESTDIR at the starting of all strings
     }
 }
-
-
 
 template <typename T>
 void read_poly(FILE *instr, CORE::Polynomial<T>& p)

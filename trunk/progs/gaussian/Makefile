@@ -81,6 +81,8 @@ simpletest: $(TARGETS)
 clean:
 	-@test -z "*.o" || rm -f *.o
 
+m:
+	gvim Makefile
 #=================================================
 # Remove executable files
 #=================================================

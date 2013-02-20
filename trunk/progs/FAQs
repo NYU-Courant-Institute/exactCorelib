@@ -211,7 +211,6 @@ TABLE OF CONTENTS:
 	of each of these ways are found in various folders under $(CORE)/progs.
 
 	METHOD 1: Automatically compile at 3 LEVELs
-
 	   See the Makefile under progs/gaussian where the
 		program "gaussian" is compiled into 
 	  	three versions, "gaussian_1", "gaussian_2", "gaussian_3".
@@ -223,13 +222,13 @@ TABLE OF CONTENTS:
 
 		> make LEV=n " (where n=1,2,3)
 
-	METHOD 3:
-	   Under progs/mesh/CXY, we wrote the Makefile so that you can
+	METHOD 3: Another variant of METHOD 1
+	   Under progs/mesh/cxy, we wrote the Makefile so that you can
 		type "make all" or "make testall"
 		to compile and test different versions of the
 		meshing program "cxy.cpp".
 	
-	METHOD 4: This last method does not use Makefiles but writing templated
+	METHOD 4: This method does not use Makefiles but writing templated
 		methods.   E.g., write a templated method "RUN<NT>" that is compiled
 		at LEVEL 4, then call RUN<NT> with different number types for NT.
 

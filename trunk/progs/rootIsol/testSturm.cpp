@@ -21,9 +21,10 @@ int main( int argc, char* argv[] ) {
   /* ************************************** */
   if (argc > 1)
 	read_poly(argv[1], P);
+	//P = std::string(argv[1]) ;
   else
-    //read_poly("data/wilk20.pol", p);
-    read_poly("data/hermite20.pol", P);
+    read_poly("../data/frisco/hermite20.pol", P);
+    	//read_poly("data/wilk20.pol", p);
 	//read_poly("data/geom3_20.pol", p);
 	//read_poly("data/mig1_20.pol", p);
 

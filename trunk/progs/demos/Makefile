@@ -111,12 +111,14 @@ t${LEV}: t.o
 clean:
 	-@test -z "*.o" || rm -f *.o
 
+m:
+	gvim Makefile
 #=================================================
 # Remove executable files
 #=================================================
 EXEPROGS=$(TARGETS:=$(EXETYPE)) $(MORETARGETS:=$(EXETYPE))
 
-veryclean: clean
+vclean veryclean: clean
 	echo "EXEPROGS=" $(EXEPROGS)
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
 	-@rm -f simple1$(EXETYPE) simple3$(EXETYPE) simple$(EXETYPE)

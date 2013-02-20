@@ -22,11 +22,15 @@ ifeq ($(PLATFORM), mac)
    MESA_LIB_PATH=/opt/local/lib
    TCLAP_INC_PATH=../ceval/third_party/
    TCLAP_INC_PATH=../../third_party/
+   # chee (Dec'12): on my MacOS, glut may be found here:
+   GLUT_INC_MAC=/System/Library/Frameworks/GLUT.framework/Versions/A/Headers/
 CORE_INC=-I. -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
 	 -I$(CORE_PATH)/gmp/include -I/usr/include/ \
-	 -I$(MESA_INC_PATH) -I$(TCLAP_INC_PATH)
+	 -I$(MESA_INC_PATH) -I$(TCLAP_INC_PATH) \
+	 -I$(GLUT_INC_MAC)
 CORE_LIB=-L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib -L$(CORE_PATH)/gmp/lib \
-	 -L$(MESA_LIB_PATH) -lGL -lGLU -lglut \
+	 -L$(MESA_LIB_PATH) -lGL -lGLU \
+	 # -lglut \
 	 -lcore++$(VAR) -lmpfr -lgmp
 else
 CORE_INC=-I. -I../ceval/third_party -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \

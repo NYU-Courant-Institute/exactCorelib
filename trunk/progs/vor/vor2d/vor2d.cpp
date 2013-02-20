@@ -70,7 +70,7 @@ double boxHeight = 512;         // Initial box height
 #include "PriorityQueue.h"
 #include "SimplePSinC.h"
 
-int Feature::LEVEL=0;
+int Feature::LEVEL=0;		// Initializing a static feature
 
 #include <set>
 using namespace std;

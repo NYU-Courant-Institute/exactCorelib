@@ -4,17 +4,21 @@
 #define CORE_LEVEL 4
 #include <CORE/CORE.h>
 
-//Compute an upper bound on the roots of the polynomial that is supposedly
-// the closest to being the best bound amongst all bounds that depend 
-// only upon the absolute value of the coefficients. Confer van der Sluis;
-// it is the first amongst the root bounds given in Chee's book.
-// 2 max { (|a_{n-k}|/|a_n|)^{1/k}: k=1..n}, where the polynomial is
-// defined as a_nx^n + a_{n-1}x^{n-1} + ... + a_1 x + a_0.
-//An improved version of this bound for the case of positive real roots
-//was given by Kioustelidis. The improvement is obtained by considering only
-//the negative coefficients of the polynomial in the radicals above and this
-//is what we implement.
-//This is the bottleneck: computing the root(.,.) is very slow.
+/***************************************************
+ * Compute an upper bound on the roots of the polynomial that is supposedly
+ * the closest to being the best bound amongst all bounds that depend 
+ * only upon the absolute value of the coefficients. Confer van der Sluis;
+ * it is the first amongst the root bounds given in Chee's book.
+ * 2 max { (|a_{n-k}|/|a_n|)^{1/k}: k=1..n}, where the polynomial is
+ * defined as a_nx^n + a_{n-1}x^{n-1} + ... + a_1 x + a_0.
+ * An improved version of this bound for the case of positive real roots
+ * was given by Kioustelidis. The improvement is obtained by considering only
+ * the negative coefficients of the polynomial in the radicals above and this
+ * is what we implement.
+ *
+ * This is the bottleneck: computing the root(.,.) is very slow.
+ * ***************************************************/
+
 template<typename NT>
 BigFloat upperbound1(const Polynomial<NT> & P)
 	{
@@ -33,17 +37,19 @@ BigFloat upperbound1(const Polynomial<NT> & P)
 	  }
 	  return 2*BigFloat(max.get_max());
 	}
-
-// A better method at computing the above bound suggested by Akritas;
-// see page 350-352 of his book. Roughly we find the smallest integer k
-// such that 2^{k} \ge (m|a_{n-i}|/|a_n|)^{1/i} where the polynomial
-// is a_nx^n + a_{n-1}x^{n-1} + ... + a_0 and m is the number of negative
-// coefficients. In the following procedure we extend the code
-// suggested by Akritas to handle the case when NT are rationals; even
-// in such a situation the return value is a BigFloat. Such an extension
-// is needed because in our root isolation algorithm we shift the
-// polynomials by BigFLoats and hence the coefficients can be non-integers.
-// Remark: It seems better to choose m = 1, because that gives a tighter bound.
+/***************************************************
+ * A better method at computing the above bound suggested by Akritas;
+ * see page 350-352 of his book. Roughly we find the smallest integer k
+ * such that 2^{k} \ge (m|a_{n-i}|/|a_n|)^{1/i} where the polynomial
+ * is a_nx^n + a_{n-1}x^{n-1} + ... + a_0 and m is the number of negative
+ * coefficients. In the following procedure we extend the code
+ * suggested by Akritas to handle the case when NT are rationals; even
+ * in such a situation the return value is a BigFloat. Such an extension
+ * is needed because in our root isolation algorithm we shift the
+ * polynomials by BigFLoats and hence the coefficients can be non-integers.
+ * Remark: It seems better to choose m = 1, because that gives a tighter bound.
+ *
+ * ***************************************************/
 template<typename NT>
 BigFloat upperbound2(const Polynomial<NT> &P)
 	{
@@ -109,11 +115,11 @@ BigFloat upperbound2(const Polynomial<NT> &P)
 	    return BigFloat(1) << kpp;
 	}
 
-/*
+/***************************************************
   Returns a lower bound on the real roots of the polynomial P in the positive
   x-axis. Assumes that the polynomial is in Bernstein form.
   The value computed is a power of 2.
-*/
+ ***************************************************/
 template<typename NT>
 BigFloat lowerboundPow(Polynomial<NT> &P, 
 		       BigFloat (*Bound)(const Polynomial<NT> &) = upperbound2)
@@ -131,14 +137,14 @@ BigFloat lowerboundPow(Polynomial<NT> &P,
 	}
 
 
-/*
-  Returns a lower bound on the roots of the polynomial P in the unit interval.
-  Assumes that the polynomial is in Bernstein form. The lower bound is achieved
-  by computing the lower bound for the polynomial P(x/(1+x)). But the monomial
-  basis coefficients of this polynomial are a multiple of the coeffs of P(x),
-  and hence can be constructed in linear time. Once we have the lower bound B
-  for P(x/(1+x)), we return B/(1+B) as a lower bound for P(x).
- */
+/***************************************************
+ * Returns a lower bound on the roots of the polynomial P in the unit interval.
+ * Assumes that the polynomial is in Bernstein form. The lower bound is achieved
+ * by computing the lower bound for the polynomial P(x/(1+x)). But the monomial
+ * basis coefficients of this polynomial are a multiple of the coeffs of P(x),
+ * and hence can be constructed in linear time. Once we have the lower bound B
+ * for P(x/(1+x)), we return B/(1+B) as a lower bound for P(x).
+ ***************************************************/
 template < typename NT >
 BigFloat lowerBoundB( const Polynomial<NT> & P, int deg)
 	{
@@ -160,12 +166,12 @@ BigFloat lowerBoundB( const Polynomial<NT> & P, int deg)
 	  return(temp.makeFloorExact());
 	}
 
-/*
+/***************************************************
   A lower bound based upon the upper bound given by Hong. This should be the
   best possible, since Hong's bound is better than Kioustelidis' bound.
   The problem is that it is an O(n^2) procedure. Assumes the polynomial
   P is in monomial form. Assumes the constant coefficient is not zero.
- */
+ ***************************************************/
 template < typename NT >
 BigInt HongLowerBound( const Polynomial<NT> & P)
 	{

@@ -24,6 +24,10 @@ OBJS=edgelist.o geometry.o heap.o memory.o output.o voronoi.o PQlist.o
 # ifeq ($(PLATFORM), mingw)
 #   OBJS+=getopt.o
 # endif
+#
+LEV = 3
+LEV = 2
+LEV = 1
 
 default: $(TARGETS)
 
@@ -55,7 +59,7 @@ tri triangulate:
 	${CXX} $(LDFLAGS) $? $(CORE_LIB) -o $@
 
 .cpp.o:
-	${CXX} -c $(CXXFLAGS) $(CORE_INC) $< -o $@
+	${CXX} -c $(CXXFLAGS) -DCORE_LEVEL=$(LEV) $(CORE_INC) $< -o $@
 
 #=================================================
 # Clean object files
@@ -68,6 +72,6 @@ clean:
 #=================================================
 EXEPROGS=$(TARGETS:=$(EXETYPE))
 
-veryclean: clean
+vclean veryclean: clean
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
 
