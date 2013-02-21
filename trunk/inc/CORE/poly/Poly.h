@@ -1070,6 +1070,10 @@ IntervalT<T> evalH(const IntervalT<T> & x) const {	// interval evaluation
 ///Evaluation: Assumes that the interval type is the same
 ///type as the coefficients.
 // Centered form based interval evaluation scheme
+// REMARK: this is a misnomer -- it should be called the "Slope Form"
+//          See Stahl's thesis, p.72.
+//          The Centered Form is called Taylor Form in Stahl.
+//          Should also implement what Stahl calls "Bicentered Mean Value Form".
 template<typename T>
 IntervalT<T> evalCF(const IntervalT<T> & x) const {	// interval evaluation
 	int deg = degree();
