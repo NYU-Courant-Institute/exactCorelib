@@ -340,7 +340,6 @@ README FILE: TABLE OF CONTENTS
         The remaining make files in subdirectories should work with other
         make programs.  The first three steps takes 15-25 minutes.
 
-
    3.5) STAGE 2: INSTALLING MPFR
 
 	Stage 2 is very similar to Stage 1.
@@ -381,7 +380,6 @@ README FILE: TABLE OF CONTENTS
                                 in the file ${CORE_PATH}/tmp/DIAG_INSTALL_MPFR
             % make testmpfr  -- you must pass this test to continue.
                                 Output in file ${CORE_PATH}/tmp/DIAG_TEST_MPFR
-
 
    3.6) STAGE 3: BUILD CORE LIBRARY.
         
