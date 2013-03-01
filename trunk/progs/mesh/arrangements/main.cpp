@@ -186,8 +186,7 @@ int main(int argc, char **argv) {
   MKPredicates<DT,NT> *const pred = 
       new MKPredicates<DT,NT>(fxy, gxy, min_size, max_size, max_gen);
 
-  Algorithm::Run<DT,NT>(*pred, box, 
-      &output, &ambiguous, &exclude);
+  Algorithm::Run<DT,NT>(*pred, box, &output, &ambiguous, &exclude);
 
   // end time
   gettimeofday(&end, NULL);
@@ -199,7 +198,9 @@ int main(int argc, char **argv) {
   unsigned int num_includes = output.size();      // statistic collections
 
   cout << endl << "Output regions: " << endl;
-  for(unsigned int i = 0; i < output.size(); i++) {
+  
+  for(unsigned int i = 0; i < output.size(); i++) 
+  {
     RootBoxT<DT,NT> *b = output[i];
     cout << "X: " << b->innerBox_->x_range << " , Y: " << b->innerBox_->y_range << endl;
     // we make full use of this loop, while going though each element in output,
@@ -207,9 +208,12 @@ int main(int argc, char **argv) {
     outer_output.push_back(b->outerBox_);
     inner_output.push_back(b->innerBox_);
   }
+  
   unsigned int num_ambiguous = ambiguous.size();   // statistic collections
   cout << "Ambiguous regions: " << endl;
-  for(unsigned int i = 0; i < ambiguous.size(); i++) {
+  
+  for(unsigned int i = 0; i < ambiguous.size(); i++) 
+  {
     if(i > max_ambiguous_box)
 	    break;
     const Box *b = ambiguous[i];
@@ -244,7 +248,8 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-void startGlutLoop(int argc, char **argv) {
+void startGlutLoop(int argc, char **argv) 
+{
   cout << "-------------Graphic----------------"<<endl;
   cout << "--------Press ESC to exit-----------"<<endl;
 

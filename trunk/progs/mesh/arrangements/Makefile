@@ -5,8 +5,14 @@
 # July 15, 2011
 #
 
+#=================================================
+#	Core Library Options
+#=================================================
+VAR=Debug
+VAR=Opt
+
 CORE_PATH=../../..
-include ../Make.options
+include ../Make.options2
 
 #=================================================
 # User definition (put parameters manually here)
