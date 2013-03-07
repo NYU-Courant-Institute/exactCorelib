@@ -12,7 +12,8 @@ VAR=Debug
 VAR=Opt
 
 CORE_PATH=../../..
-include ../Make.options2
+#include ../Make.options2
+include ../Make.options
 
 #=================================================
 # User definition (put parameters manually here)
