@@ -1049,8 +1049,9 @@ T eval(const T& x) const {	// evaluation
 
 ///Evaluation: Assumes that the interval type is the same
 ///type as the coefficients.
-// Horner's rule based interval evaluation scheme
-template<typename T>
+// Horner's rule based interval evaluation scheme. 
+// NOT REQUIRED. Invoke eval<Interval<T> > instead.
+/*template<typename T>
 IntervalT<T> evalH(const IntervalT<T> & x) const {	// interval evaluation
 	int deg = degree();
 	if (deg == -1)
@@ -1066,16 +1067,19 @@ IntervalT<T> evalH(const IntervalT<T> & x) const {	// interval evaluation
 	return val;
 		
 }//evalH
+*/
 	
 ///Evaluation: Assumes that the interval type is the same
 ///type as the coefficients.
-// Centered form based interval evaluation scheme
+// Slope form based interval evaluation scheme.
+// Drawback: This is not inclusion monotone, i.e., if interval I is a included
+// in another interval J, then evalSlopeForm(I) is not necessarily included in evalSlopeForm(J). See Stahl's thesis.
 // REMARK: this is a misnomer -- it should be called the "Slope Form"
 //          See Stahl's thesis, p.72.
 //          The Centered Form is called Taylor Form in Stahl.
 //          Should also implement what Stahl calls "Bicentered Mean Value Form".
 template<typename T>
-IntervalT<T> evalCF(const IntervalT<T> & x) const {	// interval evaluation
+IntervalT<T> evalSlopeForm(const IntervalT<T> & x) const {	// interval evaluation
 	int deg = degree();
 	if (deg == -1)
 		return IntervalT<T>(0);
@@ -1083,17 +1087,60 @@ IntervalT<T> evalCF(const IntervalT<T> & x) const {	// interval evaluation
 		return IntervalT<T>(coeff()[0]);
 	T xmid = x.mid();
 	
+	// tmp is the quotient obtained by dividing the polynomial (*this) by (x-xmid).
+	// (*this) = (*this).eval(xmid) + (x-xmid)*tmp.
 	Polynomial<T> tmp(deg-1);
 	tmp.coeff()[deg-1] = (*this).coeff()[deg];
 	for (int i=deg-1; i>0; i--) {
 		tmp.coeff()[i-1] = (*this).coeff()[i]+xmid*tmp.coeff()[i];
 	}
+
+	T fmid = (*this).coeff()[0] + xmid*tmp.coeff()[0];// val is (*this) evaluated at xmid
 	
-	IntervalT<T> val = IntervalT<T>( (*this).eval(xmid))+(x-IntervalT<T>(xmid))*tmp.evalH(x);
+	IntervalT<T> val = IntervalT<T>(fmid)+(x-IntervalT<T>(xmid))*tmp.eval<IntervalT<T> >(x);
 	
 	return val;
 		
 	}//eval
+	
+
+	///Evaluation: Assumes that the interval type is the same
+	///type as the coefficients.
+	// Centered form evaluation. This approach does a Taylor shift
+	// at the midpoint of the interval rather than differentiating and
+	// computing all the derivatives.
+	template<typename T>
+	IntervalT<T> evalCenteredForm(const IntervalT<T> & x) const {	// interval evaluation
+		int deg = degree();
+		if (deg == -1)
+			return IntervalT<T>(0);
+		if (deg == 0)
+			return IntervalT<T>(coeff()[0]);
+		T xmid = x.mid();
+
+		// Compute the Taylor coefficients at xmid
+		T shifted[deg+1];
+		for(int i=0; i<= deg ; i++)
+			shifted[i] = coeff()[i];
+		
+		if(xmid != 0){
+			for(int i=0; i<= deg-1;i++)
+				for(int j=deg-1; j>=i; j--)
+					shifted[j]+= (xmid) * shifted[j+1];
+		}
+				
+		T w = x.halfwidth(); // Half the width of interval
+		
+		// Compute the error term in centered form.
+		// The absolute value of the Taylor coefficients is used.
+		T val = abs(shifted[deg]);
+		for (int i = deg-1; i>0; i--) {
+			val *= w;
+			val += abs(shifted[i]); 	
+		}
+		val*=w;
+		return IntervalT<T>(shifted[0]-val, shifted[0]+val);		
+	}		
 	
 template<typename T>
 int evalSign(const T& f) {

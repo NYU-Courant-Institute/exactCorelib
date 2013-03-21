@@ -769,6 +769,9 @@ T BiPoly<NT>::eval(const T &x, const T &y ) const {
 
     int deg_y = ydeg;
     if ( deg_y == -1 ) return T(0);
+	if (deg_y == 0) {
+		return coeffX[0].eval(x);
+	}
 
     T res = T( coeffX[deg_y].eval(x) );
 
@@ -820,12 +823,20 @@ IntervalT<T> BiPoly<NT>::eval2 (const IntervalT<T> &x, const IntervalT<T> &y) co
 }
 
 	// eval3 for Interval implementation only
+	// Check this carefully!
 template <class NT> template <class T>
 IntervalT<T> BiPoly<NT>::eval3 (const IntervalT<T> &x, const IntervalT<T> &y) const {
-	// f(y) = f(m) + (y-m) * g(y).
-	// If g(y) = \sum_{i=0}^{n-1} b_i y^i and f(y) = \sum_{i=0}^n a_i y^i then
-	// a_n = b_{n-1}, a_{n-1} = b_{n-2}-mb_{n-1}, a_{n-2} = b_{n-3} -mb_{n-1}, ..., a_1 = b_0 - mb_1, a_0 = f(m)-mb_0
+	// f(x,y) = f(x,m) + (y-m) * g(x,y).
+	// If f(x, y) = \sum_{i=0}^n a_i y^i and g(x,y) = \sum_{i=0}^{n-1} b_i y^i then
+	// a_n = b_{n-1}, a_{n-1} = b_{n-2}-mb_{n-1}, a_{n-2} = b_{n-3} -mb_{n-1}, ..., a_1 = b_0 - mb_1, a_0 = f(m)-mb_0.
+	// The last equation above can be used for checking the computation.
 	unsigned int n = ydeg;
+	
+	if(ydeg == -1)
+		return IntervalT<T>(0);
+	if (ydeg == 0) {
+		return coeffX[0].evalSlopeForm(x);
+	}
 	const T ymid =y.mid();
 	
 	BiPoly<T> g(n-1);
@@ -833,16 +844,28 @@ IntervalT<T> BiPoly<NT>::eval3 (const IntervalT<T> &x, const IntervalT<T> &y) co
 	for (int i=n-1; i > 0; i--) {
 		g.setCoeff(i-1, coeffX[i] + g.getCoeff(i).mulScalar(ymid));
 	}
+//	std::cout <<" In eval3: g = "<< g.toString() << std::endl;
 	
-		// P is the univariate polynomial in X obtain by evaluating (*this) at ymid
+	// P is the univariate polynomial in X obtain by evaluating (*this) at ymid
 	Polynomial<T> P((*this).getXdegree());
 	P = coeffX[n];
 	for(int i = n - 1; i >= 0 ; --i){
 		P.mulScalar(ymid);
 		P += coeffX[i];
     }
-	
-	return P.evalCF(x)+(y-IntervalT<T>(ymid))*g.eval(x,y);		
+
+//	std::cout <<" In eval3: P = "<< P.toString() << std::endl;	
+	/* TEST */
+/*	BiPoly<T> temp(1);
+	temp.setCoeff(0, Polynomial<T>(0,-ymid));
+	if ((*this) == P + g*temp) {
+		std::cout <<"In eval3: all polynomials computed correctly"<<std::endl;
+	}else	
+		std::cout <<"In eval3: polynomials computed INcorrectly"<<std::endl;
+*/
+//	std::cout <<"P evalSlopeForm = "<<P.evalSlopeForm(x) << std::endl;
+//	std::cout <<"(y-ymid)*g eval = "<<(y-IntervalT<T>(ymid))*g.eval(x,y) << std::endl;
+	return P.evalSlopeForm(x)+(y-IntervalT<T>(ymid))*g.eval(x,y);		
 	
 }
   //eval(x,y)
@@ -1020,6 +1043,11 @@ BiPoly<NT> & BiPoly<NT>::mulXpoly( Polynomial<NT> & p) {
   //Multiply by a constant
 template <class NT>
 BiPoly<NT> & BiPoly<NT>::mulScalar( NT & c) {
+	if (c==0) {
+		ydeg = -1;
+		return *this;
+	}
+	
     for (int i = 0; i<=ydeg ; i++)
       coeffX[i].mulScalar(c);
     return *this;
