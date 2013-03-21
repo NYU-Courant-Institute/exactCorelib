@@ -6,7 +6,7 @@
 #
 
 CORE_PATH=../../..
-include ../Make.options
+include ../Make.options2
 
 #=================================================
 # User definition (put parameters manually here)
@@ -50,73 +50,102 @@ eg1: ${TARGETS}
 # Intersecting two cubic curves:
 eg2: $(TARGETS)
 	./mk --fxy "x^3-x" --gxy "x^2y-7" \
-    --x_min -10 --x_max 10 --y_min -2 --y_max 15 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+    		--x_min -10 --x_max 10 --y_min -2 --y_max 15 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg3: $(TARGETS)
-	./mk --fxy "((x^2 + y^2 + 12x + 9)^2 - 4(2x + 3)^3)" --gxy "(x^2 + y^2 - 2)" \
-    --x_min -3 --x_max 3 --y_min -3 --y_max 3 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+	./mk --fxy "((x^2 + y^2 + 12x + 9)^2 - 4(2x + 3)^3)" \
+	    	--gxy "(x^2 + y^2 - 2)" \
+    		--x_min -3 --x_max 3 --y_min -3 --y_max 3 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg4: ${TARGETS}
-	./mk --fxy "(x^3 + y^3 - 3xy)(x^2 + y^2 - 0.1)((x^2 + y^2)(y^2 + x(x+1)) - 4xy^2)" --gxy "x^2 + y^2 - 2" \
-    --x_min -3 --x_max 3 --y_min -3 --y_max 3 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+	./mk --fxy "(x^3 + y^3 - 3xy)(x^2 + y^2 - 0.1)((x^2 + y^2)(y^2 + x(x+1)) -4xy^2)" \
+	    	--gxy "x^2 + y^2 - 2" \
+    		--x_min -3 --x_max 3 --y_min -3 --y_max 3 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 # Fifth roots of unity
 eg5: ${TARGETS}
-	./mk --fxy "(-1 + x^5) + (-10*x^3)*y^2 + (5x)* y^4" --gxy "(5*x^4)*y^1 + (-10*x^2)*y^3 + y^5" \
-    --x_min -4 --x_max 4 --y_min -4 --y_max 4 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+	./mk --fxy "(-1 + x^5) + (-10*x^3)*y^2 + (5x)* y^4" \
+	    	--gxy "(5*x^4)*y^1 + (-10*x^2)*y^3 + y^5" \
+    		--x_min -4 --x_max 4 --y_min -4 --y_max 4 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 # REMARKS: laguerreN have N real positive roots (for N=6, these roots lie in [0,20])
 # The following example illustrates this well:
 eg6: ${TARGETS}
 	./mk --poly data/laguerre6.pol \
-    --x_min -10 --x_max 20 --y_min -10 --y_max 20 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+    		--x_min -10 --x_max 20 --y_min -10 --y_max 20 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 # DEBUG:
 # The code get messed up if you do not provide an initial square box!
 # It then reverts to the default polynomials!!!
 eg6b: ${TARGETS}
 	./mk --poly data/laguerre6.pol \
-    --x_min -5 --x_max 20 --y_min -5 --y_max 5 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+    		--x_min -5 --x_max 20 --y_min -5 --y_max 5 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg6c: ${TARGETS}
 	./mk --poly data/laguerre6.pol \
-    --x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} --minsize ${minsize} --maxsize ${maxsize} --maxgen 15
-
+    		--x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen 15
 
 eg7: ${TARGETS}
 	./mk --poly data/somepoly6.pol \
-    --x_min -8 --x_max 8 --y_min -8 --y_max 8 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+		 --x_min -8 --x_max 8 --y_min -8 --y_max 8 \
+		 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg8: ${TARGETS}
 	./mk --poly data/nroots10.pol \
-    --x_min -2 --x_max 2 --y_min -2 --y_max 2 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+    		--x_min -2 --x_max 2 --y_min -2 --y_max 2 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg9: ${TARGETS}
 	./mk --poly data/nroots20.pol \
-    --x_min -1.5 --x_max 1.5 --y_min -1.5 --y_max 1.5 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+		 --x_min -1.5 --x_max 1.5 --y_min -1.5 --y_max 1.5 \
+		 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg10: ${TARGETS}
 	./mk --poly data/hermite20.pol \
-    --x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+    		--x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg11: ${TARGETS}
 	./mk --poly data/chebyshev20.pol \
-    --x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+    		--x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg12: ${TARGETS}
 	./mk --poly data/wilk20.pol \
-    --x_min -30 --x_max 30 --y_min -30 --y_max 30 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+    		--x_min -30 --x_max 30 --y_min -30 --y_max 30 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg13: ${TARGETS}
 	./mk --poly data/laguerre4.pol \
-    --x_min -30 --x_max 30 --y_min -30 --y_max 30 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+    		--x_min -30 --x_max 30 --y_min -30 --y_max 30 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg14: ${TARGETS}
 	./mk --poly data/laguerre5.pol \
-    --x_min -30 --x_max 30 --y_min -30 --y_max 30 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
-	
+    		--x_min -30 --x_max 30 --y_min -30 --y_max 30 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+
+# THIS EXAMPLE HAS TWO STRAIGHT LINES, intersecting at origin and making
+# 	a very acute angle
+eg20: ${TARGETS}
+	./mk --fxy "2y+ x" \
+	    	--gxy "y - x" \
+    		--x_min -4 --x_max 4 --y_min -4 --y_max 4 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+
 
 temp: temp.o
+
+m:
+	gvim Makefile
+
 #=================================================
 # Rules
 #=================================================
