@@ -469,6 +469,7 @@ BiPoly<NT> BiPoly<NT>::getbipoly(string s){
   
 template <class NT>
 std::string BiPoly<NT>::toString(char xvar, char yvar) {
+
 	  int d= getTrueYdegree();
 	  if (d == -1) return std::string("0");
 	  std::ostringstream oss;
@@ -708,7 +709,7 @@ int BiPoly<NT>::getTrueYdegree() {
     for (int i=ydeg; i>=0; i--){
       coeffX[i].contract();
       if (!zeroP(coeffX[i]))
-	return i;
+		  return i;
     }
     return -1;	// Zero polynomial
   }//getTrueYdegree
@@ -880,6 +881,40 @@ Expr BiPoly<NT>::eval(Expr x, Expr y){//Evaluate the polynomial at (x,y)
   }//eval
 
 
+// Returns the polynmoial obtained by fixing X=x
+template < class NT >
+Polynomial<NT> BiPoly<NT>::fixX( const NT &x ) {
+	int d = getTrueYdegree();
+	if(d == -1)
+		return Polynomial<NT>();
+		
+	NT c[d+1];
+	for (int i =d; i >=0; i--) {
+		c[i] = coeffX[i].eval(x);
+	}
+	Polynomial<NT> P(d, c);
+	return P;
+
+}
+
+// Returns the polynmoial obtained by fixing Y=y
+template < class NT >
+Polynomial<NT> BiPoly<NT>::fixY( const NT &y ) {
+	int d = getTrueYdegree();
+	if (d == -1) {
+		return Polynomial<NT>();
+	}
+	
+	Polynomial<NT> P(getXdegree());
+	P = coeffX[d];
+	for(int i = d - 1; i >= 0 ; --i){
+		P.mulScalar(y);
+		P += coeffX[i];
+    }
+	return P;
+}
+
+
 // Interval Versions of Eval:
 // Written by Shuxing Lu (Mar 2009)
 
@@ -979,14 +1014,14 @@ BiPoly<NT> & BiPoly<NT>::operator=( const BiPoly<NT>& P) {
   // Self-addition
 template <class NT>
 BiPoly<NT> & BiPoly<NT>::operator+=( const BiPoly<NT>& P) { // +=
-
+	
     int d = P.getYdegree();
-    if (d > ydeg)
-      expand(d);
-    for (int i = 0; i<=d; i++)
-      coeffX[i] += P.coeffX[i];
+	if (d > ydeg)
+		expand(d);
+	for (int i = 0; i<=d; i++)
+		coeffX[i] += P.coeffX[i];
 
-  return *this;
+	return *this;
   }//operator+=
    
   // Self-subtraction
@@ -1042,14 +1077,21 @@ BiPoly<NT> & BiPoly<NT>::mulXpoly( Polynomial<NT> & p) {
 
   //Multiply by a constant
 template <class NT>
-BiPoly<NT> & BiPoly<NT>::mulScalar( NT & c) {
-	if (c==0) {
+BiPoly<NT> & BiPoly<NT>::mulScalar( const NT & c) {
+//std::cout << " Insider mulscalr c = " << c << std::endl;
+	if (c==NT(0)) {
+//		std::cout<<"Inside mulscalar constant zero" << std::endl;
 		ydeg = -1;
+		coeffX.clear(); // Erase the coefficients
 		return *this;
 	}
-	
-    for (int i = 0; i<=ydeg ; i++)
-      coeffX[i].mulScalar(c);
+
+	NT cc = c;
+	if(c!= NT(1)){
+//		std::cout<<"Inside mulscalar constant not one" << std::endl;
+		for (int i = 0; i<=ydeg ; i++)
+			coeffX[i].mulScalar(cc);
+	}
     return *this;
   }//mulScalar
 
@@ -1280,12 +1322,17 @@ void BiPoly<NT>::reverse() {
 template <class NT>
 Polynomial<NT>  BiPoly<NT>::replaceYwithX(){
     int m = getTrueYdegree();
-    NT *cs = new NT[m+1];
+	if(m == -1)
+		return Polynomial<NT>();
+		
+    NT cs[m+1];
     for(int i=0; i <= m ; i++)
       cs[i]=coeffX[i].getCoeff(0);
+	
+	Polynomial<NT> P(m,cs);
     delete[] cs;
 
-    return Polynomial<NT>(m,cs);
+    return P;
   }//replaceYwithX
   
 template <class NT>

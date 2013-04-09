@@ -290,6 +290,14 @@ class BiPoly{
   //
   Polynomial<NT> xPolynomial(const NT & y) ;
   
+  // Returns the polynmoial obtained by fixing X=x
+	
+  Polynomial<NT> fixX( const NT &x ) ;
+	
+  // Returns the polynmoial obtained by fixing Y=y
+	
+  Polynomial<NT> fixY( const NT &y ) ;
+	
   // getYdegree()
   int getYdegree() const;
   
@@ -360,6 +368,8 @@ class BiPoly{
   template < class T >
   IntervalT<T> eval3( const IntervalT<T> &x, const IntervalT<T> &y ) const;
 
+	
+
   // operator version of eval
   template< class T >
     T operator() ( const T &x, const T &y ) const { return eval( x, y ); } 
@@ -417,7 +427,7 @@ class BiPoly{
   BiPoly<NT> & mulXpoly( Polynomial<NT> & p);
 
   //Multiply by a constant
-  BiPoly<NT> & mulScalar( NT & c);
+  BiPoly<NT> & mulScalar(const NT & c);
 
   // mulYpower: Multiply by Y^i (COULD be a divide if i<0)
   BiPoly<NT> & mulYpower(int s);

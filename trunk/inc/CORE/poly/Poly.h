@@ -349,15 +349,16 @@ public:
   /// return the true degree
   int getTrueDegree() const {
     int i = getDegree();
-    //while (i>=0 && sign(coeff()[i]) == 0) --i;
-	  if(i >= 0) // The commented line above is correct. We need to check before the while loop whether i >= 0. Vikram Jan 2013
+	NT c;
+    while (i>=0 && sign(coeff()[i]) == 0) --i;// We are assuming that i>=0 is tested first
+	/*  if(i >= 0) // The commented line above is correct. We need to check before the while loop whether i >= 0. Vikram Jan 2013
 	  {
-		  NT c = coeff()[i];// This will not work if i=-1. Vikram Jan 2013
+		c = coeff()[i];
     	while (i>=0 && sign(c) == 0) {
 	    --i;
 	    c = coeff()[i];
 		}
-	  }
+	  }*/
     return i;
   }
 
@@ -477,11 +478,20 @@ public:
 
   ///Multiply by a scalar
   Polynomial<NT> & mulScalar( const NT & c) {
-    NT cc = c;
-    for (int i = 0; i<=degree() ; i++)
-      //	coeff()[i] *= c;		// const error..
-      coeff()[i] *= cc;				// fix...
-    return *this;
+	if (c==NT(0)) {
+		*this = Polynomial<NT>();
+		return *this;
+	}
+
+    if(c!= NT(1)){
+		NT cc = c;
+	
+		for (int i = 0; i<=degree() ; i++){
+			//	coeff()[i] *= c;		// const error..
+			coeff()[i] *= cc;				// fix...
+		}
+	}
+	  return *this;
   }
 
   ///exactDivScalar is to divide exactly by a scalar
