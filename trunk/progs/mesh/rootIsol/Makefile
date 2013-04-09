@@ -86,7 +86,7 @@ eg6: ${TARGETS}
     		--x_min -10 --x_max 20 --y_min -10 --y_max 20 \
 		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
-# DEBUG:
+# TO DEBUG: 
 # The code get messed up if you do not provide an initial square box!
 # It then reverts to the default polynomials!!!
 eg6b: ${TARGETS}
@@ -105,12 +105,12 @@ eg7: ${TARGETS}
 		 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg8: ${TARGETS}
-	./mk --poly data/nroots10.pol \
+	./mk --poly data/rootsOfUnity10.pol \
     		--x_min -2 --x_max 2 --y_min -2 --y_max 2 \
 		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg9: ${TARGETS}
-	./mk --poly data/nroots20.pol \
+	./mk --poly data/rootsOfUnity20.pol \
 		 --x_min -1.5 --x_max 1.5 --y_min -1.5 --y_max 1.5 \
 		 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
@@ -141,9 +141,17 @@ eg14: ${TARGETS}
 
 # THIS EXAMPLE HAS TWO STRAIGHT LINES, intersecting at origin and making
 # 	a very acute angle (say: y=0 and 1000y=x)
+# 	It stops instantly.
 eg20: ${TARGETS}
 	./mk --fxy "y" \
 	    	--gxy "1000y - x" \
+    		--x_min -4 --x_max 4 --y_min -4 --y_max 4 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+# THIS is a slight perturbation of the TWO STRAIGHT LINES at the origin.
+# 	Now this is very slow!
+eg20b: ${TARGETS}
+	./mk --fxy "y +xy" \
+	    	--gxy "10y - x +x^3" \
     		--x_min -4 --x_max 4 --y_min -4 --y_max 4 \
 		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
