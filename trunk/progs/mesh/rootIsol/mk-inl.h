@@ -59,7 +59,7 @@ public:
     jacobian_(1, 0) = temp3.differentiateX();
     jacobian_(1, 1) = temp4.differentiateY();
 	jacobian = jacobian_(0,0) * jacobian_(1,1) - jacobian_(0,1)*jacobian_(1,0);
-	std::cout<<" Jacobian is "<< jacobian.toString() << std::endl;
+//	std::cout<<" Jacobian is "<< jacobian.toString() << std::endl;
     debug_ = false;
   }
 
@@ -74,16 +74,16 @@ public:
     // zero not in f(B) or 0 not in g(B)
 	// This would be invoked for most boxes and hence
 	// we need a very tight implementation of interval evaluation
-	std::cout << "Inside Exclude Test " << (*box) << std::endl;
+//	std::cout << "Inside Exclude Test " << (*box) << std::endl;
     const IntervalNT &x_range = box->x_range;
     const IntervalNT &y_range = box->y_range;
 	IntervalNT c_f = fxy_.eval(x_range, y_range);// Faster than eval2
     IntervalNT c_g = gxy_.eval(x_range, y_range);
 	if(!c_f.zero() || !c_g.zero()){ 
-		std::cout << "Sign of F " << sign(c_f.getL()) << " , "<< sign(c_f.getR()) 
-					<< std:: endl;
-		std::cout << "Sign of G " << sign(c_g.getL()) << " , "<< sign(c_g.getR()) 
-		<< std:: endl;
+//		std::cout << "Sign of F " << sign(c_f.getL()) << " , "<< sign(c_f.getR()) 
+//					<< std:: endl;
+//		std::cout << "Sign of G " << sign(c_g.getL()) << " , "<< sign(c_g.getR()) 
+//		<< std:: endl;
 
 		return true;
     }else
@@ -108,8 +108,8 @@ public:
 			 << sign(det.getR()) << "]" << std::endl;
 */			 
 	IntervalNT temp = jacobian.eval(x_range, y_range);
-	  std::cout<<" On box "<< (*box) << " jacobian sign [" << sign(temp.getL()) << " , "
-	  << sign(temp.getR()) << "]" << std::endl;
+//	  std::cout<<" On box "<< (*box) << " jacobian sign [" << sign(temp.getL()) << " , "
+//	  << sign(temp.getR()) << "]" << std::endl;
    if(temp.zero())
      return false;
    else
@@ -142,10 +142,10 @@ int MKTest(const Box *box) const {
 	j01 = jacobian_(0, 1).eval<NT>(x_mid, y_mid);
 	j10 = jacobian_(1, 0).eval<NT>(x_mid, y_mid);
 	j11 = jacobian_(1, 1).eval<NT>(x_mid, y_mid);
-	std::cout<<"Evaluated jacobian at midpoint " << std::endl;
+//	std::cout<<"Evaluated jacobian at midpoint " << std::endl;
 	NT det = j00*j11 - j01*j10;
 	// if det = 0, fail
-	std::cout << "Inside MK-test sign of det at center = "<< sign(det)<< std::endl;
+//	std::cout << "Inside MK-test sign of det at center = "<< sign(det)<< std::endl;
 //	if(det == 0) {// This cannot be possible since Jacobian test passed
 			//cout << "sign = 0" << endl;
 //		return -1;
@@ -171,21 +171,21 @@ int MKTest(const Box *box) const {
 	tmp4.mulScalar(j00);
 //	std::cout << "tmp4 after mulscalar = "<< tmp4.toString() << std::endl;
 
-	std::cout << "j00 j01 = "<< j00 << " "<<j01 << std::endl;
+/*	std::cout << "j00 j01 = "<< j00 << " "<<j01 << std::endl;
 	std::cout << "j10 j11 = "<< j10 << " "<< j11 << std::endl;
 
 	std::cout << "tmp1 = "<< tmp1.toString() << std::endl;
 	std::cout << "tmp2 = "<< tmp2.toString() << std::endl;
 	std::cout << "tmp3 = "<< tmp3.toString() << std::endl;
 	std::cout << "tmp4 = "<< tmp4.toString() << std::endl;
-
+*/
 //	std::cout << "Computing F and G " << std::endl;
 	F = tmp1 - tmp2;
 	G = tmp4 - tmp3;
 	
 //	std::cout << "Computed F and G " << std::endl;	
-	std::cout << "F = "<< F.toString() << std::endl;
-	std::cout << "G = "<< G.toString() << std::endl;
+//	std::cout << "F = "<< F.toString() << std::endl;
+//	std::cout << "G = "<< G.toString() << std::endl;
 	
 	// These are the univariate polynomials corresponding to the boundaries
 /*	Polynomial<NT> f_l = F.yPolynomial(x_l);
@@ -250,13 +250,13 @@ int MKTest(const Box *box) const {
 	IntervalNT I_d = G.eval(x_range, IntervalNT(y_r));
 	 */
 
-	std::cout << "Il = " << I_l << std:: endl;
+/*	std::cout << "Il = " << I_l << std:: endl;
 	std::cout << "Ir = " << I_r << std:: endl;
 	std::cout << "Iu = " << I_u << std:: endl;
 	std::cout << "Id = " << I_d << std:: endl;
-
+*/
 	if (!I_l.zero() && !I_r.zero() && !I_d.zero() && !I_u.zero()) {
-		std::cout << "Boundaries have fixed sign "<< std::endl;
+//		std::cout << "Boundaries have fixed sign "<< std::endl;
 		
 		if (sign(I_l.getR()) *sign(I_r.getR()) < 0 &&
 			sign(I_d.getR()) *sign(I_u.getR()) < 0 )  {

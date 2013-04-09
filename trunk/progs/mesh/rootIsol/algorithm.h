@@ -88,18 +88,18 @@ namespace Algorithm {
       while(!Q_confirm.empty()) {
         const Box *box = Q_confirm.back();
         Q_confirm.pop_back();
-			  //box too small
-		/*if(pred.Min(box)) {
+		 //box too small
+		if(pred.Min(box)) {
           Q_ambiguous->push_back(box);
           continue;
-        }*/
+        }
         // also do MK test on (box)*2
         const Box *double_box = box->Dilate(2);
-		std::cout<<"Before MK Test " << std::endl;
+//		std::cout<<"Before MK Test " << std::endl;
 		mk_ret = pred.MKTest(double_box);
 		//mk_ret = pred.MKTest(box);
 		if(mk_ret == 1) {// MK-test succeeded
-			std::cout << "MK successful " << (*double_box) << std::endl;
+//			std::cout << "MK successful " << (*double_box) << std::endl;
           // already found a root box, put it in Q_final queue for refinement
           // rootbox creation based on double_box's dimension
 		  Q_final.push_back(new RootBox(box, double_box)); // Why do we push dilated box?
@@ -111,11 +111,11 @@ namespace Algorithm {
           delete double_box; 
           break;
         }else if (mk_ret == 0) {// MK-test detected an exclusion box
-		std::cout << "MK excluded " << (*double_box) << std::endl;
+//		std::cout << "MK excluded " << (*double_box) << std::endl;
 			Q_exclude->push_back(box);
 		}
         else {// MK-test failed
-		std::cout << "MK failed " << (*double_box) << std::endl;
+//		std::cout << "MK failed " << (*double_box) << std::endl;
           pred.Split_Exclude(box, &Q_confirm, Q_exclude);
           delete double_box;
         }
