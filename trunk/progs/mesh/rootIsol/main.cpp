@@ -209,13 +209,22 @@ int main(int argc, char **argv) {
     outer_output.push_back(b->outerBox_);
     inner_output.push_back(b->innerBox_);
   }
+
+  // DISPLAY OF AMBIGUOUS BOXES:
   unsigned int num_ambiguous = ambiguous.size();   // statistic collections
   cout << "Ambiguous regions: " << endl;
-  for(unsigned int i = 0; i < ambiguous.size(); i++) {
-    if(i > max_ambiguous_box)
-	    break;
-    const Box *b = ambiguous[i];
-    cout << "X: " << b->x_range << " , Y: " << b->y_range << endl;
+  int ratio=1;
+  if (ambiguous.size() > max_ambiguous_box) {
+      ratio = 1+(num_ambiguous/max_ambiguous_box);
+      cout << " Too many ambiguous boxes -- show only a sampled subset of "
+		<< max_ambiguous_box << " boxes" << endl;
+      cout << " print every " << ratio << "-th boxes" << endl;
+  }
+  for(unsigned int i = 0; i < num_ambiguous; i++) {
+    if((i % ratio) == 0 ) {
+       const Box *b = ambiguous[i];
+       cout << "X: " << b->x_range << " , Y: " << b->y_range << endl;
+    }
   }
   
 

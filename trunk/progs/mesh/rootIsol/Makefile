@@ -45,7 +45,14 @@ mk: main.o tmp-display.o
 # Intersecting a parabola and the unit circle:
 eg1: ${TARGETS}
 	./mk --fxy "y-x^2" --gxy "x^2+y^2-1" \
-    --x_min -10 --x_max 10 --y_min -10 --y_max 10 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+    		--x_min -10 --x_max 10 --y_min -10 --y_max 10 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+
+# Intersecting a parabola and the unit circle:
+eg1a: ${TARGETS}
+	./mk --fxy "y-x^3" --gxy "x^2+y^2-1" \
+    		--x_min -10 --x_max 10 --y_min -10 --y_max 10 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 # Intersecting two cubic curves:
 eg2: $(TARGETS)
@@ -75,7 +82,8 @@ eg5: ${TARGETS}
 # REMARKS: laguerreN have N real positive roots (for N=6, these roots lie in [0,20])
 # The following example illustrates this well:
 eg6: ${TARGETS}
-	./mk --poly data/laguerre6.pol \
+	#./mk --poly ../../data/simplePolynomial/laguerre6.pol 
+	./mk --poly laguerre6.pol \
     		--x_min -10 --x_max 20 --y_min -10 --y_max 20 \
 		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
@@ -133,7 +141,7 @@ eg14: ${TARGETS}
 		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 # THIS EXAMPLE HAS TWO STRAIGHT LINES, intersecting at origin and making
-# 	a very acute angle
+# 	a very acute angle (say: y=0 and 1000y=x)
 eg20: ${TARGETS}
 	./mk --fxy "y+1" \
 	    	--gxy "1000(y+1) - x" \

@@ -220,8 +220,6 @@ cout << "reached the minimum size, fail refine" << endl;
 		return Disjoint(other->innerBox_);
 	}
 
-
-	
 	
   /**************  members  ***********************/
   const Box *outerBox_;
