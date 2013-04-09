@@ -57,7 +57,7 @@ eg1a: ${TARGETS}
 # Intersecting two cubic curves:
 eg2: $(TARGETS)
 	./mk --fxy "x^3-x" --gxy "x^2y-7" \
-    		--x_min -2 --x_max 2 --y_min 4 --y_max 8 \
+    		--x_min -1.5 --x_max -0.5 --y_min 6 --y_max 8 \
 		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg3: $(TARGETS)
@@ -82,8 +82,7 @@ eg5: ${TARGETS}
 # REMARKS: laguerreN have N real positive roots (for N=6, these roots lie in [0,20])
 # The following example illustrates this well:
 eg6: ${TARGETS}
-	#./mk --poly ../../data/simplePolynomial/laguerre6.pol 
-	./mk --poly laguerre6.pol \
+	./mk --poly data/laguerre6.pol \
     		--x_min -10 --x_max 20 --y_min -10 --y_max 20 \
 		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
@@ -143,17 +142,10 @@ eg14: ${TARGETS}
 # THIS EXAMPLE HAS TWO STRAIGHT LINES, intersecting at origin and making
 # 	a very acute angle (say: y=0 and 1000y=x)
 eg20: ${TARGETS}
-	./mk --fxy "y+1" \
-	    	--gxy "1000(y+1) - x" \
+	./mk --fxy "y" \
+	    	--gxy "1000y - x" \
     		--x_min -4 --x_max 4 --y_min -4 --y_max 4 \
 		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
-
-eg21: ${TARGETS}
-	./mk --fxy "x^2-y" \
-	    	--gxy "y" \
-    		--x_min -4 --x_max 4 --y_min -4 --y_max 4 \
-		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
-
 
 
 temp: temp.o
