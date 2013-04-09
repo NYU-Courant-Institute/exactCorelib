@@ -95,6 +95,7 @@ int main(int argc, char **argv){
 		cout << endl;
 	}
 	
+
 	/*BiPoly<NT> R("-y"), Q("10y-x"), S;
 		NT j00(0);
 		Q.mulScalar(j00);

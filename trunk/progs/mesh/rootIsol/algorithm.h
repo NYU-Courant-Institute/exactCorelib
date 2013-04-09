@@ -80,7 +80,7 @@ namespace Algorithm {
         Q_confirm.push_back(current);  // wait for further confirmation
       }
       else {
-        pred.Split_Exclude(current, &Q_tmp, Q_exclude); // split and test C0
+        pred.Split_Exclude(current, &Q_tmp, Q_exclude, Q_ambiguous); // split and test C0
       }
       delete double_current;
 
@@ -89,10 +89,10 @@ namespace Algorithm {
         const Box *box = Q_confirm.back();
         Q_confirm.pop_back();
 		 //box too small
-		if(pred.Min(box)) {
-          Q_ambiguous->push_back(box);
-          continue;
-        }
+//		if(pred.Min(box)) {
+//          Q_ambiguous->push_back(box);
+//          continue;
+//        }
         // also do MK test on (box)*2
         const Box *double_box = box->Dilate(2);
 //		std::cout<<"Before MK Test " << std::endl;
@@ -116,7 +116,7 @@ namespace Algorithm {
 		}
         else {// MK-test failed
 //		std::cout << "MK failed " << (*double_box) << std::endl;
-          pred.Split_Exclude(box, &Q_confirm, Q_exclude);
+          pred.Split_Exclude(box, &Q_confirm, Q_exclude, Q_ambiguous);
           delete double_box;
         }
       }//while (Q_confirm)

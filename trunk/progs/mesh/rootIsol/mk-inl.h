@@ -387,23 +387,26 @@ int MKTest(const Box *box) const {
     delete region;
   }
 
-  /// Split_Exclude(Box B, Queue Q, Queue ExcludeQ)
+  /// Split_Exclude(Box B, Queue Q, Queue ExcludeQ, Queue ambiguous)
   ///   Splits B into 4 children, and push each child into Q if it fails 
-  //	C0 test	and push into ExcludeQ if C0 holds.
+  //	C0 test, push into ExcludeQ if C0 holds, and into ambiguous queue if too small.
   void Split_Exclude(const Box *region,
     vector<const Box *> *queue,
-    vector<const Box *> *exclude) const {
+    vector<const Box *> *exclude,
+    vector<const Box *> *ambiguous) const {
 
     // temp queue for processing
     vector<const Box *> temp;
     // split box into 4 children 
     Split(region, &temp);
-    // Do C0 test for each box in temp queue
+    // Do Ambiguous and C0 test for each box in temp queue
     while(!temp.empty()) {
       const Box *box = temp.back();
       temp.pop_back();
-      if(!Exclude(box)) {  // C0 fails, put back to queue
-        queue->push_back(box);
+	  if (Min(box)) {
+		  ambiguous->push_back(box);
+	  }else if(!Exclude(box)) {  // C0 fails, put back to queue
+		  queue->push_back(box);
       }
       else {
           exclude->push_back(box);
