@@ -75,8 +75,8 @@ namespace Algorithm {
       Q_tmp.pop_back();
       // (current box)*2 passes the Jacobian test
       const Box *double_current = current->Dilate(2);
-      //if(pred.JTest(double_current)) {
-	  if(pred.JTest(current)) {
+      if(pred.JTest(double_current)) {
+	  //if(pred.JTest(current)) {
         Q_confirm.push_back(current);  // wait for further confirmation
       }
       else {
@@ -96,8 +96,8 @@ namespace Algorithm {
         // also do MK test on (box)*2
         const Box *double_box = box->Dilate(2);
 		std::cout<<"Before MK Test " << std::endl;
-		//mk_ret = pred.MKTest(double_box);
-		mk_ret = pred.MKTest(box);
+		mk_ret = pred.MKTest(double_box);
+		//mk_ret = pred.MKTest(box);
 		if(mk_ret == 1) {// MK-test succeeded
 			std::cout << "MK successful " << (*double_box) << std::endl;
           // already found a root box, put it in Q_final queue for refinement

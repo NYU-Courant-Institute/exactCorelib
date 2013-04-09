@@ -50,7 +50,7 @@ eg1: ${TARGETS}
 # Intersecting two cubic curves:
 eg2: $(TARGETS)
 	./mk --fxy "x^3-x" --gxy "x^2y-7" \
-    		--x_min -10 --x_max 10 --y_min -2 --y_max 15 \
+    		--x_min -1.5 --x_max -0.5 --y_min 6 --y_max 8 \
 		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 eg3: $(TARGETS)
@@ -135,8 +135,8 @@ eg14: ${TARGETS}
 # THIS EXAMPLE HAS TWO STRAIGHT LINES, intersecting at origin and making
 # 	a very acute angle
 eg20: ${TARGETS}
-	./mk --fxy "2y+ x" \
-	    	--gxy "y - x" \
+	./mk --fxy "y" \
+	    	--gxy "1000y - x" \
     		--x_min -4 --x_max 4 --y_min -4 --y_max 4 \
 		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 

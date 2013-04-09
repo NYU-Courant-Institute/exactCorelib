@@ -77,8 +77,8 @@ public:
 	std::cout << "Inside Exclude Test " << (*box) << std::endl;
     const IntervalNT &x_range = box->x_range;
     const IntervalNT &y_range = box->y_range;
-	IntervalNT c_f = fxy_.eval3(x_range, y_range);// Faster than eval2
-    IntervalNT c_g = gxy_.eval3(x_range, y_range);
+	IntervalNT c_f = fxy_.eval(x_range, y_range);// Faster than eval2
+    IntervalNT c_g = gxy_.eval(x_range, y_range);
 	if(!c_f.zero() || !c_g.zero()){ 
 		std::cout << "Sign of F " << sign(c_f.getL()) << " , "<< sign(c_f.getR()) 
 					<< std:: endl;
@@ -159,26 +159,31 @@ int MKTest(const Box *box) const {
 	BiPoly<DT> F, G, tmp1(fxy_), tmp2(gxy_), tmp3(fxy_), tmp4(gxy_);
 
 //	std::cout << "tmp2 = "<< tmp2.toString() << std::endl;	
-	// Somehow, mulScalar for BiPoly is causing compilation error
-	// sp we multiply the coefficients explicitly.
-//	for (int i = 0; i<=tmp1.getYdegree() ; i++)
+//	std::cout << "tmp4 = "<< tmp4.toString() << std::endl;
 	tmp1.mulScalar(j11);
+//	std::cout << "tmp1 mulscalar done" << std::endl;
 	tmp2.mulScalar(j01);
+//	std::cout << "tmp2 mulscalar done" << std::endl;
 //	for (int i = 0; i<=tmp3.getYdegree() ; i++)
 	tmp3.mulScalar(j10);
+//	std::cout << "tmp3 mulscalar done" << std::endl;
 //	for (int i = 0; i<=tmp4.getYdegree() ; i++)
 	tmp4.mulScalar(j00);
-std::cout << "Computing F and G " << std::endl;
+//	std::cout << "tmp4 after mulscalar = "<< tmp4.toString() << std::endl;
+
+	std::cout << "j00 j01 = "<< j00 << " "<<j01 << std::endl;
+	std::cout << "j10 j11 = "<< j10 << " "<< j11 << std::endl;
+
+	std::cout << "tmp1 = "<< tmp1.toString() << std::endl;
+	std::cout << "tmp2 = "<< tmp2.toString() << std::endl;
+	std::cout << "tmp3 = "<< tmp3.toString() << std::endl;
+	std::cout << "tmp4 = "<< tmp4.toString() << std::endl;
+
+//	std::cout << "Computing F and G " << std::endl;
 	F = tmp1 - tmp2;
 	G = tmp4 - tmp3;
-/*	std::cout << "tmp1 = "<< tmp1.toString() << std::endl;
-	std::cout << "j00 j01 = "<< j01 << " "<<j01 << std::endl;
-	std::cout << "j10 j11 = "<< j10 << " "<< j11 << std::endl;
-	std::cout << "j01 = "<< j01 << std::endl;
-	std::cout << "j01 = "<< j01 << std::endl;
-	std::cout << "tmp2 = "<< tmp2.toString() << std::endl;
-*/
-//std::cout << "Computed F and G " << std::endl;	
+	
+//	std::cout << "Computed F and G " << std::endl;	
 	std::cout << "F = "<< F.toString() << std::endl;
 	std::cout << "G = "<< G.toString() << std::endl;
 	
@@ -223,11 +228,27 @@ std::cout << "Computing F and G " << std::endl;
 	
 	// Evaluate F, G at the boundaries: F on the left and right
 	// boundaries, and G on the top and bottom.
+	IntervalNT I_l, I_r, I_u, I_d;
+	
+	Polynomial<DT> P;
+	P = F.fixX(x_l);
+	I_l = P.evalCenteredForm(y_range);
+	
+	P = F.fixX(x_r);
+	I_r = P.evalCenteredForm(y_range);
+	
+	P = G.fixY(y_l);
+	I_d = P.evalCenteredForm(x_range);
+	
+	P = G.fixY(y_r);
+	I_u = P.evalCenteredForm(x_range);
+	
+	/*
 	IntervalNT I_l = F.eval(IntervalNT(x_l), y_range);
 	IntervalNT I_r = F.eval(IntervalNT(x_r), y_range);
 	IntervalNT I_u = G.eval(x_range, IntervalNT(y_l));
 	IntervalNT I_d = G.eval(x_range, IntervalNT(y_r));
-
+	 */
 
 	std::cout << "Il = " << I_l << std:: endl;
 	std::cout << "Ir = " << I_r << std:: endl;

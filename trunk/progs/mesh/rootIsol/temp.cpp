@@ -32,9 +32,9 @@ int main(int argc, char **argv){
 	H("-4xy-2x");
 	IntervalNT I(NT(0), NT(2)), J(NT(2), NT(4)), tempI, tempJ;
 	Polynomial<NT> P("x^20+2x+1");
-	G = BiPoly<NT>("9.54688x^2y + -18.3984x^3 + 18.3984x - 66.8281");
-	I=IntervalNT(NT(0.625), NT(3.125));
-	J= IntervalNT(NT(3.84375), NT(5.96875));
+	G = BiPoly<NT>("(2.38672x^2)y + (13.0156x^3 - 13.0156x - 16.707)");
+	I=IntervalNT(NT(-1.1875), NT(-0.9375));
+	J= IntervalNT(NT(5.875), NT(6.375));
 	
 
 	cout << "F.eval3 " << F.eval3(I, J) << endl;
@@ -44,8 +44,30 @@ int main(int argc, char **argv){
 //	cout << "F.eval2 "<<F.eval2(I, I) << endl;
 
 //  cout << G.eval3(I, J) << endl;
-	cout << G.eval3(I, IntervalNT(J.getL())) << endl;
-	cout << G.eval3(I, IntervalNT(J.getR())) << endl;
+	cout << G.eval(I, IntervalNT(J.getL())) << endl;
+	cout << G.eval(I, IntervalNT(J.getR())) << endl;
+	cout << G.eval<NT>(I.getL(), J.getL()) << endl;
+	cout << G.eval<NT>(I.getR(), J.getL()) << endl;
+	cout << G.eval<NT>(I.getL(), J.getR()) << endl;
+	cout << G.eval<NT>(I.getR(), J.getR()) << endl;
+	cout << G.eval<NT>(I.mid(), J.getR()) << endl;
+
+	int n = G.getYdegree();
+	NT y=J.getR();
+	Polynomial<NT> PP(G.getXdegree());
+	PP = G.coeffX[n];
+	for(int i = n - 1; i >= 0 ; --i){
+		PP.mulScalar(y);
+		PP += G.coeffX[i];
+    }
+	cout << PP.evalCenteredForm(I) << endl;
+
+	
+	
+	G=BiPoly<NT>("y^2+2y+3");
+	Polynomial<NT> QQ = G.replaceYwithX();
+	cout << QQ.toString() << endl;
+	
 //	cout << G.eval2(I, I) << endl;
 
 	cout << "H.eval3 " << H.eval3(I, J) << endl;
@@ -73,6 +95,13 @@ int main(int argc, char **argv){
 		cout << endl;
 	}
 	
+	/*BiPoly<NT> R("-y"), Q("10y-x"), S;
+		NT j00(0);
+		Q.mulScalar(j00);
+		S = Q-R;
+		cout << "Subtracted " << endl;
+		cout << "(10y-x)*0 - (-y) = " << S.toString() << endl;
+	 */
 	/*
 	 NT x_l=I.getL(), y_l=J.getR();
 	 NT xmid = I.mid();
