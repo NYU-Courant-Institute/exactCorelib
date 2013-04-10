@@ -143,8 +143,8 @@ eg14: ${TARGETS}
 # 	a very acute angle (say: y=0 and 1000y=x)
 # 	It stops instantly.
 eg20: ${TARGETS}
-	./mk --fxy "y" \
-	    	--gxy "1000y - x" \
+	./mk --fxy "y+xy" \
+	    	--gxy "1000y - x+x^3" \
     		--x_min -4 --x_max 4 --y_min -4 --y_max 4 \
 		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 # THIS is a slight perturbation of the TWO STRAIGHT LINES at the origin.
@@ -155,6 +155,22 @@ eg20b: ${TARGETS}
     		--x_min -4 --x_max 4 --y_min -4 --y_max 4 \
 		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
+# This example has two curves that are asymptote and the Jacobian 
+# coincices with one of the curves
+
+eg21: ${TARGETS}
+	./mk --fxy "xy-1" \
+	    	--gxy "y" \
+    		--x_min 40 --x_max 400 --y_min -1 --y_max 1 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+
+
+# This example has a tangential intersection
+eg22: ${TARGETS}
+	./mk --fxy "y-x^2" \
+	    	--gxy "y" \
+    		--x_min -4 --x_max 4 --y_min -4 --y_max 4 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 temp: temp.o
 
