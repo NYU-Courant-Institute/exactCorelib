@@ -235,11 +235,11 @@ int main(int argc, char **argv) {
       (end.tv_sec - start.tv_sec)*1000000 + 
       (end.tv_usec - start.tv_usec) << " micro seconds" << endl;
 
-  cout << endl << "statistic results: " << endl;
-  cout << "output regions: " << num_includes << endl;
-  cout << "ambiguous regions: " << num_ambiguous << endl; 
-  cout << "exclusion regions: " << num_excludes << endl; 
-  cout << "maximum subdivision depth: " << largest_gen << endl;
+  cout << endl << "Statistics: " << endl;
+  cout << " -- output regions: " << num_includes << endl;
+  cout << " -- ambiguous regions: " << num_ambiguous << endl; 
+  cout << " -- exclusion regions: " << num_excludes << endl; 
+  cout << " -- maximum subdivision depth: " << largest_gen << endl;
   cout << endl;
 
   // display preparation
