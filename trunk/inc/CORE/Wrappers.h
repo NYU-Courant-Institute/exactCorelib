@@ -19,6 +19,7 @@
 
 #include <CORE/Mpfr.h>  // for the definition of prec_t
 #include <cmath>
+#include <stdlib.h>
 #include <sstream>
 
 CORE_BEGIN_NAMESPACE
