@@ -9,7 +9,7 @@ endif
 
 
 include $(CORE_PATH)/Make.config
-#CXXFLAGS =  -Wall  -mno-cygwin -DCYGWIN
+CXXFLAGS += -fpermissive 
 ifeq ($(PLATFORM), mac)
    # Mac OS configuration, Mesa is assumed to have been installed
    # and built. This can be done using Macports. Change the
