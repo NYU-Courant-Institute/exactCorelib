@@ -206,6 +206,15 @@ public:
 
 template <typename NT> int BoxT<NT>::counter=0;
 
+//template <typename NT>
+//ostream& operator<<(ostream& out, BoxT<NT>& box)
+//{
+//    out<<"Box=("<<box.x_range.getL()<<", "<<box.x_range.getR()<<"), ("
+//       <<box.y_range.getL()<<", "<<box.y_range.getR()<<")";
+//
+//    return out;
+//}
+
 //Box iterator
 template <typename NT>
 class BoxIter
@@ -303,6 +312,28 @@ bool BoxT<NT>::Split(NT epsilon)
     //record the time of this split event, will be used to set priority of children
     ++BoxT<NT>::counter;
     BoxT<NT>* children[4];
+
+    const NT &x_start = x_range.getL();
+    const NT &x_end = x_range.getR();
+    const NT &x_mid = x_range.mid();
+    const NT &y_start = y_range.getL();
+    const NT &y_end = y_range.getR();
+    const NT &y_mid = y_range.mid();
+
+    const unsigned int gen_id = generation_id + 1;
+
+    children[0] = new BoxT<NT>(gen_id,IntervalT<NT>(x_start, x_mid), IntervalT<NT>(y_start, y_mid));
+    children[1] = new BoxT<NT>(gen_id,IntervalT<NT>(x_mid, x_end), IntervalT<NT>(y_start, y_mid));
+    children[2] = new BoxT<NT>(gen_id,IntervalT<NT>(x_start, x_mid), IntervalT<NT>(y_mid, y_end));
+    children[3] = new BoxT<NT>(gen_id,IntervalT<NT>(x_mid, x_end), IntervalT<NT>(y_mid, y_end));
+
+    cout<<"---------> parent="<<*this<<endl;
+
+//    output->push_back(new BoxT<NT>(gen_id,IntervalT<NT>(x_start, x_mid), IntervalT<NT>(y_start, y_mid)));
+//    output->push_back(new BoxT<NT>(gen_id,IntervalT<NT>(x_mid, x_end), IntervalT<NT>(y_start, y_mid)));
+//    output->push_back(new BoxT<NT>(gen_id,IntervalT<NT>(x_start, x_mid), IntervalT<NT>(y_mid, y_end)));
+//    output->push_back(new BoxT<NT>(gen_id,IntervalT<NT>(x_mid, x_end), IntervalT<NT>(y_mid, y_end)));
+/*
     NT child_w=width()/2;
     NT child_h=height()/2;
     Point2d o=center();
@@ -320,6 +351,7 @@ bool BoxT<NT>::Split(NT epsilon)
     children[1] = new BoxT<NT>( generation_id+1, int_x_r, int_y_u );
     children[2] = new BoxT<NT>( generation_id+1, int_x_r, int_y_l );
     children[3] = new BoxT<NT>( generation_id+1, int_x_l, int_y_l );
+*/
 
     for (int i = 0; i < 4; ++i)
     {
@@ -328,6 +360,8 @@ bool BoxT<NT>::Split(NT epsilon)
             cerr<<"! Error: Box::split: Not enough memory"<<endl;
             return false;
         }
+
+        cout<<"\tchild[i]="<<*children[i]<<endl;
 
         children[i]->depth = this->depth + 1;
 

@@ -69,34 +69,48 @@ namespace Algorithm {
         Q_exclude->push_back(initial);
     }
     
+
     // main loop
-    while(!Q_tmp.empty()) { 
+    while(!Q_tmp.empty()) {
+
+      cout<<"Q_tmp size="<<Q_tmp.size()<<endl;
+
       const Box *current = Q_tmp.back();
       Q_tmp.pop_back();
+
       // (current box)*2 passes the Jacobian test
-      const Box *double_current = current->Dilate(2);
-      if(pred.JTest(double_current)) {
-        Q_confirm.push_back(current);  // wait for further confirmation
+      {
+          const Box *double_current = current->Dilate(2);
+
+          if(pred.JTest(double_current))
+          {
+            Q_confirm.push_back(current);  // wait for further confirmation
+          }
+          else {
+            pred.Split_Exclude(current, &Q_tmp, Q_exclude); // split and test C0
+          }
+
+          delete double_current;
       }
-      else {
-        pred.Split_Exclude(current, &Q_tmp, Q_exclude); // split and test C0
-      }
-      delete double_current;
 
       // confirmation loop
-      while(!Q_confirm.empty()) {
+      cout<<"Entering confirmation loop"<<endl;
+      while(!Q_confirm.empty())
+      {
         const Box *box = Q_confirm.back();
         Q_confirm.pop_back();
-			  //box too small
-		/*if(pred.Min(box)) {
-          Q_ambiguous->push_back(box);
-          continue;
-        }*/
+
+        //box too small
+//		if(pred.Min(box)) {
+//          Q_ambiguous->push_back(box);
+//          continue;
+//        }
         
         // also do MK test on (box)*2
         const Box *double_box = box->Dilate(2);
 		mk_ret = pred.MKTest(double_box);
-		if(mk_ret == 1) {// MK-test succeeded
+		if(mk_ret == 1) // MK-test succeeded
+		{
 
           // already found a root box, put it in Q_final queue for refinement
           // rootbox creation based on double_box's dimension
@@ -108,7 +122,9 @@ namespace Algorithm {
           delete box;
           delete double_box; 
           break;
-        }else if (mk_ret == 0) {// MK-test detected an exclusion box
+        }
+		else if (mk_ret == 0) // MK-test detected an exclusion box
+		{
 			Q_exclude->push_back(box);
 		}
         else {// MK-test failed
@@ -116,7 +132,12 @@ namespace Algorithm {
           delete double_box;
         }
       }//while (Q_confirm)
+
+      cout<<"out of while (Q_confirm) loop"<<endl;
+
     }//while (Q_tmp)
+
+    cout<<"out of while (Q_tmp) loop"<<endl;
 
     // by reaching here, the root boxes are all found, and stored in Q_final
     // the next step would be to refine root boxes until they are strongly isolated 

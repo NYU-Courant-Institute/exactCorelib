@@ -321,15 +321,20 @@ int MKTest(const Box *box) const {
     vector<const Box *> temp;
     // split box into 4 children 
     Split(region, &temp);
+
     // Do C0 test for each box in temp queue
+    //cout<<"---------------- split exclude from : "<<(*region)<<endl;
     while(!temp.empty()) {
       const Box *box = temp.back();
       temp.pop_back();
+
+      //cout<<(*box)<<endl;
+
       if(!Exclude(box)) {  // C0 fails, put back to queue
         queue->push_back(box);
       }
       else {
-          exclude->push_back(box);
+        exclude->push_back(box);
       }
     }
   }

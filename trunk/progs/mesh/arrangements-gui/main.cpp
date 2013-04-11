@@ -192,6 +192,7 @@ int main(int argc, char **argv)
   MKPredicates<DT,NT> *const pred = 
       new MKPredicates<DT,NT>(fxy, gxy, display_funcs::PROG_PARAMS.min_size, display_funcs::PROG_PARAMS.max_size, display_funcs::PROG_PARAMS.max_gen);
 
+  cout<<"Run!"<<endl;
   Algorithm::Run<DT,NT>(*pred, box, &output, &ambiguous, &exclude);
 
   // end time

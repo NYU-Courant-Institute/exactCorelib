@@ -55,8 +55,8 @@ struct program_params_t
 
       windowWidth=600;            // Window width
       windowHeight=600;           // Window height
-      windowPosX = 400;           // X Position of Window
-      windowPosY = 200;           // Y Position of Window
+      windowPosX = 40;           // X Position of Window
+      windowPosY = 20;           // Y Position of Window
 
       showBoxBoundary = 1;  //draw box boundary
       showCurves=1;            //draw Vor complex

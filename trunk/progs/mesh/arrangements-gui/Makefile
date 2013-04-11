@@ -15,6 +15,7 @@ VAR=Debug
 CORE_PATH=../../..
 include ../Make.options2
 #include ../Make.options
+CXXFLAGS += -MMD
 
 #=================================================
 # User definition (put parameters manually here)
@@ -123,15 +124,28 @@ eg14: ${TARGETS}
     --x_min -30 --x_max 30 --y_min -30 --y_max 30 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 	
 
-
 #=================================================
 # Rules
+# 	First clean out all suffixes:
+.SUFFIXES:
+#	Then establish the suffixes we want for this file:
+.SUFFIXES: .cpp .o
 #=================================================
+
 %: %.o
 	${CXX} $(LDFLAGS) $< $(CORE_LIB) -o $@
 
 .cpp.o:
 	${CXX} -c -O3 $(CXXFLAGS) $(CORE_INC) $< -o $@
+	cat $*.d >> Dependencies
+	rm -f $*.d 
+
+Dependencies:
+	touch Dependencies
+
+# The following line is causing trouble with levels...
+include Dependencies
+
 
 #=================================================
 # Clean object files
