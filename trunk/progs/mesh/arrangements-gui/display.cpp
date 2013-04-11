@@ -372,7 +372,7 @@ void drawQuad(const Box* b)
 //    }
 
     Point2d UL, UR, LR, LL;
-    b->getCorners(UL, UR, LR, LL);
+    const_cast<Box*>(b)->getCorners(UL, UR, LR, LL);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_POLYGON);
@@ -446,7 +446,7 @@ void drawQuad_selected(list<Box*> boxes)
     }
 
     //draw details of the last selected box
-    Box * b=boxes.back();
+    //Box * b=boxes.back();
 
     //draw circle with radius (clearance+2*Rb)
     if(PROG_PARAMS.sel_circle)
@@ -525,7 +525,7 @@ void updateVARinfo()
     if(leave_size<0)
     {
         list<Box*> leaves;
-        PROG_PARAMS.b0->getLeaves(leaves);
+        const_cast<Box*>(PROG_PARAMS.b0)->getLeaves(leaves);
         leave_size=leaves.size();
     }
 
@@ -546,6 +546,9 @@ void updateSelectedBoxInfo()
     }
 
     Box * selected=PROG_PARAMS.g_selected_PM.back();
+    
+    //do something about selected here
+    
     char info[1024];
     sprintf(info,"Selected box has xxx");
     selectedBoxInfo->set_text(info);
@@ -613,7 +616,7 @@ void Mouse(int button, int state, int x, int y)
             double m_x=(x-PROG_PARAMS.windowWidth/2)/PROG_PARAMS.uscale_Render-PROG_PARAMS.deltaX_Render+PROG_PARAMS.windowWidth/2;
             double m_y=(viewport[3]-y-PROG_PARAMS.windowHeight/2)/PROG_PARAMS.uscale_Render-PROG_PARAMS.deltaY_Render+PROG_PARAMS.windowHeight/2;
 
-            Box * selected = PROG_PARAMS.b0->find(Point2d(m_x,m_y));
+            Box * selected = const_cast<Box*>(PROG_PARAMS.b0)->find(Point2d(m_x,m_y));
 
             if(selected!=NULL)
             {

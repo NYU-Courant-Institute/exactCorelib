@@ -294,7 +294,7 @@ int MKTest(const Box *box) const {
   void Split(const Box *region, vector<const Box*> *queue) const
   {
 
-    bool r=region->Split(0);
+    bool r=const_cast<Box*>(region)->Split(0);
 
     assert(r);
 
