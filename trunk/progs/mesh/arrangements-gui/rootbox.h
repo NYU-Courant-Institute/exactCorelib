@@ -38,8 +38,8 @@
 #include "mk-defs.h"
 #include "mk-inl.h"
 
-template <typename DT>
-inline const bool Overlap(const IntervalT<DT> &s, const IntervalT<DT> &t);
+//template <typename DT>
+//inline const bool Overlap(const IntervalT<DT> &s, const IntervalT<DT> &t);
 
 /* rootbox class  */
 
