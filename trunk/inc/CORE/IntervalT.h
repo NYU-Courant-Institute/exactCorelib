@@ -27,6 +27,8 @@
 #ifndef CORE_LINEAR_INTERVALT_H
 #define CORE_LINEAR_INTERVALT_H
 
+CORE_BEGIN_NAMESPACE
+
 // This inclusion should be removed
 // Instead, Curves.h should include IntervalT.h
 // Chee and Shang (Aug, 2011)
@@ -87,8 +89,6 @@ public:
   }
   
   // This definition of SignCondition should be used more widely!
-  enum SignCondition {_ZERO, _POS, _NEG, _UNKNOWN}; 
-  
   // Return a sign condition (_ZERO, _POS, _NEG, _UNKNOWN):
   const SignCondition sign() const {
     if (left_ <= 0) {
@@ -455,6 +455,9 @@ inline void Divide(const IntervalT<NT> &a,
 }
 
 }  // end namespace interval_ext
+
+
+CORE_END_NAMESPACE
 
 #endif
 
