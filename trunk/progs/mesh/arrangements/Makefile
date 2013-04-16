@@ -12,8 +12,8 @@ VAR=Debug
 VAR=Opt
 
 CORE_PATH=../../..
+# include ../Make.options
 include ../Make.options2
-#include ../Make.options
 
 #=================================================
 # User definition (put parameters manually here)
@@ -55,6 +55,8 @@ eg1: ${TARGETS}
     --x_min ${xmin} --x_max ${xmax} --y_min ${ymin} --y_max ${ymax} --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 
 # Intersecting two cubic curves:
+# 	f: x^3 -x = x(x-1)(x+1),    and g: x^2y -7.
+# 	So solution is (-1,7), (1,7).
 eg2: $(TARGETS)
 	./mk --fxy "x^3-x" --gxy "x^2y-7" \
     --x_min -10 --x_max 10 --y_min -2 --y_max 15 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
