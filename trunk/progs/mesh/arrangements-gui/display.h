@@ -56,7 +56,7 @@ struct program_params_t
 
       windowWidth=600;            // Window width
       windowHeight=600;           // Window height
-      windowPosX = 40;           // X Position of Window
+      windowPosX = 20;           // X Position of Window
       windowPosY = 20;           // Y Position of Window
 
       showBoxBoundary = 1;  //draw box boundary
@@ -94,8 +94,8 @@ struct program_params_t
   vector<const Box *> amb;
 
   DT x_min, x_max, y_min, y_max;
-  machine_double scale;
-  machine_double x_delta, y_delta;
+  float scale;
+  float gui_dXY[2];
 
   list<Box*> g_selected_PM;
 
@@ -123,9 +123,6 @@ struct program_params_t
   int sel_wall_bisectors;     //show the wall bisectors of selected box (if possible)
   int sel_corner_bisectors;   //show the corner bisectors of selected box (if possible)
   int sel_parabola;           //show the parabola of wall/corner pairs in the features
-
-  float gui_dXY[2];
-  float gui_dZ;
 
   //last point user clicked
   machine_double sel_x;
@@ -231,9 +228,9 @@ void SetDisplayParams(const BoxT<NT> *B0,
   prog_params.x_max = p2;
   prog_params.y_min = p3;
   prog_params.y_max = p4;
-  prog_params.scale = 1.0;
-  prog_params.x_delta = 0.0;
-  prog_params.y_delta = 0.0;
+  prog_params.scale = 1.1;
+  //prog_params.x_delta = 0.0;
+  //prog_params.y_delta = 0.0;
 }
 
 }//end of namespace

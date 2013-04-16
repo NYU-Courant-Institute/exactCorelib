@@ -76,16 +76,22 @@ void CreateGUI()
 
 
     //GLUI_Master.set_glutSpecialFunc(SpecialKey);
-    GLUI *glui = GLUI_Master.create_glui( title.c_str(), 0, 50+500, 50 );
+    GLUI *glui = GLUI_Master.create_glui( title.c_str(), 0, PROG_PARAMS.windowPosX+PROG_PARAMS.windowWidth+10, PROG_PARAMS.windowPosY );
 
     // SETTING UP THE CONTROL PANEL:
     GLUI_Panel * top_panel=glui->add_panel("Soft Curve Arrangement Controls");
     editInput = glui->add_edittext_to_panel(top_panel, "F(x,y):", GLUI_EDITTEXT_TEXT );
     editInput->set_text((char*)PROG_PARAMS.fxy_str.c_str());
+    editInput->set_w(400);
+
     editDir = glui->add_edittext_to_panel(top_panel, "G(x,y):", GLUI_EDITTEXT_TEXT );
     editDir->set_text((char*)PROG_PARAMS.gxy_str.c_str());
+    editDir->set_w(400);
+
     editEpsilon = glui->add_edittext_to_panel(top_panel, "Epsilon:", GLUI_EDITTEXT_FLOAT );
     editEpsilon->set_float_val(PROG_PARAMS.min_size.doubleValue());
+    editEpsilon->set_w(200);
+
     editMaxEpsilon = glui->add_edittext_to_panel(top_panel, "maxEpsilon:", GLUI_EDITTEXT_FLOAT );
     editMaxEpsilon->set_float_val(PROG_PARAMS.max_size.doubleValue());
 
@@ -97,7 +103,7 @@ void CreateGUI()
 //    buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
 
     // New column:
-    glui->add_column_to_panel(top_panel,true);
+    //glui->add_column_to_panel(top_panel,true);
 
     glui->add_separator_to_panel(top_panel);
     glui->add_checkbox_to_panel(top_panel,"Box Boundary", &PROG_PARAMS.showBoxBoundary)->set_int_val(PROG_PARAMS.showBoxBoundary);
@@ -124,14 +130,16 @@ void CreateGUI()
 
 
     //translate and zoom gui
-//    GLUI_Panel * bottom_panel=glui->add_panel("View Control");
-//    guiTranslate=glui->add_translation_to_panel(bottom_panel, "Translate", GLUI_TRANSLATION_XY,gui_dXY);
-//    glui->add_column_to_panel(bottom_panel,true);
-//    guiZoom=glui->add_translation_to_panel(bottom_panel, "Zoom", GLUI_TRANSLATION_Z,&gui_dZ);
-//
-//    // reset button
-//    glui->add_column_to_panel(bottom_panel,true);
-//    glui->add_button_to_panel(bottom_panel, "Reset View", 0, (GLUI_Update_CB)reset_move );
+    GLUI_Panel * bottom_panel=glui->add_panel("View Control");
+    guiTranslate=glui->add_translation_to_panel(bottom_panel, "Translate", GLUI_TRANSLATION_XY, PROG_PARAMS.gui_dXY);
+    guiTranslate->set_speed(0.01);
+    glui->add_column_to_panel(bottom_panel,true);
+    guiZoom=glui->add_translation_to_panel(bottom_panel, "Zoom", GLUI_TRANSLATION_Z,&PROG_PARAMS.scale);
+    guiZoom->set_speed(0.005);
+
+    // reset button
+    glui->add_column_to_panel(bottom_panel,true);
+    glui->add_button_to_panel(bottom_panel, "Reset View", 0, (GLUI_Update_CB)reset_move );
 
     //add some display
     vorInfo=glui->add_statictext("var \n info"); //
@@ -293,8 +301,8 @@ void ClearBackground()
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   const machine_double scale = PROG_PARAMS.scale;
-  const machine_double x_delta = PROG_PARAMS.x_delta;
-  const machine_double y_delta = PROG_PARAMS.y_delta;
+  const machine_double x_delta = PROG_PARAMS.gui_dXY[0];
+  const machine_double y_delta = PROG_PARAMS.gui_dXY[1];
 
   gluOrtho2D((PROG_PARAMS.x_min.doubleValue())*scale + x_delta,
              (PROG_PARAMS.x_max.doubleValue())*scale + x_delta,
@@ -326,16 +334,16 @@ void KeyHandler(const unsigned char key, const int x, const int y)
         exit(0);
         break;
       case 'w':
-        PROG_PARAMS.y_delta+=0.5*PROG_PARAMS.scale;
+        PROG_PARAMS.gui_dXY[1]+=0.5*PROG_PARAMS.scale;
         break;
       case 'a':
-        PROG_PARAMS.x_delta-=0.5*PROG_PARAMS.scale;
+        PROG_PARAMS.gui_dXY[0]-=0.5*PROG_PARAMS.scale;
         break;
       case 's':
-        PROG_PARAMS.y_delta-=0.5*PROG_PARAMS.scale;
+        PROG_PARAMS.gui_dXY[1]-=0.5*PROG_PARAMS.scale;
         break;
       case 'd':
-        PROG_PARAMS.x_delta+=0.5*PROG_PARAMS.scale;
+        PROG_PARAMS.gui_dXY[0]+=0.5*PROG_PARAMS.scale;
         break;
       case 'o': // zoom out
         PROG_PARAMS.scale /= 0.9;
@@ -345,14 +353,11 @@ void KeyHandler(const unsigned char key, const int x, const int y)
       case 'k':
       case 'i': // zoom in
         PROG_PARAMS.scale *= 0.9;
-        //PROG_PARAMS.x_delta = 0;
-        //PROG_PARAMS.y_delta = 0;
         break;
       case 'r': // reset
       case ' ':
-        PROG_PARAMS.scale = 1;
-        PROG_PARAMS.x_delta = 0;
-        PROG_PARAMS.y_delta = 0;
+        reset_move();
+        break;
     }
 
 //  switch( key ){
@@ -499,7 +504,7 @@ void drawQuad_selected(list<Box*> boxes)
 
     glTranslated(0,0,0.2);
 
-    static double radius=PROG_PARAMS.b0->width().doubleValue()/200;
+    double radius=PROG_PARAMS.b0->width().doubleValue()*PROG_PARAMS.scale/200;
 
     filledCircle(radius,50,Point2d(PROG_PARAMS.sel_x,PROG_PARAMS.sel_y),0.5,0.5,0);
 
@@ -590,7 +595,7 @@ bool InitGL()
 void treeTraverse(Box* b)
 {
     //cout<<"Draw "<<*b<<endl;
-    if (!b)
+    if (b==NULL)
     {
         return;
     }
@@ -644,14 +649,15 @@ void updateSelectedBoxInfo()
 }
 
 
-//void reset_move()
-//{
-//    uscale_Render=1;
-//    deltaX_Render=deltaY_Render=0;
-//    guiTranslate->set_x(0);
-//    guiTranslate->set_y(0);
-//    guiZoom->set_z(0);
-//}
+void reset_move()
+{
+    //PROG_PARAMS.uscale_Render=1;
+    //PROG_PARAMS.deltaX_Render=PROG_PARAMS.deltaY_Render=0;
+    PROG_PARAMS.scale = 1.1;
+    PROG_PARAMS.gui_dXY[0] = 0;
+    PROG_PARAMS.gui_dXY[1] = 0;
+    glutPostRedisplay();
+}
 
 
 
@@ -665,7 +671,7 @@ void SpecialKey(int key, int x, int y)
 {
     // find closest colorPt3D if ctrl is pressed...
     switch( key ){
-        case GLUT_KEY_UP:
+        case GLUT_KEY_DOWN:
             if(PROG_PARAMS.g_selected_PM.empty()==false){//not empty
                 Box * last=PROG_PARAMS.g_selected_PM.back();
                 if(last!=PROG_PARAMS.b0){
@@ -674,12 +680,26 @@ void SpecialKey(int key, int x, int y)
                     PROG_PARAMS.g_selected_PM.push_back(last->pParent);
                 }
             }
+            else{
+                PROG_PARAMS.gui_dXY[1]+=0.5*PROG_PARAMS.scale;
+            }
             break;
 
-        case GLUT_KEY_DOWN:
+        case GLUT_KEY_UP:
             if(PROG_PARAMS.g_selected_PM.size()>1)
                 PROG_PARAMS.g_selected_PM.pop_back();
+            else
+                PROG_PARAMS.gui_dXY[1]-=0.5*PROG_PARAMS.scale;
             break;
+
+        case GLUT_KEY_RIGHT:
+            PROG_PARAMS.gui_dXY[0]-=0.5*PROG_PARAMS.scale;
+            break;
+
+        case GLUT_KEY_LEFT:
+            PROG_PARAMS.gui_dXY[0]+=0.5*PROG_PARAMS.scale;
+            break;
+
         default: return;
     }
 
@@ -699,9 +719,12 @@ void Mouse(int button, int state, int x, int y)
     //control needs to be pressed to selelect nodes
     if( state == GLUT_UP )
     {
-        PROG_PARAMS.g_selected_PM.clear();
+
         if( glutGetModifiers()==GLUT_ACTIVE_CTRL )
         {
+
+            //remove selected boxes
+            PROG_PARAMS.g_selected_PM.clear();
 
             static DT width=PROG_PARAMS.b0->width();
             static DT height=PROG_PARAMS.b0->height();
@@ -710,11 +733,11 @@ void Mouse(int button, int state, int x, int y)
 
             int viewport[4];
             glGetIntegerv(GL_VIEWPORT,viewport);
-            machine_double m_x=(x-PROG_PARAMS.windowWidth/2)/PROG_PARAMS.uscale_Render-PROG_PARAMS.deltaX_Render+PROG_PARAMS.windowWidth/2;
-            machine_double m_y=(viewport[3]-y-PROG_PARAMS.windowHeight/2)/PROG_PARAMS.uscale_Render-PROG_PARAMS.deltaY_Render+PROG_PARAMS.windowHeight/2;
+            machine_double m_x=(x-PROG_PARAMS.windowWidth/2)*PROG_PARAMS.scale+PROG_PARAMS.windowWidth/2;
+            machine_double m_y=(viewport[3]-y-PROG_PARAMS.windowHeight/2)*PROG_PARAMS.scale+PROG_PARAMS.windowHeight/2;
 
-            PROG_PARAMS.sel_x=m_x=(width*m_x/PROG_PARAMS.windowWidth+min_x).doubleValue();
-            PROG_PARAMS.sel_y=m_y=(height*m_y/PROG_PARAMS.windowHeight+min_y).doubleValue();
+            PROG_PARAMS.sel_x=m_x=(width*m_x/PROG_PARAMS.windowWidth+min_x).doubleValue() + PROG_PARAMS.gui_dXY[0];
+            PROG_PARAMS.sel_y=m_y=(height*m_y/PROG_PARAMS.windowHeight+min_y).doubleValue() + PROG_PARAMS.gui_dXY[1];
 
             Box * selected = const_cast<Box*>(PROG_PARAMS.b0)->find(Point2d(m_x,m_y));
 
