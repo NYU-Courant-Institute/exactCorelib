@@ -15,7 +15,7 @@ VAR=Debug
 CORE_PATH=../../..
 include ../Make.options2
 #include ../Make.options
-CXXFLAGS += -MMD
+CXXFLAGS += -MMD -I./cxy
 
 #=================================================
 # User definition (put parameters manually here)
@@ -43,8 +43,8 @@ test: $(TARGETS)
 moretest: $(TARGETS)
 # nothing to do
 
-mk: main.o display.o box.o
-	${CXX} $(LDFLAGS) main.o display.o box.o $(CORE_LIB) -o $@
+mk: main.o display.o box.o cxy/cxy.o cxy/box.o
+	${CXX} $(LDFLAGS) main.o display.o box.o cxy/cxy.o cxy/box.o $(CORE_LIB) -o $@
 
 #=================================================
 # Sample examples for testing only (cited from 

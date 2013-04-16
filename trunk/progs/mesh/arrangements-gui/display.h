@@ -16,6 +16,7 @@
 
 #include "mk-defs.h"
 #include "box.h"
+#include "cxy.h"
 
 using namespace std;
 
@@ -59,7 +60,11 @@ struct program_params_t
       windowPosY = 20;           // Y Position of Window
 
       showBoxBoundary = 1;  //draw box boundary
-      showCurves=1;            //draw Vor complex
+      showF=1;              //draw function F
+      showG=1;              //draw function G
+      showUnitCircle=1;         //draw the unit cirle
+      showAxis=1;               //draw x&y axis
+      showOffsetAxis=0;         //draw x=1&y=1 axis
 
       timeused=0;
 
@@ -68,6 +73,8 @@ struct program_params_t
       sel_wall_bisectors=false;     //show the wall bisectors of selected box (if possible)
       sel_corner_bisectors=false;   //show the corner bisectors of selected box (if possible)
       sel_parabola=false;           //show the parabola of wall/corner pairs in the features
+
+      sel_x=sel_y=0;
   }
 
   string fxy_str;
@@ -105,7 +112,11 @@ struct program_params_t
   int windowPosY;             // Y Position of Window
 
   int showBoxBoundary;        //draw box boundary
-  int showCurves;             //draw curves
+  int showF;                  //draw curve: F
+  int showG;                  //draw curve: G
+  int showUnitCircle;         //draw the unit cirle
+  int showAxis;               //draw x&y axis
+  int showOffsetAxis;         //draw x=1&y=1 axis
 
   int sel_circle;             //show the circle of selected box
   int sel_features;           //show the features of selected box
@@ -115,6 +126,14 @@ struct program_params_t
 
   float gui_dXY[2];
   float gui_dZ;
+
+  //last point user clicked
+  machine_double sel_x;
+  machine_double sel_y;
+
+  //line segments
+  vector<pair<cxy::Point *, cxy::Point *> > func_F_cxy_line_segs;
+  vector<pair<cxy::Point *, cxy::Point *> > func_G_cxy_line_segs;
 };
 
 extern program_params_t PROG_PARAMS;
@@ -145,7 +164,7 @@ void drawCircle(float radius);
 //void renderScene(void);
 void drawCircle( double Radius, int numPoints, const Point2d& o, double r, double g, double b);
 
-void filledCircle( double radius, const Point2d& o, double r, double g, double b);
+void filledCircle( double radius, int numPoints, const Point2d& o, double r, double g, double b);
 
 void drawQuad(const Box* b);
 
@@ -159,6 +178,8 @@ void SpecialKey( int key, int x, int y );
 
 void Mouse(int button, int state, int x, int y);
 
+//draw the entire tree
+void treeTraverse(Box* b);
 
 //convex a list of BoxT<NT> to a list of Box
 template <typename NT>

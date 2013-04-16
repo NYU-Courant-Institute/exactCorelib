@@ -74,6 +74,7 @@
 #include "display.h"
 #include "benchmark.h"
 #include "rootbox.h"
+#include "cxy/cxy.h"
 
 using namespace std;
 
@@ -252,6 +253,25 @@ int main(int argc, char **argv)
   Box *b_display = new Box(0, x_range, y_range);
   display_funcs::SetDisplayParams(b_display, &exclude, &outer_output,
                                   &inner_output, &ambiguous);
+
+  //create cxy line segments for F & G
+  {
+      //Box * cxy_f_box=new Box(*display_funcs::PROG_PARAMS.b0);
+      //Box * cxy_g_box=new Box(*display_funcs::PROG_PARAMS.b0);
+
+      Point<DT,2> UL, UR, LR, LL;
+      display_funcs::PROG_PARAMS.b0->getCorners(UL, UR, LR, LL);
+
+      cxy::Point a(LL[0].doubleValue(),LL[1].doubleValue());
+      cxy::Point b(UR[0].doubleValue(),UR[1].doubleValue());
+
+      cxy::Box cxy_f_box(a, b);
+      cxy::Box cxy_g_box(a, b);
+
+      cxy::cxy(fxy_str,&cxy_f_box,display_funcs::PROG_PARAMS.func_F_cxy_line_segs);
+      cxy::cxy(gxy_str,&cxy_g_box,display_funcs::PROG_PARAMS.func_G_cxy_line_segs);
+  }
+
   // draw plot
   startGlutLoop(argc, argv);
   delete b_display;

@@ -35,10 +35,10 @@ public:
         }
   }
 
-  BoxT(unsigned int generation_id,
+  BoxT(unsigned int gid,
        const IntervalT<NT> &x_range,
        const IntervalT<NT> &y_range) :
-        generation_id(generation_id),
+        generation_id(gid),
         x_range(x_range),
         y_range(y_range),
         isLeaf(true), depth(1), pParent(NULL), priority(0), rB(0)
@@ -51,6 +51,19 @@ public:
         NT w=width();
         NT h=height();
         rB = sqrt((w*w+h*h).doubleValue())/2;
+  }
+
+  //copy constructor
+  BoxT( const BoxT<NT>& other ):
+      generation_id(other.generation_id),
+      x_range(other.x_range),
+      y_range(other.y_range),
+      isLeaf(other.isLeaf), depth(other.depth), pParent(other.pParent), priority(other.priority), rB(other.rB)
+  {
+      for (int i = 0; i < 4; ++i)
+      {
+          pChildren[i] = other.pChildren[i];
+      }
   }
 
   ~BoxT() { }
@@ -233,7 +246,7 @@ public:
     Box* First()
     {
         Box* n = b->pChildren[direction];
-        if (!n)
+        if (n==NULL)
         {
             return 0;
         }
@@ -244,11 +257,17 @@ public:
             return n;
         }
 
+        if(Box::isOverLimit(b, n))
+        {
+            cout<<"dir = "<<direction<<" b="<<(*b)<<" n="<<(*n)<<" Pointer b="<<b<<" n="<<n<<endl;
+        }
+
         assert(!Box::isOverLimit(b, n));
+
 
         while (true)
         {
-            if (!n->pChildren[next] || Box::isOverLimit(b, n->pChildren[next]))
+            if (n->pChildren[next]==NULL || Box::isOverLimit(b, n->pChildren[next]))
             {
                 break;
             }
@@ -322,36 +341,18 @@ bool BoxT<NT>::Split(NT epsilon)
 
     const unsigned int gen_id = generation_id + 1;
 
-    children[0] = new BoxT<NT>(gen_id,IntervalT<NT>(x_start, x_mid), IntervalT<NT>(y_start, y_mid));
-    children[1] = new BoxT<NT>(gen_id,IntervalT<NT>(x_mid, x_end), IntervalT<NT>(y_start, y_mid));
-    children[2] = new BoxT<NT>(gen_id,IntervalT<NT>(x_start, x_mid), IntervalT<NT>(y_mid, y_end));
-    children[3] = new BoxT<NT>(gen_id,IntervalT<NT>(x_mid, x_end), IntervalT<NT>(y_mid, y_end));
+    children[0] = new BoxT<NT>(gen_id,IntervalT<NT>(x_start, x_mid), IntervalT<NT>(y_mid, y_end));
+    children[1] = new BoxT<NT>(gen_id,IntervalT<NT>(x_mid, x_end), IntervalT<NT>(y_mid, y_end));
+    children[2] = new BoxT<NT>(gen_id,IntervalT<NT>(x_mid, x_end), IntervalT<NT>(y_start, y_mid));
+    children[3] = new BoxT<NT>(gen_id,IntervalT<NT>(x_start, x_mid), IntervalT<NT>(y_start, y_mid));
 
-    cout<<"---------> parent="<<*this<<endl;
 
-//    output->push_back(new BoxT<NT>(gen_id,IntervalT<NT>(x_start, x_mid), IntervalT<NT>(y_start, y_mid)));
-//    output->push_back(new BoxT<NT>(gen_id,IntervalT<NT>(x_mid, x_end), IntervalT<NT>(y_start, y_mid)));
-//    output->push_back(new BoxT<NT>(gen_id,IntervalT<NT>(x_start, x_mid), IntervalT<NT>(y_mid, y_end)));
-//    output->push_back(new BoxT<NT>(gen_id,IntervalT<NT>(x_mid, x_end), IntervalT<NT>(y_mid, y_end)));
-/*
-    NT child_w=width()/2;
-    NT child_h=height()/2;
-    Point2d o=center();
-    NT x_l=o[0]-width()/4;
-    NT x_r=o[0]+width()/4;
-    NT y_l=o[1]-height()/4;
-    NT y_u=o[1]+height()/4;
-
-    IntervalT<NT> int_x_l(x_l-child_w,x_l+child_w);
-    IntervalT<NT> int_x_r(x_r-child_w,x_r+child_w);
-    IntervalT<NT> int_y_u(y_u-child_h,y_u+child_h);
-    IntervalT<NT> int_y_l(y_l-child_h,y_l+child_h);
-
-    children[0] = new BoxT<NT>( generation_id+1, int_x_l, int_y_u );
-    children[1] = new BoxT<NT>( generation_id+1, int_x_r, int_y_u );
-    children[2] = new BoxT<NT>( generation_id+1, int_x_r, int_y_l );
-    children[3] = new BoxT<NT>( generation_id+1, int_x_l, int_y_l );
-*/
+//    cout<<"---------> parent="<<*this<<" ("<<this<<" )"<<endl;
+//    for(int n=0;n<4;n++)
+//    {
+//        if(pChildren[n]==NULL) continue;
+//        cout<<"--------->\tneighbor["<<n<<"]="<<*pChildren[n]<<" ("<<pChildren[n]<<")"<<endl;
+//    }
 
     for (int i = 0; i < 4; ++i)
     {
@@ -360,8 +361,6 @@ bool BoxT<NT>::Split(NT epsilon)
             cerr<<"! Error: Box::split: Not enough memory"<<endl;
             return false;
         }
-
-        cout<<"\tchild[i]="<<*children[i]<<endl;
 
         children[i]->depth = this->depth + 1;
 
@@ -392,8 +391,8 @@ bool BoxT<NT>::Split(NT epsilon)
         children[i]->pChildren[cross] = children[prev];
 
         //init box neighbor iterator for direction i
-        BoxIter<NT>* iter = new BoxIter<NT>(this, i);
-        BoxT<NT>* neighbor = iter->First();
+        BoxIter<NT> iter(this, i);
+        BoxT<NT>* neighbor = iter.First();
 
         if (!neighbor)
         {
@@ -423,7 +422,7 @@ bool BoxT<NT>::Split(NT epsilon)
         bool firstTimeCrossBetweenChildren = true;
 
         //if neighbor smaller
-        while(neighbor != iter->End())
+        while(neighbor != iter.End())
         {
             //within the strip of child next, neighbor's cross direction
             //should point to next
@@ -451,7 +450,7 @@ bool BoxT<NT>::Split(NT epsilon)
                 assert(0);
             }
             prevNeighbor = neighbor;
-            neighbor = iter->Next();
+            neighbor = iter.Next();
         }
     }
 
@@ -461,6 +460,22 @@ bool BoxT<NT>::Split(NT epsilon)
     {
         this->pChildren[i] = children[i];
         this->pChildren[i]->pParent = this;
+
+//        cout<<"pChildren["<<i<<"]="<<*pChildren[i]<<endl;
+//
+//        for(int n=0;n<4;n++)
+//        {
+//            if(children[i]->pChildren[n]==NULL) continue;
+//            cout<<"\tneighbor["<<n<<"]="<<*children[i]->pChildren[n]<<" ("<<children[i]->pChildren[n]<<")"<<endl;
+////            if(children[i]->pChildren[n]->depth<children[i]-depth)
+////            {
+////                assert(!isOverLimit(children[i]->pChildren[n], children[i]));
+////            }
+////            else{
+////                assert(!isOverLimit(children[i], children[i]->pChildren[n]));
+////            }
+//
+//        }
     }
 
     this->isLeaf = false;

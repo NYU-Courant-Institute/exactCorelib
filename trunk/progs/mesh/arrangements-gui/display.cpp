@@ -100,8 +100,12 @@ void CreateGUI()
     glui->add_column_to_panel(top_panel,true);
 
     glui->add_separator_to_panel(top_panel);
-    glui->add_checkbox_to_panel(top_panel,"Box Boundary", &PROG_PARAMS.showBoxBoundary, -1, (GLUI_Update_CB)DisplayHandler)->set_int_val(PROG_PARAMS.showBoxBoundary);
-    glui->add_checkbox_to_panel(top_panel,"Show Curves", &PROG_PARAMS.showCurves, -1, (GLUI_Update_CB)DisplayHandler)->set_int_val(PROG_PARAMS.showCurves);
+    glui->add_checkbox_to_panel(top_panel,"Box Boundary", &PROG_PARAMS.showBoxBoundary)->set_int_val(PROG_PARAMS.showBoxBoundary);
+    glui->add_checkbox_to_panel(top_panel,"Show F", &PROG_PARAMS.showF)->set_int_val(PROG_PARAMS.showF);
+    glui->add_checkbox_to_panel(top_panel,"Show G", &PROG_PARAMS.showG)->set_int_val(PROG_PARAMS.showG);
+    glui->add_checkbox_to_panel(top_panel,"Show Unit Circle", &PROG_PARAMS.showUnitCircle)->set_int_val(PROG_PARAMS.showUnitCircle);
+    glui->add_checkbox_to_panel(top_panel,"Show Axis", &PROG_PARAMS.showAxis)->set_int_val(PROG_PARAMS.showAxis);
+    glui->add_checkbox_to_panel(top_panel,"Show Offset Axis", &PROG_PARAMS.showOffsetAxis)->set_int_val(PROG_PARAMS.showOffsetAxis);
 
     // Save image button
     //glui->add_button_to_panel(top_panel, "Save Image", 0, (GLUI_Update_CB)renderScenePS );
@@ -133,18 +137,57 @@ void CreateGUI()
     vorInfo=glui->add_statictext("var \n info"); //
     selectedBoxInfo=glui->add_statictext("no selected box"); //information about selected box
 
-
     glui->set_main_gfx_window( windowID );
 }
 
 
+inline void drawCXYLineSegments(vector< pair<cxy::Point *, cxy::Point *> >& segs)
+{
+    int size=segs.size();
+    glBegin(GL_LINES);
+    for(int i=0;i<size;i++)
+    {
+        pair<cxy::Point *, cxy::Point *>& line=segs[i];
+        glVertex2d(line.first->getX(),line.first->getY());
+        glVertex2d(line.second->getX(),line.second->getY());
+    }
+    glEnd();
+}
+
 // The main display routine.
 void DisplayHandler()
 {
-  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    ClearBackground();
 
-  ClearBackground();
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
+    glLoadIdentity();
+
+    glPushMatrix();
+    treeTraverse(PROG_PARAMS.b0);
+    glPopMatrix();
+
+    drawQuad_selected(PROG_PARAMS.g_selected_PM);
+
+    //draw the outer boundary
+    {
+        glLineWidth(3);
+        Point2d UL, UR, LR, LL;
+        const_cast<Box*>(PROG_PARAMS.b0)->getCorners(UL, UR, LR, LL);
+        glPushMatrix();
+        glTranslated(0,0,0.1);
+        glColor3f(0.25, 0.25 , 0.25);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glBegin(GL_POLYGON);
+        glVertex2f_core(UL);
+        glVertex2f_core(UR);
+        glVertex2f_core(LR);
+        glVertex2f_core(LL);
+        glEnd();
+        glPopMatrix();
+    }
+
+  /*
   glLineWidth(1.5f);        // thick line!
   glColor3f(1.0f,0.0f,0.0f);    // red
   vector<const BoxT<DoubleWrapper> *>::const_iterator it = PROG_PARAMS.n_it.begin();
@@ -178,8 +221,28 @@ void DisplayHandler()
     drawQuad(*it);
     ++it;
   }
+  */
 
-  // Chee(Mar'12): Draw the X- and Y-axes!
+    if(PROG_PARAMS.showF)
+    {
+        glLineWidth(1);
+        glTranslated(0,0,0.2);
+        glColor3d(0,.5,0);
+        drawCXYLineSegments(PROG_PARAMS.func_F_cxy_line_segs);
+    }
+
+    if(PROG_PARAMS.showG)
+    {
+        glLineWidth(1);
+        glColor3d(0.5,0,0);
+        glTranslated(0,0,0.2);
+        drawCXYLineSegments(PROG_PARAMS.func_G_cxy_line_segs);
+    }
+
+      // Chee(Mar'12): Draw the X- and Y-axes!
+    if(PROG_PARAMS.showAxis)
+    {
+      glTranslated(0,0,0.2);
       glLineWidth(2.0f);        // thick line!
       glColor3f(0.0f, 0.2f, 0.8f);  // bluish line
       glBegin(GL_LINES);
@@ -188,22 +251,37 @@ void DisplayHandler()
       vertex2fWrapper( 0.0f, PROG_PARAMS.y_min.doubleValue()); // Y-axis
       vertex2fWrapper( 0.0f, PROG_PARAMS.y_max.doubleValue()); // Y-axis
       glEnd();
-    // Draw circle around origin:
-      drawCircle(1.0);
+    }
 
-// Chee(Mar'12): Draw the line at unit distance from the axes, to inidicate scale!
-      glLineWidth(2.0f);        // thick line!
-      glColor3f(0.0f, 0.8f, 0.8f);  // bluish-green
-      glBegin(GL_LINES);
-      vertex2fWrapper( PROG_PARAMS.x_min.doubleValue(), 1.0f); // X-axis
-      vertex2fWrapper( PROG_PARAMS.x_max.doubleValue(), 1.0f); // X-axis
-      vertex2fWrapper( 1.0f, PROG_PARAMS.y_min.doubleValue()); // Y-axis
-      vertex2fWrapper( 1.0f, PROG_PARAMS.y_max.doubleValue()); // Y-axis
-      glEnd();
+      // Chee(Mar'12): Draw the line at unit distance from the axes, to inidicate scale!
+      if(PROG_PARAMS.showOffsetAxis)
+      {
+          glTranslated(0,0,0.2);
+          glLineWidth(2.0f);        // thick line!
+          glColor3f(0.0f, 0.8f, 0.8f);  // bluish-green
+          glBegin(GL_LINES);
+          vertex2fWrapper( PROG_PARAMS.x_min.doubleValue(), 1.0f); // X-axis
+          vertex2fWrapper( PROG_PARAMS.x_max.doubleValue(), 1.0f); // X-axis
+          vertex2fWrapper( 1.0f, PROG_PARAMS.y_min.doubleValue()); // Y-axis
+          vertex2fWrapper( 1.0f, PROG_PARAMS.y_max.doubleValue()); // Y-axis
+          glEnd();
+      }
+
+
+      if(PROG_PARAMS.showUnitCircle)
+      {
+          glTranslated(0,0,0.2);
+          // Draw circle around origin:
+          glLineWidth(2.0f);
+          static machine_double width=PROG_PARAMS.b0->width().doubleValue();
+          drawCircle(1.0,500.0/width, Point2d(0,0) ,0.0f, 0.2f, 0.8f);
+      }
 
   glLineWidth(1.0f);
 
   glFlush();
+
+  glutSwapBuffers();
 }
 
 
@@ -224,7 +302,9 @@ void ClearBackground()
              (PROG_PARAMS.y_max.doubleValue())*scale + y_delta);
 
   glMatrixMode(GL_MODELVIEW);
-  glClearColor(255.0/256.0,192.0/256.0,203.0/256.0,0.0);
+  //glClearColor(255.0/256.0,192.0/256.0,203.0/256.0,0.0);
+  //glClearColor(0,0,0,0.0);
+  glClearColor(1,1,1,0.0);
 }
 
 // Call back when the window canvas is reshaped.
@@ -323,9 +403,8 @@ void drawCircle( double Radius, int numPoints, const Point2d& o, double r, doubl
     glEnd();
 }
 
-void filledCircle( double radius, const Point2d& o, double r, double g, double b)
+void filledCircle( double radius, int numPoints, const Point2d& o, double r, double g, double b)
 {
-    int numPoints = 100;
     glColor3d_core(r,g,b);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_POLYGON);
@@ -371,6 +450,8 @@ void drawQuad(const Box* b)
 //            break;
 //    }
 
+    glColor3f(1, 1, 1); //White
+
     Point2d UL, UR, LR, LL;
     const_cast<Box*>(b)->getCorners(UL, UR, LR, LL);
 
@@ -384,6 +465,8 @@ void drawQuad(const Box* b)
 
     if (PROG_PARAMS.showBoxBoundary)
     {
+        glPushMatrix();
+        glTranslated(0,0,0.1);
         glColor3f(0.5, 0.5 , 0.5);
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glBegin(GL_POLYGON);
@@ -392,6 +475,7 @@ void drawQuad(const Box* b)
         glVertex2f_core(LR);
         glVertex2f_core(LL);
         glEnd();
+        glPopMatrix();
     }
 
     //draw Vor segments
@@ -412,8 +496,12 @@ void drawQuad(const Box* b)
 
 void drawQuad_selected(list<Box*> boxes)
 {
-//    typedef list<Corner*>::iterator CIT;
-//    typedef list<Wall*>::iterator WIT;
+
+    glTranslated(0,0,0.2);
+
+    static double radius=PROG_PARAMS.b0->width().doubleValue()/200;
+
+    filledCircle(radius,50,Point2d(PROG_PARAMS.sel_x,PROG_PARAMS.sel_y),0.5,0.5,0);
 
     for(list<Box*>::iterator i=boxes.begin();i!=boxes.end();i++)
     {
@@ -501,6 +589,7 @@ bool InitGL()
 
 void treeTraverse(Box* b)
 {
+    //cout<<"Draw "<<*b<<endl;
     if (!b)
     {
         return;
@@ -580,6 +669,8 @@ void SpecialKey(int key, int x, int y)
             if(PROG_PARAMS.g_selected_PM.empty()==false){//not empty
                 Box * last=PROG_PARAMS.g_selected_PM.back();
                 if(last!=PROG_PARAMS.b0){
+                    cout<<"last->pParent="<<flush;
+                    cout<<last->pParent<<endl;
                     PROG_PARAMS.g_selected_PM.push_back(last->pParent);
                 }
             }
@@ -611,15 +702,27 @@ void Mouse(int button, int state, int x, int y)
         PROG_PARAMS.g_selected_PM.clear();
         if( glutGetModifiers()==GLUT_ACTIVE_CTRL )
         {
+
+            static DT width=PROG_PARAMS.b0->width();
+            static DT height=PROG_PARAMS.b0->height();
+            static DT min_x=PROG_PARAMS.b0->x_range.getL();
+            static DT min_y=PROG_PARAMS.b0->y_range.getL();
+
             int viewport[4];
             glGetIntegerv(GL_VIEWPORT,viewport);
-            double m_x=(x-PROG_PARAMS.windowWidth/2)/PROG_PARAMS.uscale_Render-PROG_PARAMS.deltaX_Render+PROG_PARAMS.windowWidth/2;
-            double m_y=(viewport[3]-y-PROG_PARAMS.windowHeight/2)/PROG_PARAMS.uscale_Render-PROG_PARAMS.deltaY_Render+PROG_PARAMS.windowHeight/2;
+            machine_double m_x=(x-PROG_PARAMS.windowWidth/2)/PROG_PARAMS.uscale_Render-PROG_PARAMS.deltaX_Render+PROG_PARAMS.windowWidth/2;
+            machine_double m_y=(viewport[3]-y-PROG_PARAMS.windowHeight/2)/PROG_PARAMS.uscale_Render-PROG_PARAMS.deltaY_Render+PROG_PARAMS.windowHeight/2;
+
+            PROG_PARAMS.sel_x=m_x=(width*m_x/PROG_PARAMS.windowWidth+min_x).doubleValue();
+            PROG_PARAMS.sel_y=m_y=(height*m_y/PROG_PARAMS.windowHeight+min_y).doubleValue();
 
             Box * selected = const_cast<Box*>(PROG_PARAMS.b0)->find(Point2d(m_x,m_y));
 
             if(selected!=NULL)
             {
+
+                cout<<"Select="<<*selected<<endl;
+
                 //selected->pParent->distribute_features2box(selected);
                 //selected->buildVor();
 

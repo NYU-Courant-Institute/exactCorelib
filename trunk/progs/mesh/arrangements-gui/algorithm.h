@@ -76,11 +76,16 @@ namespace Algorithm {
       cout<<"Q_tmp size="<<Q_tmp.size()<<endl;
 
       const Box *current = Q_tmp.back();
+      
+//      cout<<"!!!! Current="<<*current<<"("<<current<<")"<<endl;
+      
       Q_tmp.pop_back();
 
       // (current box)*2 passes the Jacobian test
       {
           const Box *double_current = current->Dilate(2);
+
+//          cout<<"!!!! Current after dialation="<<*current<<"("<<current<<")"<<endl;
 
           if(pred.JTest(double_current))
           {
@@ -100,6 +105,8 @@ namespace Algorithm {
         const Box *box = Q_confirm.back();
         Q_confirm.pop_back();
 
+//        cout<<"!!!! confirmation loop box="<<*box<<"("<<box<<")"<<endl;
+
         //box too small
 //		if(pred.Min(box)) {
 //          Q_ambiguous->push_back(box);
@@ -117,9 +124,11 @@ namespace Algorithm {
 		  Q_final.push_back(new RootBox(box, double_box)); // Why do we push dilated box?
           Q_exclude->insert(Q_exclude->end(), Q_confirm.begin(), Q_confirm.end());
           Q_confirm.clear();  // include area already found in region, clean Q_confirm
+
           // both box and double_box can be deleted because the constructor of RootBox 
           // will make new outer and inner box based on double_box's dimension
-          delete box;
+
+          //delete box;
           delete double_box; 
           break;
         }
@@ -135,7 +144,10 @@ namespace Algorithm {
 
       cout<<"out of while (Q_confirm) loop"<<endl;
 
+//      cout<<"!!!! Current="<<*current<<"("<<current<<")"<<endl;
+
     }//while (Q_tmp)
+
 
     cout<<"out of while (Q_tmp) loop"<<endl;
 
@@ -148,39 +160,42 @@ namespace Algorithm {
 	// sign of the jacobian is the same on overlaping boxes, we 
 	// only have to output one box from a set of overlapping 
 	// boxes corresponding to a root.
-	typename std::vector <RootBox *>::iterator new_end;
-	vector <RootBox *> Q_temp;
-	RootBox *current;
-	/*	
-	std::cout <<"Printing Final Queue"<<std::endl;
-	for (unsigned int i=0; i<Q_final.size(); i++) {
-		std::cout<< (*Q_final[i]) << std::endl;
-	}
-	std::cout <<"Clearing Final Queue"<<std::endl;
-	*/
-	while(!Q_final.empty())
-	{
-		current = Q_final.back();
-		Q_final.pop_back();
-	//std::cout << " current box = "<< (*current) << std::endl;
-		for (unsigned int i=0; i<Q_final.size(); i++) {
-			if (current->Disjoint(Q_final[i])) {
-				Q_temp.push_back(Q_final[i]);
-			}
-		}
+    {
+        typename std::vector <RootBox *>::iterator new_end;
+        vector <RootBox *> Q_temp;
+        RootBox *current;
+        /*
+        std::cout <<"Printing Final Queue"<<std::endl;
+        for (unsigned int i=0; i<Q_final.size(); i++) {
+            std::cout<< (*Q_final[i]) << std::endl;
+        }
+        std::cout <<"Clearing Final Queue"<<std::endl;
+        */
+        while(!Q_final.empty())
+        {
+            current = Q_final.back();
+            Q_final.pop_back();
+        //std::cout << " current box = "<< (*current) << std::endl;
+            for (unsigned int i=0; i<Q_final.size(); i++) {
+                if (current->Disjoint(Q_final[i])) {
+                    Q_temp.push_back(Q_final[i]);
+                }
+            }
 
-	//	for (unsigned int i=0; i<Q_temp.size(); i++) {
-	//		std::cout<< (*Q_temp[i]) << std::endl;
-	//	}
-		
-			// Search if any other box in Q_final overlaps with current.
-			// Discard any such box.
-			// It will help to start with smaller boxes first, but now
-			// we do a starightforward quadratic time algorithm
-		Q_output->push_back(current);
-		Q_final=Q_temp;
-		Q_temp.clear();				
-	} // (Q_final)
+        //	for (unsigned int i=0; i<Q_temp.size(); i++) {
+        //		std::cout<< (*Q_temp[i]) << std::endl;
+        //	}
+
+                // Search if any other box in Q_final overlaps with current.
+                // Discard any such box.
+                // It will help to start with smaller boxes first, but now
+                // we do a starightforward quadratic time algorithm
+            Q_output->push_back(current);
+            Q_final=Q_temp;
+            Q_temp.clear();
+        } // (Q_final)
+    }
+
   }//Run
 }  // end of namespace algorithm
 
