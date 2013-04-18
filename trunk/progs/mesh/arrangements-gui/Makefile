@@ -125,6 +125,27 @@ eg14: ${TARGETS}
     --x_min -30 --x_max 30 --y_min -30 --y_max 30 --minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
 	
 
+# THIS is a perturbation of the TWO STRAIGHT LINES at the origin.
+#	fxy = "y +y^2"    and    gxy = "1000y - x +x^3"
+# This example is still OK (3 roots found, near (1,1), (0,0) and (-1,-1).
+# If you increase the coefficient from 1000 to 10000, you get ambiguous regions.
+# 	
+eg20b: ${TARGETS}
+	./mk --fxy "y +y^2" \
+	    	--gxy "10000000y - x +x^3" \
+    		--x_min -4 --x_max 4 --y_min -4 --y_max 4 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+
+# This example has two curves that are asymptotic and the Jacobian 
+# coincides with one of the curves
+
+eg21: ${TARGETS}
+	./mk --fxy "xy-1" \
+	    	--gxy "y" \
+    		--x_min 40 --x_max 400 --y_min -1 --y_max 1 \
+		--minsize ${minsize} --maxsize ${maxsize} --maxgen ${maxgen}
+
+
 #=================================================
 # Rules
 # 	First clean out all suffixes:
