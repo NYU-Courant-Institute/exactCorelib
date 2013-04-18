@@ -194,7 +194,7 @@ void ConvertList(const vector<const BoxT<NT> *> *input, vector<const Box *> *out
         IntervalT<DoubleWrapper>(
             box->y_range.getL().doubleValue(),
             box->y_range.getR().doubleValue())));
-    delete box;
+    //delete box;
   }
   // input->clear();
 }

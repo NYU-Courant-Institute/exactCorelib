@@ -171,6 +171,20 @@ void DisplayHandler()
 
     glLoadIdentity();
 
+    //draw the outer boundary
+    {
+        Point2d UL, UR, LR, LL;
+        const_cast<Box*>(PROG_PARAMS.b0)->getCorners(UL, UR, LR, LL);
+        glColor3f(1,1,1);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glBegin(GL_POLYGON);
+        glVertex2f_core(UL);
+        glVertex2f_core(UR);
+        glVertex2f_core(LR);
+        glVertex2f_core(LL);
+        glEnd();
+    }
+
     glPushMatrix();
     treeTraverse(PROG_PARAMS.b0);
     glPopMatrix();
@@ -310,9 +324,8 @@ void ClearBackground()
              (PROG_PARAMS.y_max.doubleValue())*scale + y_delta);
 
   glMatrixMode(GL_MODELVIEW);
-  //glClearColor(255.0/256.0,192.0/256.0,203.0/256.0,0.0);
-  //glClearColor(0,0,0,0.0);
-  glClearColor(1,1,1,0.0);
+  glClearColor(0.9,0.9,0.9,0.0);
+  //glClearColor(1,1,1,0.0);
 }
 
 // Call back when the window canvas is reshaped.
