@@ -78,7 +78,7 @@ eg4: ${TARGETS}
 eg5: ${TARGETS}
 	./mk --fxy "(-1 + x^5) + (-10*x^3)*y^2 + (5x)* y^4" \
 	    	--gxy "(5*x^4)*y^1 + (-10*x^2)*y^3 + y^5" \
-    		--x_min -4 --x_max 4 --y_min -4 --y_max 4 \
+    		--x_min -3 --x_max 3 --y_min -3 --y_max 3 \
 		--minsize 0.01 --maxsize ${maxsize} --maxgen ${maxgen}
 
 # REMARKS: laguerreN have N real positive roots (for N=6, these roots lie in [0,20])

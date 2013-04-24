@@ -114,12 +114,12 @@ private:
 		} 
 		else
 		{
-			if ( 2 > s2 && s2 >= s1 || e1 > s2 && s2 >= 0 )
+			if ( ((2 > s2) && (s2 >= s1)) || ((e1 > s2) && (s2 >= 0)) )
 			{
 				return true;
 			}
 
-			if ( 2 > e2 && e2 >= s1 || e1 > e2 && e2 >= 0 )
+			if ( ((2 > e2) && (e2 >= s1)) || ((e1 > e2) && (e2 >= 0)) )
 			{
 				return true;
 			}
@@ -145,7 +145,7 @@ private:
 		} 
 		else
 		{
-			if ( 2 >= e2 && s2 >= s1 || e1 > e2 && s2 >= 0 )
+			if ( (2 >= e2 && s2 >= s1) || (e1 > e2 && s2 >= 0) )
 			{
 				return true;
 			}
@@ -461,7 +461,7 @@ public:
 			} 
 			else
 			{
-				if ( 2 > a && a >= xi[0] || xi[1] > a && a >= 0 )
+				if ( (2 > a && a >= xi[0]) || (xi[1] > a && a >= 0) )
 				{
 					return true;
 				}

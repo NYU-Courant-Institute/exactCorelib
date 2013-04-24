@@ -50,6 +50,16 @@
 #include <iostream>
 #include <fstream>
 
+#ifdef __CYGWIN32__
+#include "glui.h"
+#endif
+#ifdef _WIN32
+#include <gl/glui.h>
+#endif
+#ifdef __APPLE__
+#include "glui.h"
+#endif
+
 using namespace std;
 
 // GLOBAL VARIABLES
@@ -66,10 +76,10 @@ int counter=0;	// for debugging
  *************************************************** */
 
 // DEBUG TOOL: THIS IS TO PREVENT INFINITE LOOPS...
-void check(){
-    if (++counter > 200) exit(1);
-    cout << "counter=" << counter << endl;
-}
+ void check(){
+     if (++counter > 200) exit(1);
+     cout << "counter=" << counter << endl;
+ }
 
 // check if token is "\\"
 //

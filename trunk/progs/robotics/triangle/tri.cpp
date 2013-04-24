@@ -355,7 +355,7 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 	std::stringstream sss;
 	sss << "Triangle Robot Control: " << title;	// create full file name 
 	std::string title_string = sss.str();
-	char * test ("Triangle Robot Demo");
+	const char * test ("Triangle Robot Demo");
 
 		GLUI *glui = GLUI_Master.create_glui( test,
 			0, windowPosX + boxWidth + 20, windowPosY );

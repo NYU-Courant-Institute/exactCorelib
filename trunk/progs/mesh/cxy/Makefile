@@ -71,7 +71,8 @@ ext=.cc
 ext=.cpp
 
 CORE_PATH=../../..
-include ../Make.options
+# use Make.options2 instead of Make.options:
+include ../Make.options2
 
 #=================================================
 # RUNTIME PARAMETERS 

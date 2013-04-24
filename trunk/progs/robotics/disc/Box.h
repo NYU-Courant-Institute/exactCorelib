@@ -51,7 +51,7 @@ public:
 	friend class BoxIter;
 	friend class QuadTree;
 	int depth;
-	double x, y;
+	double x, y;		// midpoint of box
 	double width, height;
 	int priority;
 	bool isLeaf;
