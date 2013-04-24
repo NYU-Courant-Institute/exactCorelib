@@ -1,6 +1,6 @@
 #include "Box.h"
 #include <assert.h>
-
+#include <algorithm>
 
 extern int vor_build_option; //TODO: defined in vor2d.cpp, find a way to remove this
 

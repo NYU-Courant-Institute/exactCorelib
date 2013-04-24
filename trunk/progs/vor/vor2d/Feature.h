@@ -24,6 +24,7 @@
 	#define CORE_LEVEL 1
 #endif
 
+#include <stdlib.h>
 #include "CORE.h"
 
 #include "Vector.h"
