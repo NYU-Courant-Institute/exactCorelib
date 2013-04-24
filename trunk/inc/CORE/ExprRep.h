@@ -1868,7 +1868,7 @@ public:
 protected:
   ExprRep* first;  /// <- pointer to the first child node
   ExprRep* second; /// <- pointer to the second child node
-};
+};// BinaryOpRepT
 
 /// \class AddSubRepT
 /// \brief add/sub node -- this is the most critical type of node, and
@@ -1878,6 +1878,8 @@ class AddSubRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
   typedef BinaryOpRepT<RootBd, Filter, Kernel> BinaryOpRep;
   typedef RootBd* id_rootbd_t;
+
+  using BinaryOpRep::check_exact;	// This line added Apr24'2013 (Chee)
   using BinaryOpRep::first; 
   using BinaryOpRep::second; 
   using ExprRep::filter;
@@ -2087,6 +2089,7 @@ class DivRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   typedef ExprRepT<RootBd, Filter, Kernel> ExprRep;
   typedef BinaryOpRepT<RootBd, Filter, Kernel> BinaryOpRep;
   typedef RootBd* id_rootbd_t;
+  using BinaryOpRep::check_exact;	// This line added Apr24'2013 (Chee)
   using BinaryOpRep::first; 
   using BinaryOpRep::second; 
   using ExprRep::filter;
