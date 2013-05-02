@@ -19,6 +19,17 @@
 #include <GL/glut.h>
 #include <regex>
 
+#ifdef __CYGWIN32__
+#include "glui.h"
+#endif
+#ifdef _WIN32
+#include <gl/glui.h>
+#endif
+#ifdef __APPLE__
+#include <GL/glui.h>
+#include "GL/glui.h"
+#endif
+
 #define GLUT_WHEEL_UP 3
 #define GLUT_WHEEL_DOWN 4
 #define ESC 27
@@ -54,16 +65,17 @@ int windowID;
 
 // Prelimenary types
 
-int obstacleCounter;
+int obstacleCounter; // Total faces of all obstacles
 
 struct Coord {
 	float x, y, z;
 };
 
-Coord coord[1000];
+Coord coord[1000]; // Coordinates of the faces of obstacles
 
 struct Face {
 	float a, b, c, d;
+    Coord coord[3];
 };
 
 Face faces[1000];
@@ -78,7 +90,7 @@ struct Box {
 	bool isVisited;
 };
 
-Box box[1000];
+Box boxes[1000];
 
 int radius, xStart, yStart, zStart, xEnd, yEnd, zEnd;
 
@@ -98,21 +110,21 @@ void drawScene()
 		glBegin(GL_TRIANGLES);
 	    {
 			glColor4f(1.0, 1.0, 1.0, 1.0);
-			glVertex3f(coord[i * 3 + 1].x, coord[i * 3 + 1].y, coord[i * 3 + 1].z);
-		    glVertex3f(coord[i * 3 + 2].x, coord[i * 3 + 2].y, coord[i * 3 + 2].z);
-		    glVertex3f(coord[i * 3 + 3].x, coord[i * 3 + 3].y, coord[i * 3 + 3].z);
+			glVertex3f(faces[i].coord[0].x, faces[i].coord[0].y, faces[i].coord[0].z);
+		    glVertex3f(faces[i].coord[1].x, faces[i].coord[1].y, faces[i].coord[1].z);
+			glVertex3f(faces[i].coord[2].x, faces[i].coord[2].y, faces[i].coord[2].z);
 		}
 		glEnd();
 
 		glBegin(GL_LINES);
 		{
 			glColor4f(0.0, 0.0, 0.0, 1.0);
-			glVertex3f(coord[i * 3 + 1].x, coord[i * 3 + 1].y, coord[i * 3 + 1].z);
-		    glVertex3f(coord[i * 3 + 2].x, coord[i * 3 + 2].y, coord[i * 3 + 2].z);
-		    glVertex3f(coord[i * 3 + 3].x, coord[i * 3 + 3].y, coord[i * 3 + 3].z);
-			glVertex3f(coord[i * 3 + 1].x, coord[i * 3 + 1].y, coord[i * 3 + 1].z);
-		    glVertex3f(coord[i * 3 + 2].x, coord[i * 3 + 2].y, coord[i * 3 + 2].z);
-		    glVertex3f(coord[i * 3 + 3].x, coord[i * 3 + 3].y, coord[i * 3 + 3].z);
+			glVertex3f(faces[i].coord[0].x, faces[i].coord[0].y, faces[i].coord[0].z);
+		    glVertex3f(faces[i].coord[1].x, faces[i].coord[1].y, faces[i].coord[1].z);
+			glVertex3f(faces[i].coord[2].x, faces[i].coord[2].y, faces[i].coord[2].z);
+			glVertex3f(faces[i].coord[0].x, faces[i].coord[0].y, faces[i].coord[0].z);
+		    glVertex3f(faces[i].coord[1].x, faces[i].coord[1].y, faces[i].coord[1].z);
+			glVertex3f(faces[i].coord[2].x, faces[i].coord[2].y, faces[i].coord[2].z);
 		}
 		glEnd();
 	}
@@ -133,9 +145,9 @@ void drawScene()
 	if ((isShowPath) && (sinkBox != 0)) {
 		glBegin(GL_LINES);
 		{
-			glVertex3f(box[sourceBox].x, box[sourceBox].y, box[sourceBox].z);
+			glVertex3f(boxes[sourceBox].x, boxes[sourceBox].y, boxes[sourceBox].z);
 			glVertex3f(xStart, yStart, zStart);
-			glVertex3f(box[sinkBox].x, box[sinkBox].y, box[sinkBox].z);
+			glVertex3f(boxes[sinkBox].x, boxes[sinkBox].y, boxes[sinkBox].z);
 			glVertex3f(xEnd, yEnd, zEnd);
 		}
 		glEnd();
@@ -143,76 +155,76 @@ void drawScene()
 		while (i != sourceBox) {
 			glBegin(GL_LINES);
 			{
-				glVertex3f(box[i].x, box[i].y, box[i].z);
-				glVertex3f(box[box[i].previous].x, box[box[i].previous].y, box[box[i].previous].z);
+				glVertex3f(boxes[i].x, boxes[i].y, boxes[i].z);
+				glVertex3f(boxes[boxes[i].previous].x, boxes[boxes[i].previous].y, boxes[boxes[i].previous].z);
 			}
 			glEnd();
-			i = box[i].previous;
+			i = boxes[i].previous;
 		}
 	}
 
 	// Draw boxes
 	glDisable(GL_DEPTH_TEST);
 	if (isShowBox == 1) for (int i = 0; i < boxCounter; i++)
-		if (box[i].isActive)
+		if (boxes[i].isActive)
 	{
-		box[i].radius -= 0.5;
+		boxes[i].radius -= 0.5;
 		glBegin(GL_QUADS);
 		{
-			switch (box[i].type) {
+			switch (boxes[i].type) {
 			case -1: glColor4f(0.1, 0.9, 0.1, 0.1); if ((nextBoxType != 0) && (nextBoxType != 1)) glColor4f(0.0, 0.0, 0.0, 0.0); break;
 			case 0: glColor4f(0.8, 0.7, 0.0, 0.1); if ((nextBoxType != 0) && (nextBoxType != 2)) glColor4f(0.0, 0.0, 0.0, 0.0); break;
 			case 1: glColor4f(0.8, 0.2, 0.1, 0.1); if ((nextBoxType != 0) && (nextBoxType != 3)) glColor4f(0.0, 0.0, 0.0, 0.0); break;
 			}
-			if ((nextBoxType == 4) && (box[i].isVisited)) glColor4f(0.0, 0.0, 1.0, 0.2);
-			if ((nextBoxType == 4) && (box[i].isVisited)) glColor4f(0.0, 0.0, 1.0, 0.2);
+			if ((nextBoxType == 4) && (boxes[i].isVisited)) glColor4f(0.0, 0.0, 1.0, 0.2);
+			if ((nextBoxType == 4) && (boxes[i].isVisited)) glColor4f(0.0, 0.0, 1.0, 0.2);
 			// face 1
-			glVertex3f(box[i].x + box[i].radius, box[i].y + box[i].radius, box[i].z + box[i].radius);
-			glVertex3f(box[i].x + box[i].radius, box[i].y - box[i].radius, box[i].z + box[i].radius);
-			glVertex3f(box[i].x + box[i].radius, box[i].y - box[i].radius, box[i].z - box[i].radius);
-			glVertex3f(box[i].x + box[i].radius, box[i].y + box[i].radius, box[i].z - box[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z + boxes[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z + boxes[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z - boxes[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z - boxes[i].radius);
 			// face 2
-			glVertex3f(box[i].x - box[i].radius, box[i].y + box[i].radius, box[i].z + box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y - box[i].radius, box[i].z + box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y - box[i].radius, box[i].z - box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y + box[i].radius, box[i].z - box[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z + boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z + boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z - boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z - boxes[i].radius);
 			// face 3
-			glVertex3f(box[i].x + box[i].radius, box[i].y + box[i].radius, box[i].z + box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y + box[i].radius, box[i].z + box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y + box[i].radius, box[i].z - box[i].radius);
-			glVertex3f(box[i].x + box[i].radius, box[i].y + box[i].radius, box[i].z - box[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z + boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z + boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z - boxes[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z - boxes[i].radius);
 			// face 4
-			glVertex3f(box[i].x + box[i].radius, box[i].y - box[i].radius, box[i].z + box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y - box[i].radius, box[i].z + box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y - box[i].radius, box[i].z - box[i].radius);
-			glVertex3f(box[i].x + box[i].radius, box[i].y - box[i].radius, box[i].z - box[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z + boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z + boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z - boxes[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z - boxes[i].radius);
 			// face 5
-			glVertex3f(box[i].x + box[i].radius, box[i].y + box[i].radius, box[i].z + box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y + box[i].radius, box[i].z + box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y - box[i].radius, box[i].z + box[i].radius);
-			glVertex3f(box[i].x + box[i].radius, box[i].y - box[i].radius, box[i].z + box[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z + boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z + boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z + boxes[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z + boxes[i].radius);
 			// face 6
-			glVertex3f(box[i].x + box[i].radius, box[i].y + box[i].radius, box[i].z - box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y + box[i].radius, box[i].z - box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y - box[i].radius, box[i].z - box[i].radius);
-			glVertex3f(box[i].x + box[i].radius, box[i].y - box[i].radius, box[i].z - box[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z - boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z - boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z - boxes[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z - boxes[i].radius);
 		}
 		glEnd();
 
 		/*glBegin(GL_LINES);
 		{
 			glColor4f(0.1, 0.1, 0.1, 0.8);
-			glVertex3f(box[i].x + box[i].radius, box[i].y + box[i].radius, box[i].z - box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y + box[i].radius, box[i].z - box[i].radius);
-			glVertex3f(box[i].x + box[i].radius, box[i].y + box[i].radius, box[i].z + box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y + box[i].radius, box[i].z + box[i].radius);
-			glVertex3f(box[i].x + box[i].radius, box[i].y - box[i].radius, box[i].z - box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y - box[i].radius, box[i].z - box[i].radius);
-			glVertex3f(box[i].x + box[i].radius, box[i].y - box[i].radius, box[i].z + box[i].radius);
-			glVertex3f(box[i].x - box[i].radius, box[i].y - box[i].radius, box[i].z + box[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z - boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z - boxes[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z + boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z + boxes[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z - boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z - boxes[i].radius);
+			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z + boxes[i].radius);
+			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z + boxes[i].radius);
 		}
 		glEnd();*/
-		box[i].radius += 0.5;
+		boxes[i].radius += 0.5;
 	}
 
 	glDisable(GL_DEPTH_TEST);
@@ -273,12 +285,13 @@ void display(void)
 
 void Mouse(int button, int state, int x, int y) //
 {
-    if(state == GLUT_DOWN) 
-	oldmx=x,oldmy=y;
-    if(state == GLUT_UP && button == GLUT_WHEEL_UP)
-    {
-	r +=0.2;
-	glutPostRedisplay();
+    if(state == GLUT_DOWN) {
+		oldmx = x;
+		oldmy = y;
+	}
+    if(state == GLUT_UP && button == GLUT_WHEEL_UP) {
+		r +=0.2;
+		glutPostRedisplay();
     }
     if(state == GLUT_UP && button == GLUT_WHEEL_UP)
     {
@@ -303,16 +316,16 @@ bool isEqual(float i, float j) {
 }
 
 bool isInBox(int i, float x, float y, float z) {
-	if ((box[i].x + box[i].radius >= x) && (box[i].x - box[i].radius <= x)
-		&& (box[i].y + box[i].radius >= y) && (box[i].y - box[i].radius <= y)
-		&& (box[i].z + box[i].radius >= z) && (box[i].z - box[i].radius <= z))
+	if ((boxes[i].x + boxes[i].radius >= x) && (boxes[i].x - boxes[i].radius <= x)
+		&& (boxes[i].y + boxes[i].radius >= y) && (boxes[i].y - boxes[i].radius <= y)
+		&& (boxes[i].z + boxes[i].radius >= z) && (boxes[i].z - boxes[i].radius <= z))
 		return true;
 	return false;
 }
 
 int getSourceBox() {
 	for (int i = 0; i < boxCounter; i++)
-		if ((box[i].isActive) && (isInBox(i, xStart, yStart, zStart))) {
+		if ((boxes[i].isActive) && (isInBox(i, xStart, yStart, zStart))) {
 			return i;
 		}
 	return 0;
@@ -328,235 +341,130 @@ float getDist(float px, float py, float pz, int face) {
 	return baseDist;
 }
 
-int getBoxType(int i) {
-	
-	bool collided = false;
+float getDistToWall(int boxID, int obstacleID) {
+	// NOT COMPLETED
+	return getDist(boxes[boxID].x, boxes[boxID].y, boxes[boxID].z, obstacleID);
+}
 
-	// Detect wall collision
+int getBoxType(int boxID) {
 	
-	float leftSideAD, t1, t2, t3, t4, s1, s2, s3;
+	bool collided = false; // indicates whether being mixed
 
-	for (int j = 0; j < obstacleCounter; j++) {
-		// Face 1
-		leftSideAD = faces[j].a * (box[i].x + box[i].radius + radius) + faces[j].d;
-		t1 = leftSideAD + faces[j].b * (box[i].y + box[i].radius) + faces[j].c * (box[i].z + box[i].radius);
-		t2 = leftSideAD + faces[j].b * (box[i].y + box[i].radius) + faces[j].c * (box[i].z - box[i].radius);
-		t3 = leftSideAD + faces[j].b * (box[i].y - box[i].radius) + faces[j].c * (box[i].z - box[i].radius);
-		t4 = leftSideAD + faces[j].b * (box[i].y - box[i].radius) + faces[j].c * (box[i].z + box[i].radius);
-		s1 = box[i].x + box[i].radius + radius - coord[j * 3 + 1].x;
-		s2 = box[i].x + box[i].radius + radius - coord[j * 3 + 2].x;
-		s3 = box[i].x + box[i].radius + radius - coord[j * 3 + 3].x;
-		if (!(((t1 > 0) && (t2 > 0) && (t3 > 0) && (t4 > 0)) || 
-			((t1 < 0) && (t2 < 0) && (t3 < 0) && (t4 < 0)) ||
-			((s1 < 0) && (s2 < 0) && (s3 < 0)) ||
-			((s1 > 0) && (s2 > 0) && (s3 > 0)))) collided = true;
-		// Face 2
-		leftSideAD = faces[j].a * (box[i].x - box[i].radius - radius) + faces[j].d;
-		t1 = leftSideAD + faces[j].b * (box[i].y + box[i].radius) + faces[j].c * (box[i].z + box[i].radius);
-		t2 = leftSideAD + faces[j].b * (box[i].y + box[i].radius) + faces[j].c * (box[i].z - box[i].radius);
-		t3 = leftSideAD + faces[j].b * (box[i].y - box[i].radius) + faces[j].c * (box[i].z - box[i].radius);
-		t4 = leftSideAD + faces[j].b * (box[i].y - box[i].radius) + faces[j].c * (box[i].z + box[i].radius);
-		s1 = box[i].x - box[i].radius - radius - coord[j * 3 + 1].x;
-		s2 = box[i].x - box[i].radius - radius - coord[j * 3 + 2].x;
-		s3 = box[i].x - box[i].radius - radius - coord[j * 3 + 3].x;
-		if (!(((t1 > 0) && (t2 > 0) && (t3 > 0) && (t4 > 0)) || 
-			((t1 < 0) && (t2 < 0) && (t3 < 0) && (t4 < 0)) ||
-			((s1 < 0) && (s2 < 0) && (s3 < 0)) ||
-			((s1 > 0) && (s2 > 0) && (s3 > 0)))) collided = true;
-		// Face 3
-		leftSideAD = faces[j].b * (box[i].y + box[i].radius + radius) + faces[j].d;
-		t1 = leftSideAD + faces[j].a * (box[i].x + box[i].radius) + faces[j].c * (box[i].z + box[i].radius);
-		t2 = leftSideAD + faces[j].a * (box[i].x + box[i].radius) + faces[j].c * (box[i].z - box[i].radius);
-		t3 = leftSideAD + faces[j].a * (box[i].x - box[i].radius) + faces[j].c * (box[i].z - box[i].radius);
-		t4 = leftSideAD + faces[j].a * (box[i].x - box[i].radius) + faces[j].c * (box[i].z + box[i].radius);
-		s1 = box[i].y + box[i].radius + radius - coord[j * 3 + 1].y;
-		s2 = box[i].y + box[i].radius + radius - coord[j * 3 + 2].y;
-		s3 = box[i].y + box[i].radius + radius - coord[j * 3 + 3].y;
-		if (!(((t1 > 0) && (t2 > 0) && (t3 > 0) && (t4 > 0)) || 
-			((t1 < 0) && (t2 < 0) && (t3 < 0) && (t4 < 0)) ||
-			((s1 < 0) && (s2 < 0) && (s3 < 0)) ||
-			((s1 > 0) && (s2 > 0) && (s3 > 0)))) collided = true;
-		// Face 4
-		leftSideAD = faces[j].b * (box[i].y - box[i].radius - radius) + faces[j].d;
-		t1 = leftSideAD + faces[j].a * (box[i].x + box[i].radius) + faces[j].c * (box[i].z + box[i].radius);
-		t2 = leftSideAD + faces[j].a * (box[i].x + box[i].radius) + faces[j].c * (box[i].z - box[i].radius);
-		t3 = leftSideAD + faces[j].a * (box[i].x - box[i].radius) + faces[j].c * (box[i].z - box[i].radius);
-		t4 = leftSideAD + faces[j].a * (box[i].x - box[i].radius) + faces[j].c * (box[i].z + box[i].radius);
-		s1 = box[i].y - box[i].radius - radius - coord[j * 3 + 1].y;
-		s2 = box[i].y - box[i].radius - radius - coord[j * 3 + 2].y;
-		s3 = box[i].y - box[i].radius - radius - coord[j * 3 + 3].y;
-		if (!(((t1 > 0) && (t2 > 0) && (t3 > 0) && (t4 > 0)) || 
-			((t1 < 0) && (t2 < 0) && (t3 < 0) && (t4 < 0)) ||
-			((s1 < 0) && (s2 < 0) && (s3 < 0)) ||
-			((s1 > 0) && (s2 > 0) && (s3 > 0)))) collided = true;
-		// Face 5
-		leftSideAD = faces[j].c * (box[i].z + box[i].radius + radius) + faces[j].d;
-		t1 = leftSideAD + faces[j].a * (box[i].x + box[i].radius) + faces[j].b * (box[i].y + box[i].radius);
-		t2 = leftSideAD + faces[j].a * (box[i].x + box[i].radius) + faces[j].b * (box[i].y - box[i].radius);
-		t3 = leftSideAD + faces[j].a * (box[i].x - box[i].radius) + faces[j].b * (box[i].y - box[i].radius);
-		t4 = leftSideAD + faces[j].a * (box[i].x - box[i].radius) + faces[j].b * (box[i].y + box[i].radius);
-		s1 = box[i].z + box[i].radius + radius - coord[j * 3 + 1].z;
-		s2 = box[i].z + box[i].radius + radius - coord[j * 3 + 2].z;
-		s3 = box[i].z + box[i].radius + radius - coord[j * 3 + 3].z;
-		if (!(((t1 > 0) && (t2 > 0) && (t3 > 0) && (t4 > 0)) || 
-			((t1 < 0) && (t2 < 0) && (t3 < 0) && (t4 < 0)) ||
-			((s1 < 0) && (s2 < 0) && (s3 < 0)) ||
-			((s1 > 0) && (s2 > 0) && (s3 > 0)))) collided = true;
-		// Face 6
-		leftSideAD = faces[j].c * (box[i].z - box[i].radius - radius) + faces[j].d;
-		t1 = leftSideAD + faces[j].a * (box[i].x + box[i].radius) + faces[j].b * (box[i].y + box[i].radius);
-		t2 = leftSideAD + faces[j].a * (box[i].x + box[i].radius) + faces[j].b * (box[i].y - box[i].radius);
-		t3 = leftSideAD + faces[j].a * (box[i].x - box[i].radius) + faces[j].b * (box[i].y - box[i].radius);
-		t4 = leftSideAD + faces[j].a * (box[i].x - box[i].radius) + faces[j].b * (box[i].y + box[i].radius);
-		s1 = box[i].z - box[i].radius - radius - coord[j * 3 + 1].z;
-		s2 = box[i].z - box[i].radius - radius - coord[j * 3 + 2].z;
-		s3 = box[i].z - box[i].radius - radius - coord[j * 3 + 3].z;
-		if (!(((t1 > 0) && (t2 > 0) && (t3 > 0) && (t4 > 0)) || 
-			((t1 < 0) && (t2 < 0) && (t3 < 0) && (t4 < 0)) ||
-			((s1 < 0) && (s2 < 0) && (s3 < 0)) ||
-			((s1 > 0) && (s2 > 0) && (s3 > 0)))) collided = true;
+	for (int i = 0; i < obstacleCounter; i++) {
+		int distToWall = getDistToWall(boxID, i);
+		if (distToWall < boxes[boxID].radius - radius) return 1;
+		if (distToWall < boxes[boxID].radius + radius) collided = true;
 	}
-
-	// Detect corner collision
-
-	/*float dist;
-
-	for (int j = 0; j < obstacleCounter; j++) {
-		// Vertex 1
-		dist = getDist(box[i].x + box[i].radius, box[i].y + box[i].radius, box[i].z + box[i].radius, j);
-		if (dist > radius) collided = true;
-		// Vertex 2
-		dist = getDist(box[i].x + box[i].radius, box[i].y + box[i].radius, box[i].z - box[i].radius, j);
-		if (dist > radius) collided = true;
-		// Vertex 3
-		dist = getDist(box[i].x + box[i].radius, box[i].y - box[i].radius, box[i].z - box[i].radius, j);
-		if (dist > radius) collided = true;
-		// Vertex 4
-		dist = getDist(box[i].x + box[i].radius, box[i].y - box[i].radius, box[i].z + box[i].radius, j);
-		if (dist > radius) collided = true;
-		// Vertex 5
-		dist = getDist(box[i].x - box[i].radius, box[i].y + box[i].radius, box[i].z + box[i].radius, j);
-		if (dist > radius) collided = true;
-		// Vertex 6
-		dist = getDist(box[i].x - box[i].radius, box[i].y + box[i].radius, box[i].z - box[i].radius, j);
-		if (dist > radius) collided = true;
-		// Vertex 7
-		dist = getDist(box[i].x - box[i].radius, box[i].y - box[i].radius, box[i].z - box[i].radius, j);
-		if (dist > radius) collided = true;
-		// Vertex 8
-		dist = getDist(box[i].x - box[i].radius, box[i].y - box[i].radius, box[i].z + box[i].radius, j);
-		if (dist > radius) collided = true;
-	}*/
-
-	if (!collided) return -1;
-	if (box[i].radius > epsilon) return 0;
-	return 1;
+	
+	if (collided) return 0;
+		else return 1;
 }
 
 void divideBox(int i) {
-	box[i].isActive = false;
+	boxes[i].isActive = false;
 	// Subbox 1
-	box[boxCounter].x = box[i].x + box[i].radius / 2;
-	box[boxCounter].y = box[i].y + box[i].radius / 2;
-	box[boxCounter].z = box[i].z + box[i].radius / 2;
-	box[boxCounter].isActive = true;
-	box[boxCounter].parent = i;
-	box[boxCounter].radius = box[i].radius / 2;
-	box[boxCounter].isVisited = false;
-	box[boxCounter].type = getBoxType(boxCounter);
+	boxes[boxCounter].x = boxes[i].x + boxes[i].radius / 2;
+	boxes[boxCounter].y = boxes[i].y + boxes[i].radius / 2;
+	boxes[boxCounter].z = boxes[i].z + boxes[i].radius / 2;
+	boxes[boxCounter].isActive = true;
+	boxes[boxCounter].parent = i;
+	boxes[boxCounter].radius = boxes[i].radius / 2;
+	boxes[boxCounter].isVisited = false;
+	boxes[boxCounter].type = getBoxType(boxCounter);
 	boxCounter++;
 	// Subbox 2
-	box[boxCounter].x = box[i].x + box[i].radius / 2;
-	box[boxCounter].y = box[i].y + box[i].radius / 2;
-	box[boxCounter].z = box[i].z - box[i].radius / 2;
-	box[boxCounter].isActive = true;
-	box[boxCounter].parent = i;
-	box[boxCounter].radius = box[i].radius / 2;
-	box[boxCounter].isVisited = false;
-	box[boxCounter].type = getBoxType(boxCounter);
+	boxes[boxCounter].x = boxes[i].x + boxes[i].radius / 2;
+	boxes[boxCounter].y = boxes[i].y + boxes[i].radius / 2;
+	boxes[boxCounter].z = boxes[i].z - boxes[i].radius / 2;
+	boxes[boxCounter].isActive = true;
+	boxes[boxCounter].parent = i;
+	boxes[boxCounter].radius = boxes[i].radius / 2;
+	boxes[boxCounter].isVisited = false;
+	boxes[boxCounter].type = getBoxType(boxCounter);
 	boxCounter++;
 	// Subbox 3
-	box[boxCounter].x = box[i].x + box[i].radius / 2;
-	box[boxCounter].y = box[i].y - box[i].radius / 2;
-	box[boxCounter].z = box[i].z + box[i].radius / 2;
-	box[boxCounter].isActive = true;
-	box[boxCounter].parent = i;
-	box[boxCounter].radius = box[i].radius / 2;
-	box[boxCounter].isVisited = false;
-	box[boxCounter].type = getBoxType(boxCounter);
+	boxes[boxCounter].x = boxes[i].x + boxes[i].radius / 2;
+	boxes[boxCounter].y = boxes[i].y - boxes[i].radius / 2;
+	boxes[boxCounter].z = boxes[i].z + boxes[i].radius / 2;
+	boxes[boxCounter].isActive = true;
+	boxes[boxCounter].parent = i;
+	boxes[boxCounter].radius = boxes[i].radius / 2;
+	boxes[boxCounter].isVisited = false;
+	boxes[boxCounter].type = getBoxType(boxCounter);
 	boxCounter++;
 	// Subbox 4
-	box[boxCounter].x = box[i].x + box[i].radius / 2;
-	box[boxCounter].y = box[i].y - box[i].radius / 2;
-	box[boxCounter].z = box[i].z - box[i].radius / 2;
-	box[boxCounter].isActive = true;
-	box[boxCounter].parent = i;
-	box[boxCounter].radius = box[i].radius / 2;
-	box[boxCounter].isVisited = false;
-	box[boxCounter].type = getBoxType(boxCounter);
+	boxes[boxCounter].x = boxes[i].x + boxes[i].radius / 2;
+	boxes[boxCounter].y = boxes[i].y - boxes[i].radius / 2;
+	boxes[boxCounter].z = boxes[i].z - boxes[i].radius / 2;
+	boxes[boxCounter].isActive = true;
+	boxes[boxCounter].parent = i;
+	boxes[boxCounter].radius = boxes[i].radius / 2;
+	boxes[boxCounter].isVisited = false;
+	boxes[boxCounter].type = getBoxType(boxCounter);
 	boxCounter++;
 	// Subbox 5
-	box[boxCounter].x = box[i].x - box[i].radius / 2;
-	box[boxCounter].y = box[i].y + box[i].radius / 2;
-	box[boxCounter].z = box[i].z + box[i].radius / 2;
-	box[boxCounter].isActive = true;
-	box[boxCounter].parent = i;
-	box[boxCounter].radius = box[i].radius / 2;
-	box[boxCounter].isVisited = false;
-	box[boxCounter].type = getBoxType(boxCounter);
+	boxes[boxCounter].x = boxes[i].x - boxes[i].radius / 2;
+	boxes[boxCounter].y = boxes[i].y + boxes[i].radius / 2;
+	boxes[boxCounter].z = boxes[i].z + boxes[i].radius / 2;
+	boxes[boxCounter].isActive = true;
+	boxes[boxCounter].parent = i;
+	boxes[boxCounter].radius = boxes[i].radius / 2;
+	boxes[boxCounter].isVisited = false;
+	boxes[boxCounter].type = getBoxType(boxCounter);
 	boxCounter++;
 	// Subbox 6
-	box[boxCounter].x = box[i].x - box[i].radius / 2;
-	box[boxCounter].y = box[i].y + box[i].radius / 2;
-	box[boxCounter].z = box[i].z - box[i].radius / 2;
-	box[boxCounter].isActive = true;
-	box[boxCounter].parent = i;
-	box[boxCounter].radius = box[i].radius / 2;
-	box[boxCounter].isVisited = false;
-	box[boxCounter].type = getBoxType(boxCounter);
+	boxes[boxCounter].x = boxes[i].x - boxes[i].radius / 2;
+	boxes[boxCounter].y = boxes[i].y + boxes[i].radius / 2;
+	boxes[boxCounter].z = boxes[i].z - boxes[i].radius / 2;
+	boxes[boxCounter].isActive = true;
+	boxes[boxCounter].parent = i;
+	boxes[boxCounter].radius = boxes[i].radius / 2;
+	boxes[boxCounter].isVisited = false;
+	boxes[boxCounter].type = getBoxType(boxCounter);
 	boxCounter++;
 	// Subbox 7
-	box[boxCounter].x = box[i].x - box[i].radius / 2;
-	box[boxCounter].y = box[i].y - box[i].radius / 2;
-	box[boxCounter].z = box[i].z + box[i].radius / 2;
-	box[boxCounter].isActive = true;
-	box[boxCounter].parent = i;
-	box[boxCounter].radius = box[i].radius / 2;
-	box[boxCounter].isVisited = false;
-	box[boxCounter].type = getBoxType(boxCounter);
+	boxes[boxCounter].x = boxes[i].x - boxes[i].radius / 2;
+	boxes[boxCounter].y = boxes[i].y - boxes[i].radius / 2;
+	boxes[boxCounter].z = boxes[i].z + boxes[i].radius / 2;
+	boxes[boxCounter].isActive = true;
+	boxes[boxCounter].parent = i;
+	boxes[boxCounter].radius = boxes[i].radius / 2;
+	boxes[boxCounter].isVisited = false;
+	boxes[boxCounter].type = getBoxType(boxCounter);
 	boxCounter++;
 	// Subbox 8
-	box[boxCounter].x = box[i].x - box[i].radius / 2;
-	box[boxCounter].y = box[i].y - box[i].radius / 2;
-	box[boxCounter].z = box[i].z - box[i].radius / 2;
-	box[boxCounter].isActive = true;
-	box[boxCounter].parent = i;
-	box[boxCounter].radius = box[i].radius / 2;
-	box[boxCounter].isVisited = false;
-	box[boxCounter].type = getBoxType(boxCounter);
+	boxes[boxCounter].x = boxes[i].x - boxes[i].radius / 2;
+	boxes[boxCounter].y = boxes[i].y - boxes[i].radius / 2;
+	boxes[boxCounter].z = boxes[i].z - boxes[i].radius / 2;
+	boxes[boxCounter].isActive = true;
+	boxes[boxCounter].parent = i;
+	boxes[boxCounter].radius = boxes[i].radius / 2;
+	boxes[boxCounter].isVisited = false;
+	boxes[boxCounter].type = getBoxType(boxCounter);
 	boxCounter++;
 }
 
 bool isBoxConnected(int i, int j) {
-	if ((isEqual(box[i].radius + box[j].radius, abs(box[i].x - box[j].x))) &&
-		(box[i].y <= box[j].y + box[j].radius) && (box[i].y >= box[j].y - box[j].radius) &&
-		(box[i].z <= box[j].z + box[j].radius) && (box[i].z >= box[j].z - box[j].radius)) return true;
-	if ((isEqual(box[i].radius + box[j].radius, abs(box[i].y - box[j].y))) &&
-		(box[i].x <= box[j].x + box[j].radius) && (box[i].x >= box[j].x - box[j].radius) &&
-		(box[i].z <= box[j].z + box[j].radius) && (box[i].z >= box[j].z - box[j].radius)) return true;
-	if ((isEqual(box[i].radius + box[j].radius, abs(box[i].z - box[j].z))) &&
-		(box[i].y <= box[j].y + box[j].radius) && (box[i].y >= box[j].y - box[j].radius) &&
-		(box[i].x <= box[j].x + box[j].radius) && (box[i].x >= box[j].x - box[j].radius)) return true;
+	// NEED TO BE REWRITTEN, TEMPORARY
+	if ((isEqual(boxes[i].radius + boxes[j].radius, abs(boxes[i].x - boxes[j].x))) &&
+		(boxes[i].y <= boxes[j].y + boxes[j].radius) && (boxes[i].y >= boxes[j].y - boxes[j].radius) &&
+		(boxes[i].z <= boxes[j].z + boxes[j].radius) && (boxes[i].z >= boxes[j].z - boxes[j].radius)) return true;
+	if ((isEqual(boxes[i].radius + boxes[j].radius, abs(boxes[i].y - boxes[j].y))) &&
+		(boxes[i].x <= boxes[j].x + boxes[j].radius) && (boxes[i].x >= boxes[j].x - boxes[j].radius) &&
+		(boxes[i].z <= boxes[j].z + boxes[j].radius) && (boxes[i].z >= boxes[j].z - boxes[j].radius)) return true;
+	if ((isEqual(boxes[i].radius + boxes[j].radius, abs(boxes[i].z - boxes[j].z))) &&
+		(boxes[i].y <= boxes[j].y + boxes[j].radius) && (boxes[i].y >= boxes[j].y - boxes[j].radius) &&
+		(boxes[i].x <= boxes[j].x + boxes[j].radius) && (boxes[i].x >= boxes[j].x - boxes[j].radius)) return true;
 	int t = i; i = j; j = t;
-	if ((isEqual(box[i].radius + box[j].radius, abs(box[i].x - box[j].x))) &&
-		(box[i].y <= box[j].y + box[j].radius) && (box[i].y >= box[j].y - box[j].radius) &&
-		(box[i].z <= box[j].z + box[j].radius) && (box[i].z >= box[j].z - box[j].radius)) return true;
-	if ((isEqual(box[i].radius + box[j].radius, abs(box[i].y - box[j].y))) &&
-		(box[i].x <= box[j].x + box[j].radius) && (box[i].x >= box[j].x - box[j].radius) &&
-		(box[i].z <= box[j].z + box[j].radius) && (box[i].z >= box[j].z - box[j].radius)) return true;
-	if ((isEqual(box[i].radius + box[j].radius, abs(box[i].z - box[j].z))) &&
-		(box[i].y <= box[j].y + box[j].radius) && (box[i].y >= box[j].y - box[j].radius) &&
-		(box[i].x <= box[j].x + box[j].radius) && (box[i].x >= box[j].x - box[j].radius)) return true;
+	if ((isEqual(boxes[i].radius + boxes[j].radius, abs(boxes[i].x - boxes[j].x))) &&
+		(boxes[i].y <= boxes[j].y + boxes[j].radius) && (boxes[i].y >= boxes[j].y - boxes[j].radius) &&
+		(boxes[i].z <= boxes[j].z + boxes[j].radius) && (boxes[i].z >= boxes[j].z - boxes[j].radius)) return true;
+	if ((isEqual(boxes[i].radius + boxes[j].radius, abs(boxes[i].y - boxes[j].y))) &&
+		(boxes[i].x <= boxes[j].x + boxes[j].radius) && (boxes[i].x >= boxes[j].x - boxes[j].radius) &&
+		(boxes[i].z <= boxes[j].z + boxes[j].radius) && (boxes[i].z >= boxes[j].z - boxes[j].radius)) return true;
+	if ((isEqual(boxes[i].radius + boxes[j].radius, abs(boxes[i].z - boxes[j].z))) &&
+		(boxes[i].y <= boxes[j].y + boxes[j].radius) && (boxes[i].y >= boxes[j].y - boxes[j].radius) &&
+		(boxes[i].x <= boxes[j].x + boxes[j].radius) && (boxes[i].x >= boxes[j].x - boxes[j].radius)) return true;
 	return false;
 }
 
@@ -566,14 +474,14 @@ bool findPathIter(int i) {
 		sinkBox = i; 
 		return true;
 	}
-	box[i].isVisited = true;
+	boxes[i].isVisited = true;
 	for (int j = 0; j < boxCounter; j++) {
-		if ((box[j].isVisited == false) && (isBoxConnected(i, j))) {
-			if (box[j].type == 0) {
-				box[j].isVisited = true;
+		if ((boxes[j].isVisited == false) && (isBoxConnected(i, j))) {
+			if (boxes[j].type == 0) {
+				boxes[j].isVisited = true;
 				divideBox(j);
-			} else if (box[j].type == -1) {
-				box[j].previous = i;
+			} else if (boxes[j].type == -1) {
+				boxes[j].previous = i;
 				bool found = findPathIter(j);
 				if (found) return found;
 			}
@@ -590,7 +498,7 @@ int randomUnvisitedConnectedBoxCounter = 0, nextRandomUnvisitedConnectedBoxCount
 
 int getNextRandomUnvisitedConnectedBox(int i) {
 	while (nextRandomUnvisitedConnectedBoxCounter <= boxCounter) {
-			if (box[nextRandomUnvisitedConnectedBoxCounter - 1].type != 1) {
+			if (boxes[nextRandomUnvisitedConnectedBoxCounter - 1].type != 1) {
 				nextRandomUnvisitedConnectedBoxes[randomUnvisitedConnectedBoxCounter] = 
 					nextRandomUnvisitedConnectedBoxCounter - 1;
 				randomUnvisitedConnectedBoxCounter++;
@@ -620,16 +528,16 @@ bool findPathIterRand(int i) {
 		sinkBox = i; 
 		return true;
 	}
-	box[i].isVisited = true;
+	boxes[i].isVisited = true;
 	int j;
 	do {
 		j = getNextRandomUnvisitedConnectedBox(i);
 		
-			if (box[j].type == 0) {
-				box[j].isVisited = true;
+			if (boxes[j].type == 0) {
+				boxes[j].isVisited = true;
 				divideBox(j);
-			} else if (box[j].type == -1) {
-				box[j].previous = i;
+			} else if (boxes[j].type == -1) {
+				boxes[j].previous = i;
 				bool found = findPathIter(j);
 				if (found) return found;
 			}
@@ -643,19 +551,19 @@ bool findPathIterRand(int i) {
 void findPath() {
 	// Reset
 	boxCounter = 1;
-	box[0].x = 0;
-	box[0].y = 0;
-	box[0].z = 0;
-	box[0].isActive = true;
-	box[0].type = 0;
-	box[0].radius = maxRadius;
-	box[0].isVisited = true;
+	boxes[0].x = 0;
+	boxes[0].y = 0;
+	boxes[0].z = 0;
+	boxes[0].isActive = true;
+	boxes[0].type = 0;
+	boxes[0].radius = maxRadius;
+	boxes[0].isVisited = true;
 	sourceBox = 0;
 	sinkBox = 0;
 	randomUnvisitedConnectedBoxCounter = 0;
 	nextRandomUnvisitedConnectedBoxCounter = 2;
-	// Divide box in the starting loc
-	while (box[sourceBox].type == 0) {
+	// Divide boxes in the starting loc
+	while (boxes[sourceBox].type == 0) {
 		divideBox(sourceBox);
 		sourceBox = getSourceBox();
 	}
@@ -694,15 +602,15 @@ void initFromFile(std::string fileName) {
 	
 	std::ifstream iFile(fileName + "obstacles.txt");
 	while (iFile>>x1>>y1>>z1>>x2>>y2>>z2>>x3>>y3>>z3) {
-		coord[obstacleCounter * 3 + 1].x = x1;
-		coord[obstacleCounter * 3 + 2].x = x2;
-		coord[obstacleCounter * 3 + 3].x = x3;
-		coord[obstacleCounter * 3 + 1].y = y1;
-		coord[obstacleCounter * 3 + 2].y = y2;
-		coord[obstacleCounter * 3 + 3].y = y3;
-		coord[obstacleCounter * 3 + 1].z = z1;
-		coord[obstacleCounter * 3 + 2].z = z2;
-		coord[obstacleCounter * 3 + 3].z = z3;
+		faces[obstacleCounter].coord[0].x = x1;
+		faces[obstacleCounter].coord[1].x = x2;
+		faces[obstacleCounter].coord[2].x = x3;
+		faces[obstacleCounter].coord[0].y = y1;
+		faces[obstacleCounter].coord[1].y = y2;
+		faces[obstacleCounter].coord[2].y = y3;
+		faces[obstacleCounter].coord[0].z = z1;
+		faces[obstacleCounter].coord[1].z = z2;
+		faces[obstacleCounter].coord[2].z = z3;
 		faces[obstacleCounter].a = y1 * z2 - y1 * z3 - y2 * z1 + y2 * z3 + y3 * z1 - y3 * z2;
 		faces[obstacleCounter].b = -x1 * z2 + x1 * z3 + x2 * z1 - x2 * z3 - x3 * z1 + x3 * z2;
 		faces[obstacleCounter].c = x1 * y2 - x1 * y3 - x2 * y1 + x2 * y3 + x3 * y1 - x3 * y2;
