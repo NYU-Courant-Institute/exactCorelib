@@ -335,25 +335,56 @@ float sqr(float i) {
 	return i * i;
 }
 
-float getDist(float px, float py, float pz, int face) {
+float getDist(float px, float py, float pz, int face) {  //Deprecated
 	float baseDist = abs(px * faces[face].a + py * faces[face].b + pz * faces[face].c + faces[face].d) / 
 		sqrt(sqr(faces[face].a) + sqr(faces[face].b) + sqr(faces[face].c));
 	return baseDist;
 }
 
-float getDistToWall(int boxID, int obstacleID) {
+float getDistToPoint(float x, float y, float z, int faceID, int cornerID) {
+	return sqrt(sqr(x - faces[faceID].coord[cornerID].x) + sqr(y - faces[faceID].coord[cornerID].y) + sqr(z - faces[faceID].coord[cornerID].z));
+}
+
+float getDistToWall(float x, float y, float z, int faceID, int cornerID) {
 	// NOT COMPLETED
-	return getDist(boxes[boxID].x, boxes[boxID].y, boxes[boxID].z, obstacleID);
+	return 0;
+}
+
+float getDistToFace(float x, float y, float z, int faceID) {
+	return 0;
 }
 
 int getBoxType(int boxID) {
 	
 	bool collided = false; // indicates whether being mixed
 
+	float innerDomain = boxes[boxID].radius - radius;
+	float outerDomain = boxes[boxID].radius + radius;
+
 	for (int i = 0; i < obstacleCounter; i++) {
-		int distToWall = getDistToWall(boxID, i);
-		if (distToWall < boxes[boxID].radius - radius) return 1;
-		if (distToWall < boxes[boxID].radius + radius) collided = true;
+		
+		// Check Coreners
+
+		for (int j = 0; j < 3; j++) {
+			float distToCorner = getDistToPoint(boxes[boxID].x, boxes[boxID].y, boxes[boxID].z, i, j);
+			if (distToCorner < innerDomain) return 1;
+			if (distToCorner < outerDomain) collided = true;
+		}
+
+		// Check Walls
+
+		for (int j = 0; j < 3; j++) {
+			float distToWall = getDistToWall(boxes[boxID].x, boxes[boxID].y, boxes[boxID].z, i, j);
+			if (distToWall < innerDomain) return 1;
+			if (distToWall < outerDomain) collided = true;
+		}
+
+		// Check Faces
+
+		float distToFace = getDistToFace(boxes[boxID].x, boxes[boxID].y, boxes[boxID].z, i, j);
+		if (distToFace < innerDomain) return 1;
+		if (distToFace < outerDomain) collided = true;
+
 	}
 	
 	if (collided) return 0;
