@@ -92,7 +92,7 @@ struct Box {
 
 Box boxes[1000];
 
-int radius, xStart, yStart, zStart, xEnd, yEnd, zEnd;
+int sphereRadius, xStart, yStart, zStart, xEnd, yEnd, zEnd;
 
 int sourceBox, sinkBox;
 
@@ -134,11 +134,11 @@ void drawScene()
 	GLUquadric *quad = gluNewQuadric();
 	glPushMatrix();
 	glTranslatef(xStart, yStart, zStart);
-	gluSphere(quad, radius, 20, 20);
+	gluSphere(quad, sphereRadius, 20, 20);
 	glPopMatrix();
 	glPushMatrix();
 	glTranslatef(xEnd, yEnd, zEnd);
-	gluSphere(quad, radius, 20, 20);
+	gluSphere(quad, sphereRadius, 20, 20);
 	glPopMatrix();
 
 	// Draw route
@@ -346,11 +346,258 @@ float getDistToPoint(float x, float y, float z, int faceID, int cornerID) {
 }
 
 float getDistToWall(float x, float y, float z, int faceID, int cornerID) {
-	// NOT COMPLETED
-	return 0;
+	// NOT NECCESSARY?
+	return 10000; //Nominal big number
 }
 
+class Vector {
+	public:
+		float x, y, z;
+		Vector() {
+			x = 0;
+			y = 0;
+			z = 0;
+		}
+
+		Vector(float ox, float oy, float oz) {
+			x = ox;
+			y = oy;
+			z = oz;
+		}
+		
+		Vector operator + (Vector other);
+		Vector operator - (Vector other);
+		//Vector operator = (Vector other);
+
+		static float dot(Vector v1, Vector v2);
+	};
+
+Vector Vector::operator+(Vector other) {
+	return Vector(x + other.x, y + other.y, z + other.z);
+}
+
+Vector Vector::operator-(Vector other) {
+	return Vector(x - other.x, y - other.y, z - other.z);
+}
+
+float Vector::dot(Vector v1, Vector v2) {
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+// Readapted from http://www.mathworks.com/matlabcentral/fileexchange/22857-distance-between-a-point-and-a-triangle-in-3d
 float getDistToFace(float x, float y, float z, int faceID) {
+
+	// Init
+
+	Vector p0(x, y, z), p1(faces[faceID].coord[0].x, faces[faceID].coord[0].y, faces[faceID].coord[0].z),
+		p2(faces[faceID].coord[1].x, faces[faceID].coord[1].y, faces[faceID].coord[1].z),
+		p3(faces[faceID].coord[2].x, faces[faceID].coord[2].y, faces[faceID].coord[2].z);
+
+	// Normalize Triangle
+
+	Vector B, e0, e1;
+	B = p1;
+	e0 = p2 - B;
+	e1 = p3 - B;
+
+	Vector D;
+	D = B - p0;
+
+	float a, b, c, d, e, f;
+	a = Vector::dot(e0, e0);
+	b = Vector::dot(e0, e1);
+	c = Vector::dot(e1, e1);
+	d = Vector::dot(e0, D);
+	e = Vector::dot(e1, D);
+	f = Vector::dot(D, D);
+
+	float det, s, t;
+	det = a * c - b * b;
+	s = b * e - c * d;
+	t = b * d - a * e;
+
+	// Conditioning
+
+	if (s + t <= det) {
+		if (s < 0) {
+			if (t < 0) {
+				// Region 4
+				if (d < 0) {
+					t = 0;
+					if (-d >= a) {
+						s = 1;
+						return a + 2 * d + f;
+					}
+					else {
+						s = -d / a;
+						return d * s + f;
+					}
+				}
+				else {
+					s = 0;
+					if (e >= 0) {
+						t = 0;
+						return f;
+					}
+					else {
+						t = -e / c;
+						return e * t + f;
+					}
+				}
+			} // End of Region 4
+			else {
+				// Region 3
+				s = 0;
+				if (e >= 0) {
+					t = 0;
+					return f;
+				}
+				else {
+					if (-e >= c) {
+						t = 1;
+						return c + 2 * e + f;
+					}
+					else {
+						t = -e / c;
+						return e * t + f;
+					}
+				}
+			} // End of Region 3
+		}
+		else {
+			if (t < 0) {
+				// Region 5
+				t = 0;
+				if (d >= 0) {
+					s = 0;
+					return f;
+				}
+				else {
+					if (-d >= a) {
+						s = 1;
+						return a + 2 * d + f;
+					}
+					else {
+						s = -d / a;
+						return d * s + f;
+					}
+				}
+				// End of Region 5
+			}
+			else {
+				// Region 0
+				float invDet = 1 / det;
+				s = s * invDet;
+				t = t * invDet;
+				return s * (a * s + b * t + 2 * d) + t * (b * s + c * t + 2 * e) + f;
+				// End of Region 0
+			}
+		}
+	}
+	else {
+		if (s < 0) {
+			// Region 2
+			float tmp0, tmp1;
+			tmp0 = b + d;
+			tmp1 = c + e;
+			if (tmp1 > tmp0) {
+				float numer = tmp1 - tmp0;
+				float denom = a - 2 * b + c;
+				if (numer >= denom) {
+					s = 1;
+					t = 0;
+					return a + 2 * d + f;
+				}
+				else {
+					s = numer / denom;
+					t = 1 - s;
+					return s * (a * s + b * t + 2 * d) + t * (b * s + c * t + 2 * e) + f;
+				}
+			}
+			else {
+				s = 0;
+				if (tmp1 <= 0) {
+					t = 1;
+					return c + 2 * e + f;
+				}
+				else {
+					if (e >= 0) {
+						t = 0;
+						return f;
+					}
+					else {
+						t = -e / c;
+						return e * t + f;
+					}
+				}
+			}
+			// End of Region 2
+		}
+		else {
+			if (t < 0) {
+				// Region 6
+				float tmp0, tmp1;
+				tmp0 = b + e;
+				tmp1 = a + d;
+				if (tmp1 > tmp0) {
+					float numer = tmp1 - tmp0;
+					float denom = a - 2 * b + c;
+					if (numer >= denom) {
+						t = 1;
+						s = 0;
+						return c + 2 * e + f;
+					}
+					else {
+						t = numer / denom;
+						s = 1 - t;
+						return s * (a * s + b * t + 2 * d) + t * (b * s + c * t + 2 * e) + f;
+					}
+				}
+				else {
+					t = 0;
+					if (tmp1 <= 0) {
+						s = 1;
+						return a + 2 * d + f;
+					}
+					else {
+						if (d >= 0) {
+							s = 0;
+							return f;
+						}
+						else {
+							s = -d / a;
+							return d * s + f;
+						}
+					}
+				}
+				// End of Region 6
+			}
+			else {
+				// Region 1
+				float numer = c + e - b - d;
+				if (numer <= 0) {
+					s = 0;
+					t = 1;
+					return c + 2 * e + f;
+				}
+				else {
+					float denom = a - 2 * b + c;
+					if (numer >= denom) {
+						s = 1;
+						t = 0;
+						return a + 2 * d + f;
+					}
+					else {
+						s = numer / denom;
+						t = 1 - s;
+						return s * (a * s + b * t + 2 * d) + t * (b * s + c * t + 2 * e) + f;
+					}
+				}
+				// End of Region 1
+			}
+		}
+	}
+
 	return 0;
 }
 
@@ -358,8 +605,8 @@ int getBoxType(int boxID) {
 	
 	bool collided = false; // indicates whether being mixed
 
-	float innerDomain = boxes[boxID].radius - radius;
-	float outerDomain = boxes[boxID].radius + radius;
+	float innerDomain = sphereRadius;
+	float outerDomain = boxes[boxID].radius * sqrt(2.0) + sphereRadius;
 
 	for (int i = 0; i < obstacleCounter; i++) {
 		
@@ -381,14 +628,14 @@ int getBoxType(int boxID) {
 
 		// Check Faces
 
-		float distToFace = getDistToFace(boxes[boxID].x, boxes[boxID].y, boxes[boxID].z, i, j);
+		float distToFace = sqrt(getDistToFace(boxes[boxID].x, boxes[boxID].y, boxes[boxID].z, i));
 		if (distToFace < innerDomain) return 1;
 		if (distToFace < outerDomain) collided = true;
 
 	}
 	
 	if (collided) return 0;
-		else return 1;
+		else return -1;
 }
 
 void divideBox(int i) {
@@ -650,7 +897,7 @@ void initFromFile(std::string fileName) {
 	}
 
 	std::ifstream jFile(fileName + "sphereloc.txt");
-	jFile>>radius>>xStart>>yStart>>zStart>>xEnd>>yEnd>>zEnd;
+	jFile>>sphereRadius>>xStart>>yStart>>zStart>>xEnd>>yEnd>>zEnd;
 
 	inputString = "";
 
