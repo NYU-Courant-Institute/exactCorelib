@@ -1,4 +1,8 @@
 /**************************************************
+ *  3D sphere motion planning with rigid obstacles
+ *  NOTE: This program is an adaptation of 
+ *  Author: Xinwei Lin
+ *
  *	Introduction: 
  *		Command:
  *			//
@@ -30,6 +34,8 @@
 #include "GL/glui.h"
 #endif
 
+#define MAXFLOAT 100000;
+
 #define GLUT_WHEEL_UP 3
 #define GLUT_WHEEL_DOWN 4
 #define ESC 27
@@ -52,14 +58,13 @@ GLuint glistID;
 //glui controls
 std::string inputString;
 
-bool isShowBox = 1; bool isShowPath = 1;
+bool isShowBox = 1; 
+bool isShowPath = 1;
 bool isInputMode = false;
 int nextBoxType = 0;
 
-double alpha[2] = {10, 360};
-double beta[2] = {500, 20};
-double epsilon = 10;
-float maxRadius = 50;
+double epsilon = 10; // Minimum size of a divided box
+float maxRadius = 50; // Max size of the whole space
 
 int windowID;
 
@@ -88,6 +93,7 @@ struct Box {
 	int type; //0 = mix, 1 = stuck, -1 = free
 	int parent, previous;
 	bool isVisited;
+	float distToSink;
 };
 
 Box boxes[1000];
@@ -746,21 +752,27 @@ bool isBoxConnected(int i, int j) {
 	return false;
 }
 
-bool findPathIter(int i) {
+bool isBoxDividable(int boxID) {
+	if (boxes[boxID].radius < epsilon) return false;
+	return true;
+}
 
-	if (isInBox(i, xEnd, yEnd, zEnd)) {
-		sinkBox = i; 
+bool findPathIter(int curBox) {
+
+	if (isInBox(curBox, xEnd, yEnd, zEnd)) {
+		sinkBox = curBox; 
 		return true;
 	}
-	boxes[i].isVisited = true;
-	for (int j = 0; j < boxCounter; j++) {
-		if ((boxes[j].isVisited == false) && (isBoxConnected(i, j))) {
-			if (boxes[j].type == 0) {
-				boxes[j].isVisited = true;
-				divideBox(j);
-			} else if (boxes[j].type == -1) {
-				boxes[j].previous = i;
-				bool found = findPathIter(j);
+	boxes[curBox].isVisited = true;
+	for (int prochBox = 0; prochBox < boxCounter; prochBox++) {
+		if ((boxes[prochBox].isActive) && (!boxes[prochBox].isVisited) && (isBoxConnected(curBox, prochBox))) {
+			if (boxes[prochBox].type == 0) { // MIXED
+				boxes[prochBox].isVisited = true;
+				if (isBoxDividable(prochBox)) divideBox(prochBox);
+			} 
+			else if (boxes[prochBox].type == -1) { // FREE
+				boxes[prochBox].previous = curBox;
+				bool found = findPathIter(prochBox);
 				if (found) return found;
 			}
 		}
@@ -800,34 +812,79 @@ int getNextRandomUnvisitedConnectedBox(int i) {
 	return -1;
 }
 
-bool findPathIterRand(int i) {
+int getNextClosestUnvisitedConnectedBox(int boxID) {
+	// NOT OPTIMIZED
+	int id = -1;
+	float lowestDist = MAXFLOAT;
+	for (int i = 0; i < boxCounter; i++) {
+		if ((boxes[i].isActive) && (!boxes[i].isVisited) && (isBoxConnected(boxID, i))) {
+			float dist = sqr(boxes[i].x - xEnd) + sqr(boxes[i].y - yEnd) + sqr(boxes[i].z - zEnd);
+			if (dist < lowestDist) {
+				lowestDist = dist;
+				id = i;
+			}
+		}
+	}
+	return id;
+}
 
-	if (isInBox(i, xEnd, yEnd, zEnd)) {
-		sinkBox = i; 
+bool findPathIterRand(int curBox) {
+
+	if (isInBox(curBox, xEnd, yEnd, zEnd)) {
+		sinkBox = curBox; 
 		return true;
 	}
-	boxes[i].isVisited = true;
-	int j;
+	boxes[curBox].isVisited = true;
+	int prochBox;
 	do {
-		j = getNextRandomUnvisitedConnectedBox(i);
-		
-			if (boxes[j].type == 0) {
-				boxes[j].isVisited = true;
-				divideBox(j);
-			} else if (boxes[j].type == -1) {
-				boxes[j].previous = i;
-				bool found = findPathIter(j);
-				if (found) return found;
-			}
 
-	} while (j != -1);
+		prochBox = getNextRandomUnvisitedConnectedBox(curBox);
+		
+		if (boxes[prochBox].type == 0) {
+			boxes[prochBox].isVisited = true;
+			if (isBoxDividable(prochBox)) divideBox(prochBox);
+		} else if (boxes[prochBox].type == -1) {
+			boxes[prochBox].previous = curBox;
+			bool found = findPathIter(prochBox);
+			if (found) return found;
+		}
+
+	} while (prochBox != -1);
 
 	return false;
 
 }
 
+bool findPathIterDijk(int curBox) {
+
+	if (isInBox(curBox, xEnd, yEnd, zEnd)) {
+		sinkBox = curBox; 
+		return true;
+	}
+	boxes[curBox].isVisited = true;
+	int prochBox;
+	do {
+
+		prochBox = getNextClosestUnvisitedConnectedBox(curBox);
+		
+		if (boxes[prochBox].type == 0) {
+			boxes[prochBox].isVisited = true;
+			if (isBoxDividable(prochBox)) divideBox(prochBox);
+		} else if (boxes[prochBox].type == -1) {
+			boxes[prochBox].previous = curBox;
+			bool found = findPathIter(prochBox);
+			if (found) return found;
+		}
+
+	} while (prochBox != -1);
+
+	return false;
+
+}
+
+
 void findPath() {
-	// Reset
+	// Init
 	boxCounter = 1;
 	boxes[0].x = 0;
 	boxes[0].y = 0;
@@ -845,10 +902,13 @@ void findPath() {
 		divideBox(sourceBox);
 		sourceBox = getSourceBox();
 	}
-	if (!isRand) {
-		found = findPathIter(sourceBox);
+	if (isRand) {
+		found = findPathIterRand(sourceBox);
 	}
-	else found = findPathIterRand(sourceBox);
+	else if (isDijk) {
+		found = findPathIterDijk(sourceBox);
+	}
+	else found = findPathIter(sourceBox);
 }
 
 void showNextBoxType() {
@@ -907,33 +967,26 @@ void runCommand(std::string s) {
 
 	bool q = false;
 
-	if (std::regex_match(s, std::regex("run"))) {
+	if (std::regex_match(s, std::regex("run( s(eq(uential)?)?)?"))) {
 		q = true;
 		isRand = false;
 		isDijk = false;
 		findPath();
 		if (found) { inputString = "Path found.";} else { inputString = "No path found.";}
 	}
-	if (std::regex_match(s, std::regex("run s(equential)?"))) {
-		q = true;
-		isRand = false;
-		isDijk = false;
-		findPath();
-		if (found) { inputString = "Path found.";} else { inputString = "No path found.";}
-	}
-	if (std::regex_match(s, std::regex("run r(andom)?"))) {
+	if (std::regex_match(s, std::regex("run r(and(om)?)?"))) {
 		q = true;
 		isRand = true;
 		isDijk = false;
 		findPath();
 		if (found) { inputString = "Path found.";} else { inputString = "No path found.";}
 	}
-	if (std::regex_match(s, std::regex("run l(owd)?"))) {
-		/*q = true;
+	if (std::regex_match(s, std::regex("run l(owd(istance)?)?"))) {
+		q = true;
 		isRand = false;
 		isDijk = true;
 		findPath();
-		if (found) { inputString = "Path found.";} else { inputString = "No path found.";}*/
+		if (found) { inputString = "Path found.";} else { inputString = "No path found.";}
 	}
 	if (std::regex_match(s, std::regex("hidebox"))) {
 		q = true;
