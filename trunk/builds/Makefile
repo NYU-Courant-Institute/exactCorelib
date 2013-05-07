@@ -1,14 +1,20 @@
 # Makefile for preparing softwares 
 
-GMP=gmp-5.0.1
-MPFR=mpfr-3.0.0  # Chee: obsolete (Aug2011)
-MPFR=mpfr-3.0.1
-SIP=sip-4.3.2
+-include ../Make.config
+# CHEE: this should NOT be hardcoded here!  Moved into ../Make.config...
+#	GMP=gmp-5.0.1
+#	MPFR=mpfr-3.0.0  # Chee: obsolete (Aug2011)
+#	MPFR=mpfr-3.0.1
+#	MPFR=mpfr-3.1.2  # May2013
+#	SIP=sip-4.3.2
 
 PLATFORM=macx-g++
 PREFIX=$(shell dirname `pwd`)
 GMP_PREFIX=${PREFIX}/gmp
 MPFR_PREFIX=${PREFIX}/mpfr
+
+#kludge
+targz=.tar.gz
 
 # GMP's configure program will try to build 64-bits library on Sun platform, 
 # 	so we have to force it to build 32-bits library.
@@ -38,6 +44,7 @@ config-mpfr: ${MPFR}
 	cd ${MPFR}; ./configure CC=gcc --prefix=${MPFR_PREFIX} \
 	    --with-gmp-include=${GMP_PREFIX}/include \
 	    --with-gmp-lib=${GMP_PREFIX}/lib
+
 build-mpfr:
 	cd ${MPFR}; ${MAKE}
 
@@ -59,15 +66,15 @@ install-sip:
 
 ${GMP}: ${GMP}.tar.gz
 	gunzip -cd ${GMP}.tar.gz | tar xvf -
-	
+
 ${GMP}.tar.gz: 
 	wget ftp://ftp.gnu.org/gnu/gmp/${GMP}.tar.gz
 
 ${MPFR}: ${MPFR}.tar.gz
 	gunzip -cd ${MPFR}.tar.gz | tar xvf -
-	
-${MPFR}.tar.gz: 
-	wget http://www.mpfr.org/mpfr-current/${MPFR}.tar.gz
+
+${MPFR}.tar.gz:
+	wget http://www.mpfr.org/mpfr-current/${MPFR}${targz}
 
 ${SIP}: ${SIP}.tar.gz
 	gunzip -cd ${SIP}.tar.gz | tar xvf -
