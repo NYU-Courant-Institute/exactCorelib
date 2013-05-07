@@ -19,15 +19,15 @@ SUB_DIRS=src ext doc lib progs
 
 # The following is needed to make sure that CC are properly 
 #  for installing gmp
-include Make.config
+-include Make.config
 
 #################################################################
 #	gmp paths  
 #	mpfr paths  
+#	-- Should be inherited from $GMP, $MPFR in Make.config!
 #################################################################
-gmp	    := gmp-5.0.1
-mpfr	    := mpfr-3.0.1
-mpfr	    := mpfr-3.1.2
+gmp	:= ${GMP}
+mpfr	:= ${MPFR}
 
 #################################################################
 #	Default make target 
