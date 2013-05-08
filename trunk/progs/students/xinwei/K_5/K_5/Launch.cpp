@@ -52,10 +52,11 @@ GLUI_EditText* editText;
 std::string fileName = "objectModel.txt";
 bool isExist;
 
-float theta = 90.0 , phi = 0.0, actualTheta = 90.0, actualPhi = 0.0;
+float actualTheta = 90.0, actualPhi = 0.0;
 float objectWindow_old_y = -1.0 , objectWindow_old_x = -1.0;
 float sphere_d_a = 90.0, sphere_d_b = 0.0;
 float sphereWindow_old_y = -1.0 , sphereWindow_old_x = -1.0;
+float object_d_a = 90.0, object_d_b = 0.0;
 float cubeWindow_old_x, cubeWindow_old_y;
 int crType;
 
@@ -159,9 +160,6 @@ void recalcDP() { // Derived from recalcXYZ();
 			actualPhi = 90 - actualPhi;
 		}
 	}
-
-	theta = actualTheta;
-	phi = -actualPhi;
 
 }
 
@@ -462,8 +460,8 @@ void drawObjectScene() {
     
     glLoadIdentity();
 
-	GLfloat vwx = r*cos(c*phi)*cos(c*theta), vwy = r*sin(c*phi), vwz =  r*cos(c*phi)*sin(c*theta);
-    if ( (int)abs(phi)%360 >= 90 && (int)abs(phi)%360 <= 270)
+	GLfloat vwx = r*cos(c*object_d_b)*cos(c*object_d_a), vwy = r*sin(c*object_d_b), vwz =  r*cos(c*object_d_b)*sin(c*object_d_a);
+    if ( (int)abs(object_d_b)%360 >= 90 && (int)abs(object_d_b)%360 <= 270)
 	Vy = -1.0;
     else
 	Vy = 1.0;
@@ -475,6 +473,35 @@ void drawObjectScene() {
 	glEnable(GL_BLEND);
 	glMatrixMode(GL_MODELVIEW);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Draw the axises
+
+	glColor4f(0.2, 0.2, 1.0, 1.0);
+	glBegin(GL_LINES);
+	{
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(75.0, 0.0, 0.0);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(0.0, 75.0, 0.0);
+	}
+	glEnd();
+
+	glPushMatrix();
+	glTranslatef(80.0, -5.0, 0.0);
+	glRasterPos3f(0.0, 0.0, 0.0);
+	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 'T');
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(-0.0, 80.0, 0.0);
+	glRasterPos3f(0.0, 0.0, 0.0);
+	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 'P');
+	glPopMatrix();
+
+	// Rotate first
+	
+	glPushMatrix();
+	glRotatef(actualTheta, 1.0, 0.0, 0.0);
+	glRotatef(actualPhi, 0.0, 1.0, 0.0);
 
 	// Draw the actual object (plane?)
 
@@ -500,6 +527,8 @@ void drawObjectScene() {
 		}
 		glEnd();
 	}
+
+	glPopMatrix();
 
 	// Bottom Display Text
 
@@ -572,13 +601,22 @@ void object_onMouseStatusChange(int button, int state, int x, int y) //
 
 void object_onMouseMove(int x,int y) 
 {
-    theta += 0.5*(x - objectWindow_old_x); 
-    phi += 0.5f*(y - objectWindow_old_y); 
+    object_d_a += 0.5f*(x - objectWindow_old_x); 
+    object_d_b += 0.5f*(y - objectWindow_old_y); 
     objectWindow_old_x = x;
     objectWindow_old_y = y; 
+	
+}
 
-	actualPhi = -phi;
-	actualTheta = theta;
+void object_onKeyPress (GLubyte moveKey, GLint xMouse, GLint yMouse) {
+
+	switch (moveKey) {
+	case 'w': actualPhi += 2; break;
+	case 's': actualPhi -= 2; break;
+	case 'a': actualTheta += 2; break;
+	case 'd': actualTheta -= 2; break;
+	}
+
 	while (actualPhi > 180) {
 		actualPhi -= 360;
 	}
@@ -601,7 +639,7 @@ void object_onMouseMove(int x,int y)
 	}
 
 	recalcXYZ();
-	
+
 }
 
 // Init
@@ -632,7 +670,8 @@ void initFromFile(std::string fileName) {
 
 	// Reset
 	
-	theta = 90.0; phi = 0.0, actualTheta = 90.0, actualPhi = 0.0;
+	actualTheta = 90.0, actualPhi = 0.0;
+	object_d_a = 90.0, object_d_b = 0.0;
 	objectWindow_old_y = -1.0 , objectWindow_old_x = -1.0;
 	sphere_d_a = 55.0, sphere_d_b = 25.0;
 	sphereWindow_old_y = -1.0 , sphereWindow_old_x = -1.0;
@@ -646,6 +685,13 @@ void update_GLUI_Variables() {
 
 	fileName = editText->get_text();
 	initFromFile(fileName);
+
+}
+
+void resetScene() {
+
+	initFromFile(fileName);
+
 }
 
 int main(int argc, char *argv[]) {
@@ -686,6 +732,7 @@ int main(int argc, char *argv[]) {
 	glutIdleFunc(drawObjectScene);
 	glutMouseFunc(object_onMouseStatusChange);
     glutMotionFunc(object_onMouseMove);
+	glutKeyboardFunc(object_onKeyPress);
 
 	// GLUI
 
@@ -696,11 +743,10 @@ int main(int argc, char *argv[]) {
 	editText->set_text((char*)fileName.c_str());
 	glui->add_separator();
 	GLUI_Button* buttonRun = glui->add_button( "Run", -1, (GLUI_Update_CB)update_GLUI_Variables);
+	GLUI_Button* buttonReset = glui->add_button( "Reset", -1, (GLUI_Update_CB)resetScene);
 
 	glui->set_main_gfx_window( windowCubeID );
 	update_GLUI_Variables();
-
-    //glutKeyboardFunc(handleKeypress);
 
 	glutMainLoop();
 
