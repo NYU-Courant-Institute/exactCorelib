@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <math.h>
 
 #ifdef __CYGWIN32__
 #include "glui.h"
@@ -10,9 +11,10 @@
 #include <gl/glui.h>
 #endif
 #ifdef __APPLE__
-#include <GL/glui.h>
-#include "GL/glui.h"
+#include "glui.h"
 #endif
+
+#include <set>
 
 // Display Contants
 
@@ -650,7 +652,7 @@ void initFromFile(std::string fileName) {
 
 	float x1, x2, x3, y1, y2, y3, z1, z2, z3;
 	
-	std::ifstream iFile(fileName);
+	std::ifstream iFile(fileName.c_str());
 
 	isExist = false;
 

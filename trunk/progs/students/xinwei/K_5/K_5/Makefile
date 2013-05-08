@@ -5,8 +5,7 @@
 # Since Core2
 # $Id:$
 
-CORE_PATH=../../..
-# include ../Make.options
+include ../Make.options
 
 #=================================================
 # Original file
@@ -22,14 +21,37 @@ CORE_PATH=../../..
 #=================================================
 # Define target files (put all your files here)
 #=================================================
+TARGETS = Launch
+
+OBJ_FILES =
 
 CC = g++
 
-all:
-	$(CC) -o Launch.cpp
+all: $(TARGETS)
 
-test:
-	$(CC) Launch.cpp -o Launch
+test: Launch
+	Launch
+
+Launch: $(OBJ_FILES) Launch.o
+
+#=================================================
+# Temp
+#=================================================
+m:
+	gvim Makefile
+
+vi:
+	gvim Launch.cpp
+
+#=================================================
+# Rules
+#=================================================
+%: %.o
+	${CXX} $(OBJ_FILES) $(LDFLAGS) $< $(CORE_LIB) -o $@
+
+.cpp.o:
+	${CXX} -c -O3 $(CXXFLAGS) $(CORE_INC) $< -o $@
+
 
 #=================================================
 # Clean object files
@@ -42,7 +64,7 @@ clean:
 #=================================================
 EXEPROGS=$(TARGETS:=$(EXETYPE))
 
-veryclean: clean
+vclean veryclean: clean
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
 
 #=================================================
