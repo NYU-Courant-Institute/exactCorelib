@@ -688,30 +688,55 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		double rad=size[0];
 		int hor=(int)size[1];
 		int ver=(int)size[2];
-		/*Build the first Vert*/
+		/*Build the first two*/
 		solid=mvfs(1,1,1,rad,0,0);
 		double horr=PI*2/hor;
 		double verr=PI/ver;
 		
 		/*Build the polygon*/
 		for (int i=2;i<=hor;i++){
-			mev(1,1,1,i-2>0?i-2:i-1,i-1,i-1,i,rad*cos(horr*(i-1)),rad*sin(horr*(i-1)),0);
+			int prev=i-2>0?i-2:i-1;
+			mev(1,1,1,i-1,prev,prev,i,rad*cos(horr*(i-1)),rad*sin(horr*(i-1)),0);
 		}
 		/*face 1 up, face 2 bottom*/
 		mef(1,1,1,2,hor,hor-1,2);
 		
 		/*Build the upper hemisphere*/
-		for (int i=1;i<ver;i++)
+		for (int i=1;i<ver;i++){
+			int base=i*hor;
+			/*compute the layers*/
+			double xyr=rad*cos(PI/2/ver*i);
+			double z=rad*sin(PI/2/ver*i);
+			
+			/*Make all verts on this layer*/
 			/*Make the first vertex*/
-			mev(1,1,1,
+			mev(1,1,1,(i-1)*hor+1,i*hor,i*hor,i*hor+1,xyr,0,z);
+			/*Make other vertices*/
 			for(int j=2;j<=hor;j++){
 				int prev=(i-1)*hor+j;
-				double xyr=rad*cos(PI/2/ver*i);
-				double z=rad*sin(PI/2/ver*i);
+				
 				double x=xyr*cos(PI*2/hor*(j-1));
 				double y=xyr*sin(PI*2/hor*(j-1));
 				mev(1,1,1,prev,prev-1,prev-1,prev+hor,x,y,z);
-			}
+			}//for theta
+			
+			/*Make all edges*/
+			/*Make the first face*/
+			mef(1,1,base+1,base+1-hor,base+hor,base,2+(i-1)*hor+1);
+			mef(1,1,base+2,base+2-hor,base+1,base+hor,2+(i-1)*hor+2);
+			/*Make other vertices*/
+			for(int j=3;j<=hor;j++){
+				Id v1=base+j;
+				Id v2=v1-hor;
+				Id v3=v1-1;
+				Id v4=v3-1;
+				Id f2=2+(i-1)*hor+j;
+				mef(1,1,v1,v2,v3,v4,f2);
+			}//for theta
+
+
+		}//for layers
+
 		/*build layers*/	
 	}
 	return solid;

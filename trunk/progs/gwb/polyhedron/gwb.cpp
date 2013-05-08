@@ -270,6 +270,13 @@ cout << "winX = " << windowPosX << endl;
 cout << "winY = " << windowPosY << endl;
 
       eo=new Euler_Ops();
+	double a[]={2,10,2};
+	for (int i=0;i<3;i++)
+		cout<<a[i]<<endl;
+	eo->prim("sphere",a);
+	(*(eo->solids))[0]->print();
+	
+	
 cout<< "good"<<endl;
       /*Read from file*/  
       string fileAdd=inputDir+"/"+fileName;
@@ -279,9 +286,10 @@ cout<< "good"<<endl;
       
       /*Read every line*/
       string line;
+	if (false)
       while (ifile.good()){
             getline(ifile,line);
-            cout<<line<<endl;
+            //cout<<line<<endl;
 
 
 

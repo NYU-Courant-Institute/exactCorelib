@@ -44,7 +44,7 @@ using namespace std;
 int interactive=0;                  // mode of interaction
                                     //    =0 means non-interactive, >0 means interactive.
 string inputDir("inputs"); 		// Path for input files 
-string fileName("cube.gwb"); 	      // Input file name
+string fileName("cube.txt"); 	      // Input file name
 
 GLsizei windowWidth = 512;	      // initial configuration box size
 GLsizei windowHeight = 512;
@@ -270,6 +270,13 @@ cout << "winX = " << windowPosX << endl;
 cout << "winY = " << windowPosY << endl;
 
       eo=new Euler_Ops();
+	double a[]={2,8,2};
+	for (int i=0;i<3;i++)
+		cout<<a[i]<<endl;
+	eo->prim("sphere",a);
+	(*(eo->solids))[0]->print();
+	
+	
 cout<< "good"<<endl;
       /*Read from file*/  
       string fileAdd=inputDir+"/"+fileName;
@@ -279,9 +286,10 @@ cout<< "good"<<endl;
       
       /*Read every line*/
       string line;
+	if (false)
       while (ifile.good()){
             getline(ifile,line);
-            cout<<line<<endl;
+            //cout<<line<<endl;
 
 
 
