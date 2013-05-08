@@ -4,7 +4,7 @@
 # $Id: Make.options,v 1.8 2010/10/25 21:40:20 exact Exp $
 
 ifndef CORE_PATH
-	CORE_PATH=../../../..
+	CORE_PATH=../../../../..
 endif
 
 
