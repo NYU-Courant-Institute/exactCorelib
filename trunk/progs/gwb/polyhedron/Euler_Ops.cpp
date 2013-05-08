@@ -736,6 +736,17 @@ Solid* Euler_Ops::prim(string name, double size[]){
 
 
 		}//for layers
+		
+		/*Build the final vertex*/
+		int top=hor*ver+1;
+		mev(1,1,1,hor*ver,hor*ver-1,hor*ver-1,hor*ver+1,0,0,rad);
+		mef(1,1,hor*(ver-1)+1,hor*ver,top,hor*ver,2+hor*(ver-1)+1);
+		for (int i=2;i<hor;i++){
+			int now=hor*(ver-1)+i;
+			int prev=now-1;
+			mef(1,1,now,prev,top,hor*ver,2+hor*(ver-1)+i);
+		}
+
 
 		/*build layers*/	
 	}

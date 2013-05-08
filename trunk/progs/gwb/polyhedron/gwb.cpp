@@ -71,6 +71,8 @@ double centerZ=0.0;
 double colorGap=1.0;               //This is for shading
 
 double scalar=1.0;                  //Initialize the scalar of the polyhedron
+double thetaX=0;
+double thetaY=0;
 /*Declaration of mouse operations*/
 void pressMouse(int button,int state,int x,int y);
 void holdMouse(int x,int y);
@@ -175,7 +177,7 @@ void display(void){
 
   glTranslatef(windowWidth/2.0,windowHeight/2.0,centerZ);
   glScalef(scalar, scalar, scalar);
-  glRotatef(45,1,1,1);
+  //glRotatef(45,1,1,1);
   glTranslatef(-centerX,-centerY,-centerZ);
   displayPoly(s);
 
@@ -186,14 +188,20 @@ void display(void){
 /*Mouse operations*/
 
 void pressMouse(int button,int state,int x ,int y){
+
 if (state==GLUT_DOWN){
   startX=x;
   startY=windowHeight-y;
+  //glRotatef(thetaX,0,1,0);
+  //glRotatef(thetaY,-1,0,0);
   }
  if(state==GLUT_UP){
-  holdMouse(x,y);
-  base=rad;
+  startX=x;
+  startY=windowHeight-y;
+  /*holdMouse(x,y);
+  base=rad;*/
  }
+
 }//pressMouse
 
 void holdMouse(int x, int y){
@@ -226,8 +234,14 @@ void holdMouse(int x, int y){
   /*Same operation but including rotation*/
   glTranslatef(windowWidth/2.0,windowHeight/2.0,centerZ);
   glScalef(scalar, scalar, scalar);
-  glRotatef(45,1,1,1);
-  glRotatef(theta,rotX,rotY,rotZ);
+  //glRotatef(45,1,1,1);
+  //glRotatef(theta,rotX,rotY,rotZ);
+  
+  glRotatef(x-startX,0,1,0);
+  glRotatef(y-startY,-1,0,0);
+  thetaX+=x-startX;
+  thetaY+=y-startY;
+
   glTranslatef(-centerX,-centerY,-centerZ);
 
       
@@ -270,7 +284,7 @@ cout << "winX = " << windowPosX << endl;
 cout << "winY = " << windowPosY << endl;
 
       eo=new Euler_Ops();
-	double a[]={2,10,2};
+	double a[]={2,10,20};
 	for (int i=0;i<3;i++)
 		cout<<a[i]<<endl;
 	eo->prim("sphere",a);
