@@ -211,7 +211,8 @@ public:
   }
 
 /*primitives*/
-Solid* prim(string name,double size[]);
+Solid* prim(string name,double size[]){
+}
 
 
 

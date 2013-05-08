@@ -44,7 +44,7 @@ using namespace std;
 int interactive=0;                  // mode of interaction
                                     //    =0 means non-interactive, >0 means interactive.
 string inputDir("inputs"); 		// Path for input files 
-string fileName("cube.txt"); 	      // Input file name
+string fileName("cube.gwb"); 	      // Input file name
 
 GLsizei windowWidth = 512;	      // initial configuration box size
 GLsizei windowHeight = 512;

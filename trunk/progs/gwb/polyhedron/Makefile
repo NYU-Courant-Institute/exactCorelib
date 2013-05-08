@@ -12,11 +12,11 @@
 # (B)	But you probably want to try the various interactive demos of
 #     this program:
 #
-# 	       > make eg	-- compiles and runs "vor2d" interactively
+# 	       > make eg	-- compiles and runs "gwb"
 #
 #	This is equivalent to typing:
 #
-#		> ./vor2d $(interactive) \
+#		> ./gwb $(interactive) \
 #			$(pseudo) $(interior) $(fileName) \
 #			$(boxWidth) $(boxHeight) $(windowPosX) $(windowPosY) \
 #			$(inputDir) \

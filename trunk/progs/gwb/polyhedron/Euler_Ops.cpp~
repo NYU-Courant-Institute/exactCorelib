@@ -701,21 +701,17 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		mef(1,1,1,2,hor,hor-1,2);
 		
 		/*Build the upper hemisphere*/
-		for (int i=1;i<ver;i++){
-			/*compute the layers*/
-			double xyr=rad*cos(PI/2/ver*i);
-			double z=rad*sin(PI/2/ver*i);
+		for (int i=1;i<ver;i++)
 			/*Make the first vertex*/
-			mev(1,1,1,(i-1)*hor+1,i*hor,i*hor,i*hor+1,xyr,0,z);
+			mev(1,1,1,
 			for(int j=2;j<=hor;j++){
 				int prev=(i-1)*hor+j;
-				
+				double xyr=rad*cos(PI/2/ver*i);
+				double z=rad*sin(PI/2/ver*i);
 				double x=xyr*cos(PI*2/hor*(j-1));
 				double y=xyr*sin(PI*2/hor*(j-1));
 				mev(1,1,1,prev,prev-1,prev-1,prev+hor,x,y,z);
-			}//for theta
-		}//for layers
-
+			}
 		/*build layers*/	
 	}
 	return solid;

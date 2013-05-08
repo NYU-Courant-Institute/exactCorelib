@@ -486,4 +486,7 @@ Pos position(Vertex *v, Face *f){
     return f->flout->position(v);
 }
 
+/*Primitives*/
+Solid* prim(string name, double size[]){
 
+}

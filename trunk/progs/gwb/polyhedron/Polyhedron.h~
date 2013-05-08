@@ -449,3 +449,5 @@ Num dotProduct(Num* v1,Num* v2);
 Num *crossProduct(HalfEdge *he1,HalfEdge *he2);
 Num *crossProduct(Num *v1, Num *v2);
 
+/*Primitives*/
+Solid* prim(string name,double size[]);
