@@ -1,0 +1,26 @@
+============================================================
+README file for $(corelib)/progs/students/xinwei
+
+Core Library (since version 2.1, March 2012)
+============================================================
+
+Description:
+	This directory has various subdirectoris containing algorithms
+	for robotics, especially motion planning.
+
+	This is a 3-view demo showing how an object of 2 degrees of freedom in rotation mapping the physical rotation vector (theta, phi) to a cubic form rotation vector (x, y, z) which can later apply subvision on.
+
+Author:
+	Xinwei Lin (2013).
+
+$Id: README $
+============================================================
+Files:
+	README		-- this file
+
+Directories:
+	K_5/objectModel.txt, objectM2.txt		-- Models of varied objects to show rotations
+	K-5		-- the demo
+
+============================================================
+============================================================

@@ -27,7 +27,7 @@ float r=160.0f;
 
 GLfloat Vx = 0.0, Vy = 1.0, Vz = 0.0; //View-up vector.
 
-// Variables Specifics
+// Variables Specifics (Mainly visually)
 
 #define windowPosX 100
 #define windowPosY 100
@@ -36,11 +36,21 @@ GLfloat Vx = 0.0, Vy = 1.0, Vz = 0.0; //View-up vector.
 
 #define MAXINT 10000
 
+const float squareRadius = 25;
+const float squareX[6] = {100, 200, 100, 200, 100, 200};
+const float squareY[6] = {50, 50, 150, 150, 250, 250};
+const float squareTextX[6] = {100, 200, 100, 200, 100, 200};
+const float squareTextY[6] = {10, 10, 110, 110, 210, 210};
+const std::string squareText[6] = {"(x, y, 1)", "(x, y, -1)", "(x, 1, z)", "(x, -1, z)", "(1, y, z)", "(-1, y, z)"};
+
 // GLUI Controls
 
 GLUI_EditText* editText;
 
 // Core Variables
+
+std::string fileName = "objectModel.txt";
+bool isExist;
 
 float theta = 90.0 , phi = 0.0, actualTheta = 90.0, actualPhi = 0.0;
 float objectWindow_old_y = -1.0 , objectWindow_old_x = -1.0;
@@ -63,13 +73,6 @@ struct Face {
 
 Face faces[MAXINT];
 
-const float squareRadius = 25;
-const float squareX[6] = {100, 200, 100, 200, 100, 200};
-const float squareY[6] = {50, 50, 150, 150, 250, 250};
-const float squareTextX[6] = {100, 200, 100, 200, 100, 200};
-const float squareTextY[6] = {10, 10, 110, 110, 210, 210};
-const std::string squareText[6] = {"(x, y, 1)", "(x, y, -1)", "(x, 1, z)", "(x, -1, z)", "(1, y, z)", "(-1, y, z)"};
-
 float actualX = 1.0, actualY = 0.0, actualZ = 0.0;
 
 // Trad funcs
@@ -83,7 +86,7 @@ void reshape(int w,int h)
     glMatrixMode( GL_MODELVIEW );
 }
 
-// Conv. func
+// Conversion functions; mapping (theta, phi) -> (x, y, z) or other way around
 
 void recalcXYZ() {
 
@@ -107,7 +110,7 @@ void recalcXYZ() {
 	}
 	else if ((135 < actualTheta) && (actualTheta <= 225)) { // Belongs to (x, y, -1)
 		float distToCenter = tan(c * actualPhi);
-		actualX = cos(c * (actualTheta - 90));
+		actualX = sin(c * actualTheta);
 		actualY = distToCenter;
 		actualZ = -1;
 	}
@@ -126,11 +129,36 @@ void recalcXYZ() {
 
 }
 
-void recalcDP() {
+void recalcDP() { // Derived from recalcXYZ();
 
-	if (actualX == 1) {
+	if ((actualX == 1) || (actualX == -1)) {
 		actualTheta = acos(actualZ) / c;
-		actualPhi = atan(actualX) / c;
+		actualPhi = atan(actualY) / c;
+	}
+	else if ((actualZ == 1) || (actualZ == -1)) {
+		actualTheta = asin(actualX) / c;
+		actualPhi = atan(actualY) / c;
+	}
+	else if ((actualY == 1) || (actualY == -1)) {
+
+		if (actualZ == 0) {
+			actualTheta = 0;
+		}
+		else {
+			actualTheta = atan(actualX / actualZ) / c;
+			if (actualZ < 0) {
+				actualTheta += 180;
+			}
+			actualPhi = actualX / sin(c * actualTheta) / c;
+		}
+
+		if (actualY == -1) {
+			actualPhi -= 90;
+		}
+		else {
+			actualPhi = 90 - actualPhi;
+		}
+	}
 
 	theta = actualTheta;
 	phi = -actualPhi;
@@ -487,28 +515,40 @@ void drawObjectScene() {
 
     glColor3f(1.0f,1.0f,1.0f);
 
-	glRasterPos2f(0, 0);
+	if (isExist) {
 
-	std::ostringstream ss1, ss2;
-	ss1 << actualTheta;
-	ss2 << actualPhi;
+		glRasterPos2f(0, 0);
+
+		std::ostringstream ss1, ss2;
+		ss1 << actualTheta;
+		ss2 << actualPhi;
 	
-	std::string infoString = "Angles: <" +  ss1.str() + ", " + ss2.str() + ">";
+		std::string infoString = "Angles: <" +  ss1.str() + ", " + ss2.str() + ">";
 
-	for (int i = 0; i < infoString.length(); i++) 
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, infoString[i]);
+		for (int i = 0; i < infoString.length(); i++) 
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, infoString[i]);
 
-	glRasterPos2f(0, 20);
+		glRasterPos2f(0, 20);
 
-	std::ostringstream ss3, ss4, ss5;
-	ss3 << actualX;
-	ss4 << actualY;
-	ss5 << actualZ;
+		std::ostringstream ss3, ss4, ss5;
+		ss3 << actualX;
+		ss4 << actualY;
+		ss5 << actualZ;
 
-	std::string infoString2 = "RV: <" + ss3.str() + ", " + ss4.str() + ", " + ss5.str() + ">";
+		std::string infoString2 = "RV: <" + ss3.str() + ", " + ss4.str() + ", " + ss5.str() + ">";
 
-	for (int i = 0; i < infoString2.length(); i++) 
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, infoString2[i]);
+		for (int i = 0; i < infoString2.length(); i++) 
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, infoString2[i]);
+	}
+	else {
+
+		glRasterPos2f(0, 0);
+	
+		std::string infoString = "File does not exist or file is blank.";
+
+		for (int i = 0; i < infoString.length(); i++) 
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, infoString[i]);
+	}
 
 	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
@@ -564,18 +604,17 @@ void object_onMouseMove(int x,int y)
 	
 }
 
-// GLUI Callback
+// Init
 
-void update_GLUI_Variables() {
-}
-
-void initFromFile() {
+void initFromFile(std::string fileName) {
 
 	facesCounter = 0;
 
 	float x1, x2, x3, y1, y2, y3, z1, z2, z3;
 	
-	std::ifstream iFile("objectModel.txt");
+	std::ifstream iFile(fileName);
+
+	isExist = false;
 
 	while (iFile>>x1>>y1>>z1>>x2>>y2>>z2>>x3>>y3>>z3) {
 		faces[facesCounter].coord[0].x = x1;
@@ -588,13 +627,30 @@ void initFromFile() {
 		faces[facesCounter].coord[1].z = z2;
 		faces[facesCounter].coord[2].z = z3;
 		facesCounter ++;
+		isExist = true;
 	}
 
+	// Reset
+	
+	theta = 90.0; phi = 0.0, actualTheta = 90.0, actualPhi = 0.0;
+	objectWindow_old_y = -1.0 , objectWindow_old_x = -1.0;
+	sphere_d_a = 55.0, sphere_d_b = 25.0;
+	sphereWindow_old_y = -1.0 , sphereWindow_old_x = -1.0;
+	actualX = 1.0, actualY = 0.0, actualZ = 0.0;
+
+}
+
+// GLUI Callback
+
+void update_GLUI_Variables() {
+
+	fileName = editText->get_text();
+	initFromFile(fileName);
 }
 
 int main(int argc, char *argv[]) {
 
-	initFromFile();
+	initFromFile(fileName);
 
 	glutInit(&argc, argv);
 	//glutInitWindowPosition(windowPosX, windowPosY);
@@ -636,9 +692,10 @@ int main(int argc, char *argv[]) {
 	GLUI_Master.set_glutIdleFunc( NULL );
 	GLUI *glui = GLUI_Master.create_glui( "", 0, 50, 200);
 	
-	editText = glui->add_edittext( "Input file:", GLUI_EDITTEXT_TEXT );
-	std::string s = "objectModel.txt";
-	editText->set_text((char*)s.c_str());
+	editText = glui->add_edittext( "Input:", GLUI_EDITTEXT_TEXT );
+	editText->set_text((char*)fileName.c_str());
+	glui->add_separator();
+	GLUI_Button* buttonRun = glui->add_button( "Run", -1, (GLUI_Update_CB)update_GLUI_Variables);
 
 	glui->set_main_gfx_window( windowCubeID );
 	update_GLUI_Variables();
