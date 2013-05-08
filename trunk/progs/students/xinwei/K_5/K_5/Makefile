@@ -6,7 +6,7 @@
 # $Id:$
 
 CORE_PATH=../../..
-include ../Make.options
+# include ../Make.options
 
 #=================================================
 # Original file
@@ -27,6 +27,9 @@ CC = g++
 
 all:
 	$(CC) -o Launch.cpp
+
+test:
+	$(CC) Launch.cpp -o Launch
 
 #=================================================
 # Clean object files
