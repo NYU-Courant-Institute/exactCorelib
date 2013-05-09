@@ -1,11 +1,21 @@
-# Makefile for preparing softwares 
+# Makefile
+# 	for preparing softwares, under $(COREPATH)/builds,
 
 -include ../Make.config
-# CHEE: this should NOT be hardcoded here!  Moved into ../Make.config...
+
+
+######################################################################
+#	GMP Version
+######################################################################
+# GMP 5.1 http://gmplib.org/gmp5.1.html
+# GMP 5.0 http://gmplib.org/gmp5.0.html
+# GMP 5.0.3 or later version is compatible with Mac OS X 10.8
+
+# CHEE: The following NOT be hardcoded here!  Moved into ../Make.config...
 #	GMP=gmp-5.0.1
 #	MPFR=mpfr-3.0.0  # Chee: obsolete (Aug2011)
-#	MPFR=mpfr-3.0.1
-#	MPFR=mpfr-3.1.2  # May2013
+#	MPFR=mpfr-3.0.1  # old
+#	MPFR=mpfr-3.1.2 
 #	SIP=sip-4.3.2
 
 PLATFORM=macx-g++
@@ -13,8 +23,6 @@ PREFIX=$(shell dirname `pwd`)
 GMP_PREFIX=${PREFIX}/gmp
 MPFR_PREFIX=${PREFIX}/mpfr
 
-#kludge
-targz=.tar.gz
 
 # GMP's configure program will try to build 64-bits library on Sun platform, 
 # 	so we have to force it to build 32-bits library.
@@ -64,20 +72,23 @@ install-sip:
 	cd ${SIP}; ${MAKE} install
 
 
-${GMP}: ${GMP}.tar.gz
-	gunzip -cd ${GMP}.tar.gz | tar xvf -
+${GMP}: ${GMP}.tar.xz
+	# OLD: gunzip -cd ${GMP}.tar.gz | tar xvf -
+	tar xvf ${GMP}.tar.xz
 
 ${GMP}.tar.gz: 
 	wget ftp://ftp.gnu.org/gnu/gmp/${GMP}.tar.gz
 
-${MPFR}: ${MPFR}.tar.gz
-	gunzip -cd ${MPFR}.tar.gz | tar xvf -
+${MPFR}: ${MPFR}.tar.xz
+	# OLD: gunzip -cd ${MPFR}.tar.gz | tar xvf -
+	tar xvf ${MPFR}.tar.xz
 
 ${MPFR}.tar.gz:
-	wget http://www.mpfr.org/mpfr-current/${MPFR}${targz}
+	wget http://www.mpfr.org/mpfr-current/${MPFR}.tar.gz
 
-${SIP}: ${SIP}.tar.gz
-	gunzip -cd ${SIP}.tar.gz | tar xvf -
+${SIP}: ${SIP}.tar.xz
+	# OLD: gunzip -cd ${SIP}.tar.gz | tar xvf -
+	tar xvf ${SIP}.tar.xz
 	
 ${SIP}.tar.gz: 
 	wget http://www.riverbankcomputing.com/Downloads/sip4/${SIP}.tar.gz
