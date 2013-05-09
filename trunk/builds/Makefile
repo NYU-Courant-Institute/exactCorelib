@@ -72,9 +72,9 @@ install-sip:
 	cd ${SIP}; ${MAKE} install
 
 
-${GMP}: ${GMP}.tar.xz
+${GMP}: ${GMP}.tar.gz
 	# OLD: gunzip -cd ${GMP}.tar.gz | tar xvf -
-	tar xvf ${GMP}.tar.xz
+	tar xvf ${GMP}.tar.gz
 
 ${GMP}.tar.gz: 
 	wget ftp://ftp.gnu.org/gnu/gmp/${GMP}.tar.gz
@@ -83,12 +83,12 @@ ${MPFR}: ${MPFR}.tar.xz
 	# OLD: gunzip -cd ${MPFR}.tar.gz | tar xvf -
 	tar xvf ${MPFR}.tar.xz
 
-${MPFR}.tar.gz:
-	wget http://www.mpfr.org/mpfr-current/${MPFR}.tar.gz
+${MPFR}.tar.xz:
+	wget http://www.mpfr.org/mpfr-current/${MPFR}.tar.xz
 
-${SIP}: ${SIP}.tar.xz
+${SIP}: ${SIP}.tar.gz
 	# OLD: gunzip -cd ${SIP}.tar.gz | tar xvf -
-	tar xvf ${SIP}.tar.xz
+	tar xvf ${SIP}.tar.gz
 	
 ${SIP}.tar.gz: 
 	wget http://www.riverbankcomputing.com/Downloads/sip4/${SIP}.tar.gz
