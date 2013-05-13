@@ -1,6 +1,10 @@
 README 
-#	Triangle Robot Planner.
-#	Since Corelib 2.1 (March 2012)
+#	2-Link Robot Planner.
+#
+#	Author:  Zhongdi Luo
+#	Date: May 2013
+#
+#	Since Corelib 2.1 (May 2013)
 #    	$Id:$
 # ################################################################################
 

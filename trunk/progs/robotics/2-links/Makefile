@@ -58,6 +58,7 @@
 #
 #
 # April 13, 2012
+# Author: Zhongdi Luo, May 2013
 #
 # Since Core Library 2.1
 # $Id:$
@@ -72,16 +73,18 @@ interactive = 0		# 0=interactive, >0 is non-interactive
 
 startX = 60		# start configuration
 startY = 350
-startTheta = -30	# in degrees
+startTheta1 = -30	# in degrees
+startTheta2 = 120	# in degrees
 goalX = 300		# goal configuration
 goalY = 60
-goalTheta = 90		# in degrees
+goalTheta1 = 90		# in degrees
+goalTheta2 = 30		# in degrees
 
 epsilon = 10		# resolution parameter
 epsilon = 5		# resolution parameter
 
-radius = 70		# robot radius
-radius = 40		# robot radius
+len1 = 10		# link1 length
+len2 = 15		# link2 length
 
 inputDir = inputs	# where to find input files
 fileName = input2d.txt	# input environment file
@@ -130,8 +133,9 @@ testa: $(TARGETS)
 
 testb: $(TARGETS)
 	./2-links 1 \
-    $(startX) $(startY)  $(startTheta) $(goalX) $(goalY) $(startBeta) \
-    $(epsilon)  $(radius)  input2.txt  $(boxWidth) $(boxHt) \
+    $(startX) $(startY)  $(startTheta1) $(startTheta2) \
+    $(goalX) $(goalY) $(goalTheta1) $(goalTheta2) \
+    $(epsilon)  $(len1) $(len2) input2.txt  $(boxWidth) $(boxHt) \
     $(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
     $(xtrans) $(ytrans) $(scale) \
     $(verbose) $(title) \
@@ -417,6 +421,18 @@ eg8b hsub: ./2-links
 	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 75 350 0 380 205 0\
 		1 5 hsu-latombe-kurniawati2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		-70 -70 0.065 \
+		&
+
+
+eg9 narrow: ./2-links
+	@echo "Target eg8b: example from the paper of Hsu, Latombe, Kurniawati (2006)"
+	@echo "	There is a path passage... when radius=6, epsilon=1"
+	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./2-links $(interactive) 75 350 0 380 205 0\
+		1 5 narrowCorridor.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-70 -70 0.065 \
