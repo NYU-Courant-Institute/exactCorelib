@@ -257,8 +257,8 @@ eg4 egbug bug: ./2-links
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	@echo "--  you could see a green path that must pass between two green boxes"
 	@echo "--  that are NOT adjacent but shares a corner."
-	./2-links $(interactive) 200 350 0 30 30 90 \
-		8 14 bugtrap.txt \
+	./2-links $(interactive) 200 350 30 60 30 30 90 120 \
+		8 14 10 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -419,8 +419,8 @@ eg8b hsub: ./2-links
 	@echo "Target eg8b: example from the paper of Hsu, Latombe, Kurniawati (2006)"
 	@echo "	There is a path passage... when radius=6, epsilon=1"
 	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./2-links $(interactive) 75 350 0 380 205 0\
-		1 5 hsu-latombe-kurniawati2.txt \
+	./2-links $(interactive) 75 350 0 90 380 205 270 0\
+		8 5 10 hsu-latombe-kurniawati2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-70 -70 0.065 \
@@ -428,14 +428,14 @@ eg8b hsub: ./2-links
 
 
 eg9 narrow: ./2-links
-	@echo "Target eg8b: example from the paper of Hsu, Latombe, Kurniawati (2006)"
-	@echo "	There is a path passage... when radius=6, epsilon=1"
-	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./2-links $(interactive) 75 350 0 380 205 0\
-		1 5 narrowCorridor.txt \
+	@echo "Target eg9: 1st test example from Chee and Zhongdi"
+#	@echo "	There is a path passage... when radius=6, epsilon=1"
+#	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./2-links $(interactive) 195 370 0 90 195 160 270 0\
+		4 25 40 narrowCorridor.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
-		-70 -70 0.065 \
+		0 0 0.065 \
 		&
 
 # RANDOMLY GENERATED ENVIRONMENT:

@@ -357,43 +357,49 @@ int main(int argc, char* argv[]) {
 	if (argc > 3)
 		alpha[1] = atof(argv[3]);		// start y
 	if (argc > 4)
-		alpha[2] = atof(argv[4]);// start theta, convert from degree to radian
+		alpha[2] = atof(argv[4]);// start theta1, convert from degree to radian
 	if (argc > 5)
-		beta[0] = atof(argv[5]);		// goal x
+		alpha[3] = atof(argv[5]);// start theta2, convert from degree to radian
 	if (argc > 6)
-		beta[1] = atof(argv[6]);		// goal y
+		beta[0] = atof(argv[6]);		// goal x
 	if (argc > 7)
-		beta[2] = atof(argv[7]);	// goal theta, convert from degree to radian
+		beta[1] = atof(argv[7]);		// goal y
 	if (argc > 8)
-		epsilon = atof(argv[8]);		// epsilon (resolution)
+		beta[2] = atof(argv[8]);	// goal theta1, convert from degree to radian
 	if (argc > 9)
-		R0 = atof(argv[9]);		// robot radius
+		beta[3] = atof(argv[9]);	// goal theta2, convert from degree to radian
 	if (argc > 10)
-		fileName = argv[10]; 		// Input file name
+		epsilon = atof(argv[10]);		// epsilon (resolution)
 	if (argc > 11)
-		boxWidth = atof(argv[11]);		// boxWidth
+		L1 = atof(argv[11]);		// robot length1
 	if (argc > 12)
-		boxHeight = atof(argv[12]);	// boxHeight
+		L2 = atof(argv[12]);		// robot length2
 	if (argc > 13)
-		windowPosX = atoi(argv[13]);	// window X pos
+		fileName = argv[13]; 		// Input file name
 	if (argc > 14)
-		windowPosY = atoi(argv[14]);	// window Y pos
+		boxWidth = atof(argv[14]);		// boxWidth
 	if (argc > 15)
-		QType = atoi(argv[15]);	// PriorityQ Type (random or no)
+		boxHeight = atof(argv[15]);	// boxHeight
 	if (argc > 16)
-		seed = atoi(argv[16]);		// for random number generator
+		windowPosX = atoi(argv[16]);	// window X pos
 	if (argc > 17)
-		inputDir = argv[17];		// path for input files
+		windowPosY = atoi(argv[17]);	// window Y pos
 	if (argc > 18)
-		deltaX = atof(argv[18]);	// x-translation of input file
+		QType = atoi(argv[18]);	// PriorityQ Type (random or no)
 	if (argc > 19)
-		deltaY = atof(argv[19]);	// y-translation of input file
+		seed = atoi(argv[19]);		// for random number generator
 	if (argc > 20)
-		scale = atof(argv[20]);		// scaling of input file
+		inputDir = argv[20];		// path for input files
 	if (argc > 21)
-		verboseOption = atoi(argv[21]);	// verboseOption
+		deltaX = atof(argv[21]);	// x-translation of input file
 	if (argc > 22)
-		title = argv[22];		// title
+		deltaY = atof(argv[22]);	// y-translation of input file
+	if (argc > 23)
+		scale = atof(argv[23]);		// scaling of input file
+	if (argc > 24)
+		verboseOption = atoi(argv[24]);	// verboseOption
+	if (argc > 25)
+		title = argv[25];		// title
 
 	// Added by Zhongdi 05/08/2013 begin
 	// calculate the R of the robot
@@ -1376,6 +1382,8 @@ void parseConfigFile(Box* b) {
 				ptVec.push_back(
 						new Corner(pts[pt * 2] * scale + deltaX,
 								pts[pt * 2 + 1] * scale + deltaY));
+				cout<<"point: X="<< pts[pt * 2] * scale + deltaX<<"   Y="<<pts[pt * 2 + 1] * scale + deltaY;
+
 				b->addCorner(ptVec.back());
 				b->vorCorners.push_back(ptVec.back());
 				ptSet.insert(pt);
@@ -1398,7 +1406,7 @@ void parseConfigFile(Box* b) {
 		}
 	}
 	ifs.close();
-	if (verboseOption) {
+	if (true) {
 		cout << "input file name = " << s << endl;
 		cout << "nPt=" << nPt << endl;
 		cout << "nPolygons=" << nPolygons << endl;
