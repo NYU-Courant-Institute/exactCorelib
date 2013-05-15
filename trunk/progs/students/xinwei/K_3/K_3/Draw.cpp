@@ -88,13 +88,21 @@ Face faces[1000];
 int boxCounter;
 
 struct Box {
+public:
 	bool isActive;
 	float x, y, z, radius;
 	int type; //0 = mix, 1 = stuck, -1 = free
 	int parent, previous;
 	bool isVisited;
-	float distToSink;
+	float distToSource;
+	Box();
 };
+
+Box::Box() {
+	isActive = false;
+	isVisited = false;
+	distToSource = MAXFLOAT;
+}
 
 Box boxes[1000];
 
@@ -182,7 +190,6 @@ void drawScene()
 			case 0: glColor4f(0.8, 0.7, 0.0, 0.1); if ((nextBoxType != 0) && (nextBoxType != 2)) glColor4f(0.0, 0.0, 0.0, 0.0); break;
 			case 1: glColor4f(0.8, 0.2, 0.1, 0.1); if ((nextBoxType != 0) && (nextBoxType != 3)) glColor4f(0.0, 0.0, 0.0, 0.0); break;
 			}
-			if ((nextBoxType == 4) && (boxes[i].isVisited)) glColor4f(0.0, 0.0, 1.0, 0.2);
 			if ((nextBoxType == 4) && (boxes[i].isVisited)) glColor4f(0.0, 0.0, 1.0, 0.2);
 			// face 1
 			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z + boxes[i].radius);
@@ -352,7 +359,7 @@ float getDistToPoint(float x, float y, float z, int faceID, int cornerID) {
 }
 
 float getDistToWall(float x, float y, float z, int faceID, int cornerID) {
-	// NOT NECCESSARY?
+	// Actually included in the getDistToFace() function
 	return 10000; //Nominal big number
 }
 
@@ -812,22 +819,6 @@ int getNextRandomUnvisitedConnectedBox(int i) {
 	return -1;
 }
 
-int getNextClosestUnvisitedConnectedBox(int boxID) {
-	// NOT OPTIMIZED
-	int id = -1;
-	float lowestDist = MAXFLOAT;
-	for (int i = 0; i < boxCounter; i++) {
-		if ((boxes[i].isActive) && (!boxes[i].isVisited) && (isBoxConnected(boxID, i))) {
-			float dist = sqr(boxes[i].x - xEnd) + sqr(boxes[i].y - yEnd) + sqr(boxes[i].z - zEnd);
-			if (dist < lowestDist) {
-				lowestDist = dist;
-				id = i;
-			}
-		}
-	}
-	return id;
-}
-
 bool findPathIterRand(int curBox) {
 
 	if (isInBox(curBox, xEnd, yEnd, zEnd)) {
@@ -857,26 +848,56 @@ bool findPathIterRand(int curBox) {
 
 bool findPathIterDijk(int curBox) {
 
-	if (isInBox(curBox, xEnd, yEnd, zEnd)) {
-		sinkBox = curBox; 
-		return true;
-	}
-	boxes[curBox].isVisited = true;
-	int prochBox;
+	bool isFreeBox = false;
+
+	boxes[curBox].distToSource = 0;
+
 	do {
 
-		prochBox = getNextClosestUnvisitedConnectedBox(curBox);
-		
-		if (boxes[prochBox].type == 0) {
-			boxes[prochBox].isVisited = true;
-			if (isBoxDividable(prochBox)) divideBox(prochBox);
-		} else if (boxes[prochBox].type == -1) {
-			boxes[prochBox].previous = curBox;
-			bool found = findPathIter(prochBox);
-			if (found) return found;
+		boxes[curBox].isVisited = true;
+
+		if (isInBox(curBox, xEnd, yEnd, zEnd)) {
+			sinkBox = curBox; 
+			return true;
 		}
 
-	} while (prochBox != -1);
+		int i = 0;
+		isFreeBox = true;
+		float minimumDistThisIter = MAXFLOAT;
+		int minimumBoxIDThisIter = -1; // Signify unfound
+
+		do {
+			
+			if ((isBoxConnected(curBox, i)) && (boxes[i].isActive) && (!boxes[i].isVisited) && (boxes[i].type != 1)) {
+				if (boxes[i].type == 0) { // MIXED
+					if (isBoxDividable(i)) divideBox(i);
+				}
+				else { // FREE
+					float tempDist = boxes[i].radius + boxes[curBox].radius + boxes[curBox].distToSource;
+					if (tempDist < boxes[i].distToSource) {
+						boxes[i].distToSource = tempDist;
+						boxes[i].previous = curBox;
+					}
+				}
+			}
+			i++;
+		} while (i < boxCounter);
+		
+		for (int i = 0; i < boxCounter; i++) {
+			if ((boxes[i].isActive) && (!boxes[i].isVisited) && (boxes[i].type == -1) && (boxes[i].distToSource < minimumDistThisIter)) {
+				minimumDistThisIter = boxes[i].distToSource;
+				minimumBoxIDThisIter = i;
+			}
+		}
+
+		if (minimumBoxIDThisIter == -1) {
+			isFreeBox = false;
+		}
+		else {
+			curBox = minimumBoxIDThisIter;
+		}
+
+	} while (isFreeBox);
 
 	return false;
 
@@ -884,6 +905,7 @@ bool findPathIterDijk(int curBox) {
 
 
 void findPath() {
+
 	// Init
 	boxCounter = 1;
 	boxes[0].x = 0;
@@ -897,6 +919,7 @@ void findPath() {
 	sinkBox = 0;
 	randomUnvisitedConnectedBoxCounter = 0;
 	nextRandomUnvisitedConnectedBoxCounter = 2;
+
 	// Divide boxes in the starting loc
 	while (boxes[sourceBox].type == 0) {
 		divideBox(sourceBox);
