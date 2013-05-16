@@ -16,6 +16,7 @@
  *		Mouse:
  *			Change the angle of view
  ***************************************************/
+#include <math.h>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -31,7 +32,7 @@
 #include "glui.h"
 #endif
 
-#define MAXFLOAT 100000;
+#define MAXFLOAT_t 100000;
 
 #define GLUT_WHEEL_UP 3
 #define GLUT_WHEEL_DOWN 4
@@ -98,7 +99,7 @@ public:
 Box::Box() {
 	isActive = false;
 	isVisited = false;
-	distToSource = MAXFLOAT;
+	distToSource = MAXFLOAT_t;
 }
 
 Box boxes[1000];
@@ -860,7 +861,7 @@ bool findPathIterDijk(int curBox) {
 
 		int i = 0;
 		isFreeBox = true;
-		float minimumDistThisIter = MAXFLOAT;
+		float minimumDistThisIter = MAXFLOAT_t;
 		int minimumBoxIDThisIter = -1; // Signify unfound
 
 		do {
@@ -1108,7 +1109,7 @@ int main(int argc, char *argv[]) {
 	initFromFile(fileName);
 
 	if (argc > 2) {
-		initFromPara(argc, argv);
+		//initFromPara(argc, argv);
 	}
 
 	//testUseOnlyInit();
