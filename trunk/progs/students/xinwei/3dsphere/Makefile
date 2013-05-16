@@ -5,7 +5,7 @@
 # Since Core2
 # $Id:$
 
-include ../Make.options
+include Make.options
 
 #=================================================
 # Original file

@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <math.h>
 
 #ifdef __CYGWIN32__
 #include "glui.h"
@@ -11,10 +10,9 @@
 #include <gl/glui.h>
 #endif
 #ifdef __APPLE__
-#include "glui.h"
+#include <GL/glui.h>
+#include "GL/glui.h"
 #endif
-
-#include <set>
 
 // Display Contants
 
@@ -44,6 +42,8 @@ const float squareY[6] = {50, 50, 150, 150, 250, 250};
 const float squareTextX[6] = {100, 200, 100, 200, 100, 200};
 const float squareTextY[6] = {10, 10, 110, 110, 210, 210};
 const std::string squareText[6] = {"(x, y, 1)", "(x, y, -1)", "(x, 1, z)", "(x, -1, z)", "(1, y, z)", "(-1, y, z)"};
+const char squareTextAxisX[6] = {'X', 'X', 'X', 'X', 'Y', 'Y'};
+const char squareTextAxisY[6] = {'Y', 'Y', 'Z', 'Z', 'Z', 'Z'};
 
 // GLUI Controls
 
@@ -184,6 +184,7 @@ void drawCubeScene() {
     glLoadIdentity();					
 
     glColor3f(1.0f,1.0f,1.0f);
+	glDisable(GL_DEPTH_TEST);
 	
 	// Draw squares
 
@@ -199,18 +200,30 @@ void drawCubeScene() {
 		}
 		glEnd();
 
-		/*glColor3f(0.2f, 1.0f, 0.2f);
+		glColor3f(0.2f, 1.0f, 0.2f);
 		glBegin(GL_LINES);
 		{
 			glVertex2f(squareX[i], squareY[i]);
-			glVertex2f(squareX[i] + 2/3 * squareRadius, squareY[i] + 2/3 * squareRadius);
-		}*/
+			glVertex2f(squareX[i] + 4.0/3 * squareRadius, squareY[i]);
+			glVertex2f(squareX[i], squareY[i]);
+			glVertex2f(squareX[i], squareY[i] + 4.0/3 * squareRadius);
+		}
+		glEnd();
+
+		glPushMatrix();
+		glRasterPos2f(squareX[i] + 4.0/3 * squareRadius, squareY[i]);
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, squareTextAxisX[i]);
+		glPopMatrix();
+		glPushMatrix();
+		glRasterPos2f(squareX[i], squareY[i] + 4.0/3 * squareRadius);
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, squareTextAxisY[i]);
+		glPopMatrix();
 
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
 		glRasterPos2f(squareTextX[i], squareTextY[i]);
 		for (int j = 0; j < squareText[i].length(); j++) 
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, squareText[i][j]);
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, squareText[i][j]);
 		glPopMatrix();
 
 	}
@@ -253,6 +266,7 @@ void drawCubeScene() {
 	glPopMatrix();
 
 	glPopMatrix();
+	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 
 	glPopMatrix();
@@ -264,7 +278,7 @@ void drawCubeScene() {
 
 }
 
-void cube_onMouseStatusChange(int button, int state, int x, int y) //
+void cube_onMouseStatusChange(int button, int state, int x, int y) 
 {
 	float distX, distY;
 	crType = -1;
@@ -317,35 +331,12 @@ void cube_onMouseStatusChange(int button, int state, int x, int y) //
 	}
 }
 
-/*void cube_onMouseMove(int x,int y) 
+void cube_onMouseMove(int x,int y) 
 {
 
-	if (x > squareX[crType] + squareRadius) {
-		x = squareX[crType] + squareRadius;
-	}
-	if (x < squareX[crType] - squareRadius) {
-		x = squareX[crType] - squareRadius;
-	}
-	if (y > squareY[crType] + squareRadius) {
-		y = squareY[crType] + squareRadius;
-	}
-	if (y < squareY[crType] - squareRadius) {
-		y = squareY[crType] - squareRadius;
-	}
-
-	float distX = x - cubeWindow_old_x;
-	float distY = y - cubeWindow_old_x;
-	cubeWindow_old_x = x;
-	cubeWindow_old_y = y;
-
-	if ((crType == 4) || (crType == 5)) { // x == 1 or -1
-		actualY = y / squareRadius;
-		actualZ = x / squareRadius;
-	}
-   
-	recalcDP();
+	cube_onMouseStatusChange(0, GLUT_DOWN, x, y);
 	
-}*/
+}
 
 // Section: Sphere
 
@@ -619,19 +610,11 @@ void object_onKeyPress (GLubyte moveKey, GLint xMouse, GLint yMouse) {
 	case 'd': actualTheta -= 2; break;
 	}
 
-	while (actualPhi > 180) {
-		actualPhi -= 360;
-	}
-	while (actualPhi < -180) {
-		actualPhi += 360;
-	}
 	if (actualPhi > 90) {
-		actualPhi = 180 - actualPhi;
-		actualTheta += 180;
+		actualPhi = 90;
 	}
 	if (actualPhi < -90) {
-		actualPhi = -180 - actualPhi;
-		actualTheta += 180;
+		actualPhi = -90;
 	}
 	while (actualTheta > 360) {
 		actualTheta -= 360;
@@ -652,7 +635,7 @@ void initFromFile(std::string fileName) {
 
 	float x1, x2, x3, y1, y2, y3, z1, z2, z3;
 	
-	std::ifstream iFile(fileName.c_str());
+	std::ifstream iFile(fileName);
 
 	isExist = false;
 
@@ -696,6 +679,10 @@ void resetScene() {
 
 }
 
+void progQuit() {
+	exit(0);
+}
+
 int main(int argc, char *argv[]) {
 
 	initFromFile(fileName);
@@ -713,7 +700,7 @@ int main(int argc, char *argv[]) {
 	glutDisplayFunc(drawCubeScene);
 	glutIdleFunc(drawCubeScene);
 	glutMouseFunc(cube_onMouseStatusChange);
-    //glutMotionFunc(cube_onMouseMove);
+    glutMotionFunc(cube_onMouseMove);
 
 	// View: Sphere in CSpace
 
@@ -746,6 +733,7 @@ int main(int argc, char *argv[]) {
 	glui->add_separator();
 	GLUI_Button* buttonRun = glui->add_button( "Run", -1, (GLUI_Update_CB)update_GLUI_Variables);
 	GLUI_Button* buttonReset = glui->add_button( "Reset", -1, (GLUI_Update_CB)resetScene);
+	GLUI_Button* buttonExit = glui->add_button( "Exit", -1, (GLUI_Update_CB)progQuit);
 
 	glui->set_main_gfx_window( windowCubeID );
 	update_GLUI_Variables();

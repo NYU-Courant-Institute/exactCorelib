@@ -5,7 +5,7 @@ ls# Makefile for students/xinwei/K_5/K_5
 # Since Core2
 # $Id:$
 
-include ../Make.options
+include Make.options
 
 #=================================================
 # Original file
