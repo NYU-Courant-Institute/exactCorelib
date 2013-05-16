@@ -20,7 +20,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
-#include <GL/glut.h>
 #include <regex>
 
 #ifdef __CYGWIN32__
@@ -30,8 +29,7 @@
 #include <gl/glui.h>
 #endif
 #ifdef __APPLE__
-#include <GL/glui.h>
-#include "GL/glui.h"
+#include "glui.h"
 #endif
 
 #define MAXFLOAT 100000;
@@ -1031,7 +1029,7 @@ void runCommand(std::string s) {
 		isShowPath = true;
 		inputString = "";
 	}
-	if (std::regex_match(s, std::regex("set epsilon ([0-9])+"))) {
+	if (std::regex_match(s, std::regex("set epsilon=([0-9])+"))) {
 		int epsilonI = std::atoi(s.substr(12, s.length() - 12).c_str());
 		if (epsilonI != 0) {
 			q = true;
@@ -1039,7 +1037,7 @@ void runCommand(std::string s) {
 			inputString = "Epsilon set to " + epsilonI;
 		}
 	}
-	if (std::regex_match(s, std::regex("set filepath (.)+"))) {
+	if (std::regex_match(s, std::regex("set filepath=(.)+"))) {
 		std::string fileName = s.substr(13, s.length() - 13);
 		initFromFile(fileName + "/");
 	}
@@ -1093,13 +1091,31 @@ int main_t(int argc, char *argv[])
     return 0; 
 }  
 
+void initFromPara(int argc, char *argv[]) {
+	for (int i = 2; i <= argc - 1; i++) {
+		runCommand("set " + argv[i]);
+	}
+}
+
 int main(int argc, char *argv[]) {
 
-	initFromFile("");
+	std::string fileName = "";
+
+	if (argc > 1) {
+		fileName = argv[1];
+		}
+
+	initFromFile(fileName);
+
+	if (argc > 2) {
+		initFromPara(argc, argv);
+	}
 
 	//testUseOnlyInit();
 
 	inputString = "Started.";
+
+	runCommand("run");
 
 	main_t(argc, argv);
 }

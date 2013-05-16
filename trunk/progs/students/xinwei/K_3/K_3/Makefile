@@ -19,6 +19,29 @@ include ../Make.options
 # clean:
 # 	rm *.exe
 #=================================================
+# User variables (you can change them in the command line)
+#=================================================
+
+#=================================================
+# Define target files (put all your files here)
+#=================================================
+
+cmpr1: ./Launch
+	./Launch cmpr1
+
+cmpr2: ./Launch
+	./Launch cmpr2
+
+cmpr3: ./Launch
+	./Launch cmpr3
+
+cmpr4: ./Launch
+	./Launch cmpr4
+
+cmpr5: ./Launch
+	./Launch cmpr5
+
+#=================================================
 # Define target files (put all your files here)
 #=================================================
 TARGETS = Draw
