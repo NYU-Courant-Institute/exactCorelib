@@ -958,7 +958,7 @@ void initFromFile(std::string fileName) {
 	
 	float x1, x2, x3, y1, y2, y3, z1, z2, z3;
 	
-	std::ifstream iFile(fileName + "obstacles.txt");
+	std::ifstream iFile((fileName + "obstacles.txt").c_str());
 	while (iFile>>x1>>y1>>z1>>x2>>y2>>z2>>x3>>y3>>z3) {
 		faces[obstacleCounter].coord[0].x = x1;
 		faces[obstacleCounter].coord[1].x = x2;
@@ -976,7 +976,7 @@ void initFromFile(std::string fileName) {
 		obstacleCounter++;
 	}
 
-	std::ifstream jFile(fileName + "sphereloc.txt");
+	std::ifstream jFile((fileName + "sphereloc.txt").c_str());
 	jFile>>sphereRadius>>xStart>>yStart>>zStart>>xEnd>>yEnd>>zEnd;
 
 	inputString = "";
