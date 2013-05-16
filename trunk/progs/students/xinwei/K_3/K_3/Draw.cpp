@@ -256,7 +256,7 @@ void drawScene()
 	
 	if (isInputMode) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, ':');
 
-	for (int i = 0; i < inputString.length(); i++) 
+	for (int i = 0; i < int(inputString.length()); i++) 
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, inputString[i]);
 
 	glPopMatrix();
@@ -271,7 +271,7 @@ void drawScene()
 
 void display(void) 
 {
-    static unsigned long cnt = 0;
+    // static unsigned long cnt = 0;
     //    printf("display(%lu)\n",cnt++);
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -1093,7 +1093,8 @@ int main_t(int argc, char *argv[])
 
 void initFromPara(int argc, char *argv[]) {
 	for (int i = 2; i <= argc - 1; i++) {
-		runCommand("set " + argv[i]);
+		std::string temp = argv[i];
+		runCommand("set " + temp);
 	}
 }
 
