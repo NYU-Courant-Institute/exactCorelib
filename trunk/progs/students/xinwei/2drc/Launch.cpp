@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -10,8 +11,7 @@
 #include <gl/glui.h>
 #endif
 #ifdef __APPLE__
-#include <GL/glui.h>
-#include "GL/glui.h"
+#include "glui.h"
 #endif
 
 // Display Contants
@@ -222,7 +222,7 @@ void drawCubeScene() {
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glPushMatrix();
 		glRasterPos2f(squareTextX[i], squareTextY[i]);
-		for (int j = 0; j < squareText[i].length(); j++) 
+		for (int j = 0; j < (signed)squareText[i].length(); j++) 
 			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, squareText[i][j]);
 		glPopMatrix();
 
@@ -547,7 +547,7 @@ void drawObjectScene() {
 	
 		std::string infoString = "Angles: <" +  ss1.str() + ", " + ss2.str() + ">";
 
-		for (int i = 0; i < infoString.length(); i++) 
+		for (int i = 0; i < (signed)infoString.length(); i++) 
 			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, infoString[i]);
 
 		glRasterPos2f(0, 20);
@@ -635,7 +635,7 @@ void initFromFile(std::string fileName) {
 
 	float x1, x2, x3, y1, y2, y3, z1, z2, z3;
 	
-	std::ifstream iFile(fileName);
+	std::ifstream iFile(fileName.c_str());
 
 	isExist = false;
 

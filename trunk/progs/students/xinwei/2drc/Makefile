@@ -1,11 +1,11 @@
-ls# Makefile for students/xinwei/K_5/K_5
+# Makefile for students/xinwei/K_5/K_5
 #
 # May 8, 2013
 #
 # Since Core2
 # $Id:$
 
-include Make.options
+include ../Make.options
 
 #=================================================
 # Original file
