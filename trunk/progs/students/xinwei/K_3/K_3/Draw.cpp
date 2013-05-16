@@ -16,7 +16,6 @@
  *		Mouse:
  *			Change the angle of view
  ***************************************************/
-#include <math.h>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
