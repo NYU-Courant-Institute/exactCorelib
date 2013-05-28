@@ -1053,9 +1053,9 @@ void initFromFile(std::string fileName) {
 		// Update GLUI parameters
 
 		//editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_TEXT );
-		editEpsilon->set_text(std::to_string(long long(epsilon)).c_str());
+		editEpsilon->set_text(std::to_string(long(epsilon)).c_str());
 		//editSphereRadius = glui->add_edittext( "SphereRadius:", GLUI_EDITTEXT_TEXT );
-		editSphereRadius->set_text(std::to_string(long long(sphereRadius)).c_str());
+		editSphereRadius->set_text(std::to_string(long(sphereRadius)).c_str());
 		
 	}
 
@@ -1250,9 +1250,9 @@ int main_t(int argc, char *argv[])
 	GLUI_Button* buttonUpdate = glui->add_button( "Update", -1, (GLUI_Update_CB)update_GLUI_File);
 	glui->add_separator();
 	editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_TEXT );
-	editEpsilon->set_text(std::to_string(long long(epsilon)).c_str());
+	editEpsilon->set_text(std::to_string(long(epsilon)).c_str());
 	editSphereRadius = glui->add_edittext( "SphereRadius:", GLUI_EDITTEXT_TEXT );
-	editSphereRadius->set_text(std::to_string(long long(sphereRadius)).c_str());
+	editSphereRadius->set_text(std::to_string(long(sphereRadius)).c_str());
 	GLUI_Button* buttonUpdate2 = glui->add_button( "Update", -1, (GLUI_Update_CB)update_GLUI_Update);
 	glui->add_separator();
 	GLUI_Button* buttonRunBF = glui->add_button( "Run Breadth First", -1, (GLUI_Update_CB)update_GLUI_RunBF);
@@ -1260,7 +1260,7 @@ int main_t(int argc, char *argv[])
 	GLUI_Button* buttonRunD = glui->add_button( "Run Dijkstra-like", -1, (GLUI_Update_CB)update_GLUI_RunD);
 	glui->add_column(true); 
 	GLUI_Button* buttonShowBox = glui->add_button( "Display: Show/Hide Box", -1, (GLUI_Update_CB)update_GLUI_ShowBox);
-	GLUI_Button* buttonShowPath = glui->add_button( "Display: Show/Hide Box", -1, (GLUI_Update_CB)update_GLUI_ShowPath);
+	GLUI_Button* buttonShowPath = glui->add_button( "Display: Show/Hide Path", -1, (GLUI_Update_CB)update_GLUI_ShowPath);
 	GLUI_Button* buttonBoxType = glui->add_button( "Display: Toggle Box Type", -1, (GLUI_Update_CB)update_GLUI_BoxType);
 	GLUI_Button* buttonInverse = glui->add_button( "Display: Invert Color", -1, (GLUI_Update_CB)update_GLUI_Inverse);
 	glui->add_separator();
