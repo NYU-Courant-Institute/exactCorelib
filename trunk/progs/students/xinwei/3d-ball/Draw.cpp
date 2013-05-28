@@ -32,7 +32,7 @@
 #include "glui.h"
 #endif
  
-#define MAXFLOAT_t 100000;
+const int MAXFLOAT_t = 100000;
 
 #define GLUT_WHEEL_UP 3
 #define GLUT_WHEEL_DOWN 4
@@ -53,12 +53,19 @@ GLfloat Vx = 0.0, Vy = 1.0, Vz = 0.0; //View-up vector.
 // for the display lists
 GLuint glistID;  
 
-//glui controls
+//glui controls.
+GLUI_EditText* editText;
+GLUI_EditText* editEpsilon;
+GLUI_EditText* editSphereRadius;
+
 std::string inputString;
+std::string fileName;
+std::string shortFileName;
 
 bool isShowBox = 1; 
 bool isShowPath = 1;
 bool isInputMode = false;
+bool isInverseColor = false;
 int nextBoxType = 0;
 
 double epsilon = 10; // Minimum size of a divided box
@@ -117,11 +124,23 @@ void drawScene()
 	glMatrixMode(GL_MODELVIEW);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-   // Draw obstacles
+	if (isInverseColor) {
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+	else {
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+    // Draw obstacles
 	for (int i = 0; i < obstacleCounter; i++) {
 		glBegin(GL_TRIANGLES);
 	    {
-			glColor4f(1.0, 1.0, 1.0, 1.0);
+			if (!isInverseColor) {
+				glColor4f(1.0, 1.0, 1.0, 1.0);
+			}
+			else {
+				glColor4f(0.0, 0.0, 0.0, 1.0);
+			}
 			glVertex3f(faces[i].coord[0].x, faces[i].coord[0].y, faces[i].coord[0].z);
 		    glVertex3f(faces[i].coord[1].x, faces[i].coord[1].y, faces[i].coord[1].z);
 			glVertex3f(faces[i].coord[2].x, faces[i].coord[2].y, faces[i].coord[2].z);
@@ -130,7 +149,12 @@ void drawScene()
 
 		glBegin(GL_LINES);
 		{
-			glColor4f(0.0, 0.0, 0.0, 1.0);
+			if (!isInverseColor) {
+				glColor4f(0.0, 0.0, 0.0, 1.0);
+			}
+			else {
+				glColor4f(1.0, 1.0, 1.0, 1.0);
+			}
 			glVertex3f(faces[i].coord[0].x, faces[i].coord[0].y, faces[i].coord[0].z);
 		    glVertex3f(faces[i].coord[1].x, faces[i].coord[1].y, faces[i].coord[1].z);
 			glVertex3f(faces[i].coord[2].x, faces[i].coord[2].y, faces[i].coord[2].z);
@@ -222,22 +246,11 @@ void drawScene()
 		}
 		glEnd();
 
-		/*glBegin(GL_LINES);
-		{
-			glColor4f(0.1, 0.1, 0.1, 0.8);
-			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z - boxes[i].radius);
-			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z - boxes[i].radius);
-			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z + boxes[i].radius);
-			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y + boxes[i].radius, boxes[i].z + boxes[i].radius);
-			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z - boxes[i].radius);
-			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z - boxes[i].radius);
-			glVertex3f(boxes[i].x + boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z + boxes[i].radius);
-			glVertex3f(boxes[i].x - boxes[i].radius, boxes[i].y - boxes[i].radius, boxes[i].z + boxes[i].radius);
-		}
-		glEnd();*/
 		boxes[i].radius += 0.5;
 	}
 
+	 /* Information Display Text List */
+		
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 
@@ -248,9 +261,13 @@ void drawScene()
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();					// Store The Modelview Matrix
     glLoadIdentity();					// Reset The Modelview Matrix
-    
-    /* Information Display Text List */
-    glColor3f(1.0f,1.0f,1.0f);
+   
+    if (!isInverseColor) {
+		glColor3f(1.0f,1.0f,1.0f);
+	}
+	else {
+		glColor3f(0.0f, 0.0f, 0.0f);
+	}
 
 	glRasterPos2f(0, 0);
 	
@@ -266,7 +283,6 @@ void drawScene()
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_DEPTH_TEST);
 	
-
 }
 
 void display(void) 
@@ -791,9 +807,10 @@ int nextRandomUnvisitedConnectedBoxes[1000];
 
 int randomUnvisitedConnectedBoxCounter = 0, nextRandomUnvisitedConnectedBoxCounter = 2;
 
-int getNextRandomUnvisitedConnectedBox(int i) {
+int getNextRandomUnvisitedConnectedBox(int curBox) {
 	while (nextRandomUnvisitedConnectedBoxCounter <= boxCounter) {
-			if (boxes[nextRandomUnvisitedConnectedBoxCounter - 1].type != 1) {
+		if ((boxes[nextRandomUnvisitedConnectedBoxCounter - 1].isActive) && 
+			(boxes[nextRandomUnvisitedConnectedBoxCounter - 1].type != 1)) {
 				nextRandomUnvisitedConnectedBoxes[randomUnvisitedConnectedBoxCounter] = 
 					nextRandomUnvisitedConnectedBoxCounter - 1;
 				randomUnvisitedConnectedBoxCounter++;
@@ -805,15 +822,27 @@ int getNextRandomUnvisitedConnectedBox(int i) {
 			}
 			nextRandomUnvisitedConnectedBoxCounter++;
 	}
+
+	int connectedBoxes[MAXFLOAT_t];
+	int connectedBoxesCounter = 0;
 			
 	for (int j = 0; j < randomUnvisitedConnectedBoxCounter; j++) {
-		if (isBoxConnected(i, nextRandomUnvisitedConnectedBoxes[j])) {
-				int r = nextRandomUnvisitedConnectedBoxes[j];
-				randomUnvisitedConnectedBoxCounter--;
-				nextRandomUnvisitedConnectedBoxes[j] = nextRandomUnvisitedConnectedBoxes[randomUnvisitedConnectedBoxCounter];
-				return r;	
+		if (isBoxConnected(curBox, nextRandomUnvisitedConnectedBoxes[j])) {
+				connectedBoxes[connectedBoxesCounter] = j;
+				connectedBoxesCounter++;
+				
 		}
 	}
+
+	if (connectedBoxesCounter != 0) {
+		int rn2 = rand() % connectedBoxesCounter;
+		int j = connectedBoxes[rn2];
+		int r = nextRandomUnvisitedConnectedBoxes[j];
+		randomUnvisitedConnectedBoxCounter--;
+		nextRandomUnvisitedConnectedBoxes[j] = nextRandomUnvisitedConnectedBoxes[randomUnvisitedConnectedBoxCounter];
+		return r;
+	}
+
 	return -1;
 }
 
@@ -901,10 +930,8 @@ bool findPathIterDijk(int curBox) {
 
 }
 
+void afterFileInit() {
 
-void findPath() {
-
-	// Init
 	boxCounter = 1;
 	boxes[0].x = 0;
 	boxes[0].y = 0;
@@ -916,7 +943,19 @@ void findPath() {
 	sourceBox = 0;
 	sinkBox = 0;
 	randomUnvisitedConnectedBoxCounter = 0;
-	nextRandomUnvisitedConnectedBoxCounter = 2;
+	nextRandomUnvisitedConnectedBoxCounter = 0;
+
+	/*for (int i = 1; i < MAXFLOAT_t - 1; i++) {
+		boxes[i].isActive = false;
+		boxes[i].isVisited = false;
+	}*/
+
+}
+
+
+void findPath() {
+
+	afterFileInit();
 
 	// Divide boxes in the starting loc
 	while (boxes[sourceBox].type == 0) {
@@ -982,6 +1021,43 @@ void initFromFile(std::string fileName) {
 
 	inputString = "";
 
+	afterFileInit();
+
+}
+
+void runCommandCore(std::string s, float f) {
+	if (s == "run") {
+		isRand = false;
+		isDijk = false;
+		findPath();
+		if (found) { inputString = "Path found.";} else { inputString = "No path found.";}
+	}
+	if (s == "runr") {
+		isRand = true;
+		isDijk = false;
+		findPath();
+		if (found) { inputString = "Path found.";} else { inputString = "No path found.";}
+	}
+	if (s == "runl") {
+		isRand = false;
+		isDijk = true;
+		findPath();
+		if (found) { inputString = "Path found.";} else { inputString = "No path found.";}
+	}
+	if (s == "hidebox") {
+		isShowBox = !isShowBox;
+		inputString = "";
+	}
+	if (s == "epsilon") {
+		epsilon = f;
+		inputString = "Epsilon set.";
+	}
+	if (s == "radius") {
+		sphereRadius = f;
+	}
+	if (s[0] == 'c') {
+		initFromFile("c" + s + "/");
+	}
 }
 
 void runCommand(std::string s) {
@@ -990,34 +1066,23 @@ void runCommand(std::string s) {
 
 	if (std::regex_match(s, std::regex("run( s(eq(uential)?)?)?"))) {
 		q = true;
-		isRand = false;
-		isDijk = false;
-		findPath();
-		if (found) { inputString = "Path found.";} else { inputString = "No path found.";}
+		runCommandCore("run", 0);
 	}
 	if (std::regex_match(s, std::regex("run r(and(om)?)?"))) {
-		q = true;
-		isRand = true;
-		isDijk = false;
-		findPath();
-		if (found) { inputString = "Path found.";} else { inputString = "No path found.";}
+		q = true;	
+		runCommandCore("runr", 0);
 	}
 	if (std::regex_match(s, std::regex("run l(owd(istance)?)?"))) {
 		q = true;
-		isRand = false;
-		isDijk = true;
-		findPath();
-		if (found) { inputString = "Path found.";} else { inputString = "No path found.";}
+		runCommandCore("runl", 0);
 	}
 	if (std::regex_match(s, std::regex("hidebox"))) {
 		q = true;
-		isShowBox = false;
-		inputString = "";
+		runCommandCore("hidebox", 0);
 	}
 	if (std::regex_match(s, std::regex("showbox"))) {
 		q = true;
-		isShowBox = true;
-		inputString = "";
+		runCommandCore("hidebox", 0);
 	}
 	if (std::regex_match(s, std::regex("hidepath"))) {
 		q = true;
@@ -1061,15 +1126,49 @@ void keyMoveObj (GLubyte moveKey, GLint xMouse, GLint yMouse)
 	{ 
 		switch (moveKey) {
 			case ':': isInputMode = !isInputMode; inputString = ""; break;
-			case 'r': findPath(); break;
+			case 'r': runCommandCore("run", 0); break;
 			case 'b': isShowBox = !isShowBox; break;
 			case 'p': isShowPath = !isShowPath; break;
 			case 't': showNextBoxType(); break;
 			case 'w': if (r > 5) r -= 2; break;
 			case 's': r += 2; break;
+			case 'i': isInverseColor = !isInverseColor;
 		}
 	}
 
+}
+
+void update_GLUI_File() {
+	shortFileName = editText->get_text();
+	fileName = "c" + shortFileName + "/";
+	initFromFile(fileName);
+	inputString = "Location settings updated.";
+}
+
+void update_GLUI_Update() {
+	epsilon = atoi(editEpsilon->get_text());
+	sphereRadius = atoi(editSphereRadius->get_text());
+	inputString = "Epsilon and/or SphereRadius updated.";
+}
+
+void update_GLUI_RunBF() {
+	runCommandCore("run", 0);
+}
+
+void update_GLUI_RunR() {
+	runCommandCore("runr", 0);
+}
+
+void update_GLUI_RunD() {
+	runCommandCore("runl", 0);
+}
+
+void update_GLUI_Shortcut() {
+	inputString = "I: Invert color; T: Change type of boxes to display; B: Show/Hide boxes; P: Show/Hide path; W/S: Zoom.";
+}
+
+void progQuit() {
+	exit(0);
 }
 
 int main_t(int argc, char *argv[]) 
@@ -1082,41 +1181,64 @@ int main_t(int argc, char *argv[])
     windowID = glutCreateWindow("Motion Planning"); 
     glutReshapeFunc(reshape);
     glutDisplayFunc(display); 
-	glutIdleFunc(display);
+	//glutIdleFunc(display);
     glutMouseFunc(Mouse);
     glutMotionFunc(onMouseMove);
-    glutKeyboardFunc (keyMoveObj);
+    glutKeyboardFunc(keyMoveObj);
+
+	// GLUI
+
+	char buffer[33];
+
+	GLUI_Master.set_glutIdleFunc(NULL);
+	GLUI *glui = GLUI_Master.create_glui( "", 0, 1150, 200);
+	
+	editText = glui->add_edittext( "Input: c", GLUI_EDITTEXT_TEXT );
+	editText->set_text((char*)shortFileName.c_str());
+	GLUI_Button* buttonUpdate = glui->add_button( "Update", -1, (GLUI_Update_CB)update_GLUI_File);
+	glui->add_separator();
+	editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_TEXT );
+	editEpsilon->set_text(itoa(epsilon, buffer, 10));
+	editSphereRadius = glui->add_edittext( "SphereRadius:", GLUI_EDITTEXT_TEXT );
+	editSphereRadius->set_text(itoa(sphereRadius, buffer, 10));
+	GLUI_Button* buttonUpdate2 = glui->add_button( "Update", -1, (GLUI_Update_CB)update_GLUI_Update);
+	glui->add_separator();
+	GLUI_Button* buttonRunBF = glui->add_button( "Run Breadth First", -1, (GLUI_Update_CB)update_GLUI_RunBF);
+	GLUI_Button* buttonRunR = glui->add_button( "Run Random", -1, (GLUI_Update_CB)update_GLUI_RunR);
+	GLUI_Button* buttonRunD = glui->add_button( "Run Dijkstra-like", -1, (GLUI_Update_CB)update_GLUI_RunD);
+	glui->add_separator();
+	//GLUI_Button* buttonReset = glui->add_button( "Reset", -1, (GLUI_Update_CB)resetScene);
+	GLUI_Button* buttonShortcut = glui->add_button( "Show Shortcut Help", -1, (GLUI_Update_CB)update_GLUI_Shortcut);
+	GLUI_Button* buttonExit = glui->add_button( "Exit", -1, (GLUI_Update_CB)progQuit);
+
+	glui->set_main_gfx_window(windowID);
+	//update_GLUI_Variables();
+
     glutMainLoop();
 
     return 0; 
 }  
 
 void initFromPara(int argc, char *argv[]) {
-	for (int i = 2; i <= argc - 1; i++) {
-		std::string temp = argv[i];
-		runCommand("set " + temp);
-	}
+	fileName = argv[2];
 }
 
 int main(int argc, char *argv[]) {
 
-	std::string fileName = "";
+	fileName = "cmpr1/";
+	shortFileName = "mpr1";
 
 	if (argc > 1) {
-		fileName = argv[1];
-		}
+		initFromPara(argc, argv);
+	}
 
 	initFromFile(fileName);
-
-	if (argc > 2) {
-		//initFromPara(argc, argv);
-	}
 
 	//testUseOnlyInit();
 
 	inputString = "Started.";
 
-	runCommand("run");
+	//runCommandCore("run", 0);
 
 	main_t(argc, argv);
 }

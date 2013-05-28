@@ -1,6 +1,6 @@
 # Makefile for students/xinwei/K_3/K_3
 #
-# May `5, 2013
+# May 28, 2013
 #
 # Since Core2
 # $Id:$
@@ -39,8 +39,23 @@ CC = g++
 
 all: $(TARGETS)
 
-test: ./Draw
+test: Draw
 	./Draw
+
+eg1: Draw
+	./Draw cmpr1/
+
+eg2: Draw
+	./Draw cmpr2/
+
+eg3: Draw
+	./Draw cmpr3/
+
+eg4: Draw
+	./Draw cmpr4/
+
+eg5: Draw
+	./Draw cmpr5/
 
 Draw: $(OBJ_FILES) Draw.o
 
