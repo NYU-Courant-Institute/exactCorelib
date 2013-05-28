@@ -1,0 +1,2 @@
+epsilon = 2
+maxRadius = 50

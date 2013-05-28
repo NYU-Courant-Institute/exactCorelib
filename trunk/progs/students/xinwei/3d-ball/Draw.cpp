@@ -32,7 +32,7 @@
 #include "glui.h"
 #endif
  
-const int MAXFLOAT_t = 100000;
+const int MAXFLOAT_t = 1000000;
 
 #define GLUT_WHEEL_UP 3
 #define GLUT_WHEEL_DOWN 4
@@ -41,7 +41,9 @@ const int MAXFLOAT_t = 100000;
 #define ENTER 13
 
 #define WINDOWS_HEIGHT 600
-#define WINDOWS_WIDTH 1000
+#define WINDOWS_WIDTH 900
+#define GLUI_LEFT 1050
+#define GLUI_TOP 150
 
 float c=3.1415926/180.0f; // transform from angle to radian
 int du=90, oldmy=-1,oldmx=-1; // 
@@ -51,7 +53,7 @@ GLfloat Vx = 0.0, Vy = 1.0, Vz = 0.0; //View-up vector.
 
 /***************************************************************************/
 // for the display lists
-GLuint glistID;  
+//GLuint glistID;  
 
 //glui controls.
 GLUI_EditText* editText;
@@ -250,6 +252,41 @@ void drawScene()
 		boxes[i].radius += 0.5;
 	}
 
+	// Draw the axises
+
+	if (!isInverseColor) {
+		glColor4f(1.0, 1.0, 1.0, 0.5);
+	}
+	else {
+		glColor4f(0.0, 0.0, 0.0, 0.5);
+	}
+	glBegin(GL_LINES);
+	{
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(75.0, 0.0, 0.0);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(0.0, 75.0, 0.0);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(0.0, 0.0, 75.0);
+	}
+	glEnd();
+
+	glPushMatrix();
+	glTranslatef(80.0, -5.0, 0.0);
+	glRasterPos3f(0.0, 0.0, 0.0);
+	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 'X');
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(-0.0, 80.0, 0.0);
+	glRasterPos3f(0.0, 0.0, 0.0);
+	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 'Y');
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(-0.0, 0.0, 80.0);
+	glRasterPos3f(0.0, 0.0, 0.0);
+	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 'Z');
+	glPopMatrix();
+
 	 /* Information Display Text List */
 		
 	glDisable(GL_DEPTH_TEST);
@@ -305,6 +342,13 @@ void display(void)
     glPolygonMode (GL_FRONT, GL_FILL);
     
     drawScene();
+
+	// Update GLUI parameters
+
+	//editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_TEXT );
+	editEpsilon->set_text(std::to_string(long long(epsilon)).c_str());
+	//editSphereRadius = glui->add_edittext( "SphereRadius:", GLUI_EDITTEXT_TEXT );
+	editSphereRadius->set_text(std::to_string(long long(sphereRadius)).c_str());
     
 	glutPostRedisplay();
     glFlush();
@@ -633,7 +677,7 @@ int getBoxType(int boxID) {
 	
 	bool collided = false; // indicates whether being mixed
 
-	float innerDomain = sphereRadius;
+	float innerDomain = sphereRadius - boxes[boxID].radius * sqrt(2.0);
 	float outerDomain = boxes[boxID].radius * sqrt(2.0) + sphereRadius;
 
 	for (int i = 0; i < obstacleCounter; i++) {
@@ -670,6 +714,7 @@ void newResetBox(int boxID) {
 	boxes[boxID].isActive = true;
 	boxes[boxID].isVisited = false;
 	boxes[boxID].distToSource = MAXFLOAT_t;
+	boxes[boxID].previous = -1;
 	boxes[boxID].type = getBoxType(boxID);
 }
 
@@ -763,96 +808,95 @@ bool isBoxDividable(int boxID) {
 
 bool findPathIter(int curBox) {
 
-	if (isInBox(curBox, xEnd, yEnd, zEnd)) {
-		sinkBox = curBox; 
-		return true;
-	}
-	boxes[curBox].isVisited = true;
-	for (int prochBox = 0; prochBox < boxCounter; prochBox++) {
-		if ((boxes[prochBox].isActive) && (!boxes[prochBox].isVisited) && (isBoxConnected(curBox, prochBox))) {
-			if (boxes[prochBox].type == 0) { // MIXED
-				boxes[prochBox].isVisited = true;
-				if (isBoxDividable(prochBox)) divideBox(prochBox);
-			} 
-			else if (boxes[prochBox].type == -1) { // FREE
-				boxes[prochBox].previous = curBox;
-				bool found = findPathIter(prochBox);
-				if (found) return found;
+	int visitedBoxes[MAXFLOAT_t];
+	int visitedBoxesTail = 0, visitedBoxesHead = 0;
+	visitedBoxes[0] = curBox;
+
+	while (visitedBoxesHead <= visitedBoxesTail) {
+
+		boxes[curBox].isVisited = true;
+
+		if (isInBox(curBox, xEnd, yEnd, zEnd)) {
+			sinkBox = curBox; 
+			return true;
+		}
+	
+		// Expand
+
+		for (int prochBox = 0; prochBox < boxCounter; prochBox++) {
+			if ((boxes[prochBox].isActive) && (!boxes[prochBox].isVisited) && (isBoxConnected(curBox, prochBox))) {
+				if (boxes[prochBox].type == 0) { // MIXED
+					boxes[prochBox].isVisited = true;
+					if (isBoxDividable(prochBox)) divideBox(prochBox);
+				} 
+				else if ((boxes[prochBox].previous == -1) &&
+					(boxes[prochBox].type == -1)) { // FREE
+					boxes[prochBox].previous = curBox;
+					visitedBoxesTail++;
+					visitedBoxes[visitedBoxesTail] = prochBox;
+				}
 			}
 		}
+
+		// Choose next box
+
+		visitedBoxesHead++;
+		curBox = visitedBoxes[visitedBoxesHead];
+
 	}
 
 	return false;
 
 }
 
-int nextRandomUnvisitedConnectedBoxes[1000];
-
-int randomUnvisitedConnectedBoxCounter = 0, nextRandomUnvisitedConnectedBoxCounter = 2;
-
-int getNextRandomUnvisitedConnectedBox(int curBox) {
-	while (nextRandomUnvisitedConnectedBoxCounter <= boxCounter) {
-		if ((boxes[nextRandomUnvisitedConnectedBoxCounter - 1].isActive) && 
-			(boxes[nextRandomUnvisitedConnectedBoxCounter - 1].type != 1)) {
-				nextRandomUnvisitedConnectedBoxes[randomUnvisitedConnectedBoxCounter] = 
-					nextRandomUnvisitedConnectedBoxCounter - 1;
-				randomUnvisitedConnectedBoxCounter++;
-				// Random swapping order
-				int rn = rand() % randomUnvisitedConnectedBoxCounter;
-				int t = nextRandomUnvisitedConnectedBoxes[rn];
-				nextRandomUnvisitedConnectedBoxes[rn] = nextRandomUnvisitedConnectedBoxes[randomUnvisitedConnectedBoxCounter - 1];
-				nextRandomUnvisitedConnectedBoxes[randomUnvisitedConnectedBoxCounter - 1] = t;
-			}
-			nextRandomUnvisitedConnectedBoxCounter++;
-	}
-
-	int connectedBoxes[MAXFLOAT_t];
-	int connectedBoxesCounter = 0;
-			
-	for (int j = 0; j < randomUnvisitedConnectedBoxCounter; j++) {
-		if (isBoxConnected(curBox, nextRandomUnvisitedConnectedBoxes[j])) {
-				connectedBoxes[connectedBoxesCounter] = j;
-				connectedBoxesCounter++;
-				
-		}
-	}
-
-	if (connectedBoxesCounter != 0) {
-		int rn2 = rand() % connectedBoxesCounter;
-		int j = connectedBoxes[rn2];
-		int r = nextRandomUnvisitedConnectedBoxes[j];
-		randomUnvisitedConnectedBoxCounter--;
-		nextRandomUnvisitedConnectedBoxes[j] = nextRandomUnvisitedConnectedBoxes[randomUnvisitedConnectedBoxCounter];
-		return r;
-	}
-
-	return -1;
-}
-
 bool findPathIterRand(int curBox) {
 
 	srand(time(NULL));
 
-	if (isInBox(curBox, xEnd, yEnd, zEnd)) {
-		sinkBox = curBox; 
-		return true;
-	}
-	boxes[curBox].isVisited = true;
-	int prochBox;
-	do {
+	int visitedBoxes[MAXFLOAT_t];
+	int visitedBoxesTail = 0;
+	visitedBoxes[0] = curBox;
 
-		prochBox = getNextRandomUnvisitedConnectedBox(curBox);
-		
-		if (boxes[prochBox].type == 0) {
-			boxes[prochBox].isVisited = true;
-			if (isBoxDividable(prochBox)) divideBox(prochBox);
-		} else if (boxes[prochBox].type == -1) {
-			boxes[prochBox].previous = curBox;
-			bool found = findPathIter(prochBox);
-			if (found) return found;
+	while (visitedBoxesTail != -1) {
+
+		boxes[curBox].isVisited = true;
+
+		//Dequeue
+
+		visitedBoxes[0] = visitedBoxes[visitedBoxesTail];
+		visitedBoxesTail--;
+
+		if (isInBox(curBox, xEnd, yEnd, zEnd)) {
+			sinkBox = curBox; 
+			return true;
+		}
+	
+		// Expand
+
+		for (int prochBox = 0; prochBox < boxCounter; prochBox++) {
+			if ((boxes[prochBox].isActive) && (!boxes[prochBox].isVisited) && (isBoxConnected(curBox, prochBox))) {
+				if (boxes[prochBox].type == 0) { // MIXED
+					boxes[prochBox].isVisited = true;
+					if (isBoxDividable(prochBox)) divideBox(prochBox);
+				} 
+				else if ((boxes[prochBox].previous == -1) &&
+					(boxes[prochBox].type == -1)) { // FREE
+					boxes[prochBox].previous = curBox;
+					visitedBoxesTail ++;
+					int _rand = rand() % (visitedBoxesTail + 1);
+					visitedBoxes[visitedBoxesTail] = visitedBoxes[_rand];
+					visitedBoxes[_rand] = prochBox;
+				}
+			}
 		}
 
-	} while (prochBox != -1);
+		// Choose next box
+
+		if (visitedBoxesTail != -1) {
+			curBox = visitedBoxes[0];
+		}
+
+	}
 
 	return false;
 
@@ -927,8 +971,6 @@ void afterFileInit() {
 	boxes[0].isVisited = true;
 	sourceBox = 0;
 	sinkBox = 0;
-	randomUnvisitedConnectedBoxCounter = 0;
-	nextRandomUnvisitedConnectedBoxCounter = 0;
 
 	/*for (int i = 1; i < MAXFLOAT_t - 1; i++) {
 		boxes[i].isActive = false;
@@ -1003,6 +1045,11 @@ void initFromFile(std::string fileName) {
 
 	std::ifstream jFile((fileName + "sphereloc.txt").c_str());
 	jFile>>sphereRadius>>xStart>>yStart>>zStart>>xEnd>>yEnd>>zEnd;
+
+	std::string tString;
+
+	std::ifstream kFile((fileName + "spacecfg.txt").c_str());
+	kFile>>tString>>epsilon>>maxRadius;
 
 	inputString = "";
 
@@ -1152,6 +1199,18 @@ void update_GLUI_Shortcut() {
 	inputString = "I: Invert color; T: Change type of boxes to display; B: Show/Hide boxes; P: Show/Hide path; W/S: Zoom.";
 }
 
+void update_GLUI_ShowBox() {
+	isShowBox = !isShowBox;
+}
+
+void update_GLUI_ShowPath() {
+	isShowPath = !isShowPath;
+}
+
+void update_GLUI_BoxType() {
+	showNextBoxType();
+}
+
 void update_GLUI_Inverse() {
 	isInverseColor = !isInverseColor;
 }
@@ -1178,7 +1237,7 @@ int main_t(int argc, char *argv[])
 	// GLUI
 
 	GLUI_Master.set_glutIdleFunc(NULL);
-	GLUI *glui = GLUI_Master.create_glui( "", 0, 1150, 200);
+	GLUI *glui = GLUI_Master.create_glui( "", 0, GLUI_LEFT, GLUI_TOP);
 	
 	editText = glui->add_edittext( "Input: c", GLUI_EDITTEXT_TEXT );
 	editText->set_text((char*)shortFileName.c_str());
@@ -1193,8 +1252,12 @@ int main_t(int argc, char *argv[])
 	GLUI_Button* buttonRunBF = glui->add_button( "Run Breadth First", -1, (GLUI_Update_CB)update_GLUI_RunBF);
 	GLUI_Button* buttonRunR = glui->add_button( "Run Random", -1, (GLUI_Update_CB)update_GLUI_RunR);
 	GLUI_Button* buttonRunD = glui->add_button( "Run Dijkstra-like", -1, (GLUI_Update_CB)update_GLUI_RunD);
+	glui->add_column(true); 
+	GLUI_Button* buttonShowBox = glui->add_button( "Display: Show/Hide Box", -1, (GLUI_Update_CB)update_GLUI_ShowBox);
+	GLUI_Button* buttonShowPath = glui->add_button( "Display: Show/Hide Box", -1, (GLUI_Update_CB)update_GLUI_ShowPath);
+	GLUI_Button* buttonBoxType = glui->add_button( "Display: Toggle Box Type", -1, (GLUI_Update_CB)update_GLUI_BoxType);
+	GLUI_Button* buttonInverse = glui->add_button( "Display: Invert Color", -1, (GLUI_Update_CB)update_GLUI_Inverse);
 	glui->add_separator();
-	GLUI_Button* buttonInverse = glui->add_button( "Inverse Color", -1, (GLUI_Update_CB)update_GLUI_Inverse);
 	GLUI_Button* buttonShortcut = glui->add_button( "Show Shortcut Help", -1, (GLUI_Update_CB)update_GLUI_Shortcut);
 	GLUI_Button* buttonExit = glui->add_button( "Exit", -1, (GLUI_Update_CB)progQuit);
 
@@ -1208,7 +1271,7 @@ int main_t(int argc, char *argv[])
 
 void initFromPara(int argc, char *argv[]) {
 	fileName = argv[1];
-	shortFileName = fileName.substr(1, 3);
+	shortFileName = fileName.substr(1, fileName.length() - 2);
 	int t;
 	t = std::atoi(argv[2]);
 	if (t != -1) {
@@ -1234,8 +1297,9 @@ void initFromPara(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
 
-	fileName = "cmpr1/";
-	shortFileName = "mpr1";
+	//Default
+	fileName = "cmpr/";
+	shortFileName = "mpr";
 
 	if (argc > 1) {
 		initFromPara(argc, argv);
