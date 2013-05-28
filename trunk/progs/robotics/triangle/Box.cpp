@@ -11,6 +11,8 @@ double Box::r0 = 0;
 double Box::THETA_MIN = 0;
 int Box::counter = 0;
 
+int maxDep = 1;
+
 vector<Box*>* Box::pAllLeaf = 0;
 
 int Box::oppositeDir[6] = {2, 3, 0, 1, 5, 4};
@@ -69,6 +71,8 @@ bool Box::split2D( double epsilon, vector<Box*>& chldn )
 
 		children[i]->xi[0] = this->xi[0];
 		children[i]->xi[1] = this->xi[1];
+
+        maxDep = maxDep > children[i]->depth ? maxDep : children[i]->depth;
 	}
 
 	children[0]->Nhbrs[1].push_back(children[1]);
@@ -194,7 +198,7 @@ bool Box::splitAngle( double epsilon, vector<Box*>& chldn )
 	children[0] = new Box(x, y, width, height);
 	for (int i = 0; i < 2; ++i)
 	{
-		//children[i]->depth = this->depth + 1;
+		children[i]->depth = this->depth;
 		children[i]->isBig = false;
 		children[i]->pParent = this;
 		children[i]->rChildID = i;
@@ -438,12 +442,7 @@ void Box::updateStatusBig()
 	for (list<Corner*>::iterator it = corners.begin(); it != corners.end(); )
 	{
 		Corner* c = *it;
-		if (c->distance(this->x, this->y) <= innerDomain)
-		{
-			status = STUCK;
-			return;
-		}
-		else if( c->distance(this->x, this->y) <= outerDomain ) {
+		if( c->distance(this->x, this->y) <= outerDomain ) {
 			status = MIXED;
 			++it;
 		}
@@ -499,9 +498,7 @@ void Box::updateStatusSmall()
 	Line2d L1(v02x, v02y, v11x, v11y);
 	Line2d L2(v12x, v12y, v21x, v21y);
 	Line2d L3(v22x, v22y, v01x, v01y);
-	bool expandSuccess =
-	    L1.expand(rB, L2, L3) && L2.expand(rB, L1, L3)
-	    	&& L3.expand(rB, L1, L2) && !L1.isNegative(L2, L3);
+	bool expandSuccess = L1.expand(rB, L2, L3) && L2.expand(rB, L1, L3) && L3.expand(rB, L1, L2) && !L1.isNegative(L2, L3);
 	assert(expandSuccess);
 
 
