@@ -32,7 +32,7 @@
 #include "glui.h"
 #endif
  
-const int MAXFLOAT_t = 1000000;
+const long MAXFLOAT_t = 100000;
 
 #define GLUT_WHEEL_UP 3
 #define GLUT_WHEEL_DOWN 4
@@ -59,6 +59,7 @@ GLfloat Vx = 0.0, Vy = 1.0, Vz = 0.0; //View-up vector.
 GLUI_EditText* editText;
 GLUI_EditText* editEpsilon;
 GLUI_EditText* editSphereRadius;
+bool firstTimeStart = true;
 
 std::string inputString;
 std::string fileName;
@@ -112,7 +113,7 @@ Box::Box() {
 	distToSource = MAXFLOAT_t;
 }
 
-Box boxes[1000];
+Box boxes[MAXFLOAT_t];
 
 int sphereRadius, xStart, yStart, zStart, xEnd, yEnd, zEnd;
 
@@ -342,13 +343,6 @@ void display(void)
     glPolygonMode (GL_FRONT, GL_FILL);
     
     drawScene();
-
-	// Update GLUI parameters
-
-	//editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_TEXT );
-	editEpsilon->set_text(std::to_string(long long(epsilon)).c_str());
-	//editSphereRadius = glui->add_edittext( "SphereRadius:", GLUI_EDITTEXT_TEXT );
-	editSphereRadius->set_text(std::to_string(long long(sphereRadius)).c_str());
     
 	glutPostRedisplay();
     glFlush();
@@ -1054,6 +1048,18 @@ void initFromFile(std::string fileName) {
 	inputString = "";
 
 	afterFileInit();
+
+	if (!firstTimeStart) {
+		// Update GLUI parameters
+
+		//editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_TEXT );
+		editEpsilon->set_text(std::to_string(long long(epsilon)).c_str());
+		//editSphereRadius = glui->add_edittext( "SphereRadius:", GLUI_EDITTEXT_TEXT );
+		editSphereRadius->set_text(std::to_string(long long(sphereRadius)).c_str());
+		
+	}
+
+	firstTimeStart = false;
 
 }
 
