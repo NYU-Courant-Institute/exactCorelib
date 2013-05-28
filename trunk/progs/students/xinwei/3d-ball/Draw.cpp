@@ -98,7 +98,7 @@ public:
 	bool isActive;
 	float x, y, z, radius;
 	int type; //0 = mix, 1 = stuck, -1 = free
-	int parent, previous;
+	int previous;
 	bool isVisited;
 	float distToSource;
 	Box();
@@ -666,87 +666,69 @@ int getBoxType(int boxID) {
 		else return -1;
 }
 
+void newResetBox(int boxID) {
+	boxes[boxID].isActive = true;
+	boxes[boxID].isVisited = false;
+	boxes[boxID].distToSource = MAXFLOAT_t;
+	boxes[boxID].type = getBoxType(boxID);
+}
+
 void divideBox(int i) {
 	boxes[i].isActive = false;
 	// Subbox 1
 	boxes[boxCounter].x = boxes[i].x + boxes[i].radius / 2;
 	boxes[boxCounter].y = boxes[i].y + boxes[i].radius / 2;
 	boxes[boxCounter].z = boxes[i].z + boxes[i].radius / 2;
-	boxes[boxCounter].isActive = true;
-	boxes[boxCounter].parent = i;
 	boxes[boxCounter].radius = boxes[i].radius / 2;
-	boxes[boxCounter].isVisited = false;
-	boxes[boxCounter].type = getBoxType(boxCounter);
+	newResetBox(boxCounter);
 	boxCounter++;
 	// Subbox 2
 	boxes[boxCounter].x = boxes[i].x + boxes[i].radius / 2;
 	boxes[boxCounter].y = boxes[i].y + boxes[i].radius / 2;
 	boxes[boxCounter].z = boxes[i].z - boxes[i].radius / 2;
-	boxes[boxCounter].isActive = true;
-	boxes[boxCounter].parent = i;
 	boxes[boxCounter].radius = boxes[i].radius / 2;
-	boxes[boxCounter].isVisited = false;
-	boxes[boxCounter].type = getBoxType(boxCounter);
+	newResetBox(boxCounter);
 	boxCounter++;
 	// Subbox 3
 	boxes[boxCounter].x = boxes[i].x + boxes[i].radius / 2;
 	boxes[boxCounter].y = boxes[i].y - boxes[i].radius / 2;
 	boxes[boxCounter].z = boxes[i].z + boxes[i].radius / 2;
-	boxes[boxCounter].isActive = true;
-	boxes[boxCounter].parent = i;
 	boxes[boxCounter].radius = boxes[i].radius / 2;
-	boxes[boxCounter].isVisited = false;
-	boxes[boxCounter].type = getBoxType(boxCounter);
-	boxCounter++;
+	newResetBox(boxCounter);	boxCounter++;
 	// Subbox 4
 	boxes[boxCounter].x = boxes[i].x + boxes[i].radius / 2;
 	boxes[boxCounter].y = boxes[i].y - boxes[i].radius / 2;
 	boxes[boxCounter].z = boxes[i].z - boxes[i].radius / 2;
-	boxes[boxCounter].isActive = true;
-	boxes[boxCounter].parent = i;
 	boxes[boxCounter].radius = boxes[i].radius / 2;
-	boxes[boxCounter].isVisited = false;
-	boxes[boxCounter].type = getBoxType(boxCounter);
+	newResetBox(boxCounter);
 	boxCounter++;
 	// Subbox 5
 	boxes[boxCounter].x = boxes[i].x - boxes[i].radius / 2;
 	boxes[boxCounter].y = boxes[i].y + boxes[i].radius / 2;
 	boxes[boxCounter].z = boxes[i].z + boxes[i].radius / 2;
-	boxes[boxCounter].isActive = true;
-	boxes[boxCounter].parent = i;
 	boxes[boxCounter].radius = boxes[i].radius / 2;
-	boxes[boxCounter].isVisited = false;
-	boxes[boxCounter].type = getBoxType(boxCounter);
+	newResetBox(boxCounter);
 	boxCounter++;
 	// Subbox 6
 	boxes[boxCounter].x = boxes[i].x - boxes[i].radius / 2;
 	boxes[boxCounter].y = boxes[i].y + boxes[i].radius / 2;
 	boxes[boxCounter].z = boxes[i].z - boxes[i].radius / 2;
-	boxes[boxCounter].isActive = true;
-	boxes[boxCounter].parent = i;
 	boxes[boxCounter].radius = boxes[i].radius / 2;
-	boxes[boxCounter].isVisited = false;
-	boxes[boxCounter].type = getBoxType(boxCounter);
+	newResetBox(boxCounter);
 	boxCounter++;
 	// Subbox 7
 	boxes[boxCounter].x = boxes[i].x - boxes[i].radius / 2;
 	boxes[boxCounter].y = boxes[i].y - boxes[i].radius / 2;
 	boxes[boxCounter].z = boxes[i].z + boxes[i].radius / 2;
-	boxes[boxCounter].isActive = true;
-	boxes[boxCounter].parent = i;
 	boxes[boxCounter].radius = boxes[i].radius / 2;
-	boxes[boxCounter].isVisited = false;
-	boxes[boxCounter].type = getBoxType(boxCounter);
+	newResetBox(boxCounter);
 	boxCounter++;
 	// Subbox 8
 	boxes[boxCounter].x = boxes[i].x - boxes[i].radius / 2;
 	boxes[boxCounter].y = boxes[i].y - boxes[i].radius / 2;
 	boxes[boxCounter].z = boxes[i].z - boxes[i].radius / 2;
-	boxes[boxCounter].isActive = true;
-	boxes[boxCounter].parent = i;
 	boxes[boxCounter].radius = boxes[i].radius / 2;
-	boxes[boxCounter].isVisited = false;
-	boxes[boxCounter].type = getBoxType(boxCounter);
+	newResetBox(boxCounter);
 	boxCounter++;
 }
 
@@ -848,6 +830,8 @@ int getNextRandomUnvisitedConnectedBox(int curBox) {
 }
 
 bool findPathIterRand(int curBox) {
+
+	srand(time(NULL));
 
 	if (isInBox(curBox, xEnd, yEnd, zEnd)) {
 		sinkBox = curBox; 
@@ -1168,6 +1152,10 @@ void update_GLUI_Shortcut() {
 	inputString = "I: Invert color; T: Change type of boxes to display; B: Show/Hide boxes; P: Show/Hide path; W/S: Zoom.";
 }
 
+void update_GLUI_Inverse() {
+	isInverseColor = !isInverseColor;
+}
+
 void progQuit() {
 	exit(0);
 }
@@ -1189,8 +1177,6 @@ int main_t(int argc, char *argv[])
 
 	// GLUI
 
-	char buffer[33];
-
 	GLUI_Master.set_glutIdleFunc(NULL);
 	GLUI *glui = GLUI_Master.create_glui( "", 0, 1150, 200);
 	
@@ -1199,16 +1185,16 @@ int main_t(int argc, char *argv[])
 	GLUI_Button* buttonUpdate = glui->add_button( "Update", -1, (GLUI_Update_CB)update_GLUI_File);
 	glui->add_separator();
 	editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_TEXT );
-	editEpsilon->set_text(std::to_string(epsilon).c_str());
+	editEpsilon->set_text(std::to_string(long long(epsilon)).c_str());
 	editSphereRadius = glui->add_edittext( "SphereRadius:", GLUI_EDITTEXT_TEXT );
-	editSphereRadius->set_text(std::to_string(sphereRadius).c_str());
+	editSphereRadius->set_text(std::to_string(long long(sphereRadius)).c_str());
 	GLUI_Button* buttonUpdate2 = glui->add_button( "Update", -1, (GLUI_Update_CB)update_GLUI_Update);
 	glui->add_separator();
 	GLUI_Button* buttonRunBF = glui->add_button( "Run Breadth First", -1, (GLUI_Update_CB)update_GLUI_RunBF);
 	GLUI_Button* buttonRunR = glui->add_button( "Run Random", -1, (GLUI_Update_CB)update_GLUI_RunR);
 	GLUI_Button* buttonRunD = glui->add_button( "Run Dijkstra-like", -1, (GLUI_Update_CB)update_GLUI_RunD);
 	glui->add_separator();
-	//GLUI_Button* buttonReset = glui->add_button( "Reset", -1, (GLUI_Update_CB)resetScene);
+	GLUI_Button* buttonInverse = glui->add_button( "Inverse Color", -1, (GLUI_Update_CB)update_GLUI_Inverse);
 	GLUI_Button* buttonShortcut = glui->add_button( "Show Shortcut Help", -1, (GLUI_Update_CB)update_GLUI_Shortcut);
 	GLUI_Button* buttonExit = glui->add_button( "Exit", -1, (GLUI_Update_CB)progQuit);
 
