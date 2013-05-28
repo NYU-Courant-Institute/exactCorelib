@@ -22,6 +22,11 @@ include Make.options
 # User variables (you can change them in the command line)
 #=================================================
 
+spaceradius = 50
+sphereradius = 5
+epsilon = 2
+type = 2
+
 #=================================================
 # Define target files (put all your files here)
 #=================================================
@@ -43,19 +48,22 @@ test: Draw
 	./Draw
 
 eg1: Draw
-	./Draw cmpr1/
+	./Draw cmpr1/ 2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+
+eg1ex: Draw
+	./Draw cmpr1/ ${type} ${spaceradius} ${epsilon} ${sphereradius} -1 -1 -1 -1 -1 -1
 
 eg2: Draw
-	./Draw cmpr2/
+	./Draw cmpr2/ 2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 
 eg3: Draw
-	./Draw cmpr3/
+	./Draw cmpr3/ 2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 
 eg4: Draw
-	./Draw cmpr4/
+	./Draw cmpr4/ 2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 
 eg5: Draw
-	./Draw cmpr5/
+	./Draw cmpr5/ 2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 
 Draw: $(OBJ_FILES) Draw.o
 

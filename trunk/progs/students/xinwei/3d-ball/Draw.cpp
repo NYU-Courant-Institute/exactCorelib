@@ -66,6 +66,7 @@ bool isShowBox = 1;
 bool isShowPath = 1;
 bool isInputMode = false;
 bool isInverseColor = false;
+int runType = 2;
 int nextBoxType = 0;
 
 double epsilon = 10; // Minimum size of a divided box
@@ -1146,8 +1147,8 @@ void update_GLUI_File() {
 }
 
 void update_GLUI_Update() {
-	epsilon = atoi(editEpsilon->get_text());
-	sphereRadius = atoi(editSphereRadius->get_text());
+	epsilon = std::atoi(editEpsilon->get_text());
+	sphereRadius = std::atoi(editSphereRadius->get_text());
 	inputString = "Epsilon and/or SphereRadius updated.";
 }
 
@@ -1198,9 +1199,9 @@ int main_t(int argc, char *argv[])
 	GLUI_Button* buttonUpdate = glui->add_button( "Update", -1, (GLUI_Update_CB)update_GLUI_File);
 	glui->add_separator();
 	editEpsilon = glui->add_edittext( "Epsilon:", GLUI_EDITTEXT_TEXT );
-	editEpsilon->set_text(itoa(epsilon, buffer, 10));
+	editEpsilon->set_text(std::to_string(epsilon).c_str());
 	editSphereRadius = glui->add_edittext( "SphereRadius:", GLUI_EDITTEXT_TEXT );
-	editSphereRadius->set_text(itoa(sphereRadius, buffer, 10));
+	editSphereRadius->set_text(std::to_string(sphereRadius).c_str());
 	GLUI_Button* buttonUpdate2 = glui->add_button( "Update", -1, (GLUI_Update_CB)update_GLUI_Update);
 	glui->add_separator();
 	GLUI_Button* buttonRunBF = glui->add_button( "Run Breadth First", -1, (GLUI_Update_CB)update_GLUI_RunBF);
@@ -1220,7 +1221,29 @@ int main_t(int argc, char *argv[])
 }  
 
 void initFromPara(int argc, char *argv[]) {
-	fileName = argv[2];
+	fileName = argv[1];
+	shortFileName = fileName.substr(1, 3);
+	int t;
+	t = std::atoi(argv[2]);
+	if (t != -1) {
+		runType = t;
+	}
+	t = std::atoi(argv[3]);
+	if (t != -1) {
+		maxRadius = t;
+	}
+	t = std::atoi(argv[4]);
+	if (t != -1) {
+		epsilon = t;
+	}
+	sphereRadius = std::atoi(argv[5]);
+	xStart = std::atoi(argv[6]);
+	yStart = std::atoi(argv[7]);
+	zStart = std::atoi(argv[8]);
+	xEnd = std::atoi(argv[9]);
+	yEnd = std::atoi(argv[10]);
+	zEnd = std::atoi(argv[11]);
+
 }
 
 int main(int argc, char *argv[]) {
@@ -1238,7 +1261,11 @@ int main(int argc, char *argv[]) {
 
 	inputString = "Started.";
 
-	//runCommandCore("run", 0);
+	switch (runType) {
+		case 0: runCommandCore("run", 0); break;
+		case 1: runCommandCore("runr", 0); break;
+		case 2: runCommandCore("runl", 0); break;
+	}
 
 	main_t(argc, argv);
 }
