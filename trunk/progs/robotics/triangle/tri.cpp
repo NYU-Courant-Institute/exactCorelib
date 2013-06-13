@@ -60,6 +60,7 @@
 #include "GL/glui.h"
 #endif
 #ifdef _WIN32
+#include <gl/glew.h>
 #include <gl/glui.h>
 #endif
 #ifdef __APPLE__
@@ -114,20 +115,20 @@ double triRobo[2] = {0.833333333, 1.0};
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////
-	double alpha[3] = {200, 350, 0};		// start configuration
-	double beta[3] = {30, 30, 0};		// goal configuration
-	double epsilon = 2;			// resolution parameter
+	double alpha[3] = {250, 350, 0};		// start configuration
+	double beta[3] = {60, 50, 0};		// goal configuration
+	double epsilon = 1;			// resolution parameter
 	Box* boxA;				// start box (containing alpha)
 	Box* boxB;				// goal box (containing beta)
 	double boxWidth = 512;			// Initial box width
 	double boxHeight = 512;			// Initial box height
-	double R0 = 8;				// Robot radius 
+	double R0 = 10;				// Robot radius 
 	int windowPosX = 400;			// X Position of Window
 	int windowPosY = 200;			// Y Position of Window
 	string fileName("bugtrap.txt"); 		// Input file name
 	//string fileName("input150.txt"); 		// Input file name
 	string inputDir("inputs"); 		// Path for input files 
-	int QType = 2;				// The Priority Queue can be
+	int QType = 1;				// The Priority Queue can be
 	//    sequential (0) or random (1)
 	int interactive = 0;			// Run interactively?
 	//    Yes (0) or No (1)
@@ -149,9 +150,18 @@ double triRobo[2] = {0.833333333, 1.0};
 	int mixCount = 0;
 	int mixSmallCount = 0;
 
+    extern int maxDep;
+
 	//controls triangle drawing along path
 	const int TRIS_TO_SKIP = 40;
 	const double DIST_TO_SKIP = 32;
+
+    bool showAnim = true;
+    bool leafBoxesDrawed = false;
+    int iPathSeg = 0;
+    double distOnPathSeg = 0;
+    bool finishedAnim = false;
+	int idleTime = 50;
 
 // GLUI controls ========================================
 //////////////////////////////////////////////////////////////////////////////////
@@ -172,7 +182,9 @@ double triRobo[2] = {0.833333333, 1.0};
 
 	GLUI_TextBox* textBox;
 
-
+    GLuint fbo;
+    GLuint depthBuffer;			// Our handle to the depth render buffer
+    GLuint img;					// Our handle to a texture
 
 // External Routines ========================================
 //////////////////////////////////////////////////////////////////////////////////
@@ -186,6 +198,15 @@ void drawCircle( float Radius, int numPoints, double x, double y, double r, doub
 void drawLine();
 void drawTri(Box*);
 void drawTri(Box*, double, double);
+void drawRoboPath(vector<Box*>& path);
+
+void idle(int v)
+{
+	glutTimerFunc(idleTime, idle, 0);
+    iPathSeg++;
+	
+    glutPostRedisplay(); // Inform GLUT that the display has changed
+}
 
 //find path using simple heuristic:
 //use distance to beta as key in PQ, see dijkstraQueue
@@ -296,6 +317,74 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct)
 	return isPath;
 }
 
+//init FBO
+void initFbo(GLvoid)     
+{
+	//Initialize GLEW 
+	GLenum glewError = glewInit(); 
+	if( glewError != GLEW_OK ) 
+	{ 
+		printf( "Error initializing GLEW! %s\n", glewGetErrorString( glewError ) ); 
+		exit(1); 
+	}
+
+    glShadeModel(GL_SMOOTH);
+    glClearColor(0.0f, 0.0f, 0.2f, 0.5f);
+    glClearDepth(1.0f);					
+    glEnable(GL_DEPTH_TEST);			
+    glDepthFunc(GL_LEQUAL);				
+    glViewport(0,0,boxWidth, boxHeight);
+
+    // Setup our FBO
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    // Create the render buffer for depth	
+    glGenRenderbuffers(1, &depthBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, boxWidth, boxHeight);
+
+    // Now setup a texture to render to
+    glGenTextures(1, &img);
+    glBindTexture(GL_TEXTURE_2D, img);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,  boxWidth, boxHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    // And attach it to the FBO so we can render to it
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, img, 0);
+
+    // Attach the depth render buffer to the FBO as it's depth attachment
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if(status != GL_FRAMEBUFFER_COMPLETE)
+        exit(1);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);	// Unbind the FBO for now
+}
+
+void animReplay()
+{
+	iPathSeg = 0;
+	finishedAnim = 0;
+}
+
+void animSpeedDown()
+{
+	idleTime *= 2;
+	if (idleTime > 1000)
+		idleTime = 1000;
+}
+
+void animSpeedUp()
+{
+	idleTime /= 2;
+	if (idleTime < 10)
+		idleTime = 10;
+}
 
 // MAIN PROGRAM: ========================================
 int main(int argc, char* argv[])
@@ -357,8 +446,11 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 	std::string title_string = sss.str();
 	const char * test ("Triangle Robot Demo");
 
-		GLUI *glui = GLUI_Master.create_glui( test,
-			0, windowPosX + boxWidth + 20, windowPosY );
+        initFbo();
+		glutDisplayFunc(renderScene);
+		glutTimerFunc(50, idle, 0);
+//		GLUI_Master.set_glutIdleFunc(idle); //replaces glutIdleFunc
+		GLUI *glui = GLUI_Master.create_glui( "control", 0, windowPosX + boxWidth + 20, windowPosY );
 	
 		// SETTING UP THE CONTROL PANEL:
 		editInput = glui->add_edittext( "Input file:", GLUI_EDITTEXT_TEXT );
@@ -419,6 +511,20 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 		editSeed = glui->add_edittext( "seed:", GLUI_EDITTEXT_INT );
 		editSeed->set_int_val(seed);
 
+		GLUI_Panel* speedPanel = glui->add_panel("Animation Control");
+
+		GLUI_Button* buttonSpeedDown = glui->add_button_to_panel( speedPanel, "-", -1, (GLUI_Update_CB)animSpeedDown);
+		buttonSpeedDown->set_name("-"); 
+		buttonSpeedDown->set_w(1);
+		glui->add_column_to_panel(speedPanel);
+		GLUI_Button* buttonSpeedUp = glui->add_button_to_panel( speedPanel, "+", -1, (GLUI_Update_CB)animSpeedUp);
+		buttonSpeedUp->set_name("+"); 
+		buttonSpeedUp->set_w(1);
+		glui->add_column_to_panel(speedPanel);
+		GLUI_Button* buttonReplay = glui->add_button_to_panel( speedPanel, "Replay Animation", -1, (GLUI_Update_CB)animReplay);
+		buttonReplay->set_name("replay"); 
+		buttonReplay->set_w(1);
+		glui->add_separator();
 		GLUI_Button* buttonRun = glui->add_button( "Run", -1, (GLUI_Update_CB)run);
 		buttonRun->set_name("Run me"); // Hack, to avoid "unused warning" (Chee)
 
@@ -549,6 +655,13 @@ void run()
 	}
 
 	genEmptyTree();
+
+	if (showAnim)
+	{
+		finishedAnim = 0;
+		iPathSeg = 0;		
+	}
+	leafBoxesDrawed = 0;
 
 	Timer t;
 
@@ -828,6 +941,35 @@ void drawCircle( float Radius, int numPoints, double x, double y, double r, doub
 	glEnd();
 }
 
+void drawRoboPath(vector<Box*>& path)
+{
+    int skipped = 0;
+    double distSkipped = 0;
+    for (int i = 0; i < (int)path.size(); ++i)
+    {
+        if (i > 0)
+        {
+            double dist = sqrt( (path[i]->x - path[i-1]->x)*(path[i]->x - path[i-1]->x) + (path[i]->y - path[i-1]->y)*(path[i]->y - path[i-1]->y) );
+            distSkipped += dist;
+            ++skipped;
+            //control triangles drawing:
+            //enable (&& dist>= 1e-9) to hide same spot rotation 
+            if ( (skipped > TRIS_TO_SKIP || distSkipped > DIST_TO_SKIP) )// && dist>= 1e-9 )
+            {
+                drawTri(path[i]);
+                drawCircle(R0, 100, path[i]->x, path[i]->y, 0, 0, 1);
+                skipped = 0;
+                distSkipped = 0;
+            }
+        }
+        else
+        {
+            drawTri(path[i]);
+            drawCircle(R0, 100, path[i]->x, path[i]->y, 0, 0, 1);
+        }
+    }
+}
+
 void filledCircle( double radius, double x, double y, double r, double g, double b) 
 {
 	int numPoints = 100;
@@ -867,53 +1009,86 @@ void renderScene(void)
 	hideBoxBoundary = radioDrawOption->get_int_val();
 	verboseOption = radioVerboseOption->get_int_val();
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//draw leaf boxes to fbo
+    if (!leafBoxesDrawed)
+    {
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glLoadIdentity();
+        glScalef(2.0/boxWidth, 2.0/boxHeight, 0);
+        glTranslatef(-boxWidth/2, -boxHeight/2, 0);
 
-	glLoadIdentity();
-	glScalef(2.0/boxWidth, 2.0/boxHeight, 0);
-	glTranslatef(-boxWidth/2, -boxHeight/2, 0);
-
-	//render top level leaves w/o blending to avoid "black" boxes
-	//just a hack
-	glDisable( GL_BLEND );
-	//note here we render even if b is not a leaf
-	Box* b = allLeaf[0];
-	switch(b->status)
-	{
-		case Box::FREE:
-			glColor4f(0.25, 1, 0.25, 0.5);
-			break;
-		case Box::STUCK:
-			glColor4f(1, 0.25, 0.25, 0.5);
-			break;
-		case Box::MIXED:
-			glColor4f(1, 1, 0.25, 0.1);
-			if (b->height < epsilon || b->width < epsilon)
-			{
-				glColor4f(0.5, 0.5, 0.5, 0.1);
-			}
-			break;
-		case Box::UNKNOWN:
-			std::cerr << "UNKNOWN value unexpected!" << std::endl;
-	}
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glBegin(GL_POLYGON);
-	glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
-	glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
-	glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
-	glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
-	glEnd();
+	    //render top level leaves w/o blending to avoid "black" boxes
+	    //just a hack
+	    glDisable( GL_BLEND );
+	    //note here we render even if b is not a leaf
+	    Box* b = allLeaf[0];
+	    switch(b->status)
+	    {
+		    case Box::FREE:
+			    glColor4f(0.25, 1, 0.25, 0.5);
+			    break;
+		    case Box::STUCK:
+			    glColor4f(1, 0.25, 0.25, 0.5);
+			    break;
+		    case Box::MIXED:
+			    glColor4f(1, 1, 0.25, 0.1);
+			    if (b->height < epsilon || b->width < epsilon)
+			    {
+				    glColor4f(0.5, 0.5, 0.5, 0.1);
+			    }
+			    break;
+		    case Box::UNKNOWN:
+			    std::cerr << "UNKNOWN value unexpected!" << std::endl;
+	    }
+	    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	    glBegin(GL_POLYGON);
+	    glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
+	    glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
+	    glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
+	    glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
+	    glEnd();
 	
+	    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	    glEnable( GL_BLEND );
+        
+        for (vector<Box*>::iterator it = allLeaf.begin(); it != allLeaf.end(); ++it)
+        {
+            drawQuad(*it);
+        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable( GL_BLEND );
+		leafBoxesDrawed = true;
+    }
 
-	for (vector<Box*>::iterator it = allLeaf.begin(); it != allLeaf.end(); ++it)
-	{
-		drawQuad(*it);
-	}
+    glDisable( GL_BLEND );
 
-	glPolygonMode(GL_FRONT, GL_LINE);
+    // clear default frame buffer for the whole window
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+    glScalef(2.0/boxWidth, 2.0/boxHeight, 0);
+    glTranslatef(-boxWidth/2, -boxHeight/2, 0);
+
+	//draw fbo to screen by render GL_QUADS usig texture mapping
+    glBindTexture(GL_TEXTURE_2D, img);
+    glEnable(GL_TEXTURE_2D);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glColor3f(1.0f,1.0f,1.0f);          
+    glBegin(GL_QUADS);
+    Box* b = allLeaf[0];
+    glTexCoord2f(0.0f, 0.0f); 
+    glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
+    glTexCoord2f(1.0f, 0.0f); 
+    glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
+    glTexCoord2f(1.0f, 1.0f); 
+    glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
+    glTexCoord2f(0.0f, 1.0f); 
+    glVertex2f(b->x - b->width / 2, b->y + b->height / 2);    
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	drawCircle(R0, 100, alpha[0], alpha[1], 0, 0, 1);	// start
 	drawCircle(R0, 100, beta[0], beta[1], 0, 0, 1);		// goal
@@ -940,11 +1115,32 @@ void renderScene(void)
 	{
         Graph graph;
 		vector<Box*> path = graph.dijkstraShortestPath(boxA, boxB);	
-		drawPath(path);
+		//drawPath(path);
 		//Graph::bfsPath(boxA, boxB);
+
+        if (showAnim)
+        {
+            if (!finishedAnim)
+            {
+                if (iPathSeg >= path.size())
+                {
+                    finishedAnim = true;
+                }
+                else
+                {
+                    drawTri(path[iPathSeg]);
+                    drawCircle(R0, 100, path[iPathSeg]->x, path[iPathSeg]->y, 0, 0, 1);
+                }
+            }
+			else
+                drawPath(path);
+        }
+        else
+            drawPath(path);
 	}
 
 	glutSwapBuffers();
+	glutPostRedisplay();
 }
 
 /* ********************************************************************** */
