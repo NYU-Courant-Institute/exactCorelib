@@ -130,8 +130,7 @@ double triRobo[2] = {0.833333333, 1.0};
 	string inputDir("inputs"); 		// Path for input files 
 	int QType = 1;				// The Priority Queue can be
 	//    sequential (0) or random (1)
-	int interactive = 0;			// Run interactively?
-	//    Yes (0) or No (1)
+	int interactive = 0;			// Run interactively? 0=Yes, 1=No
 	int seed = 111;				// seed for random number generator
 	// (Could also be used for BFS, etc)
 	double deltaX=0;			// x-translation of input environment
@@ -437,7 +436,7 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 
 	// Else, set up for GLUT/GLUI interactive display:
 	
-	if (interactive == 0)
+	if (interactive == 0) // if interactive
 	{
 //cout<<"before glutInit\n";
 		glutInit(&argc, argv);
@@ -456,7 +455,7 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 		glutDisplayFunc(renderScene);
 		glutTimerFunc(50, idle, 0);
 //		GLUI_Master.set_glutIdleFunc(idle); //replaces glutIdleFunc
-		GLUI *glui = GLUI_Master.create_glui( "control", 0, windowPosX + boxWidth + 20, windowPosY );
+		GLUI *glui = GLUI_Master.create_glui( "Control", 0, windowPosX + boxWidth + 20, windowPosY );
 	
 		// SETTING UP THE CONTROL PANEL:
 		editInput = glui->add_edittext( "Input file:", GLUI_EDITTEXT_TEXT );
@@ -640,7 +639,7 @@ void genEmptyTree()
 void run()
 {
 
-	if (interactive == 0)
+	if (interactive == 0) // if interactive
 	{
 		//update from glui live variables
 		fileName = editInput->get_text();
@@ -745,7 +744,7 @@ void run()
 
 	t.stop();
 
-	if (interactive == 0)
+	if (interactive == 0) // if interactive
 	{
 		glutPostRedisplay();
 	}
