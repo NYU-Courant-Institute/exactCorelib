@@ -110,10 +110,13 @@ scale = 1		# scaling of input file
 verbose = 0		# if true, display statistics
 title = Demos		# Title of control panel
 
+tri = triangle		# name of executable program
+tri = tri		# name of executable program
+
 #=================================================
 # Define target files (put all your files here)
 #=================================================
-TARGETS = tri
+TARGETS = $(tri)
 
 OBJ_FILES = Box.o QuadTree.o Corner.o Wall.o fileProcessor.o Timer.o
 
@@ -126,10 +129,10 @@ all: $(TARGETS)
 test: $(TARGETS)
 
 testa: $(TARGETS)
-	./tri 1
+	./$(tri) 1
 
 testb: $(TARGETS)
-	./tri 1 \
+	./$(tri) 1 \
 		$(startX) $(startY)  $(startTheta) $(goalX) $(goalY) $(startBeta) \
 		$(epsilon)  $(radius)  input2.txt  $(boxWidth) $(boxHt) \
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
