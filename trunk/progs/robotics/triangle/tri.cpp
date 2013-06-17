@@ -188,7 +188,7 @@ double triRobo[2] = {0.833333333, 1.0};
 
 // External Routines ========================================
 //////////////////////////////////////////////////////////////////////////////////
-void renderScene(void);
+void renderScene();
 void parseConfigFile(Box*);
 void run();
 void genEmptyTree();
@@ -318,7 +318,7 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct)
 }
 
 //init FBO
-void initFbo(GLvoid)     
+void initFbo()     
 {
 	//Initialize GLEW 
 	GLenum glewError = glewInit(); 
@@ -1004,7 +1004,7 @@ void drawLine()
 	glLineWidth(1.0);
 }
 
-void renderScene(void) 
+void renderScene() 
 {
 	hideBoxBoundary = radioDrawOption->get_int_val();
 	verboseOption = radioVerboseOption->get_int_val();
