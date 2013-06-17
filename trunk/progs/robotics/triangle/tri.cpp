@@ -163,11 +163,14 @@ double triRobo[2] = {0.833333333, 1.0};
     bool finishedAnim = false;
 	int idleTime = 50;
 
+    bool colorSchemeOn = 0;
+
 // GLUI controls ========================================
 //////////////////////////////////////////////////////////////////////////////////
 	GLUI_RadioGroup* radioQType;
 	GLUI_RadioGroup* radioDrawOption;
 	GLUI_RadioGroup* radioVerboseOption;
+    GLUI_RadioGroup* radioColorSchemeOption;
 	GLUI_EditText* editInput;
 	GLUI_EditText* editDir;
 	GLUI_EditText* editRadius;
@@ -386,6 +389,11 @@ void animSpeedUp()
 		idleTime = 10;
 }
 
+void redrawFBO()
+{
+    leafBoxesDrawed = false;
+}
+
 // MAIN PROGRAM: ========================================
 int main(int argc, char* argv[])
 {
@@ -437,8 +445,6 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 		glutInitWindowSize(boxWidth, boxWidth);
 		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 		int windowID = glutCreateWindow("Motion Planning");
-		glutDisplayFunc(renderScene);
-		GLUI_Master.set_glutIdleFunc( NULL );
 
 	//Chee: trying to get demos to take a "title string"
 	std::stringstream sss;
@@ -543,11 +549,18 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 		glui->add_separator();
 		radioQType->set_int_val(QType);
 
-		radioDrawOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)renderScene);
+		radioDrawOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)redrawFBO);
 		glui->add_radiobutton_to_group(radioDrawOption, "Show Box Boundary");
 		glui->add_radiobutton_to_group(radioDrawOption, "Hide Box Boundary");
 
 		glui->add_separator();
+        radioColorSchemeOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)redrawFBO);;
+
+        glui->add_radiobutton_to_group(radioColorSchemeOption, "Enable Color");
+        glui->add_radiobutton_to_group(radioColorSchemeOption, "Disable Color");
+
+        radioColorSchemeOption->set_int_val(!colorSchemeOn);
+        glui->add_separator();
 		radioVerboseOption = glui->add_radiogroup();
 
 		glui->add_radiobutton_to_group(radioVerboseOption, "Non-Verbose");
@@ -870,27 +883,35 @@ void drawQuad(Box* b)
 	//{
 	//	return;
 	//}
-	switch(b->status)
-	{
-	case Box::FREE:
-		glColor4f(0.25, 1, 0.25, 0.5);
-		break;
-	case Box::STUCK:
-		glColor4f(1, 0.25, 0.25, 0.5);
-		break;
-	case Box::MIXED:
-		glColor4f(1, 1, 0.25, 0.1);
-		if (b->height < epsilon || b->width < epsilon)
-		{
-			glColor4f(0.5, 0.5, 0.5, 0.1);
-		}
-		break;
-	case Box::UNKNOWN:
-		//todo
-		//std::cout << "UNKNOWN in drawQuad" << std::endl;
-		break;
-	}
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    if (colorSchemeOn)
+    {
+        switch(b->status)
+        {
+        case Box::FREE:
+            glColor4f(0.25, 1, 0.25, 0.5);
+            break;
+        case Box::STUCK:
+            glColor4f(1, 0.25, 0.25, 0.5);
+            break;
+        case Box::MIXED:
+            glColor4f(1, 1, 0.25, 0.1);
+            if (b->height < epsilon || b->width < epsilon)
+            {
+                glColor4f(0.5, 0.5, 0.5, 0.1);
+            }
+            break;
+        case Box::UNKNOWN:
+            //todo
+            //std::cout << "UNKNOWN in drawQuad" << std::endl;
+            break;
+        }
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    } 
+    else
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+	
 	glBegin(GL_POLYGON);
 	glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
 	glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
@@ -900,14 +921,14 @@ void drawQuad(Box* b)
 
 	if (!hideBoxBoundary)
 	{
-		glColor3f(0, 0 , 0);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glBegin(GL_POLYGON);
-		glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
-		glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
-		glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
-		glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
-		glEnd();
+        glColor3f(0, 0 , 0);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glBegin(GL_POLYGON);
+        glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
+        glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
+        glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
+        glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
+        glEnd();
 	}	
 }
 
@@ -1008,6 +1029,7 @@ void renderScene()
 {
 	hideBoxBoundary = radioDrawOption->get_int_val();
 	verboseOption = radioVerboseOption->get_int_val();
+    colorSchemeOn = !radioColorSchemeOption->get_int_val();
 
 	//draw leaf boxes to fbo
     if (!leafBoxesDrawed)
@@ -1018,29 +1040,37 @@ void renderScene()
         glScalef(2.0/boxWidth, 2.0/boxHeight, 0);
         glTranslatef(-boxWidth/2, -boxHeight/2, 0);
 
-	    //render top level leaves w/o blending to avoid "black" boxes
-	    //just a hack
+
 	    glDisable( GL_BLEND );
-	    //note here we render even if b is not a leaf
-	    Box* b = allLeaf[0];
-	    switch(b->status)
-	    {
-		    case Box::FREE:
-			    glColor4f(0.25, 1, 0.25, 0.5);
-			    break;
-		    case Box::STUCK:
-			    glColor4f(1, 0.25, 0.25, 0.5);
-			    break;
-		    case Box::MIXED:
-			    glColor4f(1, 1, 0.25, 0.1);
-			    if (b->height < epsilon || b->width < epsilon)
-			    {
-				    glColor4f(0.5, 0.5, 0.5, 0.1);
-			    }
-			    break;
-		    case Box::UNKNOWN:
-			    std::cerr << "UNKNOWN value unexpected!" << std::endl;
-	    }
+        Box* b = allLeaf[0];
+        if (colorSchemeOn)
+        {
+            //render top level leaves w/o blending to avoid "black" boxes
+            //just a hack
+            //note here we render even if b is not a leaf            
+            switch(b->status)
+            {
+            case Box::FREE:
+                glColor4f(0.25, 1, 0.25, 0.5);
+                break;
+            case Box::STUCK:
+                glColor4f(1, 0.25, 0.25, 0.5);
+                break;
+            case Box::MIXED:
+                glColor4f(1, 1, 0.25, 0.1);
+                if (b->height < epsilon || b->width < epsilon)
+                {
+                    glColor4f(0.5, 0.5, 0.5, 0.1);
+                }
+                break;
+            case Box::UNKNOWN:
+                std::cerr << "UNKNOWN value unexpected!" << std::endl;
+            }
+        } 
+        else
+            glColor4f(1, 1, 1, 0.1);
+	    
+        
 	    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	    glBegin(GL_POLYGON);
 	    glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
