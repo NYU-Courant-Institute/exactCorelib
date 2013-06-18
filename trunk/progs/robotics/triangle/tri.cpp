@@ -158,7 +158,7 @@ double triRobo[2] = {0.833333333, 1.0};
 
     bool showAnim = true;
     bool leafBoxesDrawed = false;
-    int iPathSeg = 0;
+    unsigned int iPathSeg = 0;
     double distOnPathSeg = 0;
     bool finishedAnim = false;
 	int idleTime = 50;
@@ -444,19 +444,13 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 		glutInitWindowPosition(windowPosX, windowPosY);
 		glutInitWindowSize(boxWidth, boxWidth);
 		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-		int windowID = glutCreateWindow("Motion Planning");
-
-	//Chee: trying to get demos to take a "title string"
-	std::stringstream sss;
-	sss << "Triangle Robot Control: " << title;	// create full file name 
-	std::string title_string = sss.str();
-	const char * test ("Triangle Robot Demo");
+		int windowID = glutCreateWindow("Motion Planning for Triangle");
 
         initFbo();
 		glutDisplayFunc(renderScene);
 		glutTimerFunc(50, idle, 0);
 //		GLUI_Master.set_glutIdleFunc(idle); //replaces glutIdleFunc
-		GLUI *glui = GLUI_Master.create_glui( "Control", 0, windowPosX + boxWidth + 20, windowPosY );
+		GLUI *glui = GLUI_Master.create_glui( "Control Triangle Demo", 0, windowPosX + boxWidth + 20, windowPosY );
 	
 		// SETTING UP THE CONTROL PANEL:
 		editInput = glui->add_edittext( "Input file:", GLUI_EDITTEXT_TEXT );
@@ -678,10 +672,34 @@ void run()
 
 	Timer t;
 
-	t.start();
+	/* Start the run */
+	stringstream ssout;
+	cout << "    Begin Run using Qtype = ";
+	ssout << "    Begin Run using Qtype = ";
+		switch( QType ) 
+		{
+		    case 0:
+			cout << "Random Strategy\n"; 
+			ssout << "Random Strategy\n"; break;
+		    case 1:
+			cout << "BFS Strategy\n";
+			ssout << "BFS Strategy\n"; break;
+		    case 2:
+			cout << "Greedy Strategy\n";
+			ssout << "Greedy Strategy\n"; break;
+		    case 3:
+			cout << "Dist+Size Strategy\n";
+			ssout << "Dist+Size Strategy\n"; break;
+		    case 4:
+			cout << "Voronoi Strategy\n"; 
+			ssout << "Voronoi Strategy\n"; break;
+		}
+	cout << ">>\n";
 
 	noPath = false;	// initially, pretend we have found path 
 	int ct = 0;	// number of times a node is expanded
+
+	t.start();
 
 	if (QType == 0 || QType == 1)
 	{
@@ -690,6 +708,7 @@ void run()
 		{
 			noPath = true;  
 			cout << "Start Configuration is not free\n";
+			ssout << "Start Configuration is not free\n";
 		}
 
 		boxB = QT->getBox(beta[0], beta[1], beta[2], ct);
@@ -697,6 +716,7 @@ void run()
 		{
 			noPath = true;  
 			cout << "Goal Configuration is not free\n";
+			ssout << "Goal Configuration is not free\n";
 		}
 		
 		// In the following loop, "noPath" is should really mean "hasPath"
@@ -758,21 +778,6 @@ void run()
 	cout << ">>      ----->>  Time used: "
 	    	<< t.getElapsedTimeInMilliSec() << " ms" << endl;
 	cout << ">>\n";
-	// cout << ">>      ----->>  Qtype: " << QType << "\n";
-	cout << ">>      ----->>  Qtype: ";
-		switch( QType ) 
-		{
-		    case 0:
-			cout << "Random Strategy\n"; break;
-		    case 1:
-			cout << "BFS Strategy\n"; break;
-		    case 2:
-			cout << "Greedy Strategy\n"; break;
-		    case 3:
-			cout << "Dist+Size Strategy\n"; break;
-		    case 4:
-			cout << "Voronoi Strategy\n"; break;
-		}
 	cout << ">>\n";
 	if (verboseOption) 
 	  cout << ">>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>\n";
@@ -783,7 +788,7 @@ void run()
 	  cout << "total Mixed boxes smaller than epsilon: " << mixSmallCount << endl;
 	  cout << "total Mixed boxes bigger than epsilon: " << mixCount - ct - mixSmallCount << endl;
 	}
-	stringstream ssout;
+	// stringstream ssout;
 	if (!noPath) ssout << "    ---->>   PATH FOUND !" << endl;
 	else  ssout << "    ---->>  NO PATH !" << endl;
 	ssout << "    ---->>   TIME USED: "

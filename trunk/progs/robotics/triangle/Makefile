@@ -56,6 +56,19 @@
 # 	These targets uses different input files, all taken from
 # 	the subdirectory "inputs".   
 #
+#  Demos for SoCG 2012 Talk:
+#  	demo1	= eg100:
+#  			  (Random	14500 ms)
+#  			  (BFS 		4800 ms)
+#  			  (Greedy	700 ms)
+#  			  (Dist+Size	840 ms)
+#  			  (Vor 		1540 ms)
+#  		  Now, increase the radius by 1 (no path)
+#  			  (Random	5200 ms)
+#  			  (BFS 		4600 ms)
+#  			  (Greedy	460 ms)
+#  			  (Dist+Size	540 ms)
+#  			  (Vor 		530 ms)
 #
 # April 13, 2012
 #
