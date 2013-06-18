@@ -356,7 +356,7 @@ eg4a linea:	$(VOR2D)
 		1 $(c2) $(maxEps) \
 		&
 	
-# Eg4a: Example of a non-regularized input (set of 4 lines) but open polygons 
+# Eg4b: Example of a non-regularized input (set of 4 lines) but open polygons 
 eg4b lineb:	$(VOR2D)
 	@echo "Target 'eg4b' or 'lineb': "
 	$(VOR2D) $(interactive) \

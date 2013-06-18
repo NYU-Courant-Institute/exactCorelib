@@ -99,7 +99,8 @@ windowPosX = 500	# initial Window position
 windowPosY = 20	
 
 Qtype = 2		# type of priority queue
-			#  (0=random, 1 = BFS, 2 = Greedy Best First, 3 = A-star) 
+			#  (0=random, 1 = BFS, 2 = Greedy Best First, 3 = Dist+Size) 
+			#  (4=Vor heuristic)
 seed = 11		# seed for random
 step = 0		# number of steps to run
 			#	(step=0 means run to completion)
@@ -491,8 +492,8 @@ eg150 150: ./tri
 eg200 200: ./tri
 	@echo "Target eg200:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time!!!"
-	./tri $(interactive) 150 260 0 20 20 0 \
-		5 2 input1.txt \
+	./tri $(interactive) 150 260 0 20 20 90 \
+		5 6 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -501,15 +502,15 @@ eg200 200: ./tri
 
 # eg200a: there is an obvious path but probabilistic methods might waste
 # 	lots of time checking elsewhere!
-#
+# 	Using QType=4 (Vor Heuristic)
 eg200a 200a: ./tri
 	@echo "Target eg200a:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
-	./tri $(interactive) 10 360 0 20 20 0 \
+	./tri $(interactive) 10 360 0 320 20 90 \
 		2 10 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
+		4 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&

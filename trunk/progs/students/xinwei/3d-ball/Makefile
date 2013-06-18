@@ -59,13 +59,18 @@ help:
 	@echo "1, 1ex, 2, 3, 4, 5, 6"
 	@echo "7, 8, 8ex, 9, 9ex, 10"
 
+eg: Draw
+	./Draw cmpr1/ 2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+	./Draw ${filename} ${type} \
+	    ${spaceradius} ${epsilon} ${sphereradius} \
+	    ${xStart} ${yStart} ${zStart} \
+	    ${xEnd} ${yEnd} ${zEnd} \
+	    &
+
 eg1: Draw
 	./Draw cmpr1/ 2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 
 #=================================================
-# ./Draw ${filename} ${type} ${spaceradius} ${epsilon} ${sphereradius} \
-#	${xStart} ${yStart} ${zStart} ${xEnd} ${yEnd} ${zEnd} \
-#	&
 #=================================================
 
 eg1ex: Draw
