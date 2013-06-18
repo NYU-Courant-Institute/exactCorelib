@@ -7,13 +7,16 @@
 # points
 24
 
+# top left hand square:
 10 502
 110 502
 110 402
 10 402
+# triangle
 200 312
 250 332
 300 292
+# pentagon
 210 162
 220 202
 50 112

@@ -64,6 +64,7 @@
 #include <gl/glui.h>
 #endif
 #ifdef __APPLE__
+#include "GL/glew.h"
 #include "glui.h"
 #endif
 

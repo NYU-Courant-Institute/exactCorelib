@@ -154,7 +154,7 @@ help:
 	@echo "        eg2, eg2a, eg2b, [simple environment without bounding box]"
 	@echo "        eg3  [simple environment with door]"
 	@echo "        eg4 (= egbug, bug), eg4a (= egbuga, buga),"
-	@echo "        eg5 (= egbug2, bug2), eg5a (= egbug2a, bug2a),"
+	@echo "        eg5 (= egbug2, bug2), eg5a (= egbug2a, bug2a), eg5b, eg5c"
 	@echo "        eg6 (= kavraki), eg6a (= kavrakia),"
 	@echo "        eg7 (= tunnel), eg7a (= tunnela), eg7b (= tunnelb)"
 	@echo "        eg100, eg100a"
@@ -248,6 +248,17 @@ eg3: ./tri
 		$(verbose) $(title) \
 		&
 
+# eg3a: input3a.txt is line input2e, but there is a narrow door
+eg3a: ./tri
+	@echo "Target eg3:  runs tri on input3.txt"
+	./tri $(interactive) 150 260 90 450 450 -60 \
+		10 30 input3a.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
+		&
+
 # BUG TRAPS:
 # 
 # Bugtrap example -- Existence of path, but barely!
@@ -289,8 +300,19 @@ eg4a egbuga buga: ./tri
 # 		with BFS, takes 3.6 ms to report PATH 
 eg5 egbug2 bug2: ./tri
 	@echo "Target 'eg5 or bug2':  runs tri on bugtrap2.txt"
-	@echo "--  this examples shows there is PATH, but barely so!"
-	./tri $(interactive) 180 210 0 30 30 0 \
+	@echo "--  this example shows there is PATH, but barely so!"
+	./tri $(interactive) 180 210 90 30 30 -30 \
+		4 11 bugtrap2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
+		&
+# same as eg5, but we reverse the role of start and finish position!
+eg5a egbug2a bug2a: ./tri
+	@echo "Target 'eg5a or bug2a':  runs tri on bugtrap2.txt"
+	@echo "--  this example is like eg5, but exchanges the GOAL/START of eg5"
+	./tri $(interactive) 30 30 -30  180 210 90 \
 		4 11 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
@@ -305,8 +327,8 @@ eg5 egbug2 bug2: ./tri
 # 	OLD DATA: Eps=1, radius=8:
 # 		with Greedy, takes <1 ms to report NO PATH 
 # 		with BFS, takes 15 ms to report NO PATH
-eg5a egbug2a bug2a: ./tri
-	@echo "Target 'eg5a or bug2a':  runs tri on bugtrap2.txt"
+eg5b egbug2b bug2b: ./tri
+	@echo "Target 'eg5b or bug2b':  runs tri on bugtrap2.txt"
 	@echo "--  this examples shows there is NO PATH, but barely so!"
 	./tri $(interactive) 180 210 0 30 30 0 \
 		4 12 bugtrap2.txt \
