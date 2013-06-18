@@ -222,7 +222,7 @@ eg1: ./tri
 	./tri $(interactive) 150 260 90 40 40 -60 \
 		10 25 input2e.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
+		0 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&
@@ -492,21 +492,23 @@ eg150 150: ./tri
 eg200 200: ./tri
 	@echo "Target eg200:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time!!!"
+	@echo "--  Using Greedy Strategy"
 	./tri $(interactive) 150 260 0 20 20 90 \
 		5 6 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
+		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&
 
 # eg200a: there is an obvious path but probabilistic methods might waste
 # 	lots of time checking elsewhere!
-# 	Using QType=4 (Vor Heuristic)
+# 	Using Qtype=4 (Vor Heuristic)
 eg200a 200a: ./tri
 	@echo "Target eg200a:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
+	@echo "--  Using Vor Heuristic"
 	./tri $(interactive) 10 360 0 320 20 90 \
 		2 10 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
@@ -535,7 +537,7 @@ eg300: ./tri
 	@echo "Target eg300:  runs tri amidst 300 randomly generated triangles"
 	@echo "--  This may take a noticeable amount bit of time!!! "
 	./tri $(interactive) 10 400 0 350 20 0\
-		3 3 input300.txt \
+		2 3 input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -554,7 +556,7 @@ tri: $(OBJ_FILES) tri.o
 
 
 #=================================================
-# Experiments for our paper 
+# Experiments for our SoCG 2013 paper 
 #=================================================
 #bugtrap: radius 40, other setting same as buga
 #200: alpha 130, 460, beta 20, 20, other setting same as eg200
