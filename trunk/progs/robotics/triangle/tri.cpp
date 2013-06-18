@@ -118,9 +118,9 @@ double triRobo[2] = {0.833333333, 1.0};
 //////////////////////////////////////////////////////////////////////////////////
 	double alpha[3] = {250, 350, 0};		// start configuration
 	double beta[3] = {60, 50, 0};		// goal configuration
-	double epsilon = 1;			// resolution parameter
-	Box* boxA;				// start box (containing alpha)
-	Box* boxB;				// goal box (containing beta)
+	double epsilon = 5;			// resolution parameter
+	Box* boxA = NULL;				// start box (containing alpha)
+	Box* boxB = NULL;				// goal box (containing beta)
 	double boxWidth = 512;			// Initial box width
 	double boxHeight = 512;			// Initial box height
 	double R0 = 10;				// Robot radius 
@@ -479,7 +479,7 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 		   	"y:", GLUI_EDITTEXT_FLOAT );
 	   editAlphaY->set_float_val(alpha[1]);
 	   editAlphaTheta = glui->add_edittext_to_panel(alpha_box_panel,
-		   	"theta (radians)", GLUI_EDITTEXT_FLOAT );
+		   	"theta (degrees)", GLUI_EDITTEXT_FLOAT );
 	   editAlphaTheta->set_float_val(alpha[2]);
 	   	// ORIGINAL:
 		//editAlphaX = glui->add_edittext( "alpha.x:", GLUI_EDITTEXT_FLOAT );
@@ -498,7 +498,7 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 		   	"y:", GLUI_EDITTEXT_FLOAT );
 	   editBetaY->set_float_val(beta[1]);
 	   editBetaTheta = glui->add_edittext_to_panel(beta_box_panel,
-		   	"theta (radians)", GLUI_EDITTEXT_FLOAT );
+		   	"theta (degrees)", GLUI_EDITTEXT_FLOAT );
 	   editBetaTheta->set_float_val(beta[2]);
 	   	// ORIGINAL:
 		//editBetaX = glui->add_edittext( "beta.x:", GLUI_EDITTEXT_FLOAT );
@@ -538,7 +538,7 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 		glui->add_radiobutton_to_group(radioQType, "BFS");
 		glui->add_radiobutton_to_group(radioQType, "Greedy");
         glui->add_radiobutton_to_group(radioQType, "Dist+Size");
-        glui->add_radiobutton_to_group(radioQType, "Voronoi Heuristic");
+        glui->add_radiobutton_to_group(radioQType, "Boundary Tracker");
 
 		glui->add_separator();
 		radioQType->set_int_val(QType);
@@ -643,11 +643,12 @@ void run()
 		epsilon = editEpsilon->get_float_val();
 		alpha[0] = editAlphaX->get_float_val();
 		alpha[1] = editAlphaY->get_float_val();
-		alpha[2] = editAlphaTheta->get_float_val();	
+        //alpha[2] stores radian/pi, it's 1 if angle is 180 degree
+		alpha[2] = editAlphaTheta->get_float_val() / 180.0;	
 		alpha[2] = alpha[2] - floor(alpha[2] / 2) * 2;	
 		beta[0] = editBetaX->get_float_val();
 		beta[1] = editBetaY->get_float_val();
-		beta[2] = editBetaTheta->get_float_val();
+		beta[2] = editBetaTheta->get_float_val() / 180.0;
 		beta[2] = beta[2] - floor(beta[2] / 2) * 2;	
 
 		QType = radioQType->get_int_val();	
@@ -691,8 +692,8 @@ void run()
 			cout << "Dist+Size Strategy\n";
 			ssout << "Dist+Size Strategy\n"; break;
 		    case 4:
-			cout << "Voronoi Strategy\n"; 
-			ssout << "Voronoi Strategy\n"; break;
+			cout << "Boundary Tracker Strategy\n"; 
+			ssout << "Boundary Tracker Strategy\n"; break;
 		}
 	cout << ">>\n";
 
@@ -821,16 +822,17 @@ void drawTri(Box* b)
 	glLineWidth(1.0);
 }
 
-void drawTri(Box* b, double x, double y)
+//draw triangle with offset x/y and angle a
+void drawTri(Box* b, double x, double y, double a)
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor3f(1, 0, 0);
 	glLineWidth(2);
 	glBegin(GL_TRIANGLES);	
 
-	glVertex2f( R0*cos((b->xi[0]) * PI) + x, R0*sin((b->xi[0]) * PI) + y );
-	glVertex2f( R0*cos((triRobo[0] + b->xi[0]) * PI) + x, R0*sin((triRobo[0] + b->xi[0]) * PI) + y );
-	glVertex2f( R0*cos((triRobo[1] + b->xi[0]) * PI) + x, R0*sin((triRobo[1] + b->xi[0]) * PI) + y );
+    glVertex2f( R0*cos((a) * PI) + x, R0*sin((a) * PI) + y );
+    glVertex2f( R0*cos((triRobo[0] + a) * PI) + x, R0*sin((triRobo[0] + a) * PI) + y );
+    glVertex2f( R0*cos((triRobo[1] + a) * PI) + x, R0*sin((triRobo[1] + a) * PI) + y );
 
 	glEnd();
 	glLineWidth(1.0);
@@ -840,13 +842,13 @@ void drawPath(vector<Box*>& path)
 {
 	glColor3f(0.5, 0, 0.25);
 	glLineWidth(3.0);
-	glBegin(GL_LINE_STRIP);	
-	glVertex2f(beta[0], beta[1]);
+	glBegin(GL_LINE_STRIP);		
+    glVertex2f(alpha[0], alpha[1]);
 	for (int i = 0; i < (int)path.size(); ++i)
 	{
 		glVertex2f(path[i]->x, path[i]->y);
 	}
-	glVertex2f(alpha[0], alpha[1]);
+	glVertex2f(beta[0], beta[1]);
 	glEnd();
 	glLineWidth(1.0);
 
@@ -1125,8 +1127,9 @@ void renderScene()
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	drawCircle(R0, 100, alpha[0], alpha[1], 0, 0, 1);	// start
-	drawCircle(R0, 100, beta[0], beta[1], 0, 0, 1);		// goal
+    //draw a bigger circle, twice the robot radius
+	drawCircle(R0 * 2, 100, alpha[0], alpha[1], 0, 1, 0);	// start
+	drawCircle(R0 * 2, 100, beta[0], beta[1], 0, 0, 1);		// goal
 
 	double r0 = 5;
 	if (r0>R0) r0=R0;
@@ -1139,11 +1142,11 @@ void renderScene()
 
 	if (boxA)
 	{
-		drawTri(boxA, alpha[0], alpha[1]);
+		drawTri(boxA, alpha[0], alpha[1], alpha[2]);
 	}
 	if (boxB)
 	{
-		drawTri(boxB, beta[0], beta[1]);
+		drawTri(boxB, beta[0], beta[1], beta[2]);
 	}
 
 	if (!noPath)
