@@ -57,6 +57,8 @@
 # 	the subdirectory "inputs".   
 #
 #  Demos for SoCG 2012 Talk:
+#  	demo1	= bug:
+#  	demo2	= bug2:
 #  	demo1	= eg100:
 #  			  (Random	14500 ms)
 #  			  (BFS 		4800 ms)
@@ -69,6 +71,18 @@
 #  			  (Greedy	460 ms)
 #  			  (Dist+Size	540 ms)
 #  			  (Vor 		530 ms)
+#  	demo2	= eg200  (rad,eps)=(8,4) -- path
+#  			  (Random	?? ms)
+#  			  (BFS 		6300 ms)
+#  			  (Greedy	3100 ms)
+#  			  (Dist+Size	2800 ms)
+#  			  (Vor 		4800 ms)
+#  		  eg200  (rad,eps)=(8,5) -- NO PATH
+#  			  (Random	4350 ms)
+#  			  (BFS 		3900 ms)
+#  			  (Greedy	430 ms)
+#  			  (Dist+Size	440  ms)
+#  			  (Vor 		460 ms)
 #
 # April 13, 2012
 #
@@ -235,7 +249,7 @@ eg1: ./tri
 	./tri $(interactive) 150 260 90 40 40 -60 \
 		10 25 input2e.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		0 1111 $(inputDir) \
+		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&
@@ -305,20 +319,17 @@ eg4a egbuga buga: ./tri
 
 
 # Bugtrap2 example -- Existance of path.
-# 	NEW DATA: Eps=4, radius=11:
-# 		with Greedy, takes 0.8 sec to find PATH 
-# 		with BFS, takes 2.7 ms to report PATH 
-# 		with Random, program hung up.
-# 	OLD DATA: Eps=1, radius=7:
-# 		with Greedy, takes 7.4 ms to find PATH 
-# 		with BFS, takes 3.6 ms to report PATH 
+# 	NEW DATA: Eps=4, radius=11 (has Path)
+# 		Random=too long
+# 		BFS= 3200 ms,
+# 		Greedy=5360 ms, Dist+size= 2200* ms, Vor=5400 ms, 
 eg5 egbug2 bug2: ./tri
 	@echo "Target 'eg5 or bug2':  runs tri on bugtrap2.txt"
 	@echo "--  this example shows there is PATH, but barely so!"
 	./tri $(interactive) 180 210 90 30 30 -30 \
 		4 11 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		2 11 $(inputDir) \
+		3 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&
@@ -461,6 +472,18 @@ eg8b hsub: ./tri
 		-70 -70 0.065 \
 		&
 
+eg9: ./tri
+	@echo "Target eg8b: example from the paper of Hsu, Latombe, Kurniawati (2006)"
+	@echo "	There is a path passage... when radius=6, epsilon=1"
+	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./tri $(interactive) 250 370 -60 220 150 30\
+		5 30 narrowCorridor.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		0 0 0.065 \
+		&
+
+
 # RANDOMLY GENERATED ENVIRONMENT:
 #	This one, generated using our Python Generator, has 200 triangles.
 #	Note that these triangles are not disjoint, but our theory remains
@@ -468,12 +491,13 @@ eg8b hsub: ./tri
 #	the exact algorithms.
 
 # eg100 100: 100 random triangles
+# 	Random = ? ms, BFS=14500 ms, Greedy = 950 ms, Dist+Size = 16000 ms, Vor = 2900 ms
 eg100 100: ./tri
 	@echo "Target eg100:  runs tri amidst 100 randomly generated triangles"
-	./tri $(interactive) 200 270 0 20 20 0\
-		10 5 input100.txt \
+	./tri $(interactive) 20 20 45 200 270 0 \
+		3 20 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
+		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&
@@ -482,7 +506,7 @@ eg100 100: ./tri
 eg100a 100a: ./tri
 	@echo "Target eg100a:  runs tri amidst 100 randomly generated triangles"
 	@echo "This one is a bit harder than eg100 (with radius 8 instead of 5)"
-	./tri $(interactive) 200 270 0 20 20 0\
+	./tri $(interactive) 20 20 45 310 310 -45\
 		10 8 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
@@ -502,12 +526,15 @@ eg150 150: ./tri
 		&
 
 # eg200: 200 random triangles
+# 	Parameters: (rad,eps)=(8,4)
+# 			Time:	Random= slow! ms, BFS=6300 ms, Greedy=3100 ms,
+# 				Dist+Size 2800 ms, Vor 4800 ms
 eg200 200: ./tri
 	@echo "Target eg200:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time!!!"
 	@echo "--  Using Greedy Strategy"
 	./tri $(interactive) 150 260 0 20 20 90 \
-		5 6 input1.txt \
+		4 8 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -523,7 +550,7 @@ eg200a 200a: ./tri
 	@echo "    depending on the search strategy"
 	@echo "--  Using Vor Heuristic"
 	./tri $(interactive) 10 360 0 320 20 90 \
-		2 10 input1.txt \
+		5 7 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		4 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \

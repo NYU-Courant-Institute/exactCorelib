@@ -131,6 +131,7 @@ double triRobo[2] = {0.833333333, 1.0};
 	string inputDir("inputs"); 		// Path for input files 
 	int QType = 1;				// The Priority Queue can be
 	//    sequential (0) or random (1)
+	//    ??? random (0), bfs (1), greedy (2), Dist+size (3), Vor (4)
 	int interactive = 0;			// Run interactively? 0=Yes, 1=No
 	int seed = 111;				// seed for random number generator
 	// (Could also be used for BFS, etc)
@@ -411,7 +412,7 @@ int main(int argc, char* argv[])
 	if (argc > 12) boxHeight = atof(argv[12]);	// boxHeight
 	if (argc > 13) windowPosX = atoi(argv[13]);	// window X pos
 	if (argc > 14) windowPosY = atoi(argv[14]);	// window Y pos
-	if (argc > 15) QType   = atoi(argv[15]);	// PriorityQ Type (random or no)
+	if (argc > 15) QType   = atoi(argv[15]);	// PriorityQ Type (strategy)
 	if (argc > 16) seed   = atoi(argv[16]);		// for random number generator
 	if (argc > 17) inputDir  = argv[17];		// path for input files
 	if (argc > 18) deltaX  = atof(argv[18]);	// x-translation of input file
@@ -654,13 +655,13 @@ void run()
 		QType = radioQType->get_int_val();	
 	}
 
-	if (verboseOption) {
+	//if (verboseOption) { // always show this info on terminal!
 	  cout<<"   radius = " << R0 << ", eps = " << epsilon << endl;
 	  cout<<"   alpha = (" << alpha[0]
 	      << ", " << alpha[1] << ", " << alpha[2] << ")" << endl;
 	  cout<<"   beta = (" << beta[0]
 	      << ", " << beta[1] << ", " << beta[2] << ")" << endl;
-	}
+	//}
 
 	genEmptyTree();
 
