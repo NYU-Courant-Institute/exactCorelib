@@ -256,7 +256,7 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 					// go through neighbors of each child to see if it's in source set
 					// if yes, this child go into the dijQ					
 					bool isNeighborOfSourceSet = false;
-					for (int j = 0; j < 6 && !isNeighborOfSourceSet; ++j) {
+					for (int j = 0; j < 4 && !isNeighborOfSourceSet; ++j) {
 						for (vector<Box*>::iterator iter =
 								cldrn[i]->Nhbrs[j].begin();
 								iter < cldrn[i]->Nhbrs[j].end(); ++iter) {
@@ -303,7 +303,7 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 		// if current is not MIXED, then must be FREE
 		// go through it's neighbors and add FREE and MIXED ones to dijQ
 		// also add FREE ones to source set 
-		for (int i = 0; i < 6; ++i) {
+		for (int i = 0; i < 4; ++i) {
 			for (vector<Box*>::iterator iter = current->Nhbrs[i].begin();
 					iter < current->Nhbrs[i].end(); ++iter) {
 				Box* neighbor = *iter;
@@ -365,9 +365,9 @@ int main(int argc, char* argv[]) {
 	if (argc > 7)
 		beta[1] = atof(argv[7]);		// goal y
 	if (argc > 8)
-		beta[2] = atof(argv[8]);	// goal theta1, convert from degree to radian
+		beta[2] = atof(argv[8]);// goal theta1, convert from degree to radian
 	if (argc > 9)
-		beta[3] = atof(argv[9]);	// goal theta2, convert from degree to radian
+		beta[3] = atof(argv[9]);// goal theta2, convert from degree to radian
 	if (argc > 10)
 		epsilon = atof(argv[10]);		// epsilon (resolution)
 	if (argc > 11)
@@ -403,11 +403,7 @@ int main(int argc, char* argv[]) {
 
 	// Added by Zhongdi 05/08/2013 begin
 	// calculate the R of the robot
-	if (L1 > L2) {
-		R0 = L1;
-	} else {
-		R0 = L2;
-	}
+	R0 = max(L1,L2);
 	// Added by Zhongdi 05/08/2013 end
 
 	cout << "Before interactive, Qtype= " << QType << "\n";
@@ -422,10 +418,10 @@ int main(int argc, char* argv[]) {
 		//return 0;
 	}
 
-	alpha[2] /= 180.0;		// start theta, convert from degree to radian
-	beta[2] /= 180.0;		// goal theta, convert from degree to radian
-	alpha[3] /= 180.0;		// start theta, convert from degree to radian
-	beta[3] /= 180.0;		// goal theta, convert from degree to radian
+//	alpha[2] /= 180.0;		// start theta, convert from degree to radian
+//	beta[2] /= 180.0;		// goal theta, convert from degree to radian
+//	alpha[3] /= 180.0;		// start theta, convert from degree to radian
+//	beta[3] /= 180.0;		// goal theta, convert from degree to radian
 
 	// Else, set up for GLUT/GLUI interactive display:
 
@@ -626,15 +622,18 @@ int main(int argc, char* argv[]) {
 
 void genEmptyTree() {
 	Box* root = new Box(boxWidth / 2, boxHeight / 2, boxWidth, boxHeight);
-	Box::r0 = R0;
 
-	cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-			<< endl;
+	Box::r0 = R0;
+	Box::l1 = L1;
+	Box::l2 = L2;
+
+//	cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+//			<< endl;
 	//todo
 //	Box::THETA_MIN = min(min(triRobo[0], triRobo[1] - triRobo[0]),
 //			2 - triRobo[1]);
 	// todo added by Zhongdi 05/08/2013
-	Box::THETA_MIN = 0.1;
+//	Box::THETA_MIN = 0.1;
 
 	Box::pAllLeaf = &allLeaf;
 
@@ -673,7 +672,7 @@ void genEmptyTree() {
 		cout << "done genEmptyTree \n";
 }
 void idle() {
-	cout << "idleidleidleidleidleidleidleidleidle" << endl;
+//	cout << "idleidleidleidleidleidleidleidleidle" << endl;
 	renderScene();
 }
 
@@ -753,9 +752,21 @@ void run() {
 		alpha[0] = editAlphaX->get_float_val();
 		alpha[1] = editAlphaY->get_float_val();
 		alpha[2] = editAlphaTheta1->get_float_val();
-		alpha[2] = alpha[2] - floor(alpha[2] / 2) * 2;
+		while (alpha[2] >= 360) {
+			alpha[2] -= 360;
+		}
+		while (alpha[2] < 0) {
+			alpha[2] += 360;
+		}
+		editAlphaTheta1->set_float_val(alpha[2]);
 		alpha[3] = editAlphaTheta2->get_float_val();
-		alpha[3] = alpha[3] - floor(alpha[3] / 2) * 2;
+		while (alpha[3] >= 360) {
+			alpha[3] -= 360;
+		}
+		while (alpha[3] < 0) {
+			alpha[3] += 360;
+		}
+		editAlphaTheta2->set_float_val(alpha[3]);
 		beta[0] = editBetaX->get_float_val();
 		beta[1] = editBetaY->get_float_val();
 		beta[2] = editBetaTheta1->get_float_val();
@@ -960,15 +971,19 @@ void drawLinks(Box* b) {
 //	glVertex2f(R0 * cos((triRobo[1] + b->xi[0]) * PI) + b->x,
 //			R0 * sin((triRobo[1] + b->xi[0]) * PI) + b->y);
 	glVertex2d(b->x, b->y);
-	glVertex2d(L1 * cos((b->xi[0]) * PI) + b->x,
-			L1 * sin((b->xi[0]) * PI) + b->y);
+	glVertex2d(L1 * cos((b->xi[0] / 180) * PI) + b->x,
+			L1 * sin((b->xi[0] / 180) * PI) + b->y);
 	glEnd();
 	glColor3f(1, 0, 1);
 	glBegin(GL_LINES);
 	glVertex2d(b->x, b->y);
-	glVertex2d(L2 * cos((b->xi[2]) * PI) + b->x,
-			L2 * sin((b->xi[2]) * PI) + b->y);
+	glVertex2d(L2 * cos((b->xi[2] / 180) * PI) + b->x,
+			L2 * sin((b->xi[2] / 180) * PI) + b->y);
 	glEnd();
+
+
+	std::cout<<"hahahahhhhhhhhhhhhhhhhhh  box x="<< b->x << " y="<< b->y <<endl;
+	std::cout<<"hahahahhhhhhhhhhhhhhhhhh  box xi[0]="<< b->xi[0] << " xi[1]="<< b->xi[1] <<endl;
 	glLineWidth(1.0);
 }
 
@@ -978,12 +993,14 @@ void drawLinks(Box* b, double x, double y) {
 	glLineWidth(2);
 	glBegin(GL_LINES);
 	glVertex2f(x, y);
-	glVertex2f(L1 * cos((b->xi[0]) * PI) + x, L1 * sin((b->xi[0]) * PI) + y);
+	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + x,
+			L1 * sin((b->xi[0] / 180) * PI) + y);
 	glEnd();
 	glColor3f(1, 0, 1);
 	glBegin(GL_LINES);
 	glVertex2f(x, y);
-	glVertex2f(L2 * cos((b->xi[2]) * PI) + x, L2 * sin((b->xi[2]) * PI) + y);
+	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + x,
+			L2 * sin(b->xi[2] / 180 * PI) + y);
 	glEnd();
 	glLineWidth(1.0);
 }
@@ -1382,7 +1399,8 @@ void parseConfigFile(Box* b) {
 				ptVec.push_back(
 						new Corner(pts[pt * 2] * scale + deltaX,
 								pts[pt * 2 + 1] * scale + deltaY));
-				cout<<"point: X="<< pts[pt * 2] * scale + deltaX<<"   Y="<<pts[pt * 2 + 1] * scale + deltaY;
+				cout << "point: X=" << pts[pt * 2] * scale + deltaX << "   Y="
+						<< pts[pt * 2 + 1] * scale + deltaY;
 
 				b->addCorner(ptVec.back());
 				b->vorCorners.push_back(ptVec.back());

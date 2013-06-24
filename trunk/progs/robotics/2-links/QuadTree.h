@@ -121,6 +121,7 @@ public:
 				q.push(allLeaf[i]);
 			}
 		}
+//		std::cout<<"getBox 124"<< endl;
 
 		while (q.size())
 		{
@@ -132,12 +133,14 @@ public:
 			}
 			if (!b->contains(x, y, a1, a2))
 			{
+//				std::cout<<"getBox 135"<< endl;
 				return 0;
 			}
 
 			vector<Box*> cldrn;
 			if (!expand(b, cldrn))
 			{
+//				std::cout<<"getBox 142"<< endl;
 				return 0;
 			}
 			++ct;
@@ -148,6 +151,7 @@ public:
 				{
 					if (cldrn[i]->isFree())
 					{
+//						std::cout<<"getBox 153"<< endl;
 						return cldrn[i];
 					}
 					q.push(cldrn[i]);
@@ -155,6 +159,7 @@ public:
 			}
 
 		}
+//		std::cout<<"getBox 160"<< endl;
 		return 0;
 	}
 
@@ -169,6 +174,7 @@ public:
 	{
 		if (!b->split(epsilon, cldrn))
 		{
+//			std::cout<<"expand 177"<<endl;
 			return false;
 		}
 

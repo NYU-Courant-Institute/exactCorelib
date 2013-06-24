@@ -437,6 +437,28 @@ eg9 narrow: ./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 0.065 \
 		&
+		
+basic1 : ./2-links
+	@echo "Target basic1: basic test 1 from Zhongdi"
+#	@echo "	There is a path passage... when radius=6, epsilon=1"
+#	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./2-links $(interactive) 195 370 0 150 195 160 270 0\
+		32 50 80 basic1.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		0 0 1 \
+		&
+		
+basic2 : ./2-links
+	@echo "Target basic1: basic test 2 from Zhongdi"
+#	@echo "	There is a path passage... when radius=6, epsilon=1"
+#	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./2-links $(interactive) 195 370 0 150 195 160 270 0\
+		32 50 80 basic2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		0 0 1 \
+		&
 
 # RANDOMLY GENERATED ENVIRONMENT:
 #	This one, generated using our Python Generator, has 200 2-links.
