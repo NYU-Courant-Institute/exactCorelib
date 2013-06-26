@@ -158,6 +158,8 @@ help:
 	@echo "	eg100, eg100a, eg100b		-- 100 random triangles"
 	@echo "	eg200, eg200a			-- 200 random triangles"
 	@echo "	eg300				-- 300 random triangles"
+	@echo "========"
+	@echo "	You may also try demoX (X=1,2,3,4) for a quick walk through" 
 
 
 #=================================================
