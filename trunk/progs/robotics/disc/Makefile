@@ -513,6 +513,56 @@ eg300: disc
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
+#=================================================
+# Demos (from Talk at RCV 2013 in Berlin RSS Conference)
+#=================================================
+# Demo1 is same as "eg" (to illustrate the classification, and different strategies)
+demo1:	disc
+	@echo "Target 'eg':  runs disc with the default options of Makefile"
+	@echo "--  You can all of them in you 'make' command line, e.g.,"
+	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
+	./disc $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
+		$(epsilon) $(radius) $(fileName) \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
+
+# Demo2 is same as "eg1" (to illustrate NO-PATH in BugTrap).  If eps=4, PATH is found!
+demo2: disc
+	@echo "Target 'egbug':  runs disc for bugtrap input, bugtrap.txt"
+	@echo "--  this examples shows there is NO PATH, but barely so!"
+	@echo "--  you could see a green path that must pass between two green boxes"
+	@echo "--  that are NOT adjacent but shares a corner."
+	./disc $(interactive) 200 350 30 30 \
+		5 10 bugtrap.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
+# Demo2 is same as bug2 or eg5 -- Existence of path, but barely! (eps=1)
+demo3: disc
+	@echo "Target 'egbug2':  runs disc for bugtrap input, bugtrap2.txt"
+	@echo "--  this example shows a PATH, but barely so!"
+	./disc $(interactive) 180 220 20 20 \
+		1 8 bugtrap2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
+
+# Demo3 is same as eg100 (this has a path)
+demo4: disc
+	@echo "Target eg3:  100 randomly generated triangles (path exists)"
+	./disc $(interactive) 10 350  280 220 \
+		1 10 input3.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
+#=================================================
+# End of Demos (from Talk at RCV 2013 in Berlin RSS Conference)
+#=================================================
 
 moretest: $(TARGETS)
 # nothing to do
