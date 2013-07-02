@@ -56,10 +56,10 @@
 # 	These targets uses different input files, all taken from
 # 	the subdirectory "inputs".   
 #
-#  Demos for SoCG 2012 Talk:
+#  Disc Demos for SoCG 2013 Talk in Rio:
 #  	demo1	= bug:
 #  	demo2	= bug2:
-#  	demo1	= eg100:
+#  	demo3	= eg100:
 #  			  (Random	14500 ms)
 #  			  (BFS 		4800 ms)
 #  			  (Greedy	700 ms)
@@ -71,7 +71,7 @@
 #  			  (Greedy	460 ms)
 #  			  (Dist+Size	540 ms)
 #  			  (Vor 		530 ms)
-#  	demo2	= eg200  (rad,eps)=(8,4) -- path
+#  	demo4	= eg200  (rad,eps)=(8,4) -- path
 #  			  (Random	?? ms)
 #  			  (BFS 		6300 ms)
 #  			  (Greedy	3100 ms)
@@ -83,9 +83,18 @@
 #  			  (Greedy	430 ms)
 #  			  (Dist+Size	440  ms)
 #  			  (Vor 		460 ms)
+#  Triangle Demos for RCV 2013 Talk in Berlin:
+#  	demo1	= bug2:
+#  			Fastest is Dist+Size (930 ms)
+#  			Next is Boundary Tracker (6680 ms)
+#  			Last is Greedy (26900 ms)
+#  	demo2 	= 100 triangles,
+#  			Fastest is Greedy (250 ms)
+#  			Next is Boundary Tracker (780 ms)
+#  			Last is Dist+Size (3840 ms)
+#
 #
 # April 13, 2012
-#
 # Since Core Library 2.1
 # $Id:$
 
@@ -189,7 +198,8 @@ help:
 	@echo "        eg150"
 	@echo "        eg200, eg200a, eg200b"
 	@echo "        eg300"
-
+	@echo "========"
+	@echo "	You may also try demoX (X=1,2,3) for a quick walk through" 
 
 #=================================================
 # Examples of running tri program
@@ -316,6 +326,26 @@ eg4a egbuga buga: ./tri
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&
+
+# Bugtrap example -- Interesting because robot is about as big as can get through
+# 	The Boundary Tracker is fastest heuristic (dispite its funny search)
+# 	taking 780 ms on my MacAir.
+
+eg4b egbugb bugb: ./tri
+	@echo "Target 'eg4b or bugb':  runs tri for bugtrap input, bugtrap.txt"
+	@echo "--  this example is fastest for Boundary Tracker Heuristic"
+	@echo "--  the only change from target 'egbug' is that epsilon is now 10, not 20"
+	@echo "--  that are NOT adjacent but shares a corner."
+	./tri $(interactive) 200 350 0 30 30 0 \
+		8 20 bugtrap.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		4 $(seed) $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
+		&
+
+# Bugtrap example -- Interesting because robot is about as big as can get through
+# 	Moreover, the Boundary Tracker is fastest heuristic (dispite its funny search)
 
 
 # Bugtrap2 example -- Existance of path.
@@ -660,6 +690,38 @@ ex-300: ./tri
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&
+
+#=================================================
+# Demos (from Talk at RCV 2013 in Berlin RSS Conference)
+#=================================================
+# Demo1 is same as "bug2"  or "eg5"
+demo1: ./tri
+	@echo "Target 'eg5 or bug2':  runs tri on bugtrap2.txt"
+	@echo "--  this example shows there is PATH, but barely so!"
+	./tri $(interactive) 180 210 90 30 30 -30 \
+		4 11 bugtrap2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		3 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
+		&
+
+# Demo2 is same as eg100 (the greedy strategy is fastest, but try
+# 	also Dist+size, Boundary tracker strategy)
+demo2: ./tri
+	@echo "Target eg100:  runs tri amidst 100 randomly generated triangles"
+	./tri $(interactive) 20 20 45 200 270 0 \
+		3 20 input100.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
+		&
+
+#=================================================
+# End of Demos (from Talk at RCV 2013 in Berlin RSS Conference)
+#=================================================
+
 
 
 #=================================================
