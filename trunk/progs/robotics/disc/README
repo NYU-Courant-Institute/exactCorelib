@@ -51,19 +51,27 @@ OVERVIEW:
 			then we will return "No Path".
 	The constant K is sqrt(2) here.
 
-
-	There are many possible strategies for expansion.  Here we implement
+	There are many possible strategies for expansion.  Here we implement:
 
 		(1) Breadth First Search
 		(2) Random
-		(3) Dijkstra search
-		(4) A-Star
-		(5) Hybrids
+		(3) Dijkstra and A-Star
+		(4) Greedy Best First
+		(5) Voronoi diagram based searches
+		(6) Hybrids (any combination of the above)
 	
 	Comparison with PRM methods are planned.
 
 	--Chee Yap, Cong Wang, Yi-Jen Chiang
 	April 2012.
 
+UPDATES:
+============================================================
+July 17-20, 2013: our paper describing this work appeared at the
+	ACM Symposium on Computational Geometry in Rio de Janeiro, Brazil.
+July 27, 2013: the paper describing SSS in a general setting won the
+	Best Paper Award at "Robotics Challenge and Vision Workshop" at
+	the Robotics Science and Systems Conference in Berlin, Germany.
+	This award is sponsored by  Computing Community Consortium (CCC).
 ============================================================
 

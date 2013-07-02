@@ -159,7 +159,7 @@ help:
 	@echo "	eg200, eg200a			-- 200 random triangles"
 	@echo "	eg300				-- 300 random triangles"
 	@echo "========"
-	@echo "	You may also try demoX (X=1,2,3,4) for a quick walk through" 
+	@echo "	You may also try demoX (X=1,2,3) for a quick walk through" 
 
 
 #=================================================
@@ -542,24 +542,14 @@ demo2: disc
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		&
-# Demo2 is same as bug2 or eg5 -- Existence of path, but barely! (eps=1)
-demo3: disc
-	@echo "Target 'egbug2':  runs disc for bugtrap input, bugtrap2.txt"
-	@echo "--  this example shows a PATH, but barely so!"
-	./disc $(interactive) 180 220 20 20 \
-		1 8 bugtrap2.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
 
-# Demo3 is same as eg100 (this has a path)
-demo4: disc
+# Demo3 is same as eg100 (this has a path)  -- use Qtype=3 (Astar) for speed
+demo3: disc
 	@echo "Target eg3:  100 randomly generated triangles (path exists)"
 	./disc $(interactive) 10 350  280 220 \
 		1 10 input3.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		3 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		&
 #=================================================
