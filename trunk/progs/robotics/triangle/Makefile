@@ -695,11 +695,22 @@ ex-300: ./tri
 # Demos (from Talk at RCV 2013 in Berlin RSS Conference)
 #=================================================
 # Demo1 is same as "bug2"  or "eg5"
+# Arguments:
+#	./tri $(interactive) 180 210 90 30 30 -30 \
+#		5 11 bugtrap2.txt \
+#		512 512 $(windowPosX) $(windowPosY) \
+#		3 11 $(inputDir) \
+#		$(xtrans) $(ytrans) $(scale) \
+#		$(verbose) $(title) \
+#		&
+# Using Dist+Size Strategy with radius 11, eps=5, this takes less than 800 ms.
+# 	Boundary tracker is a bit slower (1230 ms), Greedy takes 2670 ms.
+#
 demo1: ./tri
 	@echo "Target 'eg5 or bug2':  runs tri on bugtrap2.txt"
 	@echo "--  this example shows there is PATH, but barely so!"
 	./tri $(interactive) 180 210 90 30 30 -30 \
-		4 11 bugtrap2.txt \
+		5 11 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		3 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -708,6 +719,10 @@ demo1: ./tri
 
 # Demo2 is same as eg100 (the greedy strategy is fastest, but try
 # 	also Dist+size, Boundary tracker strategy)
+# Using Radius 20, eps=3, this takes less than 250 ms with Greedy strategy.
+# 	Boundary tracker is slightly slower at 850 ms.
+# 	Dist+Size strategy is a 40 times slower (10000 ms),
+#
 demo2: ./tri
 	@echo "Target eg100:  runs tri amidst 100 randomly generated triangles"
 	./tri $(interactive) 20 20 45 200 270 0 \
