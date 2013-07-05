@@ -1114,7 +1114,7 @@ void drawPath(vector<Box*>& path) {
 //						j = j + 1;
 //					}
 //				}
-				sleep(1);
+//				sleep(1);
 				break;
 			}
 		}
