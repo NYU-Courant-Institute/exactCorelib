@@ -202,7 +202,7 @@ public:
 			{				
 				break;
 			}
-			for (int i = 0; i < 6; ++i)
+			for (int i = 0; i < 4; ++i)
 			{
 				for (vector<Box*>::iterator it = current->Nhbrs[i].begin(); it != current->Nhbrs[i].end(); ++it)
 				{
@@ -253,7 +253,7 @@ public:
 				foundB = true;
 				break;
 			}
-			for (int i = 0; i < 6; ++i)
+			for (int i = 0; i < 4; ++i)
 			{
 				for (vector<Box*>::iterator it = current->Nhbrs[i].begin(); it != current->Nhbrs[i].end(); ++it)
 				{

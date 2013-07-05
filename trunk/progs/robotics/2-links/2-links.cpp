@@ -154,7 +154,7 @@ int mixSmallCount = 0;
 
 //controls triangle drawing along path
 const int TRIS_TO_SKIP = 20;
-const double DIST_TO_SKIP = 16;
+const double DIST_TO_SKIP = 4;
 
 int renderCount = 0;
 int countAAA = 0;
@@ -234,6 +234,11 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 	bool isPath = false;
 	vector<Box*> toReset;
 	a->dist2Source = 0;
+	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!237 a  " << a->x << " " << a->y
+			<< " " << a->xi[0] << " " << a->xi[1] << " " << a->xi[2] << " "
+			<< a->xi[3] << " " << a->status << endl;
+	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!238 a->dist2Source  "
+			<< a->dist2Source << endl;
 	dijkstraQueue<Cmp> dijQ;
 	dijQ.push(a);
 	toReset.push_back(a);
@@ -261,7 +266,22 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 								cldrn[i]->Nhbrs[j].begin();
 								iter < cldrn[i]->Nhbrs[j].end(); ++iter) {
 							Box* n = *iter;
+							cout
+									<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!264 dist2Source != 0  "
+									<< n->x << " " << n->y << " " << n->xi[0]
+									<< " " << n->xi[1] << " " << n->xi[2] << " "
+									<< n->xi[3] << " " << endl;
+							cout
+									<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!267 a->dist2Source  "
+									<< a->dist2Source << endl;
+							cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!268 a  "
+									<< a->x << " " << a->y << " " << a->xi[0]
+									<< " " << a->xi[1] << " " << a->xi[2] << " "
+									<< a->xi[3] << " " << endl;
 							if (n->dist2Source == 0) {
+								cout
+										<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!265 dist2Source = 0  "
+										<< n->x << " " << n->y << endl;
 								isNeighborOfSourceSet = true;
 								break;
 							}
@@ -274,6 +294,10 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 						//if it's FREE, also insert to source set
 						case Box::FREE:
 							cldrn[i]->dist2Source = 0;
+							cout
+									<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!277 dist2Source = 0  "
+									<< cldrn[i]->x << " " << cldrn[i]->y
+									<< endl;
 							dijQ.push(cldrn[i]);
 							toReset.push_back(cldrn[i]);
 							break;
@@ -294,6 +318,8 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 			continue;
 		}
 
+		cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!302 a->dist2Source  "
+				<< a->dist2Source << endl;
 		//found path!
 		if (current == b) {
 			isPath = true;
@@ -310,8 +336,13 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 				if (!neighbor->visited && neighbor->dist2Source == -1
 						&& (neighbor->status == Box::FREE
 								|| neighbor->status == Box::MIXED)) {
+					cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!317 "
+							<< neighbor->x << " " << neighbor->y << endl;
 					if (neighbor->status == Box::FREE) {
 						neighbor->dist2Source = 0;
+						cout
+								<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!316 dist2Source = 0  "
+								<< neighbor->x << " " << neighbor->y << endl;
 					}
 					dijQ.push(neighbor);
 					toReset.push_back(neighbor);
@@ -403,7 +434,7 @@ int main(int argc, char* argv[]) {
 
 	// Added by Zhongdi 05/08/2013 begin
 	// calculate the R of the robot
-	R0 = max(L1,L2);
+	R0 = max(L1, L2);
 	// Added by Zhongdi 05/08/2013 end
 
 	cout << "Before interactive, Qtype= " << QType << "\n";
@@ -770,9 +801,21 @@ void run() {
 		beta[0] = editBetaX->get_float_val();
 		beta[1] = editBetaY->get_float_val();
 		beta[2] = editBetaTheta1->get_float_val();
-		beta[2] = beta[2] - floor(beta[2] / 2) * 2;
+		while (beta[2] >= 360) {
+			beta[2] -= 360;
+		}
+		while (beta[2] < 0) {
+			beta[2] += 360;
+		}
+		editBetaTheta1->set_float_val(beta[2]);
 		beta[3] = editBetaTheta2->get_float_val();
-		beta[3] = beta[3] - floor(beta[3] / 2) * 2;
+		while (beta[3] >= 360) {
+			beta[3] -= 360;
+		}
+		while (beta[3] < 0) {
+			beta[3] += 360;
+		}
+		editBetaTheta2->set_float_val(beta[3]);
 
 		QType = radioQType->get_int_val();
 	}
@@ -780,9 +823,9 @@ void run() {
 	if (verboseOption) {
 		cout << "   radius = " << R0 << ", eps = " << epsilon << endl;
 		cout << "   alpha = (" << alpha[0] << ", " << alpha[1] << ", "
-				<< alpha[2] << ")" << endl;
+				<< alpha[2] << ", " << alpha[3] << ")" << endl;
 		cout << "   beta = (" << beta[0] << ", " << beta[1] << ", " << beta[2]
-				<< ")" << endl;
+				<< ", " << beta[3] << ")" << endl;
 	}
 //	cout << "222222222222222222222222222222222222222222222222" << endl;
 	genEmptyTree();
@@ -981,9 +1024,28 @@ void drawLinks(Box* b) {
 			L2 * sin((b->xi[2] / 180) * PI) + b->y);
 	glEnd();
 
+	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box x=" << b->x << " y=" << b->y
+			<< endl;
+	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box xi[0]=" << b->xi[0] << " xi[1]="
+			<< b->xi[1] << endl;
+	glLineWidth(1.0);
+}
 
-	std::cout<<"hahahahhhhhhhhhhhhhhhhhh  box x="<< b->x << " y="<< b->y <<endl;
-	std::cout<<"hahahahhhhhhhhhhhhhhhhhh  box xi[0]="<< b->xi[0] << " xi[1]="<< b->xi[1] <<endl;
+void drawLinksSrcDst(double* configuration) {
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glColor3f(1, 0, 0);
+	glLineWidth(4);
+	glBegin(GL_LINES);
+	glVertex2f(configuration[0], configuration[1]);
+	glVertex2f(L1 * cos((configuration[2] / 180) * PI) + configuration[0],
+			L1 * sin((configuration[2] / 180) * PI) + configuration[1]);
+	glEnd();
+	glColor3f(1, 0, 1);
+	glBegin(GL_LINES);
+	glVertex2f(configuration[0], configuration[1]);
+	glVertex2f(L2 * cos((configuration[3] / 180) * PI) + configuration[0],
+			L2 * sin(configuration[3] / 180 * PI) + configuration[1]);
+	glEnd();
 	glLineWidth(1.0);
 }
 
@@ -1019,6 +1081,8 @@ void drawPath(vector<Box*>& path) {
 
 	int skipped = 0;
 	double distSkipped = 0;
+	drawLinksSrcDst(alpha);
+	drawLinksSrcDst(beta);
 	if (path.size() != 0) {
 		for (int i = path.size() - 1; i >= 0; i--) {
 			if (i > 0) {
@@ -1034,7 +1098,7 @@ void drawPath(vector<Box*>& path) {
 				if ((skipped > TRIS_TO_SKIP || distSkipped > DIST_TO_SKIP))	// && dist>= 1e-9 )
 				{
 					drawLinks(path[i]);
-					drawCircle(R0, 100, path[i]->x, path[i]->y, 0, 0, 1);
+//					drawCircle(R0, 100, path[i]->x, path[i]->y, 0, 0, 1);
 					skipped = 0;
 					distSkipped = 0;
 				}
@@ -1044,6 +1108,13 @@ void drawPath(vector<Box*>& path) {
 			}
 			if (animationOption == 3
 					&& i == path.size() - 1 - currentPathStep) {
+//				for (int i = 0; i < 60000000; i++) {
+//					for (int j = 0; j < 10000000; j++) {
+//						i = i + 1;
+//						j = j + 1;
+//					}
+//				}
+				sleep(1);
 				break;
 			}
 		}
@@ -1051,6 +1122,12 @@ void drawPath(vector<Box*>& path) {
 
 	if (animationOption == 3) {
 		currentPathStep++;
+//		for(int i = 0; i < 6000000; i++){
+//			for(int j = 0; j < 1000000; j++){
+//				i = i + 1;
+//				j = j + 1;
+//			}
+//		}
 		if (currentPathStep == path.size()) {
 			currentPathStep = 0;
 		}

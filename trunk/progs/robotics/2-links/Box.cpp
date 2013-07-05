@@ -507,30 +507,29 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 				for (vector<Box*>::iterator itBNhbrs = this->Nhbrs[k].begin();
 						itBNhbrs != this->Nhbrs[k].end(); ++itBNhbrs) {
 					Box* b = *itBNhbrs;
-					int foundDst = 0;
+//					int foundDst = 0;
 //					for (int j = 0; j < 2; ++j) {
 					int idx = isNhbr(child, b);
 					if (idx != -1) {
 						child->Nhbrs[idx].push_back(b);
-						if (foundDst == 0) {
-							for (vector<Box*>::iterator itBNhbrsOppo =
-									b->Nhbrs[oppositeDir[idx]].begin();
-									itBNhbrsOppo
-											!= b->Nhbrs[oppositeDir[idx]].end();
-									++itBNhbrsOppo) {
-								if (*itBNhbrsOppo == this) {
-									*itBNhbrsOppo = children[j];
-									break;
-								}
+//						if (foundDst == 0) {
+						for (vector<Box*>::iterator itBNhbrsOppo =
+								b->Nhbrs[oppositeDir[idx]].begin();
+								itBNhbrsOppo != b->Nhbrs[oppositeDir[idx]].end();
+								++itBNhbrsOppo) {
+							if (*itBNhbrsOppo == this) {
+								*itBNhbrsOppo = child;
+								b->Nhbrs[oppositeDir[idx]].erase(itBNhbrsOppo);
+								break;
 							}
-						} else {
-							b->Nhbrs[oppositeDir[idx]].push_back(
-									children[i * l2SafeZone.size() + j]);
 						}
-						++foundDst;
+//						} else {
+						b->Nhbrs[oppositeDir[idx]].push_back(child);
+//						}
+//						++foundDst;
 					}
 //					}
-					assert(foundDst > 0 && foundDst < 3);
+//					assert(foundDst > 0 && foundDst < 3);
 				}
 			}
 
@@ -1387,7 +1386,7 @@ vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges) {
 		if (temp.lowerBound > temp.upperBound) {
 			temp.upperBound += 360;
 		}
-		AngleRange tempRange(temp.lowerBound,temp.upperBound);
+		AngleRange tempRange(temp.lowerBound, temp.upperBound);
 		newSrcAngleRanges.push_back(tempRange);
 		std::cout << "hahahahaha src angle range =" << temp.lowerBound << " "
 				<< temp.upperBound << endl;

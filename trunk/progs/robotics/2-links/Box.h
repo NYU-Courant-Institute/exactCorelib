@@ -185,7 +185,7 @@ public:
 
 	static vector<Box*>* pAllLeaf;
 
-	vector<Box*> Nhbrs[6];
+	vector<Box*> Nhbrs[4];
 	bool isBig;
 	int tChildID;
 	int rChildID;

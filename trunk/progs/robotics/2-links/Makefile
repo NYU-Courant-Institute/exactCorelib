@@ -217,37 +217,37 @@ nopath eg0:	./2-links
 		&
 
 # eg1:	input2e.txt is like input2, but there is a bounding box
-eg1: ./2-links
-	@echo "Target eg1:  runs 2-links on input2e.txt (which has a bounding box)"
-	./2-links $(interactive) 150 260 90 40 40 -60 \
-		10 25 input2e.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
-		&
+#eg1: ./2-links
+#	@echo "Target eg1:  runs 2-links on input2e.txt (which has a bounding box)"
+#	./2-links $(interactive) 150 260 90 40 40 -60 \
+#		10 25 input2e.txt \
+#		512 512 $(windowPosX) $(windowPosY) \
+#		1 1111 $(inputDir) \
+#		$(xtrans) $(ytrans) $(scale) \
+#		$(verbose) $(title) \
+#		&
 
 # eg2: input 2.text, no bounding box
-eg2: ./2-links
-	@echo "Target eg2e:  runs 2-links on input2.txt"
-	./2-links $(interactive) 150 260 -45 20 20 30 \
-		10 40 input2.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
-		&
+#eg2: ./2-links
+#	@echo "Target eg2e:  runs 2-links on input2.txt"
+#	./2-links $(interactive) 150 260 -45 20 20 30 \
+#		10 40 input2.txt \
+#		512 512 $(windowPosX) $(windowPosY) \
+#		1 1111 $(inputDir) \
+#		$(xtrans) $(ytrans) $(scale) \
+#		$(verbose) $(title) \
+#		&
 
 # eg3: input3.txt is line input2e, but there is a narrow door
-eg3: ./2-links
-	@echo "Target eg3:  runs 2-links on input3.txt"
-	./2-links $(interactive) 150 260 90 450 450 -60 \
-		10 30 input3.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
-		&
+#eg3: ./2-links
+#	@echo "Target eg3:  runs 2-links on input3.txt"
+#	./2-links $(interactive) 150 260 90 450 450 -60 \
+#		10 30 input3.txt \
+#		512 512 $(windowPosX) $(windowPosY) \
+#		1 1111 $(inputDir) \
+#		$(xtrans) $(ytrans) $(scale) \
+#		$(verbose) $(title) \
+#		&
 
 # BUG TRAPS:
 # 
@@ -438,7 +438,7 @@ eg9 narrow: ./2-links
 		0 0 0.065 \
 		&
 		
-basic1 : ./2-links
+basic1 eg1 : ./2-links
 	@echo "Target basic1: basic test 1 from Zhongdi"
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
@@ -449,12 +449,23 @@ basic1 : ./2-links
 		0 0 1 \
 		&
 		
-basic2 : ./2-links
+basic2 eg2: ./2-links
 	@echo "Target basic1: basic test 2 from Zhongdi"
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 195 370 0 150 195 160 270 0\
 		32 50 80 basic2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		0 0 1 \
+		&
+		
+basic3 eg3: ./2-links
+	@echo "Target basic3: basic test 2 from Zhongdi"
+#	@echo "	There is a path passage... when radius=6, epsilon=1"
+#	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./2-links $(interactive) 195 370 0 150 345 180 270 0\
+		8 50 80 basic3.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 1 \

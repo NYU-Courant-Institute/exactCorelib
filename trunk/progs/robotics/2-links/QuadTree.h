@@ -228,7 +228,7 @@ public:
 
 	void unionAdjacent (Box* b)
 	{
-		for (int i = 0; i < 6; ++i)
+		for (int i = 0; i < 4; ++i)
 		{
 			for (vector<Box*>::iterator it = b->Nhbrs[i].begin(); it != b->Nhbrs[i].end(); ++it)
 			{
