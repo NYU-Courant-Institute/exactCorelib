@@ -9,6 +9,7 @@ public:
   Euler_Ops(Vec<Solid *> *solids);
   /**********Operations on HalfEdge************/
   HalfEdge *addhe(Edge *e, Vertex *v,HalfEdge *he,int sign);
+  Edge *addEdge(Edge *e, HalfEdge *he1, HalfEdge *he2, int sign);
   HalfEdge *delhe(HalfEdge* he);
 
   /***************************************Vertex, Face Solid****************************************************/

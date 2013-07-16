@@ -36,7 +36,9 @@ using namespace std;
 #define SQRTWO sqrt(2)
 #define SQRTFIVE sqrt(5)
 #define PHI ((1+SQRTFIVE)/2)
-#define WIRE
+//#define WIRE
+//#define MULT_SURFACE
+#define SINGLE_SURFACE
 
 /**************************************************
 * PARAMETERS:
@@ -45,7 +47,7 @@ int interactive=0;                  // mode of interaction
                                     //    =0 means non-interactive, >0 means interactive.
 string inputDir("inputs"); 		// Path for input files 
 string fileName("cube.txt"); 	      // Input file name
-
+string format("wire");
 GLsizei windowWidth = 512;	      // initial configuration box size
 GLsizei windowHeight = 512;
 
@@ -73,6 +75,7 @@ double colorGap=1.0;               //This is for shading
 double scalar=1.0;                  //Initialize the scalar of the polyhedron
 double thetaX=0;
 double thetaY=0;
+double light[]={1,1,1,10,10,10};
 /*Declaration of mouse operations*/
 void pressMouse(int button,int state,int x,int y);
 void holdMouse(int x,int y);
@@ -111,8 +114,8 @@ void displayPoly(Solid *s){
   
 
   /*Wire Solids*/
-  #ifdef WIRE
-
+ 
+  if (format.compare("wire")==0){
   glBegin(GL_LINES);
   for (unsigned int i=0;i<es->size();i++){
     Edge *e=(*es)[i];
@@ -123,8 +126,9 @@ void displayPoly(Solid *s){
 
   }
   glEnd();
+  }//wire
 
-  #elif defined(SURFACE)
+  else if (format.compare("mult_surface")==00){
   /*Initialize the random seed*/
   srand((unsigned)time(0));
   for (unsigned int i=0;i<fs->size();i++){
@@ -139,7 +143,9 @@ void displayPoly(Solid *s){
       /*Leading HalfEdge*/
       HalfEdge *lhe=(*ls)[j]->ledg;
       HalfEdge *the=lhe->nxthe;
-
+      Num* vert=crossProduct(the,lhe);
+      
+      if (vert[2]>0){
       /*Reset the face color*/
       glColor3f((0.0+rand())/RAND_MAX,(0.0+rand())/RAND_MAX,(0.0+rand())/RAND_MAX);
       
@@ -156,24 +162,70 @@ void displayPoly(Solid *s){
       
       
       glEnd();
+      }//if face up
 
     }//for j
 
 
   }//for i
 
-  #endif
-}
+  }//mult_face
+  
+  else if (format.compare("single_surface")==0||format.compare("shading")==0||format.compare("face")==0){
+  for (unsigned int i=0;i<fs->size();i++){
+    /*Now we get the face*/
+    Face *f=(*fs)[i];
+
+    /*Now we have the loops*/
+    Vec< Loop *> *ls=f->floops;
+
+    for (unsigned int j=0;j<ls->size();j++){
+      
+      /*Leading HalfEdge*/
+      HalfEdge *lhe=(*ls)[j]->ledg;
+      HalfEdge *the=lhe->nxthe;
+
+      /*Reset the face color*/
+      //glColor3f((0.0+rand())/RAND_MAX,(0.0+rand())/RAND_MAX,(0.0+rand())/RAND_MAX);
+      
+      /*Start vertex*/
+      Vertex *v=lhe->start;
+      /*Let us add a light*/
+      double rate=255.0/pow(pow(v->getX()-light[3],2)+pow(v->getY()-light[4],2)+pow(v->getZ()-light[5],2),1);
+      glColor3f(rate,0,0);
+      glBegin(GL_POLYGON);
+
+      
+      glVertex3f(v->getX(),v->getY(),v->getZ());
+
+      while(the!=lhe){
+            v=the->start;
+            glVertex3f(v->getX(),v->getY(),v->getZ());
+            the=the->nxthe;
+      }//while
+      
+      
+      glEnd();
+
+    }//for j
+
+
+  }//for i
+
+  }//single_surface
+
+}//displaypoly
 /*Display the polyhedron*/
 void display(void){
   glClear(GL_COLOR_BUFFER_BIT);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  Solid *s=(*(eo->solids))[0]; 
+  Solid *s=(*(eo->solids))[0];
   
   /*Modify Scalar*/
-  scalar=windowWidth/(s->diameter()+0.0);
+  scalar=windowWidth/(s->diameter()+0.0)/4.0;
+  //scalar=1.0;
 
   glTranslatef(windowWidth/2.0,windowHeight/2.0,centerZ);
   glScalef(scalar, scalar, scalar);
@@ -184,6 +236,30 @@ void display(void){
    glFlush();
 
 }//display
+
+/*Display without automatically setting the scalar*/
+void displayWithoutScalar(void){
+  glClear(GL_COLOR_BUFFER_BIT);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  Solid *s=(*(eo->solids))[0]; 
+  
+  //scalar=1.0;
+
+  glTranslatef(windowWidth/2.0,windowHeight/2.0,centerZ);
+  glScalef(scalar, scalar, scalar);
+  //glRotatef(45,1,1,1);
+  glTranslatef(-centerX,-centerY,-centerZ);
+  
+  /*Rebuild the rotation*/ 
+  glRotatef(rotX,0,1,0);
+  glRotatef(rotY,-1,0,0);	
+
+  displayPoly(s);
+
+  glFlush();
+}//display without scalar
 
 /*Mouse operations*/
 
@@ -218,12 +294,12 @@ void holdMouse(int x, int y){
    //cout<<"CENTERx="<<centerX<<endl;
    //cout<<"CENTERy="<<centerY<<endl;
    y=windowHeight-y;
-   double radius=sqrt((startX-centerX)*(startX-centerX)+(startY-centerY)*(startY-centerY)+(startZ-centerZ)*(startZ-centerZ));
+   /*double radius=sqrt((startX-centerX)*(startX-centerX)+(startY-centerY)*(startY-centerY)+(startZ-centerZ)*(startZ-centerZ));
    double distance=sqrt((x-startX)*(x-startX)+(y-startY)*(y-startY));
    theta=acos((2.0*radius*radius-distance*distance)/(2.0*radius*radius))/PI*180.0;
    double rotX=(startY-centerY)*(0-centerZ)-(startZ-centerZ)*(y-centerY);
    double rotY=(startZ-centerZ)*(x-centerX)-(startX-centerX)*(0-centerZ);
-   double rotZ=(startX-centerX)*(y-centerY)-(startY-centerY)*(x-centerX);
+   double rotZ=(startX-centerX)*(y-centerY)-(startY-centerY)*(x-centerX);*/
    //int direction=(startX-centerX)*(y-centerY)-(startY-centerY)*(y-centerY)>0?1:-1;
 
    glClear(GL_COLOR_BUFFER_BIT);
@@ -237,8 +313,12 @@ void holdMouse(int x, int y){
   //glRotatef(45,1,1,1);
   //glRotatef(theta,rotX,rotY,rotZ);
   
-  glRotatef(x-startX,0,1,0);
-  glRotatef(y-startY,-1,0,0);
+  rotX+=x-startX;
+  rotY+=y-startY;
+  glRotatef(rotX,0,1,0);
+  glRotatef(rotY,-1,0,0);
+  //glRotatef(x-startX,0,1,0);
+  //glRotatef(y-startY,-1,0,0);
   thetaX+=x-startX;
   thetaY+=y-startY;
 
@@ -264,8 +344,44 @@ void holdMouse(int x, int y){
    glEnd();
 
    glFlush();
+
+   startX=x;
+   startY=y;
   
 }//holdMouse
+
+/*Key Pressed*/
+void keyPressed(unsigned char key, int x, int y){
+	if (key=='+'){
+		scalar++;
+		displayWithoutScalar();
+	}
+	
+	if (key=='-'){
+		scalar--;
+		displayWithoutScalar();
+	}
+   
+  	if (key=='a'||key=='A'){
+		rotX++;
+		displayWithoutScalar();
+	}
+	
+ 	if (key=='d'||key=='D'){
+		rotX--;
+		displayWithoutScalar();
+	}
+	
+	if (key=='w'||key=='W'){
+		rotY--;
+		displayWithoutScalar();
+	}
+
+	if (key=='s'||key=='S'){
+		rotY++;
+		displayWithoutScalar();
+	}
+}
 
 //**************************************************
 // MAIN:
@@ -273,7 +389,7 @@ void holdMouse(int x, int y){
 
 int main(int argc,char **argv){
 
-	if (argc > 1) interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
+	/*if (argc > 1) interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
 	if (argc > 2) inputDir  = argv[2];		      // path for input files
 	if (argc > 3) fileName = argv[3]; 		      // Input file name
 	if (argc > 4) windowWidth = atof(argv[4]);	// windowWidth
@@ -281,17 +397,25 @@ int main(int argc,char **argv){
 	if (argc > 6) windowPosX = atoi(argv[6]);	      // window X pos
 	if (argc > 7) windowPosY = atoi(argv[7]);	      // window Y pos
 cout << "winX = " << windowPosX << endl;
-cout << "winY = " << windowPosY << endl;
-
+cout << "winY = " << windowPosY << endl;*/
+	
+	/*Name format*/
+ 	format=argc>1?argv[1]:format;
+	
+  	/*Name the type*/
+	string type=argc>2?argv[2]:"hemisphere";
       eo=new Euler_Ops();
-	double a[]={2,10,20};
+	double par[argc-3];
+	
+	for (int i=0;i<argc-3;i++)
+		par[i]=atof(argv[i+3]);
 	for (int i=0;i<3;i++)
-		cout<<a[i]<<endl;
-	eo->prim("sphere",a);
-	(*(eo->solids))[0]->print();
+		cout<<par[i]<<endl;
+	eo->prim(type,par);
+	//(*(eo->solids))[0]->print();
 	
 	
-cout<< "good"<<endl;
+//cout<< "good"<<endl;
       /*Read from file*/  
       string fileAdd=inputDir+"/"+fileName;
       ifstream ifile;
@@ -381,7 +505,7 @@ cout<< "good"<<endl;
    glutInitDisplayMode( GLUT_SINGLE | GLUT_RGB );
    glutInitWindowSize(windowWidth,windowHeight);
    glutInitWindowPosition(150,150);
-   glutCreateWindow("GWB");
+   glutCreateWindow(argc>2?type.c_str():"GWB");
 
 cout<< "good 1!"<<endl;
 /*Initialze the window*/
@@ -394,7 +518,9 @@ cout<< "good 2.1!"<<endl;
    glutMouseFunc(pressMouse);
 cout<< "good 2.2!"<<endl;
    glutMotionFunc(holdMouse);
-cout<< "good 2.3!"<<endl;
+cout<< "good 2.3"<<endl;
+   glutKeyboardFunc(keyPressed);
+cout<< "good 2.4!"<<endl;
    glutMainLoop();
   
 cout<< "good 3!"<<endl;

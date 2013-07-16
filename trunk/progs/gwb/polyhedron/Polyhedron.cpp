@@ -133,7 +133,6 @@ Num *HalfEdge::compDir(){
     
     return d;
 
-
 }
 
 /*Intersections*/

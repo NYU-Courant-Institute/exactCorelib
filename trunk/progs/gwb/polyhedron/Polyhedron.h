@@ -374,6 +374,8 @@ public:
     
 
   }*/
+
+  /*The center of the solid*/
   Vec <double> *center(){
     double cx=0;
     double cy=0;
@@ -393,7 +395,9 @@ public:
     (*vs)[1]=cy;
     (*vs)[2]=cz;
     return vs;
-  }
+  }//center
+
+  /*print every loops*/
   void print();
   void showInfo(){
     cout<<"Solid Id="<<solidno<<endl;
@@ -448,4 +452,5 @@ Num dotProduct(HalfEdge *he1,HalfEdge *he2);
 Num dotProduct(Num* v1,Num* v2);
 Num *crossProduct(HalfEdge *he1,HalfEdge *he2);
 Num *crossProduct(Num *v1, Num *v2);
+
 
