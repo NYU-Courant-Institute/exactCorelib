@@ -39,7 +39,7 @@ class Feature
 {
 public:
 
-    static int LEVEL;
+    static int LEVEL; // Core Accuracy Level
 
 //    static int corelevel()
 //    {

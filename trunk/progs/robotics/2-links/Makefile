@@ -480,8 +480,8 @@ basic3 eg3: ./2-links
 # eg100 100: 100 random 2-links
 eg100 100: ./2-links
 	@echo "Target eg100:  runs 2-links amidst 100 randomly generated 2-links"
-	./2-links $(interactive) 195 370 0 150 345 180 270 0\
-		8 50 80 input100.txt \
+	./2-links $(interactive) 195 370 0 150 445 180 270 0\
+		8 10 20 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 1 \

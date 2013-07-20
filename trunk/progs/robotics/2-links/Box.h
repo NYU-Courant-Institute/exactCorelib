@@ -255,8 +255,8 @@ public:
 		double x = child->x;
 		double y = child->y;
 
-		//clearance+2*radius of the box
-		double cl2r = child->rB * 2 + child->cl_m; //clearance + 2*rB
+		//clearance+radius of the box (previous error: NOT 2*rB!)
+		double cl2r = child->rB + child->cl_m; //clearance + rB
 
 		//
 		//compute the separation to walls
