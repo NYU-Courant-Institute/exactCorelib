@@ -66,6 +66,7 @@
 #include "Graph.h"
 #include "Timer.h"
 #include "stdlib.h"
+#include "Polygon.h"
 
 #include <set>
 //#include "CoreIo.h"
@@ -143,7 +144,14 @@ bool noPath = true;			// True means there is "No path.
 
 bool hideBoxBoundary = false;  		// don't draw box boundary
 bool verboseOption = false;		// don't print various statistics
-string title("Triangle Robot Demos");	// title for control panel
+string title("2-links Robot Demos");	// title for control panel
+
+vector<Box*> PATH;
+
+extern vector<Polygon> polygons;
+extern vector<int> srcInPolygons;
+
+int timePerFrame = 32;
 
 // GLOBAL VARIABLES ========================================
 //////////////////////////////////////////////////////////////////////////////////
@@ -234,11 +242,11 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 	bool isPath = false;
 	vector<Box*> toReset;
 	a->dist2Source = 0;
-	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!237 a  " << a->x << " " << a->y
-			<< " " << a->xi[0] << " " << a->xi[1] << " " << a->xi[2] << " "
-			<< a->xi[3] << " " << a->status << endl;
-	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!238 a->dist2Source  "
-			<< a->dist2Source << endl;
+//	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!237 a  " << a->x << " " << a->y
+//			<< " " << a->xi[0] << " " << a->xi[1] << " " << a->xi[2] << " "
+//			<< a->xi[3] << " " << a->status << endl;
+//	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!238 a->dist2Source  "
+//			<< a->dist2Source << endl;
 	dijkstraQueue<Cmp> dijQ;
 	dijQ.push(a);
 	toReset.push_back(a);
@@ -254,10 +262,7 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 			if (QT->expand(current, cldrn)) {
 				++ct;
 				for (int i = 0; i < (int) cldrn.size(); ++i) {
-//					cout<<"CountAAA: "<< countAAA << endl;
-//					countAAA++;
-//					glutPostRedisplay();
-//					glFlush();
+
 					// go through neighbors of each child to see if it's in source set
 					// if yes, this child go into the dijQ					
 					bool isNeighborOfSourceSet = false;
@@ -266,22 +271,22 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 								cldrn[i]->Nhbrs[j].begin();
 								iter < cldrn[i]->Nhbrs[j].end(); ++iter) {
 							Box* n = *iter;
-							cout
-									<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!264 dist2Source != 0  "
-									<< n->x << " " << n->y << " " << n->xi[0]
-									<< " " << n->xi[1] << " " << n->xi[2] << " "
-									<< n->xi[3] << " " << endl;
-							cout
-									<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!267 a->dist2Source  "
-									<< a->dist2Source << endl;
-							cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!268 a  "
-									<< a->x << " " << a->y << " " << a->xi[0]
-									<< " " << a->xi[1] << " " << a->xi[2] << " "
-									<< a->xi[3] << " " << endl;
+//							cout
+//									<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!264 dist2Source != 0  "
+//									<< n->x << " " << n->y << " " << n->xi[0]
+//									<< " " << n->xi[1] << " " << n->xi[2] << " "
+//									<< n->xi[3] << " " << endl;
+//							cout
+//									<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!267 a->dist2Source  "
+//									<< a->dist2Source << endl;
+//							cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!268 a  "
+//									<< a->x << " " << a->y << " " << a->xi[0]
+//									<< " " << a->xi[1] << " " << a->xi[2] << " "
+//									<< a->xi[3] << " " << endl;
 							if (n->dist2Source == 0) {
-								cout
-										<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!265 dist2Source = 0  "
-										<< n->x << " " << n->y << endl;
+//								cout
+//										<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!265 dist2Source = 0  "
+//										<< n->x << " " << n->y << endl;
 								isNeighborOfSourceSet = true;
 								break;
 							}
@@ -294,10 +299,10 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 						//if it's FREE, also insert to source set
 						case Box::FREE:
 							cldrn[i]->dist2Source = 0;
-							cout
-									<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!277 dist2Source = 0  "
-									<< cldrn[i]->x << " " << cldrn[i]->y
-									<< endl;
+//							cout
+//									<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!277 dist2Source = 0  "
+//									<< cldrn[i]->x << " " << cldrn[i]->y
+//									<< endl;
 							dijQ.push(cldrn[i]);
 							toReset.push_back(cldrn[i]);
 							break;
@@ -318,8 +323,8 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 			continue;
 		}
 
-		cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!302 a->dist2Source  "
-				<< a->dist2Source << endl;
+//		cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!302 a->dist2Source  "
+//				<< a->dist2Source << endl;
 		//found path!
 		if (current == b) {
 			isPath = true;
@@ -336,13 +341,13 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 				if (!neighbor->visited && neighbor->dist2Source == -1
 						&& (neighbor->status == Box::FREE
 								|| neighbor->status == Box::MIXED)) {
-					cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!317 "
-							<< neighbor->x << " " << neighbor->y << endl;
+//					cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!317 "
+//							<< neighbor->x << " " << neighbor->y << endl;
 					if (neighbor->status == Box::FREE) {
 						neighbor->dist2Source = 0;
-						cout
-								<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!316 dist2Source = 0  "
-								<< neighbor->x << " " << neighbor->y << endl;
+//						cout
+//								<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!316 dist2Source = 0  "
+//								<< neighbor->x << " " << neighbor->y << endl;
 					}
 					dijQ.push(neighbor);
 					toReset.push_back(neighbor);
@@ -362,8 +367,14 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 }
 
 void TimerFunction(int p) {
+//	if (renderReady) {
+//		cout << "renderReady" << endl;
+////		renderScene();
+//
+//	}
 	glutPostRedisplay();
-	glutTimerFunc(16, TimerFunction, 1);
+	glutTimerFunc(timePerFrame, TimerFunction, 1);
+
 }
 
 //void run_thread(){
@@ -441,7 +452,7 @@ int main(int argc, char* argv[]) {
 
 	if (interactive > 0) {	// non-interactive
 		// do something...
-		cout << "Non Interactive Run of Disc Robot" << endl;
+		cout << "Non Interactive Run of 2-links Robot" << endl;
 		//if (noPath)
 		//	cout << "No Path Found!" << endl;
 		//else
@@ -463,11 +474,14 @@ int main(int argc, char* argv[]) {
 		glutInitWindowSize(boxWidth, boxWidth);
 		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 		int windowID = glutCreateWindow("Motion Planning");
-		glutDisplayFunc(renderScene);
-//		glutIdleFunc(&idle);
-//		glutTimerFunc(16, TimerFunction,1);
 
 		GLUI_Master.set_glutIdleFunc(NULL);
+//		glutPostRedisplay();
+		glutDisplayFunc(renderScene);
+		//			glutIdleFunc(&idle);
+		glutTimerFunc(timePerFrame, TimerFunction, 1);
+//		run();
+		cout << "mainloop!!!!!!!!!!!" << endl;
 
 		//Chee: trying to get demos to take a "title string"
 		std::stringstream sss;
@@ -556,22 +570,22 @@ int main(int argc, char* argv[]) {
 		buttonRun->set_name("Run"); // Hack, to avoid "unused warning" (Chee)
 
 		GLUI_Panel * replay_panel = glui->add_panel("replay configuration");
-		buttonReplay = glui->add_button_to_panel(replay_panel, "Replay", -1,
+		buttonReplay = glui->add_button_to_panel(replay_panel, "Replay spliting", -1,
 				(GLUI_Update_CB) replay);
-		buttonReplay->set_name("Replay");
+		buttonReplay->set_name("Replay Spliting");
 
 		radioStepsPerFrame = glui->add_radiogroup_to_panel(replay_panel);
-		glui->add_radiobutton_to_group(radioStepsPerFrame, "1 step/frame");
-		glui->add_radiobutton_to_group(radioStepsPerFrame, "10 steps/frame");
-		glui->add_radiobutton_to_group(radioStepsPerFrame, "100 steps/frame");
+		glui->add_radiobutton_to_group(radioStepsPerFrame, "slow");
+		glui->add_radiobutton_to_group(radioStepsPerFrame, "normal");
+		glui->add_radiobutton_to_group(radioStepsPerFrame, "fast");
 
 		textCurrentStep = glui->add_edittext_to_panel(replay_panel,
 				"Current Step", GLUI_EDITTEXT_INT);
 		textCurrentStep->set_int_val(currentStep);
 
 		buttonMoveAlongPath = glui->add_button_to_panel(replay_panel,
-				"Move Along Path", -1, (GLUI_Update_CB) moveAlongPath);
-		buttonMoveAlongPath->set_name("Move Along Path");
+				"Path Animation", -1, (GLUI_Update_CB) moveAlongPath);
+		buttonMoveAlongPath->set_name("Path Animation");
 
 		// New column:
 		glui->add_column(true);
@@ -623,8 +637,11 @@ int main(int argc, char* argv[]) {
 //		perror("Thread creation faied");
 //		exit(EXIT_FAILURE);
 //	}
-
+//	glutDisplayFunc(renderScene);
+////			glutIdleFunc(&idle);
+//			glutTimerFunc(1000, TimerFunction,1);
 	run();
+//	cout<<"mainloop!!!!!!!!!!!"<<endl;
 
 //cout<<"before run\n";
 	// PERFORM THE INITIAL RUN OF THE ALGORITHM
@@ -644,7 +661,7 @@ int main(int argc, char* argv[]) {
 		return 0;
 	} else {
 
-		cout << "33333333333333333333333333333333333333" << endl;
+//		cout << "33333333333333333333333333333333333333" << endl;
 		glutMainLoop();
 	}
 
@@ -711,27 +728,34 @@ void moveAlongPath() {
 //	textCurrentStep->set_int_val(currentStep);
 	if (animationOption != 3) {
 		animationOption = 3;
-//		if (radioStepsPerFrame->get_int_val() == 0) {
-//			stepIncrease = 1;
-//		} else if (radioStepsPerFrame->get_int_val() == 1) {
-//			stepIncrease = 10;
-//		} else {
-//			stepIncrease = 100;
-//		}
+		if (radioStepsPerFrame->get_int_val() == 0) {
+			timePerFrame = 128;
+		} else if (radioStepsPerFrame->get_int_val() == 1) {
+			timePerFrame = 32;
+		} else {
+			timePerFrame = 8;
+		}
 
 //		if (animationOption == 0) {
 //			currentStep = 1;
 //		}
 		buttonMoveAlongPath->set_name("Stop");
+		if (currentPathStep >= PATH.size()) {
+			currentPathStep = 0;
+		}
 	} else {
 		animationOption = 0;
 		stepIncrease = 0;
-		buttonMoveAlongPath->set_name("Move Along Path");
+		buttonMoveAlongPath->set_name("Path Animation");
 	}
 
 	if (interactive == 0 && animationOption == 3) {
-		glutPostRedisplay();
+		renderReady = true;
+
+	} else {
+		renderReady = false;
 	}
+	glutPostRedisplay();
 }
 
 void replay() {
@@ -746,19 +770,22 @@ void replay() {
 			stepIncrease = 100;
 		}
 
-//		if (animationOption == 0) {
-//			currentStep = 1;
-//		}
+		if (currentStep >= allLeaf.size()) {
+			currentStep = 1;
+		}
 		buttonReplay->set_name("Stop");
 	} else {
 		animationOption = 2;
 		stepIncrease = 0;
-		buttonReplay->set_name("Replay");
+		buttonReplay->set_name("Replay Spliting");
 	}
 
 	if (interactive == 0 && animationOption == 1) {
-		glutPostRedisplay();
+		renderReady = true;
+	} else {
+		renderReady = false;
 	}
+	glutPostRedisplay();
 }
 
 void run() {
@@ -834,8 +861,8 @@ void run() {
 //	renderReady = true;
 
 	if (interactive == 0) {
-		cout << "interactive : " << interactive << endl;
-//		glutPostRedisplay();
+//		cout << "interactive : " << interactive << endl;
+		glutPostRedisplay();
 	}
 	Timer t;
 
@@ -894,9 +921,9 @@ void run() {
 
 	t.stop();
 
-	if (interactive == 0) {
-		glutPostRedisplay();
-	}
+//	if (interactive == 0) {
+//		glutPostRedisplay();
+//	}
 	if (verboseOption)
 		cout << ">>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>\n";
 	cout << ">>\n";
@@ -1024,10 +1051,10 @@ void drawLinks(Box* b) {
 			L2 * sin((b->xi[2] / 180) * PI) + b->y);
 	glEnd();
 
-	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box x=" << b->x << " y=" << b->y
-			<< endl;
-	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box xi[0]=" << b->xi[0] << " xi[1]="
-			<< b->xi[1] << endl;
+//	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box x=" << b->x << " y=" << b->y
+//			<< endl;
+//	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box xi[0]=" << b->xi[0] << " xi[1]="
+//			<< b->xi[1] << endl;
 	glLineWidth(1.0);
 }
 
@@ -1085,6 +1112,11 @@ void drawPath(vector<Box*>& path) {
 	drawLinksSrcDst(beta);
 	if (path.size() != 0) {
 		for (int i = path.size() - 1; i >= 0; i--) {
+			if (animationOption == 3
+					&& i != path.size() - 1 - currentPathStep) {
+
+				continue;
+			}
 			if (i > 0) {
 				double dist = sqrt(
 						(path[i]->x - path[i - 1]->x)
@@ -1108,12 +1140,13 @@ void drawPath(vector<Box*>& path) {
 			}
 			if (animationOption == 3
 					&& i == path.size() - 1 - currentPathStep) {
-//				for (int i = 0; i < 60000000; i++) {
-//					for (int j = 0; j < 10000000; j++) {
-//						i = i + 1;
-//						j = j + 1;
-//					}
+//				int tempTotalSteps = totalSteps;
+//				for (int j = 0; j < 100000000 / ((tempTotalSteps / 1000) + 1);
+//						j++) {
+////					cout<<"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"<<endl;
+//					totalSteps = j;
 //				}
+//				totalSteps = tempTotalSteps;
 //				sleep(1);
 				break;
 			}
@@ -1128,9 +1161,9 @@ void drawPath(vector<Box*>& path) {
 //				j = j + 1;
 //			}
 //		}
-		if (currentPathStep == path.size()) {
-			currentPathStep = 0;
-		}
+//		if (currentPathStep == path.size()) {
+//			currentPathStep = 0;
+//		}
 	}
 
 }
@@ -1246,10 +1279,11 @@ void drawLine() {
 
 void renderScene(void) {
 
+//	cout << "renderScene!!!!!!!!!!!!!!!!!" << endl;
 	if (animationOption == 1) {
 		currentStep += stepIncrease;
 	}
-	cout << "renderCount :" << renderCount << endl;
+//	cout << "renderCount :" << renderCount << endl;
 	renderCount++;
 
 //	while (!renderReady) {
@@ -1329,7 +1363,6 @@ void renderScene(void) {
 					break;
 				}
 			}
-
 		}
 	}
 
@@ -1363,16 +1396,16 @@ void renderScene(void) {
 
 	if (!noPath) {
 		Graph graph;
-		vector<Box*> path = graph.dijkstraShortestPath(boxA, boxB);
-		drawPath(path);
+		PATH = graph.dijkstraShortestPath(boxA, boxB);
+		drawPath(PATH);
 //Graph::bfsPath(boxA, boxB);
 	}
 
 //	glFlush();
 	glutSwapBuffers();
-	if (animationOption == 1 || animationOption == 3) {
-		glutPostRedisplay();
-	}
+//	if (animationOption == 1 || animationOption == 3) {
+//		glutPostRedisplay();
+//	}
 //	glutPostRedisplay();
 }
 
@@ -1431,6 +1464,10 @@ int skip_backslash_new_line(std::istream & in) {
 /* ********************************************************************** */
 
 void parseConfigFile(Box* b) {
+	polygons.clear();
+	srcInPolygons.clear();
+
+
 	std::stringstream ss;
 	ss << inputDir << "/" << fileName;	// create full file name
 	std::string s = ss.str();
@@ -1462,6 +1499,7 @@ void parseConfigFile(Box* b) {
 	string temp;
 	std::getline(ifs, temp);
 	for (int i = 0; i < nPolygons; ++i) {
+		Polygon tempPolygon;
 		string s;
 		std::getline(ifs, s);
 		stringstream ss(s);
@@ -1498,7 +1536,18 @@ void parseConfigFile(Box* b) {
 					break;
 				}
 			}
+
 		}
+		tempPolygon.corners = ptVec;
+		tempPolygon.corners.push_back(ptVec[0]);
+		polygons.push_back(tempPolygon);
+//		cout<<"polygons.size() 2-links"<<polygons.size()<<endl;
+		if(pointInPolygon(alpha[0],alpha[1],tempPolygon)){
+			srcInPolygons.push_back(1);
+		}else{
+			srcInPolygons.push_back(0);
+		}
+//		cout<<"polygon"<<i<< "               "<<srcInPolygons[i]<<endl;
 	}
 	ifs.close();
 	if (true) {

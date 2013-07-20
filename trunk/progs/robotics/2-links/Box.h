@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <float.h>
 #include "line2d.h"
+//#include "Polygon.h"
 
 class Set;
 class Box;
@@ -21,6 +22,8 @@ const int BOARDWIDTH = 512;
 const int BOARDHEIGHT = 512;
 
 using namespace std;
+
+
 
 class BoxNode {
 public:
@@ -242,7 +245,7 @@ public:
 	}
 
 	//find the nearest feature, and check
-	Status checkChildStatus(double x, double y);
+	Status checkChildStatus(double x, double y, int width, bool small);
 
 	void distribute_features2box(Box * child) {
 		typedef list<Wall*>::iterator WIT;

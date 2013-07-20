@@ -2,11 +2,15 @@
 #include <assert.h>
 #include <math.h>
 #include <iostream>
+#include "Polygon.h"
 //
 //#define OVERRIDE_NEW_DELETE
 //#include "MemProCpp\MemPro.cpp"
 
 //extern double triRobo[3];
+
+extern vector<Polygon> polygons;
+extern vector<int> srcInPolygons;
 
 double Box::r0 = 0;
 double Box::l1 = 0;
@@ -205,8 +209,36 @@ bool Box::split2D(double epsilon, vector<Box*>& chldn) {
 
 bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 
-	std::cout << "Box::splitAngle begin" << endl;
-	std::cout << "box  " << this->x << "  " << this->y << endl;
+//	std::cout << "Box::splitAngle begin" << endl;
+//	std::cout << "box  " << this->x << "  " << this->y << endl;
+
+	//extern vector<Polygon> polygons;
+	//extern vector<int> srcInPolygons;
+//	cout << "polygons.size() " << polygons.size() << endl;
+	for (int i = 0; i < polygons.size(); i++) {
+//		cout << "polygons.size() " << polygons.size() << endl;
+		if (pointInPolygon(x - width / 2, y - width / 2, polygons[i])
+				!= srcInPolygons[i]) {
+			this->status = STUCK;
+			return 1;
+		}
+		if (pointInPolygon(x - width / 2, y + width / 2, polygons[i])
+				!= srcInPolygons[i]) {
+			this->status = STUCK;
+			return 1;
+		}
+		if (pointInPolygon(x + width / 2, y - width / 2, polygons[i])
+				!= srcInPolygons[i]) {
+			this->status = STUCK;
+			return 1;
+		}
+		if (pointInPolygon(x + width / 2, y + width / 2, polygons[i])
+				!= srcInPolygons[i]) {
+			this->status = STUCK;
+			return 1;
+		}
+	}
+
 //	//todo do sth to return false
 //	for (int i = 0; i < 3; i += 2) {
 //		if (this->xi[i + 1] > this->xi[i]) {
@@ -234,12 +266,12 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 	vector<AngleRange> l1SafeZone;
 	vector<AngleRange> l2SafeZone;
 	for (list<Wall*>::iterator itW = walls.begin(); itW != walls.end(); itW++) {
-		std::cout << "walls.size()=" << walls.size() << endl;
+//		std::cout << "walls.size()=" << walls.size() << endl;
 
 		Wall* w = *itW;
 
-		std::cout << "walls =" << w->src->x << " " << w->src->y << " "
-				<< w->dst->x << " " << w->dst->y << endl;
+//		std::cout << "walls =" << w->src->x << " " << w->src->y << " "
+//				<< w->dst->x << " " << w->dst->y << endl;
 //		double distWall = w->distance(this->x, this->y);
 		// when wall intersects with box
 		if (hasIntersectionLR((double) w->src->x, (double) w->src->y,
@@ -263,7 +295,7 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 		if (hasIntersectionLR(newSrcX, newSrcY, newDstX, newDstY,
 				this->x - this->width / 2, this->y + this->height / 2,
 				this->x + this->width / 2, this->y - this->height / 2)) {
-			std::cout << "hasIntersectionLR == true" << endl;
+//			std::cout << "hasIntersectionLR == true" << endl;
 
 			// find the closer endpoint
 			if (min(this->x - this->width / 2, this->x + this->width / 2)
@@ -337,7 +369,7 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 			}
 		} else {
 
-			std::cout << "hasIntersectionLR == false" << endl;
+//			std::cout << "hasIntersectionLR == false" << endl;
 
 			double closestCornerX = 0;
 			double closestCornerY = 0;
@@ -379,8 +411,8 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 				closestCornerY = this->y + this->height / 2;
 			}
 
-			std::cout << "closestCorner= " << closestCornerX << " "
-					<< closestCornerY << endl;
+//			std::cout << "closestCorner= " << closestCornerX << " "
+//					<< closestCornerY << endl;
 
 			// calculate the anglerange of l1, l2
 			for (int i = 0; i < 2; i++) {
@@ -399,14 +431,14 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 					if (checkSrc) {
 						Point tempPoint(w->src->x, w->src->y);
 						tempIntersection.push_back(tempPoint);
-						std::cout << "checkSrc x= " << w->src->x << " y="
-								<< w->src->y << endl;
+//						std::cout << "checkSrc x= " << w->src->x << " y="
+//								<< w->src->y << endl;
 					}
 					if (checkDst) {
 						Point tempPoint(w->dst->x, w->dst->y);
 						tempIntersection.push_back(tempPoint);
-						std::cout << "checkDst x= " << w->dst->x << " y="
-								<< w->dst->y << endl;
+//						std::cout << "checkDst x= " << w->dst->x << " y="
+//								<< w->dst->y << endl;
 					}
 
 					AngleRange tempAngleRange(0, 0);
@@ -417,12 +449,12 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 						double tempAngle = calcAngle(closestCornerX,
 								closestCornerY, temp.x, temp.y);
 						tempAngles.push_back(tempAngle);
-						std::cout << "tempAngle= " << tempAngle << " tempL="
-								<< tempL << endl;
+//						std::cout << "tempAngle= " << tempAngle << " tempL="
+//								<< tempL << endl;
 					}
 					tempAngleRange = calcAngleRange(tempAngles);
-					std::cout << "tempAngleRange= " << tempAngleRange.lowerBound
-							<< " " << tempAngleRange.upperBound << endl;
+//					std::cout << "tempAngleRange= " << tempAngleRange.lowerBound
+//							<< " " << tempAngleRange.upperBound << endl;
 					if (tempAngleRange.lowerBound != 0
 							|| tempAngleRange.upperBound != 0) {
 						if (i == 0) {
@@ -434,7 +466,7 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 				}
 
 				if (checkSrc) {
-					std::cout << "checkSrc == true " << endl;
+//					std::cout << "checkSrc == true " << endl;
 					AngleRange tempAngleRange = calcAngleRangeCB(tempL,
 							(double) w->src->x, (double) w->src->y, this);
 
@@ -448,7 +480,7 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 					}
 				}
 				if (checkDst) {
-					std::cout << "checkDst == true " << endl;
+//					std::cout << "checkDst == true " << endl;
 					AngleRange tempAngleRange = calcAngleRangeCB(tempL,
 							(double) w->dst->x, (double) w->dst->y, this);
 
@@ -672,7 +704,7 @@ bool Box::split(double epsilon, vector<Box*>& chldn) {
 //	}
 //}
 
-Box::Status Box::checkChildStatus(double x, double y) {
+Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 //assert(walls.size());
 
 	Wall* nearestWall;
@@ -729,6 +761,35 @@ Box::Status Box::checkChildStatus(double x, double y) {
 			isFree = true;
 		}
 	}
+//	cout<<"polygons.size() "<<polygons.size()<<endl;
+//	if (small) {
+//		//extern vector<Polygon> polygons;
+//		//extern vector<int> srcInPolygons;
+//		cout<<"polygons.size() "<<polygons.size()<<endl;
+//		for (int i = 0; i < polygons.size(); i++) {
+//			cout<<"polygons.size() "<<polygons.size()<<endl;
+//			if (pointInPolygon(x - width / 2, y - width / 2, polygons[i])
+//					!= srcInPolygons[i]) {
+//				isFree = false;
+//				break;
+//			}
+//			if (pointInPolygon(x - width / 2, y + width / 2, polygons[i])
+//					!= srcInPolygons[i]) {
+//				isFree = false;
+//				break;
+//			}
+//			if (pointInPolygon(x + width / 2, y - width / 2, polygons[i])
+//					!= srcInPolygons[i]) {
+//				isFree = false;
+//				break;
+//			}
+//			if (pointInPolygon(x + width / 2, y + width / 2, polygons[i])
+//					!= srcInPolygons[i]) {
+//				isFree = false;
+//				break;
+//			}
+//		}
+//	}
 
 	if (isFree) {
 		return FREE;
@@ -790,7 +851,8 @@ void Box::updateStatusBig() {
 				&& c->y < this->y + this->height / 2
 				&& c->y > this->y - this->height / 2) {
 			status = MIXED;
-			return;
+//			return;
+			++it;
 		} else if (c->distance(this->x, this->y) <= outerDomain) {
 			status = MIXED;
 			++it;
@@ -808,7 +870,8 @@ void Box::updateStatusBig() {
 				this->x - this->width / 2, this->y + this->height / 2,
 				this->x + this->width / 2, this->y - this->height / 2)) {
 			status = MIXED;
-			return;
+			++it;
+//			return;
 		} else if (distWall <= outerDomain) {
 			status = MIXED;
 			++it;
@@ -822,7 +885,8 @@ void Box::updateStatusBig() {
 			status = FREE;
 		} else {
 //			std::cout << "updateStatusBig 791" << endl;
-			status = pParent->checkChildStatus(this->x, this->y);
+			status = pParent->checkChildStatus(this->x, this->y, this->width,
+					false);
 //			std::cout << "updateStatusBig 793  " << status << endl;
 		}
 	}
@@ -961,7 +1025,8 @@ void Box::updateStatusSmall() {
 		if (!pParent) {
 			status = FREE;
 		} else {
-			status = pParent->checkChildStatus(this->x, this->y);
+			status = pParent->checkChildStatus(this->x, this->y, this->width,
+					true);
 		}
 	}
 }
@@ -1177,9 +1242,9 @@ AngleRange calcAngleRangeCB(double l, double xc, double yc, Box* b) {
 		tempAngles.push_back(tempAngle);
 	}
 	tempAngleRange = calcAngleRange(tempAngles);
-	std::cout << "calcAngleRangeCB  tempAngleRange ="
-			<< tempAngleRange.lowerBound << " " << tempAngleRange.upperBound
-			<< endl;
+//	std::cout << "calcAngleRangeCB  tempAngleRange ="
+//			<< tempAngleRange.lowerBound << " " << tempAngleRange.upperBound
+//			<< endl;
 	return tempAngleRange;
 }
 
@@ -1374,12 +1439,12 @@ vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges) {
 	vector<AngleRange> newSrcAngleRanges;
 	vector<AngleRange> newDstAngleRanges;
 	if (srcAngleRanges.empty()) {
-		std::cout << "srcAngleRanges.empty() == true" << endl;
+//		std::cout << "srcAngleRanges.empty() == true" << endl;
 		return dstAngleRanges;
 	}
 	std::sort(srcAngleRanges.begin(), srcAngleRanges.end(), sortAngleRanges);
 
-	std::cout << "srcAngleRanges.size() = " << srcAngleRanges.size() << endl;
+//	std::cout << "srcAngleRanges.size() = " << srcAngleRanges.size() << endl;
 	for (vector<AngleRange>::iterator it = srcAngleRanges.begin();
 			it != srcAngleRanges.end(); it++) {
 		AngleRange temp = *it;
@@ -1388,8 +1453,8 @@ vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges) {
 		}
 		AngleRange tempRange(temp.lowerBound, temp.upperBound);
 		newSrcAngleRanges.push_back(tempRange);
-		std::cout << "hahahahaha src angle range =" << temp.lowerBound << " "
-				<< temp.upperBound << endl;
+//		std::cout << "hahahahaha src angle range =" << temp.lowerBound << " "
+//				<< temp.upperBound << endl;
 	}
 
 	double tempLowerBound = 540, tempUpperBound = 0;
@@ -1420,8 +1485,8 @@ vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges) {
 //			}
 			continue;
 		}
-		std::cout << "temp.lowerBound = " << temp.lowerBound << endl;
-		std::cout << "temp.upperBound = " << temp.upperBound << endl;
+//		std::cout << "temp.lowerBound = " << temp.lowerBound << endl;
+//		std::cout << "temp.upperBound = " << temp.upperBound << endl;
 		if (temp.lowerBound <= tempUpperBound) {
 			if (temp.upperBound >= tempUpperBound) {
 				tempUpperBound = temp.upperBound;
@@ -1435,18 +1500,18 @@ vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges) {
 
 		if (it == newSrcAngleRanges.end() - 1) {
 			AngleRange tempAngleRange(tempLowerBound, tempUpperBound);
-			std::cout << "tempLowerBound = " << tempLowerBound << endl;
-			std::cout << "tempUpperBound = " << tempUpperBound << endl;
+//			std::cout << "tempLowerBound = " << tempLowerBound << endl;
+//			std::cout << "tempUpperBound = " << tempUpperBound << endl;
 			dstAngleRanges.push_back(tempAngleRange);
 		}
 	}
 
-	std::cout << "dstAngleRanges.size() = " << dstAngleRanges.size() << endl;
+//	std::cout << "dstAngleRanges.size() = " << dstAngleRanges.size() << endl;
 	for (vector<AngleRange>::iterator it = dstAngleRanges.begin();
 			it != dstAngleRanges.end(); it++) {
 		AngleRange temp = *it;
-		std::cout << "hahahahaha dst angle range before=" << temp.lowerBound
-				<< " " << temp.upperBound << endl;
+//		std::cout << "hahahahaha dst angle range before=" << temp.lowerBound
+//				<< " " << temp.upperBound << endl;
 	}
 
 	if (dstAngleRanges[dstAngleRanges.size() - 1].upperBound
@@ -1473,7 +1538,7 @@ vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges) {
 			dstAngleRanges.push_back(angleRange);
 		}
 	}
-	std::cout << "dstAngleRanges.size() = " << dstAngleRanges.size() << endl;
+//	std::cout << "dstAngleRanges.size() = " << dstAngleRanges.size() << endl;
 	for (vector<AngleRange>::iterator it = dstAngleRanges.begin();
 			it != dstAngleRanges.end(); it++) {
 		AngleRange temp = *it;
@@ -1485,8 +1550,8 @@ vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges) {
 		}
 		AngleRange tempRange(temp.lowerBound, temp.upperBound);
 		newDstAngleRanges.push_back(tempRange);
-		std::cout << "hahahahaha dst angle range =" << temp.lowerBound << " "
-				<< temp.upperBound << endl;
+//		std::cout << "hahahahaha dst angle range =" << temp.lowerBound << " "
+//				<< temp.upperBound << endl;
 	}
 //	if (dstAngleRanges.size() == 1) {
 //		if (dstAngleRanges[0].upperBound - dstAngleRanges[0].lowerBound

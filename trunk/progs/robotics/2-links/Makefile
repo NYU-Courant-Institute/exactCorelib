@@ -118,7 +118,7 @@ title = Demos		# Title of control panel
 #=================================================
 TARGETS = 2-links
 
-OBJ_FILES = Box.o QuadTree.o Corner.o Wall.o fileProcessor.o Timer.o
+OBJ_FILES = Box.o QuadTree.o Corner.o Wall.o fileProcessor.o Timer.o Polygon.o
 
 all: $(TARGETS)
 
@@ -480,12 +480,11 @@ basic3 eg3: ./2-links
 # eg100 100: 100 random 2-links
 eg100 100: ./2-links
 	@echo "Target eg100:  runs 2-links amidst 100 randomly generated 2-links"
-	./2-links $(interactive) 200 270 0 20 20 0\
-		10 5 input100.txt \
+	./2-links $(interactive) 195 370 0 150 345 180 270 0\
+		8 50 80 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(Qtype) $(seed)  $(inputDir) \
+		0 0 1 \
 		&
 
 # eg100a: 100 random 2-links
