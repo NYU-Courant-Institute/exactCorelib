@@ -1,26 +1,55 @@
-Zhongdi,
+NOTES:
 
-	I am reviewing your logic for "isNhbr".
+(1) WHEN ARE TWO d-dimensional boxes adjacent?   
 
-	Here is the math theory:  if B and B' are two d-dimensional boxes
-and for each i=1,2,..,d, B[i] is the interval range in the i-th dimension,
-then 
- 	B and B' are adjacent 
+	Here is the theory:  if B and B' are two d-dimensional boxes
+	and for each i=1,2,..,d, let
+	B[i] be the interval range in the i-th dimension.
+	Note that we have tranlational as well as angular intervals.
+	
+	Then B and B' are adjacent 
 
 		iff
 
-	(There exists some i) such that
+	There exists some i=1,...,d, such that
 		(1)  B[i] and B'[i] are adjacent intervals,
-			that means they share an endpoint, but does not overlap
+			i.e., they share an endpoint, but does NOT overlap
 		(2)  For all j not equal to i,
-			B[j] and B'[j] overlap.   (For translational dimensions
-			where we do binary splits only, this is equivalent
+			B[j] and B'[j] overlap.  
+			(For translational intervals where
+			we do binary splits only, this is equivalent
 			to B[j] contained in B'[j] or vice-versa.)
 
 I am not sure that you are implementing this logic!
 
 In particular, I do not see you checking for condition (1) anywhere!
 
+HERE IS THE LOGIC FOR CHECKING CONDITION (1) for adjacency of intervals:
+	Let B[i]=[a,b], and B'[i] = [a', b'].
+
+	RECALL that there are two kinds of intervals. 
+	But we always have a<b and a'<b', even the case of angular intervals.
+	Initially, the angular interval is [0, 2*Pi].
+	HERE IS THE ALGORITHM:
+	For translational intervals,
+		B[i] and B'[i] are adjacent iff b=a' or a=b'.
+	For angular intervals,
+		B[i] and B'[i] are adjacent iff b=a' or a=b' or (a,b')=(0,2*Pi)
+						or (a',b)=(2*Pi,0)
+
+HERE IS THE LOGIC FOR CHECKING CONDITION (2) for overlap of intervals:
+	For translational intervals,
+		B[i] and B'[i] are overlapping
+			iff	a < a' < b
+				or 
+				a < b' < b
+				or
+				a' < a < b'
+				or
+				a' < b < b'
+				or
+				(a=a' and b=b')
+	
 
 Current code in Box.cpp:
 
