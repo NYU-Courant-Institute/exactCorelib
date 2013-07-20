@@ -740,7 +740,7 @@ void moveAlongPath() {
 //			currentStep = 1;
 //		}
 		buttonMoveAlongPath->set_name("Stop");
-		if (currentPathStep >= PATH.size()) {
+		if ((unsigned)currentPathStep >= PATH.size()) {
 			currentPathStep = 0;
 		}
 	} else {
@@ -770,7 +770,7 @@ void replay() {
 			stepIncrease = 100;
 		}
 
-		if (currentStep >= allLeaf.size()) {
+		if ((unsigned)currentStep >= allLeaf.size()) {
 			currentStep = 1;
 		}
 		buttonReplay->set_name("Stop");
@@ -1113,7 +1113,7 @@ void drawPath(vector<Box*>& path) {
 	if (path.size() != 0) {
 		for (int i = path.size() - 1; i >= 0; i--) {
 			if (animationOption == 3
-					&& i != path.size() - 1 - currentPathStep) {
+				&& (unsigned)i != path.size() - 1 - currentPathStep) {
 
 				continue;
 			}
@@ -1139,7 +1139,7 @@ void drawPath(vector<Box*>& path) {
 				drawCircle(R0, 100, path[i]->x, path[i]->y, 0, 0, 1);
 			}
 			if (animationOption == 3
-					&& i == path.size() - 1 - currentPathStep) {
+				&& (unsigned)i == path.size() - 1 - currentPathStep) {
 //				int tempTotalSteps = totalSteps;
 //				for (int j = 0; j < 100000000 / ((tempTotalSteps / 1000) + 1);
 //						j++) {

@@ -215,7 +215,7 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 	//extern vector<Polygon> polygons;
 	//extern vector<int> srcInPolygons;
 //	cout << "polygons.size() " << polygons.size() << endl;
-	for (int i = 0; i < polygons.size(); i++) {
+	for (unsigned int i = 0; i < polygons.size(); i++) {
 //		cout << "polygons.size() " << polygons.size() << endl;
 		if (pointInPolygon(x - width / 2, y - width / 2, polygons[i])
 				!= srcInPolygons[i]) {
@@ -514,8 +514,8 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 
 	this->isLeaf = false;
 	vector<Box*> children;
-	for (int i = 0; i < l1SafeZone.size(); i++) {
-		for (int j = 0; j < l2SafeZone.size(); j++) {
+	for (unsigned int i = 0; i < l1SafeZone.size(); i++) {
+		for (unsigned int j = 0; j < l2SafeZone.size(); j++) {
 			Box* child = new Box(x, y, width, height);
 //					child->depth = this->depth + 1;
 			child->isBig = false;
@@ -1509,7 +1509,7 @@ vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges) {
 //	std::cout << "dstAngleRanges.size() = " << dstAngleRanges.size() << endl;
 	for (vector<AngleRange>::iterator it = dstAngleRanges.begin();
 			it != dstAngleRanges.end(); it++) {
-		AngleRange temp = *it;
+		// AngleRange temp = *it; // Chee: commented it out, temp not used.
 //		std::cout << "hahahahaha dst angle range before=" << temp.lowerBound
 //				<< " " << temp.upperBound << endl;
 	}
@@ -1580,7 +1580,7 @@ vector<AngleRange> calcOppoZone(vector<AngleRange>& srcAngleRanges) {
 
 	for (vector<AngleRange>::iterator it = srcAngleRanges.begin();
 			it != srcAngleRanges.end(); it++) {
-		AngleRange temp = *it;
+		// AngleRange temp = *it; // Chee: commented out, temp not used.
 	}
 	std::sort(srcAngleRanges.begin(), srcAngleRanges.end(), sortAngleRanges);
 

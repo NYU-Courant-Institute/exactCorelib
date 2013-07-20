@@ -14,7 +14,7 @@ vector<int> srcInPolygons;
 
 bool pointInPolygon(double x, double y, Polygon polygon) {
 
-	int n = polygon.corners.size() - 1, i, sum, t1, t2, f, prob = 0;
+	int n = polygon.corners.size() - 1, i, sum, t1, t2, f; // commented out: prob = 0;
 
 //	point t;
 
