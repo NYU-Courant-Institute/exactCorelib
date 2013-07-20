@@ -798,6 +798,13 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 	return STUCK;
 }
 
+//
+// Zhongdi: What is the return Code?
+//    -1 = ?
+//    0  = ?
+//    1  = ?
+//    2  = ?
+//    3  = ?
 int Box::isNhbr(Box* b1, Box* b2) {
 	double xmin1 = b1->x - b1->width / 2;
 	double xmax1 = b1->x + b1->width / 2;
