@@ -749,7 +749,7 @@ void moveAlongPath() {
 //		if (animationOption == 0) {
 //			currentStep = 1;
 //		}
-		buttonMoveAlongPath->set_name("Stop");
+		buttonMoveAlongPath->set_name("Stop Animation");
 		if ((unsigned)currentPathStep >= PATH.size()) {
 			currentPathStep = 0;
 		}
@@ -783,7 +783,7 @@ void replay() {
 		if ((unsigned)currentStep >= allLeaf.size()) {
 			currentStep = 1;
 		}
-		buttonReplay->set_name("Stop");
+		buttonReplay->set_name("Stop Spliting");
 	} else {
 		animationOption = 2;
 		stepIncrease = 0;
