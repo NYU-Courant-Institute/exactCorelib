@@ -1,17 +1,17 @@
 /* **************************************
-   File: QuadTree.h
+ File: QuadTree.h
 
-   Description: 
+ Description:
 
-   	The main routines here are:
-		expand()  -- this keeps expanding mixed boxes
-				until the priority queue is empty
-				or a path is found
+ The main routines here are:
+ expand()  -- this keeps expanding mixed boxes
+ until the priority queue is empty
+ or a path is found
 
-   HISTORY: March, 2012: Cong Wang, Chee Yap and Yi-Jen Chiang
+ HISTORY: March, 2012: Cong Wang, Chee Yap and Yi-Jen Chiang
 
-   Since Core Library  Version 2.1
-   $Id: $
+ Since Core Library  Version 2.1
+ $Id: $
  ************************************** */
 
 #pragma once
@@ -44,18 +44,14 @@ extern int mixSmallCount;
 
 //extern void glutPostRedisplay(void);
 
-class QuadTree
-{
+class QuadTree {
 private:
-	void insertNode(Box* b)
-	{
-		switch (b->getStatus())
-		{
-		case Box::FREE:
-			{
-				Set* st = new Set(b);
-				allSet.push_back(st);
-			}
+	void insertNode(Box* b) {
+		switch (b->getStatus()) {
+		case Box::FREE: {
+			Set* st = new Set(b);
+			allSet.push_back(st);
+		}
 			unionAdjacent(b);
 			++freeCount;
 			break;
@@ -81,11 +77,9 @@ public:
 	int QType;
 	int seed;
 
-	QuadTree (Box* root, double e, int qType, int s):
-	    pRoot(root), epsilon(e), QType(qType), seed(s)
-	{
-		switch (QType)
-		{
+	QuadTree(Box* root, double e, int qType, int s) :
+			pRoot(root), epsilon(e), QType(qType), seed(s) {
+		switch (QType) {
 		case 1:
 			PQ = new seqQueue();
 			break;
@@ -95,12 +89,12 @@ public:
 		case 2:
 			PQ = new dijkstraQueue<DistCmp>();
 			break;
-        case 3:
-            PQ = new dijkstraQueue<DistPlusSizeCmp>();
-            break;
-        case 4:
-            PQ = new dijkstraQueue<VorCmp>();
-            break;
+		case 3:
+			PQ = new dijkstraQueue<DistPlusSizeCmp>();
+			break;
+		case 4:
+			PQ = new dijkstraQueue<VorCmp>();
+			break;
 		}
 
 		//PQ = new randQueue();
@@ -109,52 +103,60 @@ public:
 		insertNode(pRoot);
 	}
 
-	//bfs search for alpha/beta
-	Box* getBox (double x, double y, double a1, double a2, int& ct)
-	{
+	//bfs search for alpha/beta return the box which has the specific configuration
+	Box* getBox(double x, double y, double a1, double a2, int& ct) {
 		std::queue<Box*> q;
 
-		for (int i = 0; i < (int)allLeaf.size(); ++i)
-		{
-			if ( allLeaf[i]->contains(x, y, a1, a2) )
-			{
+		for (int i = 0; i < (int) allLeaf.size(); ++i) {
+			if (allLeaf[i]->contains(x, y, a1, a2)) {
+				//TODO added by Zhongdi 7/22/2013
+				if (allLeaf[i]->isFree()) {
+					return allLeaf[i];
+				}
+				if (allLeaf[i]->status == 1) {
+					return 0;
+				}
 				q.push(allLeaf[i]);
 			}
 		}
 //		std::cout<<"getBox 124"<< endl;
 
-		while (q.size())
-		{
+		while (q.size()) {
 			Box* b = q.front();
 			q.pop();
-			if (!b->isLeaf)
-			{
+			//TODO could be deleted
+			if (!b->isLeaf) {
+				cout << "This is Wrong" << endl;
+				cout << "getbox 134: x = " << b->x << " y = " << b->y
+						<< " width = " << b->width << endl;
 				continue;
 			}
-			if (!b->contains(x, y, a1, a2))
-			{
-//				std::cout<<"getBox 135"<< endl;
-				return 0;
-			}
+//			if (!b->contains(x, y, a1, a2))
+//			{
+////				std::cout<<"getBox 135"<< endl;
+//				cout<<"This is Wrong"<<endl;
+//				return 0;
+//			}
 
 			vector<Box*> cldrn;
-			if (!expand(b, cldrn))
-			{
+			if (!expand(b, cldrn)) {
 //				std::cout<<"getBox 142"<< endl;
-				return 0;
+//				return 0;
+				continue;
 			}
 			++ct;
 
-			for (int i = 0; i < (int)cldrn.size(); ++i)
-			{
-				if ( cldrn[i]->contains(x, y, a1, a2) )
-				{
-					if (cldrn[i]->isFree())
-					{
+			for (int i = 0; i < (int) cldrn.size(); ++i) {
+				if (cldrn[i]->contains(x, y, a1, a2)) {
+					if (cldrn[i]->isFree()) {
 //						std::cout<<"getBox 153"<< endl;
 						return cldrn[i];
+					} else if (cldrn[i]->status == 1) {
+						return 0;
+					}else{
+						q.push(cldrn[i]);
 					}
-					q.push(cldrn[i]);
+
 				}
 			}
 
@@ -163,23 +165,19 @@ public:
 		return 0;
 	}
 
-	bool expand (Box* b)
-	{
+	bool expand(Box* b) {
 		vector<Box*> cldrn;
 		return expand(b, cldrn);
 	}
 
 	//expand and put children ptr in cldrn
-	bool expand (Box* b, vector<Box*>& cldrn)
-	{
-		if (!b->split(epsilon, cldrn))
-		{
+	bool expand(Box* b, vector<Box*>& cldrn) {
+		if (!b->split(epsilon, cldrn)) {
 //			std::cout<<"expand 177"<<endl;
 			return false;
 		}
 
-		for (int i = 0; i < (int)cldrn.size(); ++i)
-		{
+		for (int i = 0; i < (int) cldrn.size(); ++i) {
 //			glutPostRedisplay();
 			cldrn[i]->updateStatus();
 			insertNode(cldrn[i]);
@@ -188,25 +186,20 @@ public:
 		return true;
 	}
 
-	bool expand ()
-	{
-		while(!PQ->empty())
-		{
+	bool expand() {
+		while (!PQ->empty()) {
 			Box* b = PQ->extract();
-			if (!b->isLeaf)
-			{
+			if (!b->isLeaf) {
 				continue;
 			}
 
 			vector<Box*> cldrn;
 
 			//b might not be a leaf since it could already be split in expand(Box* b), and PQ is not updated there
-			if (b->split(epsilon, cldrn))
-			{
+			if (b->split(epsilon, cldrn)) {
 				assert(b->status == Box::MIXED);
 
-				for (int i = 0; i < (int)cldrn.size(); ++i)
-				{
+				for (int i = 0; i < (int) cldrn.size(); ++i) {
 //					glutPostRedisplay();
 					cldrn[i]->updateStatus();
 					insertNode(cldrn[i]);
@@ -217,31 +210,25 @@ public:
 		return false;
 	}
 
-	bool isConnected (Box* a, Box* b)
-	{
-		if (pSets->Find(a) == pSets->Find(b))
-		{
+	bool isConnected(Box* a, Box* b) {
+		if (pSets->Find(a) == pSets->Find(b)) {
 			return true;
 		}
 		return false;
 	}
 
-	void unionAdjacent (Box* b)
-	{
-		for (int i = 0; i < 4; ++i)
-		{
-			for (vector<Box*>::iterator it = b->Nhbrs[i].begin(); it != b->Nhbrs[i].end(); ++it)
-			{
+	void unionAdjacent(Box* b) {
+		for (int i = 0; i < 4; ++i) {
+			for (vector<Box*>::iterator it = b->Nhbrs[i].begin();
+					it != b->Nhbrs[i].end(); ++it) {
 				Box* neighbor = *it;
-				if (neighbor->status == Box::FREE)
-				{
+				if (neighbor->status == Box::FREE) {
 					pSets->Union(b, neighbor);
 				}
 			}
 		}
 	}
 
-	~QuadTree (void)
-	{
+	~QuadTree(void) {
 	}
 };
