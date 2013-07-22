@@ -44,6 +44,10 @@ extern int mixSmallCount;
 
 //extern void glutPostRedisplay(void);
 
+enum Status {
+	FREE, STUCK, MIXED, UNKNOWN
+};
+
 class QuadTree {
 private:
 	void insertNode(Box* b) {
@@ -113,7 +117,7 @@ public:
 				if (allLeaf[i]->isFree()) {
 					return allLeaf[i];
 				}
-				if (allLeaf[i]->status == 1) {
+				if (allLeaf[i]->status == STUCK) {
 					return 0;
 				}
 				q.push(allLeaf[i]);
@@ -151,12 +155,11 @@ public:
 					if (cldrn[i]->isFree()) {
 //						std::cout<<"getBox 153"<< endl;
 						return cldrn[i];
-					} else if (cldrn[i]->status == 1) {
+					} else if (cldrn[i]->status == STUCK) {
 						return 0;
 					}else{
 						q.push(cldrn[i]);
 					}
-
 				}
 			}
 
