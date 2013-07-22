@@ -1041,7 +1041,7 @@ void run() {
 void drawLinks(Box* b) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor3f(1, 0, 0);
-	glLineWidth(2);
+	glLineWidth(4);
 	glBegin(GL_LINES);
 
 //	glVertex2f(R0 * cos((b->xi[0]) * PI) + b->x,
@@ -1089,7 +1089,7 @@ void drawLinksSrcDst(double* configuration) {
 void drawLinks(Box* b, double x, double y) {
 //	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor3f(1, 0, 0);
-	glLineWidth(2);
+	glLineWidth(4);
 	glBegin(GL_LINES);
 	glVertex2f(x, y);
 	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + x,
