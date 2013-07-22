@@ -1161,7 +1161,7 @@ void drawPath(vector<Box*>& path) {
 //				int tempTotalSteps = totalSteps;
 //				for (int j = 0; j < 100000000 / ((tempTotalSteps / 1000) + 1);
 //						j++) {
-					cout<<"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"<<endl;
+//					cout<<"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"<<endl;
 //					totalSteps = j;
 //				}
 //				totalSteps = tempTotalSteps;
