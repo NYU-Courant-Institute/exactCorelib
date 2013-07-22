@@ -1,7 +1,17 @@
 # file: 2chambers.txt
 #
 # 	This produces an interesting environment for a 2-link robot.
-#	It consists of two connected annulus corridors
+#	It consists of two connected annulus corridors:
+#
+#	    ------------
+#	    |  ______  |
+#	    |  |    |  |
+#	    |  |    |  |_________
+#	    |  ------  _______  |
+#	    |________  |     |  |
+#	            |  |     |  |
+#	            |  |_____|  |
+#	            |___________|
 #
 # 	-- Chee Yap, July 22, 2013.
 #
