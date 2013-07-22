@@ -513,9 +513,9 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 	}
 
 	this->isLeaf = false;
-	vector<Box*> children;
-	for (unsigned int i = 0; i < l1SafeZone.size(); i++) {
-		for (unsigned int j = 0; j < l2SafeZone.size(); j++) {
+//	vector<Box*> children;
+	for (int i = 0; i < l1SafeZone.size(); i++) {
+		for (int j = 0; j < l2SafeZone.size(); j++) {
 			Box* child = new Box(x, y, width, height);
 //					child->depth = this->depth + 1;
 			child->isBig = false;
@@ -533,7 +533,7 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 //					<< child->xi[1] << " " << child->xi[2] << " "
 //					<< child->xi[3] << endl;
 
-			children.push_back(child);
+//			children.push_back(child);
 
 			for (int k = 0; k < 4; ++k) {
 				for (vector<Box*>::iterator itBNhbrs = this->Nhbrs[k].begin();
@@ -798,13 +798,11 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 	return STUCK;
 }
 
-//
-// Zhongdi: What is the return Code?
-//    -1 = ?
-//    0  = ?
-//    1  = ?
-//    2  = ?
-//    3  = ?
+//    -1: not adjacent
+//    0: b2 is at the right of b1
+//    1: b2 is at the top of b1
+//    2: b2 is above b1
+//    3  b2 is under b1
 int Box::isNhbr(Box* b1, Box* b2) {
 	double xmin1 = b1->x - b1->width / 2;
 	double xmax1 = b1->x + b1->width / 2;
@@ -1516,7 +1514,7 @@ vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges) {
 //	std::cout << "dstAngleRanges.size() = " << dstAngleRanges.size() << endl;
 	for (vector<AngleRange>::iterator it = dstAngleRanges.begin();
 			it != dstAngleRanges.end(); it++) {
-		// AngleRange temp = *it; // Chee: commented it out, temp not used.
+		AngleRange temp = *it;
 //		std::cout << "hahahahaha dst angle range before=" << temp.lowerBound
 //				<< " " << temp.upperBound << endl;
 	}
@@ -1587,7 +1585,7 @@ vector<AngleRange> calcOppoZone(vector<AngleRange>& srcAngleRanges) {
 
 	for (vector<AngleRange>::iterator it = srcAngleRanges.begin();
 			it != srcAngleRanges.end(); it++) {
-		// AngleRange temp = *it; // Chee: commented out, temp not used.
+		AngleRange temp = *it;
 	}
 	std::sort(srcAngleRanges.begin(), srcAngleRanges.end(), sortAngleRanges);
 

@@ -23,8 +23,6 @@ const int BOARDHEIGHT = 512;
 
 using namespace std;
 
-
-
 class BoxNode {
 public:
 	BoxNode() {
@@ -99,12 +97,12 @@ private:
 		}
 	}
 
-// Zhongdi: isn't this the arc logic suppose to under "wrap around"?
-// I.e., 0 and 2* Pi should be the same?   Even if you assume that 0 is never
-// in the interior of an arc, you still need to check if 0 for one arc is
-// equal to 2*Pi in another arc to check adjacency.
-//
-//
+	// Zhongdi: isn't this the arc logic suppose to under "wrap around"?
+	// I.e., 0 and 2* Pi should be the same?   Even if you assume that 0 is never
+	// in the interior of an arc, you still need to check if 0 for one arc is
+	// equal to 2*Pi in another arc to check adjacency.
+	//
+	//
 	//returns true if any edge of arc2 is within arc1
 	static bool isAnyInArc1(double s1, double e1, double s2, double e2) {
 		if (e1 > s1) {
@@ -187,7 +185,7 @@ public:
 	int priority;
 	bool isLeaf;
 	static double r0;
-	static double l1,l2;
+	static double l1, l2;
 //	static double THETA_MIN;
 	double rB;
 	double cl_m; //clearance of the mid point of the box

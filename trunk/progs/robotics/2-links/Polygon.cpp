@@ -5,9 +5,7 @@
  *      Author: dodd
  */
 
-
 #include "Polygon.h"
-
 
 vector<Polygon> polygons;
 vector<int> srcInPolygons;
@@ -29,8 +27,7 @@ bool pointInPolygon(double x, double y, Polygon polygon) {
 	}
 
 	t1 = tempPolygon[0].x >= 0 ?
-			(tempPolygon[0].y >= 0 ? 0 : 3) :
-			(tempPolygon[0].y >= 0 ? 1 : 2);
+			(tempPolygon[0].y >= 0 ? 0 : 3) : (tempPolygon[0].y >= 0 ? 1 : 2);
 	for (sum = 0, i = 1; i <= n; i++) {
 		if (!tempPolygon[i].x && !tempPolygon[i].y)
 			break;

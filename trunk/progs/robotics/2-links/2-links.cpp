@@ -144,6 +144,7 @@ bool noPath = true;			// True means there is "No path.
 
 bool hideBoxBoundary = false;  		// don't draw box boundary
 bool verboseOption = false;		// don't print various statistics
+bool twoStrategyOption = false; // 2-Stage-Stratege or not
 string title("2-links Robot Demos");	// title for control panel
 
 vector<Box*> PATH;
@@ -162,7 +163,7 @@ int mixSmallCount = 0;
 
 //controls triangle drawing along path
 const int TRIS_TO_SKIP = 20;
-const double DIST_TO_SKIP = 4;
+const double DIST_TO_SKIP = 2;
 
 int renderCount = 0;
 int countAAA = 0;
@@ -177,6 +178,7 @@ GLUI_RadioGroup* radioStepsPerFrame;
 GLUI_EditText* textCurrentStep;
 GLUI_RadioGroup* radioQType;
 GLUI_RadioGroup* radioDrawOption;
+GLUI_RadioGroup* radio2StrategyOption;
 GLUI_RadioGroup* radioVerboseOption;
 GLUI_EditText* editInput;
 GLUI_EditText* editDir;
@@ -570,8 +572,8 @@ int main(int argc, char* argv[]) {
 		buttonRun->set_name("Run"); // Hack, to avoid "unused warning" (Chee)
 
 		GLUI_Panel * replay_panel = glui->add_panel("replay configuration");
-		buttonReplay = glui->add_button_to_panel(replay_panel, "Replay spliting", -1,
-				(GLUI_Update_CB) replay);
+		buttonReplay = glui->add_button_to_panel(replay_panel,
+				"Replay spliting", -1, (GLUI_Update_CB) replay);
 		buttonReplay->set_name("Replay Spliting");
 
 		radioStepsPerFrame = glui->add_radiogroup_to_panel(replay_panel);
@@ -615,6 +617,15 @@ int main(int argc, char* argv[]) {
 				"Verbose (print statistics)");
 
 		radioVerboseOption->set_int_val(verboseOption);
+
+		glui->add_separator();
+		radio2StrategyOption = glui->add_radiogroup();
+
+		glui->add_radiobutton_to_group(radio2StrategyOption, "Split Until Epsilon");
+		glui->add_radiobutton_to_group(radio2StrategyOption,
+				"Smarter Strategy");
+
+		radio2StrategyOption->set_int_val(twoStrategyOption);
 		glui->add_separator();
 
 		textBox = new GLUI_TextBox(glui, true);
@@ -719,10 +730,9 @@ void genEmptyTree() {
 	if (verboseOption)
 		cout << "done genEmptyTree \n";
 }
-void idle() {
-//	cout << "idleidleidleidleidleidleidleidleidle" << endl;
-	renderScene();
-}
+//void idle() {
+//	renderScene();
+//}
 
 void moveAlongPath() {
 //	textCurrentStep->set_int_val(currentStep);
@@ -1111,12 +1121,15 @@ void drawPath(vector<Box*>& path) {
 	drawLinksSrcDst(alpha);
 	drawLinksSrcDst(beta);
 	if (path.size() != 0) {
+//		cout<<"drawPath path.size() = "<<path.size() << endl;
 		for (int i = path.size() - 1; i >= 0; i--) {
 			if (animationOption == 3
-				&& (unsigned)i != path.size() - 1 - currentPathStep) {
+					&& (unsigned)i != path.size() - 1 - currentPathStep) {
 
 				continue;
 			}
+
+//			cout<<"i = "<<i << endl;
 			if (i > 0) {
 				double dist = sqrt(
 						(path[i]->x - path[i - 1]->x)
@@ -1127,9 +1140,14 @@ void drawPath(vector<Box*>& path) {
 				++skipped;
 				//control triangles drawing:
 				//enable (&& dist>= 1e-9) to hide same spot rotation
-				if ((skipped > TRIS_TO_SKIP || distSkipped > DIST_TO_SKIP))	// && dist>= 1e-9 )
+//				cout<<"i = "<<i <<"skipped ="<<skipped<< " distSkipped = "<<distSkipped<<endl;
+				if (((animationOption != 3 && skipped > TRIS_TO_SKIP)
+						||(animationOption == 3 && (skipped > TRIS_TO_SKIP || distSkipped >= DIST_TO_SKIP))
+//						|| distSkipped >= DIST_TO_SKIP
+						))	// && dist>= 1e-9 )
 				{
 					drawLinks(path[i]);
+//					cout<<"drawLinks"<<endl;
 //					drawCircle(R0, 100, path[i]->x, path[i]->y, 0, 0, 1);
 					skipped = 0;
 					distSkipped = 0;
@@ -1139,11 +1157,11 @@ void drawPath(vector<Box*>& path) {
 				drawCircle(R0, 100, path[i]->x, path[i]->y, 0, 0, 1);
 			}
 			if (animationOption == 3
-				&& (unsigned)i == path.size() - 1 - currentPathStep) {
+					&& (unsigned)i == path.size() - 1 - currentPathStep) {
 //				int tempTotalSteps = totalSteps;
 //				for (int j = 0; j < 100000000 / ((tempTotalSteps / 1000) + 1);
 //						j++) {
-////					cout<<"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"<<endl;
+					cout<<"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"<<endl;
 //					totalSteps = j;
 //				}
 //				totalSteps = tempTotalSteps;
@@ -1292,6 +1310,7 @@ void renderScene(void) {
 
 	hideBoxBoundary = radioDrawOption->get_int_val();
 	verboseOption = radioVerboseOption->get_int_val();
+	twoStrategyOption = radio2StrategyOption->get_int_val();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -1396,7 +1415,11 @@ void renderScene(void) {
 
 	if (!noPath) {
 		Graph graph;
+//		PATH.clear();
+//		cout<<"renderScene 1418" << endl;
 		PATH = graph.dijkstraShortestPath(boxA, boxB);
+//		cout<<"renderScene 1420" << endl;
+//		cout<<"renderScene path.size() = "<<PATH.size() << endl;
 		drawPath(PATH);
 //Graph::bfsPath(boxA, boxB);
 	}
@@ -1466,7 +1489,6 @@ int skip_backslash_new_line(std::istream & in) {
 void parseConfigFile(Box* b) {
 	polygons.clear();
 	srcInPolygons.clear();
-
 
 	std::stringstream ss;
 	ss << inputDir << "/" << fileName;	// create full file name
@@ -1542,9 +1564,9 @@ void parseConfigFile(Box* b) {
 		tempPolygon.corners.push_back(ptVec[0]);
 		polygons.push_back(tempPolygon);
 //		cout<<"polygons.size() 2-links"<<polygons.size()<<endl;
-		if(pointInPolygon(alpha[0],alpha[1],tempPolygon)){
+		if (pointInPolygon(alpha[0], alpha[1], tempPolygon)) {
 			srcInPolygons.push_back(1);
-		}else{
+		} else {
 			srcInPolygons.push_back(0);
 		}
 //		cout<<"polygon"<<i<< "               "<<srcInPolygons[i]<<endl;

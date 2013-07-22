@@ -438,6 +438,28 @@ eg9 narrow: ./2-links
 		0 0 0.065 \
 		&
 		
+eg10 twoChambers: ./2-links
+	@echo "Target eg10: 2nd test example from Chee and Zhongdi"
+#	@echo "	There is a path passage... when radius=6, epsilon=1"
+#	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./2-links $(interactive) 415 400 180 270 105 90 90 0\
+		4 55 60 2chambers.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		-220 0 0.065 \
+		&
+
+eg11 nestedRectangle: ./2-links
+	@echo "Target eg11: 3nd test example from Chee and Zhongdi"
+#	@echo "	There is a path passage... when radius=6, epsilon=1"
+#	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./2-links $(interactive) 425 390 180 270 95 100 90 0\
+		2 30 30 nestedRectangle.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		-220 0 0.065 \
+		&
+
 basic1 eg1 : ./2-links
 	@echo "Target basic1: basic test 1 from Zhongdi"
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
