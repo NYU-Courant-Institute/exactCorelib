@@ -172,6 +172,7 @@ int renderCount = 0;
 
 stringstream ssout;
 stringstream ssTemp;
+stringstream ssInfo;
 
 volatile bool renderLock = false;
 volatile bool timerLock = false;
@@ -400,7 +401,11 @@ void TimerFunction(int p) {
 	glutTimerFunc(timePerFrame, TimerFunction, 1);
 //	glFlush();
 //	glutSwapBuffers();
-	textBox->set_text(ssTemp.str().c_str());
+
+	ssInfo.str("");
+	ssInfo<<ssout.str();
+	ssInfo<<ssTemp.str();
+	textBox->set_text(ssInfo.str().c_str());
 	glutPostRedisplay();
 	timerLock = false;
 
@@ -1326,7 +1331,7 @@ void drawPath(vector<Box*>& path) {
 //				sleep(1);
 
 				ssTemp.str("");
-				ssTemp << ssout.str();
+//				ssTemp << ssout.str();
 				ssTemp << endl;
 				ssTemp << "Current Box Info:" << endl;
 				ssTemp << "x = " << path[i]->x << ", y = " << path[i]->y;
