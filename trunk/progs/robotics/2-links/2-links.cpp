@@ -152,7 +152,7 @@ vector<Box*> PATH;
 extern vector<Polygon> polygons;
 extern vector<int> srcInPolygons;
 
-int timePerFrame = 32;
+int timePerFrame = 128;
 
 // GLOBAL VARIABLES ========================================
 //////////////////////////////////////////////////////////////////////////////////
@@ -166,11 +166,17 @@ const int TRIS_TO_SKIP = 20;
 const double DIST_TO_SKIP = 2;
 
 int renderCount = 0;
-int countAAA = 0;
-int countBBB = 0;
-int countCCC = 0;
+//int countAAA = 0;
+//int countBBB = 0;
+//int countCCC = 0;
 
-volatile bool renderReady = false;
+stringstream ssout;
+stringstream ssTemp;
+
+volatile bool renderLock = false;
+volatile bool timerLock = false;
+
+//volatile bool renderReady = false;
 
 // GLUI controls ========================================
 //////////////////////////////////////////////////////////////////////////////////
@@ -203,8 +209,10 @@ GLUI_TextBox* textBox;
 void renderScene(void);
 void parseConfigFile(Box*);
 void idle();
-void replay();
-void moveAlongPath();
+void replaySplitting();
+void runAnimation();
+void previousStep(int);
+void nextStep(int);
 void run();
 void genEmptyTree();
 void drawPath(vector<Box*>&);
@@ -229,12 +237,16 @@ int currentStep = 0;
 int stepIncrease = 0;
 int currentPathStep = 0;
 
-// 0: no animation 1: animation 2: stop 3: move along path
+// 0: no replay 1: replay splitting 2: stop splitting 3: animation 4: stop animation
 int animationOption = 0;
 
 GLUI_Button* buttonRun;
+GLUI_Button* previousStepReplay;
 GLUI_Button* buttonReplay;
-GLUI_Button* buttonMoveAlongPath;
+GLUI_Button* nextStepReplay;
+GLUI_Button* previousStepAnimation;
+GLUI_Button* buttonAnimation;
+GLUI_Button* nextStepAnimation;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //find path using simple heuristic:
@@ -293,7 +305,6 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 								break;
 							}
 						}
-
 					}
 
 					if (isNeighborOfSourceSet) {
@@ -374,8 +385,24 @@ void TimerFunction(int p) {
 ////		renderScene();
 //
 //	}
-	glutPostRedisplay();
+	while (timerLock) {
+
+	}
+	timerLock = true;
+//	cout << "TimerFunction()!" << endl;
+//	renderScene();
+//	glFlush();
+//	glFlush();
+//	glutSwapBuffers();
+//	glutPostRedisplay();
+//	cout << "after glutPostRedisplay()!" << endl;
+
 	glutTimerFunc(timePerFrame, TimerFunction, 1);
+//	glFlush();
+//	glutSwapBuffers();
+	textBox->set_text(ssTemp.str().c_str());
+	glutPostRedisplay();
+	timerLock = false;
 
 }
 
@@ -474,13 +501,13 @@ int main(int argc, char* argv[]) {
 		glutInit(&argc, argv);
 		glutInitWindowPosition(windowPosX, windowPosY);
 		glutInitWindowSize(boxWidth, boxWidth);
-		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
 		int windowID = glutCreateWindow("Motion Planning");
 
 		GLUI_Master.set_glutIdleFunc(NULL);
 //		glutPostRedisplay();
 		glutDisplayFunc(renderScene);
-		//			glutIdleFunc(&idle);
+//					glutIdleFunc(&idle);
 		glutTimerFunc(timePerFrame, TimerFunction, 1);
 //		run();
 		cout << "mainloop!!!!!!!!!!!" << endl;
@@ -571,23 +598,49 @@ int main(int argc, char* argv[]) {
 		buttonRun = glui->add_button("Run", -1, (GLUI_Update_CB) run);
 		buttonRun->set_name("Run"); // Hack, to avoid "unused warning" (Chee)
 
-		GLUI_Panel * replay_panel = glui->add_panel("replay configuration");
-		buttonReplay = glui->add_button_to_panel(replay_panel,
-				"Replay spliting", -1, (GLUI_Update_CB) replay);
+		GLUI_Panel * replay_panel = glui->add_panel("replay configuration",
+				GLUI_PANEL_EMBOSSED);
+		GLUI_Panel * replaySplitting_panel = glui->add_panel_to_panel(
+				replay_panel, "", GLUI_PANEL_NONE);
+		previousStepReplay = glui->add_button_to_panel(replaySplitting_panel,
+				"<-", 0, (GLUI_Update_CB) previousStep);
+		previousStepReplay->set_w(1);
+		glui->add_column_to_panel(replaySplitting_panel);
+		buttonReplay = glui->add_button_to_panel(replaySplitting_panel,
+				"Replay spliting", -1, (GLUI_Update_CB) replaySplitting);
 		buttonReplay->set_name("Replay Spliting");
+		glui->add_column_to_panel(replaySplitting_panel);
+		nextStepReplay = glui->add_button_to_panel(replaySplitting_panel, "->",
+				0, (GLUI_Update_CB) nextStep);
+		nextStepReplay->set_w(1);
 
+//		glui->add_separator();
 		radioStepsPerFrame = glui->add_radiogroup_to_panel(replay_panel);
-		glui->add_radiobutton_to_group(radioStepsPerFrame, "slow");
-		glui->add_radiobutton_to_group(radioStepsPerFrame, "normal");
-		glui->add_radiobutton_to_group(radioStepsPerFrame, "fast");
+		glui->add_radiobutton_to_group(radioStepsPerFrame,
+				"slow (1 frame/step)");
+		glui->add_radiobutton_to_group(radioStepsPerFrame,
+				"normal (10 frames/step)");
+		glui->add_radiobutton_to_group(radioStepsPerFrame,
+				"fast (100 frames/step)");
 
 		textCurrentStep = glui->add_edittext_to_panel(replay_panel,
 				"Current Step", GLUI_EDITTEXT_INT);
 		textCurrentStep->set_int_val(currentStep);
+//		glui->add_separator();
 
-		buttonMoveAlongPath = glui->add_button_to_panel(replay_panel,
-				"Path Animation", -1, (GLUI_Update_CB) moveAlongPath);
-		buttonMoveAlongPath->set_name("Path Animation");
+		GLUI_Panel * animation_panel = glui->add_panel_to_panel(replay_panel,
+				"", GLUI_PANEL_NONE);
+		previousStepAnimation = glui->add_button_to_panel(animation_panel, "<-",
+				1, (GLUI_Update_CB) previousStep);
+		previousStepAnimation->set_w(1);
+		glui->add_column_to_panel(animation_panel);
+		buttonAnimation = glui->add_button_to_panel(animation_panel,
+				"Path Animation", -1, (GLUI_Update_CB) runAnimation);
+		buttonAnimation->set_name("Path Animation");
+		glui->add_column_to_panel(animation_panel);
+		nextStepAnimation = glui->add_button_to_panel(animation_panel, "->", 1,
+				(GLUI_Update_CB) nextStep);
+		nextStepAnimation->set_w(1);
 
 		// New column:
 		glui->add_column(true);
@@ -621,7 +674,8 @@ int main(int argc, char* argv[]) {
 		glui->add_separator();
 		radio2StrategyOption = glui->add_radiogroup();
 
-		glui->add_radiobutton_to_group(radio2StrategyOption, "Split Until Epsilon");
+		glui->add_radiobutton_to_group(radio2StrategyOption,
+				"Split Until Epsilon");
 		glui->add_radiobutton_to_group(radio2StrategyOption,
 				"Smarter Strategy");
 
@@ -629,7 +683,7 @@ int main(int argc, char* argv[]) {
 		glui->add_separator();
 
 		textBox = new GLUI_TextBox(glui, true);
-		textBox->set_h(250);
+		textBox->set_h(450);
 		textBox->set_w(310);
 		textBox->disable();
 
@@ -731,10 +785,12 @@ void genEmptyTree() {
 		cout << "done genEmptyTree \n";
 }
 //void idle() {
-//	renderScene();
+//	cout << "idle() \n" << endl;
+//	glutPostRedisplay();
+//	textBox->set_text(ssTemp.str().c_str());
 //}
 
-void moveAlongPath() {
+void runAnimation() {
 //	textCurrentStep->set_int_val(currentStep);
 	if (animationOption != 3) {
 		animationOption = 3;
@@ -749,26 +805,26 @@ void moveAlongPath() {
 //		if (animationOption == 0) {
 //			currentStep = 1;
 //		}
-		buttonMoveAlongPath->set_name("Stop Animation");
-		if ((unsigned)currentPathStep >= PATH.size()) {
+		buttonAnimation->set_name("Stop Animation");
+		if ((unsigned) currentPathStep >= PATH.size()) {
 			currentPathStep = 0;
 		}
 	} else {
 		animationOption = 0;
 		stepIncrease = 0;
-		buttonMoveAlongPath->set_name("Path Animation");
+		buttonAnimation->set_name("Path Animation");
 	}
 
-	if (interactive == 0 && animationOption == 3) {
-		renderReady = true;
-
-	} else {
-		renderReady = false;
-	}
+//	if (interactive == 0 && animationOption == 3) {
+//		renderReady = true;
+//
+//	} else {
+//		renderReady = false;
+//	}
 	glutPostRedisplay();
 }
 
-void replay() {
+void replaySplitting() {
 	textCurrentStep->set_int_val(currentStep);
 	if (animationOption != 1) {
 		animationOption = 1;
@@ -780,7 +836,7 @@ void replay() {
 			stepIncrease = 100;
 		}
 
-		if ((unsigned)currentStep >= allLeaf.size()) {
+		if ((unsigned) currentStep >= allLeaf.size()) {
 			currentStep = 1;
 		}
 		buttonReplay->set_name("Stop Spliting");
@@ -790,14 +846,82 @@ void replay() {
 		buttonReplay->set_name("Replay Spliting");
 	}
 
-	if (interactive == 0 && animationOption == 1) {
-		renderReady = true;
+//	if (interactive == 0 && animationOption == 1) {
+//		renderReady = true;
+//	} else {
+//		renderReady = false;
+//	}
+	glutPostRedisplay();
+}
+void previousStep(int id) {
+	int stepGap = 0;
+	if (radioStepsPerFrame->get_int_val() == 0) {
+		stepGap = 1;
+	} else if (radioStepsPerFrame->get_int_val() == 1) {
+		stepGap = 10;
 	} else {
-		renderReady = false;
+		stepGap = 100;
+	}
+
+	switch (id) {
+	case 0:
+		textCurrentStep->set_int_val(currentStep);
+		animationOption = 2;
+		stepIncrease = 0;
+		buttonReplay->set_name("Replay Spliting");
+		currentStep -= stepGap;
+		if (currentStep <= 1) {
+			currentStep = allLeaf.size() - 1;
+		}
+		break;
+	case 1:
+		animationOption = 4;
+		stepIncrease = 0;
+		buttonAnimation->set_name("Path Animation");
+		currentPathStep -= stepGap;
+		if (currentPathStep <= 0) {
+			currentPathStep = PATH.size() - 1;
+		}
+		break;
 	}
 	glutPostRedisplay();
 }
 
+void nextStep(int id) {
+	int stepGap = 0;
+	if (radioStepsPerFrame->get_int_val() == 0) {
+		stepGap = 1;
+	} else if (radioStepsPerFrame->get_int_val() == 1) {
+		stepGap = 10;
+	} else {
+		stepGap = 100;
+	}
+	switch (id) {
+	case 0:
+		textCurrentStep->set_int_val(currentStep);
+		animationOption = 2;
+		stepIncrease = 0;
+		buttonReplay->set_name("Replay Spliting");
+
+		currentStep += stepGap;
+		if ((unsigned) currentStep >= allLeaf.size()) {
+			currentStep = 1;
+		}
+		break;
+	case 1:
+		animationOption = 4;
+		stepIncrease = 0;
+		buttonAnimation->set_name("Path Animation");
+
+		currentPathStep += stepGap;
+
+		if ((unsigned) currentPathStep >= PATH.size()) {
+			currentPathStep = 0;
+		}
+		break;
+	}
+	glutPostRedisplay();
+}
 void run() {
 //	cout << "1111111111111111111111111111111111111111111111111" << endl;
 
@@ -979,7 +1103,8 @@ void run() {
 
 	totalSteps = allLeaf.size();
 
-	stringstream ssout;
+//	stringstream ssout;
+	ssout.str("");
 	if (!noPath)
 		ssout << "    ---->>   PATH FOUND !" << endl;
 	else
@@ -996,8 +1121,11 @@ void run() {
 		ssout << "total Mixed boxes bigger than epsilon: "
 				<< mixCount - ct - mixSmallCount << endl;
 	}
+//	if(animationOption == 3 || animationOption == 4){
+//		ssout << ssTemp.str().c_str();
+//	}
 	textBox->set_text(ssout.str().c_str());
-
+//	GLUI_Master.sync_live_all();
 	freeCount = stuckCount = mixCount = mixSmallCount = 0;
 	cout << "####################### END of RUN ######################\n";
 
@@ -1042,18 +1170,29 @@ void drawLinks(Box* b) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor3f(1, 0, 0);
 	glLineWidth(4);
+	// draw link1
 	glBegin(GL_LINES);
-
-//	glVertex2f(R0 * cos((b->xi[0]) * PI) + b->x,
-//			R0 * sin((b->xi[0]) * PI) + b->y);
-//	glVertex2f(R0 * cos((triRobo[0] + b->xi[0]) * PI) + b->x,
-//			R0 * sin((triRobo[0] + b->xi[0]) * PI) + b->y);
-//	glVertex2f(R0 * cos((triRobo[1] + b->xi[0]) * PI) + b->x,
-//			R0 * sin((triRobo[1] + b->xi[0]) * PI) + b->y);
 	glVertex2d(b->x, b->y);
 	glVertex2d(L1 * cos((b->xi[0] / 180) * PI) + b->x,
 			L1 * sin((b->xi[0] / 180) * PI) + b->y);
 	glEnd();
+	// draw the arrows
+	glLineWidth(2);
+	glBegin(GL_LINES);
+	glVertex2d((L1 - 5) * cos(((b->xi[0] - 5) / 180) * PI) + b->x,
+			(L1 - 5) * sin(((b->xi[0] - 5) / 180) * PI) + b->y);
+	glVertex2d(L1 * cos((b->xi[0] / 180) * PI) + b->x,
+			L1 * sin((b->xi[0] / 180) * PI) + b->y);
+	glEnd();
+	glBegin(GL_LINES);
+	glVertex2d((L1 - 5) * cos(((b->xi[0] + 5) / 180) * PI) + b->x,
+			(L1 - 5) * sin(((b->xi[0] + 5) / 180) * PI) + b->y);
+	glVertex2d(L1 * cos((b->xi[0] / 180) * PI) + b->x,
+			L1 * sin((b->xi[0] / 180) * PI) + b->y);
+	glEnd();
+
+	// draw link2
+	glLineWidth(4);
 	glColor3f(1, 0, 1);
 	glBegin(GL_LINES);
 	glVertex2d(b->x, b->y);
@@ -1061,6 +1200,20 @@ void drawLinks(Box* b) {
 			L2 * sin((b->xi[2] / 180) * PI) + b->y);
 	glEnd();
 
+	// draw the arrows
+	glLineWidth(2);
+	glBegin(GL_LINES);
+	glVertex2d((L2 - 5) * cos(((b->xi[2] - 5) / 180) * PI) + b->x,
+			(L2 - 5) * sin(((b->xi[2] - 5) / 180) * PI) + b->y);
+	glVertex2d(L2 * cos((b->xi[2] / 180) * PI) + b->x,
+			L2 * sin((b->xi[2] / 180) * PI) + b->y);
+	glEnd();
+	glBegin(GL_LINES);
+	glVertex2d((L2 - 5) * cos(((b->xi[2] + 5) / 180) * PI) + b->x,
+			(L2 - 5) * sin(((b->xi[2] + 5) / 180) * PI) + b->y);
+	glVertex2d(L2 * cos((b->xi[2] / 180) * PI) + b->x,
+			L2 * sin((b->xi[2] / 180) * PI) + b->y);
+	glEnd();
 //	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box x=" << b->x << " y=" << b->y
 //			<< endl;
 //	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box xi[0]=" << b->xi[0] << " xi[1]="
@@ -1123,8 +1276,8 @@ void drawPath(vector<Box*>& path) {
 	if (path.size() != 0) {
 //		cout<<"drawPath path.size() = "<<path.size() << endl;
 		for (int i = path.size() - 1; i >= 0; i--) {
-			if (animationOption == 3
-					&& (unsigned)i != path.size() - 1 - currentPathStep) {
+			if ((animationOption == 3 || animationOption == 4)
+					&& (unsigned) i != path.size() - 1 - currentPathStep) {
 
 				continue;
 			}
@@ -1141,10 +1294,13 @@ void drawPath(vector<Box*>& path) {
 				//control triangles drawing:
 				//enable (&& dist>= 1e-9) to hide same spot rotation
 //				cout<<"i = "<<i <<"skipped ="<<skipped<< " distSkipped = "<<distSkipped<<endl;
-				if (((animationOption != 3 && skipped > TRIS_TO_SKIP)
-						||(animationOption == 3 && (skipped > TRIS_TO_SKIP || distSkipped >= DIST_TO_SKIP))
+				if (((animationOption != 3 && animationOption != 4
+						&& skipped > TRIS_TO_SKIP)
+						|| ((animationOption == 3 || animationOption == 4)
+								&& (skipped > TRIS_TO_SKIP
+										|| distSkipped >= DIST_TO_SKIP))
 //						|| distSkipped >= DIST_TO_SKIP
-						))	// && dist>= 1e-9 )
+				))// && dist>= 1e-9 )
 				{
 					drawLinks(path[i]);
 //					cout<<"drawLinks"<<endl;
@@ -1154,18 +1310,71 @@ void drawPath(vector<Box*>& path) {
 				}
 			} else {
 				drawLinks(path[i]);
-				drawCircle(R0, 100, path[i]->x, path[i]->y, 0, 0, 1);
+//				drawCircle(R0, 100, path[i]->x, path[i]->y, 0, 0, 1);
 			}
-			if (animationOption == 3
-					&& (unsigned)i == path.size() - 1 - currentPathStep) {
+			if ((animationOption == 3 || animationOption == 4)
+					&& (unsigned) i == path.size() - 1 - currentPathStep) {
 //				int tempTotalSteps = totalSteps;
 //				for (int j = 0; j < 100000000 / ((tempTotalSteps / 1000) + 1);
 //						j++) {
-//					cout<<"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"<<endl;
+//				cout
+//						<< "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
+//						<< endl;
 //					totalSteps = j;
 //				}
 //				totalSteps = tempTotalSteps;
 //				sleep(1);
+
+				ssTemp.str("");
+				ssTemp << ssout.str();
+				ssTemp << endl;
+				ssTemp << "Current Box Info:" << endl;
+				ssTemp << "x = " << path[i]->x << ", y = " << path[i]->y;
+				ssTemp << ", width = " << path[i]->width << endl << endl;
+				ssTemp << "safe range of L1 is " << endl << "from "
+						<< path[i]->xi[0] << " degree to " << path[i]->xi[1]
+						<< " degree" << endl;
+				ssTemp << "safe range of L2 is " << endl << "from "
+						<< path[i]->xi[2] << " degree to " << path[i]->xi[3]
+						<< " degree" << endl << endl;
+				ssTemp << "Free Neighbours Info:" << endl;
+				for (int m = 0; m < 4; ++m) {
+					for (vector<Box*>::iterator it = path[i]->Nhbrs[m].begin();
+							it != path[i]->Nhbrs[m].end(); ++it) {
+						Box* neighbor = *it;
+						if(!neighbor->isFree()){
+							continue;
+						}
+						switch (m) {
+						case 0:
+							ssTemp << "right: ";
+							break;
+						case 1:
+							ssTemp << "above: ";
+							break;
+						case 2:
+							ssTemp << "left: ";
+							break;
+						case 3:
+							ssTemp << "under: ";
+							break;
+						}
+						ssTemp << "x = " << neighbor->x << ", y = "
+								<< neighbor->y;
+						ssTemp << ", width = " << neighbor->width << endl;
+						ssTemp << "L1 Range: " << "from "
+								<< neighbor->xi[0] << " degree to "
+								<< neighbor->xi[1] << " degree" << endl;
+						ssTemp << "L2 Range: " << "from "
+								<< neighbor->xi[2] << " degree to "
+								<< neighbor->xi[3] << " degree" << endl;
+					}
+				}
+
+//				textBox->set_text(ssTemp.str().c_str());
+//				GLUI_Master.sync_live_all();
+//				glutSwapBuffers();
+//				glutPostRedisplay();
 				break;
 			}
 		}
@@ -1297,6 +1506,10 @@ void drawLine() {
 
 void renderScene(void) {
 
+	while (renderLock) {
+//		return;
+	}
+	renderLock = true;
 //	cout << "renderScene!!!!!!!!!!!!!!!!!" << endl;
 	if (animationOption == 1) {
 		currentStep += stepIncrease;
@@ -1368,14 +1581,15 @@ void renderScene(void) {
 		for (vector<Box*>::iterator it = allLeaf.begin(); it != allLeaf.end();
 				++it) {
 			i++;
-			if (animationOption == 0 || animationOption == 3) {
+			if (animationOption == 0 || animationOption == 3
+					|| animationOption == 4) {
 				drawQuad(*it);
 			}
 
 			if (animationOption == 1 || animationOption == 2) {
 				if (currentStep >= i) {
 					drawQuad(*it);
-					cout << "currentStep:  " << currentStep << endl;
+//					cout << "currentStep:  " << currentStep << endl;
 				}
 
 				if (currentStep == i) {
@@ -1390,8 +1604,9 @@ void renderScene(void) {
 //			<< endl;
 	glPolygonMode(GL_FRONT, GL_LINE);
 
-	drawCircle(R0, 100, alpha[0], alpha[1], 0, 0, 1);	// start
-	drawCircle(R0, 100, beta[0], beta[1], 0, 0, 1);	// goal
+	drawCircle(R0, 100, alpha[0], alpha[1], 0, 1, 1);	// start
+	drawCircle(R0 + 10, 100, alpha[0], alpha[1], 0, 1, 1);	// start
+	drawCircle(R0, 100, beta[0], beta[1], 1, 0, 1);	// goal
 
 	double r0 = 5;
 	if (r0 > R0)
@@ -1406,12 +1621,12 @@ void renderScene(void) {
 
 	drawLine();
 
-	if (boxA) {
-		drawLinks(boxA, alpha[0], alpha[1]);
-	}
-	if (boxB) {
-		drawLinks(boxB, beta[0], beta[1]);
-	}
+//	if (boxA) {
+//		drawLinks(boxA, alpha[0], alpha[1]);
+//	}
+//	if (boxB) {
+//		drawLinks(boxB, beta[0], beta[1]);
+//	}
 
 	if (!noPath) {
 		Graph graph;
@@ -1430,6 +1645,7 @@ void renderScene(void) {
 //		glutPostRedisplay();
 //	}
 //	glutPostRedisplay();
+	renderLock = false;
 }
 
 //void *thread_render(void* arg) {

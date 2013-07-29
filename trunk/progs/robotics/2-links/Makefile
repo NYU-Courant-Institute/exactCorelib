@@ -445,7 +445,7 @@ eg10 twoChambers: ./2-links
 	./2-links $(interactive) 415 400 180 270 105 90 90 0\
 		4 65 80 2chambers.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		1 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		&
 

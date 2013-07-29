@@ -799,9 +799,9 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 }
 
 //    -1: not adjacent
-//    0: b2 is at the right of b1
-//    1: b2 is at the top of b1
-//    2: b2 is above b1
+//    0: b2 is on the right of b1
+//    1: b2 is above b1
+//    2: b2 is on the left of b1
 //    3  b2 is under b1
 int Box::isNhbr(Box* b1, Box* b2) {
 	double xmin1 = b1->x - b1->width / 2;

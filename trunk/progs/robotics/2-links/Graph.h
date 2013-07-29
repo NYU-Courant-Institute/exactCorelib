@@ -215,12 +215,14 @@ public:
 								dist_heap.decreaseKey(bv, neighbor, dist2src);
 							}
 						}
-						if (neighbor->x == b->x && neighbor->y == b->y
-								&& neighbor->width == b->width
-								&& path.size() == 1 && neighbor->prev != 0) {
-							b->prev = neighbor;
-							path.push_back(neighbor);
-						}
+//						if (neighbor->x == b->x && neighbor->y == b->y
+//								&& neighbor->width == b->width
+//								&& path.size() == 1 && neighbor->prev != 0
+////								&& neighbor->isNhbr(neighbor, b) != -1
+//								) {
+//							b->prev = neighbor;
+//							path.push_back(neighbor);
+//						}
 					}
 				}
 			}

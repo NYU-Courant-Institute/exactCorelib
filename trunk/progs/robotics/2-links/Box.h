@@ -114,7 +114,7 @@ private:
 				return true;
 			}
 		} else {
-			if ((s2 >= s1) || (e2 >= s1) || (s2 < e1) || (e2 < e1)) {
+			if ((s2 >= s1) || (e2 > s1) || (s2 < e1) || (e2 <= e1)) {
 				return true;
 			}
 		}
@@ -496,6 +496,8 @@ public:
 	//split(eps)
 	//	returns false if we fail to split for some reason
 	bool split(double epsilon, vector<Box*>& chldn);
+
+//	extern bool isNeighbor(Box * b);
 
 //	void recursiveSplitAngle(double epsilon, vector<Box*>& chldn, const int n, int m);
 //

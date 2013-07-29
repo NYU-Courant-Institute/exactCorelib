@@ -130,11 +130,13 @@ public:
 			q.pop();
 			//TODO could be deleted
 			if (!b->isLeaf) {
-				cout << "This is Wrong" << endl;
-				cout << "getbox 134: x = " << b->x << " y = " << b->y
-						<< " width = " << b->width << endl;
+//				cout << "This is Wrong" << endl;
+//				cout << "getbox 134: x = " << b->x << " y = " << b->y
+//						<< " width = " << b->width << endl;
 				continue;
 			}
+
+
 //			if (!b->contains(x, y, a1, a2))
 //			{
 ////				std::cout<<"getBox 135"<< endl;
@@ -203,7 +205,7 @@ public:
 				assert(b->status == Box::MIXED);
 
 				for (int i = 0; i < (int) cldrn.size(); ++i) {
-//					glutPostRedisplay();
+
 					cldrn[i]->updateStatus();
 					insertNode(cldrn[i]);
 				}
