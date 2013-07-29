@@ -48,6 +48,7 @@
 #		eg6 (= kavraki), eg6a (= kavrakia),
 #		eg7 (= tunnel), eg7a (= tunnela), eg7b (= tunnelb)
 #		eg8 (= hsu), eg8a (= hsua), eg8b (= hsub)
+#		eg10 (= 2chambers)
 #		eg100, eg100a
 #		eg150
 #		eg200, eg200a, eg200b
@@ -503,7 +504,7 @@ eg8b hsub: ./tri
 		&
 
 eg9: ./tri
-	@echo "Target eg8b: example from the paper of Hsu, Latombe, Kurniawati (2006)"
+	@echo "Target eg9: example from the paper of Hsu, Latombe, Kurniawati (2006)"
 	@echo "	There is a path passage... when radius=6, epsilon=1"
 	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./tri $(interactive) 250 370 -60 220 150 30\
@@ -511,6 +512,17 @@ eg9: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		0 0 0.065 \
+		&
+
+eg10: ./tri
+	@echo "Target eg10: example using 2-chambers"
+	@echo "	There is a path passage... when radius=6, epsilon=1"
+	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./tri $(interactive) 415 400 -60 120 100 30\
+		4 22 2chambers.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		-220 0 .065 \ #$(xtrans) $(ytrans) $(scale) \
 		&
 
 
@@ -705,6 +717,7 @@ ex-300: ./tri
 #		&
 # Using Dist+Size Strategy with radius 11, eps=5, this takes less than 800 ms.
 # 	Boundary tracker is a bit slower (1230 ms), Greedy takes 2670 ms.
+# 	Random tend to take over 3000 ms.
 #
 demo1: ./tri
 	@echo "Target 'eg5 or bug2':  runs tri on bugtrap2.txt"
