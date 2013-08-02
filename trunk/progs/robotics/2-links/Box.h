@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <float.h>
 #include "line2d.h"
-//#include "Polygon.h"
 
 class Set;
 class Box;

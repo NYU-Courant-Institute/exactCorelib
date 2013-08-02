@@ -403,8 +403,8 @@ void TimerFunction(int p) {
 //	glutSwapBuffers();
 
 	ssInfo.str("");
-	ssInfo<<ssout.str();
-	ssInfo<<ssTemp.str();
+	ssInfo << ssout.str();
+	ssInfo << ssTemp.str();
 	textBox->set_text(ssInfo.str().c_str());
 	glutPostRedisplay();
 	timerLock = false;
@@ -1173,7 +1173,7 @@ void run() {
 
 void drawLinks(Box* b) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glColor3f(1, 0, 0);
+	glColor3f(0, 0, 0);
 	glLineWidth(4);
 	// draw link1
 	glBegin(GL_LINES);
@@ -1198,7 +1198,7 @@ void drawLinks(Box* b) {
 
 	// draw link2
 	glLineWidth(4);
-	glColor3f(1, 0, 1);
+	glColor3f(1, 0, 0);
 	glBegin(GL_LINES);
 	glVertex2d(b->x, b->y);
 	glVertex2d(L2 * cos((b->xi[2] / 180) * PI) + b->x,
@@ -1228,14 +1228,14 @@ void drawLinks(Box* b) {
 
 void drawLinksSrcDst(double* configuration) {
 //	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glColor3f(1, 0, 0);
+	glColor3f(0, 0, 0);
 	glLineWidth(4);
 	glBegin(GL_LINES);
 	glVertex2f(configuration[0], configuration[1]);
 	glVertex2f(L1 * cos((configuration[2] / 180) * PI) + configuration[0],
 			L1 * sin((configuration[2] / 180) * PI) + configuration[1]);
 	glEnd();
-	glColor3f(1, 0, 1);
+	glColor3f(1, 0, 0);
 	glBegin(GL_LINES);
 	glVertex2f(configuration[0], configuration[1]);
 	glVertex2f(L2 * cos((configuration[3] / 180) * PI) + configuration[0],
@@ -1246,14 +1246,14 @@ void drawLinksSrcDst(double* configuration) {
 
 void drawLinks(Box* b, double x, double y) {
 //	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glColor3f(1, 0, 0);
+	glColor3f(0, 0, 0);
 	glLineWidth(4);
 	glBegin(GL_LINES);
 	glVertex2f(x, y);
 	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + x,
 			L1 * sin((b->xi[0] / 180) * PI) + y);
 	glEnd();
-	glColor3f(1, 0, 1);
+	glColor3f(1, 0, 0);
 	glBegin(GL_LINES);
 	glVertex2f(x, y);
 	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + x,
@@ -1347,7 +1347,7 @@ void drawPath(vector<Box*>& path) {
 					for (vector<Box*>::iterator it = path[i]->Nhbrs[m].begin();
 							it != path[i]->Nhbrs[m].end(); ++it) {
 						Box* neighbor = *it;
-						if(!neighbor->isFree()){
+						if (!neighbor->isFree()) {
 							continue;
 						}
 						switch (m) {
@@ -1367,12 +1367,12 @@ void drawPath(vector<Box*>& path) {
 						ssTemp << "x = " << neighbor->x << ", y = "
 								<< neighbor->y;
 						ssTemp << ", width = " << neighbor->width << endl;
-						ssTemp << "L1 Range: " << "from "
-								<< neighbor->xi[0] << " degree to "
-								<< neighbor->xi[1] << " degree" << endl;
-						ssTemp << "L2 Range: " << "from "
-								<< neighbor->xi[2] << " degree to "
-								<< neighbor->xi[3] << " degree" << endl;
+						ssTemp << "L1 Range: " << "from " << neighbor->xi[0]
+								<< " degree to " << neighbor->xi[1] << " degree"
+								<< endl;
+						ssTemp << "L2 Range: " << "from " << neighbor->xi[2]
+								<< " degree to " << neighbor->xi[3] << " degree"
+								<< endl;
 					}
 				}
 

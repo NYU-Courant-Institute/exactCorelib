@@ -42,10 +42,6 @@ public:
 
 };
 
-//vector<Point> points;
-//vector<double> angles;
-//vector<AngleRange> safeZone;
-//vector<AngleRange> forbiddenZone;
 
 int Box::oppositeDir[4] = { 2, 3, 0, 1 };
 

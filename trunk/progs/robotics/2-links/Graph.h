@@ -238,7 +238,7 @@ public:
 //				}
 //			}
 //		}
-
+// TODO check whether the src box is not the same box in path.
 		while (path.back()->prev) {
 			path.push_back(path.back()->prev);
 		}
