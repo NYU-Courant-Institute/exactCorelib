@@ -439,13 +439,24 @@ eg9 narrow: ./2-links
 		&
 		
 eg10 twoChambers: ./2-links
-	@echo "Target eg10: 2nd test example from Chee and Zhongdi"
+	@echo "Target eg10: two Chamber environment using BFS"
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 415 400 180 270 105 90 90 0\
 		4 65 80 2chambers.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 $(seed)  $(inputDir) \
+		-220 0 0.065 \
+		&
+
+eg10a twoChambers: ./2-links
+	@echo "Target eg10: two Chamber environment using Random Search"
+#	@echo "	There is a path passage... when radius=6, epsilon=1"
+#	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./2-links $(interactive) 415 400 180 270 105 90 90 0\
+		4 8 10 2chambers.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		0 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		&
 
@@ -502,10 +513,10 @@ basic3 eg3: ./2-links
 # eg100 100: 100 random 2-links
 eg100 100: ./2-links
 	@echo "Target eg100:  runs 2-links amidst 100 randomly generated 2-links"
-	./2-links $(interactive) 195 370 0 150 445 180 270 0\
-		8 10 20 input100.txt \
+	./2-links $(interactive) 180 370 0 150 445 180 270 0\
+		8 40 60 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		1 $(seed)  $(inputDir) \
 		0 0 1 \
 		&
 
@@ -536,10 +547,10 @@ eg150 150: ./2-links
 eg200 200: ./2-links
 	@echo "Target eg200:  runs 2-links on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time!!!"
-	./2-links $(interactive) 150 260 0 20 20 0 \
-		5 2 input1.txt \
+	./2-links $(interactive) 180 370 0 150 445 180 270 0\
+		8 40 60 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
+		1 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&
