@@ -547,7 +547,7 @@ eg150 150: ./2-links
 eg200 200: ./2-links
 	@echo "Target eg200:  runs 2-links on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time!!!"
-	./2-links $(interactive) 180 370 0 150 445 180 270 0\
+	./2-links $(interactive) 10 490 0 270 495 180 270 0\
 		8 40 60 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 $(seed)  $(inputDir) \
