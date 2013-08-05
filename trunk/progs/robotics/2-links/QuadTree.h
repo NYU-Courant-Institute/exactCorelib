@@ -184,7 +184,8 @@ public:
 
 		for (int i = 0; i < (int) cldrn.size(); ++i) {
 //			glutPostRedisplay();
-			cldrn[i]->updateStatus();
+			//TODO determine whether it is fine to delete this
+//			cldrn[i]->updateStatus();
 			insertNode(cldrn[i]);
 		}
 

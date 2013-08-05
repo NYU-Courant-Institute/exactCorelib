@@ -42,7 +42,6 @@ public:
 
 };
 
-
 int Box::oppositeDir[4] = { 2, 3, 0, 1 };
 
 bool hasIntersectionLR(double xs, double ys, double xe, double ye, double xleft,
@@ -163,6 +162,8 @@ bool Box::split2D(double epsilon, vector<Box*>& chldn) {
 	for (int i = 0; i < 4; ++i) {
 		//add all of parent's walls and corners to each child,
 		//will be filtered later in updatestatus()
+
+		//TODO try to improve this part. Should filter the features before add them to its children.
 		children[i]->walls.insert(children[i]->walls.begin(),
 				this->walls.begin(), this->walls.end());
 		children[i]->corners.insert(children[i]->corners.begin(),
@@ -171,10 +172,11 @@ bool Box::split2D(double epsilon, vector<Box*>& chldn) {
 		BoxNode node;
 		node.x = children[i]->x;
 		node.y = children[i]->y;
+		// get the clearance for voronoi
 		determine_clearance(node);
 		children[i]->cl_m = node.clearance;
 
-		//distribute the feature
+		//distribute the feature for voronoi
 		distribute_features2box(children[i]);
 	}
 
@@ -211,29 +213,29 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 	//extern vector<Polygon> polygons;
 	//extern vector<int> srcInPolygons;
 //	cout << "polygons.size() " << polygons.size() << endl;
-	for (unsigned int i = 0; i < polygons.size(); i++) {
-//		cout << "polygons.size() " << polygons.size() << endl;
-		if (pointInPolygon(x - width / 2, y - width / 2, polygons[i])
-				!= srcInPolygons[i]) {
-			this->status = STUCK;
-			return 1;
-		}
-		if (pointInPolygon(x - width / 2, y + width / 2, polygons[i])
-				!= srcInPolygons[i]) {
-			this->status = STUCK;
-			return 1;
-		}
-		if (pointInPolygon(x + width / 2, y - width / 2, polygons[i])
-				!= srcInPolygons[i]) {
-			this->status = STUCK;
-			return 1;
-		}
-		if (pointInPolygon(x + width / 2, y + width / 2, polygons[i])
-				!= srcInPolygons[i]) {
-			this->status = STUCK;
-			return 1;
-		}
-	}
+//	for (unsigned int i = 0; i < polygons.size(); i++) {
+////		cout << "polygons.size() " << polygons.size() << endl;
+//		if (pointInPolygon(x - width / 2, y - width / 2, polygons[i])
+//				!= srcInPolygons[i]) {
+//			this->status = STUCK;
+//			return 1;
+//		}
+//		if (pointInPolygon(x - width / 2, y + width / 2, polygons[i])
+//				!= srcInPolygons[i]) {
+//			this->status = STUCK;
+//			return 1;
+//		}
+//		if (pointInPolygon(x + width / 2, y - width / 2, polygons[i])
+//				!= srcInPolygons[i]) {
+//			this->status = STUCK;
+//			return 1;
+//		}
+//		if (pointInPolygon(x + width / 2, y + width / 2, polygons[i])
+//				!= srcInPolygons[i]) {
+//			this->status = STUCK;
+//			return 1;
+//		}
+//	}
 
 //	//todo do sth to return false
 //	for (int i = 0; i < 3; i += 2) {
@@ -703,12 +705,18 @@ bool Box::split(double epsilon, vector<Box*>& chldn) {
 Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 //assert(walls.size());
 
+
 	Wall* nearestWall;
 	list<Wall*>::iterator iterW = walls.begin();
+//	cout<<"checkChildStatus 711"<<endl;
+//	cout<<"checkChildStatus 712 "<< walls.size()<<" "<<corners.size()<< endl;
+//	cout<<"checkChildStatus 713 "<<
 	double mindistW = (*iterW)->distance(x, y);
+//	cout<<"checkChildStatus 713"<< "  mindistW = "<< mindistW<<endl;
 	nearestWall = *iterW;
 	++iterW;
 	for (; iterW != walls.end(); ++iterW) {
+//		cout<<"checkChildStatus 715"<<endl;
 		Wall* w = *iterW;
 		double dist = w->distance(x, y);
 		if (dist < mindistW) {
@@ -716,7 +724,7 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 			nearestWall = *iterW;
 		}
 	}
-
+//	cout<<"checkChildStatus 722"<<endl;
 	double mindistC = mindistW + 1; //mindistC may not exist, so init to a bigger number
 	Corner* nearestCorner = NULL;
 	if (corners.size()) {
@@ -734,18 +742,30 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 		}
 	}
 
-	bool isFree = false;
-
+	Status tempStatus = UNKNOWN;
+//	cout<<"checkChildStatus 741"<<endl;
 //nearest feature is a wall
 	if (mindistW < mindistC) {
 //		std::cout << "checkChildStatus 686" << endl;
 //		std::cout << "checkChildStatus nearestWall " << nearestWall->src->x
 //				<< " " << nearestWall->src->y << " " << nearestWall->dst->x
 //				<< " " << nearestWall->dst->y << endl;
-		if (nearestWall->isRight(x, y)) {
+		if (nearestWall->isRight(x, y) && mindistW > r0 + rB/2) {
 //			std::cout << "checkChildStatus 688" << endl;
-			isFree = true;
+			tempStatus = FREE;
+			return tempStatus;
+		} else if (!nearestWall->isRight(x, y) && mindistW > rB/2) {
+			tempStatus = STUCK;
+			return tempStatus;
 		}
+		if (!nearestWall->isRight(x + width / 2, y + width / 2)
+				&& !nearestWall->isRight(x - width / 2, y + width / 2)
+				&& !nearestWall->isRight(x + width / 2, y - width / 2)
+				&& !nearestWall->isRight(x - width / 2, y - width / 2)) {
+			tempStatus = STUCK;
+			return tempStatus;
+		}
+
 	}
 //otherwise check the corner's convexity
 //if convex, out; if concave, in
@@ -753,10 +773,21 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 //only need to take care of the corner
 	else {
 //		std::cout << "checkChildStatus 695" << endl;
-		if (nearestCorner->isConvex()) {
-			isFree = true;
+//		if (nearestCorner->isConvex() && mindistC > r0+ rB) {
+//			tempStatus = FREE;
+//		}
+
+		if (nearestCorner->isConvex() && mindistC > r0 + rB/2) {
+			tempStatus = FREE;
+		} else if (!nearestCorner->isConvex() && mindistC > rB/2) {
+			tempStatus = STUCK;
 		}
+
+//		else if(!nearestCorner->isConvex() && mindistC > rB){
+//			tempStatus = STUCK;
+//		}
 	}
+
 //	cout<<"polygons.size() "<<polygons.size()<<endl;
 //	if (small) {
 //		//extern vector<Polygon> polygons;
@@ -787,11 +818,12 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 //		}
 //	}
 
-	if (isFree) {
-		return FREE;
-	}
-//	std::cout << "checkChildStatus 703" << endl;
-	return STUCK;
+//	if (isFree) {
+//		return FREE;
+//	}
+////	std::cout << "checkChildStatus 703" << endl;
+//	return STUCK;
+	return tempStatus;
 }
 
 //    -1: not adjacent
@@ -843,37 +875,53 @@ void Box::updateStatusBig() {
 	if (status != UNKNOWN) {
 		return;
 	}
-
+//	cout<<"updateStatusBig 872"<<endl;
+	if (pParent) {
+		status = pParent->checkChildStatus(this->x, this->y, this->width,
+				false);
+	} else {
+		status = MIXED;
+	}
+//	cout<<"updateStatusBig 879"<<endl;
+	if (status == STUCK || status == FREE) {
+		return;
+	}
+//	cout<<"updateStatusBig 881"<<endl;
+	// TODO should add the clearance filter to determine a box stuck or free directly. this part is unnecessary.
 	double outerDomain = r0 + rB;
 //	double innerDomain = r0 > rB ? r0 - rB : 0;
 	for (list<Corner*>::iterator it = corners.begin(); it != corners.end();) {
 		Corner* c = *it;
-		if (c->x < this->x + this->width / 2 && c->x > this->x - this->width / 2
-				&& c->y < this->y + this->height / 2
-				&& c->y > this->y - this->height / 2) {
-			status = MIXED;
-//			return;
-			++it;
-		} else if (c->distance(this->x, this->y) <= outerDomain) {
+//		if (c->x < this->x + this->width / 2 && c->x > this->x - this->width / 2
+//				&& c->y < this->y + this->height / 2
+//				&& c->y > this->y - this->height / 2) {
+//			status = MIXED;
+////			return;
+//			++it;
+//		} else
+
+		if (c->distance(this->x, this->y) <= outerDomain) {
 			status = MIXED;
 			++it;
 		} else {
 			it = corners.erase(it);
 		}
 	}
-
+//	cout<<"updateStatusBig 902"<<endl;
 	for (list<Wall*>::iterator it = walls.begin(); it != walls.end();) {
 		Wall* w = *it;
 		double distWall = w->distance(this->x, this->y);
 
-		if (hasIntersectionLR((double) w->src->x, (double) w->src->y,
-				(double) w->dst->x, (double) w->dst->y,
-				this->x - this->width / 2, this->y + this->height / 2,
-				this->x + this->width / 2, this->y - this->height / 2)) {
-			status = MIXED;
-			++it;
-//			return;
-		} else if (distWall <= outerDomain) {
+//		if (hasIntersectionLR((double) w->src->x, (double) w->src->y,
+//				(double) w->dst->x, (double) w->dst->y,
+//				this->x - this->width / 2, this->y + this->height / 2,
+//				this->x + this->width / 2, this->y - this->height / 2)) {
+//			status = MIXED;
+//			++it;
+////			return;
+//		} else
+
+		if (distWall <= outerDomain) {
 			status = MIXED;
 			++it;
 		} else {
@@ -881,21 +929,23 @@ void Box::updateStatusBig() {
 		}
 	}
 
-	if (corners.size() == 0 && walls.size() == 0) {
-		if (!pParent) {
-			status = FREE;
-		} else {
-//			std::cout << "updateStatusBig 791" << endl;
-			status = pParent->checkChildStatus(this->x, this->y, this->width,
-					false);
-//			std::cout << "updateStatusBig 793  " << status << endl;
-		}
-	}
+//	if (corners.size() == 0 && walls.size() == 0) {
+//		if (!pParent) {
+//			status = FREE;
+//		} else {
+////			std::cout << "updateStatusBig 791" << endl;
+//			status = pParent->checkChildStatus(this->x, this->y, this->width,
+//					false);
+////			std::cout << "updateStatusBig 793  " << status << endl;
+//		}
+//	}
 }
 
 void Box::updateStatusSmall() {
 	if (status != UNKNOWN) {
 		return;
+	} else {
+		cout << "updateStatusSmall 942942" << endl;
 	}
 
 //	double v01x, v01y, v02x, v02y, v11x, v11y, v12x, v12y, v21x, v21y, v22x,
@@ -1022,14 +1072,14 @@ void Box::updateStatusSmall() {
 //			it = walls.erase(it);
 //		}
 
-	if (corners.size() == 0 && walls.size() == 0) {
-		if (!pParent) {
-			status = FREE;
-		} else {
-			status = pParent->checkChildStatus(this->x, this->y, this->width,
-					true);
-		}
-	}
+//	if (corners.size() == 0 && walls.size() == 0) {
+//		if (!pParent) {
+//			status = FREE;
+//		} else {
+//			status = pParent->checkChildStatus(this->x, this->y, this->width,
+//					true);
+//		}
+//	}
 }
 // check whether a line segment intersects with a rectangle
 bool hasIntersectionLR(double xs, double ys, double xe, double ye, double xleft,
