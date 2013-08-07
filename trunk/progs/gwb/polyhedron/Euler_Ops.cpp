@@ -1371,7 +1371,7 @@ Solid* Euler_Ops::prim(string name, double size[]){
 	}// if a torus
 
 	
-	/*Torus*/
+	/*Hat*/
 	if (name.compare("hat")==0){
 		double rad1=size[0];
 		double rad2=size[1];

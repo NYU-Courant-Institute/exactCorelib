@@ -113,11 +113,14 @@ eg0 facehemi:	gwb
 	./gwb $(mode) hemisphere 6 20 20
 
 #eg1 sphere
-eg1 sphere wiresphere:	gwb	
+eg1 sphere:	gwb	
 	./gwb $(mode) sphere 6 20 20
 
 #eg2 torus
-eg2 donut torus wiretorus:	gwb	
+eg2 donut torus :	gwb	
+	./gwb $(mode) torus $(rad) $(ht) $(hor) $(ver)
+
+torus0:
 	./gwb $(mode) torus 6 4 20 20
 
 #eg3 facecylinder
@@ -125,11 +128,11 @@ eg3 facecylinder:	gwb
 	./gwb $(mode) cylinder 6 20 20 20
 
 #eg4 wirecylinder
-eg4 cylinder wirecylinder:	gwb	
+eg4 cylinder:	gwb	
 	./gwb $(mode) cylinder 6 20 20 20
 
 #eg5 disk 
-eg5 disk wiredisk:	gwb	
+eg5 disk:	gwb	
 	./gwb $(mode) disk 10 5 20 20
 
 #eg6 facedisk 
@@ -142,7 +145,16 @@ eg7 bullet:	gwb
 
 #eg8 cone 
 eg8 cone:	gwb	
-	./gwb $(mode) cone 10 5 20 20
+	./gwb $(mode) cone $(rad) $(ht) $(hor) $(ver)
+
+#eg9 cone 
+eg9 drum:	gwb	
+	./gwb $(mode) drum $(rad) $(ht) $(hor) $(ver)
+
+#eg10 hat 
+eg10 hat:	gwb	
+	./gwb $(mode) hat $(rad) $(ht) $(hor) $(ver)
+
 ##################################################
 		
 moretest: $(TARGETS)
@@ -181,24 +193,17 @@ include Dependencies
 # Misc
 #=================================================
 
-params:
+par params:
 	@echo "================ Parameters =================="
 	@echo "    interactive = " ${interactive}
-	@echo "    epsilon = " ${epsilon}
-	@echo "    pseudo = " ${pseudo}
-	@echo "    interior = " ${interior}
 	@echo "    inputDir = " ${inputDir}
 	@echo "    fileName = " ${fileName}
-	@echo "    boxWidth = " ${boxWidth}
-	@echo "    boxHt = " ${boxHt}
-	@echo "    windowPosX = " ${windowPosX}
-	@echo "    windowPosY = " ${windowPosY}
-	@echo "    seed = " ${seed}
-	@echo "    step = " ${step}
-	@echo "    xtrans = " ${xtrans}
-	@echo "    ytrans = " ${ytrans}
-	@echo "    scale = " ${scale}
-	@echo "    closePoly = " ${closePoly}
+	@echo "    shape = " ${shape}
+	@echo "    mode = " ${mode}
+	@echo "    rad = " ${rad}
+	@echo "    ht = " ${ht}
+	@echo "    hor = " ${hor}
+	@echo "    ver = " ${ver}
 	@echo "=============================================="
 
 #=================================================
