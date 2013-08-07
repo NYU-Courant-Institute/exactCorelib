@@ -8,6 +8,7 @@ ifndef CORE_PATH
 endif
 
 
+
 include $(CORE_PATH)/Make.config
 #CXXFLAGS =  -Wall  -mno-cygwin -DCYGWIN
 ifeq ($(PLATFORM), mac)
@@ -23,19 +24,24 @@ ifeq ($(PLATFORM), mac)
    MESA_LIB_PATH=/opt/local/lib 
    TCLAP_INC_PATH=../ceval/third_party/
    TCLAP_INC_PATH=../../third_party/
+   GLEW_PATH=/Users/cheeyap/svn-localcopy2/prog/graphics/glew/glew-1.9.0/
   CORE_INC=-I. -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
 	 -I$(CORE_PATH)/gmp/include -I/usr/include/ \
-	 -I$(MESA_INC_PATH) -I$(TCLAP_INC_PATH) 
+	 -I$(MESA_INC_PATH) -I$(TCLAP_INC_PATH) \
+	 -I$(GLEW_PATH)/include/
   CORE_LIB=-L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib -L$(CORE_PATH)/gmp/lib \
-	 -L$(MESA_LIB_PATH) -lglui \
-	 -lcore++$(VAR) -lmpfr -lgmp  -framework OpenGL -framework GLUT 
+	 -L$(MESA_LIB_PATH) \
+	 -L$(GLEW_PATH)lib \
+	 -lcore++$(VAR) -lmpfr -lgmp \
+	 -lGLEW -lglui \
+	 -framework OpenGL -framework GLUT  
 else
 CORE_INC=-I. -I../ceval/third_party -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
 	 -I$(CORE_PATH)/gmp/include -I/usr/include/
 CORE_INC=-I. -I../../third_party -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
-	 -I$(CORE_PATH)/gmp/include -I/usr/include/ 
+	 -I$(CORE_PATH)/gmp/include -I/usr/include/
 CORE_LIB=-L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib -L$(CORE_PATH)/gmp/lib\
-	 -lcore++$(VAR) -lmpfr -lgmp  -lGL -lGLU -lglut -lglui
+	 -lcore++$(VAR) -lmpfr -lgmp  -lglut -lGLU -lGL -lglew
 #lmpfr -lgmp -lm -lglut32 -lglu32 -lopengl32
 endif
 

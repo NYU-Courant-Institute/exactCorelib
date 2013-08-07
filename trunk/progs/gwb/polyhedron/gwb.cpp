@@ -10,6 +10,20 @@
 /***************************************************
  * include files:
  ***************************************************/
+#ifdef __CYGWIN32__
+#include "GL/glui.h"
+#endif
+#ifdef __linux__
+#include <GL/glut.h>
+#include "GL/glui.h"
+#endif
+#ifdef _WIN32
+#include <gl/glui.h>
+#endif
+#ifdef __APPLE__
+#include <GLUI/glui.h>
+#endif
+
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,7 +35,7 @@
 #include <cstring>
 #include <time.h>
 #include "Euler_Ops.h"
-#include <GL/glut.h>
+#include "GL/glut.h"
 #include <math.h>
 
 /***************************************************

@@ -3,12 +3,27 @@
  *Author:Kai Cao
 */
 
+
+#ifdef __CYGWIN32__
+#include "GL/glui.h"
+#endif
+#ifdef __linux__
+#include <GL/glut.h>
+#include "GL/glui.h"
+#endif
+#ifdef _WIN32
+#include <gl/glui.h>
+#endif
+#ifdef __APPLE__
+#include <GLUI/glui.h>
+#endif
+
 #include <iostream>
 #include <vector>
 #include <math.h>
 #include <X11/Xlib.h>
-#include <GL/glut.h>
-#include <GL/glui.h>
+//	#include <GL/glut.h>
+//	#include <GL/glui.h>
 
 
 using namespace std;
