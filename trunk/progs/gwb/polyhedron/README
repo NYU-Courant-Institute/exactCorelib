@@ -7,6 +7,7 @@ file: README
             It can read a sequence of Euler operators from a *.gwb file
             to build a geometric model.
 
+	
 (2) Format for *.gwb files:
     These are line-oriented ASCII files with
        -- single-line comments indicated by "#" (rest of line is ignored)

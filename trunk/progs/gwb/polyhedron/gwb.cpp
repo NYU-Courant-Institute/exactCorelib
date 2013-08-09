@@ -430,7 +430,6 @@ cout << "winY = " << windowPosY << endl;*/
 	(*(eo->solids))[0]->print();
 	
 	
-//cout<< "good"<<endl;
       /*Read from file*/  
       string fileAdd=inputDir+"/"+fileName;
       ifstream ifile;
@@ -442,9 +441,6 @@ cout << "winY = " << windowPosY << endl;*/
 	if (false)
       while (ifile.good()){
             getline(ifile,line);
-            //cout<<line<<endl;
-
-
 
             /*Analyze the line*/
             string command;
@@ -474,7 +470,6 @@ cout << "winY = " << windowPosY << endl;*/
             /*We need to erase the last one*/
             ids->erase(ids->end()-1);
 
-
             /*Different commands*/
             if (command.compare("mvfs")==0)
                   eo->mvfs(ids);
@@ -501,20 +496,9 @@ cout << "winY = " << windowPosY << endl;*/
             else {
                   cout<<command<<" is not a valid command."<<endl;
             }
-
-
-
-
-
       }//while (ifile.good())
   //Vec<Solid *> *ss=eo->solids;
-
-
-
- 
   
-  //cout<< "good over!"<<endl;
-
 /*Prepare for the window*/
    glutInit(&argc,argv);
    glutInitDisplayMode( GLUT_SINGLE | GLUT_RGB );
@@ -522,23 +506,16 @@ cout << "winY = " << windowPosY << endl;*/
    glutInitWindowPosition(150,150);
    glutCreateWindow(argc>2?type.c_str():"GWB");
 
-//cout<< "good 1!"<<endl;
 /*Initialze the window*/
    MyInit();
 
-//cout<< "good 2!"<<endl;
 /*Display the polyhedron and manage rotation*/
    glutDisplayFunc(display);
-//cout<< "good 2.1!"<<endl;
    glutMouseFunc(pressMouse);
-//cout<< "good 2.2!"<<endl;
    glutMotionFunc(holdMouse);
-//cout<< "good 2.3"<<endl;
    glutKeyboardFunc(keyPressed);
-//cout<< "good 2.4!"<<endl;
    glutMainLoop();
   
-//cout<< "good 3!"<<endl;
 }//main
 
 

@@ -54,7 +54,7 @@ interactive = 0		# 0=interactive, >0 is non-interactive
 
 inputDir = inputs	# where to find input files
 fileName = cube.txt	# cube
-fileName = cube.txt	# cube
+fileName = tetrahedron.txt	# tetrahedron
 
 shape = bullet		# builtin shape to display
 
@@ -88,6 +88,7 @@ all: $(TARGETS)
 #       non-interactive mode !!!
 #
 test: $(TARGETS)
+	./gwb 0
 
 testall: $(TARGETS)
 
@@ -106,7 +107,9 @@ testall: $(TARGETS)
 
 #eg default (does not work)
 eg:	gwb	
-	./gwb $(mode) $(shape) $(rad) $(ht) $(hor) $(ver)
+	./gwb $(interactive) \
+	    $(mode) $(shape) \
+	    $(rad) $(ht) $(hor) $(ver) \
 
 #eg0 
 eg0 facehemi:	gwb	
@@ -120,14 +123,18 @@ eg1 sphere:	gwb
 eg2 donut torus :	gwb	
 	./gwb $(mode) torus $(rad) $(ht) $(hor) $(ver)
 
-torus0:
+eg2a torus0:
 	./gwb $(mode) torus 6 4 20 20
 
-#eg3 facecylinder
-eg3 facecylinder:	gwb	
+#eg3 cylinder
+eg3 cylinder:	gwb	
+	./gwb $(mode) cylinder $(rad) $(ht) $(hor) $(ver)
+
+eg3a:
 	./gwb $(mode) cylinder 6 20 20 20
 
-#eg4 wirecylinder
+
+#eg4 cylinder
 eg4 cylinder:	gwb	
 	./gwb $(mode) cylinder 6 20 20 20
 
@@ -135,8 +142,8 @@ eg4 cylinder:	gwb
 eg5 disk:	gwb	
 	./gwb $(mode) disk 10 5 20 20
 
-#eg6 facedisk 
-eg6 facedisk:	gwb	
+#teg6 disk 
+eg6 disk:	gwb	
 	./gwb $(mode) facedisk 10 5 20 20
 
 #eg7 bullet 
@@ -147,13 +154,14 @@ eg7 bullet:	gwb
 eg8 cone:	gwb	
 	./gwb $(mode) cone $(rad) $(ht) $(hor) $(ver)
 
-#eg9 cone 
+#eg9 drum 
 eg9 drum:	gwb	
 	./gwb $(mode) drum $(rad) $(ht) $(hor) $(ver)
 
-#eg10 hat 
-eg10 hat:	gwb	
-	./gwb $(mode) hat $(rad) $(ht) $(hor) $(ver)
+#eg10 table 
+eg10 table:	gwb	
+	./gwb $(mode) table $(rad) $(ht) $(hor) $(ver)
+
 
 ##################################################
 		
