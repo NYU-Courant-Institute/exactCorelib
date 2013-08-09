@@ -724,13 +724,13 @@ int Euler_Ops::kfmrh(Id s,Id f1,Id f2){
   /*Get face1*/
   oldface1=fface(oldsolid,f1);
   if(oldface1==NULL){
-    cout<<"kemr: face "<<f1<<"not found in solid "<<s<<endl;
+    cout<<"kfmrh: face "<<f1<<"not found in solid "<<s<<endl;
     return(ERROR);
   }
   /*Get face2*/
   oldface2=fface(oldsolid,f2);
   if(oldface2==NULL){
-    cout<<"kemr: face "<<f2<<"not found in solid "<<s<<endl;
+    cout<<"kfmrh: face "<<f2<<"not found in solid "<<s<<endl;
     return(ERROR);
   }
 
@@ -1034,8 +1034,398 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		/*build layers*/	
 	}// if a cigar
 
-	/*Cone*/
 	if (name.compare("cone")==0){
+		/*Get basic parameters*/
+		double rad=size[0];
+		double height=size[1];
+		int hor=(int)size[2];
+		int ver=(int)size[3];
+
+		/*Build the first two*/
+		solid=mvfs(1,1,1,rad,0,0);
+		double horr=PI*2/hor;
+		double verr=PI/ver;
+		
+		/*Build the polygon*/
+		for (int i=2;i<=hor;i++){
+			int prev=i-2>0?i-2:i-1;
+			mev(1,1,1,i-1,prev,prev,i,rad*cos(horr*(i-1)),rad*sin(horr*(i-1)),0);
+		}
+		/*face 1 up, face 2 bottom*/
+		mef(1,1,1,2,hor,hor-1,2);
+		
+		/*Build the upper hemisphere*/
+		for (int i=1;i<ver;i++){
+			int base=i*hor;
+			/*compute the layers*/
+			double xyr=rad/(ver+0.0)*(ver-i);
+			double z=height/(ver+0.0)*i;
+			
+			/*Make all verts on this layer*/
+			/*Make the first vertex*/
+			mev(1,1,1,(i-1)*hor+1,i*hor,i*hor,i*hor+1,xyr,0,z);
+			/*Make other vertices*/
+			for(int j=2;j<=hor;j++){
+				int prev=(i-1)*hor+j;
+				
+				double x=xyr*cos(PI*2/hor*(j-1));
+				double y=xyr*sin(PI*2/hor*(j-1));
+				mev(1,1,1,prev,prev-1,prev-1,prev+hor,x,y,z);
+			}//for theta
+			
+			/*Make all edges*/
+			/*Make the first face*/
+			mef(1,1,base+1,base+1-hor,base+hor,base,2+(i-1)*hor+1);
+			mef(1,1,base+2,base+2-hor,base+1,base+hor,2+(i-1)*hor+2);
+			/*Make other vertices*/
+			for(int j=3;j<=hor;j++){
+				Id v1=base+j;
+				Id v2=v1-hor;
+				Id v3=v1-1;
+				Id v4=v3-1;
+				Id f2=2+(i-1)*hor+j;
+				mef(1,1,v1,v2,v3,v4,f2);
+			}//for theta
+
+
+		}//for layers
+		
+		/*Build the final vertex*/
+		int top=hor*ver+1;
+		mev(1,1,1,hor*ver,hor*ver-1,hor*ver-1,hor*ver+1,0,0,height);
+		mef(1,1,hor*(ver-1)+1,hor*ver,top,hor*ver,2+hor*(ver-1)+1);
+		for (int i=2;i<hor;i++){
+			int now=hor*(ver-1)+i;
+			int prev=now-1;
+			mef(1,1,now,prev,top,hor*ver,2+hor*(ver-1)+i);
+		}
+
+
+		/*build layers*/	
+		
+		
+	}//if cone
+	
+	if (name.compare("rocket")==0){
+		double rad=size[0];
+		double coneHeight=size[1];
+		double height=size[2];
+		int hor=(int)size[3];
+		int ver=(int)size[4];
+		/*Build the first two*/
+		solid=mvfs(1,1,1,rad,0,0);
+		double horr=PI*2/hor;
+		double verr=PI/ver;
+		
+		/*Build the polygon*/
+		for (int i=2;i<=hor;i++){
+			int prev=i-2>0?i-2:i-1;
+			mev(1,1,1,i-1,prev,prev,i,rad*cos(horr*(i-1)),rad*sin(horr*(i-1)),0);
+		}
+		/*face 1 up, face 2 bottom*/
+		mef(1,1,1,2,hor,hor-1,2);
+		
+		/*Build the upper hemisphere*/
+		for (int i=1;i<=ver;i++){
+			int base=i*hor;
+			/*compute the layers*/
+			double xyr=rad/(ver+0.0)*(ver-i);
+			double z=height+coneHeight/(ver+0.0)*i;
+			/*compute the layers*/
+			//xyr=rad*cos(PI/2/ver*(i-1));
+			//z=height+rad*sin(PI/2/ver*(i-1));
+			
+			/*Make all verts on this layer*/
+			/*Make the first vertex*/
+			mev(1,1,1,(i-1)*hor+1,i*hor,i*hor,i*hor+1,xyr,0,z);
+			/*Make other vertices*/
+			for(int j=2;j<=hor;j++){
+				int prev=(i-1)*hor+j;
+				double x=0;
+				double y=0;
+				if (i==1){
+					x=rad*cos(PI*2/hor*(j-1));
+					y=rad*sin(PI*2/hor*(j-1));
+					z=height;
+				}
+				else{
+					x=xyr*cos(PI*2/hor*(j-1));
+					y=xyr*sin(PI*2/hor*(j-1));
+				}
+				mev(1,1,1,prev,prev-1,prev-1,prev+hor,x,y,z);
+			}//for theta
+			
+			/*Make all edges*/
+			/*Make the first face*/
+			mef(1,1,base+1,base+1-hor,base+hor,base,2+(i-1)*hor+1);
+			mef(1,1,base+2,base+2-hor,base+1,base+hor,2+(i-1)*hor+2);
+			/*Make other vertices*/
+			for(int j=3;j<=hor;j++){
+				Id v1=base+j;
+				Id v2=v1-hor;
+				Id v3=v1-1;
+				Id v4=v3-1;
+				Id f2=2+(i-1)*hor+j;
+				mef(1,1,v1,v2,v3,v4,f2);
+			}//for theta
+
+
+		}//for layers
+		
+		/*Build the final vertex*/
+		int top=hor*ver+1;
+		mev(1,1,1,hor*ver,hor*ver-1,hor*ver-1,hor*ver+1,0,0,rad);
+		mef(1,1,hor*(ver-1)+1,hor*ver,top,hor*ver,2+hor*(ver-1)+1);
+		for (int i=2;i<hor;i++){
+			int now=hor*(ver-1)+i;
+			int prev=now-1;
+			mef(1,1,now,prev,top,hor*ver,2+hor*(ver-1)+i);
+		}
+
+
+		/*build layers*/
+	}//rocket
+
+	if (name.compare("table")==0){
+		/*Table Radius*/
+		double rad=size[0];
+		/*Table face height*/
+		double height=size[1];
+		int hor = (int) size[2];
+		
+		/*Leg Position and Leg numbers*/
+		double legPos=size[3];
+		int legNum=(int)size[4];
+		
+		/*Leg Radius*/
+		double legRad=size[5];
+		double legHor=size[6];
+		double legHeight=size[7];
+		/*Build the first two*/
+		solid=mvfs(1,1,1,rad,0,0);
+		double horr=PI*2/hor;
+		//double verr=PI/ver;
+		
+		/*Build the polygon*/
+		for (int i=2;i<=hor;i++){
+			int prev=i-2>0?i-2:i-1;
+			mev(1,1,1,i-1,prev,prev,i,rad*cos(horr*(i-1)),rad*sin(horr*(i-1)),0);
+		}
+		/*face 1 up, face 2 bottom*/
+		mef(1,1,1,2,hor,hor-1,2);
+		
+		/*Build the verts and faces*/
+		for (int i=1;i<2;i++){
+			int base=i*hor;
+			/*compute the layers*/
+			double xyr=rad;
+			double z=height;
+			
+			/*Make all verts on this layer*/
+			/*Make the first vertex*/
+			mev(1,1,1,(i-1)*hor+1,i*hor,i*hor,i*hor+1,xyr,0,z);
+			/*Make other vertices*/
+			for(int j=2;j<=hor;j++){
+				int prev=(i-1)*hor+j;
+				
+				double x=xyr*cos(PI*2/hor*(j-1));
+				double y=xyr*sin(PI*2/hor*(j-1));
+				mev(1,1,1,prev,prev-1,prev-1,prev+hor,x,y,z);
+			}//for theta
+			
+			/*Make all edges*/
+			/*Make the first face*/
+			mef(1,1,base+1,base+1-hor,base+hor,base,2+(i-1)*hor+1);
+			mef(1,1,base+2,base+2-hor,base+1,base+hor,2+(i-1)*hor+2);
+			/*Make other vertices*/
+			for(int j=3;j<=hor;j++){
+				Id v1=base+j;
+				Id v2=v1-hor;
+				Id v3=v1-1;
+				Id v4=v3-1;
+				Id f2=2+(i-1)*hor+j;
+				mef(1,1,v1,v2,v3,v4,f2);
+			}//for theta
+
+
+		}//for layers
+
+
+		/**********************Now we have a cylinder********************************/
+		/*Build legs*/
+		for (int i=0;i<legNum;i++){
+			int vertNum=hor*2+i*legHor*2;
+			int faceNum=2+hor+i*(legHor+1);
+			
+			/*Get the leg center*/
+			double centerX=legPos*cos(2*PI/legNum*i);
+			double centerY=legPos*sin(2*PI/legNum*i);
+			
+			/*The first point*/
+			double x1=centerX+legRad*cos(2*PI/legNum*i);
+			double y1=centerY+legRad*sin(2*PI/legNum*i);
+			double x2=centerX+legRad*cos(2*PI/legNum*i+2*PI/legHor);
+			double y2=centerY+legRad*sin(2*PI/legNum*i+2*PI/legHor);
+			/*The first & second point*/
+			mev(1,2,2,1,2,2,vertNum+1,x1,y1,0);
+			mev(1,2,2,vertNum+1,1,1,vertNum+2,x2,y2,0);
+			
+			/*The other n-2 points*/
+			for (int j=3;j<=legHor;j++){
+				double xj=centerX+legRad*cos(2*PI/legNum*i+2*PI/legHor*(j-1));
+				double yj=centerY+legRad*sin(2*PI/legNum*i+2*PI/legHor*(j-1));
+				mev(1,2,2,vertNum+j-1,vertNum+j-2,vertNum+j-2,vertNum+j,xj,yj,0);
+			}//n-2 points
+
+			/*Close the cycle*/
+			mef(1,2,vertNum+1,vertNum+2,vertNum+legHor,vertNum+legHor-1,faceNum+1);
+			/*Kemr: kill the edge*/
+			kemr(1,2,1,vertNum+1);
+			
+			/******************Draw the Leg******************/
+			/*Draw edges*/
+			for (int j=1;j<=legHor;j++){
+				double xj=centerX+legRad*cos(2*PI/legNum*i+2*PI/legHor*(j-1));
+				double yj=centerY+legRad*sin(2*PI/legNum*i+2*PI/legHor*(j-1));
+				mev(1,faceNum+1,faceNum+1,vertNum+j,vertNum+((j+1)>legHor?1:(j+1)),vertNum+((j+1)>legHor?1:(j+1)),vertNum+legHor+j,xj,yj,-legHeight);
+			}//add n edge & vertices
+			
+			/*Draw the final edges*/
+			for (int j=1;j<=legHor;j++){
+				mef(1,faceNum+1,vertNum+legHor+j,vertNum+j,vertNum+legHor+((j+1)>legHor?1:(j+1)),vertNum+((j+1)>legHor?(legHor+2):(j+1)),faceNum+1+j);
+			}//add n edge & faces
+
+  		}//for legs	
+	}//table
+
+	if (name.compare("chair")==0){
+		/*Table Radius*/
+		double rad=size[0];
+		/*Table face height*/
+		double height=size[1];
+		int hor = (int) size[2];
+		
+		/*Leg Position and Leg numbers*/
+		double legPos=size[3];
+		int legNum=(int)size[4];
+		
+		/*Leg Radius*/
+		double legRad=size[5];
+		double legHor=size[6];
+		double legHeight=size[7];
+		/*Build the first two*/
+		solid=mvfs(1,1,1,rad,0,0);
+		double horr=PI*2/hor;
+		//double verr=PI/ver;
+		
+		/*Build the polygon*/
+		for (int i=2;i<=hor;i++){
+			int prev=i-2>0?i-2:i-1;
+			mev(1,1,1,i-1,prev,prev,i,rad*cos(horr*(i-1)),rad*sin(horr*(i-1)),0);
+		}
+		/*face 1 up, face 2 bottom*/
+		mef(1,1,1,2,hor,hor-1,2);
+		
+		/*Build the verts and faces*/
+		for (int i=1;i<2;i++){
+			int base=i*hor;
+			/*compute the layers*/
+			double xyr=rad;
+			double z=height;
+			
+			/*Make all verts on this layer*/
+			/*Make the first vertex*/
+			mev(1,1,1,(i-1)*hor+1,i*hor,i*hor,i*hor+1,xyr,0,z);
+			/*Make other vertices*/
+			for(int j=2;j<=hor;j++){
+				int prev=(i-1)*hor+j;
+				
+				double x=xyr*cos(PI*2/hor*(j-1));
+				double y=xyr*sin(PI*2/hor*(j-1));
+				mev(1,1,1,prev,prev-1,prev-1,prev+hor,x,y,z);
+			}//for theta
+			
+			/*Make all edges*/
+			/*Make the first face*/
+			mef(1,1,base+1,base+1-hor,base+hor,base,2+(i-1)*hor+1);
+			mef(1,1,base+2,base+2-hor,base+1,base+hor,2+(i-1)*hor+2);
+			/*Make other vertices*/
+			for(int j=3;j<=hor;j++){
+				Id v1=base+j;
+				Id v2=v1-hor;
+				Id v3=v1-1;
+				Id v4=v3-1;
+				Id f2=2+(i-1)*hor+j;
+				mef(1,1,v1,v2,v3,v4,f2);
+			}//for theta
+
+
+		}//for layers
+
+
+		/**********************Now we have a cylinder********************************/
+		/*Build legs*/
+		for (int i=0;i<legNum;i++){
+			int vertNum=hor*2+i*legHor*2;
+			int faceNum=2+hor+i*(legHor+1);
+			
+			/*Get the leg center*/
+			double centerX=legPos*cos(2*PI/legNum*i);
+			double centerY=legPos*sin(2*PI/legNum*i);
+			
+			/*The first point*/
+			double x1=centerX+legRad*cos(2*PI/legNum*i);
+			double y1=centerY+legRad*sin(2*PI/legNum*i);
+			double x2=centerX+legRad*cos(2*PI/legNum*i+2*PI/legHor);
+			double y2=centerY+legRad*sin(2*PI/legNum*i+2*PI/legHor);
+			/*The first & second point*/
+			mev(1,2,2,1,2,2,vertNum+1,x1,y1,0);
+			mev(1,2,2,vertNum+1,1,1,vertNum+2,x2,y2,0);
+			
+			/*The other n-2 points*/
+			for (int j=3;j<=legHor;j++){
+				double xj=centerX+legRad*cos(2*PI/legNum*i+2*PI/legHor*(j-1));
+				double yj=centerY+legRad*sin(2*PI/legNum*i+2*PI/legHor*(j-1));
+				mev(1,2,2,vertNum+j-1,vertNum+j-2,vertNum+j-2,vertNum+j,xj,yj,0);
+			}//n-2 points
+
+			/*Close the cycle*/
+			mef(1,2,vertNum+1,vertNum+2,vertNum+legHor,vertNum+legHor-1,faceNum+1);
+			/*Kemr: kill the edge*/
+			kemr(1,2,1,vertNum+1);
+			
+			/******************Draw the Leg******************/
+			/*Draw edges*/
+			for (int j=1;j<=legHor;j++){
+				double xj=centerX+legRad*cos(2*PI/legNum*i+2*PI/legHor*(j-1));
+				double yj=centerY+legRad*sin(2*PI/legNum*i+2*PI/legHor*(j-1));
+				mev(1,faceNum+1,faceNum+1,vertNum+j,vertNum+((j+1)>legHor?1:(j+1)),vertNum+((j+1)>legHor?1:(j+1)),vertNum+legHor+j,xj,yj,-legHeight);
+			}//add n edge & vertices
+			
+			/*Draw the final edges*/
+			for (int j=1;j<=legHor;j++){
+				mef(1,faceNum+1,vertNum+legHor+j,vertNum+j,vertNum+legHor+((j+1)>legHor?1:(j+1)),vertNum+((j+1)>legHor?(legHor+2):(j+1)),faceNum+1+j);
+			}//add n edge & faces
+
+  		}//for legs	
+
+
+	/**************************After finish bottom and the legs, build the back*******************************/
+	int vertNum=hor*2+legNum*legHor*2;
+	int faceNum=2+hor+legNum*(legHor+1);
+	
+	/*Get parameter information*/
+	double backRad=size[8];
+	//double backWid=size[9];
+	double backThi=size[9];
+	double backHei=size[10];
+
+	mev(1,1,1,hor+1,2*hor,2*hor,vertNum+1,backRad,0,height+10);
+	mev(1,1,1,vertNum+1,hor+1,hor+1,vertNum+2,backRad*cos(2*PI/hor),backRad*sin(2*PI/hor),height);
+	}//chair
+
+	/*Cone*/
+	if (name.compare("cones")==0){
 		double rad1=size[0];
 		double height=size[1];
 		double rad2=size[2];

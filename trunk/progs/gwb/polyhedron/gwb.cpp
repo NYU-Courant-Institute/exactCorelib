@@ -417,16 +417,17 @@ cout << "winY = " << windowPosY << endl;*/
  	format=argc>1?argv[1]:format;
 	
   	/*Name the type*/
-	string type=argc>2?argv[2]:"hemisphere";
+	string type=argc>2?argv[2]:"table";
       eo=new Euler_Ops();
-	double par[argc-3];
-	
+	//double par[argc-3];
+	double par[]={10,1,4,5,8,1,5,8,8,1,6};
 	for (int i=0;i<argc-3;i++)
 		par[i]=atof(argv[i+3]);
 	for (int i=0;i<3;i++)
 		cout<<par[i]<<endl;
+	
 	eo->prim(type,par);
-	//(*(eo->solids))[0]->print();
+	(*(eo->solids))[0]->print();
 	
 	
 //cout<< "good"<<endl;
@@ -512,7 +513,7 @@ cout << "winY = " << windowPosY << endl;*/
 
  
   
-  cout<< "good over!"<<endl;
+  //cout<< "good over!"<<endl;
 
 /*Prepare for the window*/
    glutInit(&argc,argv);
@@ -521,23 +522,23 @@ cout << "winY = " << windowPosY << endl;*/
    glutInitWindowPosition(150,150);
    glutCreateWindow(argc>2?type.c_str():"GWB");
 
-cout<< "good 1!"<<endl;
+//cout<< "good 1!"<<endl;
 /*Initialze the window*/
    MyInit();
 
-cout<< "good 2!"<<endl;
+//cout<< "good 2!"<<endl;
 /*Display the polyhedron and manage rotation*/
    glutDisplayFunc(display);
-cout<< "good 2.1!"<<endl;
+//cout<< "good 2.1!"<<endl;
    glutMouseFunc(pressMouse);
-cout<< "good 2.2!"<<endl;
+//cout<< "good 2.2!"<<endl;
    glutMotionFunc(holdMouse);
-cout<< "good 2.3"<<endl;
+//cout<< "good 2.3"<<endl;
    glutKeyboardFunc(keyPressed);
-cout<< "good 2.4!"<<endl;
+//cout<< "good 2.4!"<<endl;
    glutMainLoop();
   
-cout<< "good 3!"<<endl;
+//cout<< "good 3!"<<endl;
 }//main
 
 
