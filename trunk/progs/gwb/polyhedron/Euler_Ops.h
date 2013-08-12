@@ -24,6 +24,8 @@ public:
 
       return mvfs((Id)((*v)[0]),(Id)((*v)[1]),(Id)((*v)[2]),(*v)[3],(*v)[4],(*v)[5]);
   }
+  
+  
 
   /********Kill a solid with a single face & a single vertex***************/
   void lkvfs(Solid *s);
@@ -214,10 +216,118 @@ public:
 /*primitives*/
 Solid* prim(string name,double size[]);
 
+/*x y and z*/
+double modelX(double t){
+	return modelX("trefoid",t);
+}
+double modelX(string type,double t){
+	if (type.compare("trefoid")==0)	{
+		return sin(t)+2*sin(2*t);
+	}
+}//modelX
+double dirX(double t){
+	return dirX("trefoid",t);
+}
+double dirX(string type,double t){
+	if (type.compare("trefoid")==0){
+		return cos(t)+4*cos(2*t);
+	}
+}//dirX
+double modelY(double t){
+	return modelY("trefoid",t);
+}
+double modelY(string type,double t){
+	if (type.compare("trefoid")==0){
+		double x=cos(t)-2*cos(2*t);
+		//cout << x<<endl;
+		return x;
+	}
+}//modelY
+double dirY(double t){
+	return dirY("trefoid",t);
+}
+double dirY(string type,double t){
+	if (type.compare("trefoid")==0){
+		return -sin(t)+4*sin(2*t);
+	}
+}//dirX
+double modelZ(double t){
+	return modelZ("trefoid",t);
+}
+double modelZ(string type,double t){
+	if (type.compare("trefoid")==0){
+		return -sin(3*t);
+	}
+}//modelZ
+double dirZ(double t){
+	return dirZ("trefoid", t);
+}
+double dirZ(string type,double t){
+	if (type.compare("trefoid")==0){
+		return -3*cos(3*t);
+	}
+}//modelZ
 
-
-
+double* rotate(double* dir,double* v, double theta,double* result){
+	//cout<<"good before norm"<<endl;
+	double normDir[3];
+	norm(dir,normDir);
+	/*cout<<"good after norm"<<endl;
+	cout<<dir[0]<<" "<<normDir[0]<<endl;
+	cout<<dir[1]<<" "<<normDir[1]<<endl;
+	cout<<dir[2]<<" "<<normDir[2]<<endl;*/
+	
+	double x=normDir[0];
+	double y=normDir[1];
+	double z=normDir[2];
+	//cout<<"good after xyz"<<endl;
+	
+	
+	double mat[]=	{x*x*(1-cos(theta))+cos(theta),x*y*(1-cos(theta))-z*sin(theta),x*z*(1-cos(theta))+y*sin(theta),
+			 x*y*(1-cos(theta))+z*sin(theta),y*y*(1-cos(theta))+cos(theta),y*z*(1-cos(theta))-x*sin(theta),
+			 x*z*(1-cos(theta))-y*sin(theta),y*z*(1-cos(theta))+x*sin(theta),z*z*(1-cos(theta))+cos(theta)};
+	/*cout<<"theta="<<theta<<endl;
+	for (int i=0;i<9;i++)
+		cout<<mat[i]<<endl;
+	cout<<endl;*/
+	return matrixLeftMult(mat,v,result);
+	
+	
+}
+double* norm(double* v,double* a,double len2){
+	double len=sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+	//cout<<"len="<<len<<endl;
+	//double* a=new double[3];
+	a[0]=v[0]/len*len2;
+	a[1]=v[1]/len*len2;
+	a[2]=v[2]/len*len2;
+	return a;
+}
+double* norm(double* v,double* a){
+	double len=sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+	//cout<<"len="<<len<<endl;
+	//double* a=new double[3];
+	a[0]=v[0]/len;
+	a[1]=v[1]/len;
+	a[2]=v[2]/len;
+	return a;
+}
+double* matrixLeftMult(double* mat, double* v,double* result){
+	return matrixLeftMult(mat,v,3,3,result);
+}
+double* matrixLeftMult(double* mat, double* v,int row,int col,double* result){
+	//cout<<"good vefore new "<<endl;
+	//double* result=new double[3];
+	//cout<<"good after new"<<endl;
+	for (int i=0;i<row;i++){
+		double num=0;
+		for (int j=0;j<col;j++)
+			num+=mat[i*col+j]*v[j];
+		//cout<<"("<<i<<")"<<"="<<num<<endl;
+		result[i]=num;
+	
+	}//for rows
+	return result;
+}//
 
 };
-
-

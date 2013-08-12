@@ -1419,10 +1419,157 @@ Solid* Euler_Ops::prim(string name, double size[]){
 	//double backWid=size[9];
 	double backThi=size[9];
 	double backHei=size[10];
+	
+	/*Build the back*/
+	double b1[]={backRad,0,height};
+	double b2[]={backRad*cos(2*PI/hor),backRad*sin(2*PI/hor),height};
+	double v[]={b1[1]-b2[1],b2[0]-b1[0],0};
+	double normV[]={1,2,3};
+	/*Normalize the vector*/
+	norm(v,normV,backThi);
+	double b3[]={b2[0]+normV[0],b2[1]+normV[1],b2[2]+normV[2]};
+	double b4[]={b1[0]+normV[0],b1[1]+normV[1],b1[2]+normV[2]};
+	mev(1,1,1,hor+1,2*hor,2*hor,vertNum+1,b1[0],b1[1],b1[2]);
+	mev(1,1,1,vertNum+1,hor+1,hor+1,vertNum+2,b4[0],b4[1],b4[2]);
+	mev(1,1,1,vertNum+2,vertNum+1,vertNum+1,vertNum+3,b3[0],b3[1],b3[2]);
+	mev(1,1,1,vertNum+3,vertNum+2,vertNum+2,vertNum+4,b2[0],b2[1],b2[2]);
+	
+	/*Close the cycle*/
+	mef(1,1,vertNum+1,vertNum+2,vertNum+4,vertNum+3,faceNum+1);
+	/*Remove the edge*/
+	kemr(1,1,hor+1,vertNum+1);
+	
+	/*Build the back*/
+	/*Four vertical lines*/
+	mev(1,faceNum+1,faceNum+1,vertNum+1,vertNum+2,vertNum+2,vertNum+5,b1[0],b1[1],b1[2]+backHei);
+	mev(1,faceNum+1,faceNum+1,vertNum+2,vertNum+3,vertNum+3,vertNum+6,b4[0],b4[1],b4[2]+backHei);
+	mev(1,faceNum+1,faceNum+1,vertNum+3,vertNum+4,vertNum+4,vertNum+7,b3[0],b3[1],b3[2]+backHei);
+	mev(1,faceNum+1,faceNum+1,vertNum+4,vertNum+1,vertNum+1,vertNum+8,b2[0],b2[1],b2[2]+backHei);
 
-	mev(1,1,1,hor+1,2*hor,2*hor,vertNum+1,backRad,0,height+10);
-	mev(1,1,1,vertNum+1,hor+1,hor+1,vertNum+2,backRad*cos(2*PI/hor),backRad*sin(2*PI/hor),height);
+	/*Finish the faces*/
+	mef(1,faceNum+1,vertNum+5,vertNum+1,vertNum+6,vertNum+2,faceNum+2);
+	mef(1,faceNum+1,vertNum+6,vertNum+2,vertNum+7,vertNum+3,faceNum+3);
+	mef(1,faceNum+1,vertNum+7,vertNum+3,vertNum+8,vertNum+4,faceNum+4);
+	mef(1,faceNum+1,vertNum+8,vertNum+4,vertNum+5,vertNum+6,faceNum+5);
 	}//chair
+
+	if (name.compare("trefoid")==0){
+		double rad1=size[0];
+		double rad2=size[1];
+		
+		int hor=(int)size[2];
+		int ver=(int)size[3];
+
+		if (rad1>rad2){
+		/*Build the first Point*/
+		/*The first center is (0,-rad1,0)
+		  The direction is (5,0,-3);
+	          The first vec is (0,rad2,0);
+		  So the first point is (0,rad2-rad1,0)
+		*/
+		
+		solid=mvfs(1,1,1,0,rad2-rad1 ,0);
+		
+		/*Unit angle*/
+		double verr=PI*2/ver;
+		double horr=PI*2/hor;
+		
+		/*The first vector*/
+		double firstV[]={0,rad2,0};
+		/*The first direction*/
+		double firstDir[]={5,0,-3};
+		/*The first center*/
+		double firstCen[]={0,-rad1,0};
+		/*Build the polygon*/
+		for (int i=2;i<=ver;i++){
+			int prev=i-2>0?i-2:i-1;
+			
+			/*Rotating theta*/
+			double theta=verr*(i-1);
+			//cout<<"good before rotate"<<endl;
+			double iV[]={1,20,30};
+			rotate(firstDir,firstV,theta,iV);
+			//cout<<"good after rotate"<<endl;
+			/*cout<<iV[0]<<endl;
+			cout<<iV[1]<<endl;
+			cout<<iV[2]<<endl;*/
+
+			mev(1,1,1,i-1,prev,prev,i,firstCen[0]+iV[0],firstCen[1]+iV[1],firstCen[2]+iV[2]);
+			//cout<<"good after mev"<<endl;
+		}
+		/*face 1 up, face 2 bottom*/
+		mef(1,1,1,2,ver,ver-1,2);
+		
+		
+		
+		/*Build the upper hemisphere*/
+		for (int i=1;i<hor;i++){
+			
+			/*The first direction*/
+			double iDir[]={dirX(i*horr),dirY(i*horr),dirZ(i*horr)};
+			/*The first center*/
+			double iCen[]={rad1*modelX(i*horr),rad1*modelY(i*horr),rad1*modelZ(i*horr)};
+			/*The first vector*/
+			double iFirstV[]={-iDir[1],iDir[0],0};
+			/*normIFistV*/
+			double iNormFirstV[]={1,2,3};
+			norm(iFirstV,iNormFirstV,rad2);
+			int base=i*ver;
+			
+			/*Make all horts on this layer*/
+			/*Make the first hortex*/
+			mev(1,1,1,(i-1)*ver+1,i*ver,i*ver,i*ver+1,iCen[0]+iNormFirstV[0],iCen[1]+iNormFirstV[1],iCen[2]+iNormFirstV[2]);
+			/*Make other hortices*/
+			for(int j=2;j<=ver;j++){
+				
+				int prev=(i-1)*ver+j;
+
+				/*Rotating theta*/
+				double theta=verr*(j-1);
+				
+				double jV[]={1,20,30};
+				rotate(iDir,iNormFirstV,theta,jV);				
+				
+				mev(1,1,1,prev,prev-1,prev-1,prev+ver,iCen[0]+jV[0],iCen[1]+jV[1],iCen[2]+jV[2]);
+			}//for theta
+			
+			/*Make all edges*/
+			/*Make the first face*/
+			mef(1,1,base+1,base+1-ver,base+ver,base,2+(i-1)*ver+1);
+			mef(1,1,base+2,base+2-ver,base+1,base+ver,2+(i-1)*ver+2);
+			/*Make other hortices*/
+			for(int j=3;j<=ver;j++){
+				Id v1=base+j;
+				Id v2=v1-ver;
+				Id v3=v1-1;
+				Id v4=v3-1;
+				Id f2=2+(i-1)*ver+j;
+				mef(1,1,v1,v2,v3,v4,f2);
+			}//for theta
+
+
+		}//for layers
+		/*Build the final hortex*/
+		/*int top=ver*hor+1;
+		mev(1,1,1,ver*hor,ver*hor-1,ver*hor-1,ver*hor+1,0,0,rad1);
+		mef(1,1,ver*(hor-1)+1,ver*hor,top,ver*hor,2+ver*(hor-1)+1);
+		for (int i=2;i<ver;i++){
+			int now=ver*(hor-1)+i;
+			int prev=now-1;
+			mef(1,1,now,prev,top,ver*hor,2+ver*(hor-1)+i);
+		}*/
+
+		/*Add the face*/
+		kfmrh(1,2,1);
+		mekr(1,2,1,2,ver*(hor-1)+1,ver*hor);
+		
+      		/*Make the edge faces*/
+		for (int i=2;i<=ver;i++){
+		    mef(1,2,ver*(hor-1)+i,ver*(hor-1)+i-1,i,i+1>ver?1:i+1,ver*(hor-1)+i+1);
+		}
+
+		}//rad1>rad2
+	}//trefoid
 
 	/*Cone*/
 	if (name.compare("cones")==0){

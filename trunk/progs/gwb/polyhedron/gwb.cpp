@@ -402,8 +402,8 @@ void keyPressed(unsigned char key, int x, int y){
 //*************************************************
 
 int main(int argc,char **argv){
-
-	/*if (argc > 1) interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
+/*
+	if (argc > 1) interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
 	if (argc > 2) inputDir  = argv[2];		      // path for input files
 	if (argc > 3) fileName = argv[3]; 		      // Input file name
 	if (argc > 4) windowWidth = atof(argv[4]);	// windowWidth
@@ -417,17 +417,17 @@ cout << "winY = " << windowPosY << endl;*/
  	format=argc>1?argv[1]:format;
 	
   	/*Name the type*/
-	string type=argc>2?argv[2]:"table";
+	string type=argc>2?argv[2]:"trefoid";
       eo=new Euler_Ops();
 	//double par[argc-3];
-	double par[]={10,1,4,5,8,1,5,8,8,1,6};
+	double par[]={5,1,50,20,8,1,5,8,8,1,6};
 	for (int i=0;i<argc-3;i++)
 		par[i]=atof(argv[i+3]);
 	for (int i=0;i<3;i++)
 		cout<<par[i]<<endl;
 	
 	eo->prim(type,par);
-	(*(eo->solids))[0]->print();
+	//(*(eo->solids))[0]->print();
 	
 	
       /*Read from file*/  
