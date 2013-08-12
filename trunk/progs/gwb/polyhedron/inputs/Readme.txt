@@ -38,7 +38,13 @@ The coordinates of the points and the position of the mouse arrow is inversed (x
 
 
  --------------------OPENGL--------------------
-1.You have to Normalize the coordinated using gluOrtho2D or glOrtho()(3D),for glOrtho(0,ww,0,wh,-z,z),-z is for translate(x,y,z) and z is for translate(x,y,-z) 
+1.You have to normalize the coordinates using
+
+	gluOrtho2D or glOrtho()(3D),
+
+	for glOrtho(0,winwidth,0,winht,-z,z),
+
+	-z is for translate(x,y,z) and z is for translate(x,y,-z) 
 
 2.Multiplication by transformation matrix is from left to right.(Inverse Sequence)
 

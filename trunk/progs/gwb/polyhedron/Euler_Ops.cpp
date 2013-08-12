@@ -900,7 +900,7 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		/*build layers*/	
 	}// if a sphere
 
-	/*build a cyliner*/
+	/*build a cylinder*/
 	if (name.compare("cylinder")==0){
 		double rad=size[0];
 		double height=size[1];
@@ -953,8 +953,6 @@ Solid* Euler_Ops::prim(string name, double size[]){
 
 
 		}//for layers
-
-
 	}//if a cylinder
 
 

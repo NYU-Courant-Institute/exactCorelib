@@ -53,13 +53,23 @@ include ../Make.options
 interactive = 0		# 0=interactive, >0 is non-interactive
 
 inputDir = inputs	# where to find input files
-fileName = cube.txt	# cube
-fileName = tetrahedron.txt	# tetrahedron
+fileName = cube.gwb	# cube
+fileName = trefoil.gwb	# trefoil
+fileName = tetrahedron.gwb	# tetrahedron
 
-shape = bullet		# builtin shape to display
+windowWidth = 512
+windowHeight = 512 
+windowPosX = 200	# initial Window position
+windowPosY = 200	
+windowPosX = 450	# initial Window position
+windowPosY = 20	
 
 mode = face		# show faces of surfaces
 mode = wire		# show wire frame of surfaces
+
+model = cube		# name of model to be displayed
+model = bullet
+model = trefoil
 
 rad = 20		# radius
 ht = 40			# height
@@ -112,57 +122,87 @@ testall: $(TARGETS)
 
 #eg default (does not work)
 eg:	gwb	
-	./gwb $(interactive) \
-	    $(mode) $(shape) \
-	    $(rad) $(ht) $(hor) $(ver) \
+	@echo "Target 'eg':  runs gwb with the default options of Makefile"
+	@echo "--  You can all of them in you 'make' command line, e.g.,"
+	@echo "--      > make eg fileName=cube.txt"
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+	    	$(mode) $(model) \
+	    	$(rad) $(ht) $(hor) $(ver) \
 
 #eg0 
 eg0 facehemi:	gwb	
-	./gwb $(mode) hemisphere 6 20 20
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+	    	$(mode) hemisphere 6 20 20
 
 #eg1 sphere
 eg1 sphere:	gwb	
-	./gwb $(mode) sphere 6 20 20
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+	    	$(mode) sphere 6 20 20
 
 #eg2 torus
 eg2 donut torus :	gwb	
-	./gwb $(mode) torus 6 4 20 20
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+	    	$(mode) torus 6 4 20 20
 
 eg2x torusx:
-	./gwb $(mode) torus $(rad) $(ht) $(hor) $(ver)
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+	    	$(mode) torus $(rad) $(ht) $(hor) $(ver)
 
 #eg3 cylinder
 eg3 cylinder:	gwb	
-	./gwb $(mode) cylinder 6 20 20 20
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) cylinder 6 20 20 20
 
 eg3x cylinderx:
-	./gwb $(mode) cylinder $(rad) $(ht) $(hor) $(ver)
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) cylinder $(rad) $(ht) $(hor) $(ver)
 
 #eg4 disk 
 eg4 disk:	gwb	
-	./gwb $(mode) disk 10 5 20 20
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) disk 10 5 20 20
 
 #eg5 bullet 
 eg5 bullet:	gwb	
-	./gwb $(mode) bullet 10 5 20 20
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+	.	$(mode) bullet 10 5 20 20
 
 eg5x bulletx:
-	./gwb $(mode) bullet $(rad) $(ht) $(hor) $(ver)
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) bullet $(rad) $(ht) $(hor) $(ver)
 
 #eg6 cone 
 eg6 cone:	gwb	
-	./gwb $(mode) cone $(rad) $(ht) $(hor) $(ver)
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) cone $(rad) $(ht) $(hor) $(ver)
 
 #eg7 drum 
 eg7 drum:	gwb	
-	./gwb $(mode) drum $(rad) $(ht) $(hor) $(ver)
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) drum $(rad) $(ht) $(hor) $(ver)
 
 #eg8 table 
 eg8 table:	gwb	
-	./gwb $(mode) table 100 5
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) table 100 5
 
 eg8x tablex:	gwb	
-	./gwb $(mode) table $(rad) $(ht) $(hor) $(ver)
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) table $(rad) $(ht) $(hor) $(ver)
 
 #eg9 trefoil 
 #	rad1 is the diameter of the knot
@@ -171,10 +211,14 @@ eg8x tablex:	gwb
 #	interp is the number of interpolation points
 #		(more points gives the smoother curves)
 eg9 trefoil:	gwb	
-	./gwb $(mode) trefoil 40 10 60 6
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) trefoil 40 10 60 6
 
 eg9x trefoilx:	gwb	
-	./gwb $(mode) trefoil $(rad1) $(rad2) $(nsections) $(nsegments)
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) trefoil $(rad1) $(rad2) $(nsections) $(nsegments)
 
 ##################################################
 		
@@ -219,7 +263,7 @@ par params:
 	@echo "    interactive = " ${interactive}
 	@echo "    inputDir = " ${inputDir}
 	@echo "    fileName = " ${fileName}
-	@echo "    shape = " ${shape}
+	@echo "    model = " ${model}
 	@echo "    mode = " ${mode}
 	@echo "    rad = " ${rad}
 	@echo "    ht = " ${ht}

@@ -57,14 +57,14 @@ using namespace std;
 /**************************************************
 * PARAMETERS:
 **************************************************/
-int interactive=0;                  // mode of interaction
-                                    //    =0 means non-interactive, >0 means interactive.
-string inputDir("inputs"); 		// Path for input files 
-string fileName("cube.txt"); 	      // Input file name
-string format("wire");
-GLsizei windowWidth = 512;	      // initial configuration box size
+int interactive=0;                  // interactive or not:
+                                    // <=0 means non-interactive, >0 means interactive.
+string inputDir("inputs"); 	    // Path for input files 
+string fileName("cube.txt"); 	    // Input file name (this is not used currently)
+string model("trefoil");	    // model can be "cylinder", "sphere", "trefoil", etc.
+string mode("wire");		    // mode can be "wire" or "face"
+GLsizei windowWidth = 512;	    // initial configuration box size
 GLsizei windowHeight = 512;
-
 GLsizei windowPosX = 200;           // initial Window position
 GLsizei windowPosY = 200;	
 
@@ -72,7 +72,7 @@ double startX=0;                    //start postion of mouse press
 double startY=0;
 double startZ=0;
 
-double  base=0.0;                   //Initialize the origin rotation arguments
+double base=0.0;                   //Initialize the origin rotation arguments
 double theta=0.0;
 double rad=0.0;
 
@@ -90,6 +90,7 @@ double scalar=1.0;                  //Initialize the scalar of the polyhedron
 double thetaX=0;
 double thetaY=0;
 double light[]={1,1,1,10,10,10};
+
 /*Declaration of mouse operations*/
 void pressMouse(int button,int state,int x,int y);
 void holdMouse(int x,int y);
@@ -125,11 +126,10 @@ void displayPoly(Solid *s){
   centerX=(*c)[0];
   centerY=(*c)[1];
   centerZ=(*c)[2];
-  
 
   /*Wire Solids*/
  
-  if (format.compare("wire")==0){
+  if (mode.compare("wire")==0){
   glBegin(GL_LINES);
   for (unsigned int i=0;i<es->size();i++){
     Edge *e=(*es)[i];
@@ -142,7 +142,7 @@ void displayPoly(Solid *s){
   glEnd();
   }//wire
 
-  else if (format.compare("mult_surface")==00){
+  else if (mode.compare("mult_surface")==0){
   /*Initialize the random seed*/
   srand((unsigned)time(0));
   for (unsigned int i=0;i<fs->size();i++){
@@ -185,7 +185,7 @@ void displayPoly(Solid *s){
 
   }//mult_face
   
-  else if (format.compare("single_surface")==0||format.compare("shading")==0||format.compare("face")==0){
+  else if (mode.compare("single_surface")==0||mode.compare("shading")==0||mode.compare("face")==0){
   for (unsigned int i=0;i<fs->size();i++){
     /*Now we get the face*/
     Face *f=(*fs)[i];
@@ -402,22 +402,29 @@ void keyPressed(unsigned char key, int x, int y){
 //*************************************************
 
 int main(int argc,char **argv){
-/*
+
 	if (argc > 1) interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
 	if (argc > 2) inputDir  = argv[2];		      // path for input files
 	if (argc > 3) fileName = argv[3]; 		      // Input file name
+		if (interactive > 0) {
+		    cout << "Non-interactive mode is not support currently" << endl;
+		    return 0;
+		}
 	if (argc > 4) windowWidth = atof(argv[4]);	// windowWidth
 	if (argc > 5) windowHeight= atof(argv[5]);	// windowHt
-	if (argc > 6) windowPosX = atoi(argv[6]);	      // window X pos
-	if (argc > 7) windowPosY = atoi(argv[7]);	      // window Y pos
-cout << "winX = " << windowPosX << endl;
-cout << "winY = " << windowPosY << endl;*/
-	
-	/*Name format*/
- 	format=argc>1?argv[1]:format;
-	
-  	/*Name the type*/
-	string type=argc>2?argv[2]:"trefoil";
+	if (argc > 6) windowPosX = atoi(argv[6]);	// window X pos
+	if (argc > 7) windowPosY = atoi(argv[7]);	// window Y pos
+	if (argc > 8) mode=argv[8];			// mode = face or wire
+	if (argc > 9) model=argv[9];			// model = cube, trefoil, etc, etc
+	/* model parameters */
+	if (argc > 10) radius = atof(argv[10]);
+	if (argc > 11) height = atof(argv[11]);
+	if (argc > 12) nsegments = atoi(argv[12]);
+	if (argc > 13) nsections = atoi(argv[13]);
+
+
+	/*Parameters for the model */
+
       eo=new Euler_Ops();
 	//double par[argc-3];
 	double par[]={5,1,50,20,8,1,5,8,8,1,6};
@@ -426,7 +433,7 @@ cout << "winY = " << windowPosY << endl;*/
 	for (int i=0;i<3;i++)
 		cout<<par[i]<<endl;
 	
-	eo->prim(type,par);
+	eo->prim(model,par);
 	//(*(eo->solids))[0]->print();
 	
 	
@@ -504,7 +511,7 @@ cout << "winY = " << windowPosY << endl;*/
    glutInitDisplayMode( GLUT_SINGLE | GLUT_RGB );
    glutInitWindowSize(windowWidth,windowHeight);
    glutInitWindowPosition(150,150);
-   glutCreateWindow(argc>2?type.c_str():"GWB");
+   glutCreateWindow(argc>2?model.c_str():"GWB");
 
 /*Initialze the window*/
    MyInit();
