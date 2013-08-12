@@ -66,9 +66,10 @@ ht = 40			# height
 hor = 30		# horizontal dim
 ver = 20		# vertical dim
 
-rad1 = 40		# thickness of trefoil
+rad1 = 40		# thickness of cross-section of knot
 rad2 = 10		# diameter of overall trefoil knot
-ninterp = 50		# number of interpolation points in trefoil 
+nsections = 50		# number of cross-sections in trefoil 
+nsegments = 4		# number of segments in each cross-section
 
 ## unused:
 xtrans = 5		# x-translation of the input data 
@@ -111,7 +112,7 @@ testall: $(TARGETS)
 
 #eg default (does not work)
 eg:	gwb	
-	./gwb \
+	./gwb $(interactive) \
 	    $(mode) $(shape) \
 	    $(rad) $(ht) $(hor) $(ver) \
 
@@ -145,6 +146,9 @@ eg4 disk:	gwb
 eg5 bullet:	gwb	
 	./gwb $(mode) bullet 10 5 20 20
 
+eg5x bulletx:
+	./gwb $(mode) bullet $(rad) $(ht) $(hor) $(ver)
+
 #eg6 cone 
 eg6 cone:	gwb	
 	./gwb $(mode) cone $(rad) $(ht) $(hor) $(ver)
@@ -167,10 +171,10 @@ eg8x tablex:	gwb
 #	interp is the number of interpolation points
 #		(more points gives the smoother curves)
 eg9 trefoil:	gwb	
-	./gwb $(mode) trefoil 40 10 60
+	./gwb $(mode) trefoil 40 10 60 6
 
 eg9x trefoilx:	gwb	
-	./gwb $(mode) trefoil $(rad1) $(rad2) $(interp)
+	./gwb $(mode) trefoil $(rad1) $(rad2) $(nsections) $(nsegments)
 
 ##################################################
 		
