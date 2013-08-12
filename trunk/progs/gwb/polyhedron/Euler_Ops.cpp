@@ -1460,7 +1460,9 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		int hor=(int)size[2];
 		int ver=(int)size[3];
 
-		if (rad1>rad2){
+		if (rad1<=rad2){
+		    cout << "rad1 must be greater than rad2" << endl;
+		} else {
 		/*Build the first Point*/
 		/*The first center is (0,-rad1,0)
 		  The direction is (5,0,-3);

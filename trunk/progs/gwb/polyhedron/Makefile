@@ -66,6 +66,10 @@ ht = 40			# height
 hor = 30		# horizontal dim
 ver = 20		# vertical dim
 
+rad1 = 40		# thickness of trefoil
+rad2 = 10		# diameter of overall trefoil knot
+ninterp = 50		# number of interpolation points in trefoil 
+
 ## unused:
 xtrans = 5		# x-translation of the input data 
 ytrans = 5		# y-translation of the input data
@@ -107,7 +111,7 @@ testall: $(TARGETS)
 
 #eg default (does not work)
 eg:	gwb	
-	./gwb $(interactive) \
+	./gwb \
 	    $(mode) $(shape) \
 	    $(rad) $(ht) $(hor) $(ver) \
 
@@ -121,47 +125,52 @@ eg1 sphere:	gwb
 
 #eg2 torus
 eg2 donut torus :	gwb	
-	./gwb $(mode) torus $(rad) $(ht) $(hor) $(ver)
-
-eg2a torus0:
 	./gwb $(mode) torus 6 4 20 20
+
+eg2x torusx:
+	./gwb $(mode) torus $(rad) $(ht) $(hor) $(ver)
 
 #eg3 cylinder
 eg3 cylinder:	gwb	
+	./gwb $(mode) cylinder 6 20 20 20
+
+eg3x cylinderx:
 	./gwb $(mode) cylinder $(rad) $(ht) $(hor) $(ver)
 
-eg3a:
-	./gwb $(mode) cylinder 6 20 20 20
-
-
-#eg4 cylinder
-eg4 cylinder:	gwb	
-	./gwb $(mode) cylinder 6 20 20 20
-
-#eg5 disk 
-eg5 disk:	gwb	
+#eg4 disk 
+eg4 disk:	gwb	
 	./gwb $(mode) disk 10 5 20 20
 
-#teg6 disk 
-eg6 disk:	gwb	
-	./gwb $(mode) facedisk 10 5 20 20
-
-#eg7 bullet 
-eg7 bullet:	gwb	
+#eg5 bullet 
+eg5 bullet:	gwb	
 	./gwb $(mode) bullet 10 5 20 20
 
-#eg8 cone 
-eg8 cone:	gwb	
+#eg6 cone 
+eg6 cone:	gwb	
 	./gwb $(mode) cone $(rad) $(ht) $(hor) $(ver)
 
-#eg9 drum 
-eg9 drum:	gwb	
+#eg7 drum 
+eg7 drum:	gwb	
 	./gwb $(mode) drum $(rad) $(ht) $(hor) $(ver)
 
-#eg10 table 
-eg10 table:	gwb	
+#eg8 table 
+eg8 table:	gwb	
+	./gwb $(mode) table 100 5
+
+eg8x tablex:	gwb	
 	./gwb $(mode) table $(rad) $(ht) $(hor) $(ver)
 
+#eg9 trefoil 
+#	rad1 is the diameter of the knot
+#	rad2 is the thickness of the knot
+#		ASSUMPTION: rad1>rad2
+#	interp is the number of interpolation points
+#		(more points gives the smoother curves)
+eg9 trefoil:	gwb	
+	./gwb $(mode) trefoil 40 10 60
+
+eg9x trefoilx:	gwb	
+	./gwb $(mode) trefoil $(rad1) $(rad2) $(interp)
 
 ##################################################
 		
