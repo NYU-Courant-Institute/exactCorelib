@@ -417,7 +417,7 @@ cout << "winY = " << windowPosY << endl;*/
  	format=argc>1?argv[1]:format;
 	
   	/*Name the type*/
-	string type=argc>2?argv[2]:"trefoid";
+	string type=argc>2?argv[2]:"trefoil";
       eo=new Euler_Ops();
 	//double par[argc-3];
 	double par[]={5,1,50,20,8,1,5,8,8,1,6};

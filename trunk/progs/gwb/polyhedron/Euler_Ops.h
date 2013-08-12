@@ -218,52 +218,52 @@ Solid* prim(string name,double size[]);
 
 /*x y and z*/
 double modelX(double t){
-	return modelX("trefoid",t);
+	return modelX("trefoil",t);
 }
 double modelX(string type,double t){
-	if (type.compare("trefoid")==0)	{
+	if (type.compare("trefoil")==0)	{
 		return sin(t)+2*sin(2*t);
 	}
 }//modelX
 double dirX(double t){
-	return dirX("trefoid",t);
+	return dirX("trefoil",t);
 }
 double dirX(string type,double t){
-	if (type.compare("trefoid")==0){
+	if (type.compare("trefoil")==0){
 		return cos(t)+4*cos(2*t);
 	}
 }//dirX
 double modelY(double t){
-	return modelY("trefoid",t);
+	return modelY("trefoil",t);
 }
 double modelY(string type,double t){
-	if (type.compare("trefoid")==0){
+	if (type.compare("trefoil")==0){
 		double x=cos(t)-2*cos(2*t);
 		//cout << x<<endl;
 		return x;
 	}
 }//modelY
 double dirY(double t){
-	return dirY("trefoid",t);
+	return dirY("trefoil",t);
 }
 double dirY(string type,double t){
-	if (type.compare("trefoid")==0){
+	if (type.compare("trefoil")==0){
 		return -sin(t)+4*sin(2*t);
 	}
 }//dirX
 double modelZ(double t){
-	return modelZ("trefoid",t);
+	return modelZ("trefoil",t);
 }
 double modelZ(string type,double t){
-	if (type.compare("trefoid")==0){
+	if (type.compare("trefoil")==0){
 		return -sin(3*t);
 	}
 }//modelZ
 double dirZ(double t){
-	return dirZ("trefoid", t);
+	return dirZ("trefoil", t);
 }
 double dirZ(string type,double t){
-	if (type.compare("trefoid")==0){
+	if (type.compare("trefoil")==0){
 		return -3*cos(3*t);
 	}
 }//modelZ

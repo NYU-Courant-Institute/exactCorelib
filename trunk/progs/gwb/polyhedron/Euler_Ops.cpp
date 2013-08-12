@@ -1453,7 +1453,7 @@ Solid* Euler_Ops::prim(string name, double size[]){
 	mef(1,faceNum+1,vertNum+8,vertNum+4,vertNum+5,vertNum+6,faceNum+5);
 	}//chair
 
-	if (name.compare("trefoid")==0){
+	if (name.compare("trefoil")==0){
 		double rad1=size[0];
 		double rad2=size[1];
 		
@@ -1569,7 +1569,7 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		}
 
 		}//rad1>rad2
-	}//trefoid
+	}//trefoil
 
 	/*Cone*/
 	if (name.compare("cones")==0){
