@@ -177,6 +177,8 @@ stringstream ssInfo;
 volatile bool renderLock = false;
 volatile bool timerLock = false;
 
+vector<Box*> boxClicked;
+
 //volatile bool renderReady = false;
 
 // GLUI controls ========================================
@@ -204,6 +206,7 @@ GLUI_EditText* editBetaTheta2;
 GLUI_EditText* editSeed;
 
 GLUI_TextBox* textBox;
+GLUI_TextBox* boxSelectedInfo;
 
 // External Routines ========================================
 //////////////////////////////////////////////////////////////////////////////////
@@ -345,29 +348,32 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 			break;
 		}
 
-		// if current is not MIXED, then must be FREE
-		// go through it's neighbors and add FREE and MIXED ones to dijQ
-		// also add FREE ones to source set 
-		for (int i = 0; i < 4; ++i) {
-			for (vector<Box*>::iterator iter = current->Nhbrs[i].begin();
-					iter < current->Nhbrs[i].end(); ++iter) {
-				Box* neighbor = *iter;
-				if (!neighbor->visited && neighbor->dist2Source == -1
-						&& (neighbor->status == Box::FREE
-								|| neighbor->status == Box::MIXED)) {
-//					cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!317 "
-//							<< neighbor->x << " " << neighbor->y << endl;
-					if (neighbor->status == Box::FREE) {
-						neighbor->dist2Source = 0;
-//						cout
-//								<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!316 dist2Source = 0  "
-//								<< neighbor->x << " " << neighbor->y << endl;
+		if (current->status == Box::FREE) {
+			// if current is not MIXED, then must be FREE
+			// go through it's neighbors and add FREE and MIXED ones to dijQ
+			// also add FREE ones to source set
+			for (int i = 0; i < 4; ++i) {
+				for (vector<Box*>::iterator iter = current->Nhbrs[i].begin();
+						iter < current->Nhbrs[i].end(); ++iter) {
+					Box* neighbor = *iter;
+					if (!neighbor->visited && neighbor->dist2Source == -1
+							&& (neighbor->status == Box::FREE
+									|| neighbor->status == Box::MIXED)) {
+						//					cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!317 "
+						//							<< neighbor->x << " " << neighbor->y << endl;
+						if (neighbor->status == Box::FREE) {
+							neighbor->dist2Source = 0;
+							//						cout
+							//								<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!316 dist2Source = 0  "
+							//								<< neighbor->x << " " << neighbor->y << endl;
+						}
+						dijQ.push(neighbor);
+						toReset.push_back(neighbor);
 					}
-					dijQ.push(neighbor);
-					toReset.push_back(neighbor);
 				}
 			}
 		}
+
 	}
 
 	//these two fields are also used in dijkstraShortestPath
@@ -393,7 +399,6 @@ void TimerFunction(int p) {
 //	cout << "TimerFunction()!" << endl;
 //	renderScene();
 //	glFlush();
-//	glFlush();
 //	glutSwapBuffers();
 //	glutPostRedisplay();
 //	cout << "after glutPostRedisplay()!" << endl;
@@ -409,6 +414,82 @@ void TimerFunction(int p) {
 	glutPostRedisplay();
 	timerLock = false;
 
+}
+
+void processMouse(int button, int state, int x, int y) {
+
+	int reverseY = 512 - y;
+	if (state == GLUT_DOWN) {
+
+		int minWidth = 999;
+		boxClicked.clear();
+//		cout << "426" << endl;
+		if (!allLeaf.empty() && allLeaf.size() != 0) {
+			Box* lastTempBox = NULL;
+			for (vector<Box*>::iterator it = allLeaf.begin();
+					it != allLeaf.end(); ++it) {
+				Box* tempBox = *it;
+
+				int tempWidth = tempBox->width;
+//				cout << "434" << endl;
+				if (tempWidth <= minWidth && x >= tempBox->x - tempWidth / 2
+						&& x <= tempBox->x + tempWidth / 2
+						&& reverseY >= tempBox->y - tempWidth / 2
+						&& reverseY <= tempBox->y + tempWidth / 2) {
+					if (tempWidth == minWidth) {
+						boxClicked.push_back(lastTempBox);
+					}
+					minWidth = tempWidth;
+					lastTempBox = tempBox;
+				}
+
+			}
+//			cout << "446" << endl;
+//			if(boxClicked.empty()){
+			boxClicked.push_back(lastTempBox);
+//			cout << lastTempBox->width << endl;
+//			cout << "449" << endl;
+//			}
+//			cout << x << " " << reverseY << " " << minWidth << " "
+//					<< boxClicked.size() << endl;
+//			cout << "453" << endl;
+			stringstream tempStream;
+			tempStream << "Selected Box Info:" << endl;
+			tempStream << "Status: ";
+			switch (boxClicked.front()->status) {
+			case FREE:
+				tempStream << "Free";
+				break;
+			case STUCK:
+				tempStream << "Stuck";
+				break;
+			case MIXED:
+				tempStream << "Mixed";
+				break;
+			case UNKNOWN:
+				tempStream << "Unknown";
+				break;
+			}
+			tempStream << endl;
+			tempStream << "x: " << boxClicked.front()->x << " y: "
+					<< boxClicked.front()->y << " width: "
+					<< boxClicked.front()->width << endl;
+			for (vector<Box*>::iterator it = boxClicked.begin();
+					it != boxClicked.end(); ++it) {
+				Box* tempBox = *it;
+				if (tempBox->status == FREE) {
+
+					tempStream << "L1 range: [" << tempBox->xi[0]
+							<< ", " << boxClicked.front()->xi[1] << "]" << endl;
+					tempStream << "L2 range: [" << tempBox->xi[2]
+							<< ", " << boxClicked.front()->xi[3] << "]" << endl;
+
+				}
+			}
+
+			boxSelectedInfo->set_text(tempStream.str().c_str());
+		}
+	}
 }
 
 //void run_thread(){
@@ -477,10 +558,10 @@ int main(int argc, char* argv[]) {
 	if (argc > 25)
 		title = argv[25];		// title
 
-	// Added by Zhongdi 05/08/2013 begin
-	// calculate the R of the robot
+// Added by Zhongdi 05/08/2013 begin
+// calculate the R of the robot
 	R0 = max(L1, L2);
-	// Added by Zhongdi 05/08/2013 end
+// Added by Zhongdi 05/08/2013 end
 
 	cout << "Before interactive, Qtype= " << QType << "\n";
 
@@ -499,7 +580,7 @@ int main(int argc, char* argv[]) {
 //	alpha[3] /= 180.0;		// start theta, convert from degree to radian
 //	beta[3] /= 180.0;		// goal theta, convert from degree to radian
 
-	// Else, set up for GLUT/GLUI interactive display:
+// Else, set up for GLUT/GLUI interactive display:
 
 	if (interactive == 0) {
 //cout<<"before glutInit\n";
@@ -514,6 +595,7 @@ int main(int argc, char* argv[]) {
 		glutDisplayFunc(renderScene);
 //					glutIdleFunc(&idle);
 		glutTimerFunc(timePerFrame, TimerFunction, 1);
+		glutMouseFunc(processMouse);
 //		run();
 		cout << "mainloop!!!!!!!!!!!" << endl;
 
@@ -647,6 +729,12 @@ int main(int argc, char* argv[]) {
 				(GLUI_Update_CB) nextStep);
 		nextStepAnimation->set_w(1);
 
+		// box selected info
+		boxSelectedInfo = new GLUI_TextBox(glui, true);
+		boxSelectedInfo->set_h(120);
+		boxSelectedInfo->set_w(210);
+		boxSelectedInfo->disable();
+
 		// New column:
 		glui->add_column(true);
 
@@ -714,12 +802,12 @@ int main(int argc, char* argv[]) {
 //	cout<<"mainloop!!!!!!!!!!!"<<endl;
 
 //cout<<"before run\n";
-	// PERFORM THE INITIAL RUN OF THE ALGORITHM
-	//==========================================
+// PERFORM THE INITIAL RUN OF THE ALGORITHM
+//==========================================
 //	run(); 	// make it do something interesting from the start!!!
 
-	// SHOULD WE STOP or GO INTERACTIVE?
-	//==========================================
+// SHOULD WE STOP or GO INTERACTIVE?
+//==========================================
 //cout<<"after run\n";
 	if (interactive > 0) {	// non-interactive
 		// do something...
@@ -747,10 +835,10 @@ void genEmptyTree() {
 
 //	cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
 //			<< endl;
-	//todo
+//todo
 //	Box::THETA_MIN = min(min(triRobo[0], triRobo[1] - triRobo[0]),
 //			2 - triRobo[1]);
-	// todo added by Zhongdi 05/08/2013
+// todo added by Zhongdi 05/08/2013
 //	Box::THETA_MIN = 0.1;
 
 	Box::pAllLeaf = &allLeaf;
@@ -932,6 +1020,10 @@ void run() {
 
 	animationOption = 0;
 	currentStep = 0;
+	currentPathStep = 0;
+
+	buttonReplay->set_name("Replay Spliting");
+	buttonAnimation->set_name("Path Animation");
 
 	if (interactive == 0) {
 		//update from glui live variables
@@ -1007,7 +1099,7 @@ void run() {
 
 	t.start();
 
-	noPath = false;	// initially, pretend we have found path 
+	noPath = false;	// initially, pretend we have found path
 	int ct = 0;	// number of times a node is expanded
 
 	if (QType == 0 || QType == 1) {
@@ -1074,7 +1166,7 @@ void run() {
 	cout << ">>      ----->>  Time used: " << t.getElapsedTimeInMilliSec()
 			<< " ms" << endl;
 	cout << ">>\n";
-	// cout << ">>      ----->>  Qtype: " << QType << "\n";
+// cout << ">>      ----->>  Qtype: " << QType << "\n";
 	cout << ">>      ----->>  Qtype: ";
 	switch (QType) {
 	case 0:
@@ -1175,13 +1267,13 @@ void drawLinks(Box* b) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor3f(0, 0, 0);
 	glLineWidth(4);
-	// draw link1
+// draw link1
 	glBegin(GL_LINES);
 	glVertex2d(b->x, b->y);
 	glVertex2d(L1 * cos((b->xi[0] / 180) * PI) + b->x,
 			L1 * sin((b->xi[0] / 180) * PI) + b->y);
 	glEnd();
-	// draw the arrows
+// draw the arrows
 	glLineWidth(2);
 	glBegin(GL_LINES);
 	glVertex2d((L1 - 5) * cos(((b->xi[0] - 5) / 180) * PI) + b->x,
@@ -1196,7 +1288,7 @@ void drawLinks(Box* b) {
 			L1 * sin((b->xi[0] / 180) * PI) + b->y);
 	glEnd();
 
-	// draw link2
+// draw link2
 	glLineWidth(4);
 	glColor3f(1, 0, 0);
 	glBegin(GL_LINES);
@@ -1205,7 +1297,7 @@ void drawLinks(Box* b) {
 			L2 * sin((b->xi[2] / 180) * PI) + b->y);
 	glEnd();
 
-	// draw the arrows
+// draw the arrows
 	glLineWidth(2);
 	glBegin(GL_LINES);
 	glVertex2d((L2 - 5) * cos(((b->xi[2] - 5) / 180) * PI) + b->x,
@@ -1408,10 +1500,10 @@ void drawQuad(Box* b) {
 		return;
 	}
 
-	//if (b->status != Box::FREE)
-	//{
-	//	return;
-	//}
+//if (b->status != Box::FREE)
+//{
+//	return;
+//}
 //	cout<<"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"<<endl;
 	switch (b->status) {
 	case Box::FREE:
@@ -1422,7 +1514,7 @@ void drawQuad(Box* b) {
 		break;
 	case Box::MIXED:
 		glColor4f(1, 1, 0.25, 0.1);
-		if (b->height < epsilon || b->width < epsilon) {
+		if (b->height < 2 * epsilon || b->width < 2 * epsilon) {
 			glColor4f(0.5, 0.5, 0.5, 0.1);
 		}
 		break;
@@ -1430,6 +1522,17 @@ void drawQuad(Box* b) {
 //todo
 //std::cout << "UNKNOWN in drawQuad" << std::endl;
 		break;
+	}
+
+	if (!boxClicked.empty()) {
+		if (b->x == boxClicked.front()->x && b->y == boxClicked.front()->y
+				&& b->width == boxClicked.front()->width) {
+			glColor4f(0.2, 0.2, 1, 0.5);
+//			cout<<b->x<<boxClicked.front()->x <<endl;
+//					cout<<b->y<<boxClicked.front()->y <<endl;
+//					cout<<b->width<<boxClicked.front()->width <<endl;
+		}
+
 	}
 //	cout<<"999999999999999999999999999999999999999999999999999999999"<<endl;
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -1470,6 +1573,7 @@ void drawCircle(float Radius, int numPoints, double x, double y, double r,
 		double g, double b) {
 	glColor3d(r, g, b);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glLineWidth(2.0);
 	glBegin(GL_POLYGON);
 	for (int i = 0; i <= numPoints; ++i) {
 		float Angle = i * (2.0 * 3.1415926 / numPoints);
@@ -1478,6 +1582,7 @@ void drawCircle(float Radius, int numPoints, double x, double y, double r,
 		glVertex2f(X + x, Y + y);
 	}
 	glEnd();
+	glLineWidth(1.0);
 }
 
 void filledCircle(double radius, double x, double y, double r, double g,
@@ -1724,7 +1829,7 @@ void parseConfigFile(Box* b) {
 		exit(1);
 	}
 
-	// First, get to the beginning of the first token:
+// First, get to the beginning of the first token:
 	skip_comment_line(ifs);
 
 	int nPt, nPolygons;	// previously, nPolygons was misnamed as nFeatures
@@ -1736,9 +1841,9 @@ void parseConfigFile(Box* b) {
 		ifs >> pts[i * 2] >> pts[i * 2 + 1];
 	}
 
-	//skip_comment_line ( ifs );	// again, clear white space
+//skip_comment_line ( ifs );	// again, clear white space
 	ifs >> nPolygons;
-	//skip_comment_line ( ifs );	// again, clear white space
+//skip_comment_line ( ifs );	// again, clear white space
 	string temp;
 	std::getline(ifs, temp);
 	for (int i = 0; i < nPolygons; ++i) {

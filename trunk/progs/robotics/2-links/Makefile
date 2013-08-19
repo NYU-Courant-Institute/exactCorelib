@@ -464,7 +464,7 @@ eg11 nestedRectangle: ./2-links
 	@echo "Target eg11: 3nd test example from Chee and Zhongdi"
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./2-links $(interactive) 425 390 180 270 95 100 90 0\
+	./2-links $(interactive) 425 390 180 270 95 100 0 90\
 		2 60 40 nestedRectangle.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
