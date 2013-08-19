@@ -416,6 +416,28 @@ void TimerFunction(int p) {
 
 }
 
+//void run_thread(){
+//	// new thread for render
+//	int res;
+//	pthread_t a_thread;
+//	void *thread_result;
+//
+//	res = pthread_create(&a_thread, NULL, thread_render, NULL);
+//	if (0 != res) {
+//		perror("Thread creation faied");
+//		exit(EXIT_FAILURE);
+//	}
+//}
+
+bool sortByXi0( const Box* b1, const Box* b2)
+{
+    return b1->xi[0] < b2->xi[0];
+}
+bool sortByXi2( const Box* b1, const Box* b2)
+{
+    return b1->xi[2] < b2->xi[2];
+}
+
 void processMouse(int button, int state, int x, int y) {
 
 	int reverseY = 512 - y;
@@ -432,10 +454,10 @@ void processMouse(int button, int state, int x, int y) {
 
 				int tempWidth = tempBox->width;
 //				cout << "434" << endl;
-				if (tempWidth <= minWidth && x >= tempBox->x - tempWidth / 2
-						&& x <= tempBox->x + tempWidth / 2
-						&& reverseY >= tempBox->y - tempWidth / 2
-						&& reverseY <= tempBox->y + tempWidth / 2) {
+				if (tempWidth <= minWidth && x > tempBox->x - tempWidth / 2
+						&& x < tempBox->x + tempWidth / 2
+						&& reverseY > tempBox->y - tempWidth / 2
+						&& reverseY < tempBox->y + tempWidth / 2) {
 					if (tempWidth == minWidth) {
 						boxClicked.push_back(lastTempBox);
 					}
@@ -474,38 +496,43 @@ void processMouse(int button, int state, int x, int y) {
 			tempStream << "x: " << boxClicked.front()->x << " y: "
 					<< boxClicked.front()->y << " width: "
 					<< boxClicked.front()->width << endl;
+
+			std::sort(boxClicked.begin(),boxClicked.end(),sortByXi0);
+			double lastXi = 361.0;
 			for (vector<Box*>::iterator it = boxClicked.begin();
 					it != boxClicked.end(); ++it) {
 				Box* tempBox = *it;
 				if (tempBox->status == FREE) {
-
-					tempStream << "L1 range: [" << tempBox->xi[0]
-							<< ", " << boxClicked.front()->xi[1] << "]" << endl;
-					tempStream << "L2 range: [" << tempBox->xi[2]
-							<< ", " << boxClicked.front()->xi[3] << "]" << endl;
+					if (tempBox->xi[0] != lastXi) {
+						tempStream << "L1 range: [" << tempBox->xi[0] << ", "
+								<< tempBox->xi[1] << "] "<<endl;
+						lastXi = tempBox->xi[0];
+					}
 
 				}
 			}
+
+			std::sort(boxClicked.begin(),boxClicked.end(),sortByXi2);
+			lastXi = 361.0;
+			for (vector<Box*>::iterator it = boxClicked.begin();
+					it != boxClicked.end(); ++it) {
+				Box* tempBox = *it;
+				if (tempBox->status == FREE) {
+					if (tempBox->xi[2] != lastXi) {
+						tempStream << "L2 range: [" << tempBox->xi[2] << ", "
+								<< tempBox->xi[3] << "] "<<endl;
+						lastXi = tempBox->xi[2];
+					}
+				}
+			}
+
+
 
 			boxSelectedInfo->set_text(tempStream.str().c_str());
 		}
 	}
 }
 
-//void run_thread(){
-//	// new thread for render
-//	int res;
-//	pthread_t a_thread;
-//	void *thread_result;
-//
-//	res = pthread_create(&a_thread, NULL, thread_render, NULL);
-//	if (0 != res) {
-//		perror("Thread creation faied");
-//		exit(EXIT_FAILURE);
-//	}
-//}
-
-// MAIN PROGRAM: ========================================
 int main(int argc, char* argv[]) {
 	if (argc > 1)
 		interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
@@ -733,7 +760,7 @@ int main(int argc, char* argv[]) {
 		boxSelectedInfo = new GLUI_TextBox(glui, true);
 		boxSelectedInfo->set_h(120);
 		boxSelectedInfo->set_w(210);
-		boxSelectedInfo->disable();
+//		boxSelectedInfo->disable();
 
 		// New column:
 		glui->add_column(true);
