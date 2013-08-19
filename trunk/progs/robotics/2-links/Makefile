@@ -397,11 +397,12 @@ eg8 hsu: ./2-links
 	@echo "Target eg8: example from the paper of Hsu, Latombe, Kurniawati (2006)"
 	@echo "	There is a path passage... when radius=6, epsilon=1"
 	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./2-links $(interactive) 75 350 0 380 205 0\
-		1 5 hsu-latombe-kurniawati.txt \
+	./2-links $(interactive) 10 490 0 270 495 180 270 0\
+		8 40 60 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		-70 -70 0.065 \
+		2 $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 eg8a hsua: ./2-links
@@ -513,11 +514,12 @@ basic3 eg3: ./2-links
 # eg100 100: 100 random 2-links
 eg100 100: ./2-links
 	@echo "Target eg100:  runs 2-links amidst 100 randomly generated 2-links"
-	./2-links $(interactive) 180 370 0 150 445 180 270 0\
+	./2-links $(interactive) 10 490 0 270 495 180 270 0\
 		8 40 60 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 $(seed)  $(inputDir) \
-		0 0 1 \
+		3 $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
 		&
 
 # eg100a: 100 random 2-links
@@ -535,10 +537,10 @@ eg100a 100a: ./2-links
 # eg150: 150 random 2-links (use radius=1)
 eg150 150: ./2-links
 	@echo "Target eg150:  runs 2-links amidst 100 randomly generated 2-links"
-	./2-links $(interactive) 200 270 0 20 20 0\
-		10 1 input150.txt \
+	./2-links $(interactive) 10 490 0 270 495 180 270 0\
+		8 40 60 input150.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
+		2 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&
