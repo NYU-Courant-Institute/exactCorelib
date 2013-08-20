@@ -91,6 +91,12 @@ double thetaX=0;
 double thetaY=0;
 double light[]={1,1,1,10,10,10};
 
+/* Chee: new parameters */
+double radius=1.0;		  // Chee: this was not defined below.
+double height=1.0;		  // Chee: this was not defined below.
+int nsegments=12;
+int nsections=20;
+
 /*Declaration of mouse operations*/
 void pressMouse(int button,int state,int x,int y);
 void holdMouse(int x,int y);
