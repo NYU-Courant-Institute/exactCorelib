@@ -168,15 +168,16 @@ help:
 # Examples of running 2-links program
 #=================================================
 #
+eg: eg10
+
 # this is default, but every option may be changed at command line:
-#
-eg:	./2-links
-	@echo "Target 'eg':  runs 2-links with the default options of Makefile"
-	@echo "--  You can all of them in you 'make' command line, e.g.,"
-	@echo "--      > make eg radius=60 goalX=111 goalY=450 goalTheta=90 startY=200 startX=20"
-	./2-links $(interactive) $(startX) $(startY)  $(startTheta) \
-	    	$(goalX) $(goalY) $(goalTheta) \
-		$(epsilon) $(radius) $(fileName) \
+egx: ./2-links
+#	@echo "	There is a path passage... when radius=6, epsilon=1"
+#	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./2-links $(interactive) $(startX) $(startY)  $(startTheta1) $(startTheta2) \
+	    	$(goalX) $(goalY) $(goalTheta1) $(goalTheta2) \
+		$(epsilon) $(len1) $(len2) \
+		$(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
