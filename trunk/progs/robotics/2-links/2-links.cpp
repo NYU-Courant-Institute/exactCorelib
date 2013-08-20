@@ -736,6 +736,7 @@ int main(int argc, char* argv[]) {
 				"normal (10 frames/step)");
 		glui->add_radiobutton_to_group(radioStepsPerFrame,
 				"fast (100 frames/step)");
+		radioStepsPerFrame->set_int_val(1);
 
 		textCurrentStep = glui->add_edittext_to_panel(replay_panel,
 				"Current Step", GLUI_EDITTEXT_INT);
@@ -1255,6 +1256,8 @@ void run() {
 
 //	renderReady = false;
 //	renderReady = true;
+	// run the moving animation after calculation
+	runAnimation();
 }		//run
 
 //void drawTri(Box* b) {
