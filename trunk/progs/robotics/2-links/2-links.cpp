@@ -111,9 +111,9 @@ using namespace std;
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////
-double alpha[4] = { 200, 350, 80, 30 };		// start configuration
+double alpha[4] = { 300, 120, 80, 30 };		// start configuration
 double beta[4] = { 30, 30, 100, 50 };		// goal configuration
-double epsilon = 2;			// resolution parameter
+double epsilon = 4;			// resolution parameter
 Box* boxA;				// start box (containing alpha)
 Box* boxB;				// goal box (containing beta)
 double boxWidth = 512;			// Initial box width
@@ -122,8 +122,8 @@ double R0 = 8;				// Robot radius
 
 // Added by Zhongdi 05/08/2013 begin
 // length of 2 links
-double L1 = 6;
-double L2 = 10;
+double L1 = 26;
+double L2 = 60;
 // Added by Zhongdi 05/08/2013 end
 
 int windowPosX = 400;			// X Position of Window
