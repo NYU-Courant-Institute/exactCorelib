@@ -450,7 +450,7 @@ eg10 twoChambers: ./2-links
 		-220 0 0.065 \
 		&
 
-eg10a twoChambers: ./2-links
+eg10a twoChambersa: ./2-links
 	@echo "Target eg10: two Chamber environment using Random Search"
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
