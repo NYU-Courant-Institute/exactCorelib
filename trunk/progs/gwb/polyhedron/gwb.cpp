@@ -92,8 +92,10 @@ double thetaY=0;
 double light[]={1,1,1,10,10,10};
 
 /* Chee: new parameters */
-double radius=1.0;		  // Chee: this was not defined below.
-double height=1.0;		  // Chee: this was not defined below.
+double radius=1.0;		  
+double radius2=1.0;		 
+double height=1.0;		
+double height2=2.0;	
 int nsegments=12;
 int nsections=20;
 
@@ -310,7 +312,8 @@ void holdMouse(int x, int y){
     glFlush();*/
 
    Solid *s=(*(eo->solids))[0]; 
-   vector<Edge *> *es=s->sedges;
+   // Chee: es is unused:
+   //       vector<Edge *> *es=s->sedges;
    //cout<<"CENTERx="<<centerX<<endl;
    //cout<<"CENTERy="<<centerY<<endl;
    y=windowHeight-y;
@@ -427,21 +430,47 @@ int main(int argc,char **argv){
 	if (argc > 11) height = atof(argv[11]);
 	if (argc > 12) nsegments = atoi(argv[12]);
 	if (argc > 13) nsections = atoi(argv[13]);
-
+	if (argc > 14) height2 = atof(argv[14]);
+	if (argc > 15) radius2 = atof(argv[15]);
 
 	/*Parameters for the model */
+
 
       eo=new Euler_Ops();
 	//double par[argc-3];
 	double par[]={5,1,50,20,8,1,5,8,8,1,6};
-	for (int i=0;i<argc-3;i++)
+	/************************** Chee commented this out:
+	  for (int i=0;i<argc-3;i++)
 		par[i]=atof(argv[i+3]);
-	for (int i=0;i<3;i++)
+	  for (int i=0;i<3;i++)
 		cout<<par[i]<<endl;
-	
+	************************* */
+	if (model.compare("table")==0)
+	{
+		par[0] = radius;	//table rad
+		par[1] = height; 	//table ht
+		par[2] = height2; 	//legPos
+		par[3] = 6;		//legNo
+		par[4] = radius2;		//legRad
+		par[5] = nsections;	//legHor
+		par[6] = height2;	//legHeight
+	} else if (model.compare("rocket")==0)
+	{
+		par[0] = radius;
+		par[1] = height; 
+		par[2] = height2; 	// coneheight for rocket head
+		par[3] = nsegments;
+		par[4] = nsections;
+	} else{
+		par[0] = radius;
+		par[1] = height; // or "radius2"
+		par[2] = nsegments;
+		par[3] = nsections;
+	}
+
 	eo->prim(model,par);
 	//(*(eo->solids))[0]->print();
-	
+
 	
       /*Read from file*/  
       string fileAdd=inputDir+"/"+fileName;

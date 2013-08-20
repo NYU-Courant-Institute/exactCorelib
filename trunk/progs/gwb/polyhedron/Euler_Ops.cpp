@@ -824,7 +824,7 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		/*build layers*/	
 	}// if a hemisphere
 
-	if (name.compare("sphere")==0){
+	else if (name.compare("sphere")==0){
 		double rad=size[0];
 		int hor=(int)size[1];
 		int ver=(int)size[2];
@@ -901,7 +901,7 @@ Solid* Euler_Ops::prim(string name, double size[]){
 	}// if a sphere
 
 	/*build a cylinder*/
-	if (name.compare("cylinder")==0){
+	else if (name.compare("cylinder")==0){
 		double rad=size[0];
 		double height=size[1];
 		int hor=(int)size[2];
@@ -955,8 +955,7 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		}//for layers
 	}//if a cylinder
 
-
-	if (name.compare("bullet")==0){
+	else if (name.compare("bullet")==0){
 		double rad=size[0];
 		double height=size[1];
 		int hor=(int)size[2];
@@ -1032,7 +1031,7 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		/*build layers*/	
 	}// if a cigar
 
-	if (name.compare("cone")==0){
+	else if (name.compare("cone")==0){
 		/*Get basic parameters*/
 		double rad=size[0];
 		double height=size[1];
@@ -1104,7 +1103,7 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		
 	}//if cone
 	
-	if (name.compare("rocket")==0){
+	else if (name.compare("rocket")==0){
 		double rad=size[0];
 		double coneHeight=size[1];
 		double height=size[2];
@@ -1184,7 +1183,9 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		/*build layers*/
 	}//rocket
 
-	if (name.compare("table")==0){
+	else if (name.compare("table")==0){
+	    // Chee: THESE PARAMETERS ARE NOT INTUITIVE!!!
+	    //         PLEASE MAKE SOME COMMENTS IN CODE!
 		/*Table Radius*/
 		double rad=size[0];
 		/*Table face height*/

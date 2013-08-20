@@ -10,7 +10,8 @@
 #
 # (B)	See the default demo:
 #
-# 	       > make eg	-- compiles and runs "gwb" interactively
+# 	       > make eg		-- compiles and runs "gwb" interactively
+# 	       > make egx rad1=30	-- like "eg" but you can change parameters
 #
 #	To see what these default parameters are, you can type
 #
@@ -71,11 +72,12 @@ model = cube		# name of model to be displayed
 model = bullet
 model = trefoil
 
-rad = 20		# radius
-ht = 40			# height
+rad = 40		# radius
+ht = 10			# height
 hor = 30		# horizontal dim
 ver = 20		# vertical dim
 
+# trefoil
 rad1 = 40		# thickness of cross-section of knot
 rad2 = 10		# diameter of overall trefoil knot
 nsections = 50		# number of cross-sections in trefoil 
@@ -121,14 +123,17 @@ testall: $(TARGETS)
 #	g++ *.h *.cpp -o gwb -LGL -lglut -lglui
 
 #eg default (does not work)
-eg:	gwb	
+eg:	trefoil	
+
+#eg default (does not work)
+egx:	gwb	
 	@echo "Target 'eg':  runs gwb with the default options of Makefile"
 	@echo "--  You can all of them in you 'make' command line, e.g.,"
 	@echo "--      > make eg fileName=cube.txt"
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 	    	$(mode) $(model) \
-	    	$(rad) $(ht) $(hor) $(ver) \
+	    	$(rad1) $(rad2) $(nsegment) $(nsections) \
 
 #eg0 
 eg0 facehemi:	gwb	
@@ -170,11 +175,11 @@ eg4 disk:	gwb
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 		$(mode) disk 10 5 20 20
 
-#eg5 bullet 
+#eg5 bullet 	(40 50 20 20)
 eg5 bullet:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-	.	$(mode) bullet 10 5 20 20
+		$(mode) bullet 40 50 30 20
 
 eg5x bulletx:
 	./gwb $(interactive) $(inputDir) $(fileName) \
@@ -185,7 +190,7 @@ eg5x bulletx:
 eg6 cone:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) cone $(rad) $(ht) $(hor) $(ver)
+		$(mode) cone 40 70 30 20
 
 #eg7 drum 
 eg7 drum:	gwb	
@@ -193,18 +198,20 @@ eg7 drum:	gwb
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 		$(mode) drum $(rad) $(ht) $(hor) $(ver)
 
-#eg8 table 
+# THIS IS BADLY CONFUSED!
+#eg8 table 	radius, height(thickness), legPos, legNo, legRad, legHor, legHeight
+#eg8 table 	radius, height(thickness), nseg,   nsect,   ht2, rad2
 eg8 table:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) table 100 5
+		$(mode) table 80 10 70 100 100 10
 
 eg8x tablex:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 		$(mode) table $(rad) $(ht) $(hor) $(ver)
 
-#eg9 trefoil 
+#eg9 trefoil (40 10 80 12)
 #	rad1 is the diameter of the knot
 #	rad2 is the thickness of the knot
 #		ASSUMPTION: rad1>rad2
@@ -213,12 +220,18 @@ eg8x tablex:	gwb
 eg9 trefoil:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) trefoil 40 10 60 6
+		$(mode) trefoil 40 10 80 12
 
 eg9x trefoilx:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 		$(mode) trefoil $(rad1) $(rad2) $(nsections) $(nsegments)
+
+# eg10 rocket 	(20 30 20 40 30)
+eg10 rocket:	gwb	
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) rocket 10 30 20 40 30
 
 ##################################################
 		
