@@ -414,7 +414,7 @@ void TimerFunction(int p) {
 
 	ssInfo.str("");
 	ssInfo << ssout.str();
-	ssInfo << ssTemp.str();
+//	ssInfo << ssTemp.str();
 	textBox->set_text(ssInfo.str().c_str());
 	glutPostRedisplay();
 	timerLock = false;
@@ -741,7 +741,7 @@ int main(int argc, char* argv[]) {
 				"normal (10 frames/step)");
 		glui->add_radiobutton_to_group(radioStepsPerFrame,
 				"fast (100 frames/step)");
-		radioStepsPerFrame->set_int_val(1);
+		radioStepsPerFrame->set_int_val(2);
 
 		textCurrentStep = glui->add_edittext_to_panel(replay_panel,
 				"Current Step", GLUI_EDITTEXT_INT);
