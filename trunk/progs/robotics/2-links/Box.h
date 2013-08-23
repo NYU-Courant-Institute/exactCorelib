@@ -339,7 +339,11 @@ public:
 			Wall* w = *iterW;
 
 			double dist = w->distance(x, y);
-
+// Chee: this code is wrong!
+// 	instead od distance_sign(x,y), we compute the parameter u.
+// 	Then we compute r = radius(B)/ Length(w)
+// 	Then w is a nearest wall to m(B) iff  u lies in the interval [ -r, 1+r].
+//
 			if (fabs(dist - mindistW) < 1e-10) {
 				if (w->distance_sign(x, y) == 0 && w->isRight(x, y)) //in zone
 					nearestWall = *iterW;
