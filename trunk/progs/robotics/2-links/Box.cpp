@@ -3,14 +3,18 @@
 #include <math.h>
 #include <iostream>
 #include "Polygon.h"
+#include "QuadTree.h"
 //
 //#define OVERRIDE_NEW_DELETE
 //#include "MemProCpp\MemPro.cpp"
 
 //extern double triRobo[3];
 
-extern vector<Polygon> polygons;
-extern vector<int> srcInPolygons;
+//extern vector<Polygon> polygons;
+//extern vector<int> srcInPolygons;
+
+extern bool twoStrategyOption;
+extern QuadTree* QT;
 
 double Box::r0 = 0;
 double Box::l1 = 0;
@@ -88,6 +92,7 @@ void calcOppoAngle(double& angle);
 //}
 
 bool Box::split2D(double epsilon, vector<Box*>& chldn) {
+	shouldSplit2D = false;
 	//todo do sth to return false
 	if (this->height < epsilon || this->width < epsilon) {
 //		std::cout << "split2D 94" << endl;
@@ -426,12 +431,14 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 					vector<Point> tempIntersection;
 					tempIntersection = calcIntersectionCW(tempL, closestCornerX,
 							closestCornerY, w, checkSrc, checkDst);
+					//TODO modified by Zhongdi 08/22/2013, we should always check both endpoints
 					if (checkSrc) {
 						Point tempPoint(w->src->x, w->src->y);
 						tempIntersection.push_back(tempPoint);
 //						std::cout << "checkSrc x= " << w->src->x << " y="
 //								<< w->src->y << endl;
 					}
+					//TODO modified by Zhongdi 08/22/2013, we should always check both endpoints
 					if (checkDst) {
 						Point tempPoint(w->dst->x, w->dst->y);
 						tempIntersection.push_back(tempPoint);
@@ -462,7 +469,7 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 						}
 					}
 				}
-
+				//TODO modified by Zhongdi 08/22/2013, we should always check both endpoints
 				if (checkSrc) {
 //					std::cout << "checkSrc == true " << endl;
 					AngleRange tempAngleRange = calcAngleRangeCB(tempL,
@@ -477,6 +484,7 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 						}
 					}
 				}
+				//TODO modified by Zhongdi 08/22/2013, we should always check both endpoints
 				if (checkDst) {
 //					std::cout << "checkDst == true " << endl;
 					AngleRange tempAngleRange = calcAngleRangeCB(tempL,
@@ -663,10 +671,34 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 }
 
 bool Box::split(double epsilon, vector<Box*>& chldn) {
-	if (this->height / 2 < epsilon) {
+	if (this->height / 2 < epsilon || (twoStrategyOption && walls.size() + corners.size() <= 1 && !shouldSplit2D)) {
+
 //		return split3D(epsilon, chldn);
-//		std::cout << "split 603" << endl;
-		return splitAngle(epsilon, chldn);
+//		std::cout << "split 602" << endl;
+//		std::cout << twoStrategyOption << endl;
+		if(this->height / 2 < epsilon){
+//			std::cout << "split 603" << endl;
+			return splitAngle(epsilon, chldn);
+
+		}else{
+			QT->PQ->push(this);
+//			if(!PQ->empty()){
+//				std::cout  << endl;
+//			}
+
+//			std::cout << "split 604" << endl;
+			bool result = splitAngle(epsilon, chldn);
+
+			isLeaf = true;
+			status = MIXED;
+			shouldSplit2D = true;
+			visited = false;
+//			dist2Source = -1;
+
+			return result;
+
+		}
+
 	}
 //	else if (rB / 2 < r0 * 2 / THETA_MIN / 20) {
 //		//int n = ceil( 2 / THETA_MIN );

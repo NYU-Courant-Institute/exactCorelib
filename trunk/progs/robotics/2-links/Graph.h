@@ -145,10 +145,13 @@ public:
 class DistCmp {
 public:
 	bool operator()(const Box* a, const Box* b) {
-		double distDiff = (a->x - beta[0]) * (a->x - beta[0])
-				+ (a->y - beta[1]) * (a->y - beta[1])
+		double distDiff = ((a->x - beta[0]) * (a->x - beta[0])
+				+ (a->y - beta[1]) * (a->y - beta[1]))
+						* (a->shouldSplit2D?2:1)
 				- ((b->x - beta[0]) * (b->x - beta[0])
-						+ (b->y - beta[1]) * (b->y - beta[1]));
+						+ (b->y - beta[1]) * (b->y - beta[1]))
+						* (b->shouldSplit2D?2:1)
+						;
 		return distDiff > 0;
 	}
 };

@@ -292,8 +292,8 @@ eg4a egbuga buga: ./2-links
 eg5 egbug2 bug2: ./2-links
 	@echo "Target 'eg5 or bug2':  runs 2-links on bugtrap2.txt"
 	@echo "--  this examples shows there is PATH, but barely so!"
-	./2-links $(interactive) 180 210 0 30 30 0 \
-		4 11 bugtrap2.txt \
+	./2-links $(interactive) 180 210 180 320 30 30 0 0\
+		4 11 50 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -447,7 +447,7 @@ eg10 twoChambers: ./2-links
 	./2-links $(interactive) 415 400 180 270 105 90 90 0\
 		4 65 80 2chambers.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 $(seed)  $(inputDir) \
+		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		&
 

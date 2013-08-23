@@ -126,8 +126,8 @@ double L1 = 26;
 double L2 = 60;
 // Added by Zhongdi 05/08/2013 end
 
-int windowPosX = 400;			// X Position of Window
-int windowPosY = 200;			// Y Position of Window
+int windowPosX = 320;			// X Position of Window
+int windowPosY = 20;			// Y Position of Window
 string fileName("bugtrap.txt"); 		// Input file name
 //string fileName("input150.txt"); 		// Input file name
 string inputDir("inputs"); 		// Path for input files
@@ -151,6 +151,8 @@ vector<Box*> PATH;
 
 extern vector<Polygon> polygons;
 extern vector<int> srcInPolygons;
+
+//dijkstraQueue<Cmp> dijQ;
 
 int timePerFrame = 128;
 
@@ -336,6 +338,9 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 						}
 					}
 				}
+			}
+			if(current->shouldSplit2D){
+				dijQ.push(current);
 			}
 			continue;
 		}
@@ -1052,6 +1057,7 @@ void run() {
 
 	buttonReplay->set_name("Replay Spliting");
 	buttonAnimation->set_name("Path Animation");
+	twoStrategyOption = radio2StrategyOption->get_int_val();
 
 	if (interactive == 0) {
 		//update from glui live variables
@@ -1537,10 +1543,14 @@ void drawQuad(Box* b) {
 //	cout<<"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"<<endl;
 	switch (b->status) {
 	case Box::FREE:
-		glColor4f(0.25, 1, 0.25, 0.5);
+		if(b->xi[0] != 0 || b->xi[1] != 360 || b->xi[2] != 0 || b->xi[3] != 360){
+			glColor4f(0.6, 0.7, 0.25, 0.8);
+		}else{
+			glColor4f(0.25, 1, 0.25, 0.8);
+		}
 		break;
 	case Box::STUCK:
-		glColor4f(1, 0.25, 0.25, 0.5);
+		glColor4f(1, 0.0, 0.0, 1);
 		break;
 	case Box::MIXED:
 		glColor4f(1, 1, 0.25, 0.1);
@@ -1663,7 +1673,7 @@ void renderScene(void) {
 
 	hideBoxBoundary = radioDrawOption->get_int_val();
 	verboseOption = radioVerboseOption->get_int_val();
-	twoStrategyOption = radio2StrategyOption->get_int_val();
+
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

@@ -136,14 +136,6 @@ public:
 				continue;
 			}
 
-
-//			if (!b->contains(x, y, a1, a2))
-//			{
-////				std::cout<<"getBox 135"<< endl;
-//				cout<<"This is Wrong"<<endl;
-//				return 0;
-//			}
-
 			vector<Box*> cldrn;
 			if (!expand(b, cldrn)) {
 //				std::cout<<"getBox 142"<< endl;
