@@ -219,12 +219,13 @@ public:
 	int heapId;
 	Box* prev;
 	bool visited;
+	bool shouldSplit2D;
 
 	Box(double xx, double yy, double w, double h) :
 			depth(1), x(xx), y(yy), width(w), height(h), isLeaf(true), isBig(
 					true), tChildID(-1), rChildID(-1), pParent(0), status(
 					UNKNOWN), pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(
-					false) {
+					false), shouldSplit2D(false) {
 		rB = sqrt(width * width + height * height) / 2;
 		priority = Box::counter;
 
