@@ -441,7 +441,7 @@ eg9 narrow: ./2-links
 		&
 		
 eg10 twoChambers: ./2-links
-	@echo "Target eg10: two Chamber environment using BFS"
+	@echo "Target eg10: two Chamber environment using Greedy"
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 415 400 180 270 105 90 90 0\
@@ -459,6 +459,17 @@ eg10a twoChambersa: ./2-links
 		4 8 10 2chambers.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		0 $(seed)  $(inputDir) \
+		-220 0 0.065 \
+		&
+		
+eg10b twoChambers: ./2-links
+	@echo "Target eg10: two Chamber environment using Greedy and shorter links"
+#	@echo "	There is a path passage... when radius=6, epsilon=1"
+#	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./2-links $(interactive) 415 400 180 270 105 90 90 0\
+		4 15 20 2chambers.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		&
 

@@ -1902,8 +1902,8 @@ void parseConfigFile(Box* b) {
 				ptVec.push_back(
 						new Corner(pts[pt * 2] * scale + deltaX,
 								pts[pt * 2 + 1] * scale + deltaY));
-				cout << "point: X=" << pts[pt * 2] * scale + deltaX << "   Y="
-						<< pts[pt * 2 + 1] * scale + deltaY;
+//				cout << "point: X=" << pts[pt * 2] * scale + deltaX << "   Y="
+//						<< pts[pt * 2 + 1] * scale + deltaY;
 
 				b->addCorner(ptVec.back());
 				b->vorCorners.push_back(ptVec.back());
