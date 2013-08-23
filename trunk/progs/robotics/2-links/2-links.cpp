@@ -123,7 +123,7 @@ double R0 = 8;				// Robot radius
 // Added by Zhongdi 05/08/2013 begin
 // length of 2 links
 double L1 = 26;
-double L2 = 60;
+double L2 = 20;
 // Added by Zhongdi 05/08/2013 end
 
 int windowPosX = 320;			// X Position of Window
