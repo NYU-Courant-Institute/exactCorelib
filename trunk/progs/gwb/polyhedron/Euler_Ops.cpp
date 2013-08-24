@@ -13,6 +13,55 @@
 #include "Euler_Ops.h"
 using namespace std;
 
+extern int interactive;                  // interactive or not:
+                                    // <=0 means non-interactive, >0 means interactive.
+extern string inputDir; 	    // Path for input files 
+extern string fileName; 	    // Input file name (this is not used currently)
+extern string model;	    // model can be "cylinder", "sphere", "trefoil", etc.
+extern string mode;		    // mode can be "wire" or "face"
+extern GLsizei windowWidth;	    // initial configuration box size
+extern GLsizei windowHeight;
+extern GLsizei windowPosX;           // initial Window position
+extern GLsizei windowPosY;	
+
+extern double startX;                    //start postion of mouse press 
+extern double startY;
+extern double startZ;
+
+extern double base;                   //Initialize the origin rotation arguments
+extern double theta;
+extern double rad;
+
+extern double rotX;                    //Initialize the rotation vector
+extern double rotY;
+extern double rotZ;
+
+extern double centerX;                 //Initialize the center of the polyhedron
+extern double centerY;
+extern double centerZ;
+
+extern double colorGap;               //This is for shading
+
+extern double scalar;                  //Initialize the scalar of the polyhedron
+extern double thetaX;
+extern double thetaY;
+extern double light[];
+
+/* Chee: new parameters */
+extern double radius;		  
+extern double radius2;		 
+extern double height;		
+extern double height2;	
+extern int nsegments;
+extern int nsections;
+extern int nsegments2;
+extern int nsections2;
+extern int nparts;
+extern int nparts2;
+extern double position2;
+extern double position3;
+extern double thickness3;
+extern double height3;
 /*Constructors*/
 Euler_Ops::Euler_Ops(Vec<Solid *> *solids){
   this->solids=solids;
@@ -758,9 +807,9 @@ Solid* Euler_Ops::prim(string name, double size[]){
 	Solid* solid;
 
 	if (name.compare("hemisphere")==0){
-		double rad=size[0];
-		int hor=(int)size[1];
-		int ver=(int)size[2];
+		double rad=radius;
+		int hor=nsegments;
+		int ver=nsections;
 		/*Build the first two*/
 		solid=mvfs(1,1,1,rad,0,0);
 		double horr=PI*2/hor;
@@ -825,9 +874,9 @@ Solid* Euler_Ops::prim(string name, double size[]){
 	}// if a hemisphere
 
 	else if (name.compare("sphere")==0){
-		double rad=size[0];
-		int hor=(int)size[1];
-		int ver=(int)size[2];
+		double rad=radius;
+		int hor=nsegments;
+		int ver=nsections;
 		/*Build the first two*/
 		
 		double horr=PI*2/hor;
@@ -902,9 +951,9 @@ Solid* Euler_Ops::prim(string name, double size[]){
 
 	/*build a cylinder*/
 	else if (name.compare("cylinder")==0){
-		double rad=size[0];
-		double height=size[1];
-		int hor=(int)size[2];
+		double rad=radius;
+		//double height=size[1];
+		int hor=nsegments;
 		/*Build the first two*/
 		solid=mvfs(1,1,1,rad,0,0);
 		double horr=PI*2/hor;
@@ -919,11 +968,11 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		mef(1,1,1,2,hor,hor-1,2);
 		
 		/*Build the verts and faces*/
-		for (int i=1;i<2;i++){
+		for (int i=1;i<=nsections;i++){
 			int base=i*hor;
 			/*compute the layers*/
 			double xyr=rad;
-			double z=height;
+			double z=height/nsections*i;
 			
 			/*Make all verts on this layer*/
 			/*Make the first vertex*/
@@ -956,10 +1005,9 @@ Solid* Euler_Ops::prim(string name, double size[]){
 	}//if a cylinder
 
 	else if (name.compare("bullet")==0){
-		double rad=size[0];
-		double height=size[1];
-		int hor=(int)size[2];
-		int ver=(int)size[3];
+		double rad=radius;
+		int hor=nsegments;
+		int ver=nsections;
 		/*Build the first two*/
 		solid=mvfs(1,1,1,rad,0,0);
 		double horr=PI*2/hor;
@@ -970,6 +1018,7 @@ Solid* Euler_Ops::prim(string name, double size[]){
 			int prev=i-2>0?i-2:i-1;
 			mev(1,1,1,i-1,prev,prev,i,rad*cos(horr*(i-1)),rad*sin(horr*(i-1)),0);
 		}
+		//cout<<"Polygon done!"<<endl;
 		/*face 1 up, face 2 bottom*/
 		mef(1,1,1,2,hor,hor-1,2);
 		
@@ -1016,27 +1065,29 @@ Solid* Euler_Ops::prim(string name, double size[]){
 
 
 		}//for layers
+		//cout<<"layers done"<<endl;
 		
 		/*Build the final vertex*/
-		int top=hor*ver+1;
+		/*int top=hor*ver+1;
 		mev(1,1,1,hor*ver,hor*ver-1,hor*ver-1,hor*ver+1,0,0,rad);
+		cout<<"final vertex done"<<endl;
 		mef(1,1,hor*(ver-1)+1,hor*ver,top,hor*ver,2+hor*(ver-1)+1);
 		for (int i=2;i<hor;i++){
 			int now=hor*(ver-1)+i;
 			int prev=now-1;
 			mef(1,1,now,prev,top,hor*ver,2+hor*(ver-1)+i);
-		}
+		}*/
 
 
 		/*build layers*/	
-	}// if a cigar
+	}// if a bullet
 
 	else if (name.compare("cone")==0){
 		/*Get basic parameters*/
-		double rad=size[0];
-		double height=size[1];
-		int hor=(int)size[2];
-		int ver=(int)size[3];
+		double rad=radius;
+
+		int hor=nsegments;
+		int ver=nsections;
 
 		/*Build the first two*/
 		solid=mvfs(1,1,1,rad,0,0);
@@ -1104,11 +1155,11 @@ Solid* Euler_Ops::prim(string name, double size[]){
 	}//if cone
 	
 	else if (name.compare("rocket")==0){
-		double rad=size[0];
-		double coneHeight=size[1];
-		double height=size[2];
-		int hor=(int)size[3];
-		int ver=(int)size[4];
+		
+		double rad=radius;
+		//double height=size[1];(We have already had the global variable "height")
+		int hor=nsegments;
+		int ver=nsections;
 		/*Build the first two*/
 		solid=mvfs(1,1,1,rad,0,0);
 		double horr=PI*2/hor;
@@ -1119,6 +1170,7 @@ Solid* Euler_Ops::prim(string name, double size[]){
 			int prev=i-2>0?i-2:i-1;
 			mev(1,1,1,i-1,prev,prev,i,rad*cos(horr*(i-1)),rad*sin(horr*(i-1)),0);
 		}
+		//cout<<"Polygon done!"<<endl;
 		/*face 1 up, face 2 bottom*/
 		mef(1,1,1,2,hor,hor-1,2);
 		
@@ -1126,11 +1178,8 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		for (int i=1;i<=ver;i++){
 			int base=i*hor;
 			/*compute the layers*/
-			double xyr=rad/(ver+0.0)*(ver-i);
-			double z=height+coneHeight/(ver+0.0)*i;
-			/*compute the layers*/
-			//xyr=rad*cos(PI/2/ver*(i-1));
-			//z=height+rad*sin(PI/2/ver*(i-1));
+			double xyr=rad*cos(PI/2/ver*(i-1));
+			double z=height+rad*sin(PI/2/ver*(i-1));
 			
 			/*Make all verts on this layer*/
 			/*Make the first vertex*/
@@ -1168,38 +1217,40 @@ Solid* Euler_Ops::prim(string name, double size[]){
 
 
 		}//for layers
+		//cout<<"layers done"<<endl;
 		
 		/*Build the final vertex*/
-		int top=hor*ver+1;
+		/*int top=hor*ver+1;
 		mev(1,1,1,hor*ver,hor*ver-1,hor*ver-1,hor*ver+1,0,0,rad);
+		cout<<"final vertex done"<<endl;
 		mef(1,1,hor*(ver-1)+1,hor*ver,top,hor*ver,2+hor*(ver-1)+1);
 		for (int i=2;i<hor;i++){
 			int now=hor*(ver-1)+i;
 			int prev=now-1;
 			mef(1,1,now,prev,top,hor*ver,2+hor*(ver-1)+i);
-		}
+		}*/
 
 
-		/*build layers*/
+		/*build layers*/	
 	}//rocket
 
 	else if (name.compare("table")==0){
 	    // Chee: THESE PARAMETERS ARE NOT INTUITIVE!!!
 	    //         PLEASE MAKE SOME COMMENTS IN CODE!
 		/*Table Radius*/
-		double rad=size[0];
+		double rad=radius;
 		/*Table face height*/
-		double height=size[1];
-		int hor = (int) size[2];
+		//double height=size[1];
+		int hor = nsegments;
 		
 		/*Leg Position and Leg numbers*/
-		double legPos=size[3];
-		int legNum=(int)size[4];
+		double legPos=position2;//This is the distance from the center/radius
+		int legNum=nparts2;
 		
 		/*Leg Radius*/
-		double legRad=size[5];
-		double legHor=size[6];
-		double legHeight=size[7];
+		double legRad=radius2;
+		double legHor=nsegments2;
+		double legHeight=height2;
 		/*Build the first two*/
 		solid=mvfs(1,1,1,rad,0,0);
 		double horr=PI*2/hor;
@@ -1299,19 +1350,19 @@ Solid* Euler_Ops::prim(string name, double size[]){
 
 	if (name.compare("chair")==0){
 		/*Table Radius*/
-		double rad=size[0];
+		double rad=radius;
 		/*Table face height*/
-		double height=size[1];
-		int hor = (int) size[2];
+		//double height=size[1];
+		int hor = nsegments;
 		
 		/*Leg Position and Leg numbers*/
-		double legPos=size[3];
-		int legNum=(int)size[4];
+		double legPos=position2;
+		int legNum=nparts2;
 		
 		/*Leg Radius*/
-		double legRad=size[5];
-		double legHor=size[6];
-		double legHeight=size[7];
+		double legRad=radius2;
+		double legHor=nsegments2;
+		double legHeight=height2;
 		/*Build the first two*/
 		solid=mvfs(1,1,1,rad,0,0);
 		double horr=PI*2/hor;
@@ -1414,10 +1465,10 @@ Solid* Euler_Ops::prim(string name, double size[]){
 	int faceNum=2+hor+legNum*(legHor+1);
 	
 	/*Get parameter information*/
-	double backRad=size[8];
+	double backRad=position3;
 	//double backWid=size[9];
-	double backThi=size[9];
-	double backHei=size[10];
+	double backThi=thickness3;
+	double backHei=height3;
 	
 	/*Build the back*/
 	double b1[]={backRad,0,height};
@@ -1453,13 +1504,13 @@ Solid* Euler_Ops::prim(string name, double size[]){
 	}//chair
 
 	if (name.compare("trefoil")==0){
-		double rad1=size[0];
-		double rad2=size[1];
+		double rad1=radius;
+		double rad2=radius2;
 		
-		int hor=(int)size[2];
-		int ver=(int)size[3];
+		int hor=nsegments;
+		int ver=nsections;
 
-		if (rad1<=rad2){
+		/*if (rad1<=rad2){
 		    cout << "rad1 must be greater than rad2" << endl;
 		} else {
 		/*Build the first Point*/
@@ -1569,16 +1620,16 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		    mef(1,2,ver*(hor-1)+i,ver*(hor-1)+i-1,i,i+1>ver?1:i+1,ver*(hor-1)+i+1);
 		}
 
-		}//rad1>rad2
+		//}//rad1>rad2
 	}//trefoil
 
 	/*Cone*/
 	if (name.compare("cones")==0){
-		double rad1=size[0];
-		double height=size[1];
-		double rad2=size[2];
-		int hor=(int)size[3];
-		int ver=(int)size[4];
+		double rad1=radius;
+		//double height=size[1];
+		double rad2=radius2;
+		int hor=nsegments;
+		int ver=nsections;
 		/*Build the first two*/
 		solid=mvfs(1,1,1,rad2,0,0);
 		double horr=PI*2/hor;
@@ -1634,10 +1685,10 @@ Solid* Euler_Ops::prim(string name, double size[]){
 
 	/*disk*/
 	if (name.compare("disk")==0){
-		double rad=size[0];
-		double height=size[1];
-		int hor=(int)size[2];
-		int ver=(int)size[3];
+		double rad=radius;
+		//double height=size[1];
+		int hor=nsegments;
+		int ver=nsections;
 		/*Build the first two*/
 		solid=mvfs(1,1,1,rad,0,0);
 		double horr=PI*2/hor;
@@ -1690,72 +1741,13 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		
 		/*build layers*/	
 	}// if a disk
-	/*disk*/
-	if (name.compare("drum")==0){
-		double rad=size[0];
-		double height=size[1];
-		int hor=(int)size[2];
-		int ver=(int)size[3];
-		/*Build the first two*/
-		solid=mvfs(1,1,1,rad,0,0);
-		double horr=PI*2/hor;
-		double verr=PI/ver;
-		
-		/*Build the polygon*/
-		for (int i=2;i<=hor;i++){
-			int prev=i-2>0?i-2:i-1;
-			mev(1,1,1,i-1,prev,prev,i,rad*cos(horr*(i-1)),rad*sin(horr*(i-1)),0);
-		}
-		/*face 1 up, face 2 bottom*/
-		mef(1,1,1,2,hor,hor-1,2);
-		
-		/*Build the upper hemisphere*/
-		for (int i=1;i<=ver;i++){
-			int base=i*hor;
-			/*compute the layers*/
-			double xyr=rad+height/2*sin(PI/ver*i);
-			double z=height/ver*i;
-			
-			/*Make all verts on this layer*/
-			/*Make the first vertex*/
-			mev(1,1,1,(i-1)*hor+1,i*hor,i*hor,i*hor+1,xyr,0,z);
-			/*Make other vertices*/
-			for(int j=2;j<=hor;j++){
-				int prev=(i-1)*hor+j;
-				
-				double x=xyr*cos(PI*2/hor*(j-1));
-				double y=xyr*sin(PI*2/hor*(j-1));
-				mev(1,1,1,prev,prev-1,prev-1,prev+hor,x,y,z);
-			}//for theta
-			
-			/*Make all edges*/
-			/*Make the first face*/
-			mef(1,1,base+1,base+1-hor,base+hor,base,2+(i-1)*hor+1);
-			mef(1,1,base+2,base+2-hor,base+1,base+hor,2+(i-1)*hor+2);
-			/*Make other vertices*/
-			for(int j=3;j<=hor;j++){
-				Id v1=base+j;
-				Id v2=v1-hor;
-				Id v3=v1-1;
-				Id v4=v3-1;
-				Id f2=2+(i-1)*hor+j;
-				mef(1,1,v1,v2,v3,v4,f2);
-			}//for theta
-
-
-		}//for layers
-		
-		kfmrh(1,2,1);
-		mekr(1,1,1,2,hor*ver+1,hor*(ver+1));
-			
-	}// if a disk
-
+	
 	/*Torus*/
 	if (name.compare("torus")==0){
-		double rad1=size[0];
-		double rad2=size[1];
-		int hor=(int)size[2];
-		int ver=(int)size[3];
+		double rad1=radius;
+		double rad2=radius2;
+		int hor=nsegments;
+		int ver=nsections;
 		if (rad1>rad2){
 			/*Build the first two*/
 		solid=mvfs(1,1,1,rad1+rad2,0,0);
@@ -1909,12 +1901,11 @@ Solid* Euler_Ops::prim(string name, double size[]){
 	}// if a torus
 
 	
-	/*Hat*/
-	if (name.compare("hat")==0){
-		double rad1=size[0];
-		double rad2=size[1];
-		int hor=(int)size[2];
-		int ver=(int)size[3];
+	if (name.compare("chain")==0){
+		double rad1=radius;
+		double rad2=radius2;
+		int hor=nsegments;
+		int ver=nsections;
 		if (rad1>rad2){
 			/*Build the first two*/
 		solid=mvfs(1,1,1,rad1+rad2,0,0);
@@ -1929,12 +1920,89 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		/*face 1 up, face 2 bottom*/
 		mef(1,1,1,2,hor,hor-1,2);
 		
+		
 		/*Build the upper hemisphere*/
 		for (int i=1;i<ver;i++){
 			int base=i*hor;
 			/*compute the layers*/
-			double xyr=rad1*cos(PI/2/ver*i);
-			double z=rad1*sin(PI/2/ver*i);
+			double xyr=rad1+rad2*cos(2.0*PI/ver*i);
+			double z=rad2*sin(2.0*PI/ver*i);
+			
+			/*Make all verts on this layer*/
+			/*Make the first vertex*/
+			mev(1,1,1,(i-1)*hor+1,i*hor,i*hor,i*hor+1,xyr,0,z);
+			/*Make other vertices*/
+			for(int j=2;j<=hor;j++){
+				int prev=(i-1)*hor+j;
+				
+				double x=xyr*cos(PI*2/hor*(j-1));
+				double y=xyr*sin(PI*2/hor*(j-1));
+				mev(1,1,1,prev,prev-1,prev-1,prev+hor,x,y,z);
+			}//for theta
+			
+			/*Make all edges*/
+			/*Make the first face*/
+			mef(1,1,base+1,base+1-hor,base+hor,base,2+(i-1)*hor+1);
+			mef(1,1,base+2,base+2-hor,base+1,base+hor,2+(i-1)*hor+2);
+			/*Make other vertices*/
+			for(int j=3;j<=hor;j++){
+				Id v1=base+j;
+				Id v2=v1-hor;
+				Id v3=v1-1;
+				Id v4=v3-1;
+				Id f2=2+(i-1)*hor+j;
+				mef(1,1,v1,v2,v3,v4,f2);
+			}//for theta
+
+
+		}//for layers
+		/*Build the final vertex*/
+		/*int top=hor*ver+1;
+		mev(1,1,1,hor*ver,hor*ver-1,hor*ver-1,hor*ver+1,0,0,rad1);
+		mef(1,1,hor*(ver-1)+1,hor*ver,top,hor*ver,2+hor*(ver-1)+1);
+		for (int i=2;i<hor;i++){
+			int now=hor*(ver-1)+i;
+			int prev=now-1;
+			mef(1,1,now,prev,top,hor*ver,2+hor*(ver-1)+i);
+		}*/
+
+		/*Add the face*/
+		kfmrh(1,2,1);
+		mekr(1,2,1,2,hor*(ver-1)+1,hor*ver);
+		
+      		/*Make the edge faces*/
+		for (int i=2;i<=hor;i++){
+		    mef(1,2,hor*(ver-1)+i,hor*(ver-1)+i-1,i,i+1>hor?1:i+1,hor*(ver-1)+i+1);
+		}
+
+		}//rad1>rad2
+
+		else {
+			double topZ=sqrt(rad2*rad2-rad1*rad1);
+			double theta=PI-acos(rad1/rad2);
+
+		/*Build the first two*/
+		
+		double horr=PI*2/hor;
+		double verr=theta*2/ver;
+		
+		double smallRad=rad1+rad2*cos(theta-verr);
+		double smallZ=-rad2*sin(theta-verr);
+		solid=mvfs(1,1,1,smallRad,0,smallZ);
+		/*Build the polygon*/
+		for (int i=2;i<=hor;i++){
+			int prev=i-2>0?i-2:i-1;
+			mev(1,1,1,i-1,prev,prev,i,smallRad*cos(horr*(i-1)),smallRad*sin(horr*(i-1)),smallZ);
+		}
+		/*face 1 up, face 2 bottom*/
+		mef(1,1,1,2,hor,hor-1,2);
+		
+		/*Build the upper hemisphere*/
+		for (int i=1;i<ver-1;i++){
+			int base=i*hor;
+			/*compute the layers*/
+			double xyr=rad1+rad2*cos(theta-verr*(i+1));
+			double z=-rad2*sin(theta-verr*(i+1));
 			
 			/*Make all verts on this layer*/
 			/*Make the first vertex*/
@@ -1966,20 +2034,29 @@ Solid* Euler_Ops::prim(string name, double size[]){
 		}//for layers
 		
 		/*Build the final vertex*/
+		ver--;
 		int top=hor*ver+1;
-		mev(1,1,1,hor*ver,hor*ver-1,hor*ver-1,hor*ver+1,0,0,rad1);
+		mev(1,1,1,hor*ver,hor*ver-1,hor*ver-1,hor*ver+1,0,0,topZ);
 		mef(1,1,hor*(ver-1)+1,hor*ver,top,hor*ver,2+hor*(ver-1)+1);
 		for (int i=2;i<hor;i++){
 			int now=hor*(ver-1)+i;
 			int prev=now-1;
 			mef(1,1,now,prev,top,hor*ver,2+hor*(ver-1)+i);
-		}
-
-		}//rad1>rad2
+		}//for n-1 top faces
+		ver++;
+		int bot=top+1;
+		mev(1,2,2,hor,1,1,bot,0,0,-topZ);
+		mef(1,2,bot,hor,1,2,1+hor*(ver-1)+1);
+		for (int i=2;i<hor;i++){
+			mef(1,2,bot,i-1,i,i+1,1+hor*(ver-1)+i);
+		}//for n-1 bottom faces
+		
+		
+		}//if rad1<=rad2
 		
 
 		/*build layers*/	
-	}// if a torus
+	}// if a chain
 	
 
  	

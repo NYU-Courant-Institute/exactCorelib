@@ -46,7 +46,8 @@
 VAR=Opt
 VAR=Debug
 CORE_PATH=../../..
-include ../Make.options
+#include ../Make.options
+
 
 #=================================================
 # User variables (you can change them in the command line)

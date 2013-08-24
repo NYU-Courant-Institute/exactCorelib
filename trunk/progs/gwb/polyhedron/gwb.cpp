@@ -61,7 +61,7 @@ int interactive=0;                  // interactive or not:
                                     // <=0 means non-interactive, >0 means interactive.
 string inputDir("inputs"); 	    // Path for input files 
 string fileName("cube.txt"); 	    // Input file name (this is not used currently)
-string model("trefoil");	    // model can be "cylinder", "sphere", "trefoil", etc.
+string model("cone");	    // model can be "cylinder", "sphere", "trefoil", etc.
 string mode("wire");		    // mode can be "wire" or "face"
 GLsizei windowWidth = 512;	    // initial configuration box size
 GLsizei windowHeight = 512;
@@ -92,13 +92,36 @@ double thetaY=0;
 double light[]={1,1,1,10,10,10};
 
 /* Chee: new parameters */
-double radius=1.0;		  
-double radius2=1.0;		 
-double height=1.0;		
-double height2=2.0;	
+double radius=100.0;		  
+double radius2=10.0;		 
+double height=50.0;		
+double height2=20.0;	
 int nsegments=12;
 int nsections=20;
+int nsegments2=5;
+int nsections2=1;
+int nparts=10;
+int nparts2=20;
+double position2=80;
+double position3=90;
+double thickness3=10;
+double height3=50;
 
+/*Kai: Rotation Amplitude*/
+int rotUnitX=5;
+int rotUnitY=5;
+int rotUnitZ=5;
+
+/*View Point*/
+GLdouble  	eyeX=0;
+GLdouble  	eyeY=0;
+GLdouble  	eyeZ=0;
+GLdouble  	cX=0;
+GLdouble  	cY=0;
+GLdouble  	cZ=0;
+GLdouble  	upX=0;
+GLdouble  	upY=0;
+GLdouble  	upZ=0;
 /*Declaration of mouse operations*/
 void pressMouse(int button,int state,int x,int y);
 void holdMouse(int x,int y);
@@ -116,8 +139,10 @@ void MyInit(void){
   glPointSize(10);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
+  
   //gluOrtho2D(0,(GLdouble)ww,0.0,(GLdouble)wh);
   glOrtho(-100.0,(GLdouble)windowWidth,-100.0,(GLdouble)windowHeight,-1000,1000);
+  //gluLookAt(eyeX,eyeY,eyeZ,cX,cY,cZ,upX,upY,upZ);
 }//MyInit
 
 void displayPoly(Solid *s){
@@ -432,6 +457,10 @@ int main(int argc,char **argv){
 	if (argc > 13) nsections = atoi(argv[13]);
 	if (argc > 14) height2 = atof(argv[14]);
 	if (argc > 15) radius2 = atof(argv[15]);
+	/*Rotation Size*/
+	if (argc > 16) rotUnitX=atoi(argv[16]);
+	if (argc > 17) rotUnitY=atoi(argv[17]);
+	if (argc > 18) rotUnitZ=atoi(argv[18]);
 
 	/*Parameters for the model */
 
