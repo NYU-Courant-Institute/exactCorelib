@@ -150,9 +150,15 @@ public:
 //						std::cout<<"getBox 153"<< endl;
 						return cldrn[i];
 					} else if (cldrn[i]->status == STUCK) {
-						return 0;
-					}else{
+//						if (b->shouldSplit2D) {
+//							q.push(b);
+//						} else {
+							return 0;
+//						}
+
+					} else {
 						q.push(cldrn[i]);
+
 					}
 				}
 			}

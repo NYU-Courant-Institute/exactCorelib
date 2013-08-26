@@ -113,7 +113,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////
 double alpha[4] = { 300, 120, 80, 30 };		// start configuration
 double beta[4] = { 30, 30, 100, 50 };		// goal configuration
-double epsilon = 4;			// resolution parameter
+double epsilon = 8;			// resolution parameter
 Box* boxA;				// start box (containing alpha)
 Box* boxB;				// goal box (containing beta)
 double boxWidth = 512;			// Initial box width
@@ -144,8 +144,9 @@ bool noPath = true;			// True means there is "No path.
 
 bool hideBoxBoundary = false;  		// don't draw box boundary
 bool verboseOption = false;		// don't print various statistics
-bool twoStrategyOption = false; // 2-Stage-Stratege or not
+int twoStrategyOption = 0; // 2-Stage-Stratege or not
 string title("2-links Robot Demos");	// title for control panel
+int phiB = 1;
 
 vector<Box*> PATH;
 
@@ -186,10 +187,12 @@ vector<Box*> boxClicked;
 // GLUI controls ========================================
 //////////////////////////////////////////////////////////////////////////////////
 GLUI_RadioGroup* radioStepsPerFrame;
+GLUI_EditText* textCustomSpeed;
 GLUI_EditText* textCurrentStep;
 GLUI_RadioGroup* radioQType;
 GLUI_RadioGroup* radioDrawOption;
 GLUI_RadioGroup* radio2StrategyOption;
+GLUI_EditText* textPhiB;
 GLUI_RadioGroup* radioVerboseOption;
 GLUI_EditText* editInput;
 GLUI_EditText* editDir;
@@ -741,6 +744,10 @@ int main(int argc, char* argv[]) {
 				"normal (10 frames/step)");
 		glui->add_radiobutton_to_group(radioStepsPerFrame,
 				"fast (100 frames/step)");
+//		glui->add_radiobutton_to_group(radioStepsPerFrame,
+//						"   ");
+//		textCustomSpeed= glui->add_edittext_to_panel(replay_panel,
+//				"Current Step", GLUI_EDITTEXT_INT);
 		radioStepsPerFrame->set_int_val(2);
 
 		textCurrentStep = glui->add_edittext_to_panel(replay_panel,
@@ -778,7 +785,7 @@ int main(int argc, char* argv[]) {
 		glui->add_radiobutton_to_group(radioQType, "BFS");
 		glui->add_radiobutton_to_group(radioQType, "Greedy");
 		glui->add_radiobutton_to_group(radioQType, "Dist+Size");
-		glui->add_radiobutton_to_group(radioQType, "Voronoi Heuristic");
+		glui->add_radiobutton_to_group(radioQType, "Voronoi Heuristic(deprecated)");
 
 		glui->add_separator();
 		radioQType->set_int_val(QType);
@@ -804,12 +811,17 @@ int main(int argc, char* argv[]) {
 				"Split Until Epsilon");
 		glui->add_radiobutton_to_group(radio2StrategyOption,
 				"Smarter Strategy");
+		textPhiB = glui->add_edittext(
+						"Phi(B) = ", GLUI_EDITTEXT_INT);
+		textPhiB->set_int_val(phiB);
+		glui->add_radiobutton_to_group(radio2StrategyOption,
+						"Smarter Strategy With Voronoi Approach");
 
 		radio2StrategyOption->set_int_val(twoStrategyOption);
 		glui->add_separator();
 
 		textBox = new GLUI_TextBox(glui, true);
-		textBox->set_h(450);
+		textBox->set_h(400);
 		textBox->set_w(310);
 		textBox->disable();
 
@@ -1058,6 +1070,7 @@ void run() {
 	buttonReplay->set_name("Replay Spliting");
 	buttonAnimation->set_name("Path Animation");
 	twoStrategyOption = radio2StrategyOption->get_int_val();
+	phiB = textPhiB->get_int_val();
 
 	if (interactive == 0) {
 		//update from glui live variables

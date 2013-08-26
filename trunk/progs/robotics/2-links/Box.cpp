@@ -13,8 +13,9 @@
 //extern vector<Polygon> polygons;
 //extern vector<int> srcInPolygons;
 
-extern bool twoStrategyOption;
+extern int twoStrategyOption;
 extern QuadTree* QT;
+extern int phiB;
 
 double Box::r0 = 0;
 double Box::l1 = 0;
@@ -512,6 +513,15 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 	l2SafeZone = calcOppoZone(l2ForbidenZone);
 
 //	std::cout << "Box::splitAngle safezone calculated" << endl;
+	if (twoStrategyOption == 2) {
+		if (l1SafeZone.size() <= l2SafeZone.size()) {
+			safeRanges = l2SafeZone.size();
+//			std::cout << "l2" << l2SafeZone.size()<< endl;
+		} else {
+			safeRanges = l1SafeZone.size();
+//			std::cout << "l1" << l1SafeZone.size()<< endl;
+		}
+	}
 
 	if (l1SafeZone.empty() || l2SafeZone.empty()) {
 		this->status = STUCK;
@@ -520,6 +530,7 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 
 	this->isLeaf = false;
 //	vector<Box*> children;
+
 	for (int i = 0; i < l1SafeZone.size(); i++) {
 		for (int j = 0; j < l2SafeZone.size(); j++) {
 			Box* child = new Box(x, y, width, height);
@@ -671,16 +682,18 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 }
 
 bool Box::split(double epsilon, vector<Box*>& chldn) {
-	if (this->height / 2 < epsilon || (twoStrategyOption && walls.size() + corners.size() <= 1 && !shouldSplit2D)) {
+	if (this->height / 2 < epsilon
+			|| (twoStrategyOption > 0 && walls.size() + corners.size() <= phiB
+					&& !shouldSplit2D)) {
 
 //		return split3D(epsilon, chldn);
 //		std::cout << "split 602" << endl;
 //		std::cout << twoStrategyOption << endl;
-		if(this->height / 2 < epsilon){
+		if (this->height / 2 < epsilon) {
 //			std::cout << "split 603" << endl;
 			return splitAngle(epsilon, chldn);
 
-		}else{
+		} else {
 			QT->PQ->push(this);
 //			if(!PQ->empty()){
 //				std::cout  << endl;
@@ -737,7 +750,6 @@ bool Box::split(double epsilon, vector<Box*>& chldn) {
 Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 //assert(walls.size());
 
-
 	Wall* nearestWall;
 	list<Wall*>::iterator iterW = walls.begin();
 //	cout<<"checkChildStatus 711"<<endl;
@@ -782,11 +794,11 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 //		std::cout << "checkChildStatus nearestWall " << nearestWall->src->x
 //				<< " " << nearestWall->src->y << " " << nearestWall->dst->x
 //				<< " " << nearestWall->dst->y << endl;
-		if (nearestWall->isRight(x, y) && mindistW > r0 + rB/2) {
+		if (nearestWall->isRight(x, y) && mindistW > r0 + rB / 2) {
 //			std::cout << "checkChildStatus 688" << endl;
 			tempStatus = FREE;
 			return tempStatus;
-		} else if (!nearestWall->isRight(x, y) && mindistW > rB/2) {
+		} else if (!nearestWall->isRight(x, y) && mindistW > rB / 2) {
 			tempStatus = STUCK;
 			return tempStatus;
 		}
@@ -809,9 +821,9 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 //			tempStatus = FREE;
 //		}
 
-		if (nearestCorner->isConvex() && mindistC > r0 + rB/2) {
+		if (nearestCorner->isConvex() && mindistC > r0 + rB / 2) {
 			tempStatus = FREE;
-		} else if (!nearestCorner->isConvex() && mindistC > rB/2) {
+		} else if (!nearestCorner->isConvex() && mindistC > rB / 2) {
 			tempStatus = STUCK;
 		}
 

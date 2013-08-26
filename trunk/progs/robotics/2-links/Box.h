@@ -220,12 +220,13 @@ public:
 	Box* prev;
 	bool visited;
 	bool shouldSplit2D;
+	int safeRanges;
 
 	Box(double xx, double yy, double w, double h) :
 			depth(1), x(xx), y(yy), width(w), height(h), isLeaf(true), isBig(
 					true), tChildID(-1), rChildID(-1), pParent(0), status(
 					UNKNOWN), pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(
-					false), shouldSplit2D(false) {
+					false), shouldSplit2D(false), safeRanges(0) {
 		rB = sqrt(width * width + height * height) / 2;
 		priority = Box::counter;
 
@@ -259,8 +260,8 @@ public:
 		double x = child->x;
 		double y = child->y;
 
-		//clearance+radius of the box (previous error: NOT 2*rB!)
-		double cl2r = 2 * child->rB + child->cl_m; //clearance + rB
+		//clearance+radius of the box
+		double cl2r = 2 * child->rB + child->cl_m; //clearance + 2 * rB
 
 		//
 		//compute the separation to walls
