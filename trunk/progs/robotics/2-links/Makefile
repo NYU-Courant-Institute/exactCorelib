@@ -323,13 +323,18 @@ eg5a egbug2a bug2a: ./2-links
 #  	(because dimensions came from xfig)
 eg6: ./2-links
 	@echo "Target DemoSE2_PRM (from Kavraki's group)"
-	./2-links $(interactive) 75 350 0 380 205 0\
-		5 15 DemoSE2_PRM.txt \
-		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+#	./2-links $(interactive) 75 350 0 380 205 0\
+#		5 15 DemoSE2_PRM.txt \
+#		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+#		$(Qtype) $(seed)  $(inputDir) \
+#		250 250 0.04 \
+#		&
+	./2-links $(interactive) 75 350 90 270 320 100 0 90\
+		8 60 40 DemoSE2_PRM.txt \
+		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		250 250 0.04 \
 		&
-
 # eg6a:  Variant of eg6a where their "robot" is shown.
 eg6a: ./2-links
 	@echo "Target DemoSE2_PRM (from Kavraki's group) -- their robot is shown"

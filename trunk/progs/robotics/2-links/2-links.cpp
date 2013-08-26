@@ -510,7 +510,7 @@ void processMouse(int button, int state, int x, int y) {
 			for (vector<Box*>::iterator it = boxClicked.begin();
 					it != boxClicked.end(); ++it) {
 				Box* tempBox = *it;
-				if (tempBox->status == FREE) {
+				if (tempBox->status == Box::FREE) {
 					if (tempBox->xi[0] != lastXi) {
 						tempStream << "L1 range: [" << tempBox->xi[0] << ", "
 								<< tempBox->xi[1] << "] "<<endl;
@@ -525,7 +525,7 @@ void processMouse(int button, int state, int x, int y) {
 			for (vector<Box*>::iterator it = boxClicked.begin();
 					it != boxClicked.end(); ++it) {
 				Box* tempBox = *it;
-				if (tempBox->status == FREE) {
+				if (tempBox->status == Box::FREE) {
 					if (tempBox->xi[2] != lastXi) {
 						tempStream << "L2 range: [" << tempBox->xi[2] << ", "
 								<< tempBox->xi[3] << "] "<<endl;

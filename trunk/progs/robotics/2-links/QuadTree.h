@@ -117,7 +117,7 @@ public:
 				if (allLeaf[i]->isFree()) {
 					return allLeaf[i];
 				}
-				if (allLeaf[i]->status == STUCK) {
+				if (allLeaf[i]->status == Box::STUCK) {
 					return 0;
 				}
 				q.push(allLeaf[i]);
@@ -149,7 +149,7 @@ public:
 					if (cldrn[i]->isFree()) {
 //						std::cout<<"getBox 153"<< endl;
 						return cldrn[i];
-					} else if (cldrn[i]->status == STUCK) {
+					} else if (cldrn[i]->status == Box::STUCK) {
 //						if (b->shouldSplit2D) {
 //							q.push(b);
 //						} else {

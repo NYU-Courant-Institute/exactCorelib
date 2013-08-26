@@ -531,8 +531,8 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 	this->isLeaf = false;
 //	vector<Box*> children;
 
-	for (int i = 0; i < l1SafeZone.size(); i++) {
-		for (int j = 0; j < l2SafeZone.size(); j++) {
+	for (int i = 0; i < (int)l1SafeZone.size(); i++) {
+		for (int j = 0; j < (int)l2SafeZone.size(); j++) {
 			Box* child = new Box(x, y, width, height);
 //					child->depth = this->depth + 1;
 			child->isBig = false;
@@ -683,7 +683,7 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 
 bool Box::split(double epsilon, vector<Box*>& chldn) {
 	if (this->height / 2 < epsilon
-			|| (twoStrategyOption > 0 && walls.size() + corners.size() <= phiB
+			|| (twoStrategyOption > 0 && (int)walls.size() + (int)corners.size() <= phiB
 					&& !shouldSplit2D)) {
 
 //		return split3D(epsilon, chldn);
@@ -1604,7 +1604,7 @@ vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges) {
 //	std::cout << "dstAngleRanges.size() = " << dstAngleRanges.size() << endl;
 	for (vector<AngleRange>::iterator it = dstAngleRanges.begin();
 			it != dstAngleRanges.end(); it++) {
-		AngleRange temp = *it;
+		//AngleRange temp = *it;
 //		std::cout << "hahahahaha dst angle range before=" << temp.lowerBound
 //				<< " " << temp.upperBound << endl;
 	}
@@ -1675,7 +1675,7 @@ vector<AngleRange> calcOppoZone(vector<AngleRange>& srcAngleRanges) {
 
 	for (vector<AngleRange>::iterator it = srcAngleRanges.begin();
 			it != srcAngleRanges.end(); it++) {
-		AngleRange temp = *it;
+		//AngleRange temp = *it;
 	}
 	std::sort(srcAngleRanges.begin(), srcAngleRanges.end(), sortAngleRanges);
 
