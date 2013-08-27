@@ -61,12 +61,17 @@ int interactive=0;                  // interactive or not:
                                     // <=0 means non-interactive, >0 means interactive.
 string inputDir("inputs"); 	    // Path for input files 
 string fileName("cube.txt"); 	    // Input file name (this is not used currently)
-string model("cone");	    // model can be "cylinder", "sphere", "trefoil", etc.
+string model("chain");	    // model can be "cylinder", "sphere", "trefoil", etc.
 string mode("wire");		    // mode can be "wire" or "face"
 GLsizei windowWidth = 512;	    // initial configuration box size
 GLsizei windowHeight = 512;
 GLsizei windowPosX = 200;           // initial Window position
 GLsizei windowPosY = 200;	
+
+/*The Rotation, Movement, Zoom in&out degree*/
+double rotDeg=1;
+double movDeg=10;
+double zoomDeg=1;
 
 double startX=0;                    //start postion of mouse press 
 double startY=0;
@@ -80,6 +85,7 @@ double rotX=0.0;                    //Initialize the rotation vector
 double rotY=0.0;
 double rotZ=0.0;
 
+bool centered=false;
 double centerX=0.0;                 //Initialize the center of the polyhedron
 double centerY=0.0;
 double centerZ=0.0;
@@ -89,7 +95,7 @@ double colorGap=1.0;               //This is for shading
 double scalar=1.0;                  //Initialize the scalar of the polyhedron
 double thetaX=0;
 double thetaY=0;
-double light[]={1,1,1,10,10,10};
+double light[]={1,1,1,100,100,100};
 
 /* Chee: new parameters */
 double radius=100.0;		  
@@ -151,14 +157,17 @@ void displayPoly(Solid *s){
 
   Vec<Face *> *fs=s->sfaces;
   colorGap=1.0/(fs->size());
-
+if (!centered){
   /*center of the polyhedron*/
   Vec<double> *c=s->center();
 
   /*center coordinates of the polyhedron*/
+
   centerX=(*c)[0];
   centerY=(*c)[1];
   centerZ=(*c)[2];
+  centered=true;
+}//if we do not have a center
 
   /*Wire Solids*/
  
@@ -226,6 +235,7 @@ void displayPoly(Solid *s){
     /*Now we have the loops*/
     Vec< Loop *> *ls=f->floops;
 
+    
     for (unsigned int j=0;j<ls->size();j++){
       
       /*Leading HalfEdge*/
@@ -238,8 +248,11 @@ void displayPoly(Solid *s){
       /*Start vertex*/
       Vertex *v=lhe->start;
       /*Let us add a light*/
-      double rate=255.0/pow(pow(v->getX()-light[3],2)+pow(v->getY()-light[4],2)+pow(v->getZ()-light[5],2),1);
+      double rate=255.0/pow(pow(v->getX()-light[3],2)+pow(v->getY()-light[4],2)+pow(v->getZ()-light[5],2),0.5);
       glColor3f(rate,0,0);
+	glEnable(GL_DEPTH_TEST);
+    //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    glClearDepth(1.0);	
       glBegin(GL_POLYGON);
 
       
@@ -268,7 +281,8 @@ void display(void){
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  Solid *s=(*(eo->solids))[0];
+  for (unsigned int i=0;i<eo->solids->size();i++){
+  Solid *s=(*(eo->solids))[i];
   
   /*Modify Scalar*/
   scalar=windowWidth/(s->diameter()+0.0)/4.0;
@@ -279,6 +293,7 @@ void display(void){
   //glRotatef(45,1,1,1);
   glTranslatef(-centerX,-centerY,-centerZ);
   displayPoly(s);
+  }
 
    glFlush();
 
@@ -289,8 +304,6 @@ void displayWithoutScalar(void){
   glClear(GL_COLOR_BUFFER_BIT);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-
-  Solid *s=(*(eo->solids))[0]; 
   
   //scalar=1.0;
 
@@ -303,7 +316,10 @@ void displayWithoutScalar(void){
   glRotatef(rotX,0,1,0);
   glRotatef(rotY,-1,0,0);	
 
+  for (unsigned int i=0;i<eo->solids->size();i++){
+  	Solid *s=(*(eo->solids))[i];
   displayPoly(s);
+  }
 
   glFlush();
 }//display without scalar
@@ -335,8 +351,8 @@ void holdMouse(int x, int y){
     glVertex2i(x,wh-y);
     glEnd();
     glFlush();*/
-
-   Solid *s=(*(eo->solids))[0]; 
+//for (int i=0;i<eo->solids->size();i++){
+  // Solid *s=(*(eo->solids))[i]; 
    // Chee: es is unused:
    //       vector<Edge *> *es=s->sedges;
    //cout<<"CENTERx="<<centerX<<endl;
@@ -373,7 +389,7 @@ void holdMouse(int x, int y){
   glTranslatef(-centerX,-centerY,-centerZ);
 
       
-  displayPoly(s); 
+  displayWithoutScalar(); 
 
   /*glBegin(GL_LINES);
   for (unsigned int i=0;i<es->size();i++){
@@ -385,7 +401,7 @@ void holdMouse(int x, int y){
 
   }
    glEnd();*/
-
+//}
    glBegin(GL_POINTS);
    glPointSize(50);
    glVertex3f(centerX,centerY,centerZ);
@@ -401,32 +417,52 @@ void holdMouse(int x, int y){
 /*Key Pressed*/
 void keyPressed(unsigned char key, int x, int y){
 	if (key=='+'){
-		scalar++;
+		scalar+=zoomDeg;
 		displayWithoutScalar();
 	}
 	
 	if (key=='-'){
-		scalar--;
+		scalar-=zoomDeg;
 		displayWithoutScalar();
 	}
    
   	if (key=='a'||key=='A'){
-		rotX++;
+		rotX+=rotDeg;
 		displayWithoutScalar();
 	}
 	
  	if (key=='d'||key=='D'){
-		rotX--;
+		rotX-=rotDeg;
 		displayWithoutScalar();
 	}
 	
 	if (key=='w'||key=='W'){
-		rotY--;
+		rotY-=rotDeg;
 		displayWithoutScalar();
 	}
 
 	if (key=='s'||key=='S'){
-		rotY++;
+		rotY+=rotDeg;
+		displayWithoutScalar();
+	}
+	
+	if (key=='j'||key=='J'){
+		centerX+=movDeg;
+		displayWithoutScalar();
+	}
+	
+	if (key=='l'||key=='L'){
+		centerX-=movDeg;
+		displayWithoutScalar();
+	}
+	
+	if (key=='i'||key=='I'){
+		centerY-=movDeg;
+		displayWithoutScalar();
+	}
+	
+	if (key=='k'||key=='K'){
+		centerY+=movDeg;
 		displayWithoutScalar();
 	}
 }
@@ -467,14 +503,14 @@ int main(int argc,char **argv){
 
       eo=new Euler_Ops();
 	//double par[argc-3];
-	double par[]={5,1,50,20,8,1,5,8,8,1,6};
+	//double par[]={5,1,50,20,8,1,5,8,8,1,6};
 	/************************** Chee commented this out:
 	  for (int i=0;i<argc-3;i++)
 		par[i]=atof(argv[i+3]);
 	  for (int i=0;i<3;i++)
 		cout<<par[i]<<endl;
 	************************* */
-	if (model.compare("table")==0)
+	/*if (model.compare("table")==0)
 	{
 		par[0] = radius;	//table rad
 		par[1] = height; 	//table ht
@@ -495,9 +531,9 @@ int main(int argc,char **argv){
 		par[1] = height; // or "radius2"
 		par[2] = nsegments;
 		par[3] = nsections;
-	}
+	}*/
 
-	eo->prim(model,par);
+	eo->prim(model);
 	//(*(eo->solids))[0]->print();
 
 	
@@ -581,7 +617,7 @@ int main(int argc,char **argv){
    MyInit();
 
 /*Display the polyhedron and manage rotation*/
-   glutDisplayFunc(display);
+   glutDisplayFunc(displayWithoutScalar);
    glutMouseFunc(pressMouse);
    glutMotionFunc(holdMouse);
    glutKeyboardFunc(keyPressed);

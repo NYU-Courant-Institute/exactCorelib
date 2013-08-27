@@ -163,7 +163,7 @@ public:
   /*mekr for vector*/
   int mekr(Vec<double> *v){
       if (v->size()==6){
-            return mekr((Id)((*v)[0]),(Id)((*v)[1]),(Id)((*v)[2]),(Id)((*v)[3])),(Id)((*v)[4]),(Id)((*v)[5]);
+            return mekr((Id)((*v)[0]),(Id)((*v)[1]),(Id)((*v)[2]),(Id)((*v)[3]),(Id)((*v)[4]),(Id)((*v)[5]));
       }
       if (v->size()==4){
             return mekr((Id)((*v)[0]),(Id)((*v)[1]),(Id)((*v)[2]),(Id)((*v)[3]));
@@ -214,7 +214,8 @@ public:
   }
 
 /*primitives*/
-Solid* prim(string name,double size[]);
+Solid* prim(string name);
+Solid* prim(string name,int solidNum);
 
 /*x y and z*/
 double modelX(double t){
@@ -224,6 +225,7 @@ double modelX(string type,double t){
 	if (type.compare("trefoil")==0)	{
 		return sin(t)+2*sin(2*t);
 	}
+	return 1.0;
 }//modelX
 double dirX(double t){
 	return dirX("trefoil",t);
@@ -232,6 +234,7 @@ double dirX(string type,double t){
 	if (type.compare("trefoil")==0){
 		return cos(t)+4*cos(2*t);
 	}
+	return 1.0;
 }//dirX
 double modelY(double t){
 	return modelY("trefoil",t);
@@ -242,6 +245,7 @@ double modelY(string type,double t){
 		//cout << x<<endl;
 		return x;
 	}
+	return 1.0;
 }//modelY
 double dirY(double t){
 	return dirY("trefoil",t);
@@ -250,6 +254,7 @@ double dirY(string type,double t){
 	if (type.compare("trefoil")==0){
 		return -sin(t)+4*sin(2*t);
 	}
+	return 1.0;
 }//dirX
 double modelZ(double t){
 	return modelZ("trefoil",t);
@@ -258,6 +263,7 @@ double modelZ(string type,double t){
 	if (type.compare("trefoil")==0){
 		return -sin(3*t);
 	}
+	return 1.0;
 }//modelZ
 double dirZ(double t){
 	return dirZ("trefoil", t);
@@ -266,6 +272,7 @@ double dirZ(string type,double t){
 	if (type.compare("trefoil")==0){
 		return -3*cos(3*t);
 	}
+	return 1.0;
 }//modelZ
 
 double* rotate(double* dir,double* v, double theta,double* result){
