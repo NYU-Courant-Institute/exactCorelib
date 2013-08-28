@@ -57,8 +57,8 @@
 # 	the subdirectory "inputs".   
 #
 #
-# April 13, 2012
-# Author: Zhongdi Luo, May 2013
+# April 13, 2012 - Sep 2013
+# Author: Zhongdi Luo and Chee Yap
 #
 # Since Core Library 2.1
 # $Id:$
@@ -113,6 +113,9 @@ scale = 1		# scaling of input file
 verbose = 0		# if true, display statistics
 title = Demos		# Title of control panel
 
+threshold = 2		# threshold for angular split: if |phi(B)| <= threshold,
+			#	then we may do angular split
+			# threshold = 0,1,2,...
 #=================================================
 # Define target files (put all your files here)
 #=================================================
@@ -182,6 +185,7 @@ egx: ./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
+		$(threshold) \
 		&
 
 # run with default compiled options:
@@ -203,6 +207,7 @@ egb:	./2-links
 		$(Qtype) 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
+		$(threshold) \
 		&
 
 # Simple NO PATH example:
@@ -215,18 +220,20 @@ nopath eg0:	./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
+		$(threshold) \
 		&
 
-# eg1:	input2e.txt is like input2, but there is a bounding box
-#eg1: ./2-links
-#	@echo "Target eg1:  runs 2-links on input2e.txt (which has a bounding box)"
-#	./2-links $(interactive) 150 260 90 40 40 -60 \
-#		10 25 input2e.txt \
-#		512 512 $(windowPosX) $(windowPosY) \
-#		1 1111 $(inputDir) \
-#		$(xtrans) $(ytrans) $(scale) \
-#		$(verbose) $(title) \
-#		&
+eg1: ./2-links
+	@echo "Target eg1: 3 obstacles" 
+	./2-links $(interactive) 195 370 0 150 345 180 270 0\
+		8 50 80 basic3.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		0 0 1 \
+		$(verbose) $(title) \
+		$(threshold)
+		&
+
 
 # eg2: input 2.text, no bounding box
 #eg2: ./2-links
@@ -264,6 +271,7 @@ eg4 egbug bug: ./2-links
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
+		$(threshold) \
 		&
 
 # Bugtrap example -- Non-existence of path, but barely!
@@ -278,6 +286,7 @@ eg4a egbuga buga: ./2-links
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
+		$(threshold) \
 		&
 
 
@@ -298,6 +307,7 @@ eg5 egbug2 bug2: ./2-links
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
+		$(threshold) \
 		&
 
 # Bugtrap2 example -- Non-Existence of path.
@@ -316,6 +326,7 @@ eg5a egbug2a bug2a: ./2-links
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
+		$(threshold) \
 		&
 
 # eg6: This environment is taken from Kavraki's groups Demo for OOPSMP:
@@ -420,6 +431,8 @@ eg8a hsua: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-70 -70 0.065 \
+		$(verbose) $(title) \
+		$(threshold)
 		&
 
 eg8b hsub: ./2-links
@@ -431,6 +444,8 @@ eg8b hsub: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-70 -70 0.065 \
+		$(verbose) $(title) \
+		$(threshold)
 		&
 
 
@@ -443,6 +458,8 @@ eg9 narrow: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 0.065 \
+		$(verbose) $(title) \
+		$(threshold)
 		&
 		
 eg10 twoChambers: ./2-links
@@ -454,6 +471,8 @@ eg10 twoChambers: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
+		$(verbose) $(title) \
+		$(threshold)
 		&
 
 eg10a twoChambersa: ./2-links
@@ -463,6 +482,8 @@ eg10a twoChambersa: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		0 $(seed)  $(inputDir) \
 		-220 0 0.065 \
+		$(verbose) $(title) \
+		$(threshold)
 		&
 		
 eg10b twoChamberb: ./2-links
@@ -472,6 +493,8 @@ eg10b twoChamberb: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
+		$(verbose) $(title) \
+		$(threshold)
 		&
 
 eg11 nestedRectangle: ./2-links
@@ -483,40 +506,11 @@ eg11 nestedRectangle: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-220 0 0.065 \
+		$(verbose) $(title) \
+		$(threshold)
 		&
 
-basic1 eg1 : ./2-links
-	@echo "Target basic1: basic test 1 from Zhongdi"
-#	@echo "	There is a path passage... when radius=6, epsilon=1"
-#	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./2-links $(interactive) 195 370 0 150 195 160 270 0\
-		32 50 80 basic1.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		0 0 1 \
-		&
 		
-basic2 eg2: ./2-links
-	@echo "Target basic1: basic test 2 from Zhongdi"
-#	@echo "	There is a path passage... when radius=6, epsilon=1"
-#	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./2-links $(interactive) 195 370 0 150 195 160 270 0\
-		32 50 80 basic2.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		0 0 1 \
-		&
-		
-basic3 eg3: ./2-links
-	@echo "Target basic3: basic test 2 from Zhongdi"
-#	@echo "	There is a path passage... when radius=6, epsilon=1"
-#	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./2-links $(interactive) 195 370 0 150 345 180 270 0\
-		8 50 80 basic3.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		0 0 1 \
-		&
 
 # RANDOMLY GENERATED ENVIRONMENT:
 #	This one, generated using our Python Generator, has 200 2-links.
