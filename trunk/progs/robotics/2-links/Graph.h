@@ -145,12 +145,19 @@ public:
 class DistCmp {
 public:
 	bool operator()(const Box* a, const Box* b) {
-		double distDiff = ((a->x - beta[0]) * (a->x - beta[0])
-				+ (a->y - beta[1]) * (a->y - beta[1]))
-						* (a->shouldSplit2D?2:1)
-				- ((b->x - beta[0]) * (b->x - beta[0])
-						+ (b->y - beta[1]) * (b->y - beta[1]))
-						* (b->shouldSplit2D?2:1)
+//		std::cout<< a->safeRanges<<endl;
+//		std::cout<< b->safeRanges<<endl;
+
+		double distDiff = sqrt(
+				(a->x - beta[0]) * (a->x - beta[0])
+						+ (a->y - beta[1]) * (a->y - beta[1]))
+				* (a->shouldSplit2D ? 5 : 1)
+				/ (a->safeRanges == 0 ? 1 : 1 + 0.2 * a->safeRanges)
+				- sqrt(
+						(b->x - beta[0]) * (b->x - beta[0])
+								+ (b->y - beta[1]) * (b->y - beta[1]))
+						* (b->shouldSplit2D ? 5 : 1)
+						/ (b->safeRanges == 0 ? 1 : 1 + 0.2 * b->safeRanges)
 						;
 		return distDiff > 0;
 	}
@@ -163,9 +170,14 @@ public:
 		double distDiff = sqrt(
 				(a->x - beta[0]) * (a->x - beta[0])
 						+ (a->y - beta[1]) * (a->y - beta[1]))
+//				* (a->shouldSplit2D ? 5 : 1)
+//				/ (a->safeRanges == 0 ? 1 : 1 + a->safeRanges)
 				- sqrt(
-						((b->x - beta[0]) * (b->x - beta[0])
-								+ (b->y - beta[1]) * (b->y - beta[1])));
+						(b->x - beta[0]) * (b->x - beta[0])
+								+ (b->y - beta[1]) * (b->y - beta[1]))
+//						* (b->shouldSplit2D ? 5 : 1)
+//						/ (b->safeRanges == 0 ? 1 : 1 + b->safeRanges)
+						;
 		double wDiff = 1 / a->width - 1 / b->width;
 		double c = 0.0001;
 		return c * distDiff + wDiff > 0;

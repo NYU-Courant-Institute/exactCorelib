@@ -146,7 +146,7 @@ bool hideBoxBoundary = false;  		// don't draw box boundary
 bool verboseOption = false;		// don't print various statistics
 int twoStrategyOption = 0; // 2-Stage-Stratege or not
 string title("2-links Robot Demos");	// title for control panel
-int phiB = 1;
+int sizeOfPhiB = 0;
 
 vector<Box*> PATH;
 
@@ -342,16 +342,18 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 					}
 				}
 			}
-			if(current->shouldSplit2D){
+			if (current->shouldSplit2D) {
 				dijQ.push(current);
 			}
+
 			continue;
 		}
 
 //		cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!302 a->dist2Source  "
 //				<< a->dist2Source << endl;
 		//found path!
-		if (current == b) {
+		if (current->status == Box::FREE
+				&& current->contains(beta[0], beta[1], beta[2], beta[3])) {
 			isPath = true;
 			break;
 		}
@@ -437,13 +439,11 @@ void TimerFunction(int p) {
 //	}
 //}
 
-bool sortByXi0( const Box* b1, const Box* b2)
-{
-    return b1->xi[0] < b2->xi[0];
+bool sortByXi0(const Box* b1, const Box* b2) {
+	return b1->xi[0] < b2->xi[0];
 }
-bool sortByXi2( const Box* b1, const Box* b2)
-{
-    return b1->xi[2] < b2->xi[2];
+bool sortByXi2(const Box* b1, const Box* b2) {
+	return b1->xi[2] < b2->xi[2];
 }
 
 void processMouse(int button, int state, int x, int y) {
@@ -505,7 +505,7 @@ void processMouse(int button, int state, int x, int y) {
 					<< boxClicked.front()->y << " width: "
 					<< boxClicked.front()->width << endl;
 
-			std::sort(boxClicked.begin(),boxClicked.end(),sortByXi0);
+			std::sort(boxClicked.begin(), boxClicked.end(), sortByXi0);
 			double lastXi = 361.0;
 			for (vector<Box*>::iterator it = boxClicked.begin();
 					it != boxClicked.end(); ++it) {
@@ -513,14 +513,14 @@ void processMouse(int button, int state, int x, int y) {
 				if (tempBox->status == Box::FREE) {
 					if (tempBox->xi[0] != lastXi) {
 						tempStream << "L1 range: [" << tempBox->xi[0] << ", "
-								<< tempBox->xi[1] << "] "<<endl;
+								<< tempBox->xi[1] << "] " << endl;
 						lastXi = tempBox->xi[0];
 					}
 
 				}
 			}
 
-			std::sort(boxClicked.begin(),boxClicked.end(),sortByXi2);
+			std::sort(boxClicked.begin(), boxClicked.end(), sortByXi2);
 			lastXi = 361.0;
 			for (vector<Box*>::iterator it = boxClicked.begin();
 					it != boxClicked.end(); ++it) {
@@ -528,13 +528,11 @@ void processMouse(int button, int state, int x, int y) {
 				if (tempBox->status == Box::FREE) {
 					if (tempBox->xi[2] != lastXi) {
 						tempStream << "L2 range: [" << tempBox->xi[2] << ", "
-								<< tempBox->xi[3] << "] "<<endl;
+								<< tempBox->xi[3] << "] " << endl;
 						lastXi = tempBox->xi[2];
 					}
 				}
 			}
-
-
 
 			boxSelectedInfo->set_text(tempStream.str().c_str());
 		}
@@ -592,6 +590,8 @@ int main(int argc, char* argv[]) {
 		verboseOption = atoi(argv[24]);	// verboseOption
 	if (argc > 25)
 		title = argv[25];		// title
+	if (argc > 26)
+		sizeOfPhiB = atoi(argv[26]);		// threshold for splitting angles  |Phi(B)|
 
 // Added by Zhongdi 05/08/2013 begin
 // calculate the R of the robot
@@ -785,7 +785,8 @@ int main(int argc, char* argv[]) {
 		glui->add_radiobutton_to_group(radioQType, "BFS");
 		glui->add_radiobutton_to_group(radioQType, "Greedy");
 		glui->add_radiobutton_to_group(radioQType, "Dist+Size");
-		glui->add_radiobutton_to_group(radioQType, "Voronoi Heuristic(deprecated)");
+		glui->add_radiobutton_to_group(radioQType,
+				"Voronoi Heuristic(deprecated)");
 
 		glui->add_separator();
 		radioQType->set_int_val(QType);
@@ -811,11 +812,10 @@ int main(int argc, char* argv[]) {
 				"Split Until Epsilon");
 		glui->add_radiobutton_to_group(radio2StrategyOption,
 				"Smarter Strategy");
-		textPhiB = glui->add_edittext(
-						"Phi(B) = ", GLUI_EDITTEXT_INT);
-		textPhiB->set_int_val(phiB);
+		textPhiB = glui->add_edittext("Phi(B) = ", GLUI_EDITTEXT_INT);
+		textPhiB->set_int_val(sizeOfPhiB);
 		glui->add_radiobutton_to_group(radio2StrategyOption,
-						"Smarter Strategy With Voronoi Approach");
+				"Smarter Strategy With Voronoi Approach");
 
 		radio2StrategyOption->set_int_val(twoStrategyOption);
 		glui->add_separator();
@@ -1070,7 +1070,7 @@ void run() {
 	buttonReplay->set_name("Replay Spliting");
 	buttonAnimation->set_name("Path Animation");
 	twoStrategyOption = radio2StrategyOption->get_int_val();
-	phiB = textPhiB->get_int_val();
+	sizeOfPhiB = textPhiB->get_int_val();
 
 	if (interactive == 0) {
 		//update from glui live variables
@@ -1556,9 +1556,10 @@ void drawQuad(Box* b) {
 //	cout<<"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"<<endl;
 	switch (b->status) {
 	case Box::FREE:
-		if(b->xi[0] != 0 || b->xi[1] != 360 || b->xi[2] != 0 || b->xi[3] != 360){
+		if (b->xi[0] != 0 || b->xi[1] != 360 || b->xi[2] != 0
+				|| b->xi[3] != 360) {
 			glColor4f(0.6, 0.7, 0.25, 0.8);
-		}else{
+		} else {
 			glColor4f(0.25, 1, 0.25, 0.8);
 		}
 		break;
@@ -1686,7 +1687,6 @@ void renderScene(void) {
 
 	hideBoxBoundary = radioDrawOption->get_int_val();
 	verboseOption = radioVerboseOption->get_int_val();
-
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

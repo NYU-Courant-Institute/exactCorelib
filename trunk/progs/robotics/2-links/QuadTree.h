@@ -110,7 +110,7 @@ public:
 	//bfs search for alpha/beta return the box which has the specific configuration
 	Box* getBox(double x, double y, double a1, double a2, int& ct) {
 		std::queue<Box*> q;
-
+//		std::cout << "getBox 113" << endl;
 		for (int i = 0; i < (int) allLeaf.size(); ++i) {
 			if (allLeaf[i]->contains(x, y, a1, a2)) {
 				//TODO added by Zhongdi 7/22/2013
@@ -118,21 +118,25 @@ public:
 					return allLeaf[i];
 				}
 				if (allLeaf[i]->status == Box::STUCK) {
+					std::cout << "getBox 121" << endl;
 					return 0;
 				}
 				q.push(allLeaf[i]);
 			}
 		}
-//		std::cout<<"getBox 124"<< endl;
+//		std::cout << "getBox 127" << endl;
 
 		while (q.size()) {
 			Box* b = q.front();
+
 			q.pop();
+
 			//TODO could be deleted
 			if (!b->isLeaf) {
 //				cout << "This is Wrong" << endl;
 //				cout << "getbox 134: x = " << b->x << " y = " << b->y
 //						<< " width = " << b->width << endl;
+//				std::cout << "getBox 139" << endl;
 				continue;
 			}
 
@@ -140,6 +144,20 @@ public:
 			if (!expand(b, cldrn)) {
 //				std::cout<<"getBox 142"<< endl;
 //				return 0;
+//				std::cout << "getBox 147" << endl;
+				// Since the smarter strategy added, only knowing return code true/false is not enough to determine next move
+				if (!b->shouldSplit2D) {
+					continue;
+				}
+			}
+
+//			std::cout << "getBox 149" << endl;
+			if (b->shouldSplit2D) {
+				q.push(b);
+//				std::cout << q.size() << endl;
+//				if (q.size() > 0) {
+//					std::cout << q.front()->x << " " << q.front()->y << endl;
+//				}
 				continue;
 			}
 			++ct;
@@ -147,21 +165,35 @@ public:
 			for (int i = 0; i < (int) cldrn.size(); ++i) {
 				if (cldrn[i]->contains(x, y, a1, a2)) {
 					if (cldrn[i]->isFree()) {
+//						if(b->shouldSplit2D){
+//							q.push(b);
+//							break;
+//						}
 //						std::cout<<"getBox 153"<< endl;
 						return cldrn[i];
 					} else if (cldrn[i]->status == Box::STUCK) {
 //						if (b->shouldSplit2D) {
+//							std::cout << q.size() << endl;
 //							q.push(b);
+//							std::cout << "after push stuck" << q.size() << endl;
+//							break;
 //						} else {
-							return 0;
+						return 0;
 //						}
-
 					} else {
+//						if (b->shouldSplit2D) {
+//							std::cout << q.size() << endl;
+//							q.push(b);
+//							std::cout << "after push mixed" << q.size() << endl;
+//							break;
+//						} else {
 						q.push(cldrn[i]);
+//						}
 
 					}
 				}
 			}
+//			std::cout << "getBox 188" << endl;
 
 		}
 //		std::cout<<"getBox 160"<< endl;
@@ -176,12 +208,11 @@ public:
 	//expand and put children ptr in cldrn
 	bool expand(Box* b, vector<Box*>& cldrn) {
 		if (!b->split(epsilon, cldrn)) {
-//			std::cout<<"expand 177"<<endl;
+//			std::cout<<"expand 207"<<endl;
 			return false;
 		}
 
 		for (int i = 0; i < (int) cldrn.size(); ++i) {
-//			glutPostRedisplay();
 			//TODO determine whether it is fine to delete this
 //			cldrn[i]->updateStatus();
 			insertNode(cldrn[i]);
@@ -201,11 +232,12 @@ public:
 
 			//b might not be a leaf since it could already be split in expand(Box* b), and PQ is not updated there
 			if (b->split(epsilon, cldrn)) {
+//				cout<< "expand() 231"<<endl;
 				assert(b->status == Box::MIXED);
 
 				for (int i = 0; i < (int) cldrn.size(); ++i) {
 
-					cldrn[i]->updateStatus();
+//					cldrn[i]->updateStatus();
 					insertNode(cldrn[i]);
 				}
 				return true;

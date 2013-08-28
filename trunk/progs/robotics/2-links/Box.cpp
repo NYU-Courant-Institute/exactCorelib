@@ -15,7 +15,7 @@
 
 extern int twoStrategyOption;
 extern QuadTree* QT;
-extern int phiB;
+extern int sizeOfPhiB;
 
 double Box::r0 = 0;
 double Box::l1 = 0;
@@ -282,7 +282,7 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 				(double) w->dst->x, (double) w->dst->y,
 				this->x - this->width / 2, this->y + this->height / 2,
 				this->x + this->width / 2, this->y - this->height / 2)) {
-			this->status = STUCK;
+			this->status = MIXED;
 			return 0;
 		}
 
@@ -471,10 +471,12 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 					}
 				}
 				//TODO modified by Zhongdi 08/22/2013, we should always check both endpoints
-				if (checkSrc) {
+				if (true || checkSrc) {
 //					std::cout << "checkSrc == true " << endl;
 					AngleRange tempAngleRange = calcAngleRangeCB(tempL,
 							(double) w->src->x, (double) w->src->y, this);
+//					std::cout << "checkSrc tempAngleRange= " << tempAngleRange.lowerBound
+//												<< " " << tempAngleRange.upperBound << endl;
 
 					if (tempAngleRange.lowerBound != 0
 							|| tempAngleRange.upperBound != 0) {
@@ -486,10 +488,13 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 					}
 				}
 				//TODO modified by Zhongdi 08/22/2013, we should always check both endpoints
-				if (checkDst) {
+				if (true || checkDst) {
 //					std::cout << "checkDst == true " << endl;
 					AngleRange tempAngleRange = calcAngleRangeCB(tempL,
 							(double) w->dst->x, (double) w->dst->y, this);
+
+//					std::cout << "checkDst tempAngleRange= " << tempAngleRange.lowerBound
+//							<< " " << tempAngleRange.upperBound << endl;
 
 					if (tempAngleRange.lowerBound != 0
 							|| tempAngleRange.upperBound != 0) {
@@ -504,13 +509,17 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 		}
 	}
 	l1ForbidenZone = calcZone(l1AngleRanges);
+//	std::cout << "l1ForbidenZone.size= " << l1ForbidenZone.size() << endl;
 //	std::cout << "l1ForbidenZone[0]= " << l1ForbidenZone[0].lowerBound << " "
 //			<< l1ForbidenZone[0].upperBound << endl;
 	l2ForbidenZone = calcZone(l2AngleRanges);
+//	std::cout << "l2ForbidenZone.size= " << l2ForbidenZone.size() << endl;
 	l1SafeZone = calcOppoZone(l1ForbidenZone);
 //	std::cout << "l1SafeZone[0]= " << l1SafeZone[0].lowerBound << " "
 //			<< l1SafeZone[0].upperBound << endl;
 	l2SafeZone = calcOppoZone(l2ForbidenZone);
+//	std::cout << "l1SafeZone[0]= " << l1SafeZone[0].lowerBound << " "
+//				<< l1SafeZone[0].upperBound << endl;
 
 //	std::cout << "Box::splitAngle safezone calculated" << endl;
 	if (twoStrategyOption == 2) {
@@ -562,16 +571,19 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 					if (idx != -1) {
 						child->Nhbrs[idx].push_back(b);
 //						if (foundDst == 0) {
-						for (vector<Box*>::iterator itBNhbrsOppo =
-								b->Nhbrs[oppositeDir[idx]].begin();
-								itBNhbrsOppo != b->Nhbrs[oppositeDir[idx]].end();
-								++itBNhbrsOppo) {
-							if (*itBNhbrsOppo == this) {
-								*itBNhbrsOppo = child;
-								b->Nhbrs[oppositeDir[idx]].erase(itBNhbrsOppo);
-								break;
-							}
-						}
+						//TODO commented by Zhongdi 08/27/2013
+//						for (vector<Box*>::iterator itBNhbrsOppo =
+//								b->Nhbrs[oppositeDir[idx]].begin();
+//								itBNhbrsOppo != b->Nhbrs[oppositeDir[idx]].end();
+//								++itBNhbrsOppo) {
+//							if (*itBNhbrsOppo == this) {
+//								*itBNhbrsOppo = child;
+//								//TODO deleted by Zhongdi 08/27/2013 need to further check this line when using smarter strategy
+////								b->Nhbrs[oppositeDir[idx]].erase(itBNhbrsOppo);
+//								break;
+//							}
+//						}
+
 //						} else {
 						b->Nhbrs[oppositeDir[idx]].push_back(child);
 //						}
@@ -683,7 +695,7 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 
 bool Box::split(double epsilon, vector<Box*>& chldn) {
 	if (this->height / 2 < epsilon
-			|| (twoStrategyOption > 0 && (int)walls.size() + (int)corners.size() <= phiB
+			|| (twoStrategyOption > 0 && (int)walls.size() + (int)corners.size() <= sizeOfPhiB
 					&& !shouldSplit2D)) {
 
 //		return split3D(epsilon, chldn);
@@ -699,7 +711,7 @@ bool Box::split(double epsilon, vector<Box*>& chldn) {
 //				std::cout  << endl;
 //			}
 
-//			std::cout << "split 604" << endl;
+//			std::cout << "split 711" << endl;
 			bool result = splitAngle(epsilon, chldn);
 
 			isLeaf = true;
@@ -707,7 +719,8 @@ bool Box::split(double epsilon, vector<Box*>& chldn) {
 			shouldSplit2D = true;
 			visited = false;
 //			dist2Source = -1;
-
+//			std::cout << "split 719" << endl;
+//			std::cout << "split 720" << endl;
 			return result;
 
 		}
@@ -729,7 +742,7 @@ bool Box::split(double epsilon, vector<Box*>& chldn) {
 //		return true;
 //	}
 	else {
-//		std::cout << "split 622" << endl;
+//		std::cout << "split 741" << endl;
 		return split2D(epsilon, chldn);
 	}
 }
