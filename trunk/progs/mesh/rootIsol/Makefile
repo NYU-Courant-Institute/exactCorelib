@@ -43,6 +43,7 @@ mk: main.o tmp-display.o
 # Sample examples for testing only (cited from 
 # krawczyk examples)
 #=================================================
+eg: eg1
 
 # Intersecting a parabola and the unit circle:
 eg1: ${TARGETS}
