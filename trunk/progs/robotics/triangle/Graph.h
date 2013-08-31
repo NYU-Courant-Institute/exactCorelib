@@ -12,6 +12,7 @@ using namespace std;
 
 extern double beta[3];
 
+// Greedy search strategy uses this for computing the final path from alpha to beta:
 class distCmp
 {
 public:
@@ -189,6 +190,7 @@ private:
     distHeap<distCmp> dist_heap;
 
 public:
+    	// returns a vector of boxes representing a path from a to b:
 	vector<Box*> dijkstraShortestPath(Box* a, Box* b)
 	{
 		a->dist2Source = 0;

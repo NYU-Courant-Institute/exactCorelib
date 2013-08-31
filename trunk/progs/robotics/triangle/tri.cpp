@@ -292,6 +292,8 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct)
 		// if current is not MIXED, then must be FREE
 		// go through it's neighbors and add FREE and MIXED ones to dijQ
 		// also add FREE ones to source set 
+	      if (current->status == Box::FREE){ // bug fix by Zhongdi (Aug 19, 2013)
+		  				 // -- added if(status==FREE) test
 		for (int i = 0; i < 6; ++i)
 		{
 			for (vector<Box*>::iterator iter = current->Nhbrs[i].begin(); iter < current->Nhbrs[i].end(); ++iter)
@@ -307,7 +309,8 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct)
 					toReset.push_back(neighbor);
 				}
 			}
-		}
+		}//for
+	       }//if (bug fix)
 	}
 
 	//these two fields are also used in dijkstraShortestPath
