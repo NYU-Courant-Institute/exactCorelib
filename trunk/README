@@ -135,6 +135,7 @@ README FILE: TABLE OF CONTENTS
        python/       Python interface to Core Library.
        win32/        Windows related files (can be deleted for unix-base)
        bin/          executable programs (mostly for development currently)
+       cmake/        directory for CMake builds and modules
        builds/       directory for building gmp and mpfr (it is possible
                          to delete this directory if you don't need it later)
        gmp/          gmp installation directory (may be a link).  This
