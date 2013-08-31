@@ -78,11 +78,37 @@ ht = 10			# height
 hor = 30		# horizontal dim
 ver = 20		# vertical dim
 
+ht2=40  		# height 2: second part of the model
+
+#alias of the variables
+radius=$(rad)
+height=$(ht)
+nsegments=$(hor)
+nsections=$(ver)
+height2=$(ht2)
+
+nsegments2=5		# nsegment2: how many segments in the second part
+nsections2=1		# nsections2: how many sections in the second part
+nparts=10		
+nparts2=20
+
+position2=80		# the position of the second part of the polyhedron: Like the distance from the leg to the center
+position3=90		# the potition of the third part of the polyhedron: Like how many
+thickness3=10
+height3=50
+
+
+rotUnitX=5
+rotUnitY=5
+rotUnitZ=5
+
+lightRate=0.55
 # trefoil
 rad1 = 40		# thickness of cross-section of knot
-rad2 = 10		# diameter of overall trefoil knot
+rad2 = 10		# diameter of overall trefoil knotf
 nsections = 50		# number of cross-sections in trefoil 
 nsegments = 4		# number of segments in each cross-section
+
 
 ## unused:
 xtrans = 5		# x-translation of the input data 
@@ -97,7 +123,7 @@ SUBDIRS = .
 SRCS=$(wildcard $(addsuffix /*.cpp,$(SUBDIRS)))
 OBJS=${SRCS:.cpp=.o}
 OBJ_FILES = $(OBJS)
-CXXFLAGS += -MMD
+CXXFLAGS += -MMD -lGL -lGLU -lglui -lglut
 
 all: $(TARGETS)
 
@@ -140,19 +166,25 @@ egx:	gwb
 eg0 facehemi:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-	    	$(mode) hemisphere 6 20 20
+	    	face hemisphere 200 $(height) 20 20 $(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) $(position3) $(thickness3) $(height3) 0.55
+eg0x:	gwb
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+	    	$(mode) hemisphere $(rad1) $(ht) $(nsegments) $(nsections) $(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) $(position3) $(thickness3) $(height3) $(lightRate)
 
 #eg1 sphere
 eg1 sphere:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-	    	$(mode) sphere 6 20 20
+	    	$(mode) sphere 200 $(height) 20 20
 
 #eg2 torus
 eg2 donut torus :	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-	    	$(mode) torus 6 4 20 20
+	    	$(mode) torus 200 $(height) 20 20 $(height2) 50
 
 eg2x torusx:
 	./gwb $(interactive) $(inputDir) $(fileName) \
@@ -256,7 +288,7 @@ vi:
 .SUFFIXES: .cpp
 
 %: %.o
-	${CXX} $(OBJ_FILES) $(LDFLAGS) $(CORE_LIB) -o $@
+	${CXX} $(OBJ_FILES) $(LDFLAGS) $(CORE_LIB) -o $@ $(CXXFLAGS)
 
 .cpp.o:
 	${CXX} $(CXXFLAGS) $(CORE_INC) -c $< -o $@

@@ -85,6 +85,8 @@ double rotX=0.0;                    //Initialize the rotation vector
 double rotY=0.0;
 double rotZ=0.0;
 
+double lightRate=1.0;
+
 bool centered=false;
 double centerX=0.0;                 //Initialize the center of the polyhedron
 double centerY=0.0;
@@ -248,7 +250,7 @@ if (!centered){
       /*Start vertex*/
       Vertex *v=lhe->start;
       /*Let us add a light*/
-      double rate=255.0/pow(pow(v->getX()-light[3],2)+pow(v->getY()-light[4],2)+pow(v->getZ()-light[5],2),0.5);
+      double rate=255.0/pow(pow(v->getX()-light[3],2)+pow(v->getY()-light[4],2)+pow(v->getZ()-light[5],2),lightRate);
       glColor3f(rate,0,0);
 	glEnable(GL_DEPTH_TEST);
     //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -497,6 +499,16 @@ int main(int argc,char **argv){
 	if (argc > 16) rotUnitX=atoi(argv[16]);
 	if (argc > 17) rotUnitY=atoi(argv[17]);
 	if (argc > 18) rotUnitZ=atoi(argv[18]);
+	/*model parameters*/
+	if (argc > 19) nsegments2=atoi(argv[19]);
+	if (argc > 20) nsections2=atoi(argv[20]);
+	if (argc > 21) nparts=atoi(argv[21]);
+ 	if (argc > 22) nparts2=atoi(argv[22]);
+	if (argc > 23) position2=atoi(argv[23]);
+	if (argc > 24) position3=atoi(argv[24]);
+ 	if (argc > 25) thickness3=atoi(argv[25]);
+	if (argc > 26) height3=atoi(argv[26]);
+	if (argc > 27) lightRate=atof(argv[27]);
 
 	/*Parameters for the model */
 
