@@ -166,7 +166,7 @@ help:
 	@echo "        eg200, eg200a, eg200b"
 	@echo "        eg300"
 
-cmake build/2-links:
+cmake build/2-links/2-links:
 	cd build; \
 	    cmake ../.. ;\
 	    make; echo "\n\n AFTER MAKE \n\n"  
