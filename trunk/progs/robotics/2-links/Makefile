@@ -166,17 +166,38 @@ help:
 	@echo "        eg200, eg200a, eg200b"
 	@echo "        eg300"
 
+cmake build/2-links:
+	cd build; \
+	    cmake ../.. ;\
+	    make; echo "\n\n AFTER MAKE \n\n"  
+
+moretest: $(TARGETS)
+# nothing to do
+
+# Do not use this (use cmake instead):
+# 2-links: $(OBJ_FILES) 2-links.o
+2-links: build/2-links/2-links
+	-ln -s build/2-links/2-links 2-links
+
 
 #=================================================
 # Examples of running 2-links program
 #=================================================
 #
-eg: eg10
+# eg: eg10
+eg: 2-links
+	@echo "Target eg10: two Chamber environment using Greedy"
+	./2-links $(interactive) 415 400 180 270 105 90 90 0\
+		4 65 80 2chambers.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		-220 0 0.065 \
+		$(verbose) $(title) \
+		$(threshold) \
+		&
 
 # this is default, but every option may be changed at command line:
-egx: ./2-links
-#	@echo "	There is a path passage... when radius=6, epsilon=1"
-#	@echo " 	There is No Path... when radius=7, epsilon=1"
+egx: 
 	./2-links $(interactive) $(startX) $(startY)  $(startTheta1) $(startTheta2) \
 	    	$(goalX) $(goalY) $(goalTheta1) $(goalTheta2) \
 		$(epsilon) $(len1) $(len2) \
@@ -193,13 +214,13 @@ egx: ./2-links
 #	There are 3 combinatorially different paths.
 #	Randomized strategy will find all three of them (keep hitting "run").
 #
-ega:	./2-links
+ega:	
 	@echo "Target 'ega':  runs 2-links with default compiled options"
 	./2-links &
 
 # run with default Makefile options:
 #
-egb:	./2-links
+egb:
 	@echo "Target 'egb':  runs 2-links with default Makefile options for file input.txt"
 	./2-links $(interactive) 60 350 -30 300 60 60 \
 		5 40 input.txt \
@@ -231,7 +252,7 @@ eg1: ./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 1 \
 		$(verbose) $(title) \
-		$(threshold)
+		$(threshold) \
 		&
 
 
@@ -432,7 +453,7 @@ eg8a hsua: ./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		-70 -70 0.065 \
 		$(verbose) $(title) \
-		$(threshold)
+		$(threshold) \
 		&
 
 eg8b hsub: ./2-links
@@ -445,7 +466,7 @@ eg8b hsub: ./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		-70 -70 0.065 \
 		$(verbose) $(title) \
-		$(threshold)
+		$(threshold) \
 		&
 
 
@@ -459,20 +480,18 @@ eg9 narrow: ./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 0.065 \
 		$(verbose) $(title) \
-		$(threshold)
+		$(threshold) \
 		&
 		
 eg10 twoChambers: ./2-links
 	@echo "Target eg10: two Chamber environment using Greedy"
-#	@echo "	There is a path passage... when radius=6, epsilon=1"
-#	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 415 400 180 270 105 90 90 0\
 		4 65 80 2chambers.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) $(title) \
-		$(threshold)
+		$(threshold) \
 		&
 
 eg10a twoChambersa: ./2-links
@@ -483,7 +502,7 @@ eg10a twoChambersa: ./2-links
 		0 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) $(title) \
-		$(threshold)
+		$(threshold) \
 		&
 		
 eg10b twoChamberb: ./2-links
@@ -494,7 +513,7 @@ eg10b twoChamberb: ./2-links
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) $(title) \
-		$(threshold)
+		$(threshold) \
 		&
 
 eg11 nestedRectangle: ./2-links
@@ -507,7 +526,7 @@ eg11 nestedRectangle: ./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) $(title) \
-		$(threshold)
+		$(threshold) \
 		&
 
 		
@@ -605,12 +624,6 @@ eg300: ./2-links
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&
-
-
-moretest: $(TARGETS)
-# nothing to do
-
-2-links: $(OBJ_FILES) 2-links.o
 
 
 # under development...
