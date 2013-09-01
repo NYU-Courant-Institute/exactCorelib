@@ -83,9 +83,11 @@ ht2=40  		# height 2: second part of the model
 #alias of the variables
 radius=$(rad)
 height=$(ht)
+ht1=$(ht)
 nsegments=$(hor)
 nsections=$(ver)
 height2=$(ht2)
+thinkness=$(ht)
 
 nsegments2=5		# nsegment2: how many segments in the second part
 nsections2=1		# nsections2: how many sections in the second part
@@ -163,39 +165,59 @@ egx:	gwb
 	    	$(rad1) $(rad2) $(nsegment) $(nsections) \
 
 #eg0 
+#		rad: radius of the hemisphere
+#		nsegments: # of segments of the horizontal polygon ( The biggest circle )
+#		nsections: # of sections of the hemisphere
+# 		lightRate: to control the lightness of the face,
+#		We use the inverse of the lightRate as the lightness
 eg0 facehemi:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 	    	face hemisphere 200 $(height) 20 20 $(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
 		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) $(position3) $(thickness3) $(height3) 0.55
-eg0x:	gwb
+eg0x facehemix:	gwb
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 	    	$(mode) hemisphere $(rad1) $(ht) $(nsegments) $(nsections) $(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
 		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) $(position3) $(thickness3) $(height3) $(lightRate)
 
-#eg1 sphere
+#eg1 sphere 
+#		rad: radius of the sphere
+#		nsegments: # of segments of the horizontal polygon ( The biggest circle )
+#		nsections: # of sections of the sphere
 eg1 sphere:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 	    	$(mode) sphere 200 $(height) 20 20
+eg1x spherex:	gwb
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+	    	$(mode) sphere $(rad) $(ht) $(nsegments) $(nsections)
 
 #eg2 torus
+#		rad1: radius of main circle
+#		rad2: radius of the subordinate circle which goes around the main circle
+#		nsegments: # of segments of the horizontal polygon ( The main circle )
+#		nsections: # of the subordinate circles in the graph
 eg2 donut torus :	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 	    	$(mode) torus 200 $(height) 20 20 $(height2) 50
 
-eg2x torusx:
+eg2x donutx torusx :
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-	    	$(mode) torus $(rad) $(ht) $(hor) $(ver)
+	    	$(mode) torus $(rad1) $(ht) $(hor) $(ver) $(height2) $(rad2)
 
 #eg3 cylinder
+#		rad: radius of the circle
+#		ht: height of the cylinder
+#		hor: # of segments of the top/down circle
+#		ver: # of layers/sections of the cylinder 
 eg3 cylinder:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) cylinder 6 20 20 20
+		$(mode) cylinder 200 500 20 20
 
 eg3x cylinderx:
 	./gwb $(interactive) $(inputDir) $(fileName) \
@@ -203,16 +225,28 @@ eg3x cylinderx:
 		$(mode) cylinder $(rad) $(ht) $(hor) $(ver)
 
 #eg4 disk 
+#		rad: radius of the main circle
+#		ht: height of the disk 
+#		which is also the diameter of the hemisphere around the side of the main circle
+#		hor: # of segments of the top/down circle
+#		ver: # of layers/sections of the disk
 eg4 disk:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) disk 10 5 20 20
-
-#eg5 bullet 	(40 50 20 20)
+		$(mode) disk 200 80 20 20 
+eg4x diskx:	gwb	
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) disk $(rad) $(ht) $(hor) $(ver)
+#eg5 bullet 
+#		rad: radius of the main circle ( or the bottom circle of the bullet )
+#		ht: height of the disk cylinder,as part of the bullet 
+#		hor: # of segments of the horizontal circles
+#		ver: # of layers/sections of the upper hemisphere
 eg5 bullet:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) bullet 40 50 30 20
+		$(mode) bullet 100 500 30 20
 
 eg5x bulletx:
 	./gwb $(interactive) $(inputDir) $(fileName) \
@@ -220,29 +254,59 @@ eg5x bulletx:
 		$(mode) bullet $(rad) $(ht) $(hor) $(ver)
 
 #eg6 cone 
+#		rad: radius of the bottom circle
+#		ht: height of the cone
+#		hor: # of segments of the horizontal circles
+#		ver: # of layers/sections of the cone
 eg6 cone:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) cone 40 70 30 20
+		$(mode) cone 200 500 30 20
 
-#eg7 drum 
-eg7 drum:	gwb	
+eg6x conex:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) drum $(rad) $(ht) $(hor) $(ver)
+		$(mode) cone $(rad) $(ht) $(hor) $(ver)
 
-# THIS IS BADLY CONFUSED!
-#eg8 table 	radius, height(thickness), legPos, legNo, legRad, legHor, legHeight
-#eg8 table 	radius, height(thickness), nseg,   nsect,   ht2, rad2
+#eg7 chain 
+#		rad1: radius of main circle
+#		rad2: radius of the subordinate circle which goes around the main circle
+#		nsegments: # of segments of the horizontal polygon ( The main circle )
+#		nsections: # of the subordinate circles in the graph
+#		nparts: # of rings in the chain
+eg7 chain:	gwb	
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) chain 100 $(ht) 20 20 $(ht2) 30 $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) 5
+eg7x chainx:	gwb	
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) chain $(rad1) $(ht) $(hor) $(ver) $(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts)
+
+#eg8 table 
+#		rad1: radius of the desktop
+#		ht(thickness): thickness of the desktop	
+#		nsegments: # of segments of the horizontal polygon of the desktop
+#		ht2: the height of the legs
+#		rad2: radius of the top/bottom faces of legs
+#		nsegments2: # of segments of the horizontal polygon of the legs
+#		nparts2: # of legs
+#		nposition2: position of the legs, horizontal distance 
+#		between the center of the leg and the center of the desktop
+
 eg8 table:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) table 80 10 70 100 100 10
+		$(mode) table 200 10 100 $(nsections) 200 10 $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		8 $(nsections2) $(nparts) 4 180 
 
 eg8x tablex:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) table $(rad) $(ht) $(hor) $(ver)
+		$(mode) table $(rad1) $(ht) $(nsegments) $(nsections) $(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) 
 
 #eg9 trefoil (40 10 80 12)
 #	rad1 is the diameter of the knot
@@ -253,18 +317,25 @@ eg8x tablex:	gwb
 eg9 trefoil:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) trefoil 40 10 80 12
+		$(mode) trefoil 80 $(ht) 80 12 $(ht2) 15
 
 eg9x trefoilx:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) trefoil $(rad1) $(rad2) $(nsections) $(nsegments)
+		$(mode) trefoil $(rad1) $(ht) $(nsegments) $(nsections) $(ht2) $(rad2)
 
-# eg10 rocket 	(20 30 20 40 30)
-eg10 rocket:	gwb	
+# eg10 chair
+eg10 chair:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) rocket 10 30 20 40 30
+		$(mode) chair 200 10 4 $(nsections) 200 10 $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		4 $(nsections2) $(nparts) 4 180 170 10 300
+
+eg10x chairx:	gwb	
+	./gwb $(interactive) $(inputDir) $(fileName) \
+		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
+		$(mode) chair $(rad) $(ht) $(nsegments) $(nsections) $(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) $(position3) $(thickness3) $(height3)
 
 ##################################################
 		
