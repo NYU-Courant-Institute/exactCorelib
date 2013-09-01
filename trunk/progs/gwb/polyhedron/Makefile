@@ -198,7 +198,7 @@ eg1x spherex:	gwb
 #		rad1: radius of main circle
 #		rad2: radius of the subordinate circle which goes around the main circle
 #		nsegments: # of segments of the horizontal polygon ( The main circle )
-#		nsections: # of the subordinate circles in the graph
+#		nsections: # of sections of in a subordinate circle
 eg2 donut torus :	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
@@ -272,7 +272,7 @@ eg6x conex:	gwb
 #		rad1: radius of main circle
 #		rad2: radius of the subordinate circle which goes around the main circle
 #		nsegments: # of segments of the horizontal polygon ( The main circle )
-#		nsections: # of the subordinate circles in the graph
+#		nsections: # of sections in a subordinate circle
 #		nparts: # of rings in the chain
 eg7 chain:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
@@ -290,7 +290,7 @@ eg7x chainx:	gwb
 #		ht(thickness): thickness of the desktop	
 #		nsegments: # of segments of the horizontal polygon of the desktop
 #		ht2: the height of the legs
-#		rad2: radius of the top/bottom faces of legs
+#		rad2: radius of the top/bottom face of legs
 #		nsegments2: # of segments of the horizontal polygon of the legs
 #		nparts2: # of legs
 #		nposition2: position of the legs, horizontal distance 
@@ -312,6 +312,8 @@ eg8x tablex:	gwb
 #	rad1 is the diameter of the knot
 #	rad2 is the thickness of the knot
 #		ASSUMPTION: rad1>rad2
+#	nsegments: # of segments of around the main frame of trefoil
+#	nsections: # of sections in the circle goes around the main frame of the trefoil
 #	interp is the number of interpolation points
 #		(more points gives the smoother curves)
 eg9 trefoil:	gwb	
@@ -324,7 +326,21 @@ eg9x trefoilx:	gwb
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 		$(mode) trefoil $(rad1) $(ht) $(nsegments) $(nsections) $(ht2) $(rad2)
 
-# eg10 chair
+# eg10 chair ( A chair is a table with a back )
+#		rad1: radius of the desktop
+#		ht(thickness): thickness of the desktop	
+#		nsegments: # of segments of the horizontal polygon of the desktop
+#		ht2: the height of the legs
+#		rad2: radius of the top/bottom face of legs
+#		nsegments2: # of segments of the horizontal polygon of the legs
+#		nparts2: # of legs
+#		nposition2: position of the legs, horizontal distance 
+#		between the center of the leg and the center of the desktop
+#		nposition3: position of the back, horizontal distance
+#		between the further corner of the back and the center of the desktop
+#		thickness3: the thickness of the back
+#		hight3: the height of the back		 
+
 eg10 chair:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
