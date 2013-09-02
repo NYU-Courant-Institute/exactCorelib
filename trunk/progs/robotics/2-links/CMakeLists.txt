@@ -1,13 +1,22 @@
 # CMakeLists.txt in 2-links
 #
 #	USAGE:
-#	To use this file in 2-links, assume you are currently in 2-links:
+#	This file is in $(COREPATH)/progs/robotics/2-links. 
+#	To use this file, assume you are currently
+#	in the directory $(COREPATH)/progs/robotics/2-links.  Do this:
 #
-#		> mkdir build
-#		> cd build
-#		> cmake ..
+#		> cd build				-- go to build dir
+#		> cmake ..				-- create Makefile
+#		> make					-- create executables
+#		> ln -s 2-links/2-links ../2-links	-- install executable
 #
 #	This will deposit all the executable files under 2-links/build.
+#
+# Aug 31, 2013
+# Author: Chee Yap
+#
+# Since Core Library 2.1
+# $Id:$
 #
 # CMake Version
 cmake_minimum_required(VERSION 2.8.8)

@@ -4,7 +4,7 @@
 #
 # (A)	To compile run this demo, you can use this Makefile and just have to type:
 #
-# 	       > make 		-- compiles the main program into "tri"
+# 	       > make 		-- compiles the main program into "2-link"
 # 	       > make help	-- help message
 # 	       > make test	-- compiles and runs "tri" non-interactively
 # 	       			   (this is Core Library's automatic self-test)
@@ -56,6 +56,8 @@
 # 	These targets uses different input files, all taken from
 # 	the subdirectory "inputs".   
 #
+# (E) (August 2013) Started to use CMake to build executables.
+# 	The main "2-links" target is now renamed "2-links-orig" and deprecated.
 #
 # April 13, 2012 - Sep 2013
 # Author: Zhongdi Luo and Chee Yap
@@ -145,7 +147,9 @@ testb: $(TARGETS)
 
 help:
 	@echo "USAGE:  The main program is called 2-links.  Demos can be invoked thus:"
-	@echo "              > make eg [...optional parameters...]"
+	@echo "         > make                       -- to compile 2-links"
+	@echo "         > make eg                    -- to run default example"
+	@echo "         > make ega  [Qtype=3 ...]    -- to run example with parameters "
 	@echo "     where parameters include fileName, radius, startX, startY,"
 	@echo "     goalX, goalY, etc.  See the Makefile for examples."
 	@echo "     You can also call demos where these these parameters are prechosen:"
@@ -161,6 +165,7 @@ help:
 	@echo "        eg5 (= egbug2, bug2), eg5a (= egbug2a, bug2a),"
 	@echo "        eg6 (= kavraki), eg6a (= kavrakia),"
 	@echo "        eg7 (= tunnel), eg7a (= tunnela), eg7b (= tunnelb)"
+	@echo "        eg10 (= 2chambers), eg10a, eg10b, etc"
 	@echo "        eg100, eg100a"
 	@echo "        eg150"
 	@echo "        eg200, eg200a, eg200b"
@@ -174,8 +179,11 @@ cmake build/2-links/2-links:
 moretest: $(TARGETS)
 # nothing to do
 
-# Do not use this (use cmake instead):
-# 2-links: $(OBJ_FILES) 2-links.o
+# Deprecated (use "2-links" instead):
+2-links-orig: $(OBJ_FILES) 2-links.o
+	${CXX} $(OBJ_FILES) $(LDFLAGS) 2-links.cpp $(CORE_LIB) -o 2-links
+
+# Cmake version:
 2-links: build/2-links/2-links
 	-ln -s build/2-links/2-links 2-links
 
