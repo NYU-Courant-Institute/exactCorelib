@@ -100,9 +100,15 @@ thickness3=10
 height3=50
 
 
-rotUnitX=5
+rotUnitX=5		# How much it rotates when you press 'a', 'd', 's', 'w'
 rotUnitY=5
 rotUnitZ=5
+
+initRotDeg=45		# Initialize the rotation of the polyhedron
+initRotAxisX=1
+initRotAxisY=1
+initRotAxisZ=1
+
 
 lightRate=0.55
 # trefoil
@@ -174,12 +180,15 @@ eg0 facehemi:	gwb
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 	    	face hemisphere 200 $(height) 20 20 $(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
-		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) $(position3) $(thickness3) $(height3) 0.55
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) $(position3) $(thickness3) $(height3) 0.55 45 1 1 1
 eg0x facehemix:	gwb
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-	    	$(mode) hemisphere $(rad1) $(ht) $(nsegments) $(nsections) $(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
-		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) $(position3) $(thickness3) $(height3) $(lightRate)
+	    	$(mode) hemisphere $(rad1) $(ht) $(nsegments) $(nsections) \
+		$(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		$(initRotDeg) $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
 #eg1 sphere 
 #		rad: radius of the sphere
@@ -192,7 +201,11 @@ eg1 sphere:	gwb
 eg1x spherex:	gwb
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-	    	$(mode) sphere $(rad) $(ht) $(nsegments) $(nsections)
+	    	$(mode) sphere $(rad) $(ht) $(nsegments) $(nsections)\
+		$(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		$(initRotDeg) $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
 #eg2 torus
 #		rad1: radius of main circle
@@ -202,12 +215,17 @@ eg1x spherex:	gwb
 eg2 donut torus :	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-	    	$(mode) torus 200 $(height) 20 20 $(height2) 50
+	    	$(mode) torus 200 $(height) 20 20 $(height2) 50 \
+		
 
 eg2x donutx torusx :
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 	    	$(mode) torus $(rad1) $(ht) $(hor) $(ver) $(height2) $(rad2)
+		$(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		$(initRotDeg) $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
 #eg3 cylinder
 #		rad: radius of the circle
@@ -222,7 +240,11 @@ eg3 cylinder:	gwb
 eg3x cylinderx:
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) cylinder $(rad) $(ht) $(hor) $(ver)
+		$(mode) cylinder $(rad) $(ht) $(hor) $(ver) \
+		$(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		$(initRotDeg) $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
 #eg4 disk 
 #		rad: radius of the main circle
@@ -237,7 +259,11 @@ eg4 disk:	gwb
 eg4x diskx:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) disk $(rad) $(ht) $(hor) $(ver)
+		$(mode) disk $(rad) $(ht) $(hor) $(ver) \
+		$(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		$(initRotDeg) $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 #eg5 bullet 
 #		rad: radius of the main circle ( or the bottom circle of the bullet )
 #		ht: height of the disk cylinder,as part of the bullet 
@@ -246,12 +272,20 @@ eg4x diskx:	gwb
 eg5 bullet:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) bullet 100 500 30 20
+		$(mode) bullet 100 500 30 20 \
+		$(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		40 1 1 1
 
 eg5x bulletx:
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) bullet $(rad) $(ht) $(hor) $(ver)
+		$(mode) bullet $(rad) $(ht) $(hor) $(ver) \
+		$(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		$(initRotDeg) $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
 #eg6 cone 
 #		rad: radius of the bottom circle
@@ -266,7 +300,11 @@ eg6 cone:	gwb
 eg6x conex:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) cone $(rad) $(ht) $(hor) $(ver)
+		$(mode) cone $(rad) $(ht) $(hor) $(ver) \
+		$(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		$(initRotDeg) $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
 #eg7 chain 
 #		rad1: radius of main circle
@@ -278,12 +316,17 @@ eg7 chain:	gwb
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 		$(mode) chain 100 $(ht) 20 20 $(ht2) 30 $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
-		$(nsegments2) $(nsections2) 5
+		$(nsegments2) $(nsections2) 5 $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		0 $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 eg7x chainx:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) chain $(rad1) $(ht) $(hor) $(ver) $(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
-		$(nsegments2) $(nsections2) $(nparts)
+		$(mode) chain $(rad1) $(ht) $(hor) $(ver) \
+		$(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		$(initRotDeg) $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
 #eg8 table 
 #		rad1: radius of the desktop
@@ -300,13 +343,18 @@ eg8 table:	gwb
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 		$(mode) table 200 10 100 $(nsections) 200 10 $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
-		8 $(nsections2) $(nparts) 4 180 
+		8 $(nsections2) $(nparts) 4 180 \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		-45 $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
 eg8x tablex:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) table $(rad1) $(ht) $(nsegments) $(nsections) $(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
-		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) 
+		$(mode) table $(rad1) $(ht) $(nsegments) $(nsections) \
+		$(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		$(initRotDeg) $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
 #eg9 trefoil (40 10 80 12)
 #	rad1 is the diameter of the knot
@@ -319,12 +367,19 @@ eg8x tablex:	gwb
 eg9 trefoil:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) trefoil 80 $(ht) 80 12 $(ht2) 15
+		$(mode) trefoil 80 $(ht) 80 12 $(ht2) 15 $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		0 $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
 eg9x trefoilx:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) trefoil $(rad1) $(ht) $(nsegments) $(nsections) $(ht2) $(rad2)
+		$(mode) trefoil $(rad1) $(ht) $(nsegments) $(nsections) \
+		$(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		$(initRotDeg) $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
 # eg10 chair ( A chair is a table with a back )
 #		rad1: radius of the desktop
@@ -345,13 +400,17 @@ eg10 chair:	gwb
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 		$(mode) chair 200 10 4 $(nsections) 200 10 $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
-		4 $(nsections2) $(nparts) 4 180 170 10 300
+		4 $(nsections2) $(nparts) 4 180 170 10 300 $(lightRate)\
+		-45 $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
 eg10x chairx:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) chair $(rad) $(ht) $(nsegments) $(nsections) $(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
-		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) $(position3) $(thickness3) $(height3)
+		$(mode) chair $(rad) $(ht) $(nsegments) $(nsections) \
+		$(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		$(initRotDeg) $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
 ##################################################
 		

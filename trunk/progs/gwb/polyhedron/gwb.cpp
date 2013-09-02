@@ -73,31 +73,37 @@ double rotDeg=1;
 double movDeg=10;
 double zoomDeg=1;
 
-double startX=0;                    //start postion of mouse press 
+double startX=0;                    	//start postion of mouse press 
 double startY=0;
 double startZ=0;
 
-double base=0.0;                   //Initialize the origin rotation arguments
+double base=0.0;                   	//Initialize the origin rotation arguments
 double theta=0.0;
 double rad=0.0;
 
-double rotX=0.0;                    //Initialize the rotation vector
+double rotX=0.0;                    	//Initialize the rotation vector
 double rotY=0.0;
 double rotZ=0.0;
 
-double lightRate=1.0;
+double lightRate=1.0;		    	//The inverse of Lightness
 
 bool centered=false;
-double centerX=0.0;                 //Initialize the center of the polyhedron
+double centerX=0.0;                 	//Initialize the center of the polyhedron
 double centerY=0.0;
 double centerZ=0.0;
 
-double colorGap=1.0;               //This is for shading
+double colorGap=1.0;               	//This is for shading
 
-double scalar=1.0;                  //Initialize the scalar of the polyhedron
+double scalar=1.0;                  	//Initialize the scalar of the polyhedron
 double thetaX=0;
 double thetaY=0;
-double light[]={1,1,1,100,100,100};
+
+double initRotDeg=45;			//Initialize the rotation of the polyhedron
+double initRotAxisX=1;
+double initRotAxisY=1;
+double initRotAxisZ=1;
+
+double light[]={1,1,1,100,100,100}; //Add a light
 
 /* Chee: new parameters */
 double radius=100.0;		  
@@ -106,11 +112,15 @@ double height=50.0;
 double height2=20.0;	
 int nsegments=12;
 int nsections=20;
+
+/*Kai the second Part ( Like the legs of the chair )*/
 int nsegments2=5;
 int nsections2=1;
 int nparts=10;
 int nparts2=20;
 double position2=80;
+
+/*The third part ( Like the back of the chair ) */
 double position3=90;
 double thickness3=10;
 double height3=50;
@@ -292,7 +302,8 @@ void display(void){
 
   glTranslatef(windowWidth/2.0,windowHeight/2.0,centerZ);
   glScalef(scalar, scalar, scalar);
-  //glRotatef(45,1,1,1);
+  //gluLookAt(eyeX,eyeY,eyeZ,cX,cY,cZ,upX,upY,upZ);
+  glRotatef(initRotDeg,initRotAxisX,initRotAxisY,initRotAxisZ);
   glTranslatef(-centerX,-centerY,-centerZ);
   displayPoly(s);
   }
@@ -311,7 +322,10 @@ void displayWithoutScalar(void){
 
   glTranslatef(windowWidth/2.0,windowHeight/2.0,centerZ);
   glScalef(scalar, scalar, scalar);
+  //gluLookAt(eyeX,eyeY,eyeZ,cX,cY,cZ,upX,upY,upZ);
   //glRotatef(45,1,1,1);
+  glRotatef(initRotDeg,initRotAxisX,initRotAxisY,initRotAxisZ);	
+	
   glTranslatef(-centerX,-centerY,-centerZ);
   
   /*Rebuild the rotation*/ 
@@ -509,6 +523,10 @@ int main(int argc,char **argv){
  	if (argc > 25) thickness3=atoi(argv[25]);
 	if (argc > 26) height3=atoi(argv[26]);
 	if (argc > 27) lightRate=atof(argv[27]);
+	if (argc > 28) initRotDeg=atof(argv[28]);
+	if (argc > 29) initRotAxisX=atof(argv[29]);
+	if (argc > 30) initRotAxisY=atof(argv[30]);
+	if (argc > 31) initRotAxisZ=atof(argv[31]);
 
 	/*Parameters for the model */
 
