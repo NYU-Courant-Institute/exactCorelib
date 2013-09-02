@@ -46,7 +46,7 @@
 VAR=Opt
 VAR=Debug
 CORE_PATH=../../..
-#include ../Make.options
+include ../Make.options
 
 
 #=================================================
@@ -115,7 +115,7 @@ lightRate=0.55
 rad1 = 40		# thickness of cross-section of knot
 rad2 = 10		# diameter of overall trefoil knotf
 nsections = 50		# number of cross-sections in trefoil 
-nsegments = 4		# number of segments in each cross-section
+nsegments = 8		# number of segments in each cross-section
 
 
 ## unused:
@@ -168,7 +168,7 @@ egx:	gwb
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 	    	$(mode) $(model) \
-	    	$(rad1) $(rad2) $(nsegment) $(nsections) \
+	    	$(rad1) $(rad2) $(nsegments) $(nsections) \
 
 #eg0 
 #		rad: radius of the hemisphere
@@ -315,10 +315,12 @@ eg6x conex:	gwb
 eg7 chain:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) chain 100 $(ht) 20 20 $(ht2) 30 $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(mode) chain 100 $(ht) 20 20 $(ht2) 30 \
+		$(rotUnitX) $(rotUnitY) $(rotUnitZ) \
 		$(nsegments2) $(nsections2) 5 $(nparts2) $(position2) \
 		$(position3) $(thickness3) $(height3) $(lightRate)\
 		0 $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
+
 eg7x chainx:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
@@ -342,7 +344,8 @@ eg7x chainx:	gwb
 eg8 table:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-		$(mode) table 200 10 100 $(nsections) 200 10 $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(mode) table 200 10 100 $(nsections) 200 10 \
+		$(rotUnitX) $(rotUnitY) $(rotUnitZ) \
 		8 $(nsections2) $(nparts) 4 180 \
 		$(position3) $(thickness3) $(height3) $(lightRate)\
 		-45 $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
