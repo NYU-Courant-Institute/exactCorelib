@@ -574,7 +574,7 @@ int main(int argc,char **argv){
 	}//interactive=0
       /*Read from file*/  
       string fileAdd=inputDir+"/"+fileName;
-      model=fileName;
+      
       ifstream ifile;
       ifile.open(fileAdd.c_str());
       
@@ -585,6 +585,8 @@ int main(int argc,char **argv){
       string line;
 	/*If we Read from file*/
 	if (interactive==2){
+	/*The model name*/
+	model=fileName;
 	
 	/*Display direction*/
 	if (argc > 4) initRotDeg=atof(argv[4]);
