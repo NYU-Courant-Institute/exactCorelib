@@ -46,7 +46,7 @@
 VAR=Opt
 VAR=Debug
 CORE_PATH=../../..
-include ../Make.options
+#include ../Make.options
 
 
 #=================================================
@@ -415,6 +415,28 @@ eg10x chairx:	gwb
 		$(position3) $(thickness3) $(height3) $(lightRate)\
 		$(initRotDeg) $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
+# 		Read the file: cube.gwb and draw a cube
+eg11 filecube:	gwb
+	./gwb 2 $(inputDir) cube.gwb
+
+# 		Read the file: cube.gwb and draw an icosahedron
+eg12 fileicosa:	gwb
+	./gwb 2 $(inputDir) icosahedron.gwb
+
+# 		Read the file: cube.gwb and draw a dodecahedron
+eg13 filedodeca: 	gwb
+	./gwb 2 $(inputDir) dodecahedron.gwb 90
+
+# 		Read the file: cube.gwb and draw a tetrahedron
+eg14 filetetra:	gwb
+	./gwb 2 $(inputDir) tetrahedron.gwb
+
+# 		Read the file: cube.gwb and draw a icosahedron
+eg15 fileocta:	gwb
+	./gwb 2 $(inputDir) octahedron.gwb
+
+eg16 filhole:	gwb
+	./gwb 2 $(inputDir) cube-with-hole.gwb
 ##################################################
 		
 moretest: $(TARGETS)
@@ -426,9 +448,9 @@ $(TARGETS): $(OBJ_FILES)
 # Temp
 #=================================================
 m:
-	gvim Makefile
+	gvim -f Makefile
 vi:
-	gvim vor2d.cpp
+	gvim -f gwb.cpp
 
 #=================================================
 # Rules

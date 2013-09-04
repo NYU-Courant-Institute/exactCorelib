@@ -9,6 +9,11 @@
 #   Since Core 2.1.
 #   
 ##################################################
+
+
+# The Scalar
+  scalar=100
+
 # initialize Object  
         mvfs 2 1 1 0 0 0
 

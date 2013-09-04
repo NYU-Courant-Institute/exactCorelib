@@ -37,6 +37,8 @@
 #include "Euler_Ops.h"
 #include "GL/glut.h"
 #include <math.h>
+#include <map>
+#include <utility>
 
 /***************************************************
  * namespace:
@@ -60,7 +62,7 @@ using namespace std;
 int interactive=0;                  // interactive or not:
                                     // <=0 means non-interactive, >0 means interactive.
 string inputDir("inputs"); 	    // Path for input files 
-string fileName("cube.txt"); 	    // Input file name (this is not used currently)
+string fileName("cube.gwb"); 	    // Input file name (this is not used currently)
 string model("chain");	    // model can be "cylinder", "sphere", "trefoil", etc.
 string mode("wire");		    // mode can be "wire" or "face"
 GLsizei windowWidth = 512;	    // initial configuration box size
@@ -130,6 +132,7 @@ int rotUnitX=5;
 int rotUnitY=5;
 int rotUnitZ=5;
 
+int comLen=1000;
 /*View Point*/
 GLdouble  	eyeX=0;
 GLdouble  	eyeY=0;
@@ -488,14 +491,15 @@ void keyPressed(unsigned char key, int x, int y){
 //*************************************************
 
 int main(int argc,char **argv){
+	
+	/*The Euler_Ops Object*/
+	eo=new Euler_Ops();
 
 	if (argc > 1) interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
 	if (argc > 2) inputDir  = argv[2];		      // path for input files
 	if (argc > 3) fileName = argv[3]; 		      // Input file name
-		if (interactive > 0) {
-		    cout << "Non-interactive mode is not support currently" << endl;
-		    return 0;
-		}
+		if (interactive == 0) {
+		   
 	if (argc > 4) windowWidth = atof(argv[4]);	// windowWidth
 	if (argc > 5) windowHeight= atof(argv[5]);	// windowHt
 	if (argc > 6) windowPosX = atoi(argv[6]);	// window X pos
@@ -531,7 +535,7 @@ int main(int argc,char **argv){
 	/*Parameters for the model */
 
 
-      eo=new Euler_Ops();
+      
 	//double par[argc-3];
 	//double par[]={5,1,50,20,8,1,5,8,8,1,6};
 	/************************** Chee commented this out:
@@ -567,40 +571,104 @@ int main(int argc,char **argv){
 	//(*(eo->solids))[0]->print();
 
 	
+	}//interactive=0
       /*Read from file*/  
       string fileAdd=inputDir+"/"+fileName;
+      model=fileName;
       ifstream ifile;
       ifile.open(fileAdd.c_str());
-
+      
+      /*Variable Maps*/
+      map<string, double> variables;
       
       /*Read every line*/
       string line;
-	if (false)
+	/*If we Read from file*/
+	if (interactive==2){
+	
+	/*Display direction*/
+	if (argc > 4) initRotDeg=atof(argv[4]);
+	if (argc > 5) initRotAxisX=atof(argv[5]);
+	if (argc > 6) initRotAxisY=atof(argv[6]);
+	if (argc > 7) initRotAxisZ=atof(argv[7]);
+	
       while (ifile.good()){
+	    
+	    /*Read a line*/
             getline(ifile,line);
+	    
+	    /*If it is an empty line,go ahead*/
+            if(line.length()<=0)
+                  continue;
 
+            /*If the line begins with '#' it must be a comment*/
+            if(line[0]=='#')
+                  continue;
+	    //cout<<line<<endl;
+	    /*The = position*/
+	    int eqPos=line.find('=');
+	    //cout<<"line "<<line<<endl;
+            /*If it contains =, it is not a command, it is a variable*/
+	    if (eqPos<line.size()&&eqPos>=0){
+		/*Read variables*/
+            	string first=line.substr(0,eqPos);
+		istringstream iss2(first);
+		string var;
+		iss2>>var;
+		//cout<<var<<endl;
+
+		string second=line.substr(eqPos+1);
+		istringstream iss3(second);
+		double num;
+		iss3>>num;
+		
+		variables[var]=num;
+		//second=second.erase(second.find_last_not_of(" \n\r\t")+1);
+		//cout<<num<<endl;
+		
+		//cout<<line.size()<<line<<endl;
+	    }//variables
+		
+	    else{
+	    //cout<<line.find("=")<<endl;
             /*Analyze the line*/
             string command;
             Vec<double> *ids= new Vec<double>();
-
+	    
+	    //cout<<line<<endl;
             /*Read first word*/
             string first;
             istringstream iss(line);
             iss>>first;
 
-            /*If it is an empty line,go ahead*/
-            if(first.length()<=0)
-                  continue;
-
-            /*If the line begins with '#' it must be a comment*/
-            if(first[0]=='#')
-                  continue;
+            double fileScalar=variables["scalar"]==0?1:variables["scalar"];
             
             /*Then the first word must be command*/
             command=first;
             while(iss){
+		 /*Read the variable*/
+		 string var;
+		 /*Push the number*/
                  double num;
-                 iss>>num;
+                 iss>>var;
+	         //cout<<"haha "<<var<<endl;
+		 /*Parse the variable*/
+		 int varPos=var.find('$');
+		 if (varPos<var.size()&&varPos>=0){
+			string tempVar;          // string which will contain the result
+
+			ostringstream convert;   // stream used for the conversion
+
+			convert <<variables[var.substr(varPos+1)];      // insert the constant value
+
+			tempVar = convert.str(); // set 'Result' to the contents of the stream
+			num=atof((var.substr(0,varPos)+tempVar).c_str());
+		 }
+		 else 
+			num=atof(var.c_str());
+		 //cout<<"num="<<num<<endl;
+		 
+		 //cout<<var<<"="<<num<<endl;
                  ids->push_back(num);
             }//while(iss)
 
@@ -608,12 +676,22 @@ int main(int argc,char **argv){
             ids->erase(ids->end()-1);
 
             /*Different commands*/
-            if (command.compare("mvfs")==0)
+            if (command.compare("mvfs")==0){
+		  
+	          (*ids)[ids->size()-1]*=fileScalar;
+		  (*ids)[ids->size()-2]*=fileScalar;
+		  (*ids)[ids->size()-3]*=fileScalar;
+			
                   eo->mvfs(ids);
+	    }
             else if(command.compare("kvfs")==0)
                   eo->kvfs(ids);
-            else if(command.compare("mev")==0)
+            else if(command.compare("mev")==0){
+		  (*ids)[ids->size()-1]*=fileScalar;
+		  (*ids)[ids->size()-2]*=fileScalar;
+		  (*ids)[ids->size()-3]*=fileScalar;
                   eo->mev(ids);
+	    }
             else if(command.compare("kev")==0)
                   eo->kev(ids);
             else if(command.compare("mef")==0)
@@ -633,14 +711,16 @@ int main(int argc,char **argv){
             else {
                   cout<<command<<" is not a valid command."<<endl;
             }
+	}//command
       }//while (ifile.good())
+  }//if read file
   //Vec<Solid *> *ss=eo->solids;
   
 /*Prepare for the window*/
    glutInit(&argc,argv);
-   glutInitDisplayMode( GLUT_SINGLE | GLUT_RGB );
+   glutInitDisplayMode( GLUT_RGB  | GLUT_SINGLE);
    glutInitWindowSize(windowWidth,windowHeight);
-   glutInitWindowPosition(150,150);
+   glutInitWindowPosition(windowPosX,windowPosY);
    glutCreateWindow(argc>2?model.c_str():"GWB");
 
 /*Initialze the window*/
