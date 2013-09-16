@@ -260,7 +260,8 @@ public:
 		double x = child->x;
 		double y = child->y;
 
-		double cl2r = 2 * child->rB + child->cl_m; //outer rad = clearance + 2*rB
+		//clearance+radius of the box
+		double cl2r = 2 * child->rB + child->cl_m; //clearance + 2 * rB
 
 		//
 		//compute the separation to walls

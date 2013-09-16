@@ -177,8 +177,9 @@ stringstream ssout;
 stringstream ssTemp;
 stringstream ssInfo;
 
-volatile bool renderLock = false;
-volatile bool timerLock = false;
+//volatile bool renderLock = false;
+//volatile bool timerLock = false;
+//bool blinkFlag = false;
 
 vector<Box*> boxClicked;
 
@@ -278,6 +279,10 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 		Box* current = dijQ.extract();
 		current->visited = true;
 
+//		int aaa = dijQ.size();
+//		cout<<current->x<< " "<<current->y<<" "<<current->width<<" "<<current->status<<" "<<endl;
+
+
 		// if current is MIXED, try expand it and push the children that is
 		// ACTUALLY neighbors of the source set (set containing alpha) into the dijQ again
 		if (current->status == Box::MIXED) {
@@ -342,8 +347,10 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 					}
 				}
 			}
-			if (current->shouldSplit2D) {
+			if (current->shouldSplit2D && current->height/2 >= epsilon && current->width/2 >= epsilon) {
 				dijQ.push(current);
+				toReset.push_back(current);
+//				cout<<"push"<<endl;
 			}
 
 			continue;
@@ -366,7 +373,8 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 				for (vector<Box*>::iterator iter = current->Nhbrs[i].begin();
 						iter < current->Nhbrs[i].end(); ++iter) {
 					Box* neighbor = *iter;
-					if (!neighbor->visited && neighbor->dist2Source == -1
+					if (!neighbor->visited
+							&& neighbor->dist2Source == -1
 							&& (neighbor->status == Box::FREE
 									|| neighbor->status == Box::MIXED)) {
 						//					cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!317 "
@@ -386,6 +394,8 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 
 	}
 
+//	cout<<"before reset"<<endl;
+
 	//these two fields are also used in dijkstraShortestPath
 	// need to reset
 	for (int i = 0; i < (int) toReset.size(); ++i) {
@@ -402,10 +412,10 @@ void TimerFunction(int p) {
 ////		renderScene();
 //
 //	}
-	while (timerLock) {
-
-	}
-	timerLock = true;
+//	while (timerLock) {
+//
+//	}
+//	timerLock = true;
 //	cout << "TimerFunction()!" << endl;
 //	renderScene();
 //	glFlush();
@@ -422,7 +432,7 @@ void TimerFunction(int p) {
 //	ssInfo << ssTemp.str();
 	textBox->set_text(ssInfo.str().c_str());
 	glutPostRedisplay();
-	timerLock = false;
+//	timerLock = false;
 
 }
 
@@ -591,7 +601,7 @@ int main(int argc, char* argv[]) {
 	if (argc > 25)
 		title = argv[25];		// title
 	if (argc > 26)
-		sizeOfPhiB = atoi(argv[26]);		// threshold for splitting angles  |Phi(B)|
+		sizeOfPhiB = atoi(argv[26]);// threshold for splitting angles  |Phi(B)|
 
 // Added by Zhongdi 05/08/2013 begin
 // calculate the R of the robot
@@ -632,7 +642,7 @@ int main(int argc, char* argv[]) {
 		glutTimerFunc(timePerFrame, TimerFunction, 1);
 		glutMouseFunc(processMouse);
 //		run();
-		cout << "mainloop!!!!!!!!!!!" << endl;
+//		cout << "mainloop!!!!!!!!!!!" << endl;
 
 		//Chee: trying to get demos to take a "title string"
 		std::stringstream sss;
@@ -809,13 +819,13 @@ int main(int argc, char* argv[]) {
 		radio2StrategyOption = glui->add_radiogroup();
 
 		glui->add_radiobutton_to_group(radio2StrategyOption,
-				"Split Until Epsilon");
+				"Split Until Epsilon, Phi(B) = 0");
 		glui->add_radiobutton_to_group(radio2StrategyOption,
 				"Smarter Strategy");
 		textPhiB = glui->add_edittext("Phi(B) = ", GLUI_EDITTEXT_INT);
 		textPhiB->set_int_val(sizeOfPhiB);
-		glui->add_radiobutton_to_group(radio2StrategyOption,
-				"Smarter Strategy With Voronoi Approach");
+//		glui->add_radiobutton_to_group(radio2StrategyOption,
+//				"Smarter Strategy With Voronoi Approach");
 
 		radio2StrategyOption->set_int_val(twoStrategyOption);
 		glui->add_separator();
@@ -863,8 +873,6 @@ int main(int argc, char* argv[]) {
 			cout << "Path was Found!" << endl;
 		return 0;
 	} else {
-
-//		cout << "33333333333333333333333333333333333333" << endl;
 		glutMainLoop();
 	}
 
@@ -878,8 +886,6 @@ void genEmptyTree() {
 	Box::l1 = L1;
 	Box::l2 = L2;
 
-//	cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-//			<< endl;
 //todo
 //	Box::THETA_MIN = min(min(triRobo[0], triRobo[1] - triRobo[0]),
 //			2 - triRobo[1]);
@@ -888,12 +894,9 @@ void genEmptyTree() {
 
 	Box::pAllLeaf = &allLeaf;
 
-//	cout << "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << endl;
 	if (!allLeaf.empty() && allLeaf.size() != 0) {
-//		cout << "ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg" <<allLeaf.size()<< endl;
 		for (vector<Box*>::iterator it = allLeaf.begin(); it != allLeaf.end();
 				++it) {
-//					cout << "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh" <<(*it)->x<< endl;
 			delete *it;
 		}
 	}
@@ -905,7 +908,6 @@ void genEmptyTree() {
 		}
 	}
 
-//	cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << endl;
 	allLeaf.clear();
 	allLeaf.push_back(root);
 	allSet.clear();
@@ -913,7 +915,6 @@ void genEmptyTree() {
 	parseConfigFile(root);
 	root->updateStatus();
 
-//	cout << "ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" << endl;
 	if (QT) {
 		delete (QT);
 	}
@@ -1063,6 +1064,7 @@ void nextStep(int id) {
 void run() {
 //	cout << "1111111111111111111111111111111111111111111111111" << endl;
 
+	ssout.str("");
 	animationOption = 0;
 	currentStep = 0;
 	currentPathStep = 0;
@@ -1154,12 +1156,14 @@ void run() {
 		if (!boxA) {
 			noPath = true;
 			cout << "Start Configuration is not free\n";
+			ssout << "Start Configuration is not free\n";
 		}
 
 		boxB = QT->getBox(beta[0], beta[1], beta[2], beta[3], ct);
 		if (!boxB) {
 			noPath = true;
 			cout << "Goal Configuration is not free\n";
+			ssout << "Goal Configuration is not free\n";
 		}
 
 		// In the following loop, "noPath" should really mean "hasPath"
@@ -1179,12 +1183,14 @@ void run() {
 		if (!boxA) {
 			noPath = true;
 			cout << "Start Configuration is not free\n";
+			ssout << "Start Configuration is not free\n";
 		}
 
 		boxB = QT->getBox(beta[0], beta[1], beta[2], beta[3], ct);
 		if (!boxB) {
 			noPath = true;
 			cout << "Goal Configuration is not free\n";
+			ssout << "Goal Configuration is not free\n";
 		}
 		if (!noPath) {
 			if (QType == 2) {
@@ -1198,10 +1204,14 @@ void run() {
 	}
 
 	t.stop();
+	if (!noPath) {
+		Graph graph;
+		PATH.clear();
 
-//	if (interactive == 0) {
-//		glutPostRedisplay();
-//	}
+//		cout<<"before dijkstraShortestPath"<<endl;
+		PATH = graph.dijkstraShortestPath(boxA, boxB);
+//		cout<<"after dijkstraShortestPath"<<endl;
+	}
 	if (verboseOption)
 		cout << ">>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>\n";
 	cout << ">>\n";
@@ -1248,7 +1258,7 @@ void run() {
 	totalSteps = allLeaf.size();
 
 //	stringstream ssout;
-	ssout.str("");
+
 	if (!noPath)
 		ssout << "    ---->>   PATH FOUND !" << endl;
 	else
@@ -1314,7 +1324,7 @@ void run() {
 
 void drawLinks(Box* b) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glColor3f(0, 0, 0);
+	glColor3f(0x00/255.0, 0x00/255.0, 0x33/255.0);
 	glLineWidth(4);
 // draw link1
 	glBegin(GL_LINES);
@@ -1339,7 +1349,7 @@ void drawLinks(Box* b) {
 
 // draw link2
 	glLineWidth(4);
-	glColor3f(1, 0, 0);
+	glColor3f(0xFF/255.0, 0x00/255.0, 0x33/255.0);
 	glBegin(GL_LINES);
 	glVertex2d(b->x, b->y);
 	glVertex2d(L2 * cos((b->xi[2] / 180) * PI) + b->x,
@@ -1369,14 +1379,14 @@ void drawLinks(Box* b) {
 
 void drawLinksSrcDst(double* configuration) {
 //	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glColor3f(0, 0, 0);
+	glColor3f(0x00/255.0, 0x00/255.0, 0x33/255.0);
 	glLineWidth(4);
 	glBegin(GL_LINES);
 	glVertex2f(configuration[0], configuration[1]);
 	glVertex2f(L1 * cos((configuration[2] / 180) * PI) + configuration[0],
 			L1 * sin((configuration[2] / 180) * PI) + configuration[1]);
 	glEnd();
-	glColor3f(1, 0, 0);
+	glColor3f(0xFF/255.0, 0x00/255.0, 0x33/255.0);
 	glBegin(GL_LINES);
 	glVertex2f(configuration[0], configuration[1]);
 	glVertex2f(L2 * cos((configuration[3] / 180) * PI) + configuration[0],
@@ -1385,26 +1395,26 @@ void drawLinksSrcDst(double* configuration) {
 	glLineWidth(1.0);
 }
 
-void drawLinks(Box* b, double x, double y) {
-//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glColor3f(0, 0, 0);
-	glLineWidth(4);
-	glBegin(GL_LINES);
-	glVertex2f(x, y);
-	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + x,
-			L1 * sin((b->xi[0] / 180) * PI) + y);
-	glEnd();
-	glColor3f(1, 0, 0);
-	glBegin(GL_LINES);
-	glVertex2f(x, y);
-	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + x,
-			L2 * sin(b->xi[2] / 180 * PI) + y);
-	glEnd();
-	glLineWidth(1.0);
-}
+//void drawLinks(Box* b, double x, double y) {
+////	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//	glColor3f(0, 0, 0);
+//	glLineWidth(4);
+//	glBegin(GL_LINES);
+//	glVertex2f(x, y);
+//	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + x,
+//			L1 * sin((b->xi[0] / 180) * PI) + y);
+//	glEnd();
+//	glColor3f(1, 1, 1);
+//	glBegin(GL_LINES);
+//	glVertex2f(x, y);
+//	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + x,
+//			L2 * sin(b->xi[2] / 180 * PI) + y);
+//	glEnd();
+//	glLineWidth(1.0);
+//}
 
 void drawPath(vector<Box*>& path) {
-	glColor3f(0.5, 0, 0.25);
+	glColor3f(0x99/255.0, 0xCC/255.0, 0xFF/255.0);
 	glLineWidth(3.0);
 	glBegin(GL_LINE_STRIP);
 	glVertex2d(beta[0], beta[1]);
@@ -1417,8 +1427,7 @@ void drawPath(vector<Box*>& path) {
 
 	int skipped = 0;
 	double distSkipped = 0;
-	drawLinksSrcDst(alpha);
-	drawLinksSrcDst(beta);
+
 	if (path.size() != 0) {
 //		cout<<"drawPath path.size() = "<<path.size() << endl;
 		for (int i = path.size() - 1; i >= 0; i--) {
@@ -1558,18 +1567,18 @@ void drawQuad(Box* b) {
 	case Box::FREE:
 		if (b->xi[0] != 0 || b->xi[1] != 360 || b->xi[2] != 0
 				|| b->xi[3] != 360) {
-			glColor4f(0.6, 0.7, 0.25, 0.8);
+			glColor3f(0x66/255.0, 0xCC/255.0, 0x99/255.0);
 		} else {
-			glColor4f(0.25, 1, 0.25, 0.8);
+			glColor3f(0x33/255.0, 0x99/255.0, 0x33/255.0);
 		}
 		break;
 	case Box::STUCK:
-		glColor4f(1, 0.0, 0.0, 1);
+		glColor3f(0xCC/255.0, 0x33/255.0, 0x33/255.0);
 		break;
 	case Box::MIXED:
-		glColor4f(1, 1, 0.25, 0.1);
+		glColor3f(0xFF/255.0, 0xFF/255.0, 0x66/255.0);
 		if (b->height < 2 * epsilon || b->width < 2 * epsilon) {
-			glColor4f(0.5, 0.5, 0.5, 0.1);
+			glColor3f(0x99/255.0, 0x99/255.0, 0x99/255.0);
 		}
 		break;
 	case Box::UNKNOWN:
@@ -1581,7 +1590,16 @@ void drawQuad(Box* b) {
 	if (!boxClicked.empty()) {
 		if (b->x == boxClicked.front()->x && b->y == boxClicked.front()->y
 				&& b->width == boxClicked.front()->width) {
-			glColor4f(0.2, 0.2, 1, 0.5);
+//			if(blinkFlag){
+				glColor3f(0x33/255.0, 0x99/255.0, 0xCC/255.0);
+//				blinkFlag = false;
+//			}else{
+//				glColor3f(0xFF/255.0, 0xFF/255.0, 0xCC/255.0);
+//				blinkFlag = true;
+//			}
+
+
+
 //			cout<<b->x<<boxClicked.front()->x <<endl;
 //					cout<<b->y<<boxClicked.front()->y <<endl;
 //					cout<<b->width<<boxClicked.front()->width <<endl;
@@ -1655,11 +1673,11 @@ void filledCircle(double radius, double x, double y, double r, double g,
 }
 
 void drawLine() {
-	if (noPath) {
-		glColor3f(0, 0, 0);
-	} else {
-		glColor3f(1, 0, 0);
-	}
+//	if (noPath) {
+//		glColor3f(0, 0, 0);
+//	} else {
+		glColor3f(0xFF/255.0, 0x99/255.0, 0x66/255.0);
+//	}
 	glLineWidth(3.0);
 	glBegin(GL_LINES);
 	glVertex2f(alpha[0], alpha[1]);
@@ -1670,10 +1688,10 @@ void drawLine() {
 
 void renderScene(void) {
 
-	while (renderLock) {
-//		return;
-	}
-	renderLock = true;
+//	while (renderLock) {
+////		return;
+//	}
+//	renderLock = true;
 //	cout << "renderScene!!!!!!!!!!!!!!!!!" << endl;
 	if (animationOption == 1) {
 		currentStep += stepIncrease;
@@ -1703,35 +1721,39 @@ void renderScene(void) {
 
 //render top level leaves w/o blending to avoid "black" boxes
 //just a hack
-	glDisable(GL_BLEND);
-//note here we render even if b is not a leaf
-	Box* b = allLeaf[0];
-	switch (b->status) {
-	case Box::FREE:
-		glColor4f(0.25, 1, 0.25, 0.5);
-		break;
-	case Box::STUCK:
-		glColor4f(1, 0.25, 0.25, 0.5);
-		break;
-	case Box::MIXED:
-		glColor4f(1, 1, 0.25, 0.1);
-		if (b->height < epsilon || b->width < epsilon) {
-			glColor4f(0.5, 0.5, 0.5, 0.1);
-		}
-		break;
-	case Box::UNKNOWN:
-		std::cerr << "UNKNOWN value unexpected!" << std::endl;
-	}
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glBegin(GL_POLYGON);
-	glVertex2d(b->x - b->width / 2, b->y - b->height / 2);
-	glVertex2d(b->x + b->width / 2, b->y - b->height / 2);
-	glVertex2d(b->x + b->width / 2, b->y + b->height / 2);
-	glVertex2d(b->x - b->width / 2, b->y + b->height / 2);
-	glEnd();
+//	glDisable(GL_BLEND);
+////note here we render even if b is not a leaf
+//	Box* b = allLeaf[0];
+//	switch (b->status) {
+//	case Box::FREE:
+//		glColor4f(0x33/255, 0x99/255, 0x33/255, 0.1);
+//		break;
+//	case Box::STUCK:
+//		glColor4f(0xCC/255, 0x33/255, 0x33/255, 0.1);
+//		break;
+//	case Box::MIXED:
+//		glColor4f(0xFF/255, 0xFF/255, 0x66/255, 0.1);
+//		if (b->height < epsilon || b->width < epsilon) {
+//			glColor4f(0xCC/255, 0xCC/255, 0x99/255, 0.1);
+//		}
+//		break;
+//	case Box::UNKNOWN:
+//		std::cerr << "UNKNOWN value unexpected!" << std::endl;
+//	}
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//	glBegin(GL_POLYGON);
+//	glVertex2d(b->x - b->width / 2, b->y - b->height / 2);
+//	glVertex2d(b->x + b->width / 2, b->y - b->height / 2);
+//	glVertex2d(b->x + b->width / 2, b->y + b->height / 2);
+//	glVertex2d(b->x - b->width / 2, b->y + b->height / 2);
+//	glEnd();
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
+//	glBlendFunc(GL_ONE, GL_DST_ALPHA);
+//	glColor4f(0x33/255, 0x99/255, 0x33/255, 0.3);
+//	glEnable(GL_BLEND);
+	glDisable(GL_BLEND);
+
+
 //	cout
 //			<< "555555555555555555555555555555555555555555555555555555555555555555555"
 //			<< endl;
@@ -1791,13 +1813,22 @@ void renderScene(void) {
 //		drawLinks(boxB, beta[0], beta[1]);
 //	}
 
+	drawLinksSrcDst(alpha);
+	drawLinksSrcDst(beta);
+
 	if (!noPath) {
-		Graph graph;
+//		Graph graph;
 //		PATH.clear();
-//		cout<<"renderScene 1418" << endl;
-		PATH = graph.dijkstraShortestPath(boxA, boxB);
-//		cout<<"renderScene 1420" << endl;
-//		cout<<"renderScene path.size() = "<<PATH.size() << endl;
+//
+//		PATH = graph.dijkstraShortestPath(boxA, boxB);
+
+//		cout << "renderScene path.size() = " << PATH.size() << endl;
+//		cout << "A " << boxA->width << " " << boxA->x << " " << boxA->y << " "
+//				<< boxA->xi[0] << " " << boxA->xi[1] << " " << boxA->xi[2]
+//				<< " " << boxA->xi[3] << endl;
+//		cout << "A " << boxB->width << " " << boxB->x << " " << boxB->y << " "
+//				<< boxB->xi[0] << " " << boxB->xi[1] << " " << boxB->xi[2]
+//				<< " " << boxB->xi[3] << endl;
 		drawPath(PATH);
 //Graph::bfsPath(boxA, boxB);
 	}
@@ -1808,7 +1839,7 @@ void renderScene(void) {
 //		glutPostRedisplay();
 //	}
 //	glutPostRedisplay();
-	renderLock = false;
+//	renderLock = false;
 }
 
 //void *thread_render(void* arg) {

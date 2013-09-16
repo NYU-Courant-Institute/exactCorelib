@@ -180,12 +180,14 @@ moretest: $(TARGETS)
 # nothing to do
 
 # Deprecated (use "2-links" instead):
-2-links-orig: $(OBJ_FILES) 2-links.o
+# 2-links-orig: $(OBJ_FILES) 2-links.o
+#	${CXX} $(OBJ_FILES) $(LDFLAGS) 2-links.cpp $(CORE_LIB) -o 2-links
+2-links: $(OBJ_FILES) 2-links.o
 	${CXX} $(OBJ_FILES) $(LDFLAGS) 2-links.cpp $(CORE_LIB) -o 2-links
 
 # Cmake version:
-2-links: build/2-links/2-links
-	-ln -s build/2-links/2-links 2-links
+# 2-links: build/2-links/2-links
+#	ln -s build/2-links/2-links 2-links
 
 
 #=================================================
@@ -264,16 +266,16 @@ eg1: ./2-links
 		&
 
 
-# eg2: input 2.text, no bounding box
-#eg2: ./2-links
-#	@echo "Target eg2e:  runs 2-links on input2.txt"
-#	./2-links $(interactive) 150 260 -45 20 20 30 \
-#		10 40 input2.txt \
-#		512 512 $(windowPosX) $(windowPosY) \
-#		1 1111 $(inputDir) \
-#		$(xtrans) $(ytrans) $(scale) \
-#		$(verbose) $(title) \
-#		&
+eg2: ./2-links
+	@echo "Target eg2: zigzagrotation" 
+	./2-links $(interactive) 216 297 115 155 210 220 260 200\
+		4 85 80 zigzagrotation.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		0 0 1 \
+		$(verbose) $(title) \
+		$(threshold) \
+		&
 
 # eg3: input3.txt is line input2e, but there is a narrow door
 #eg3: ./2-links
@@ -504,6 +506,8 @@ eg10 twoChambers: ./2-links
 
 eg10a twoChambersa: ./2-links
 	@echo "Target eg10: two Chamber environment using Random Search"
+#	@echo "	There is a path passage... when radius=6, epsilon=1"
+#	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 415 400 180 270 105 90 90 0\
 		4 8 10 2chambers.txt \
 		512 512 $(windowPosX) $(windowPosY) \
@@ -513,8 +517,10 @@ eg10a twoChambersa: ./2-links
 		$(threshold) \
 		&
 		
-eg10b twoChamberb: ./2-links
+eg10b twoChambersb: ./2-links
 	@echo "Target eg10: two Chamber environment using Greedy and shorter links"
+#	@echo "	There is a path passage... when radius=6, epsilon=1"
+#	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 415 400 180 270 105 90 90 0\
 		4 15 20 2chambers.txt \
 		512 512 $(windowPosX) $(windowPosY) \
@@ -535,6 +541,17 @@ eg11 nestedRectangle: ./2-links
 		-220 0 0.065 \
 		$(verbose) $(title) \
 		$(threshold) \
+		&
+		
+eg11a nestedRectangleA: ./2-links
+	@echo "Target eg11: 3nd test example from Chee and Zhongdi"
+#	@echo "	There is a path passage... when radius=6, epsilon=1"
+#	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./2-links $(interactive) 425 390 180 270 95 100 0 90\
+		2 10 10 nestedRectangle.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		-220 0 0.065 \
 		&
 
 		

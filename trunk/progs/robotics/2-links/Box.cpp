@@ -94,23 +94,19 @@ void calcOppoAngle(double& angle);
 
 bool Box::split2D(double epsilon, vector<Box*>& chldn) {
 	shouldSplit2D = false;
-	//todo do sth to return false
-	if (this->height < epsilon || this->width < epsilon) {
-//		std::cout << "split2D 94" << endl;
-		return 0;
-	}
+//	//todo do sth to return false
+//	if (this->height < epsilon || this->width < epsilon) {
+////		std::cout << "split2D 94" << endl;
+//		return 0;
+//	}
 
 	if (!this->isLeaf || this->status == FREE || this->status == STUCK) {
-//		std::cout << this->isLeaf << endl;
-//		std::cout << this->status << endl;
-//		std::cout << FREE << endl;
-//		std::cout << this->width << endl;
-//		std::cout << this->x << endl;
-//		std::cout << this->y << endl;
-//		std::cout << "split2D 99" << endl;
+
+
 		return 0;
 	}
 
+//	std::cout << "split2D" << endl;
 	Box* children[4];
 	//same as quadrants I, II, III, IV
 	children[2] = new Box(x - width / 4, y + height / 4, width / 2, height / 2);
@@ -540,8 +536,8 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 	this->isLeaf = false;
 //	vector<Box*> children;
 
-	for (int i = 0; i < (int)l1SafeZone.size(); i++) {
-		for (int j = 0; j < (int)l2SafeZone.size(); j++) {
+	for (int i = 0; i < (int) l1SafeZone.size(); i++) {
+		for (int j = 0; j < (int) l2SafeZone.size(); j++) {
 			Box* child = new Box(x, y, width, height);
 //					child->depth = this->depth + 1;
 			child->isBig = false;
@@ -694,14 +690,13 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 }
 
 bool Box::split(double epsilon, vector<Box*>& chldn) {
-	if (this->height / 2 < epsilon
-			|| (twoStrategyOption > 0 && (int)walls.size() + (int)corners.size() <= sizeOfPhiB
+	if ((this->height / 2 < epsilon && this->width / 2 < epsilon)
+			|| (twoStrategyOption > 0
+					&& (int) walls.size() + (int) corners.size() <= sizeOfPhiB
 					&& !shouldSplit2D)) {
 
-//		return split3D(epsilon, chldn);
-//		std::cout << "split 602" << endl;
-//		std::cout << twoStrategyOption << endl;
-		if (this->height / 2 < epsilon) {
+//		std::cout << "splitangle" << endl;
+		if (this->height / 2 < epsilon && this->width / 2 < epsilon) {
 //			std::cout << "split 603" << endl;
 			return splitAngle(epsilon, chldn);
 
@@ -716,9 +711,13 @@ bool Box::split(double epsilon, vector<Box*>& chldn) {
 
 			isLeaf = true;
 			status = MIXED;
+//			if(this->height / 2 < epsilon && this->width / 2 <epsilon){
+//				shouldSplit2D = false;
+//			}else{
 			shouldSplit2D = true;
-			visited = false;
-//			dist2Source = -1;
+//			}
+//			visited = false;
+			dist2Source = -1;
 //			std::cout << "split 719" << endl;
 //			std::cout << "split 720" << endl;
 			return result;

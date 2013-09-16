@@ -151,13 +151,13 @@ public:
 		double distDiff = sqrt(
 				(a->x - beta[0]) * (a->x - beta[0])
 						+ (a->y - beta[1]) * (a->y - beta[1]))
-				* (a->shouldSplit2D ? 5 : 1)
-				/ (a->safeRanges == 0 ? 1 : 1 + 0.2 * a->safeRanges)
+				* (a->shouldSplit2D ? 10 : 1)
+//				/ (a->safeRanges == 0 ? 1 : 1 + 0.2 * a->safeRanges)
 				- sqrt(
 						(b->x - beta[0]) * (b->x - beta[0])
 								+ (b->y - beta[1]) * (b->y - beta[1]))
-						* (b->shouldSplit2D ? 5 : 1)
-						/ (b->safeRanges == 0 ? 1 : 1 + 0.2 * b->safeRanges)
+						* (b->shouldSplit2D ? 10 : 1)
+//						/ (b->safeRanges == 0 ? 1 : 1 + 0.2 * b->safeRanges)
 						;
 		return distDiff > 0;
 	}
@@ -170,12 +170,12 @@ public:
 		double distDiff = sqrt(
 				(a->x - beta[0]) * (a->x - beta[0])
 						+ (a->y - beta[1]) * (a->y - beta[1]))
-//				* (a->shouldSplit2D ? 5 : 1)
+				* (a->shouldSplit2D ? 10 : 1)
 //				/ (a->safeRanges == 0 ? 1 : 1 + a->safeRanges)
 				- sqrt(
 						(b->x - beta[0]) * (b->x - beta[0])
 								+ (b->y - beta[1]) * (b->y - beta[1]))
-//						* (b->shouldSplit2D ? 5 : 1)
+						* (b->shouldSplit2D ? 10 : 1)
 //						/ (b->safeRanges == 0 ? 1 : 1 + b->safeRanges)
 						;
 		double wDiff = 1 / a->width - 1 / b->width;
@@ -195,13 +195,23 @@ public:
 		dist_heap.insert(bv, a);
 //		cout<< "bv.size()"<<bv.size()<<endl;
 		vector<Box*> path;
-		path.push_back(b);
+
 
 		while (bv.size()) {
 //			cout << "bv.size() = " << bv.size() << endl;
+//			cout<< "b->prev " << b->prev<<endl;
+
+
 			Box* current = dist_heap.extractMin(bv);
+			if(current->visited){
+				continue;
+			}
 			current->visited = true;
-			if (current == b) {
+
+//			cout<<current->x<< " "<<current->y<<" "<<current->width<<" "<<current->status<<" "<<endl;
+
+			if (current->contains(beta[0], beta[1], beta[2], beta[3])) {
+				path.push_back(current);
 				break;
 			}
 			for (int i = 0; i < 4; ++i) {
@@ -220,15 +230,24 @@ public:
 
 //						cout << "neighbor->dist2Source = "
 //								<< neighbor->dist2Source << endl;
+
+//						dist_heap.insert(bv, neighbor);
 						if (neighbor->dist2Source == -1) {
 							neighbor->prev = current;
 							neighbor->dist2Source = dist2src;
 							dist_heap.insert(bv, neighbor);
+
 						} else {
-							if (neighbor->dist2Source > dist2src) {
+							if (neighbor->dist2Source > dist2src
+//									|| (neighbor->dist2Source == 0
+//											&& neighbor != a)
+											) {
 								neighbor->prev = current;
 								dist_heap.decreaseKey(bv, neighbor, dist2src);
 							}
+//							else if(neighbor->dist2Source > dist2src){
+//
+//							}
 						}
 //						if (neighbor->x == b->x && neighbor->y == b->y
 //								&& neighbor->width == b->width
