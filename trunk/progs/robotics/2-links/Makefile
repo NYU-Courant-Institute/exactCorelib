@@ -277,16 +277,18 @@ eg2: ./2-links
 		$(threshold) \
 		&
 
-# eg3: input3.txt is line input2e, but there is a narrow door
-#eg3: ./2-links
-#	@echo "Target eg3:  runs 2-links on input3.txt"
-#	./2-links $(interactive) 150 260 90 450 450 -60 \
-#		10 30 input3.txt \
-#		512 512 $(windowPosX) $(windowPosY) \
-#		1 1111 $(inputDir) \
-#		$(xtrans) $(ytrans) $(scale) \
-#		$(verbose) $(title) \
-#		&
+# eg3: input3.txt is a hallway with 8 convergent passages
+eg3 8way: ./2-links
+	@echo "Target eg3: Hall way with 8 convergent hallways"
+	./2-links $(interactive) 262 250 180 270 271 256 90 0\
+		4 90 80 8way.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		-220 0 0.065 \
+		$(verbose) $(title) \
+		$(threshold) \
+		&
+
 
 # BUG TRAPS:
 # 
