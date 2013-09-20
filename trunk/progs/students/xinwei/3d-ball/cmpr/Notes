@@ -1,0 +1,25 @@
+
+Contents of obstacles.txt
+
+	Bounding Box: [10,30]x [-5,5] x [-10,-20]
+	This is a tetrahedron.
+	Points are
+		A: 10 -5 -20
+		B: 10 5 -20
+		C: 30 0 -10
+		D: 10 -5 -20
+	Triangles are
+		t1: ABC
+		t2: ADB
+		t3: ADC
+		t4: CBD
+	
+Contents of spacecfg.txt
+	epsilon=2
+	maxRadius=50
+
+Contents of sphereloc.txt
+	3
+	-20 -20 -20
+	20 20 20
+

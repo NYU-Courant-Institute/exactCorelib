@@ -20,8 +20,46 @@ Files:
 	README		-- this file
 
 Directories:
-	K_3/cmpr1, K_3/cmpr2, ..., K_3/cmpr5		-- This directory has various environments for motion planning
+	K_3/cmpr1, K_3/cmpr2, ..., K_3/cmpr5	-- This directory
+				has various environments for motion planning
 	K-3		-- motion planning for a disc in the plane
 
 ============================================================
+COMMENTS ON CODE:
+	The main program is Draw.cpp.
+	
+	COMMAND Line argument is:
+		./Draw ${filename} ${runtype} \
+		    ${spaceradius} ${epsilon} ${sphereradius} \
+		    ${xStart} ${yStart} ${zStart} \
+		    ${xEnd} ${yEnd} ${zEnd} \
+		    &
+	where	
+		filename = directory name (e.g., cmpr or cmpr5) with 3 files called
+				obstacles.txt, spacecfg.txt, sphereloc.txt
+			describing the obstacles, start and goal config,
+			radius of sphere, epsilon, etc.
+		runtype = 0, 1 or 2
+			These corresponds to BFS, random, Dijkstra strategies
+			(see "runCommandCore" routine in Draw.cpp)
+		spaceradius = dimension of the ROI
+		epsilon = eps parameter
+		sphereradius = robot radius
+		
+	
+		E.g., in cmpr,
+		obstacles.txt:
+			description of the obstacles given by a list of triangles
+			in this case, a tetrahedron
+		sphereloc.txt has
+			3		(robot radius)
+			-20 -20 -20	(start cfg)
+			20 20 20	(goal cfg)
+		spacecfg.txt has
+			epsilon=2	(epsilon parameter)
+			maxRadius=50	(space radius, i.e., ROI radius)
+	
+
+
+			
 ============================================================

@@ -22,6 +22,8 @@
 #include <fstream>
 #include <regex>
 
+using namespace std;
+
 #ifdef __CYGWIN32__
 #include "glui.h"
 #endif
@@ -51,6 +53,12 @@ float r=160.0f,h=0.0f; // radius of turn
 
 GLfloat Vx = 0.0, Vy = 1.0, Vz = 0.0; //View-up vector.
 
+/***************************************************************************/
+
+int debug(std::string msg)
+{
+    cout << msg << endl;
+}
 /***************************************************************************/
 // for the display lists
 //GLuint glistID;  
@@ -123,7 +131,7 @@ bool found = false; bool isRand = false; bool isDijk = false;
 
 void drawScene() 
 {
-	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);  // hidden surface removal
 	glEnable(GL_BLEND);
 	glMatrixMode(GL_MODELVIEW);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1019,6 +1027,8 @@ void initFromFile(std::string fileName) {
 	
 	float x1, x2, x3, y1, y2, y3, z1, z2, z3;
 	
+	// ////////////////////////////////////////////////////////////
+	// Constructing the obstacles by reading one triangle at a time:
 	std::ifstream iFile((fileName + "obstacles.txt").c_str());
 	while (iFile>>x1>>y1>>z1>>x2>>y2>>z2>>x3>>y3>>z3) {
 		faces[obstacleCounter].coord[0].x = x1;
@@ -1030,6 +1040,7 @@ void initFromFile(std::string fileName) {
 		faces[obstacleCounter].coord[0].z = z1;
 		faces[obstacleCounter].coord[1].z = z2;
 		faces[obstacleCounter].coord[2].z = z3;
+		// WHAT IS a,b,c,d next?   Is it the normal?
 		faces[obstacleCounter].a = y1 * z2 - y1 * z3 - y2 * z1 + y2 * z3 + y3 * z1 - y3 * z2;
 		faces[obstacleCounter].b = -x1 * z2 + x1 * z3 + x2 * z1 - x2 * z3 - x3 * z1 + x3 * z2;
 		faces[obstacleCounter].c = x1 * y2 - x1 * y3 - x2 * y1 + x2 * y3 + x3 * y1 - x3 * y2;
@@ -1068,19 +1079,22 @@ void runCommandCore(std::string s, float f) {
 		isRand = false;
 		isDijk = false;
 		findPath();
-		if (found) { inputString = "Path found.";} else { inputString = "No path found.";}
+		if (found) { inputString = "Path found.";}
+		else { inputString = "No path found.";}
 	}
 	if (s == "runr") {
 		isRand = true;
 		isDijk = false;
 		findPath();
-		if (found) { inputString = "Path found.";} else { inputString = "No path found.";}
+		if (found) { inputString = "Path found.";}
+		else { inputString = "No path found.";}
 	}
 	if (s == "runl") {
 		isRand = false;
 		isDijk = true;
 		findPath();
-		if (found) { inputString = "Path found.";} else { inputString = "No path found.";}
+		if (found) { inputString = "Path found.";}
+		else { inputString = "No path found.";}
 	}
 	if (s == "hidebox") {
 		isShowBox = !isShowBox;
@@ -1311,17 +1325,19 @@ int main(int argc, char *argv[]) {
 		initFromPara(argc, argv);
 	}
 
-	initFromFile(fileName);
+	initFromFile(fileName);		// set up obstacles, start/goal, eps, rad, ROI
 
 	//testUseOnlyInit();
 
 	inputString = "Started.";
 
+debug("before ");
 	switch (runType) {
 		case 0: runCommandCore("run", 0); break;
 		case 1: runCommandCore("runr", 0); break;
 		case 2: runCommandCore("runl", 0); break;
 	}
+debug("after ");
 
 	main_t(argc, argv);
 }
