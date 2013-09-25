@@ -261,7 +261,7 @@ eg1: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 1 \
-		$(verbose) "3 obstacles" \
+		$(verbose) "Eg1: 3 obstacles" \
 		$(threshold) \
 		&
 
@@ -273,7 +273,7 @@ eg2: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 1 \
-		$(verbose) "8 ways with 2 more obstacles" \
+		$(verbose) "Eg2: 8-ways with 2 more obstacles" \
 		$(threshold) \
 		&
 
@@ -285,10 +285,31 @@ eg3 8way: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) "8 ways" \
+		$(verbose) "Eg3: 8 ways" \
 		$(threshold) \
 		&
 
+eg3a 8waya: ./2-links
+	@echo "Target eg3b: Hall way with 8 convergent hallways"
+	./2-links $(interactive) 145 145 33 235 262 346 280 80\
+		4 90 70 8way.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		4 $(seed)  $(inputDir) \
+		-220 0 0.065 \
+		$(verbose) $(title) \
+		$(threshold) \
+		&
+
+eg3b 8wayb: ./2-links
+	@echo "Target eg3: Hall way with 8 convergent hallways"
+	./2-links $(interactive) 262 160 90 270 271 346 270 90\
+		4 90 70 8way.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		4 $(seed)  $(inputDir) \
+		-220 0 0.065 \
+		$(verbose) $(title) \
+		$(threshold) \
+		&
 
 # BUG TRAPS:
 # 
@@ -338,22 +359,22 @@ eg6: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		250 250 0.04 \
-		$(verbose) "Target DemoSE2_PRM (from Kavraki's group)"\
+		$(verbose) "Eg6: Target DemoSE2_PRM (from Kavraki's group)"\
 		$(threshold) \
 		&
 
 # eg7, egtunnel:  tunnel example from Salzman et al.
-# 	NOTE that the current search strategy seems to miss the direct path!!
-# 	TODO: develop a better search (e.g. Best First Search)
-# eg7 egtunnel tunnel: ./2-links
-#	./2-links $(interactive) 200 280 90 0 450 300 0 90\
-#		4 10 15 tunnel.poly \
-#		512 512 $(windowPosX) $(windowPosY) \
-#		1 1111 $(inputDir) \
-#		100 200 0.05
-#		$(verbose) "Target DemoSE2_PRM (from Kavraki's group)"\
-#		$(threshold) \
-#		&
+#	NOTE that the current search strategy seems to miss the direct path!!
+#	TODO: develop a better search (e.g. Best First Search)
+eg7 egtunnel tunnel: ./2-links
+	./2-links $(interactive) 200 280 90 0 450 300 0 90\
+	4 10 15 tunnel.poly \
+	512 512 $(windowPosX) $(windowPosY) \
+	1 1111 $(inputDir) \
+	100 200 0.05 \
+	$(verbose) "Eg 7:  Target DemoSE2_PRM (from Kavraki's group)"\
+	$(threshold) \
+	&
 		
 
 
@@ -367,7 +388,7 @@ eg8 hsu: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) "200 obstacles" \
+		$(verbose) "Eg8: 200 obstacles" \
 		&
 
 eg8a hsua: ./2-links
@@ -401,12 +422,12 @@ eg9 narrow: ./2-links
 	@echo "Target eg9: 1st test example from Chee and Zhongdi"
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./2-links $(interactive) 195 370 0 90 195 160 270 0\
+	./2-links $(interactive) 215 370 0 125 195 160 270 0\
 		4 95 70 narrowCorridor.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 0.065 \
-		$(verbose) "narrow" \
+		$(verbose) "Eg 9:  narrow" \
 		$(threshold) \
 		&
 		
@@ -417,7 +438,7 @@ eg10 twoChambers: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) "2 Chambers" \
+		$(verbose) "Eg 10: 2 Chambers" \
 		$(threshold) \
 		&
 
@@ -443,7 +464,7 @@ eg10b twoChambersb: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) "2 Chambers with shorter links - Greedy" \
+		$(verbose) "Eg 10b: 2 Chambers with shorter links - Greedy" \
 		$(threshold) \
 		&
 
@@ -456,7 +477,7 @@ eg11 nestedRectangle: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) "Nested Rectangle" \
+		$(verbose) "Eg 11: Nested Rectangle" \
 		$(threshold) \
 		&
 		
