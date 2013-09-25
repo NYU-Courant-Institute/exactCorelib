@@ -388,7 +388,8 @@ eg8 hsu: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) "Eg8: 200 obstacles" \
+		$(verbose) "Eg8: From paper of Hsu, Latombe, Kurniawatti (2006)" \
+		$(threshold) \
 		&
 
 eg8a hsua: ./2-links
