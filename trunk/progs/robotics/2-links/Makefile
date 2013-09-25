@@ -256,7 +256,7 @@ nopath eg0:	./2-links
 
 eg1: ./2-links
 	@echo "Target eg1: 3 obstacles" 
-	./2-links $(interactive) 195 370 0 150 345 180 270 0\
+	./2-links $(interactive) 195 340 0 150 345 180 270 0\
 		8 50 80 basic3.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
