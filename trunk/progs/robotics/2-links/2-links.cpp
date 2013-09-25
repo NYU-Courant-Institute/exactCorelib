@@ -51,9 +51,11 @@
 #include "GL/glui.h"
 #endif
 #ifdef _WIN32
+#include <gl/glew.h>
 #include <gl/glui.h>
 #endif
 #ifdef __APPLE__
+#include <GL/glew.h>
 #include <GLUI/glui.h>
 #endif
 
@@ -144,8 +146,10 @@ bool noPath = true;			// True means there is "No path.
 
 bool hideBoxBoundary = false;  		// don't draw box boundary
 bool verboseOption = false;		// don't print various statistics
+
+int drawPathOption = 0;
 int twoStrategyOption = 0; // 2-Stage-Stratege or not
-string title("2-links Robot Demos");	// title for control panel
+string title("2-links Control Panel");	// title for control panel
 int sizeOfPhiB = 0;
 
 vector<Box*> PATH;
@@ -185,11 +189,17 @@ vector<Box*> boxClicked;
 
 //volatile bool renderReady = false;
 
+char** argvSave;
+int argcSave;
+
+bool leafBoxesDrawed = false;
+
 // GLUI controls ========================================
 //////////////////////////////////////////////////////////////////////////////////
 GLUI_RadioGroup* radioStepsPerFrame;
 GLUI_EditText* textCustomSpeed;
 GLUI_EditText* textCurrentStep;
+GLUI_RadioGroup* radioDrawPathOption;
 GLUI_RadioGroup* radioQType;
 GLUI_RadioGroup* radioDrawOption;
 GLUI_RadioGroup* radio2StrategyOption;
@@ -213,12 +223,16 @@ GLUI_EditText* editSeed;
 
 GLUI_TextBox* textBox;
 GLUI_TextBox* boxSelectedInfo;
+//GLUI_RadioGroup* radioDrawPathOption;
 
+GLuint fbo;
+GLuint depthBuffer;			// Our handle to the depth render buffer
+GLuint img;					// Our handle to a texture
 // External Routines ========================================
 //////////////////////////////////////////////////////////////////////////////////
 void renderScene(void);
 void parseConfigFile(Box*);
-void idle();
+//void idle();
 void replaySplitting();
 void runAnimation();
 void previousStep(int);
@@ -233,7 +247,11 @@ void drawLine();
 //void drawTri(Box*);
 //void drawTri(Box*, double, double);
 void drawLinks(Box*);
-void drawLinks(Box*, double, double);
+//void drawLinks(Box*, double, double);
+void resetAndRun();
+void reset();
+void initFbo();
+void redrawFBO();
 
 //void *thread_render(void* arg);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -257,6 +275,7 @@ GLUI_Button* nextStepReplay;
 GLUI_Button* previousStepAnimation;
 GLUI_Button* buttonAnimation;
 GLUI_Button* nextStepAnimation;
+GLUI_Button* buttonReset;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //find path using simple heuristic:
@@ -281,7 +300,6 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 
 //		int aaa = dijQ.size();
 //		cout<<current->x<< " "<<current->y<<" "<<current->width<<" "<<current->status<<" "<<endl;
-
 
 		// if current is MIXED, try expand it and push the children that is
 		// ACTUALLY neighbors of the source set (set containing alpha) into the dijQ again
@@ -347,7 +365,8 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 					}
 				}
 			}
-			if (current->shouldSplit2D && current->height/2 >= epsilon && current->width/2 >= epsilon) {
+			if (current->shouldSplit2D && current->height / 2 >= epsilon
+					&& current->width / 2 >= epsilon) {
 				dijQ.push(current);
 				toReset.push_back(current);
 //				cout<<"push"<<endl;
@@ -373,8 +392,7 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 				for (vector<Box*>::iterator iter = current->Nhbrs[i].begin();
 						iter < current->Nhbrs[i].end(); ++iter) {
 					Box* neighbor = *iter;
-					if (!neighbor->visited
-							&& neighbor->dist2Source == -1
+					if (!neighbor->visited && neighbor->dist2Source == -1
 							&& (neighbor->status == Box::FREE
 									|| neighbor->status == Box::MIXED)) {
 						//					cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!317 "
@@ -458,6 +476,7 @@ bool sortByXi2(const Box* b1, const Box* b2) {
 
 void processMouse(int button, int state, int x, int y) {
 
+//	cout<<button<<" "<<state<<endl;
 	int reverseY = 512 - y;
 	if (state == GLUT_DOWN) {
 
@@ -547,61 +566,15 @@ void processMouse(int button, int state, int x, int y) {
 			boxSelectedInfo->set_text(tempStream.str().c_str());
 		}
 	}
+	redrawFBO();
 }
 
 int main(int argc, char* argv[]) {
-	if (argc > 1)
-		interactive = atoi(argv[1]);	// Interactive (0) or no (>0)
-	if (argc > 2)
-		alpha[0] = atof(argv[2]);		// start x
-	if (argc > 3)
-		alpha[1] = atof(argv[3]);		// start y
-	if (argc > 4)
-		alpha[2] = atof(argv[4]);// start theta1, convert from degree to radian
-	if (argc > 5)
-		alpha[3] = atof(argv[5]);// start theta2, convert from degree to radian
-	if (argc > 6)
-		beta[0] = atof(argv[6]);		// goal x
-	if (argc > 7)
-		beta[1] = atof(argv[7]);		// goal y
-	if (argc > 8)
-		beta[2] = atof(argv[8]);// goal theta1, convert from degree to radian
-	if (argc > 9)
-		beta[3] = atof(argv[9]);// goal theta2, convert from degree to radian
-	if (argc > 10)
-		epsilon = atof(argv[10]);		// epsilon (resolution)
-	if (argc > 11)
-		L1 = atof(argv[11]);		// robot length1
-	if (argc > 12)
-		L2 = atof(argv[12]);		// robot length2
-	if (argc > 13)
-		fileName = argv[13]; 		// Input file name
-	if (argc > 14)
-		boxWidth = atof(argv[14]);		// boxWidth
-	if (argc > 15)
-		boxHeight = atof(argv[15]);	// boxHeight
-	if (argc > 16)
-		windowPosX = atoi(argv[16]);	// window X pos
-	if (argc > 17)
-		windowPosY = atoi(argv[17]);	// window Y pos
-	if (argc > 18)
-		QType = atoi(argv[18]);	// PriorityQ Type (random or no)
-	if (argc > 19)
-		seed = atoi(argv[19]);		// for random number generator
-	if (argc > 20)
-		inputDir = argv[20];		// path for input files
-	if (argc > 21)
-		deltaX = atof(argv[21]);	// x-translation of input file
-	if (argc > 22)
-		deltaY = atof(argv[22]);	// y-translation of input file
-	if (argc > 23)
-		scale = atof(argv[23]);		// scaling of input file
-	if (argc > 24)
-		verboseOption = atoi(argv[24]);	// verboseOption
-	if (argc > 25)
-		title = argv[25];		// title
-	if (argc > 26)
-		sizeOfPhiB = atoi(argv[26]);// threshold for splitting angles  |Phi(B)|
+
+	argvSave = argv;
+	argcSave = argc;
+
+	reset();
 
 // Added by Zhongdi 05/08/2013 begin
 // calculate the R of the robot
@@ -633,7 +606,9 @@ int main(int argc, char* argv[]) {
 		glutInitWindowPosition(windowPosX, windowPosY);
 		glutInitWindowSize(boxWidth, boxWidth);
 		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
-		int windowID = glutCreateWindow("Motion Planning");
+		int windowID = glutCreateWindow(title.c_str());
+
+		initFbo();
 
 		GLUI_Master.set_glutIdleFunc(NULL);
 //		glutPostRedisplay();
@@ -648,9 +623,9 @@ int main(int argc, char* argv[]) {
 		std::stringstream sss;
 		sss << "2-Links Control: " << title;	// create full file name
 		std::string title_string = sss.str();
-		const char * test("2-Links Demo");
+//		const char * test("2-Links Demo");
 
-		GLUI *glui = GLUI_Master.create_glui(test, 0,
+		GLUI *glui = GLUI_Master.create_glui(title_string.c_str(), 0,
 				windowPosX + boxWidth + 20, windowPosY);
 
 		// SETTING UP THE CONTROL PANEL:
@@ -727,10 +702,26 @@ int main(int argc, char* argv[]) {
 		editSeed = glui->add_edittext("seed:", GLUI_EDITTEXT_INT);
 		editSeed->set_int_val(seed);
 
-		buttonRun = glui->add_button("Run", -1, (GLUI_Update_CB) run);
-		buttonRun->set_name("Run"); // Hack, to avoid "unused warning" (Chee)
+		GLUI_Panel * runAndReset_panel = glui->add_panel("", GLUI_PANEL_NONE);
+		buttonRun = glui->add_button_to_panel(runAndReset_panel, "Run", -1,
+				(GLUI_Update_CB) run);
+//		buttonRun->set_name("Run"); // Hack, to avoid "unused warning" (Chee)
+		glui->add_column_to_panel(runAndReset_panel);
+		buttonReset = glui->add_button_to_panel(runAndReset_panel, "Reset", 1,
+				(GLUI_Update_CB) resetAndRun);
 
-		GLUI_Panel * replay_panel = glui->add_panel("replay configuration",
+		radioDrawPathOption = glui->add_radiogroup(0, -1,
+				(GLUI_Update_CB) redrawFBO);
+		glui->add_radiobutton_to_group(radioDrawPathOption, "Animation");
+		glui->add_radiobutton_to_group(radioDrawPathOption,
+				"Initial Configuration");
+		glui->add_radiobutton_to_group(radioDrawPathOption,
+				"Static Subdivision");
+		glui->add_radiobutton_to_group(radioDrawPathOption, "Static Path");
+
+		glui->add_separator();
+
+		GLUI_Panel * replay_panel = glui->add_panel("Animation",
 				GLUI_PANEL_EMBOSSED);
 		GLUI_Panel * replaySplitting_panel = glui->add_panel_to_panel(
 				replay_panel, "", GLUI_PANEL_NONE);
@@ -779,12 +770,6 @@ int main(int argc, char* argv[]) {
 				(GLUI_Update_CB) nextStep);
 		nextStepAnimation->set_w(1);
 
-		// box selected info
-		boxSelectedInfo = new GLUI_TextBox(glui, true);
-		boxSelectedInfo->set_h(120);
-		boxSelectedInfo->set_w(210);
-//		boxSelectedInfo->disable();
-
 		// New column:
 		glui->add_column(true);
 
@@ -802,7 +787,7 @@ int main(int argc, char* argv[]) {
 		radioQType->set_int_val(QType);
 
 		radioDrawOption = glui->add_radiogroup(0, -1,
-				(GLUI_Update_CB) renderScene);
+				(GLUI_Update_CB) redrawFBO);
 		glui->add_radiobutton_to_group(radioDrawOption, "Show Box Boundary");
 		glui->add_radiobutton_to_group(radioDrawOption, "Hide Box Boundary");
 
@@ -830,8 +815,14 @@ int main(int argc, char* argv[]) {
 		radio2StrategyOption->set_int_val(twoStrategyOption);
 		glui->add_separator();
 
+		// box selected info
+		boxSelectedInfo = new GLUI_TextBox(glui, true);
+//		boxSelectedInfo->set_name("box selected");
+		boxSelectedInfo->set_h(120);
+		boxSelectedInfo->set_w(310);
+
 		textBox = new GLUI_TextBox(glui, true);
-		textBox->set_h(400);
+		textBox->set_h(300);
 		textBox->set_w(310);
 		textBox->disable();
 
@@ -854,6 +845,7 @@ int main(int argc, char* argv[]) {
 ////			glutIdleFunc(&idle);
 //			glutTimerFunc(1000, TimerFunction,1);
 	run();
+//	processMouse(0,0,1,1);
 //	cout<<"mainloop!!!!!!!!!!!"<<endl;
 
 //cout<<"before run\n";
@@ -931,6 +923,8 @@ void genEmptyTree() {
 
 void runAnimation() {
 //	textCurrentStep->set_int_val(currentStep);
+	radioDrawPathOption->set_int_val(0);
+
 	if (animationOption != 3) {
 		animationOption = 3;
 		if (radioStepsPerFrame->get_int_val() == 0) {
@@ -949,7 +943,7 @@ void runAnimation() {
 			currentPathStep = 0;
 		}
 	} else {
-		animationOption = 0;
+		animationOption = 4;
 		stepIncrease = 0;
 		buttonAnimation->set_name("Path Animation");
 	}
@@ -964,6 +958,7 @@ void runAnimation() {
 }
 
 void replaySplitting() {
+	radioDrawPathOption->set_int_val(0);
 	textCurrentStep->set_int_val(currentStep);
 	if (animationOption != 1) {
 		animationOption = 1;
@@ -993,6 +988,7 @@ void replaySplitting() {
 	glutPostRedisplay();
 }
 void previousStep(int id) {
+	radioDrawPathOption->set_int_val(0);
 	int stepGap = 0;
 	if (radioStepsPerFrame->get_int_val() == 0) {
 		stepGap = 1;
@@ -1027,6 +1023,7 @@ void previousStep(int id) {
 }
 
 void nextStep(int id) {
+	radioDrawPathOption->set_int_val(0);
 	int stepGap = 0;
 	if (radioStepsPerFrame->get_int_val() == 0) {
 		stepGap = 1;
@@ -1068,6 +1065,7 @@ void run() {
 	animationOption = 0;
 	currentStep = 0;
 	currentPathStep = 0;
+	leafBoxesDrawed = false;
 
 	buttonReplay->set_name("Replay Spliting");
 	buttonAnimation->set_name("Path Animation");
@@ -1287,6 +1285,7 @@ void run() {
 //	renderReady = true;
 	// run the moving animation after calculation
 	runAnimation();
+
 }		//run
 
 //void drawTri(Box* b) {
@@ -1324,50 +1323,50 @@ void run() {
 
 void drawLinks(Box* b) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glColor3f(0x00/255.0, 0x00/255.0, 0x33/255.0);
+	glColor3f(0x00 / 255.0, 0x00 / 255.0, 0x33 / 255.0);
 	glLineWidth(4);
 // draw link1
 	glBegin(GL_LINES);
-	glVertex2d(b->x, b->y);
-	glVertex2d(L1 * cos((b->xi[0] / 180) * PI) + b->x,
+	glVertex2f(b->x, b->y);
+	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
 			L1 * sin((b->xi[0] / 180) * PI) + b->y);
 	glEnd();
 // draw the arrows
 	glLineWidth(2);
 	glBegin(GL_LINES);
-	glVertex2d((L1 - 5) * cos(((b->xi[0] - 5) / 180) * PI) + b->x,
+	glVertex2f((L1 - 5) * cos(((b->xi[0] - 5) / 180) * PI) + b->x,
 			(L1 - 5) * sin(((b->xi[0] - 5) / 180) * PI) + b->y);
-	glVertex2d(L1 * cos((b->xi[0] / 180) * PI) + b->x,
+	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
 			L1 * sin((b->xi[0] / 180) * PI) + b->y);
 	glEnd();
 	glBegin(GL_LINES);
-	glVertex2d((L1 - 5) * cos(((b->xi[0] + 5) / 180) * PI) + b->x,
-			(L1 - 5) * sin(((b->xi[0] + 5) / 180) * PI) + b->y);
-	glVertex2d(L1 * cos((b->xi[0] / 180) * PI) + b->x,
+	glVertex2f((double) ((L1 - 5) * cos(((b->xi[0] + 5) / 180) * PI) + b->x),
+			(double) ((L1 - 5) * sin(((b->xi[0] + 5) / 180) * PI) + b->y));
+	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
 			L1 * sin((b->xi[0] / 180) * PI) + b->y);
 	glEnd();
 
 // draw link2
 	glLineWidth(4);
-	glColor3f(0xFF/255.0, 0x00/255.0, 0x33/255.0);
+	glColor3f(0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
 	glBegin(GL_LINES);
-	glVertex2d(b->x, b->y);
-	glVertex2d(L2 * cos((b->xi[2] / 180) * PI) + b->x,
+	glVertex2f(b->x, b->y);
+	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
 			L2 * sin((b->xi[2] / 180) * PI) + b->y);
 	glEnd();
 
 // draw the arrows
 	glLineWidth(2);
 	glBegin(GL_LINES);
-	glVertex2d((L2 - 5) * cos(((b->xi[2] - 5) / 180) * PI) + b->x,
+	glVertex2f((L2 - 5) * cos(((b->xi[2] - 5) / 180) * PI) + b->x,
 			(L2 - 5) * sin(((b->xi[2] - 5) / 180) * PI) + b->y);
-	glVertex2d(L2 * cos((b->xi[2] / 180) * PI) + b->x,
+	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
 			L2 * sin((b->xi[2] / 180) * PI) + b->y);
 	glEnd();
 	glBegin(GL_LINES);
-	glVertex2d((L2 - 5) * cos(((b->xi[2] + 5) / 180) * PI) + b->x,
+	glVertex2f((L2 - 5) * cos(((b->xi[2] + 5) / 180) * PI) + b->x,
 			(L2 - 5) * sin(((b->xi[2] + 5) / 180) * PI) + b->y);
-	glVertex2d(L2 * cos((b->xi[2] / 180) * PI) + b->x,
+	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
 			L2 * sin((b->xi[2] / 180) * PI) + b->y);
 	glEnd();
 //	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box x=" << b->x << " y=" << b->y
@@ -1379,14 +1378,14 @@ void drawLinks(Box* b) {
 
 void drawLinksSrcDst(double* configuration) {
 //	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glColor3f(0x00/255.0, 0x00/255.0, 0x33/255.0);
+	glColor3f(0x00 / 255.0, 0x00 / 255.0, 0x33 / 255.0);
 	glLineWidth(4);
 	glBegin(GL_LINES);
 	glVertex2f(configuration[0], configuration[1]);
 	glVertex2f(L1 * cos((configuration[2] / 180) * PI) + configuration[0],
 			L1 * sin((configuration[2] / 180) * PI) + configuration[1]);
 	glEnd();
-	glColor3f(0xFF/255.0, 0x00/255.0, 0x33/255.0);
+	glColor3f(0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
 	glBegin(GL_LINES);
 	glVertex2f(configuration[0], configuration[1]);
 	glVertex2f(L2 * cos((configuration[3] / 180) * PI) + configuration[0],
@@ -1414,14 +1413,14 @@ void drawLinksSrcDst(double* configuration) {
 //}
 
 void drawPath(vector<Box*>& path) {
-	glColor3f(0x99/255.0, 0xCC/255.0, 0xFF/255.0);
+	glColor3f(0x99 / 255.0, 0xCC / 255.0, 0xFF / 255.0);
 	glLineWidth(3.0);
 	glBegin(GL_LINE_STRIP);
-	glVertex2d(beta[0], beta[1]);
+	glVertex2f(beta[0], beta[1]);
 	for (int i = 0; i < (int) path.size(); ++i) {
-		glVertex2d(path[i]->x, path[i]->y);
+		glVertex2f(path[i]->x, path[i]->y);
 	}
-	glVertex2d(alpha[0], alpha[1]);
+	glVertex2f(alpha[0], alpha[1]);
 	glEnd();
 	glLineWidth(1.0);
 
@@ -1469,16 +1468,6 @@ void drawPath(vector<Box*>& path) {
 			}
 			if ((animationOption == 3 || animationOption == 4)
 					&& (unsigned) i == path.size() - 1 - currentPathStep) {
-//				int tempTotalSteps = totalSteps;
-//				for (int j = 0; j < 100000000 / ((tempTotalSteps / 1000) + 1);
-//						j++) {
-//				cout
-//						<< "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
-//						<< endl;
-//					totalSteps = j;
-//				}
-//				totalSteps = tempTotalSteps;
-//				sleep(1);
 
 				ssTemp.str("");
 //				ssTemp << ssout.str();
@@ -1567,18 +1556,18 @@ void drawQuad(Box* b) {
 	case Box::FREE:
 		if (b->xi[0] != 0 || b->xi[1] != 360 || b->xi[2] != 0
 				|| b->xi[3] != 360) {
-			glColor3f(0x66/255.0, 0xCC/255.0, 0x99/255.0);
+			glColor3f(0x66 / 255.0, 0xCC / 255.0, 0x99 / 255.0);
 		} else {
-			glColor3f(0x33/255.0, 0x99/255.0, 0x33/255.0);
+			glColor3f(0x33 / 255.0, 0x99 / 255.0, 0x33 / 255.0);
 		}
 		break;
 	case Box::STUCK:
-		glColor3f(0xCC/255.0, 0x33/255.0, 0x33/255.0);
+		glColor3f(0xCC / 255.0, 0x33 / 255.0, 0x33 / 255.0);
 		break;
 	case Box::MIXED:
-		glColor3f(0xFF/255.0, 0xFF/255.0, 0x66/255.0);
+		glColor3f(0xFF / 255.0, 0xFF / 255.0, 0x66 / 255.0);
 		if (b->height < 2 * epsilon || b->width < 2 * epsilon) {
-			glColor3f(0x99/255.0, 0x99/255.0, 0x99/255.0);
+			glColor3f(0x99 / 255.0, 0x99 / 255.0, 0x99 / 255.0);
 		}
 		break;
 	case Box::UNKNOWN:
@@ -1591,14 +1580,12 @@ void drawQuad(Box* b) {
 		if (b->x == boxClicked.front()->x && b->y == boxClicked.front()->y
 				&& b->width == boxClicked.front()->width) {
 //			if(blinkFlag){
-				glColor3f(0x33/255.0, 0x99/255.0, 0xCC/255.0);
+			glColor3f(0x33 / 255.0, 0x99 / 255.0, 0xCC / 255.0);
 //				blinkFlag = false;
 //			}else{
 //				glColor3f(0xFF/255.0, 0xFF/255.0, 0xCC/255.0);
 //				blinkFlag = true;
 //			}
-
-
 
 //			cout<<b->x<<boxClicked.front()->x <<endl;
 //					cout<<b->y<<boxClicked.front()->y <<endl;
@@ -1609,20 +1596,20 @@ void drawQuad(Box* b) {
 //	cout<<"999999999999999999999999999999999999999999999999999999999"<<endl;
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBegin(GL_POLYGON);
-	glVertex2d(b->x - b->width / 2, b->y - b->height / 2);
-	glVertex2d(b->x + b->width / 2, b->y - b->height / 2);
-	glVertex2d(b->x + b->width / 2, b->y + b->height / 2);
-	glVertex2d(b->x - b->width / 2, b->y + b->height / 2);
+	glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
+	glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
+	glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
+	glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
 	glEnd();
 
 	if (!hideBoxBoundary) {
 		glColor3f(0, 0, 0);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glBegin(GL_POLYGON);
-		glVertex2d(b->x - b->width / 2, b->y - b->height / 2);
-		glVertex2d(b->x + b->width / 2, b->y - b->height / 2);
-		glVertex2d(b->x + b->width / 2, b->y + b->height / 2);
-		glVertex2d(b->x - b->width / 2, b->y + b->height / 2);
+		glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
+		glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
+		glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
+		glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
 		glEnd();
 	}
 }
@@ -1634,8 +1621,8 @@ void drawWalls(Box* b) {
 			++iter) {
 		Wall* w = *iter;
 		glBegin(GL_LINES);
-		glVertex2d(w->src->x, w->src->y);
-		glVertex2d(w->dst->x, w->dst->y);
+		glVertex2f(w->src->x, w->src->y);
+		glVertex2f(w->dst->x, w->dst->y);
 		glEnd();
 	}
 	glLineWidth(1.0);
@@ -1643,7 +1630,7 @@ void drawWalls(Box* b) {
 
 void drawCircle(float Radius, int numPoints, double x, double y, double r,
 		double g, double b) {
-	glColor3d(r, g, b);
+	glColor3f(r, g, b);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(2.0);
 	glBegin(GL_POLYGON);
@@ -1660,7 +1647,7 @@ void drawCircle(float Radius, int numPoints, double x, double y, double r,
 void filledCircle(double radius, double x, double y, double r, double g,
 		double b) {
 	int numPoints = 100;
-	glColor3d(r, g, b);
+	glColor3f(r, g, b);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBegin(GL_POLYGON);
 	for (int i = 0; i <= numPoints; ++i) {
@@ -1676,7 +1663,7 @@ void drawLine() {
 //	if (noPath) {
 //		glColor3f(0, 0, 0);
 //	} else {
-		glColor3f(0xFF/255.0, 0x99/255.0, 0x66/255.0);
+	glColor3f(0xFF / 255.0, 0x99 / 255.0, 0x66 / 255.0);
 //	}
 	glLineWidth(3.0);
 	glBegin(GL_LINES);
@@ -1688,10 +1675,6 @@ void drawLine() {
 
 void renderScene(void) {
 
-//	while (renderLock) {
-////		return;
-//	}
-//	renderLock = true;
 //	cout << "renderScene!!!!!!!!!!!!!!!!!" << endl;
 	if (animationOption == 1) {
 		currentStep += stepIncrease;
@@ -1699,94 +1682,117 @@ void renderScene(void) {
 //	cout << "renderCount :" << renderCount << endl;
 	renderCount++;
 
-//	while (!renderReady) {
-//			cout<<"44444444444444444444444444444444444444444"<<endl;
-//	}
-
 	hideBoxBoundary = radioDrawOption->get_int_val();
 	verboseOption = radioVerboseOption->get_int_val();
+	drawPathOption = radioDrawPathOption->get_int_val();
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (animationOption == 1 || animationOption == 2) {
+		leafBoxesDrawed = false;
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glLoadIdentity();
-	glScalef(2.0 / boxWidth, 2.0 / boxHeight, 0);
-	glTranslatef(-boxWidth / 2, -boxHeight / 2, 0);
+	}
 
-//	cout
-//			<< "666666666666666666666666666666666666666666666666666666666666666666666"
-//			<< endl;
-//	cout
-//			<< "666666666666666666666666666666666666666666666666666666666666666666666"
-//			<< endl;
+	//draw leaf boxes to fbo
+	if (!leafBoxesDrawed) {
+		if (!(animationOption == 1 || animationOption == 2)) {
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+		}
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//render top level leaves w/o blending to avoid "black" boxes
-//just a hack
-//	glDisable(GL_BLEND);
-////note here we render even if b is not a leaf
-//	Box* b = allLeaf[0];
-//	switch (b->status) {
-//	case Box::FREE:
-//		glColor4f(0x33/255, 0x99/255, 0x33/255, 0.1);
-//		break;
-//	case Box::STUCK:
-//		glColor4f(0xCC/255, 0x33/255, 0x33/255, 0.1);
-//		break;
-//	case Box::MIXED:
-//		glColor4f(0xFF/255, 0xFF/255, 0x66/255, 0.1);
-//		if (b->height < epsilon || b->width < epsilon) {
-//			glColor4f(0xCC/255, 0xCC/255, 0x99/255, 0.1);
-//		}
-//		break;
-//	case Box::UNKNOWN:
-//		std::cerr << "UNKNOWN value unexpected!" << std::endl;
-//	}
-//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//	glBegin(GL_POLYGON);
-//	glVertex2d(b->x - b->width / 2, b->y - b->height / 2);
-//	glVertex2d(b->x + b->width / 2, b->y - b->height / 2);
-//	glVertex2d(b->x + b->width / 2, b->y + b->height / 2);
-//	glVertex2d(b->x - b->width / 2, b->y + b->height / 2);
-//	glEnd();
+		glLoadIdentity();
+		glScalef(2.0 / boxWidth, 2.0 / boxHeight, 0);
+		glTranslatef(-boxWidth / 2, -boxHeight / 2, 0);
 
-//	glBlendFunc(GL_ONE, GL_DST_ALPHA);
-//	glColor4f(0x33/255, 0x99/255, 0x33/255, 0.3);
-//	glEnable(GL_BLEND);
-	glDisable(GL_BLEND);
+		glDisable(GL_BLEND);
 
+		// TODO fill the initial board yellow
+		glColor3f(0xFF / 255.0, 0xFF / 255.0, 0x66 / 255.0);
+		Box* b = allLeaf[0];
 
-//	cout
-//			<< "555555555555555555555555555555555555555555555555555555555555555555555"
-//			<< endl;
-//	cout
-//			<< "555555555555555555555555555555555555555555555555555555555555555555555"
-//			<< endl;
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glBegin(GL_POLYGON);
+		glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
+		glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
+		glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
+		glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
+		glEnd();
 
-	if (!allLeaf.empty() && allLeaf.size() != 0) {
-		int i = 0;
-		for (vector<Box*>::iterator it = allLeaf.begin(); it != allLeaf.end();
-				++it) {
-			i++;
-			if (animationOption == 0 || animationOption == 3
-					|| animationOption == 4) {
-				drawQuad(*it);
-			}
-
-			if (animationOption == 1 || animationOption == 2) {
-				if (currentStep >= i) {
+		if (!allLeaf.empty() && allLeaf.size() != 0) {
+			int i = 0;
+			for (vector<Box*>::iterator it = allLeaf.begin();
+					it != allLeaf.end(); ++it) {
+				i++;
+				if (animationOption == 0 || animationOption == 3
+						|| animationOption == 4) {
 					drawQuad(*it);
-//					cout << "currentStep:  " << currentStep << endl;
 				}
 
-				if (currentStep == i) {
-					break;
+				if (animationOption == 1 || animationOption == 2) {
+					if (currentStep >= i) {
+						drawQuad(*it);
+//					cout << "currentStep:  " << currentStep << endl;
+					}
+
+					if (currentStep == i) {
+						break;
+					}
 				}
 			}
 		}
+		if (!(animationOption == 1 || animationOption == 2)) {
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			leafBoxesDrawed = true;
+		}
 	}
 
-//	cout
-//			<< "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
-//			<< endl;
+	if (!(animationOption == 1 || animationOption == 2)) {
+		// clear default frame buffer for the whole window
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glLoadIdentity();
+		glScalef(2.0 / boxWidth, 2.0 / boxHeight, 0);
+		glTranslatef(-boxWidth / 2, -boxHeight / 2, 0);
+
+		//draw fbo to screen by render GL_QUADS usig texture mapping
+		glBindTexture(GL_TEXTURE_2D, img);
+		glEnable(GL_TEXTURE_2D);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_QUADS);
+		Box* b = allLeaf[0];
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2f(b->x + b->width / 2, b->y - b->height / 2);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2f(b->x + b->width / 2, b->y + b->height / 2);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2f(b->x - b->width / 2, b->y + b->height / 2);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	}
+
+	if (drawPathOption != 0) {
+		animationOption = 0;
+		stepIncrease = 0;
+		buttonAnimation->set_name("Path Animation");
+		buttonReplay->set_name("Replay Spliting");
+	}
+
+	if (drawPathOption == 3) {
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	if (!noPath && drawPathOption != 2) {
+		drawPath(PATH);
+	}
+
+	if (drawPathOption == 1) {
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
 	glPolygonMode(GL_FRONT, GL_LINE);
 
 	drawCircle(R0, 100, alpha[0], alpha[1], 0, 1, 1);	// start
@@ -1815,23 +1821,6 @@ void renderScene(void) {
 
 	drawLinksSrcDst(alpha);
 	drawLinksSrcDst(beta);
-
-	if (!noPath) {
-//		Graph graph;
-//		PATH.clear();
-//
-//		PATH = graph.dijkstraShortestPath(boxA, boxB);
-
-//		cout << "renderScene path.size() = " << PATH.size() << endl;
-//		cout << "A " << boxA->width << " " << boxA->x << " " << boxA->y << " "
-//				<< boxA->xi[0] << " " << boxA->xi[1] << " " << boxA->xi[2]
-//				<< " " << boxA->xi[3] << endl;
-//		cout << "A " << boxB->width << " " << boxB->x << " " << boxB->y << " "
-//				<< boxB->xi[0] << " " << boxB->xi[1] << " " << boxB->xi[2]
-//				<< " " << boxB->xi[3] << endl;
-		drawPath(PATH);
-//Graph::bfsPath(boxA, boxB);
-	}
 
 //	glFlush();
 	glutSwapBuffers();
@@ -1990,16 +1979,144 @@ void parseConfigFile(Box* b) {
 
 }
 
+void resetAndRun() {
+	reset();
+
+	editAlphaX->set_float_val(alpha[0]);
+	editAlphaY->set_float_val(alpha[1]);
+	editAlphaTheta1->set_float_val(alpha[2]);
+	editAlphaTheta2->set_float_val(alpha[3]);
+	editBetaX->set_float_val(beta[0]);
+	editBetaY->set_float_val(beta[1]);
+	editBetaTheta1->set_float_val(beta[2]);
+	editBetaTheta2->set_float_val(beta[3]);
+	editEpsilon->set_float_val(epsilon);
+	editL1->set_float_val(L1);
+	editL2->set_float_val(L2);
+	radioQType->set_int_val(QType);
+	editSeed->set_int_val(seed);
+	radioVerboseOption->set_int_val(verboseOption);
+	radio2StrategyOption->set_int_val(0);
+	textPhiB->set_int_val(sizeOfPhiB);
+	radioDrawOption->set_int_val(0);
+	radioDrawPathOption->set_int_val(0);
+
+	run();
+
+}
+
+void reset() {
+	if (argcSave > 1)
+		interactive = atoi(argvSave[1]);	// Interactive (0) or no (>0)
+	if (argcSave > 2)
+		alpha[0] = atof(argvSave[2]);		// start x
+	if (argcSave > 3)
+		alpha[1] = atof(argvSave[3]);		// start y
+	if (argcSave > 4)
+		alpha[2] = atof(argvSave[4]);// start theta1, convert from degree to radian
+	if (argcSave > 5)
+		alpha[3] = atof(argvSave[5]);// start theta2, convert from degree to radian
+	if (argcSave > 6)
+		beta[0] = atof(argvSave[6]);		// goal x
+	if (argcSave > 7)
+		beta[1] = atof(argvSave[7]);		// goal y
+	if (argcSave > 8)
+		beta[2] = atof(argvSave[8]);// goal theta1, convert from degree to radian
+	if (argcSave > 9)
+		beta[3] = atof(argvSave[9]);// goal theta2, convert from degree to radian
+	if (argcSave > 10)
+		epsilon = atof(argvSave[10]);		// epsilon (resolution)
+	if (argcSave > 11)
+		L1 = atof(argvSave[11]);		// robot length1
+	if (argcSave > 12)
+		L2 = atof(argvSave[12]);		// robot length2
+	if (argcSave > 13)
+		fileName = argvSave[13]; 		// Input file name
+	if (argcSave > 14)
+		boxWidth = atof(argvSave[14]);		// boxWidth
+	if (argcSave > 15)
+		boxHeight = atof(argvSave[15]);	// boxHeight
+	if (argcSave > 16)
+		windowPosX = atoi(argvSave[16]);	// window X pos
+	if (argcSave > 17)
+		windowPosY = atoi(argvSave[17]);	// window Y pos
+	if (argcSave > 18)
+		QType = atoi(argvSave[18]);	// PriorityQ Type (random or no)
+	if (argcSave > 19)
+		seed = atoi(argvSave[19]);		// for random number generator
+	if (argcSave > 20)
+		inputDir = argvSave[20];		// path for input files
+	if (argcSave > 21)
+		deltaX = atof(argvSave[21]);	// x-translation of input file
+	if (argcSave > 22)
+		deltaY = atof(argvSave[22]);	// y-translation of input file
+	if (argcSave > 23)
+		scale = atof(argvSave[23]);		// scaling of input file
+	if (argcSave > 24)
+		verboseOption = atoi(argvSave[24]);	// verboseOption
+	if (argcSave > 25)
+		title = argvSave[25];		// title
+	if (argcSave > 26)
+		sizeOfPhiB = atoi(argvSave[26]);// threshold for splitting angles  |Phi(B)|
+}
+
+//init FBO
+void initFbo() {
+	//Initialize GLEW
+	GLenum glewError = glewInit();
+	if (glewError != GLEW_OK) {
+		printf("Error initializing GLEW! %s\n", glewGetErrorString(glewError));
+		exit(1);
+	}
+
+	glShadeModel(GL_SMOOTH);
+	glClearColor(0.0f, 0.0f, 0.2f, 0.5f);
+	glClearDepth(1.0f);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glViewport(0, 0, boxWidth, boxHeight);
+
+	// Setup our FBO
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	// Create the render buffer for depth
+	glGenRenderbuffers(1, &depthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, boxWidth,
+			boxHeight);
+
+	// Now setup a texture to render to
+	glGenTextures(1, &img);
+	glBindTexture(GL_TEXTURE_2D, img);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, boxWidth, boxHeight, 0, GL_RGBA,
+			GL_UNSIGNED_BYTE, NULL);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	// And attach it to the FBO so we can render to it
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+			img, 0);
+
+	// Attach the depth render buffer to the FBO as it's depth attachment
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+			GL_RENDERBUFFER, depthBuffer);
+
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+		exit(1);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);	// Unbind the FBO for now
+}
+
+void redrawFBO() {
+	leafBoxesDrawed = false;
+	glutPostRedisplay();
+}
+
+//void drawPathOption{
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+//}
 

@@ -261,7 +261,7 @@ eg1: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 1 \
-		$(verbose) $(title) \
+		$(verbose) "3 obstacles" \
 		$(threshold) \
 		&
 
@@ -273,7 +273,7 @@ eg2: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 1 \
-		$(verbose) $(title) \
+		$(verbose) "8 ways with 2 more obstacles" \
 		$(threshold) \
 		&
 
@@ -285,7 +285,7 @@ eg3 8way: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) $(title) \
+		$(verbose) "8 ways" \
 		$(threshold) \
 		&
 
@@ -303,22 +303,7 @@ eg4 egbug bug: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
-		$(threshold) \
-		&
-
-# Bugtrap example -- Non-existence of path, but barely!
-eg4a egbuga buga: ./2-links
-	@echo "Target 'eg4a or buga':  runs 2-links for bugtrap input, bugtrap.txt"
-	@echo "--  this examples shows there is a PATH, but barely so!"
-	@echo "--  the only change from target 'egbug' is that epsilon is now 10, not 20"
-	@echo "--  that are NOT adjacent but shares a corner."
-	./2-links $(interactive) 200 350 0 30 30 0 \
-		9 14 bugtrap.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		2 11 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) "Bugtrap" \
 		$(threshold) \
 		&
 
@@ -339,26 +324,7 @@ eg5 egbug2 bug2: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
-		$(threshold) \
-		&
-
-# Bugtrap2 example -- Non-Existence of path.
-# 	NEW DATA: Eps=4, radius=12:
-# 		with Greedy, takes 0.9 sec to report NO PATH 
-# 		with BFS, process hung up...
-# 	OLD DATA: Eps=1, radius=8:
-# 		with Greedy, takes <1 ms to report NO PATH 
-# 		with BFS, takes 15 ms to report NO PATH
-eg5a egbug2a bug2a: ./2-links
-	@echo "Target 'eg5a or bug2a':  runs 2-links on bugtrap2.txt"
-	@echo "--  this examples shows there is NO PATH, but barely so!"
-	./2-links $(interactive) 180 210 0 30 30 0 \
-		4 12 bugtrap2.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		2 11 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) "Double Bugtrap"\
 		$(threshold) \
 		&
 
@@ -367,80 +333,29 @@ eg5a egbug2a bug2a: ./2-links
 #  	(because dimensions came from xfig)
 eg6: ./2-links
 	@echo "Target DemoSE2_PRM (from Kavraki's group)"
-#	./2-links $(interactive) 75 350 0 380 205 0\
-#		5 15 DemoSE2_PRM.txt \
-#		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-#		$(Qtype) $(seed)  $(inputDir) \
-#		250 250 0.04 \
-#		&
 	./2-links $(interactive) 75 350 90 270 320 100 0 90\
 		8 60 40 DemoSE2_PRM.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		250 250 0.04 \
-		&
-# eg6a:  Variant of eg6a where their "robot" is shown.
-eg6a: ./2-links
-	@echo "Target DemoSE2_PRM (from Kavraki's group) -- their robot is shown"
-	@echo "	There is a narrow path... when radius=15, epsilon=2"
-	@echo " 	There is No Path... when radius=15, epsilon=3"
-	./2-links $(interactive) 75 350 0 380 205 0\
-		2 15 DemoSE2_PRMa.txt \
-		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		250 250 0.04 \
+		$(verbose) "Target DemoSE2_PRM (from Kavraki's group)"\
+		$(threshold) \
 		&
 
 # eg7, egtunnel:  tunnel example from Salzman et al.
 # 	NOTE that the current search strategy seems to miss the direct path!!
 # 	TODO: develop a better search (e.g. Best First Search)
-eg7 egtunnel tunnel: ./2-links
-	./2-links $(interactive) 200 280 0 450 300 0\
-		10 15 tunnel.poly \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		100 200 0.05
+# eg7 egtunnel tunnel: ./2-links
+#	./2-links $(interactive) 200 280 90 0 450 300 0 90\
+#		4 10 15 tunnel.poly \
+#		512 512 $(windowPosX) $(windowPosY) \
+#		1 1111 $(inputDir) \
+#		100 200 0.05
+#		$(verbose) "Target DemoSE2_PRM (from Kavraki's group)"\
+#		$(threshold) \
+#		&
+		
 
-# eg7a or tunnela:  Variant of tunnel.  We introduce a confining box to force 
-# 	the robot to go through the tunnel.  This one is reasonably fast
-# 	(radius=10, epsilon=10).  Path is found.  See tunnelXa for a much harder instance.
-eg7a egtunnela tunnela: ./2-links
-	./2-links $(interactive) 200 280 0 450 300 0\
-		10 10 tunnelx.poly \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		100 200 0.05
-
-# eg7b or tunnelb:  Variant of tunnel.  We introduce a confining box to force 
-# 	the robot to go through the tunnel.  
-#	CAREFUL, THIS DEMO (with epsilon=10, radius=15)
-#	TAKES A LONG TIME BUT WILL EVENTUALLY FIND A PATH (takes about 25 minutes)
-#
-	#	./2-links 0		 200 280 0 450 300 0\
-	#		10 15 tunnelx.poly \
-	#		512 512 500	20 \
-	#		1 1111 inputs	 \
-	#		100 200 0.05
-	#	before interactive, Qtype= 1
-	#	inside run:  Qtype= 0
-	#	input file name = inputs/tunnelx.poly
-	#	nPt=36
-	#	nPolygons=11
-	#	done genEmptyTree 
-	#	          --------------------->>  PATH FOUND !
-	#	Expanded 48769 times
-	#	Time used: 1.39074e+06 ms
-	#	total Free boxes: 78886
-	#	total Stuck boxes: 2757
-	#	total Mixed boxes smaller than epsilon: 250988
-	#	total Mixed boxes bigger than epsilon: 8781
-	#	####################### END of RUN ######################
-eg7b tunnelb: ./2-links
-	./2-links $(interactive) 200 280 0 450 300 0\
-		10 15 tunnelx.poly \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		100 200 0.05
 
 # eg8: from Paper of Hsu-Lathombe-Kurniawati
 eg8 hsu: ./2-links
@@ -452,7 +367,7 @@ eg8 hsu: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) "200 obstacles" \
 		&
 
 eg8a hsua: ./2-links
@@ -468,18 +383,18 @@ eg8a hsua: ./2-links
 		$(threshold) \
 		&
 
-eg8b hsub: ./2-links
-	@echo "Target eg8b: example from the paper of Hsu, Latombe, Kurniawati (2006)"
-	@echo "	There is a path passage... when radius=6, epsilon=1"
-	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./2-links $(interactive) 75 350 0 90 380 205 270 0\
-		8 5 10 hsu-latombe-kurniawati2.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		-70 -70 0.065 \
-		$(verbose) $(title) \
-		$(threshold) \
-		&
+# eg8b hsub: ./2-links
+#	@echo "Target eg8b: example from the paper of Hsu, Latombe, Kurniawati (2006)"
+#	@echo "	There is a path passage... when radius=6, epsilon=1"
+#	@echo " 	There is No Path... when radius=7, epsilon=1"
+#	./2-links $(interactive) 75 350 0 90 380 205 270 0\
+#		8 5 10 hsu-latombe-kurniawati2.txt \
+#		512 512 $(windowPosX) $(windowPosY) \
+#		$(Qtype) $(seed)  $(inputDir) \
+#		-70 -70 0.065 \
+#		$(verbose) $(title) \
+#		$(threshold) \
+#		&
 
 
 eg9 narrow: ./2-links
@@ -487,11 +402,11 @@ eg9 narrow: ./2-links
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 195 370 0 90 195 160 270 0\
-		4 25 40 narrowCorridor.txt \
+		4 95 70 narrowCorridor.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 0.065 \
-		$(verbose) $(title) \
+		$(verbose) "narrow" \
 		$(threshold) \
 		&
 		
@@ -502,7 +417,7 @@ eg10 twoChambers: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) $(title) \
+		$(verbose) "2 Chambers" \
 		$(threshold) \
 		&
 
@@ -515,7 +430,7 @@ eg10a twoChambersa: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		0 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) $(title) \
+		$(verbose) "2 Chambers with shorter links - Random" \
 		$(threshold) \
 		&
 		
@@ -528,7 +443,7 @@ eg10b twoChambersb: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) $(title) \
+		$(verbose) "2 Chambers with shorter links - Greedy" \
 		$(threshold) \
 		&
 
@@ -541,7 +456,7 @@ eg11 nestedRectangle: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) $(title) \
+		$(verbose) "Nested Rectangle" \
 		$(threshold) \
 		&
 		
@@ -554,6 +469,8 @@ eg11a nestedRectangleA: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-220 0 0.065 \
+		$(verbose) "Nested Rectangle with shorter links" \
+		$(threshold) \
 		&
 
 		
