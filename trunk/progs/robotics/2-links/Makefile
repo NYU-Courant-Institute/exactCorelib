@@ -595,7 +595,7 @@ eg12: ./2-links
 	./2-links $(interactive) 405 400 180 270 105 60 0 180\
 		4 45 45 input4.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
+		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&
