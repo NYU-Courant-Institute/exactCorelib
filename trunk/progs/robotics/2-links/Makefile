@@ -364,17 +364,17 @@ eg6: ./2-links
 		&
 
 # eg7, egtunnel:  tunnel example from Salzman et al.
-#	NOTE that the current search strategy seems to miss the direct path!!
-#	TODO: develop a better search (e.g. Best First Search)
+# 	NOTE that the current search strategy seems to miss the direct path!!
+# 	TODO: develop a better search (e.g. Best First Search)
 eg7 egtunnel tunnel: ./2-links
 	./2-links $(interactive) 200 280 90 0 450 300 0 90\
-	4 10 15 tunnel.poly \
-	512 512 $(windowPosX) $(windowPosY) \
-	1 1111 $(inputDir) \
-	100 200 0.05 \
-	$(verbose) "Eg 7:  Target DemoSE2_PRM (from Kavraki's group)"\
-	$(threshold) \
-	&
+		4 10 15 tunnel.poly \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		100 200 0.05 \
+		$(verbose) "Target DemoSE2_PRM (from Kavraki's group)"\
+		$(threshold) \
+		&
 		
 
 
