@@ -591,7 +591,15 @@ eg300: ./2-links
 		$(verbose) $(title) \
 		&
 
-
+eg12: ./2-links
+	./2-links $(interactive) 405 400 180 270 105 60 0 180\
+		4 45 45 input4.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		1 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
+		&
+		
 # under development...
 # (1) Run all series of examples using Qtypes=0,1,2 and compare timing
 
@@ -661,6 +669,7 @@ ex-300: ./2-links
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
 		&
+
 
 
 #=================================================
