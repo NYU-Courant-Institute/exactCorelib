@@ -159,7 +159,7 @@ extern vector<int> srcInPolygons;
 
 //dijkstraQueue<Cmp> dijQ;
 
-int timePerFrame = 128;
+int timePerFrame = 10;
 
 // GLOBAL VARIABLES ========================================
 //////////////////////////////////////////////////////////////////////////////////
@@ -425,47 +425,23 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 }
 
 void TimerFunction(int p) {
-//	if (renderReady) {
-//		cout << "renderReady" << endl;
-////		renderScene();
-//
-//	}
-//	while (timerLock) {
-//
-//	}
-//	timerLock = true;
-//	cout << "TimerFunction()!" << endl;
-//	renderScene();
-//	glFlush();
-//	glutSwapBuffers();
-//	glutPostRedisplay();
-//	cout << "after glutPostRedisplay()!" << endl;
+	if (animationOption == 1) {
+		currentStep += stepIncrease;
+	}
 
-	glutTimerFunc(timePerFrame, TimerFunction, 1);
-//	glFlush();
-//	glutSwapBuffers();
+	if (!noPath && animationOption == 3) {
+		currentPathStep++;
+	}
 
 	ssInfo.str("");
 	ssInfo << ssout.str();
-//	ssInfo << ssTemp.str();
+
 	textBox->set_text(ssInfo.str().c_str());
-	glutPostRedisplay();
-//	timerLock = false;
+//	glutPostRedisplay();
+	glutTimerFunc(timePerFrame, TimerFunction, 0);
+//	glFlush();
 
 }
-
-//void run_thread(){
-//	// new thread for render
-//	int res;
-//	pthread_t a_thread;
-//	void *thread_result;
-//
-//	res = pthread_create(&a_thread, NULL, thread_render, NULL);
-//	if (0 != res) {
-//		perror("Thread creation faied");
-//		exit(EXIT_FAILURE);
-//	}
-//}
 
 bool sortByXi0(const Box* b1, const Box* b2) {
 	return b1->xi[0] < b2->xi[0];
@@ -605,18 +581,18 @@ int main(int argc, char* argv[]) {
 		glutInit(&argc, argv);
 		glutInitWindowPosition(windowPosX, windowPosY);
 		glutInitWindowSize(boxWidth, boxWidth);
-		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
+		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 		int windowID = glutCreateWindow(title.c_str());
 
 		initFbo();
 
-		GLUI_Master.set_glutIdleFunc(NULL);
-//		glutPostRedisplay();
+//		GLUI_Master.set_glutIdleFunc(NULL);
+
 		glutDisplayFunc(renderScene);
-//					glutIdleFunc(&idle);
-		glutTimerFunc(timePerFrame, TimerFunction, 1);
+
+		glutTimerFunc(timePerFrame, TimerFunction, 0);
 		glutMouseFunc(processMouse);
-//		run();
+
 //		cout << "mainloop!!!!!!!!!!!" << endl;
 
 		//Chee: trying to get demos to take a "title string"
@@ -831,27 +807,16 @@ int main(int argc, char* argv[]) {
 
 		glui->set_main_gfx_window(windowID);
 	}
-//	// new thread for render
-//	int res;
-//	pthread_t a_thread;
-//	void *thread_result;
-//
-//	res = pthread_create(&a_thread, NULL, thread_render, NULL);
-//	if (0 != res) {
-//		perror("Thread creation faied");
-//		exit(EXIT_FAILURE);
-//	}
-//	glutDisplayFunc(renderScene);
-////			glutIdleFunc(&idle);
-//			glutTimerFunc(1000, TimerFunction,1);
-	run();
-//	processMouse(0,0,1,1);
-//	cout<<"mainloop!!!!!!!!!!!"<<endl;
+//	run();
+
+//	renderScene();
+//	glutPostRedisplay();
 
 //cout<<"before run\n";
 // PERFORM THE INITIAL RUN OF THE ALGORITHM
 //==========================================
-//	run(); 	// make it do something interesting from the start!!!
+	run(); 	// make it do something interesting from the start!!!
+//	glFlush();
 
 // SHOULD WE STOP or GO INTERACTIVE?
 //==========================================
@@ -928,16 +893,13 @@ void runAnimation() {
 	if (animationOption != 3) {
 		animationOption = 3;
 		if (radioStepsPerFrame->get_int_val() == 0) {
-			timePerFrame = 128;
+			timePerFrame = 200;
 		} else if (radioStepsPerFrame->get_int_val() == 1) {
-			timePerFrame = 32;
+			timePerFrame = 50;
 		} else {
-			timePerFrame = 8;
+			timePerFrame = 10;
 		}
 
-//		if (animationOption == 0) {
-//			currentStep = 1;
-//		}
 		buttonAnimation->set_name("Stop Animation");
 		if ((unsigned) currentPathStep >= PATH.size()) {
 			currentPathStep = 0;
@@ -948,12 +910,6 @@ void runAnimation() {
 		buttonAnimation->set_name("Path Animation");
 	}
 
-//	if (interactive == 0 && animationOption == 3) {
-//		renderReady = true;
-//
-//	} else {
-//		renderReady = false;
-//	}
 	glutPostRedisplay();
 }
 
@@ -1132,11 +1088,8 @@ void run() {
 		cout << "   beta = (" << beta[0] << ", " << beta[1] << ", " << beta[2]
 				<< ", " << beta[3] << ")" << endl;
 	}
-//	cout << "222222222222222222222222222222222222222222222222" << endl;
-	genEmptyTree();
 
-//	cout << "0000000000000000000000000000000000000000000000000" << endl;
-//	renderReady = true;
+	genEmptyTree();
 
 	if (interactive == 0) {
 //		cout << "interactive : " << interactive << endl;
@@ -1524,18 +1477,9 @@ void drawPath(vector<Box*>& path) {
 		}
 	}
 
-	if (animationOption == 3) {
-		currentPathStep++;
-//		for(int i = 0; i < 6000000; i++){
-//			for(int j = 0; j < 1000000; j++){
-//				i = i + 1;
-//				j = j + 1;
-//			}
-//		}
-//		if (currentPathStep == path.size()) {
-//			currentPathStep = 0;
-//		}
-	}
+//	if (animationOption == 3) {
+//		currentPathStep++;
+//	}
 
 }
 
@@ -1676,9 +1620,7 @@ void drawLine() {
 void renderScene(void) {
 
 //	cout << "renderScene!!!!!!!!!!!!!!!!!" << endl;
-	if (animationOption == 1) {
-		currentStep += stepIncrease;
-	}
+
 //	cout << "renderCount :" << renderCount << endl;
 	renderCount++;
 
@@ -1825,9 +1767,10 @@ void renderScene(void) {
 //	glFlush();
 	glutSwapBuffers();
 //	if (animationOption == 1 || animationOption == 3) {
+////		sleep(1);
 //		glutPostRedisplay();
 //	}
-//	glutPostRedisplay();
+	glutPostRedisplay();
 //	renderLock = false;
 }
 
