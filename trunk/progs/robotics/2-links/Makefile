@@ -104,7 +104,7 @@ windowPosX = 320	# initial Window position
 windowPosY = 20	
 
 Qtype = 2		# type of priority queue
-			#  (0=random, 1 = BFS, 2 = Greedy Best First, 3 = A-star) 
+			#  (0=random, 1=BFS, 2=Greedy Best First, 3=Dist+size, 4=Vor?) 
 seed = 11		# seed for random
 step = 0		# number of steps to run
 			#	(step=0 means run to completion)
@@ -193,18 +193,8 @@ moretest: $(TARGETS)
 #=================================================
 # Examples of running 2-links program
 #=================================================
-#
-# eg: eg10
-eg: 2-links
-	@echo "Target eg10: two Chamber environment using Greedy"
-	./2-links $(interactive) 415 400 180 270 105 90 90 0\
-		4 65 80 2chambers.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		2 $(seed)  $(inputDir) \
-		-220 0 0.065 \
-		$(verbose) $(title) \
-		$(threshold) \
-		&
+# choose an interesting default!
+eg: bug
 
 # this is default, but every option may be changed at command line:
 egx: 
@@ -255,13 +245,13 @@ nopath eg0:	./2-links
 		&
 
 eg1: ./2-links
-	@echo "Target eg1: 3 obstacles" 
-	./2-links $(interactive) 195 340 0 150 295 185 270 180\
+	@echo "Target eg1: Barrier environment" 
+	./2-links $(interactive) 195 340 0 150 260 80  70 120\
 		4 50 80 basic3.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		3 $(seed)  $(inputDir) \
 		0 0 1 \
-		$(verbose) "Eg1: 3 obstacles" \
+		$(verbose) "Eg1: Barrier environment" \
 		$(threshold) \
 		&
 
@@ -296,7 +286,7 @@ eg3a 8waya: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		4 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) $(title) \
+		$(verbose) "Eg3a: 8 ways" \
 		$(threshold) \
 		&
 
@@ -307,7 +297,7 @@ eg3b 8wayb: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		4 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) $(title) \
+		$(verbose) "Eg3b: 8 ways" \
 		$(threshold) \
 		&
 
@@ -345,7 +335,7 @@ eg5 egbug2 bug2: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) "Double Bugtrap"\
+		$(verbose) "Eg 5: Double Bugtrap"\
 		$(threshold) \
 		&
 
@@ -372,7 +362,7 @@ eg7 egtunnel tunnel: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		100 200 0.05 \
-		$(verbose) "Target DemoSE2_PRM (from Kavraki's group)"\
+		$(verbose) "Eg7: Target DemoSE2_PRM (from Kavraki's group)"\
 		$(threshold) \
 		&
 		
@@ -401,7 +391,7 @@ eg8a hsua: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-70 -70 0.065 \
-		$(verbose) $(title) \
+		$(verbose) "Eg8a: From paper of Hsu, Latombe, Kurniawatti (2006)" \
 		$(threshold) \
 		&
 
@@ -428,7 +418,7 @@ eg9 narrow: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 0.065 \
-		$(verbose) "Eg 9:  narrow" \
+		$(verbose) "Eg 9:  Narrow Corridor" \
 		$(threshold) \
 		&
 		
@@ -452,7 +442,7 @@ eg10a twoChambersa: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		0 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) "2 Chambers with shorter links - Random" \
+		$(verbose) "Eg10a: 2 Chambers with shorter links - Random" \
 		$(threshold) \
 		&
 		
@@ -491,7 +481,7 @@ eg11a nestedRectangleA: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) "Nested Rectangle with shorter links" \
+		$(verbose) "Eg 11a: Nested Rectangle with shorter links" \
 		$(threshold) \
 		&
 
@@ -511,7 +501,8 @@ eg100 100: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		3 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) "Eg 100: 100 randomly generated triangles" \
+		$(threshold) \
 		&
 
 # eg100a: 100 random 2-links
@@ -523,7 +514,8 @@ eg100a 100a: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) "Eg 100a: 100 randomly generated triangles" \
+		$(threshold) \
 		&
 
 # eg150: 150 random 2-links (use radius=1)
@@ -534,7 +526,8 @@ eg150 150: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) "Eg 150: 150 randomly generated triangles" \
+		$(threshold) \
 		&
 
 # eg200: 200 random 2-links
@@ -546,7 +539,8 @@ eg200 200: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		1 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) "Eg 200: 200 randomly generated triangles" \
+		$(threshold) \
 		&
 
 # eg200a: there is an obvious path but probabilistic methods might waste
