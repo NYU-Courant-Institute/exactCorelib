@@ -64,7 +64,7 @@ private:
 			break;
 		case Box::MIXED:
 			++mixCount;
-			if (b->height < epsilon || b->width < epsilon)
+			if (b->height/2 < epsilon || b->width/2 < epsilon)
 				++mixSmallCount;
 			PQ->push(b);
 			break;

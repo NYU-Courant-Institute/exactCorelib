@@ -20,7 +20,7 @@
 #
 #	This is equivalent to typing:
 #
-#	       > tri $(interactive) $(startX) $(startY)  $(startTheta) \
+#	       > 2-links $(interactive) $(startX) $(startY)  $(startTheta) \
 #	       		$(goalX) $(goalY) $(goalTheta) \
 #			$(epsilon) $(radius) $(fileName) \
 #			$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
@@ -115,6 +115,8 @@ scale = 1		# scaling of input file
 verbose = 0		# if true, display statistics
 title = Demos		# Title of control panel
 
+smarterStrategy = 0 # Two-Strategy Option    0: original 1: smarter
+
 threshold = 4		# threshold for angular split: if |phi(B)| <= threshold,
 			#	then we may do angular split
 			# threshold = 0,1,2,...
@@ -144,6 +146,9 @@ testb: $(TARGETS)
     $(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
     $(xtrans) $(ytrans) $(scale) \
     $(verbose) $(title) \
+    $(smarterStrategy) \
+	$(threshold) \
+	&
 
 help:
 	@echo "USAGE:  The main program is called 2-links.  Demos can be invoked thus:"
@@ -206,6 +211,7 @@ egx:
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -228,6 +234,7 @@ egb:
 		$(Qtype) 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -241,6 +248,7 @@ nopath eg0:	./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -252,6 +260,7 @@ eg1: ./2-links
 		3 $(seed)  $(inputDir) \
 		0 0 1 \
 		$(verbose) "Eg1: Barrier environment" \
+		$(smarterStrategy) \
 		4 \
 		&
 
@@ -264,6 +273,7 @@ eg2: ./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 1 \
 		$(verbose) "Eg2: 8-ways with 2 more obstacles" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -276,6 +286,7 @@ eg3 8way: ./2-links
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) "Eg3: 8 ways" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -287,6 +298,7 @@ eg3a 8waya: ./2-links
 		4 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) "Eg3a: 8 ways" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -298,6 +310,7 @@ eg3b 8wayb: ./2-links
 		4 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) "Eg3b: 8 ways" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -315,6 +328,7 @@ eg4 egbug bug: ./2-links
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) "Bugtrap" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -336,6 +350,7 @@ eg5 egbug2 bug2: ./2-links
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) "Eg 5: Double Bugtrap"\
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -350,6 +365,7 @@ eg6: ./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		250 250 0.04 \
 		$(verbose) "Eg6: Target DemoSE2_PRM (from Kavraki's group)"\
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -363,6 +379,7 @@ eg7 egtunnel tunnel: ./2-links
 		1 1111 $(inputDir) \
 		100 200 0.05 \
 		$(verbose) "Eg7: Target DemoSE2_PRM (from Kavraki's group)"\
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 		
@@ -379,6 +396,7 @@ eg8 hsu: ./2-links
 		2 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) "Eg8: From paper of Hsu, Latombe, Kurniawatti (2006)" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -392,6 +410,7 @@ eg8a hsua: ./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		-70 -70 0.065 \
 		$(verbose) "Eg8a: From paper of Hsu, Latombe, Kurniawatti (2006)" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -405,6 +424,7 @@ eg8a hsua: ./2-links
 #		$(Qtype) $(seed)  $(inputDir) \
 #		-70 -70 0.065 \
 #		$(verbose) $(title) \
+#		$(smarterStrategy) \
 #		$(threshold) \
 #		&
 
@@ -419,6 +439,7 @@ eg9 narrow: ./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 0.065 \
 		$(verbose) "Eg 9:  Narrow Corridor" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 		
@@ -430,6 +451,7 @@ eg10 twoChambers: ./2-links
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) "Eg 10: 2 Chambers" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -443,6 +465,7 @@ eg10a twoChambersa: ./2-links
 		0 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) "Eg10a: 2 Chambers with shorter links - Random" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 		
@@ -453,10 +476,11 @@ eg10b twoChambersb: ./2-links
 	./2-links $(interactive) 415 400 180 270 105 90 90 0\
 		4 15 20 2chambers.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		2 $(seed)  $(inputDir) \
+		3 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) "Eg 10b: 2 Chambers with shorter links - Greedy" \
-		$(threshold) \
+		1 \
+		6 \
 		&
 
 eg11 nestedRectangle: ./2-links
@@ -469,6 +493,7 @@ eg11 nestedRectangle: ./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) "Eg 11: Nested Rectangle" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 		
@@ -482,7 +507,8 @@ eg11a nestedRectangleA: ./2-links
 		$(Qtype) $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) "Eg 11a: Nested Rectangle with shorter links" \
-		$(threshold) \
+		1 \
+		4 \
 		&
 
 		
@@ -502,6 +528,7 @@ eg100 100: ./2-links
 		3 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) "Eg 100: 100 randomly generated triangles" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -515,6 +542,7 @@ eg100a 100a: ./2-links
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) "Eg 100a: 100 randomly generated triangles" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -527,6 +555,7 @@ eg150 150: ./2-links
 		4 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) "Eg 150: 150 randomly generated triangles" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -539,6 +568,7 @@ eg150a 150a: ./2-links
 		3 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) "Eg 150a: 150 randomly generated triangles" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -551,6 +581,7 @@ eg150c 150c: ./2-links
 		3 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) "Eg 150c: 150 randomly generated triangles" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -564,6 +595,7 @@ eg200 200: ./2-links
 		1 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) "Eg 200: 200 randomly generated triangles" \
+		$(smarterStrategy) \
 		$(threshold) \
 		&
 
@@ -580,6 +612,8 @@ eg200a 200a: ./2-links
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
+		$(smarterStrategy) \
+		$(threshold) \
 		&
 
 # eg200b: there is no path because eps=10
@@ -594,6 +628,8 @@ eg200b: ./2-links
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
+		$(smarterStrategy) \
+		$(threshold) \
 		&
 
 # eg300: 300 random 2-links
@@ -607,6 +643,8 @@ eg300: ./2-links
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
+		$(smarterStrategy) \
+		$(threshold) \
 		&
 
 eg12: ./2-links
@@ -616,6 +654,19 @@ eg12: ./2-links
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) \
+		$(smarterStrategy) \
+		$(threshold) \
+		&
+		
+eg12a: ./2-links
+	./2-links $(interactive) 405 400 180 270 105 60 0 180\
+		4 15 15 input4.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		3 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
+		1 \
+		1 \
 		&
 		
 # under development...

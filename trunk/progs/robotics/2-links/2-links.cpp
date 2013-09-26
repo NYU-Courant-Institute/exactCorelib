@@ -1,5 +1,5 @@
 /* **************************************
- File: tri.cpp
+ File: 2-links.cpp
 
  Description:
  This is the entry point for the running the SSS algorithm
@@ -37,10 +37,11 @@
 
  Format of input environment: see README FILE
 
- HISTORY: March, 2012: Cong Wang, Chee Yap and Yi-Jen Chiang
+ HISTORY: March, 2012: triangle version by Cong Wang, Chee Yap and Yi-Jen Chiang
+          October, 2013: 2-links version by Zhongdi Luo, Chee Yap
 
  Since Core Library  Version 2.1
- $Id: tri.cpp,v 1.3 2012/10/26 04:26:52 cheeyap Exp cheeyap $
+ $Id: 2-links.cpp,v 1.3 2012/10/26 04:26:52 cheeyap Exp cheeyap $
  ************************************** */
 
 #ifdef __CYGWIN32__
@@ -148,7 +149,7 @@ bool hideBoxBoundary = false;  		// don't draw box boundary
 bool verboseOption = false;		// don't print various statistics
 
 int drawPathOption = 0;
-int twoStrategyOption = 0; // 2-Stage-Stratege or not
+int twoStrategyOption = 0; //  Two-Strategy Option    0: original 1: smarter
 string title("2-links Control Panel");	// title for control panel
 int sizeOfPhiB = 0;
 
@@ -178,6 +179,7 @@ int renderCount = 0;
 //int countCCC = 0;
 
 stringstream ssout;
+stringstream ssoutLastTime;
 stringstream ssTemp;
 stringstream ssInfo;
 
@@ -193,6 +195,8 @@ char** argvSave;
 int argcSave;
 
 bool leafBoxesDrawed = false;
+
+int runCount = 0;
 
 // GLUI controls ========================================
 //////////////////////////////////////////////////////////////////////////////////
@@ -433,10 +437,11 @@ void TimerFunction(int p) {
 		currentPathStep++;
 	}
 
-	ssInfo.str("");
-	ssInfo << ssout.str();
-
-	textBox->set_text(ssInfo.str().c_str());
+//	ssInfo.str("");
+////	ssout<<ssoutLastTime;
+//	ssInfo << ssout.str();
+//
+//	textBox->set_text(ssInfo.str().c_str());
 //	glutPostRedisplay();
 	glutTimerFunc(timePerFrame, TimerFunction, 0);
 //	glFlush();
@@ -800,7 +805,7 @@ int main(int argc, char* argv[]) {
 		textBox = new GLUI_TextBox(glui, true);
 		textBox->set_h(300);
 		textBox->set_w(310);
-		textBox->disable();
+//		textBox->disable();
 
 		// Quit button
 		glui->add_button("Quit", 0, (GLUI_Update_CB) exit);
@@ -1016,8 +1021,13 @@ void nextStep(int id) {
 }
 void run() {
 //	cout << "1111111111111111111111111111111111111111111111111" << endl;
+	runCount++;
 
+	ssoutLastTime.str("");
+	ssoutLastTime<<ssout.str();
 	ssout.str("");
+	ssout<<"Cycle "<<runCount<<":" <<endl;
+
 	animationOption = 0;
 	currentStep = 0;
 	currentPathStep = 0;
@@ -1197,13 +1207,13 @@ void run() {
 	if (verboseOption)
 		cout << ">>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>\n";
 	if (verboseOption) {
-		cout << "Expanded " << ct << " times" << endl;
-		cout << "total Free boxes: " << freeCount << endl;
-		cout << "total Stuck boxes: " << stuckCount << endl;
-		cout << "total Mixed boxes smaller than epsilon: " << mixSmallCount
+		cout << "    Expanded " << ct << " times" << endl;
+		cout << "    total Free boxes: " << freeCount << endl;
+		cout << "    total Stuck boxes: " << stuckCount << endl;
+		cout << "    total Mixed boxes smaller than epsilon: " << mixSmallCount
 				<< endl;
-		cout << "total Mixed boxes bigger than epsilon: "
-				<< mixCount - ct - mixSmallCount << endl;
+		cout << "    total Mixed boxes bigger than epsilon: "
+				<< mixCount - mixSmallCount << endl;
 	}
 
 	totalSteps = allLeaf.size();
@@ -1218,17 +1228,19 @@ void run() {
 			<< endl;
 	ssout << "    ---->>   TOTAL STEPS: " << totalSteps << endl;
 	if (verboseOption) {
-		ssout << "Expanded " << ct << " times" << endl;
-		ssout << "total Free boxes: " << freeCount << endl;
-		ssout << "total Stuck boxes: " << stuckCount << endl;
-		ssout << "total Mixed boxes smaller than epsilon: " << mixSmallCount
+		ssout << "    Expanded " << ct << " times" << endl;
+		ssout << "    total Free boxes: " << freeCount << endl;
+		ssout << "    total Stuck boxes: " << stuckCount << endl;
+		ssout << "    total Mixed boxes smaller than epsilon: " << mixSmallCount
 				<< endl;
-		ssout << "total Mixed boxes bigger than epsilon: "
-				<< mixCount - ct - mixSmallCount << endl;
+		ssout << "    total Mixed boxes bigger than epsilon: "
+				<< mixCount - mixSmallCount << endl;
 	}
 //	if(animationOption == 3 || animationOption == 4){
 //		ssout << ssTemp.str().c_str();
 //	}
+	ssout<< endl;
+	ssout<<ssoutLastTime.str();
 	textBox->set_text(ssout.str().c_str());
 //	GLUI_Master.sync_live_all();
 	freeCount = stuckCount = mixCount = mixSmallCount = 0;
@@ -2000,7 +2012,9 @@ void reset() {
 	if (argcSave > 25)
 		title = argvSave[25];		// title
 	if (argcSave > 26)
-		sizeOfPhiB = atoi(argvSave[26]);// threshold for splitting angles  |Phi(B)|
+		twoStrategyOption = atoi(argvSave[26]);// two Strategy Option (0: original 1: smarter)
+	if (argcSave > 27)
+		sizeOfPhiB = atoi(argvSave[27]);// threshold for splitting angles  |Phi(B)|
 }
 
 //init FBO
