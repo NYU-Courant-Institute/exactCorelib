@@ -6,36 +6,42 @@
 #
 # 	       > make 		-- compiles the main program into "2-link"
 # 	       > make help	-- help message
-# 	       > make test	-- compiles and runs "tri" non-interactively
+# 	       > make test	-- compiles and runs "2-link" non-interactively
 # 	       			   (this is Core Library's automatic self-test)
 # 	       > make [target]	-- where [target] has the form egX
 # 	                     	   and X=1,2,3,4,5,6,100,150,200,300, etc.
 #
 # (B)	But you may try the various interactive demos of this program:
 #
-# 	       > make eg	-- compiles and runs "tri" interactively
+# 	       > make eg	-- compiles and runs "2-link" interactively on
+# 	       				some default example
+# 	       > make egx [...]
+# 	       			-- compiles and runs "2-link" interactively,
+# 	       				but where you can change any argument
+# 	       				(see next)
 #
-# 	The default search-mode is "random".  We encourage you to just
-# 	hit the "Run me" button to see different runs of the program.
-#
-#	This is equivalent to typing:
+#	The target "egx" is equivalent to typing:
 #
 #	       > 2-links $(interactive) $(startX) $(startY)  $(startTheta) \
 #	       		$(goalX) $(goalY) $(goalTheta) \
-#			$(epsilon) $(radius) $(fileName) \
+#			$(epsilon) $(len1) $(len2) \
+#			$(fileName) \
 #			$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 #			$(Qtype) $(seed)  $(inputDir) \
 #			$(xtrans) $(ytrans) $(scale) \
 #			$(verbose) $(title) \
 #
-#	where the arguments to tri correspond to the values $(var) of
+#	where the arguments to 2-link correspond to the values $(var) of
 #	various Makefile variables.   
 #
-# (C)	You can override any of these values at the command line.
-#	For instance, to change the radius of the robot
-#	to 55, and to change the start position of the robot to (20,200), you can type:
+# 	The best search-strategy is usually "Greedy" (Qtype=2). 
+# 	We encourage you to just try other strategies to see...
 #
-#		> make eg radius=55 startY=200 startX=20
+# (C)	You can override any of these values at the command line.
+#	For instance, to change the length of the first link
+#	to 55, and the start position of the robot to (20,200), you can type:
+#
+#		> make egx len1=55 startY=200 startX=20
 #
 # (D)	Instead of the target "eg" you can use any of these targets:
 #
@@ -56,7 +62,7 @@
 # 	These targets uses different input files, all taken from
 # 	the subdirectory "inputs".   
 #
-# (E) (August 2013) Started to use CMake to build executables.
+# (E) (Chee: August 2013) Started to use CMake to build executables.
 # 	The main "2-links" target is now renamed "2-links-orig" and deprecated.
 #
 # April 13, 2012 - Sep 2013
@@ -116,6 +122,7 @@ verbose = 0		# if true, display statistics
 title = Demos		# Title of control panel
 
 smarterStrategy = 0 # Two-Strategy Option    0: original 1: smarter
+smarterStrategy = 1 # Two-Strategy Option    0: original 1: smarter
 
 threshold = 4		# threshold for angular split: if |phi(B)| <= threshold,
 			#	then we may do angular split
@@ -154,7 +161,7 @@ help:
 	@echo "USAGE:  The main program is called 2-links.  Demos can be invoked thus:"
 	@echo "         > make                       -- to compile 2-links"
 	@echo "         > make eg                    -- to run default example"
-	@echo "         > make ega  [Qtype=3 ...]    -- to run example with parameters "
+	@echo "         > make egx  [Qtype=3 ...]    -- to run example with parameters "
 	@echo "     where parameters include fileName, radius, startX, startY,"
 	@echo "     goalX, goalY, etc.  See the Makefile for examples."
 	@echo "     You can also call demos where these these parameters are prechosen:"
@@ -163,7 +170,7 @@ help:
 	@echo "     Some demos have variants (such as egXa, egXb or egXc)"
 	@echo "     or alternative names (such as bug, bug2, tunnal, etc): "
 	@echo "        ega, egb,"
-	@echo "        eg1, eg1a, eg1b, [simple environment with bounding box]"
+	@echo "        eg1, eg1a, eg1b, [environment with various box barriers]"
 	@echo "        eg2, eg2a, eg2b, [simple environment without bounding box]"
 	@echo "        eg3  [simple environment with door]"
 	@echo "        eg4 (= egbug, bug), eg4a (= egbuga, buga),"
@@ -198,8 +205,8 @@ moretest: $(TARGETS)
 #=================================================
 # Examples of running 2-links program
 #=================================================
-# choose an interesting default!
-eg: bug
+# choose an interesting example as default!
+eg: eg10
 
 # this is default, but every option may be changed at command line:
 egx: 
@@ -316,31 +323,24 @@ eg3b 8wayb: ./2-links
 
 # BUG TRAPS:
 # 
-# Bugtrap example -- Existence of path, but barely!
+# Bugtrap example -- Non-Existence of path, but barely!
 eg4 egbug bug: ./2-links
-	@echo "Target 'egbug':  runs 2-links for bugtrap input, bugtrap.txt"
-	@echo "--  this examples shows there is NO PATH, but barely so!"
-	@echo "--  you could see a green path that must pass between two green boxes"
-	@echo "--  that are NOT adjacent but shares a corner."
-	./2-links $(interactive) 200 350 30 60 30 30 90 120 \
-		8 14 10 bugtrap.txt \
+	@echo "Target 'bug':  runs 2-links for bugtrap input"
+	@echo "--  this example shows there is NO PATH, but barely!"
+	@echo "--  If you decrease the longer link from 79 to 78, there is a path"
+	@echo "--  Or, you decrease the epsilon from 5 to 4, there is a path"
+	./2-links $(interactive) 200 320 30 60 30 30 90 120 \
+		5 45 79 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) "Bugtrap" \
+		$(verbose) "Eg4: Bugtrap" \
 		$(smarterStrategy) \
 		$(threshold) \
 		&
 
 
 # Bugtrap2 example -- Existance of path.
-# 	NEW DATA: Eps=4, radius=11:
-# 		with Greedy, takes 0.8 sec to find PATH 
-# 		with BFS, takes 2.7 ms to report PATH 
-# 		with Random, program hung up.
-# 	OLD DATA: Eps=1, radius=7:
-# 		with Greedy, takes 7.4 ms to find PATH 
-# 		with BFS, takes 3.6 ms to report PATH 
 eg5 egbug2 bug2: ./2-links
 	@echo "Target 'eg5 or bug2':  runs 2-links on bugtrap2.txt"
 	@echo "--  this examples shows there is PATH, but barely so!"

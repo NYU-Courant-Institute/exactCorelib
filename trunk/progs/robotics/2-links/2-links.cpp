@@ -3,42 +3,52 @@
 
  Description:
  This is the entry point for the running the SSS algorithm
- for a triangle robot amidst a collection of polygonal obstacles.
+ for a 2-link robot amidst a collection of polygonal obstacles.
 
- To run, call with these positional arguments:
+ To run, call with these positional arguments
+ (some sample values are given):
 
- > ./tri [interactive = 0] \
-			[alpha-x = 10] [alpha-y = 360] [alpha-theta = 0]\
-			[beta-x = 500] [beta-y = 20][beta-theta = 0] \
-			[epsilon = 1] \
-			[R0 = 30] \
-			[fileName = input2.txt] \
-			[boxWidth = 512] [boxHeight = 512] \
-			[windoxPosX = 400] [windowPosY = 200] \
-			[Qtype = 0] [seed = 111] [inputDir = inputs] \
-			[deltaX = 0] [deltaY = 0] [scale = 1] \
-	where 
- interactive 	 	is nature of run
- (0=interactive, >0 is non-interactive)
- alpha			is start configuration
- beta			is goal configuration
- epsilon			is resolution parameter
- R0			is robot radius
- fileName		is input file describing the environment
- box Width/Height	is initial box dimensions
- windowPos		is position of window
- Qtype			is type of the priority queue
- (sequential=0, random=1)
- seed			is seed for random number generator
- inputDir		is directory for input files
- deltaX, deltaY, scale	is the translation and scaling of input environment
+ > ./2-link [interactive = 0] \
+		[start-x = 10] [start-y = 360] [start-theta1 = 0] [start-theta2= 90]\
+		[goal-x = 500] [goal-y = 20][goal-theta1 = 180]  [goal-theta2= 270]\
+		[epsilon = 5] \
+		[len1 = 30] [len2 = 50]\
+		[fileName = input2.txt] \
+		[boxWidth = 512] [boxHeight = 512] \
+		[windoxPosX = 400] [windowPosY = 200] \
+		[Qtype = 3] [seed = 111] [inputDir = inputs] \
+		[offsetX = 0] [offsetY = 0] [scale = 1] \
+		[verbose = 0] [title = "Eg 4: Bug trap example" ] \
+		[smarterStrategy = 1-or-0] \
+		[threshold-for-smarterStrategy = 1-to-8] \
+		&
 
- NOTE: see several examples of running this program in the Makefile.
+where:
+   interactive 	 		is nature of run
+   				  (0 is interactive, >0 is non-interactive)
+   start (x,y,theta1,theta2)	is initial configuration
+   goal (x,y,theta1,theta2)	is final configuration
+   epsilon			is resolution parameter
+   				  (1 or greater)
+   len1, len2			are lengths of the 2 links
+   fileName			is input (text) file describing the environment
+   box Width/Height		is initial box dimensions
+   windowPos(x,y)		is initial position of window
+   Qtype			is type of the priority queue
+   				   (0=random, 1=BFS, 2=Greedy, 3=Dist+Size, 4=Vor)
+   seed				is seed for random number generator
+   inputDir			is directory for input files
+   offset(X,Y), scale		is the offset and scaling for input environment
+   smarterStrategy		chooses either original splitting or smarter strategy
+   threshold			is the parameter used by smarter strategy
+ 				   (say, a small integer between 0 and 10).
+
+ See examples of running this program in the Makefile.
 
  Format of input environment: see README FILE
 
- HISTORY: March, 2012: triangle version by Cong Wang, Chee Yap and Yi-Jen Chiang
-          October, 2013: 2-links version by Zhongdi Luo, Chee Yap
+ HISTORY: May-Oct, 2013: 2-links version by Zhongdi Luo and Chee Yap
+ 			(started out by adapting the triangle code of Cong Wang)
 
  Since Core Library  Version 2.1
  $Id: 2-links.cpp,v 1.3 2012/10/26 04:26:52 cheeyap Exp cheeyap $
@@ -1026,7 +1036,7 @@ void run() {
 	ssoutLastTime.str("");
 	ssoutLastTime<<ssout.str();
 	ssout.str("");
-	ssout<<"Cycle "<<runCount<<":" <<endl;
+	ssout<<"Run No. "<<runCount<<":" <<endl;
 
 	animationOption = 0;
 	currentStep = 0;
@@ -1227,6 +1237,7 @@ void run() {
 	ssout << "    ---->>   TIME USED: " << t.getElapsedTimeInMilliSec() << " ms"
 			<< endl;
 	ssout << "    ---->>   TOTAL STEPS: " << totalSteps << endl;
+	ssout << "    ---->>   STRATEGY: " << QType << endl;
 	if (verboseOption) {
 		ssout << "    Expanded " << ct << " times" << endl;
 		ssout << "    total Free boxes: " << freeCount << endl;
