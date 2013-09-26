@@ -115,7 +115,7 @@ scale = 1		# scaling of input file
 verbose = 0		# if true, display statistics
 title = Demos		# Title of control panel
 
-threshold = 2		# threshold for angular split: if |phi(B)| <= threshold,
+threshold = 4		# threshold for angular split: if |phi(B)| <= threshold,
 			#	then we may do angular split
 			# threshold = 0,1,2,...
 #=================================================
@@ -252,7 +252,7 @@ eg1: ./2-links
 		3 $(seed)  $(inputDir) \
 		0 0 1 \
 		$(verbose) "Eg1: Barrier environment" \
-		$(threshold) \
+		4 \
 		&
 
 
@@ -493,9 +493,9 @@ eg11a nestedRectangleA: ./2-links
 #	valid for such inputs.  This is the power of the SSS approach (over
 #	the exact algorithms.
 
-# eg100 100: 100 random 2-links
+# eg100 100: 100 random  triangles
 eg100 100: ./2-links
-	@echo "Target eg100:  runs 2-links amidst 100 randomly generated 2-links"
+	@echo "Target eg100:  runs 2-links amidst 100 randomly generated triangles"
 	./2-links $(interactive) 10 490 0 270 495 180 270 0\
 		8 40 60 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
@@ -505,9 +505,9 @@ eg100 100: ./2-links
 		$(threshold) \
 		&
 
-# eg100a: 100 random 2-links
+# eg100a: 100 random triangles
 eg100a 100a: ./2-links
-	@echo "Target eg100a:  runs 2-links amidst 100 randomly generated 2-links"
+	@echo "Target eg100a:  runs 2-links amidst 100 randomly generated triangles"
 	@echo "This one is a bit harder than eg100 (with radius 8 instead of 5)"
 	./2-links $(interactive) 200 270 0 20 20 0\
 		10 8 input100.txt \
@@ -518,21 +518,45 @@ eg100a 100a: ./2-links
 		$(threshold) \
 		&
 
-# eg150: 150 random 2-links (use radius=1)
+# eg150: 150 random triangles
 eg150 150: ./2-links
-	@echo "Target eg150:  runs 2-links amidst 100 randomly generated 2-links"
-	./2-links $(interactive) 10 490 0 270 495 180 270 0\
-		8 40 60 input150.txt \
+	@echo "Target eg150:  runs 2-links amidst 150 randomly generated triangles"
+	./2-links $(interactive) 5 300 0 270 380 380 270 45\
+		4 40 60 input150.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		2 $(seed)  $(inputDir) \
+		4 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) "Eg 150: 150 randomly generated triangles" \
 		$(threshold) \
 		&
 
-# eg200: 200 random 2-links
+# eg150a: 150 random triangles
+eg150a 150a: ./2-links
+	@echo "Target eg150a:  runs 2-links amidst 150 randomly generated triangles"
+	./2-links $(interactive) 5 300 0 270 380 240 270 0\
+		4 40 60 input150.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		3 $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) "Eg 150a: 150 randomly generated triangles" \
+		$(threshold) \
+		&
+
+# eg150c: 150 random triangles
+eg150c 150c: ./2-links
+	@echo "Target eg150c:  runs 2-links amidst 150 randomly generated triangles"
+	./2-links $(interactive) 5 500 0 270 380 240 270 0\
+		8 40 60 input150.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		3 $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) "Eg 150c: 150 randomly generated triangles" \
+		$(threshold) \
+		&
+
+# eg200: 200 random triangles
 eg200 200: ./2-links
-	@echo "Target eg200:  runs 2-links on randomly generated obstacles"
+	@echo "Target eg200:  runs 2-links on randomly generated triangles"
 	@echo "--  This may take a noticeable amount bit of time!!!"
 	./2-links $(interactive) 10 490 0 270 495 180 270 0\
 		8 40 60 input200.txt \
