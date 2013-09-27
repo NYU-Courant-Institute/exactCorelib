@@ -53,13 +53,14 @@
 #include "Timer.h"
 
 #ifdef __CYGWIN32__
+#include "GL/glew.h"
+#include "GL/glut.h"
 #include "GL/glui.h"
 #endif
 #ifdef __linux__
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <GL/glui.h>
-// #include "GL/glui.h"
 #endif
 #ifdef _WIN32
 #include <gl/glew.h>

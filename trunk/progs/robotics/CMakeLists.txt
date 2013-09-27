@@ -18,15 +18,16 @@ message("\n\n my CMAKE_MODULE_PATH is " ${CMAKE_MODULE_PATH} "\n\n")
 #for finding external libraries. 
 #see /usr/local/share/cmake-2.6/Modules/Find*.cmake for more examples
 find_package(gmp)		# found -- case insensitive: "gmp", "Gmp" or "GMP" OK
-find_package(mpfr)		# not found
+find_package(mpfr)		# found
+find_package(GLEW REQUIRED)	# found
 find_package(OpenGL REQUIRED)	# found
 find_package(GLUT REQUIRED)	# found
-find_package(GLUI REQUIRED)	# cannot find?
-# find_package(GLEW REQUIRED)	# cannot find?
+find_package(GLUI REQUIRED)	# found
 
 # COMPILE FLAGS
 set(CMAKE_CXX_FLAGS "-g -Wall")
 set(CORE_CXXFLAGS "-Wfatal-errors")
  
 # DIRECTORIES
-add_subdirectory(2-links)
+#add_subdirectory(2-links)
+add_subdirectory(triangle)

@@ -55,12 +55,14 @@ where:
  ************************************** */
 
 #ifdef __CYGWIN32__
+#include "GL/glut.h"
 #include "GL/glui.h"
+#include "GL/glew.h"
 #endif
 #ifdef __linux__
-#include <GL/glew.h>
 #include <GL/glut.h>
 #include <GL/glui.h>
+#include <GL/glew.h>
 //#include "GL/glui.h"
 #endif
 #ifdef _WIN32
