@@ -1,0 +1,22 @@
+NOTES:
+
+Sep 2013:
+Work for Siemen's Competition.
+Surin's work is under $SVN_ROOT/robotics/surin2011.
+
+But to run it under Corelib, I create a version under $CORELIB/progs/students.
+
+Check out from Surin's directory here:
+
+1) To set up:
+	> svnexact
+
+	This will create this export:
+		export SVNROOT=https://exact@subversive.cims.nyu.edu/exact
+
+2) Then check out:
+	> svn checkout $SVNROOT/robotics/surinAhn2011/ball
+
+	  
+
+
