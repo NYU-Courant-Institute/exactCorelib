@@ -133,12 +133,12 @@ Box* boxA;				// start box (containing alpha)
 Box* boxB;				// goal box (containing beta)
 double boxWidth = 512;			// Initial box width
 double boxHeight = 512;			// Initial box height
-double R0 = 8;				// Robot radius
 
 // Added by Zhongdi 05/08/2013 begin
 // length of 2 links
-double L1 = 26;
-double L2 = 20;
+double L1 = 35;
+double L2 = 30;
+double R0 = 0;				// will be set to max(L1,L2)
 // Added by Zhongdi 05/08/2013 end
 
 int windowPosX = 320;			// X Position of Window
@@ -769,12 +769,12 @@ int main(int argc, char* argv[]) {
 		glui->add_separator();
 		radioQType = glui->add_radiogroup();
 
-		glui->add_radiobutton_to_group(radioQType, "Random Heuristic");
-		glui->add_radiobutton_to_group(radioQType, "BFS");
-		glui->add_radiobutton_to_group(radioQType, "Greedy");
-		glui->add_radiobutton_to_group(radioQType, "Dist+Size");
+		glui->add_radiobutton_to_group(radioQType, "(0) Random Heuristic");
+		glui->add_radiobutton_to_group(radioQType, "(1) BFS");
+		glui->add_radiobutton_to_group(radioQType, "(2) Greedy");
+		glui->add_radiobutton_to_group(radioQType, "(3) Dist+Size");
 		glui->add_radiobutton_to_group(radioQType,
-				"Voronoi Heuristic(deprecated)");
+				"(4) Voronoi Heuristic(deprecated)");
 
 		glui->add_separator();
 		radioQType->set_int_val(QType);
@@ -797,7 +797,7 @@ int main(int argc, char* argv[]) {
 		radio2StrategyOption = glui->add_radiogroup();
 
 		glui->add_radiobutton_to_group(radio2StrategyOption,
-				"Split Until Epsilon, Phi(B) = 0");
+				"Split Until Epsilon or Phi(B) empty");
 		glui->add_radiobutton_to_group(radio2StrategyOption,
 				"Smarter Strategy");
 		textPhiB = glui->add_edittext("Phi(B) = ", GLUI_EDITTEXT_INT);
@@ -1239,7 +1239,7 @@ void run() {
 	ssout << "    ---->>   TIME USED: " << t.getElapsedTimeInMilliSec() << " ms"
 			<< endl;
 	ssout << "    ---->>   TOTAL STEPS: " << totalSteps << endl;
-	ssout << "    ---->>   STRATEGY: " << QType << endl;
+	ssout << "    ---->>   Strategy No (" << QType << ")" << endl;
 	if (verboseOption) {
 		ssout << "    Expanded " << ct << " times" << endl;
 		ssout << "    total Free boxes: " << freeCount << endl;
@@ -1862,7 +1862,6 @@ void parseConfigFile(Box* b) {
 	std::string s = ss.str();
 
 	fileProcessor(s);	// this will clean the input and put in
-// output-tmp.txt
 
 	ifstream ifs("output-tmp.txt");
 	if (!ifs) {
@@ -1870,21 +1869,20 @@ void parseConfigFile(Box* b) {
 		exit(1);
 	}
 
-// First, get to the beginning of the first token:
+	// First, get to the beginning of the first token:
 	skip_comment_line(ifs);
 
 	int nPt, nPolygons;	// previously, nPolygons was misnamed as nFeatures
 	ifs >> nPt;
 
-//skip_comment_line ( ifs );	// again, clear white space
+	//Read input points:
 	vector<double> pts(nPt * 2);
 	for (int i = 0; i < nPt; ++i) {
 		ifs >> pts[i * 2] >> pts[i * 2 + 1];
 	}
 
-//skip_comment_line ( ifs );	// again, clear white space
+	//Read input polygons:
 	ifs >> nPolygons;
-//skip_comment_line ( ifs );	// again, clear white space
 	string temp;
 	std::getline(ifs, temp);
 	for (int i = 0; i < nPolygons; ++i) {
@@ -1901,10 +1899,8 @@ void parseConfigFile(Box* b) {
 			pt -= 1;	//1 based array
 			if (ptSet.find(pt) == ptSet.end()) {
 				ptVec.push_back(
-						new Corner(pts[pt * 2] * scale + deltaX,
-								pts[pt * 2 + 1] * scale + deltaY));
-//				cout << "point: X=" << pts[pt * 2] * scale + deltaX << "   Y="
-//						<< pts[pt * 2 + 1] * scale + deltaY;
+					new Corner(pts[pt * 2] * scale + deltaX,
+						pts[pt * 2 + 1] * scale + deltaY));
 
 				b->addCorner(ptVec.back());
 				b->vorCorners.push_back(ptVec.back());
@@ -1915,8 +1911,9 @@ void parseConfigFile(Box* b) {
 					b->addWall(w);
 					b->vorWalls.push_back(w);
 				}
-			}
-			//new pt already appeared, a loop is formed. should only happen on first and last pt
+			}//if
+		//new pt already appeared, a loop is formed.
+		//should only happen on first and last pt
 			else {
 				if (ptVec.size() > 1) {
 					Wall* w = new Wall(ptVec[ptVec.size() - 1], ptVec[0]);
@@ -1925,27 +1922,26 @@ void parseConfigFile(Box* b) {
 					break;
 				}
 			}
-
-		}
+		}// while(ss)
 		tempPolygon.corners = ptVec;
 		tempPolygon.corners.push_back(ptVec[0]);
 		polygons.push_back(tempPolygon);
-//		cout<<"polygons.size() 2-links"<<polygons.size()<<endl;
 		if (pointInPolygon(alpha[0], alpha[1], tempPolygon)) {
 			srcInPolygons.push_back(1);
 		} else {
 			srcInPolygons.push_back(0);
 		}
-//		cout<<"polygon"<<i<< "               "<<srcInPolygons[i]<<endl;
-	}
+		if (i==0) {// if first polygon is clockwise, set globalMark
+
+		}
+	}//for i=0 to nPolygons
 	ifs.close();
 	if (true) {
 		cout << "input file name = " << s << endl;
 		cout << "nPt=" << nPt << endl;
 		cout << "nPolygons=" << nPolygons << endl;
 	}
-
-}
+}//parseConfigFile
 
 void resetAndRun() {
 	reset();

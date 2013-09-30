@@ -264,7 +264,7 @@ eg1: ./2-links
 	./2-links $(interactive) 195 340 0 150 260 80  70 120\
 		4 50 80 basic3.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		3 $(seed)  $(inputDir) \
+		2 $(seed)  $(inputDir) \
 		0 0 1 \
 		$(verbose) "Eg1: Barrier environment" \
 		$(smarterStrategy) \
@@ -344,8 +344,8 @@ eg4 egbug bug: ./2-links
 eg5 egbug2 bug2: ./2-links
 	@echo "Target 'eg5 or bug2':  runs 2-links on bugtrap2.txt"
 	@echo "--  this examples shows there is PATH, but barely so!"
-	./2-links $(interactive) 180 210 180 320 30 30 0 0\
-		4 11 50 bugtrap2.txt \
+	./2-links $(interactive) 190 210 180 300 30 30 90 0\
+		4 60 50 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
