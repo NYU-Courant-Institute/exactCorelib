@@ -58,6 +58,12 @@ README:
 # 	somewhat unpredictable (it is predictable, of course, but
 # 	harder to figure out).
 #
+# (5) Suppose the polygons has one exterior polygon (say, P0) that contains all
+# 	the other polygons, the we require P0 to be listed first.
+# 	There is at most one such polygon (this is because motion planning can be
+# 	restricted to within one such P0; we will not have environments with more
+# 	than one such P0).  E.g. the 2-chamber input is such an example.
+#
 #  EXAMPLE:  Suppose we want to represent an obstacle set whose
 #		complement is a triangular annulus:
 #                            /\
