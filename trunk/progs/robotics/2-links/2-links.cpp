@@ -23,32 +23,32 @@
 		[threshold-for-smarterStrategy = 1-to-8] \
 		&
 
-where:
-   interactive 	 		is nature of run
-   				  (0 is interactive, >0 is non-interactive)
-   start (x,y,theta1,theta2)	is initial configuration
-   goal (x,y,theta1,theta2)	is final configuration
-   epsilon			is resolution parameter
-   				  (1 or greater)
-   len1, len2			are lengths of the 2 links
-   fileName			is input (text) file describing the environment
-   box Width/Height		is initial box dimensions
-   windowPos(x,y)		is initial position of window
-   Qtype			is type of the priority queue
-   				   (0=random, 1=BFS, 2=Greedy, 3=Dist+Size, 4=Vor)
-   seed				is seed for random number generator
-   inputDir			is directory for input files
-   offset(X,Y), scale		is the offset and scaling for input environment
-   smarterStrategy		chooses either original splitting or smarter strategy
-   threshold			is the parameter used by smarter strategy
- 				   (say, a small integer between 0 and 10).
+ where:
+ interactive 	 		is nature of run
+ (0 is interactive, >0 is non-interactive)
+ start (x,y,theta1,theta2)	is initial configuration
+ goal (x,y,theta1,theta2)	is final configuration
+ epsilon			is resolution parameter
+ (1 or greater)
+ len1, len2			are lengths of the 2 links
+ fileName			is input (text) file describing the environment
+ box Width/Height		is initial box dimensions
+ windowPos(x,y)		is initial position of window
+ Qtype			is type of the priority queue
+ (0=random, 1=BFS, 2=Greedy, 3=Dist+Size, 4=Vor)
+ seed				is seed for random number generator
+ inputDir			is directory for input files
+ offset(X,Y), scale		is the offset and scaling for input environment
+ smarterStrategy		chooses either original splitting or smarter strategy
+ threshold			is the parameter used by smarter strategy
+ (say, a small integer between 0 and 10).
 
  See examples of running this program in the Makefile.
 
  Format of input environment: see README FILE
 
  HISTORY: May-Oct, 2013: 2-links version by Zhongdi Luo and Chee Yap
- 			(started out by adapting the triangle code of Cong Wang)
+ (started out by adapting the triangle code of Cong Wang)
 
  Since Core Library  Version 2.1
  $Id: 2-links.cpp,v 1.3 2012/10/26 04:26:52 cheeyap Exp cheeyap $
@@ -158,6 +158,7 @@ double scale = 1;				// scaling of input environment
 bool noPath = true;			// True means there is "No path.
 
 bool hideBoxBoundary = false;  		// don't draw box boundary
+bool shadeOption = false;        // don't shade the obstacles
 bool verboseOption = false;		// don't print various statistics
 
 int drawPathOption = 0;
@@ -210,6 +211,8 @@ bool leafBoxesDrawed = false;
 
 int runCount = 0;
 
+int firstPolygonClockwise = 0;
+
 // GLUI controls ========================================
 //////////////////////////////////////////////////////////////////////////////////
 GLUI_RadioGroup* radioStepsPerFrame;
@@ -218,6 +221,7 @@ GLUI_EditText* textCurrentStep;
 GLUI_RadioGroup* radioDrawPathOption;
 GLUI_RadioGroup* radioQType;
 GLUI_RadioGroup* radioDrawOption;
+GLUI_RadioGroup* radioShadeOption;
 GLUI_RadioGroup* radio2StrategyOption;
 GLUI_EditText* textPhiB;
 GLUI_RadioGroup* radioVerboseOption;
@@ -268,6 +272,7 @@ void resetAndRun();
 void reset();
 void initFbo();
 void redrawFBO();
+int checkClockwise(Polygon p);
 
 //void *thread_render(void* arg);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -774,15 +779,21 @@ int main(int argc, char* argv[]) {
 		glui->add_radiobutton_to_group(radioQType, "(2) Greedy");
 		glui->add_radiobutton_to_group(radioQType, "(3) Dist+Size");
 		glui->add_radiobutton_to_group(radioQType,
-				"(4) Voronoi Heuristic(deprecated)");
-
-		glui->add_separator();
+				"(4) Voronoi Heuristic (deprecated)");
 		radioQType->set_int_val(QType);
 
+		glui->add_separator();
 		radioDrawOption = glui->add_radiogroup(0, -1,
 				(GLUI_Update_CB) redrawFBO);
 		glui->add_radiobutton_to_group(radioDrawOption, "Show Box Boundary");
 		glui->add_radiobutton_to_group(radioDrawOption, "Hide Box Boundary");
+
+		glui->add_separator();
+		radioShadeOption = glui->add_radiogroup(0, -1,
+				(GLUI_Update_CB) redrawFBO);
+		glui->add_radiobutton_to_group(radioShadeOption, "Clear Shading");
+		glui->add_radiobutton_to_group(radioShadeOption,
+				"Shade Obstacles (doesn't support concave ones)");
 
 		glui->add_separator();
 		radioVerboseOption = glui->add_radiogroup();
@@ -815,7 +826,7 @@ int main(int argc, char* argv[]) {
 		boxSelectedInfo->set_w(310);
 
 		textBox = new GLUI_TextBox(glui, true);
-		textBox->set_h(300);
+		textBox->set_h(250);
 		textBox->set_w(310);
 //		textBox->disable();
 
@@ -1036,9 +1047,9 @@ void run() {
 	runCount++;
 
 	ssoutLastTime.str("");
-	ssoutLastTime<<ssout.str();
+	ssoutLastTime << ssout.str();
 	ssout.str("");
-	ssout<<"Run No. "<<runCount<<":" <<endl;
+	ssout << "Run No. " << runCount << ":" << endl;
 
 	animationOption = 0;
 	currentStep = 0;
@@ -1252,8 +1263,8 @@ void run() {
 //	if(animationOption == 3 || animationOption == 4){
 //		ssout << ssTemp.str().c_str();
 //	}
-	ssout<< endl;
-	ssout<<ssoutLastTime.str();
+	ssout << endl;
+	ssout << ssoutLastTime.str();
 	textBox->set_text(ssout.str().c_str());
 //	GLUI_Master.sync_live_all();
 	freeCount = stuckCount = mixCount = mixSmallCount = 0;
@@ -1584,7 +1595,9 @@ void drawQuad(Box* b) {
 }
 
 void drawWalls(Box* b) {
-	glColor3f(0, 0, 0.7);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(0.0, 0.0, 0.8, 0.9);
 	glLineWidth(2.0);
 	for (list<Wall*>::iterator iter = b->walls.begin(); iter != b->walls.end();
 			++iter) {
@@ -1594,7 +1607,23 @@ void drawWalls(Box* b) {
 		glVertex2f(w->dst->x, w->dst->y);
 		glEnd();
 	}
+
+	if (shadeOption == 1) {
+		glColor4f(0.8, 0.8, 0.8, 0.7);
+		for (int i = 0; i < polygons.size(); i++) {
+			if (i == 0 && firstPolygonClockwise == 1) {
+				continue;
+			}
+			glBegin(GL_POLYGON);
+			for (int j = 0; j < polygons[i].corners.size(); j++) {
+				glVertex2f(polygons[i].corners[j]->x,
+						polygons[i].corners[j]->y);
+			}
+			glEnd();
+		}
+	}
 	glLineWidth(1.0);
+	glDisable(GL_BLEND);
 }
 
 void drawCircle(float Radius, int numPoints, double x, double y, double r,
@@ -1650,6 +1679,7 @@ void renderScene(void) {
 	renderCount++;
 
 	hideBoxBoundary = radioDrawOption->get_int_val();
+	shadeOption = radioShadeOption->get_int_val();
 	verboseOption = radioVerboseOption->get_int_val();
 	drawPathOption = radioDrawPathOption->get_int_val();
 
@@ -1670,7 +1700,7 @@ void renderScene(void) {
 		glScalef(2.0 / boxWidth, 2.0 / boxHeight, 0);
 		glTranslatef(-boxWidth / 2, -boxHeight / 2, 0);
 
-		glDisable(GL_BLEND);
+//		glDisable(GL_BLEND);
 
 		// TODO fill the initial board yellow
 		glColor3f(0xFF / 255.0, 0xFF / 255.0, 0x66 / 255.0);
@@ -1711,6 +1741,9 @@ void renderScene(void) {
 			leafBoxesDrawed = true;
 		}
 	}
+
+//	glEnable(GL_BLEND);
+//	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 	if (!(animationOption == 1 || animationOption == 2)) {
 		// clear default frame buffer for the whole window
@@ -1899,8 +1932,8 @@ void parseConfigFile(Box* b) {
 			pt -= 1;	//1 based array
 			if (ptSet.find(pt) == ptSet.end()) {
 				ptVec.push_back(
-					new Corner(pts[pt * 2] * scale + deltaX,
-						pts[pt * 2 + 1] * scale + deltaY));
+						new Corner(pts[pt * 2] * scale + deltaX,
+								pts[pt * 2 + 1] * scale + deltaY));
 
 				b->addCorner(ptVec.back());
 				b->vorCorners.push_back(ptVec.back());
@@ -1911,9 +1944,9 @@ void parseConfigFile(Box* b) {
 					b->addWall(w);
 					b->vorWalls.push_back(w);
 				}
-			}//if
-		//new pt already appeared, a loop is formed.
-		//should only happen on first and last pt
+			}	//if
+			//new pt already appeared, a loop is formed.
+			//should only happen on first and last pt
 			else {
 				if (ptVec.size() > 1) {
 					Wall* w = new Wall(ptVec[ptVec.size() - 1], ptVec[0]);
@@ -1922,7 +1955,7 @@ void parseConfigFile(Box* b) {
 					break;
 				}
 			}
-		}// while(ss)
+		}		// while(ss)
 		tempPolygon.corners = ptVec;
 		tempPolygon.corners.push_back(ptVec[0]);
 		polygons.push_back(tempPolygon);
@@ -1931,17 +1964,17 @@ void parseConfigFile(Box* b) {
 		} else {
 			srcInPolygons.push_back(0);
 		}
-		if (i==0) {// if first polygon is clockwise, set globalMark
-
+		if (i == 0) {		// if first polygon is clockwise, set globalMark
+			firstPolygonClockwise = checkClockwise(tempPolygon);
 		}
-	}//for i=0 to nPolygons
+	}		//for i=0 to nPolygons
 	ifs.close();
 	if (true) {
 		cout << "input file name = " << s << endl;
 		cout << "nPt=" << nPt << endl;
 		cout << "nPolygons=" << nPolygons << endl;
 	}
-}//parseConfigFile
+}		//parseConfigFile
 
 void resetAndRun() {
 	reset();
@@ -1963,6 +1996,7 @@ void resetAndRun() {
 	radio2StrategyOption->set_int_val(0);
 	textPhiB->set_int_val(sizeOfPhiB);
 	radioDrawOption->set_int_val(0);
+	radioShadeOption->set_int_val(0);
 	radioDrawPathOption->set_int_val(0);
 
 	run();
@@ -2021,7 +2055,7 @@ void reset() {
 	if (argcSave > 25)
 		title = argvSave[25];		// title
 	if (argcSave > 26)
-		twoStrategyOption = atoi(argvSave[26]);// two Strategy Option (0: original 1: smarter)
+		twoStrategyOption = atoi(argvSave[26]);	// two Strategy Option (0: original 1: smarter)
 	if (argcSave > 27)
 		sizeOfPhiB = atoi(argvSave[27]);// threshold for splitting angles  |Phi(B)|
 }
@@ -2082,6 +2116,60 @@ void redrawFBO() {
 	glutPostRedisplay();
 }
 
+// check whether a polygon is clockwise or counter-clockwise.
+// return value
+// 0: other issues
+// 1: clockwise
+// 2: counter-clockwise
+
+int checkClockwise(Polygon p) {
+	if (p.corners.size() == 0) {
+		return 0;
+	}
+
+	double maxX = -100000;
+	int maxI = -1;
+	int prevI = -1;
+	int nextI = -1;
+//	cout<< p.corners.size()<<endl;
+	for (int i = 0; i < p.corners.size(); i++) {
+		if (p.corners[i]->x > maxX) {
+			maxX = p.corners[i]->x;
+			maxI = i;
+			if (maxI == 0) {
+				prevI = p.corners.size() - 2;
+			} else {
+				prevI = maxI - 1;
+			}
+
+			if (maxI == p.corners.size() - 2) {
+				nextI = 0;
+			} else {
+				nextI = maxI + 1;
+			}
+		}
+	}
+	if ((p.corners[nextI]->y - p.corners[maxI]->y)
+			/ (p.corners[nextI]->x - p.corners[maxI]->x == 0 ?
+					-0.01 : (p.corners[nextI]->x - p.corners[maxI]->x))
+			- (p.corners[prevI]->y - p.corners[maxI]->y)
+					/ (p.corners[prevI]->x - p.corners[maxI]->x == 0 ?
+							-0.01 : (p.corners[prevI]->x - p.corners[maxI]->x))
+			> 0) {
+//		cout<<(p.corners[nextI]->y - p.corners[maxI]->y)
+//					/ (p.corners[nextI]->x - p.corners[maxI]->x == 0? -0.01 : (p.corners[nextI]->x - p.corners[maxI]->x))
+//					<< " "<< (p.corners[prevI]->y - p.corners[maxI]->y)
+//							/ (p.corners[prevI]->x - p.corners[maxI]->x == 0? -0.01 : (p.corners[prevI]->x - p.corners[maxI]->x))<<endl;
+//
+//		cout<< p.corners[prevI]->y<<endl;
+//		cout<< p.corners[maxI]->y<<endl;
+
+		return 1;
+	} else {
+		return 2;
+	}
+
+}
 //void drawPathOption{
 //
 //}
