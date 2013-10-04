@@ -245,6 +245,19 @@ egb:
 		$(threshold) \
 		&
 
+# run with the file input2.txt
+egc: $(TARGETS)
+	./2-links $(interactive) \
+	    $(startX) $(startY)  $(startTheta1) $(startTheta2) \
+	    $(goalX) $(goalY) $(goalTheta1) $(goalTheta2) \
+	    $(epsilon)  $(len1) $(len2) input2.txt  $(boxWidth) $(boxHt) \
+	    $(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
+	    $(xtrans) $(ytrans) $(scale) \
+	    $(verbose) $(title) \
+	    $(smarterStrategy) \
+		$(threshold) \
+		&
+
 # Simple NO PATH example:
 nopath eg0:	./2-links
 	@echo "Target 'eg0':  runs 2-links with default options for file input0.txt"
@@ -331,6 +344,22 @@ eg4 egbug bug: ./2-links
 	@echo "--  Or, you decrease the epsilon from 5 to 4, there is a path"
 	./2-links $(interactive) 200 320 30 60 30 30 90 120 \
 		5 45 79 bugtrap.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 11 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) "Eg4: Bugtrap" \
+		$(smarterStrategy) \
+		$(threshold) \
+		&
+
+# Bugtrap example -- Existence of path, but barely!
+eg4a egbuga buga: ./2-links
+	@echo "Target 'bug':  runs 2-links for bugtrap input"
+	@echo "--  this example shows there is NO PATH, but barely!"
+	@echo "--  If you decrease the longer link from 79 to 78, there is a path"
+	@echo "--  Or, you decrease the epsilon from 5 to 4, there is a path"
+	./2-links $(interactive) 200 320 30 60 30 30 90 120 \
+		4 45 79 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
