@@ -21,7 +21,7 @@
 #include <gl/glui.h>
 #endif
 #ifdef __APPLE__
-#include <GLUI/glui.h>
+#include <glui.h>
 #endif
 
 #include <iostream>

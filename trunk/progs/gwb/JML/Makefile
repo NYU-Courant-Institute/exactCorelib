@@ -1,52 +1,96 @@
-# Makefile for progs/gwb/polyhedron/
 #
-#  HOW TO USE THIS Makefile:
+# makefile 
 #
-# (A)	To compile run this demo, you can use this Makefile and just have to type:
-#
-# 	       > make 		-- compiles the main program into "gwb"
-# 	       > make test	-- compiles and runs "gwb" non-interactively
-# 	       			   (this is Core Library's automatic self-test)
-#
-# (B)	See the default demo:
-#
-# 	       > make eg		-- compiles and runs "gwb" interactively
-# 	       > make egx rad1=30	-- like "eg" but you can change parameters
-#
-#	To see what these default parameters are, you can type
-#
-#		> make params
-#
-# (C)	You can override any of these default parameters at the command line.
-#	For instance, to change the input file to "input2.txt", you may type:
-#
-#		> make eg fineName=input2.txt
-#
-# (D)	Instead of the target "eg" you can try these targets (alternative
-# 	names are in parenthesis):
-#
-#		eg0 (annulus)
-#		eg1 (simple)
-#		eg2 (simple2)
-#		eg3 (dog)
-#
-# 	These targets uses different input files, all taken from
-# 	the subdirectory "inputs".   
-#
-################################################################################
-# 	Kai Cao and Chee Yap
-# 	May 20, 2012
-# 	Since Core Library 2.1
-# 	$Id:$
-################################################################################
 
-#=================================================
-#	Core Library Options
-#=================================================
-VAR=Opt
-VAR=Debug
-CORE_PATH=../../..
-include ../Make.options
+TARGET = gwb
+SRC_DIR=.
+LIB_DIR=.
+
+#
+# Determine the platform (Linux, Mac OS X, Windows+Cygwin etc.)
+#
+# On Linux,    this should be 'Linux'
+# On Mac OS X, this should be 'Darwin'
+#
+
+OSNAME := $(shell uname -s)
+MACHINE := $(shell uname -m)
+
+ifeq ($(OSNAME),Linux)
+  ifeq ($(MACHINE),x86_64)
+    PLATFORM := LINUX64
+  else
+    PLATFORM := LINUX
+  endif
+else 
+  ifeq ($(OSNAME),Darwin)
+    PLATFORM := MAC_OS_X
+  else
+    PLATFORM := OTHER
+  endif
+endif
+
+#-----------------------------------------------------------------------------
+# Choose a compiler & its options
+#--------------------------------------------------------------------------
+g++ = g++
+CXX = g++
+
+OPTS = -pipe -g -MMD
+
+ifeq ($(PLATFORM),MAC_OS_X)
+ OPTS += -DMACOS -Wreturn-type -frounding-math
+endif
+
+OPTS += -frounding-math
+
+#--------------------------------------------------------------------
+# Xlib and OpenGL
+#--------------------------------------------------------------------
+
+ifeq ($(PLATFORM),MAC_OS_X)
+   GL_INCL = -I/opt/local/include
+   GL_LIB = -L/opt/local/lib  -lglui -framework OpenGL -framework GLUT -framework Foundation
+else
+   GL_LIB = -lglui -lGL -lGLU -lglut
+endif
+
+#--------------------------------------------------------------------
+# MPFR
+#--------------------------------------------------------------------
+
+ifeq ($(PLATFORM),MAC_OS_X)
+	MPFR_DIR = /opt/local
+	MPFR_INCL= -I${MPFR_DIR}/include
+	MPFR_LIB = -L${MPFR_DIR}/lib -lmpfr -lgmp
+else 
+	MPFR_LIB = -lmpfr -lgmp
+endif
+
+
+#--------------------------------------------------------------------
+INCLUDE = -I$(SRC_DIR) $(GL_INCL) $(GLEW_INCL) $(MPFR_INCL)
+LIB = $(GL_LIB) $(GLEW_LIB) $(MPFR_LIB)
+
+#--------------------------------------------------------------------
+
+CFLAGS     = $(OPTS) $(INCLUDE)
+CXXFLAGS   = $(CFLAGS)
+
+#--------------------------------------------------------------------
+SRCS=$(wildcard $(addsuffix /*.cpp,$(SRC_DIR) GL))
+OBJS=${SRCS:.cpp=.o}
+DFILES=${SRCS:.cpp=.d}
+
+####### Build rules
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CXX) ${CXXFLAGS} -o $@ $(OBJS) $(LIB) 
+
+clean:
+	-rm -f $(OBJS) $(TARGET) $(DFILES) Dependencies
 
 
 #=================================================
@@ -68,7 +112,7 @@ windowPosY = 20
 
 mode = wire		# show wire frame of surfaces
 mode = face		# show faces of surfaces
-
+mode= multi_surface
 
 model = cube		# name of model to be displayed
 model = bullet
@@ -123,27 +167,6 @@ nsegments = 8		# number of segments in each cross-section
 xtrans = 5		# x-translation of the input data 
 ytrans = 5		# y-translation of the input data
 scale  = 1		# scaling of input data 
-
-#=================================================
-# Define target files (put all your files here)
-#=================================================
-TARGETS = gwb
-SUBDIRS = . 
-SRCS=$(wildcard $(addsuffix /*.cpp,$(SUBDIRS)))
-OBJS=${SRCS:.cpp=.o}
-OBJ_FILES = $(OBJS)
-CXXFLAGS += -MMD -lGL -lGLU -lglui -lglut
-
-all: $(TARGETS)
-
-# note: this target is the standard target that Core Library uses
-#       to test its subdirectories.   So the program must run in a
-#       non-interactive mode !!!
-#
-test: $(TARGETS)
-	./gwb 0
-
-testall: $(TARGETS)
 
 #=================================================
 # Examples of running gwb program
@@ -439,126 +462,16 @@ eg15 fileocta:	gwb
 eg16 filehole:	gwb
 	./gwb 2 $(inputDir) cube-with-hole.gwb
 ##################################################
-		
-moretest: $(TARGETS)
-# nothing to do
 
-$(TARGETS): $(OBJ_FILES)
-
-#=================================================
-# Temp
-#=================================================
-m:
-	gvim -f Makefile
-vi:
-	gvim -f gwb.cpp
-
-#=================================================
-# Rules
-#=================================================
-
+#--------------------------------------------------------------------
 .SUFFIXES: .cpp
 
-%: %.o
-	${CXX} $(OBJ_FILES) $(LDFLAGS) $(CORE_LIB) -o $@ $(CXXFLAGS)
-
-.cpp.o:
-	${CXX} $(CXXFLAGS) $(CORE_INC) -c $< -o $@
+.cpp.o: 
+	${CXX} ${CXXFLAGS} -c $< -o $@
 	cat $*.d >> Dependencies
-	rm -f $*.d 
+	rm -f $*.d
 
 Dependencies:
 	touch Dependencies
 
-include Dependencies
-
-#=================================================
-# Help
-#=================================================
-help:
-	@echo "USAGE: Type the following"
-	@echo "  > make eg                 -- to see an example : trefoil"
-	@echo "  > make params             -- to see default parameters of eg"
-	@echo "  > make egN                -- where N = 0, 1, 2, ..., 14, 15, 16"
-	@echo "                               to see various examples "
-	@echo " LIST of TARGETS:"
-	@echo "		eg0 (facehemi)  -- a hemisphere"
-	@echo "		eg1 (sphere)	"
-	@echo "		eg2 (torus,donut)"
-	@echo "		eg3 (cylinder)"
-	@echo "		eg4 (disk)"
-	@echo "		eg5 (bullet)"
-	@echo "		eg6 (cone)"
-	@echo "		eg7 (chain)	-- a model with several solids"
-	@echo "		eg8 (table)"
-	@echo "		eg9 (trefoil)	-- an interesting exmaple"
-	@echo "		eg10 (chair)	-- a table with a back"
-	@echo "		eg11 (cube) 	-- a cube, which is also a trivial calendar"
-	@echo "		eg12 (fileicosa)-- icosahedron read from a file "
-	@echo "		eg13 (filedodeca)- dodecahedron reaf from a file"
-	@echo "		eg14 (filetetra)-- tetrahedron read from a file"	
-	@echo "		eg15 (fileocta) -- octahedron read from a file"
-	@echo "		eg16 (filehole) -- a cube wiht a hole read from a file"
-
-#=================================================
-# Misc
-#=================================================
-
-par params:
-	@echo "================ Parameters =================="
-	@echo "    interactive = " ${interactive}
-	@echo "    inputDir = " ${inputDir}
-	@echo "    fileName = " ${fileName}
-	@echo "    windowWidth = " ${windowWidth}
-	@echo "    windowHeight = " ${windowHeight}
-	@echo "    windowPosX = " ${windowPosX}
-	@echo "    windowPosY = " ${windowPosY}	
-	@echo "    mode = " ${mode}
-	@echo "    model = " ${model}
-	@echo "    rad = " ${rad}
-	@echo "    radius = " ${radius}
-	@echo "    ht = " ${ht}
-	@echo "    height = " ${height}
-	@echo "    hor = " ${hor}
-	@echo "    nsegments = " ${nsegments}
-	@echo "    ver = " ${ver}
-	@echo "    nsections = " ${nsections}	
-	@echo "    height2 = " ${height2} 
-	@echo "    rad2 = " ${rad2}
-	@echo "    rotUnitX = " ${rotUnitX}
-	@echo "    rotUnitY = " ${rotUnitY}
-	@echo "    rotUnitZ = " ${rotUnitZ}
-	@echo "    nsegments2 = " ${nsegments2}
-	@echo "    nsections2 = " ${nsections2}
-	@echo "    nparts = " ${nparts}
-	@echo "    nparts2 = " ${nparts2}
-	@echo "    position2 = " ${position2}
-	@echo "    position3 = " ${position3}
-	@echo "    thickness3 = " ${thickness3}
-	@echo "    height3 = " ${height3}
-	@echo "    lightRate = " ${lightRate}
-	@echo "    initRotDeg = " ${initRotDeg}
-	@echo "    initRotAxisX = " ${initRotAxisX}
-	@echo "    initRotAxisY = " ${initRotAxisY}
-	@echo "    initRotAxisZ = " ${initRotAxisZ}
-
-	@echo "=============================================="
-
-#=================================================
-# Clean object files
-#=================================================
-clean:
-	-@test -z "*.o" || rm -f *.o Dependencies $(TARGETS)
-
-#=================================================
-# Remove executable files
-#=================================================
-EXEPROGS=$(TARGETS:=$(EXETYPE))
-
-vclean veryclean: clean
-	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS) Dependencies
-
-#=================================================
-# END Makefile 
-#=================================================
-
+-include Dependencies
