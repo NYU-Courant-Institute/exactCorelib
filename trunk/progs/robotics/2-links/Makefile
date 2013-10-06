@@ -184,7 +184,7 @@ help:
 	@echo "        eg100, eg100a"
 	@echo "        eg150"
 	@echo "        eg200, eg200a, eg200b"
-	@echo "        eg300"
+	@echo "        eg300, eg300a"
 
 cmake build/2-links/2-links:
 	cd build; \
@@ -660,7 +660,7 @@ eg200b: ./2-links
 #
 eg300: ./2-links
 	@echo "Target eg300:  runs 2-links amidst 300 randomly generated 2-links"
-	@echo "--  This may take a noticeable amount bit of time!!! "
+	@echo "--  This may take a noticeable amount bit of time "
 	@echo "    depending on the search strategy"
 	./2-links $(interactive) \
 	    	10 400 90 270 \
@@ -670,6 +670,21 @@ eg300: ./2-links
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) "Eg 300: 300 randomly generated triangles" \
+		$(smarterStrategy) \
+		$(threshold) \
+		&
+
+eg300a: ./2-links
+	@echo "Target eg300a:  runs 2-links amidst 300 randomly generated 2-links"
+	@echo "--  Slightly more challenging than eg300. "
+	./2-links $(interactive) \
+	    	10 400 90 270 \
+		250 200 290 30 \
+		4 40 30 input300.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) "Eg 300a: 300 randomly generated triangles" \
 		$(smarterStrategy) \
 		$(threshold) \
 		&

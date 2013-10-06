@@ -1610,12 +1610,12 @@ void drawWalls(Box* b) {
 
 	if (shadeOption == 1) {
 		glColor4f(0.8, 0.8, 0.8, 0.7);
-		for (int i = 0; i < polygons.size(); i++) {
+		for (int i = 0; (unsigned)i < polygons.size(); i++) {
 			if (i == 0 && firstPolygonClockwise == 1) {
 				continue;
 			}
 			glBegin(GL_POLYGON);
-			for (int j = 0; j < polygons[i].corners.size(); j++) {
+			for (int j = 0; (unsigned)j < polygons[i].corners.size(); j++) {
 				glVertex2f(polygons[i].corners[j]->x,
 						polygons[i].corners[j]->y);
 			}
@@ -2132,7 +2132,7 @@ int checkClockwise(Polygon p) {
 	int prevI = -1;
 	int nextI = -1;
 //	cout<< p.corners.size()<<endl;
-	for (int i = 0; i < p.corners.size(); i++) {
+	for (int i = 0; (unsigned)i < p.corners.size(); i++) {
 		if (p.corners[i]->x > maxX) {
 			maxX = p.corners[i]->x;
 			maxI = i;
@@ -2142,7 +2142,7 @@ int checkClockwise(Polygon p) {
 				prevI = maxI - 1;
 			}
 
-			if (maxI == p.corners.size() - 2) {
+			if ((unsigned)maxI == p.corners.size() - 2) {
 				nextI = 0;
 			} else {
 				nextI = maxI + 1;
