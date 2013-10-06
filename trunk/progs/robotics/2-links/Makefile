@@ -607,10 +607,12 @@ eg150c 150c: ./2-links
 eg200 200: ./2-links
 	@echo "Target eg200:  runs 2-links on randomly generated triangles"
 	@echo "--  This may take a noticeable amount bit of time!!!"
-	./2-links $(interactive) 10 490 0 270 495 180 270 0\
-		8 40 60 input200.txt \
+	./2-links $(interactive) \
+	    	10 490 0 270 \
+		320 280 270 0 \
+		4 40 60 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 $(seed)  $(inputDir) \
+		2 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) "Eg 200: 200 randomly generated triangles" \
 		$(smarterStrategy) \
@@ -624,12 +626,14 @@ eg200a 200a: ./2-links
 	@echo "Target eg200a:  runs 2-links on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
-	./2-links $(interactive) 10 360 0 20 20 0 \
-		2 10 input1.txt \
+	./2-links $(interactive) \
+	    	10 490 0 270 \
+		495 180 270 0 \
+		5 40 60 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
+		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) "Eg 200: 200 randomly generated triangles" \
 		$(smarterStrategy) \
 		$(threshold) \
 		&
@@ -637,15 +641,17 @@ eg200a 200a: ./2-links
 # eg200b: there is no path because eps=10
 #
 eg200b: ./2-links
-	@echo "Target eg200b:  runs 2-links on randomly generated obstacles"
+	@echo "Target eg200a:  runs 2-links on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
-	./2-links $(interactive) 150 260 0 20 20 0 \
-		10 5 input1.txt \
+	./2-links $(interactive) \
+	    	10 490 0 270 \
+		495 180 270 0 \
+		5 40 60 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
+		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) "Eg 200: 200 randomly generated triangles" \
 		$(smarterStrategy) \
 		$(threshold) \
 		&
@@ -655,12 +661,15 @@ eg200b: ./2-links
 eg300: ./2-links
 	@echo "Target eg300:  runs 2-links amidst 300 randomly generated 2-links"
 	@echo "--  This may take a noticeable amount bit of time!!! "
-	./2-links $(interactive) 10 400 0 350 20 0\
-		3 3 input300.txt \
+	@echo "    depending on the search strategy"
+	./2-links $(interactive) \
+	    	10 400 90 270 \
+		330 40 270 0 \
+		4 40 30 input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
+		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) "Eg 300: 300 randomly generated triangles" \
 		$(smarterStrategy) \
 		$(threshold) \
 		&
