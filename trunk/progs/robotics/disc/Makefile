@@ -306,6 +306,16 @@ eg2a: disc
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
+eg2b: disc
+	@echo "Target eg2a: runs disc on input2f.txt which splits the concave polygon"
+	@echo "   into two convex ones."
+	./disc $(interactive) 10 350  500 20 \
+		10 20 input2f.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		&
+
 # This environment has 100 randomly generated triangles (this has a path)
 eg3 eg100: disc
 	@echo "Target eg3:  100 randomly generated triangles (path exists)"
