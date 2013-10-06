@@ -169,7 +169,10 @@ help:
 	@echo "     where X is replaced by 1, 2, 3, 4, 5, 6, 100, 150, 200, 300, etc."
 	@echo "     Some demos have variants (such as egXa, egXb or egXc)"
 	@echo "     or alternative names (such as bug, bug2, tunnal, etc): "
-	@echo "        ega, egb,"
+	@echo "        eg [some selected choice]"
+	@echo "        egx [all the Makefile defaults, which you can override]"
+	@echo "        ega [compiled defaults, no arguments taken]"
+	@echo "        egb [simple example from input2.txt]"
 	@echo "        eg1, eg1a, eg1b, [environment with various box barriers]"
 	@echo "        eg2, eg2a, eg2b, [simple environment without bounding box]"
 	@echo "        eg3  [simple environment with door]"
@@ -223,35 +226,20 @@ egx:
 		&
 
 # run with default compiled options:
-#	The input file is input2.txt.
-#	There are 3 combinatorially different paths.
-#	Randomized strategy will find all three of them (keep hitting "run").
-#
 ega:	
 	@echo "Target 'ega':  runs 2-links with default compiled options"
 	./2-links &
 
-# run with default Makefile options:
-#
-egb:
-	@echo "Target 'egb':  runs 2-links with default Makefile options for file input.txt"
-	./2-links $(interactive) 60 350 -30 300 60 60 \
-		5 40 input.txt \
-		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
-		$(smarterStrategy) \
-		$(threshold) \
-		&
-
-# run with the file input2.txt
-egc: $(TARGETS)
+# run with the file input2f.txt
+# 	NOTE: input2f.txt is the variant of input2.txt in which we
+# 		split the concave polygon into two convex one!!!
+egb: $(TARGETS)
 	./2-links $(interactive) \
-	    $(startX) $(startY)  $(startTheta1) $(startTheta2) \
-	    $(goalX) $(goalY) $(goalTheta1) $(goalTheta2) \
-	    $(epsilon)  $(len1) $(len2) input2.txt  $(boxWidth) $(boxHt) \
-	    $(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
+	    60 350 330 140 \
+	    300 60 90 30 \
+	    5 45 65 input2f.txt \
+	    $(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+	    0 222 $(inputDir) \
 	    $(xtrans) $(ytrans) $(scale) \
 	    $(verbose) $(title) \
 	    $(smarterStrategy) \
@@ -262,8 +250,10 @@ egc: $(TARGETS)
 nopath eg0:	./2-links
 	@echo "Target 'eg0':  runs 2-links with default options for file input0.txt"
 	@echo "--  this example has no path..."
-	./2-links $(interactive) 400 400 -60 200 200 90\
-		20 20 input0.txt \
+	./2-links $(interactive) \
+	    	60 350 330 140 \
+	    	200 160 90 0 \
+	    	5 45 65 input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -283,7 +273,6 @@ eg1: ./2-links
 		$(smarterStrategy) \
 		4 \
 		&
-
 
 eg2: ./2-links
 	@echo "Target eg2: zigzagrotation" 
