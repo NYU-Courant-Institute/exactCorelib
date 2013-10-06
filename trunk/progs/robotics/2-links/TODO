@@ -1,17 +1,15 @@
 TODO:
 
-(1) More efficient
+(1) The green boxes should be called "free" not "mixed"
+	Please change the output function
 
-(2) Allow command line spec of the strategy (e.g. Astar is
-	very fast for some difficult examples, and we do not want random!)
+(2) Use **dashed** line to connect start/goal configuration
 
+(3) I am confused: why are some boxes in the middle of
+	the regions colored grey, but others green???
 
-(3) Something is not right with prm_bug.
+(4) More strategies
 
-	Our angular subdivision is terminated by an arbitrary 0.014 constant.
-	Theory says it should be epsilon/r0.
-	But this does not work either.
+(5) Develop a true Voronoi strategy.
 
-	Cong thinks splitAngle() is to blame...
-	
 
