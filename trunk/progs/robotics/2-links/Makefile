@@ -9,7 +9,7 @@
 # 	       > make test	-- compiles and runs "2-link" non-interactively
 # 	       			   (this is Core Library's automatic self-test)
 # 	       > make [target]	-- where [target] has the form egX
-# 	                     	   and X=1,2,3,4,5,6,100,150,200,300, etc.
+# 	                     	   and X=1,2,3,4,5,6,100,150,200, etc.
 #
 # (B)	But you may try the various interactive demos of this program:
 #
@@ -57,7 +57,6 @@
 #		eg100, eg100a
 #		eg150
 #		eg200, eg200a, eg200b
-#		eg300
 #
 # 	These targets uses different input files, all taken from
 # 	the subdirectory "inputs".   
@@ -81,18 +80,18 @@ interactive = 0		# 0=interactive, >0 is non-interactive
 
 startX = 60		# start configuration
 startY = 350
-startTheta1 = -30	# in degrees
-startTheta2 = 120	# in degrees
+startTheta1 = 330	# in degrees
+startTheta2 = 140	# in degrees
 goalX = 300		# goal configuration
 goalY = 60
 goalTheta1 = 90		# in degrees
 goalTheta2 = 30		# in degrees
 
-epsilon = 10		# resolution parameter
+epsilon = 2		# resolution parameter
 epsilon = 5		# resolution parameter
 
-len1 = 10		# link1 length
-len2 = 15		# link2 length
+len1 = 65		# link1 length
+len2 = 85		# link2 length
 
 inputDir = inputs	# where to find input files
 fileName = input2d.txt	# input environment file
@@ -100,6 +99,7 @@ fileName = input2.txt	# input environment file
 fileName = input0.txt	# input environment file
 fileName = bugtrap.txt	# input environment file
 fileName = input.txt	# input environment file
+fileName = input2f.txt	# input environment file
 
 boxWidth = 512		# initial configuration box size
 boxHt = 512
@@ -109,7 +109,7 @@ windowPosY = 200
 windowPosX = 320	# initial Window position
 windowPosY = 20	
 
-Qtype = 2		# type of priority queue
+Qtype = 0		# type of priority queue
 			#  (0=random, 1=BFS, 2=Greedy Best First, 3=Dist+size, 4=Vor?) 
 seed = 11		# seed for random
 step = 0		# number of steps to run
@@ -279,7 +279,7 @@ eg2: ./2-links
 	./2-links $(interactive) 216 297 115 155 210 220 260 200\
 		4 85 80 zigzagrotation.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		2 $(seed)  $(inputDir) \
 		0 0 1 \
 		$(verbose) "Eg2: 8-ways with 2 more obstacles" \
 		$(smarterStrategy) \
