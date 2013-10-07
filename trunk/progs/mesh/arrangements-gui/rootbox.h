@@ -42,16 +42,13 @@
 //inline const bool Overlap(const IntervalT<DT> &s, const IntervalT<DT> &t);
 
 /* rootbox class  */
-
-// this is a box that contains root
 template <typename DT, typename NT>
 class RootBoxT {
 public:
   // Constructor
   RootBoxT(const BoxT<DT> *B) : 
     strongIsolFlag_(false),
-    failRefineFlag_(false)
-  {
+    failRefineFlag_(false) {
       unsigned int gen_id = B->generation_id;
       const IntervalT<DT> &xRange = B->x_range;
       const IntervalT<DT> &yRange = B->y_range;
@@ -81,9 +78,8 @@ public:
   typedef IntervalT<DT> Interval;
 
   /***************** methods ***********************/  
-  void Cover(const BoxT<DT> *box,
-             vector<const BoxT<DT>*> *queue)
-  {
+  void Cover(const Box *box, 
+             vector<const Box*> *queue) {
     const DT &x_start     = box->x_range.getL();
     const DT &x_end       = box->x_range.getR();
     const DT &x_mid       = box->x_range.mid();
@@ -99,31 +95,30 @@ public:
     if(largest_gen < gen_id)
       largest_gen = gen_id;
 
-    queue->push_back(new BoxT<DT>(gen_id, // q_1
+    queue->push_back(new Box(gen_id, // q_1
       Interval(x_start, x_mid), Interval(y_start, y_mid)));
-    queue->push_back(new BoxT<DT>(gen_id, // q_2
+    queue->push_back(new Box(gen_id, // q_2
       Interval(x_mid, x_end), Interval(y_start, y_mid)));
-    queue->push_back(new BoxT<DT>(gen_id, // q_3
+    queue->push_back(new Box(gen_id, // q_3
       Interval(x_start, x_mid), Interval(y_mid, y_end)));
-    queue->push_back(new BoxT<DT>(gen_id, // q_4
+    queue->push_back(new Box(gen_id, // q_4
       Interval(x_mid, x_end), Interval(y_mid, y_end)));
-    queue->push_back(new BoxT<DT>(gen_id, // q_1/2
+    queue->push_back(new Box(gen_id, // q_1/2
       Interval(x_mid, x_end), Interval(y_mid-y_halfwidth, y_mid+y_halfwidth)));
-    queue->push_back(new BoxT<DT>(gen_id, // q_3/2
+    queue->push_back(new Box(gen_id, // q_3/2
       Interval(x_mid-x_halfwidth, x_mid+x_halfwidth), Interval(y_start, y_mid)));
-    queue->push_back(new BoxT<DT>(gen_id, // q_5/2
+    queue->push_back(new Box(gen_id, // q_5/2
       Interval(x_start, x_mid), Interval(y_mid-y_halfwidth, y_mid+y_halfwidth)));
-    queue->push_back(new BoxT<DT>(gen_id, // q_7/2
+    queue->push_back(new Box(gen_id, // q_7/2
       Interval(x_mid-x_halfwidth, x_mid+x_halfwidth), Interval(y_mid, y_end)));
-    queue->push_back(new BoxT<DT>(gen_id, // q_0
+    queue->push_back(new Box(gen_id, // q_0
       Interval(x_mid-x_halfwidth, x_mid+x_halfwidth), 
       Interval(y_mid-y_halfwidth, y_mid+y_halfwidth)));
   }
   // release all pointers that stay in the queue
-  void Clear_queue(vector<const BoxT<DT> *> *queue)
-  {
+  void Clear_queue(vector<const Box *> *queue) {
     while(!queue->empty()) {
-      const BoxT<DT> *b = queue->back();
+      const Box *b = queue->back();
       queue->pop_back();
       delete b;
     }
@@ -132,15 +127,14 @@ public:
   // Cover_Exclude() calls Cover() to split the box into 9 children
   // and use C0 to test each of them, put children into queue if it fails C0 test
   void Cover_Exclude(const MKPredicates<DT,NT> &pred,
-      const BoxT<DT> *box, vector<const BoxT<DT> *> *queue)
-  {
+      const Box *box, vector<const Box *> *queue) {
     // temp queue for processing
-    vector<const BoxT<DT> *> temp;
+    vector<const Box *> temp;
     // cover box into 9 children
     Cover(box, &temp);
     // Do C0 test for each box
     while(!temp.empty()) {
-      const BoxT<DT> *b = temp.back();
+      const Box *b = temp.back();
       temp.pop_back();
       if(!pred.Exclude(b)) { // C0 fails, keep the box in the queue
         queue->push_back(b);
@@ -153,7 +147,7 @@ public:
   }
 
   const bool Refinement(const MKPredicates<DT,NT> &pred) {
-    vector<const BoxT<DT> *> Qtmp;
+    vector<const Box *> Qtmp;
     Cover_Exclude(pred, innerBox_, &Qtmp);
     // loop started
     while(true) {
@@ -162,7 +156,7 @@ public:
 cout << "all passed C0 test, fail refine" << endl;
         return false;
       }
-      const BoxT<DT> *box = Qtmp.back();
+      const Box *box = Qtmp.back();
       Qtmp.pop_back();
       // too small
       if(pred.Min(box)) {
@@ -191,7 +185,7 @@ cout << "reached the minimum size, fail refine" << endl;
   // This routine will make an inner box a strong rootbox,
   // return false means the inner box cannot be refined anymore
   const bool StrongIsol(const MKPredicates<DT,NT> &pred) {
-      BoxT<DT> *triple_box = innerBox_->Dilate(3);
+    Box *triple_box = innerBox_->Dilate(3);
     while(!pred.JTest(triple_box)) {
       if(!Refinement(pred)) {
         failRefineFlag_ = true;
@@ -213,7 +207,7 @@ cout << "reached the minimum size, fail refine" << endl;
   // check if two boxes are disjoint
   // return true if either innerBox.x_range isn't overlap with other.x_range
   // or innerBox.y_range isn't overlap with other.y_range
-  const bool Disjoint(const BoxT<DT> *other) {
+  const bool Disjoint(const Box *other) {
     const Interval &inner_x = innerBox_->x_range;
     const Interval &inner_y = innerBox_->y_range;
     const Interval &other_x = other->x_range;
@@ -226,12 +220,10 @@ cout << "reached the minimum size, fail refine" << endl;
 		return Disjoint(other->innerBox_);
 	}
 
-
-	
 	
   /**************  members  ***********************/
-  const BoxT<DT> *outerBox_;
-  const BoxT<DT> *innerBox_;
+  const Box *outerBox_;
+  const Box *innerBox_;
   bool      strongIsolFlag_;
   bool      failRefineFlag_;
 };

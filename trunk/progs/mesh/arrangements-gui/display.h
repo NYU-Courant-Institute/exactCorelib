@@ -188,10 +188,10 @@ void ConvertList(const vector<const BoxT<NT> *> *input, vector<const Box *> *out
     const BoxT<NT> *box = (*input)[i];
     output->push_back(new Box(
         0,
-        IntervalT<DoubleWrapper>(
+        IntervalT<NT>(
             box->x_range.getL().doubleValue(),
             box->x_range.getR().doubleValue()),
-        IntervalT<DoubleWrapper>(
+        IntervalT<NT>(
             box->y_range.getL().doubleValue(),
             box->y_range.getR().doubleValue())));
     //delete box;

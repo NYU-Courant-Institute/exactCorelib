@@ -7,9 +7,9 @@
 #ifndef MK_MK_DEFS_H_
 #define MK_MK_DEFS_H_
 
-#define CORE_LEVEL 4
-
 #include <stdlib.h>
+
+#define CORE_LEVEL 4
 
 #include "CORE/CORE.h"
 #include "CORE/IntervalT.h"
@@ -17,9 +17,11 @@
 #include "CORE/BigFloat.h"
 #include "CORE/linearAlgebraT.h"
 
-typedef DoubleWrapper DT;
-typedef DoubleWrapper NT;
-//typedef BigFloat NT;
+
+//typedef DoubleWrapper DT;
+//typedef DoubleWrapper NT;
+typedef BigFloat NT;
+typedef BigFloat DT;
 
 // use DT for arithmetics
 typedef IntervalT<DT> IntervalDT;
@@ -35,5 +37,6 @@ typedef Vector<DT,2> Vector2d;
 #include "box.h"
 typedef BoxT<DT> Box;
 typedef BiPoly<DT> poly;
+
 
 #endif

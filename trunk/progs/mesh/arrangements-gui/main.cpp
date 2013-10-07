@@ -78,6 +78,11 @@
 
 using namespace std;
 
+//typedef DoubleWrapper DT;
+//typedef DoubleWrapper NT;
+
+
+
 void startGlutLoop(int argc, char **argv);
 
 // statistical variable
@@ -101,8 +106,13 @@ TCLAP::ValueArg<string> max_box_size("M", "maxsize", "maximum size of box", fals
 TCLAP::ValueArg<string> max_generation("r", "maxgen", "maximum generation", false, "15", "string");
 
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
+
+  // use DT for arithmetics
+  // typedef IntervalT<DT> IntervalDT;
+  // typedef IntervalT<NT> IntervalNT;
+  // typedef BoxT<DT> Box;
+  // typedef BiPoly<DT> poly;
 
   // queues that used for display
   std::vector< RootBoxT<DT,NT> *> output;
@@ -113,18 +123,28 @@ int main(int argc, char **argv)
 
   // default values for arguments, all arguments can be 
   // specified in Makefile
+
   string& fxy_str=display_funcs::PROG_PARAMS.fxy_str;
   string& gxy_str=display_funcs::PROG_PARAMS.gxy_str;
 
-  fxy_str = "y - (x-1)^2 - 1";	// default fxy
-  //gxy_str = "x - 1";		// default gxy
-  gxy_str = "x^2 + y^2 - 4";	// default gxy
+  fxy_str = "y - (x-1)^2 - 1";  // default fxy
+  //gxy_str = "x - 1";    // default gxy
+  gxy_str = "x^2 + y^2 - 4";  // default gxy
 
+  // This is the maximum number of ambiguous boxes to be printed
+  // unsigned int max_ambiguous_box = 20;
+
+  // DT x_min = -3, x_max = 3, y_min = -3, y_max = 3;
+  // DT min_size = 0.0001;
+  // DT max_size = 0.01;
+  // int max_gen = 15;
+  // string fxy_str = "y - (x-1)^2 - 1";	// default fxy
+  // // string gxy_str = "x - 1";		// default gxy
+  // string gxy_str = "x^2 + y^2 - 4";	// default gxy
   poly fxy;
   poly gxy;
 
-  try
-  {
+  try {
     TCLAP::CmdLine cmd("MK test", ' ', "1.0");
     cmd.add(Poly);
     cmd.add(x_minimum);
@@ -140,27 +160,26 @@ int main(int argc, char **argv)
     // parse the arguments
     cmd.parse(argc, argv);
   }
-  catch (TCLAP::ArgException &e)
+  catch (TCLAP::ArgException &e) 
   {
     cerr << "Error : " << e.error() << endl;
     cerr << "Processing arg : " << e.argId() << endl;
     return -1;
   }
   
-  std::cout << "Reading poly " << Poly.getValue()<< endl;
+	std::cout << "Reading poly " << Poly.getValue()<< endl;
 
-  if(!(f_xy.getValue()).empty() && !(g_xy.getValue()).empty() && (Poly.getValue()).empty())
-  {
+  if(!(f_xy.getValue()).empty() && !(g_xy.getValue()).empty() && (Poly.getValue()).empty()) {
 	fxy_str = f_xy.getValue();
     gxy_str = g_xy.getValue();
 	fxy = fxy.getbipoly(fxy_str);
     gxy = gxy.getbipoly(gxy_str);
   }
-  else if(!(Poly.getValue()).empty())
+  else if(!(Poly.getValue()).empty()) 
   {
     benchmark::GetBiPoly(Poly.getValue().c_str(), &fxy, &gxy);
   }
-  else
+  else 
   {
     cout << "you should either specify a file name or provide 2 bipolynomials!" << endl;
     return -1;
@@ -174,7 +193,6 @@ int main(int argc, char **argv)
   display_funcs::PROG_PARAMS.min_size = min_box_size.getValue();
   display_funcs::PROG_PARAMS.max_size = max_box_size.getValue();
   display_funcs::PROG_PARAMS.max_gen = atoi(max_generation.getValue().c_str());
-
   // initial box construction
   IntervalDT x_range(display_funcs::PROG_PARAMS.x_min, display_funcs::PROG_PARAMS.x_max);
   IntervalDT y_range(display_funcs::PROG_PARAMS.y_min, display_funcs::PROG_PARAMS.y_max);
@@ -184,7 +202,6 @@ int main(int argc, char **argv)
 
   struct timeval start;
   struct timeval end;
-
   // start time
   gettimeofday(&start, NULL);
   
@@ -194,7 +211,8 @@ int main(int argc, char **argv)
       new MKPredicates<DT,NT>(fxy, gxy, display_funcs::PROG_PARAMS.min_size, display_funcs::PROG_PARAMS.max_size, display_funcs::PROG_PARAMS.max_gen);
 
   cout<<"Run!"<<endl;
-  Algorithm::Run<DT,NT>(*pred, box, &output, &ambiguous, &exclude);
+  Algorithm::Run<DT,NT>(*pred, box, 
+      &output, &ambiguous, &exclude);
 
   // end time
   gettimeofday(&end, NULL);
@@ -213,9 +231,7 @@ int main(int argc, char **argv)
   unsigned int num_includes = output.size();      // statistic collections
 
   cout << endl << "Output regions: " << endl;
-  
-  for(unsigned int i = 0; i < output.size(); i++) 
-  {
+  for(unsigned int i = 0; i < output.size(); i++) {
     RootBoxT<DT,NT> *b = output[i];
     cout << "X: " << b->innerBox_->x_range << " , Y: " << b->innerBox_->y_range << endl;
     // we make full use of this loop, while going though each element in output,
@@ -223,17 +239,24 @@ int main(int argc, char **argv)
     outer_output.push_back(b->outerBox_);
     inner_output.push_back(b->innerBox_);
   }
-  
+
+  // DISPLAY OF AMBIGUOUS BOXES:
   unsigned int num_ambiguous = ambiguous.size();   // statistic collections
   cout << "Ambiguous regions: " << endl;
-  
-  for(unsigned int i = 0; i < ambiguous.size(); i++) 
-  {
-    if(i > display_funcs::PROG_PARAMS.max_ambiguous_box)
-	    break;
-    const Box *b = ambiguous[i];
-    cout << "X: " << b->x_range << " , Y: " << b->y_range << endl;
+  int ratio=1;
+  if (ambiguous.size() > display_funcs::PROG_PARAMS.max_ambiguous_box) {
+      ratio = 1+(num_ambiguous/display_funcs::PROG_PARAMS.max_ambiguous_box);
+      cout << " Too many ambiguous boxes -- show only a sampled subset of "
+		<< display_funcs::PROG_PARAMS.max_ambiguous_box << " boxes" << endl;
+      cout << " print every " << ratio << "-th boxes" << endl;
   }
+  for(unsigned int i = 0; i < num_ambiguous; i++) {
+    if((i % ratio) == 0 ) {
+       const Box *b = ambiguous[i];
+       cout << "X: " << b->x_range << " , Y: " << b->y_range << endl;
+    }
+  }
+  
 
   unsigned int num_excludes = exclude.size();  // statistic collections
 
@@ -242,19 +265,19 @@ int main(int argc, char **argv)
       (end.tv_sec - start.tv_sec)*1000000 + 
       (end.tv_usec - start.tv_usec) << " micro seconds" << endl;
 
-  cout << endl << "statistic results: " << endl;
-  cout << "output regions: " << num_includes << endl;
-  cout << "ambiguous regions: " << num_ambiguous << endl; 
-  cout << "exclusion regions: " << num_excludes << endl; 
-  cout << "maximum subdivision depth: " << largest_gen << endl;
+  cout << endl << "Statistics: " << endl;
+  cout << " -- output regions: " << num_includes << endl;
+  cout << " -- ambiguous regions: " << num_ambiguous << endl; 
+  cout << " -- exclusion regions: " << num_excludes << endl; 
+  cout << " -- maximum subdivision depth: " << largest_gen << endl;
   cout << endl;
 
   // display preparation
   Box *b_display = new Box(0, x_range, y_range);
   display_funcs::SetDisplayParams(b_display, &exclude, &outer_output,
                                   &inner_output, &ambiguous);
-
-  //create cxy line segments for F & G
+  
+ //create cxy line segments for F & G
   {
       //Box * cxy_f_box=new Box(*display_funcs::PROG_PARAMS.b0);
       //Box * cxy_g_box=new Box(*display_funcs::PROG_PARAMS.b0);
@@ -271,18 +294,17 @@ int main(int argc, char **argv)
       cxy::cxy(fxy_str,&cxy_f_box,display_funcs::PROG_PARAMS.func_F_cxy_line_segs);
       cxy::cxy(gxy_str,&cxy_g_box,display_funcs::PROG_PARAMS.func_G_cxy_line_segs);
   }
-
+  
   // draw plot
   startGlutLoop(argc, argv);
   delete b_display;
   delete pred;
 
+
   return 0;
 }
 
-
-void startGlutLoop(int argc, char **argv) 
-{
+void startGlutLoop(int argc, char **argv) {
   cout << "-------------Graphic----------------"<<endl;
   cout << "--------Press ESC to exit-----------"<<endl;
 

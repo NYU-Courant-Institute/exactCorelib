@@ -69,85 +69,75 @@ namespace Algorithm {
         Q_exclude->push_back(initial);
     }
     
-
     // main loop
     while(!Q_tmp.empty()) {
-
+      
       cout<<"Q_tmp size="<<Q_tmp.size()<<endl;
 
       const Box *current = Q_tmp.back();
-      
-//      cout<<"!!!! Current="<<*current<<"("<<current<<")"<<endl;
-      
-      Q_tmp.pop_back();
 
+      Q_tmp.pop_back();
       // (current box)*2 passes the Jacobian test
       {
-          const Box *double_current = current->Dilate(2);
-
-//          cout<<"!!!! Current after dialation="<<*current<<"("<<current<<")"<<endl;
-
-          if(pred.JTest(double_current))
-          {
-            Q_confirm.push_back(current);  // wait for further confirmation
-          }
-          else {
-            pred.Split_Exclude(current, &Q_tmp, Q_exclude); // split and test C0
-          }
-
-          delete double_current;
+        const Box *double_current = current->Dilate(2);
+        if(pred.JTest(double_current)) {
+  	  //if(pred.JTest(current)) {
+          Q_confirm.push_back(current);  // wait for further confirmation
+        }
+        else {
+          pred.Split_Exclude(current, &Q_tmp, Q_exclude, Q_ambiguous); // split and test C0
+        }
+        delete double_current;
       }
+      
 
       // confirmation loop
       cout<<"Entering confirmation loop"<<endl;
-      while(!Q_confirm.empty())
+      while(!Q_confirm.empty()) 
       {
         const Box *box = Q_confirm.back();
         Q_confirm.pop_back();
-
-//        cout<<"!!!! confirmation loop box="<<*box<<"("<<box<<")"<<endl;
-
-        //box too small
+      
+		 //box too small
 //		if(pred.Min(box)) {
 //          Q_ambiguous->push_back(box);
 //          continue;
 //        }
-        
         // also do MK test on (box)*2
         const Box *double_box = box->Dilate(2);
-		mk_ret = pred.MKTest(double_box);
-		if(mk_ret == 1) // MK-test succeeded
-		{
-
+//		std::cout<<"Before MK Test " << std::endl;
+		    mk_ret = pred.MKTest(double_box);
+		    //mk_ret = pred.MKTest(box);
+		    if(mk_ret == 1) // MK-test succeeded
+        {
+  //			std::cout << "MK successful " << (*double_box) << std::endl;
           // already found a root box, put it in Q_final queue for refinement
           // rootbox creation based on double_box's dimension
-		  Q_final.push_back(new RootBox(box, double_box)); // Why do we push dilated box?
+		      Q_final.push_back(new RootBox(box, double_box)); // Why do we push dilated box?
           Q_exclude->insert(Q_exclude->end(), Q_confirm.begin(), Q_confirm.end());
           Q_confirm.clear();  // include area already found in region, clean Q_confirm
-
           // both box and double_box can be deleted because the constructor of RootBox 
           // will make new outer and inner box based on double_box's dimension
-
           //delete box;
           delete double_box; 
           break;
         }
-		else if (mk_ret == 0) // MK-test detected an exclusion box
-		{
-			Q_exclude->push_back(box);
-		}
-        else {// MK-test failed
-          pred.Split_Exclude(box, &Q_confirm, Q_exclude);
+        else if (mk_ret == 0) // MK-test detected an exclusion box
+        {
+//		std::cout << "MK excluded " << (*double_box) << std::endl;
+			     Q_exclude->push_back(box);
+		    }
+        else // MK-test failed
+        {
+//		std::cout << "MK failed " << (*double_box) << std::endl;
+          pred.Split_Exclude(box, &Q_confirm, Q_exclude, Q_ambiguous);
           delete double_box;
         }
       }//while (Q_confirm)
 
       cout<<"out of while (Q_confirm) loop"<<endl;
 
-//      cout<<"!!!! Current="<<*current<<"("<<current<<")"<<endl;
-
     }//while (Q_tmp)
-
 
     cout<<"out of while (Q_tmp) loop"<<endl;
 
@@ -156,46 +146,48 @@ namespace Algorithm {
     // and place them into Q_output for display, and we are also cleaning
     // boxes in Q_final. In the end, Q_final should be empty
 
-	// Vikram: Why do we need to do strong root isolation? Since the 
-	// sign of the jacobian is the same on overlaping boxes, we 
-	// only have to output one box from a set of overlapping 
-	// boxes corresponding to a root.
+  	// Vikram: Why do we need to do strong root isolation? Since the 
+  	// sign of the jacobian is the same on overlaping boxes, we 
+  	// only have to output one box from a set of overlapping 
+  	// boxes corresponding to a root.
     {
-        typename std::vector <RootBox *>::iterator new_end;
-        vector <RootBox *> Q_temp;
-        RootBox *current;
-        /*
-        std::cout <<"Printing Final Queue"<<std::endl;
-        for (unsigned int i=0; i<Q_final.size(); i++) {
-            std::cout<< (*Q_final[i]) << std::endl;
-        }
-        std::cout <<"Clearing Final Queue"<<std::endl;
-        */
-        while(!Q_final.empty())
+    	typename std::vector <RootBox *>::iterator new_end;
+    	vector <RootBox *> Q_temp;
+    	RootBox *current;
+    	/*	
+    	std::cout <<"Printing Final Queue"<<std::endl;
+    	for (unsigned int i=0; i<Q_final.size(); i++) {
+    		std::cout<< (*Q_final[i]) << std::endl;
+    	}
+    	std::cout <<"Clearing Final Queue"<<std::endl;
+    	*/
+    	while(!Q_final.empty()) 
+      {
+    		current = Q_final.back();
+    		Q_final.pop_back();
+    	  //std::cout << " current box = "<< (*current) << std::endl;
+    		for (unsigned int i=0; i<Q_final.size(); i++) 
         {
-            current = Q_final.back();
-            Q_final.pop_back();
-        //std::cout << " current box = "<< (*current) << std::endl;
-            for (unsigned int i=0; i<Q_final.size(); i++) {
-                if (current->Disjoint(Q_final[i])) {
-                    Q_temp.push_back(Q_final[i]);
-                }
-            }
+    			if (current->Disjoint(Q_final[i])) 
+          {
+    				Q_temp.push_back(Q_final[i]);
+    			}
+    		}
 
-        //	for (unsigned int i=0; i<Q_temp.size(); i++) {
-        //		std::cout<< (*Q_temp[i]) << std::endl;
-        //	}
-
-                // Search if any other box in Q_final overlaps with current.
-                // Discard any such box.
-                // It will help to start with smaller boxes first, but now
-                // we do a starightforward quadratic time algorithm
-            Q_output->push_back(current);
-            Q_final=Q_temp;
-            Q_temp.clear();
-        } // (Q_final)
+    	//	for (unsigned int i=0; i<Q_temp.size(); i++) {
+    	//		std::cout<< (*Q_temp[i]) << std::endl;
+    	//	}
+    		
+    			// Search if any other box in Q_final overlaps with current.
+    			// Discard any such box.
+    			// It will help to start with smaller boxes first, but now
+    			// we do a starightforward quadratic time algorithm
+    		Q_output->push_back(current);
+    		Q_final=Q_temp;
+    		Q_temp.clear();				
+    	} // while (Q_final)
     }
-
+  
   }//Run
 }  // end of namespace algorithm
 

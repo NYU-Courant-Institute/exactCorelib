@@ -16,7 +16,7 @@ VAR=Opt
 CORE_PATH=../../..
 include ../Make.options2
 #include ../Make.options
-CXXFLAGS += -MMD -I./cxy
+CXXFLAGS += -MMD -I./cxy -fpermissive
 
 #=================================================
 # User definition (put parameters manually here)
