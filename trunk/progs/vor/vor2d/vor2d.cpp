@@ -110,10 +110,10 @@ QuadTree* QT;
 	int showBoxBoundary = 1;  //draw box boundary
 	int showVor=1;            //draw Vor complex
 
-	bool c1=false; //c1 predicate (true is new version, false is old version)
+	bool c1=true; //c1 predicate (true is new version, false is old version)
 	bool c2=false; //c2 predicate
 
-	int vor_build_option=0; //0, build vor as described in the paper
+	int vor_build_option=1; //0, build vor as described in the paper
 	                        //1, build vor using the closest features of box corners
 
 	string title="Subdivision Voronoi 2D";	// display title
