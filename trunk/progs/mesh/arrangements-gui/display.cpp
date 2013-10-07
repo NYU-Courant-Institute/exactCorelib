@@ -331,7 +331,22 @@ void ClearBackground()
 // Call back when the window canvas is reshaped.
 void ReshapeHandler(const GLsizei w,const GLsizei h)
 {
-  glViewport(0,0,w,h);
+  GLsizei d=min(w,h);
+
+
+  const machine_double x_width=(PROG_PARAMS.x_max-PROG_PARAMS.x_min).doubleValue();
+  const machine_double y_width=(PROG_PARAMS.y_max-PROG_PARAMS.y_min).doubleValue();
+  if(x_width>y_width){
+    GLsizei dy=d*(y_width/x_width);
+    glViewport(0,0,d,dy);  
+  }
+  else
+  {
+    GLsizei dx=d*(x_width/y_width);
+    glViewport(0,0,dx,d);  
+  }
+
+  
   ClearBackground();
 }
 
