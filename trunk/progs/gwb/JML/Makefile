@@ -484,8 +484,10 @@ help:
 	@echo "Welcome to our Geometric Workbench Demo!"
 	@echo "USAGE: using our Makefile, type the following"
 	@echo "  > make help               -- this message"
-	@echo "  > make eg                 -- to compile and see an example : trefoil"
-	@echo " NAVIGATION:  Zoom = right mouse button, Translate = middle mouse button."
+	@echo "  > make eg                 -- compile and see an example : trefoil"
+	@echo "    NAVIGATION: Rotate = left mouse (1-finger click-hold on Mac), "
+	@echo "                Zoom = right mouse, (2-fingers click-hold on Mac)"
+	@echo "                Translate = middle mouse."
 	@echo "  > make params             -- to see default parameters of eg"
 	@echo "  > make egN                -- where N = 0, 1, 2, ..., 14, 15, 16"
 	@echo "                               to see various examples "
@@ -555,6 +557,8 @@ par params:
 vi:
 	gvim gwb.cpp
 
+m:
+	gvim Makefile
 #=================================================
 # Clean object files
 #=================================================
