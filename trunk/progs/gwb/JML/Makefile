@@ -475,3 +475,101 @@ Dependencies:
 	touch Dependencies
 
 -include Dependencies
+
+
+#=================================================
+# Help
+#=================================================
+help:
+	@echo "Welcome to our Geometric Workbench Demo!"
+	@echo "USAGE: using our Makefile, type the following"
+	@echo "  > make help               -- this message"
+	@echo "  > make eg                 -- to compile and see an example : trefoil"
+	@echo " NAVIGATION:  Zoom = right mouse button, Translate = middle mouse button."
+	@echo "  > make params             -- to see default parameters of eg"
+	@echo "  > make egN                -- where N = 0, 1, 2, ..., 14, 15, 16"
+	@echo "                               to see various examples "
+	@echo " LIST of TARGETS:"
+	@echo "		eg0 (facehemi)  -- a hemisphere"
+	@echo "		eg1 (sphere)	"
+	@echo "		eg2 (torus,donut)"
+	@echo "		eg3 (cylinder)"
+	@echo "		eg4 (disk)"
+	@echo "		eg5 (bullet)"
+	@echo "		eg6 (cone)"
+	@echo "		eg7 (chain)	-- a model with several solids"
+	@echo "		eg8 (table)"
+	@echo "		eg9 (trefoil)	-- an interesting exmaple"
+	@echo "		eg10 (chair)	-- a table with a back"
+	@echo "		eg11 (cube) 	-- a cube, which is also a trivial calendar"
+	@echo "		eg12 (fileicosa)-- icosahedron read from a file "
+	@echo "		eg13 (filedodeca)- dodecahedron reaf from a file"
+	@echo "		eg14 (filetetra)-- tetrahedron read from a file"	
+	@echo "		eg15 (fileocta) -- octahedron read from a file"
+	@echo "		eg16 (filehole) -- a cube wiht a hole read from a file"
+
+#=================================================
+# Misc
+#=================================================
+
+par params:
+	@echo "================ Parameters =================="
+	@echo "    interactive = " ${interactive}
+	@echo "    inputDir = " ${inputDir}
+	@echo "    fileName = " ${fileName}
+	@echo "    windowWidth = " ${windowWidth}
+	@echo "    windowHeight = " ${windowHeight}
+	@echo "    windowPosX = " ${windowPosX}
+	@echo "    windowPosY = " ${windowPosY}	
+	@echo "    mode = " ${mode}
+	@echo "    model = " ${model}
+	@echo "    rad = " ${rad}
+	@echo "    radius = " ${radius}
+	@echo "    ht = " ${ht}
+	@echo "    height = " ${height}
+	@echo "    hor = " ${hor}
+	@echo "    nsegments = " ${nsegments}
+	@echo "    ver = " ${ver}
+	@echo "    nsections = " ${nsections}	
+	@echo "    height2 = " ${height2} 
+	@echo "    rad2 = " ${rad2}
+	@echo "    rotUnitX = " ${rotUnitX}
+	@echo "    rotUnitY = " ${rotUnitY}
+	@echo "    rotUnitZ = " ${rotUnitZ}
+	@echo "    nsegments2 = " ${nsegments2}
+	@echo "    nsections2 = " ${nsections2}
+	@echo "    nparts = " ${nparts}
+	@echo "    nparts2 = " ${nparts2}
+	@echo "    position2 = " ${position2}
+	@echo "    position3 = " ${position3}
+	@echo "    thickness3 = " ${thickness3}
+	@echo "    height3 = " ${height3}
+	@echo "    lightRate = " ${lightRate}
+	@echo "    initRotDeg = " ${initRotDeg}
+	@echo "    initRotAxisX = " ${initRotAxisX}
+	@echo "    initRotAxisY = " ${initRotAxisY}
+	@echo "    initRotAxisZ = " ${initRotAxisZ}
+
+	@echo "=============================================="
+
+vi:
+	gvim gwb.cpp
+
+#=================================================
+# Clean object files
+#=================================================
+oldclean:
+	-@test -z "*.o" || rm -f *.o Dependencies $(TARGETS)
+
+#=================================================
+# Remove executable files
+#=================================================
+EXEPROGS=$(TARGETS:=$(EXETYPE))
+
+vclean veryclean: clean
+	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS) Dependencies
+
+#=================================================
+# END Makefile 
+#=================================================
+

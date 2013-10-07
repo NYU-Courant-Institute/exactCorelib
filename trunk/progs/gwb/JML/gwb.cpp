@@ -1,7 +1,10 @@
 /* file: gwb.cpp
  *
- * Author: Kai Cao (Supervised by Professor Yap, July 2012)
+ * This is our implementation of the "Geometric Workbench" (GWB)
+ * 	from Marrti Mantyla.
  *
+ * Author:	Kai Cao (Supervised by Professor Yap, July 2012)
+ * 		Oct 2013: improvements by Jyh-Ming Lien 
  * Since Core 2.1.
  * 
  ***************************************************/
@@ -158,13 +161,10 @@ int main(int argc,char **argv)
 	            command=first;
 	            while(iss)
 	            {
-			
-				 	//cout<		 /*Read the variable*/
 					 string var;
 					 /*Push the number*/
 		             double num;
 		             iss>>var;
-			         //cout<<"haha "<<var<<endl;
 					 /*Parse the variable*/
 					 int varPos=var.find('$');
 					 if (varPos<var.size()&&varPos>=0)
@@ -181,7 +181,6 @@ int main(int argc,char **argv)
 					 else 
 						num=atof(var.c_str());
 				 
-				 //cout<<var<<"="<<num<<endl;
 	                 ids->push_back(num);
 	            }//while(iss)
 
