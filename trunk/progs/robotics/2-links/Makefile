@@ -275,18 +275,18 @@ eg1: ./2-links
 		&
 
 eg2: ./2-links
-	@echo "Target eg2: zigzagrotation" 
+	@echo "Target eg2: 8-way junction" 
 	./2-links $(interactive) 216 297 115 155 210 220 260 200\
 		4 85 80 zigzagrotation.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		0 0 1 \
-		$(verbose) "Eg2: 8-ways with 2 more obstacles" \
+		$(verbose) "Eg2: 8-ways with 3 more obstacles" \
 		$(smarterStrategy) \
 		$(threshold) \
 		&
 
-# eg3: input3.txt is a hallway with 8 convergent passages
+# eg3: input3.txt is a junction with 8 convergent passages
 eg3 8way: ./2-links
 	@echo "Target eg3: Hall way with 8 convergent hallways"
 	./2-links $(interactive) 262 250 180 270 271 256 90 0\
@@ -329,8 +329,8 @@ eg3b 8wayb: ./2-links
 eg4 egbug bug: ./2-links
 	@echo "Target 'bug':  runs 2-links for bugtrap input"
 	@echo "--  this example shows there is NO PATH, but barely!"
-	@echo "--  If you decrease the longer link from 79 to 78, there is a path"
-	@echo "--  Or, you decrease the epsilon from 5 to 4, there is a path"
+	@echo "--  If you decrease the epsilon from 5 to 4, there is a path."
+	@echo "--  If you decrease the longer link from 79 to 78, there is a path."
 	./2-links $(interactive) 200 320 30 60 30 30 90 120 \
 		5 45 79 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
