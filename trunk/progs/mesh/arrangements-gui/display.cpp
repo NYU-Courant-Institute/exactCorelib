@@ -17,6 +17,9 @@
 
 #include "mk-defs.h"
 #include "Point.h"
+#include "mk-inl.h"
+
+extern MKPredicates<DT,NT> * pred;
 
 namespace display_funcs
 {
@@ -53,6 +56,7 @@ GLUI_StaticText * vorInfo=NULL;
 // GLUI controls ========================================
 //
 program_params_t PROG_PARAMS;
+
 
 //
 void CreateGUI()
@@ -681,7 +685,7 @@ void reset_move()
 {
     //PROG_PARAMS.uscale_Render=1;
     //PROG_PARAMS.deltaX_Render=PROG_PARAMS.deltaY_Render=0;
-    PROG_PARAMS.scale = 1.1;
+    PROG_PARAMS.scale = 1; //1.1;
     PROG_PARAMS.gui_dXY[0] = 0;
     PROG_PARAMS.gui_dXY[1] = 0;
     glutPostRedisplay();
@@ -702,9 +706,16 @@ void SpecialKey(int key, int x, int y)
         case GLUT_KEY_DOWN:
             if(PROG_PARAMS.g_selected_PM.empty()==false){//not empty
                 Box * last=PROG_PARAMS.g_selected_PM.back();
-                if(last!=PROG_PARAMS.b0){
-                    cout<<"last->pParent="<<flush;
-                    cout<<last->pParent<<endl;
+                if(last!=PROG_PARAMS.b0)
+                {
+                    cout<<"Selected Parent box="<<*(last->pParent)<<endl;
+                    bool c0=pred->Exclude(last->pParent);
+                    bool jr=pred->JTest(last->pParent);
+                    int mkr=pred->MKTest(last->pParent);
+                    cout<<"\t c0-test="<<c0<<endl;
+                    cout<<"\t J-test="<<((jr)?"has root":"no root")<<endl;
+                    cout<<"\t MK-test="<<mkr<<endl;
+
                     PROG_PARAMS.g_selected_PM.push_back(last->pParent);
                 }
             }
@@ -761,36 +772,30 @@ void Mouse(int button, int state, int x, int y)
 
             int viewport[4];
             glGetIntegerv(GL_VIEWPORT,viewport);
-            machine_double m_x=(x-PROG_PARAMS.windowWidth/2)*PROG_PARAMS.scale+PROG_PARAMS.windowWidth/2;
-            machine_double m_y=(viewport[3]-y-PROG_PARAMS.windowHeight/2)*PROG_PARAMS.scale+PROG_PARAMS.windowHeight/2;
+            machine_double v_w=viewport[2];
+            machine_double v_h=viewport[3];
 
-            PROG_PARAMS.sel_x=m_x=(width*m_x/PROG_PARAMS.windowWidth+min_x).doubleValue() + PROG_PARAMS.gui_dXY[0];
-            PROG_PARAMS.sel_y=m_y=(height*m_y/PROG_PARAMS.windowHeight+min_y).doubleValue() + PROG_PARAMS.gui_dXY[1];
+            DT nwidth=width * (PROG_PARAMS.windowWidth/v_w);
+            DT nheight=height * (PROG_PARAMS.windowHeight/v_h);
+
+            machine_double m_x=(x-PROG_PARAMS.windowWidth/2)*PROG_PARAMS.scale+PROG_PARAMS.windowWidth/2;
+            machine_double m_y=(PROG_PARAMS.windowHeight/2-y)*PROG_PARAMS.scale+PROG_PARAMS.windowHeight/2;
+
+            PROG_PARAMS.sel_x=m_x=(nwidth*m_x/PROG_PARAMS.windowWidth+min_x).doubleValue() + PROG_PARAMS.gui_dXY[0];
+            PROG_PARAMS.sel_y=m_y=(nheight*m_y/PROG_PARAMS.windowHeight+min_y).doubleValue() + PROG_PARAMS.gui_dXY[1];
 
             Box * selected = const_cast<Box*>(PROG_PARAMS.b0)->find(Point2d(m_x,m_y));
 
             if(selected!=NULL)
             {
 
-                cout<<"Select="<<*selected<<endl;
-
-                //selected->pParent->distribute_features2box(selected);
-                //selected->buildVor();
-
-//                BoxNode mid;
-//                mid.pos=selected->o;
-//                selected->pParent->determine_clearance(mid);
-//                if(dynamic_cast<Wall*>(mid.nearest_feature)!=NULL)
-//                {
-//                    closest_wall=(Wall*)mid.nearest_feature;
-//                    closest_corner=NULL;
-//                }
-//                else{
-//                    closest_wall=NULL;
-//                    closest_corner=(Corner*)mid.nearest_feature;
-//                }
-
-
+                cout<<"Selected box="<<*selected<<endl;
+                bool c0=pred->Exclude(selected);
+                bool jr=pred->JTest(selected);
+                int mkr=pred->MKTest(selected);
+                cout<<"\t c0-test="<<c0<<endl;
+                cout<<"\t J-test="<<((jr)?"has root":"no root")<<endl;
+                cout<<"\t MK-test="<<mkr<<endl;
                 PROG_PARAMS.g_selected_PM.push_back(selected);
             }//end selected
 

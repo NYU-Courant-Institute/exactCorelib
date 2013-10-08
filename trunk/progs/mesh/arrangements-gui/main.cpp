@@ -106,6 +106,8 @@ TCLAP::ValueArg<string> max_box_size("M", "maxsize", "maximum size of box", fals
 TCLAP::ValueArg<string> max_generation("r", "maxgen", "maximum generation", false, "15", "string");
 
 
+MKPredicates<DT,NT> * pred=NULL;
+
 int main(int argc, char **argv) {
 
   // use DT for arithmetics
@@ -207,8 +209,7 @@ int main(int argc, char **argv) {
   
   cout << "Starting Algorithm"<<endl;
   // get the algorithm running
-  MKPredicates<DT,NT> *const pred = 
-      new MKPredicates<DT,NT>(fxy, gxy, display_funcs::PROG_PARAMS.min_size, display_funcs::PROG_PARAMS.max_size, display_funcs::PROG_PARAMS.max_gen);
+  pred = new MKPredicates<DT,NT>(fxy, gxy, display_funcs::PROG_PARAMS.min_size, display_funcs::PROG_PARAMS.max_size, display_funcs::PROG_PARAMS.max_gen);
 
   cout<<"Run!"<<endl;
   Algorithm::Run<DT,NT>(*pred, box, 
