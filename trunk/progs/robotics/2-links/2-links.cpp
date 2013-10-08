@@ -515,13 +515,17 @@ void processMouse(int button, int state, int x, int y) {
 			tempStream << "Status: ";
 			switch (boxClicked.front()->status) {
 			case FREE:
-				tempStream << "Free";
+				tempStream << "Totally Free";
 				break;
 			case STUCK:
 				tempStream << "Stuck";
 				break;
 			case MIXED:
-				tempStream << "Mixed";
+				if(boxClicked.back()->status == Box::FREE){
+					tempStream << "Partially Free";
+				}else{
+					tempStream << "Mixed";
+				}
 				break;
 			case UNKNOWN:
 				tempStream << "Unknown";
@@ -1573,7 +1577,7 @@ void drawQuad(Box* b) {
 		}
 
 	}
-//	cout<<"999999999999999999999999999999999999999999999999999999999"<<endl;
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBegin(GL_POLYGON);
 	glVertex2f(b->x - b->width / 2, b->y - b->height / 2);
