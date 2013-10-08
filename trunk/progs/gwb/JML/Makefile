@@ -221,7 +221,12 @@ eg0x facehemix:	gwb
 eg1 sphere:	gwb	
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
-	    	$(mode) sphere 200 $(height) 20 20
+	    	$(mode) sphere 200 $(height) 20 20 \
+		$(ht2) $(rad2) $(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		100 $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
+
 eg1x spherex:	gwb
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
@@ -240,8 +245,11 @@ eg2 donut torus :	gwb
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
 	    	$(mode) torus 200 $(height) 20 20 $(height2) 50 \
+		$(rotUnitX) $(rotUnitY) $(rotUnitZ) \
+		$(nsegments2) $(nsections2) $(nparts) $(nparts2) $(position2) \
+		$(position3) $(thickness3) $(height3) $(lightRate)\
+		$(initRotDeg) $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 		
-
 eg2x donutx torusx :
 	./gwb $(interactive) $(inputDir) $(fileName) \
 		$(windowWidth) $(windowHeight) $(windowPosX) $(windowPosY) \
@@ -440,26 +448,26 @@ eg10x chairx:	gwb
 		$(initRotDeg) $(initRotAxisX) $(initRotAxisY) $(initRotAxisZ)
 
 # 		Read the file: cube.gwb and draw a cube
-eg11 filecube:	gwb
+eg11 cube filecube:	gwb
 	./gwb 2 $(inputDir) cube.gwb
 
 # 		Read the file: cube.gwb and draw an icosahedron
-eg12 fileicosa:	gwb
+eg12 icosa fileicosa:	gwb
 	./gwb 2 $(inputDir) icosahedron.gwb
 
 # 		Read the file: cube.gwb and draw a dodecahedron
-eg13 filedodeca: 	gwb
+eg13 dodeca filedodeca: 	gwb
 	./gwb 2 $(inputDir) dodecahedron.gwb 90
 
 # 		Read the file: cube.gwb and draw a tetrahedron
-eg14 filetetra:	gwb
+eg14 tetra filetetra:	gwb
 	./gwb 2 $(inputDir) tetrahedron.gwb
 
 # 		Read the file: cube.gwb and draw a icosahedron
-eg15 fileocta:	gwb
+eg15 octa fileocta:	gwb
 	./gwb 2 $(inputDir) octahedron.gwb
 
-eg16 filehole:	gwb
+eg16 hole filehole:	gwb
 	./gwb 2 $(inputDir) cube-with-hole.gwb
 ##################################################
 
@@ -482,16 +490,18 @@ Dependencies:
 #=================================================
 help:
 	@echo "Welcome to our Geometric Workbench Demo!"
-	@echo "USAGE: using our Makefile, type the following"
+	@echo "  CONTROLS: Rotate    = left mouse (1-finger click-hold on Mac), "
+	@echo "            Zoom      = right mouse, (2-fingers click-hold on Mac)"
+	@echo "            Translate = middle mouse."
+	@echo "            key `w'   = to turn on/off shading."
+	@echo "=================================================="
+	@echo "  USAGE: using our Makefile, type the following"
 	@echo "  > make help               -- this message"
 	@echo "  > make eg                 -- compile and see an example : trefoil"
-	@echo "    NAVIGATION: Rotate = left mouse (1-finger click-hold on Mac), "
-	@echo "                Zoom = right mouse, (2-fingers click-hold on Mac)"
-	@echo "                Translate = middle mouse."
 	@echo "  > make params             -- to see default parameters of eg"
 	@echo "  > make egN                -- where N = 0, 1, 2, ..., 14, 15, 16"
 	@echo "                               to see various examples "
-	@echo " LIST of TARGETS:"
+	@echo " LIST of TARGETS: "
 	@echo "		eg0 (facehemi)  -- a hemisphere"
 	@echo "		eg1 (sphere)	"
 	@echo "		eg2 (torus,donut)"
@@ -499,16 +509,17 @@ help:
 	@echo "		eg4 (disk)"
 	@echo "		eg5 (bullet)"
 	@echo "		eg6 (cone)"
-	@echo "		eg7 (chain)	-- a model with several solids"
+	@echo "		eg7 (chain)	-- a model with several connected solids"
 	@echo "		eg8 (table)"
-	@echo "		eg9 (trefoil)	-- an interesting exmaple"
+	@echo "		eg9 (trefoil)	-- an interesting example"
 	@echo "		eg10 (chair)	-- a table with a back"
 	@echo "		eg11 (cube) 	-- a cube, which is also a trivial calendar"
-	@echo "		eg12 (fileicosa)-- icosahedron read from a file "
-	@echo "		eg13 (filedodeca)- dodecahedron reaf from a file"
-	@echo "		eg14 (filetetra)-- tetrahedron read from a file"	
-	@echo "		eg15 (fileocta) -- octahedron read from a file"
-	@echo "		eg16 (filehole) -- a cube wiht a hole read from a file"
+	@echo "		eg12 (fileicosa)-- icosahedron, read from a file "
+	@echo "		eg13 (filedodeca)- dodecahedron, read from a file"
+	@echo "		eg14 (filetetra)-- tetrahedron, read from a file"	
+	@echo "		eg15 (fileocta) -- octahedron, read from a file"
+	@echo "		eg16 (filehole) -- a cube with a hole, read from a file"
+	@echo "=================================================="
 
 #=================================================
 # Misc
