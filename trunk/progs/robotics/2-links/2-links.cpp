@@ -482,7 +482,7 @@ void processMouse(int button, int state, int x, int y) {
 		boxClicked.clear();
 //		cout << "426" << endl;
 		if (!allLeaf.empty() && allLeaf.size() != 0) {
-			Box* lastTempBox = NULL;
+//			Box* lastTempBox = NULL;
 			for (vector<Box*>::iterator it = allLeaf.begin();
 					it != allLeaf.end(); ++it) {
 				Box* tempBox = *it;
@@ -490,20 +490,24 @@ void processMouse(int button, int state, int x, int y) {
 				int tempWidth = tempBox->width;
 //				cout << "434" << endl;
 				if (tempWidth <= minWidth && x > tempBox->x - tempWidth / 2
-						&& x < tempBox->x + tempWidth / 2
+						&& x <= tempBox->x + tempWidth / 2
 						&& reverseY > tempBox->y - tempWidth / 2
-						&& reverseY < tempBox->y + tempWidth / 2) {
-					if (tempWidth == minWidth) {
-						boxClicked.push_back(lastTempBox);
+						&& reverseY <= tempBox->y + tempWidth / 2) {
+					if (tempWidth < minWidth){
+						boxClicked.clear();
+						minWidth = tempWidth;
 					}
-					minWidth = tempWidth;
-					lastTempBox = tempBox;
+					if (tempWidth == minWidth) {
+						boxClicked.push_back(tempBox);
+					}
+
+//					lastTempBox = tempBox;
 				}
 
 			}
 //			cout << "446" << endl;
 //			if(boxClicked.empty()){
-			boxClicked.push_back(lastTempBox);
+//			boxClicked.push_back(lastTempBox);
 //			cout << lastTempBox->width << endl;
 //			cout << "449" << endl;
 //			}
@@ -1561,8 +1565,8 @@ void drawQuad(Box* b) {
 	}
 
 	if (!boxClicked.empty()) {
-		if (b->x == boxClicked.front()->x && b->y == boxClicked.front()->y
-				&& b->width == boxClicked.front()->width) {
+		if (b->x == boxClicked.back()->x && b->y == boxClicked.back()->y
+				&& b->width == boxClicked.back()->width) {
 //			if(blinkFlag){
 			glColor3f(0x33 / 255.0, 0x99 / 255.0, 0xCC / 255.0);
 //				blinkFlag = false;
@@ -1668,10 +1672,13 @@ void drawLine() {
 	glColor3f(0xFF / 255.0, 0x99 / 255.0, 0x66 / 255.0);
 //	}
 	glLineWidth(3.0);
+	glEnable(GL_LINE_STIPPLE);
+	glLineStipple (1, 0x0F0F);
 	glBegin(GL_LINES);
 	glVertex2f(alpha[0], alpha[1]);
 	glVertex2f(beta[0], beta[1]);
 	glEnd();
+	glDisable(GL_LINE_STIPPLE);
 	glLineWidth(1.0);
 }
 
