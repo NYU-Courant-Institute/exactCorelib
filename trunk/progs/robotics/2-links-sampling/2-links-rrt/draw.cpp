@@ -27,6 +27,8 @@ bool animation = false;
 bool reverse_order = false;
 bool show_roadmap_node_as_robot=false;
 bool show_path_node_as_robot=false;
+bool show_roadmap=true;
+bool show_path=true;
 int current_frame = 0;
 
 int maxFrames = 64*2;
@@ -536,8 +538,10 @@ void printGUIKeys()
 	printf("      r:  reset\n");
 	printf("      ,:  previous frame\n");
 	printf("      .:  next frame\n");
-	printf("      1:  show roadmap node as robot\n");
-	printf("      2:  show path node as robot\n");
+	printf("      1:  show/hide roadmap\n");
+	printf("      2:  show/hide path\n");
+	printf("      3:  show/hide roadmap node as robot\n");
+	printf("      4:  show/hide path node as robot\n");
 }
 
 void updateWindownTitle()
@@ -579,8 +583,10 @@ void Keyboard( unsigned char key, int x, int y )
         case 'r': path_index = 0; break;
         case ',': path_index --;  break;
         case '.': path_index ++;  break;
-        case '1': show_roadmap_node_as_robot=!show_roadmap_node_as_robot; break;
-        case '2': show_path_node_as_robot=!show_path_node_as_robot; break;
+        case '1': show_roadmap=!show_roadmap; break;
+        case '2': show_path=!show_path; break;
+        case '3': show_roadmap_node_as_robot=!show_roadmap_node_as_robot; break;
+        case '4': show_path_node_as_robot=!show_path_node_as_robot; break;
     }
 
     glutPostRedisplay();
