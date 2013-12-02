@@ -61,7 +61,7 @@ double getSeparation(double xa, double ya, double xb, double yb, double x,
 vector<Point> calcIntersectionCW(double l, double xc, double yc, Wall* wall,
 		bool& checkSrc, bool& checkDst);
 double calcAngle(double srcX, double srcY, double dstX, double dstY);
-AngleRange calcAngleRange(map<double, double> angles, double t);
+AngleRange calcAngleRange(map<double, double> angles, double l, double t);
 vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges);
 vector<AngleRange> calcOppoZone(vector<AngleRange>& srcAngleRanges);
 double getPointDistance(double x1, double y1, double x2, double y2);
@@ -459,7 +459,8 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 //						std::cout << "tempAngle= " << tempAngle << " tempL="
 //								<< tempL << endl;
 					}
-					tempAngleRange = calcAngleRange(tempAngles, thickness);
+					tempAngleRange = calcAngleRange(tempAngles, tempL,
+							thickness);
 //					std::cout << "tempAngleRange= " << tempAngleRange.lowerBound
 //							<< " " << tempAngleRange.upperBound << endl;
 					if (tempAngleRange.lowerBound != 0
@@ -1361,7 +1362,7 @@ AngleRange calcAngleRangeCB(double l, double t, double xc, double yc, Box* b) {
 				pair<double, double>(tempAngle,
 						getPointDistance(xc, yc, temp.x, temp.y)));
 	}
-	tempAngleRange = calcAngleRange(tempAngles, t);
+	tempAngleRange = calcAngleRange(tempAngles, l, t);
 //	std::cout << "calcAngleRangeCB  tempAngleRange ="
 //			<< tempAngleRange.lowerBound << " " << tempAngleRange.upperBound
 //			<< endl;
@@ -1491,7 +1492,7 @@ void calcOppoAngle(double& angle) {
 
 // calculate the angleRange spanned by several angles, in our case the angleRange is no more than 180 degree
 // 0 < lowerbound < upperbound < 360
-AngleRange calcAngleRange(map<double, double> angles, double t) {
+AngleRange calcAngleRange(map<double, double> angles, double l, double t) {
 	AngleRange angleRange(0, 0);
 	if (angles.empty()) {
 		return angleRange;
@@ -1555,18 +1556,60 @@ AngleRange calcAngleRange(map<double, double> angles, double t) {
 	}
 
 	// if robot has thickness, expand the forbidden range.
-	double fixRange1 = atan2(t / 2, minAngleDistance) * 180 / PI;
-	double fixRange2 = atan2(t / 2, maxAngleDistance) * 180 / PI;
-//	cout<<t<<endl;
-	if (fixRange1 < 0) {
-		fixRange1 = -fixRange1;
+	bool isStuck = 0;
+	double fixRange1 = 0;
+	if (minAngleDistance < t / 2) {
+		isStuck = 1;
 	}
-	if (fixRange2 < 0) {
-		fixRange2 = -fixRange2;
+//	else if (minAngleDistance + t / 2 < l - t / 2) {
+//		fixRange1 = asin(t / 2 / minAngleDistance) * 180 / PI;
+//	} else {
+//		fixRange1 = acos(
+//				((l - t / 2) * (l - t / 2) + minAngleDistance * minAngleDistance
+//						- (t / 2) * (t / 2))
+//						/ (2 * (l - t / 2) * minAngleDistance)) * 180 / PI;
+//	}
+//
+	double fixRange2 = 0;
+	if (maxAngleDistance < t / 2) {
+		isStuck = 1;
 	}
-//	cout<<fixRange1<<endl;
-	angleRange.lowerBound -= fixRange1;
-	angleRange.upperBound += fixRange2;
+//	else if (maxAngleDistance + t / 2 < l - t / 2) {
+//		fixRange2 = asin(t / 2 / maxAngleDistance) * 180 / PI;
+//	} else {
+//		fixRange2 = acos(
+//				((l - t / 2) * (l - t / 2) + maxAngleDistance * maxAngleDistance
+//						- (t / 2) * (t / 2))
+//						/ (2 * (l - t / 2) * maxAngleDistance)) * 180 / PI;
+//	}
+
+	fixRange1 = asin(t / 2 / minAngleDistance) * 180 / PI;
+	fixRange2 = asin(t / 2 / maxAngleDistance) * 180 / PI;
+//	cout << t << endl;
+
+//	cout
+//			<< ((l - t / 2) * (l - t / 2) + minAngleDistance * minAngleDistance
+//					- (t / 2) * (t / 2)) / (2 * (l - t / 2) * minAngleDistance)
+//			<< endl;
+//	cout
+//			<< ((l - t / 2) * (l - t / 2) + maxAngleDistance * maxAngleDistance
+//					- (t / 2) * (t / 2)) / (2 * (l - t / 2) * maxAngleDistance)
+//			<< endl;
+	if (isStuck) {
+		angleRange.lowerBound = 0;
+		angleRange.upperBound = 360;
+	} else {
+		angleRange.lowerBound -= fixRange1;
+		if (angleRange.lowerBound < 0) {
+			angleRange.lowerBound += 360;
+		}
+
+		angleRange.upperBound += fixRange2;
+		if (angleRange.upperBound > 360) {
+			angleRange.upperBound -= 360;
+		}
+
+	}
 
 	return angleRange;
 
@@ -1577,7 +1620,7 @@ bool sortAngleRanges(const AngleRange &v1, const AngleRange &v2) {
 }
 
 // merge several angle ranges.
-vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges) {
+vector<AngleRange> calcZone(vector<AngleRange> &srcAngleRanges) {
 	vector<AngleRange> dstAngleRanges;
 	vector<AngleRange> newSrcAngleRanges;
 	vector<AngleRange> newDstAngleRanges;
@@ -1709,7 +1752,7 @@ vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges) {
 }
 
 // calculate the opposite of the existing zone, the lower and upperbound of the angle ranges will between 0 and 360
-vector<AngleRange> calcOppoZone(vector<AngleRange>& srcAngleRanges) {
+vector<AngleRange> calcOppoZone(vector<AngleRange> &srcAngleRanges) {
 	vector<AngleRange> dstAngleRanges;
 	if (srcAngleRanges.empty()) {
 		AngleRange angleRange(0, 360);
