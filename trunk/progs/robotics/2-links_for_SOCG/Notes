@@ -1,5 +1,12 @@
 NOTES:
 
+(2) Dec 2, 2013:  Zhongdi said:
+	I've just submit a new version in which I refined the common tangent
+	computation a little bit.
+	However, still if we want to compute the common tangent with thickness at full
+	accuracy, the whole part of splitting angle in box.cpp should be rewritten in
+	the future.
+
 (1) WHEN ARE TWO d-dimensional boxes adjacent?   
 
 	Here is the theory:  if B and B' are two d-dimensional boxes
