@@ -159,7 +159,8 @@ struct CFG
     inline double normsqr() const
     {
         assert(ws);
-        return SQR(x) + SQR(y) + .01*SQR(t1) + .1*SQR(t2);
+        double weight=0.01;
+        return SQR(x) + SQR(y) + weight*SQR(t1) + weight*SQR(t2);
     }
 
 	CFG normalize() const
@@ -184,7 +185,8 @@ struct CFG
 	//cout<<"rhs="<<rhs<<endl;
 	    assert(ws);
 	    assert(rhs.ws);
-		CFG r(this->x - rhs.x, this->y - rhs.y, this->t1-rhs.t1, this->t2-rhs.t2);
+	    
+		CFG r(this->x - rhs.x, this->y - rhs.y, euler_diff(this->t1,rhs.t1), euler_diff(this->t2,rhs.t2) );
 		r.round();
 		return r;
 	}
@@ -232,9 +234,9 @@ struct CFG
 	double euler_diff(double e1, double e2) const
 	{
 	    double diff1=(e1-e2);
-	    double diff2=(e1<e2)?(e1+2-e2):(e1-e2+2);
+	    double diff2=(e1<e2)?(e1+2-e2):(e1-e2-2);
 	    double d = ( fabs(diff1)<fabs(diff2) )? diff1: diff2;
-	    assert(d<=1 && d>=-1); //the result must be between -1 and 1s
+	    assert(d<=1 && d>=-1); //the result must be between -1 and 1
 	    return d;
 	}
 
@@ -528,7 +530,7 @@ protected:
 
 	void connectNodes(list< pair<int,int> >& close);
 
-	int connect2Map(const CFG& cfg);
+	int connect2Map(const CFG& cfg, int CCvid);
 
 
 	bool findPathV1V2(int v1, int v2, PATH& path);

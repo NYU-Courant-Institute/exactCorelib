@@ -174,16 +174,13 @@ bool Planner::isValid(const CFG& cfg)
 //connect from c1 to c2
 bool Planner::isValid(const CFG& c1, const CFG& c2)
 {
-	//return true;
-
 	CFG dir = (c2 - c1); //general moving direction
-	double dist = dir.norm();     // distance form nearest to rand
 
 	int steps = (int) ceil( max((dir.normT()/env_TR), (dir.normR()/env_RR)) );
 
     CFG step = dir/steps;
 
-	for(int i=1;i<=steps;i++)
+	for(int i=0;i<=steps;i++)
 	{
 		CFG now_cfg = c1 + step*i;
 
@@ -466,27 +463,43 @@ bool PRM::findPath(const CFG& start, const CFG& goal)
 
 	//find path
 	//connect to roadmap...
-    int n1=connect2Map(start);  //start connect to goal
-    int n2=connect2Map(goal);  //goal connect to goal
-	if( n1<0 || n2<0 ){
-        cerr<<"! Warning : Start or/and Goal cannot connect to the map"<<endl;
-        return false;
-    }
-
-	//build path from graph
-    m_path.push_back(start);
-
-	PATH mypath;
-    if( !findPathV1V2(n1,n2,mypath) )
+	vector< pair<int,VID> > ccstats;
+    int ccsize=GetCCStats(m_graph,ccstats);
+	
+	for(int i=0;i<ccsize;i++)
 	{
-        cerr<<"! Warning : Start can not connect to Goal"<<endl;
-		return false;
-	}
+		cout<<"- Attempt CC["<<i<<"] size="<<ccstats[i].first<<endl;
+		
+		int CCvid=ccstats[i].second;
+		int n1=connect2Map(start,CCvid);  //start connect to rmap
+		if( n1<0 ){
+			cerr<<"! Warning : Start cannot connect to the CC"<<endl;
+			continue;
+		}
 
-    m_path.insert(m_path.end(),mypath.begin(),mypath.end());
-    m_path.push_back(goal);
+		int n2=connect2Map(goal,CCvid);  //goal connect to rmap
+		if( n2<0 ){
+			cerr<<"! Warning : Goal cannot connect to the CC"<<endl;
+			continue;
+		}
+		
+		//build path from graph
+		m_path.push_back(start);
 
-    return true;
+		PATH mypath;
+		if( !findPathV1V2(n1,n2,mypath) )
+		{
+			cerr<<"! Warning : Start can not connect to Goal"<<endl;
+			continue;
+		}
+
+		m_path.insert(m_path.end(),mypath.begin(),mypath.end());
+		m_path.push_back(goal);
+
+   	 	return true;
+   	 }
+   	 
+   	 cerr<<"! Warning : tried all CCs. Failed to fina a path"<<endl;
 }
 
 void PRM::sample()
@@ -556,7 +569,7 @@ void PRM::sortedPairs(list< pair<int,int> >& close)
 
             VPAIR v(vids[i],vids[j]);
 			
-			float dist=(cfg_j-cfg_i).normT();
+			float dist=(cfg_j-cfg_i).norm();
 
             sorted_i.push_back(pair<float,VPAIR>(dist,v));
         }
@@ -609,7 +622,7 @@ void PRM::connectNodes(list< pair<int,int> >& closest)
 		CFG cfg1=m_graph.GetData(vid1).getCFG();
 		CFG cfg2=m_graph.GetData(vid2).getCFG();
 		
-        if( isValid(cfg1,cfg2) )
+        if( isValid(cfg1,cfg2) || isValid(cfg2,cfg1) )
         {
 			m_graph.AddEdge(vid1, vid2, Graph_Edge( (cfg1-cfg2).norm() ) );
     	}
@@ -630,7 +643,7 @@ void PRM::connectNodes(list< pair<int,int> >& closest)
 
 
 //connect cfg to rmap
-int PRM::connect2Map(const CFG& cfg)
+int PRM::connect2Map(const CFG& cfg, int CCvid)
 {
     //CFlock * m_F=rmap.getFlock();
     /////////////////////////////////////////////////////////////////
@@ -640,24 +653,27 @@ int PRM::connect2Map(const CFG& cfg)
     //}
 
     /////////////////////////////////////////////////////////////////
-    vector<Graph_Node> nodes;
-    m_graph.GetVerticesData(nodes);
+    vector<VID> nodes;
+//    m_graph.GetVerticesData(nodes);
+	GetCC(m_graph,CCvid,nodes);
 
     list< pair<float,int> > sorted;
-    typedef vector<Graph_Node>::iterator NIT;
-    for( NIT i=nodes.begin();i!=nodes.end();i++ ){
-		float dist = (i->getCFG()-cfg).normsqr();
+    typedef vector<VID>::iterator NIT;
+    for( NIT i=nodes.begin();i!=nodes.end();i++ )
+    {
+    	Graph_Node node=m_graph.GetData(*i);
+		float dist = (node.getCFG()-cfg).normsqr();
         if( dist<1e-10 ) 
-            return i->getID();
-        sorted.push_back( pair<float,int>(dist,i-nodes.begin()) );
+            return *i;
+        sorted.push_back( pair<float,int>(dist,*i) );
     }//end for i
 
     sorted.sort();
     typedef list< pair<float,int> >::iterator LIT;
     for( LIT i=sorted.begin();i!=sorted.end();i++ ){
-        Graph_Node & node=nodes[i->second];
-        if( isValid(cfg,node.getCFG()) )
-            return node.getID();
+        Graph_Node node=m_graph.GetData(i->second);
+        if( isValid(cfg,node.getCFG()) || isValid(node.getCFG(), cfg) )
+            return i->second;
     }//end for i
 
     return -1;

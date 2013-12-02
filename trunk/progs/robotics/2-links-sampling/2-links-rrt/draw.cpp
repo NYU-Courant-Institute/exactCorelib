@@ -18,10 +18,15 @@ extern bool check;
 extern string filename;
 extern Planner * planner;
 
+extern float env_TR;				// TRANSLATIONAL RESOLUTION
+extern float env_RR;				// Rotational RESOLUTION (deg)
+
 float c_theta = 0.0;
 uint c_index = 0;
 bool animation = false;
 bool reverse_order = false;
+bool show_roadmap_node_as_robot=false;
+bool show_path_node_as_robot=false;
 int current_frame = 0;
 
 int maxFrames = 64*2;
@@ -35,54 +40,105 @@ int path_index = 0;
 
 void DrawRobot(RRT_ROBOT& robot, const CFG& cfg);
 
+
+static PATH path;
+
 void drawCircle(float radius, float angle, bool fill)
+
 {
+
 #if GL_ON
+
     float delta=0.2f;
+
     angle=2*PI-angle;
+
     float s=PI+angle/2; float e=3*PI-angle/2;
 
+
+
     /////////////////////////////////////////////////////////////
+
     if(!fill)
+
         glBegin(GL_LINE_LOOP);
+
     else 
+
         glBegin(GL_POLYGON);
 
+
+
     {if( angle>0 ) glVertex3f( 0, 0.2f, 0 );
+
     for(float theta=s; theta<e ; theta += delta )
+
         glVertex3f( radius*sin(theta), 0.2f, radius*cos(theta) );
+
     glVertex3f( radius*sin(e), 0.2f, radius*cos(e) );}
+
     glEnd();
+
 #endif
+
 }
+
+
 
 void drawArrow(float radius)
+
 {
+
 #if GL_ON
+
     glBegin(GL_TRIANGLES);
+
     glVertex3d(0.4,0.2,radius);
+
     glVertex3d(-0.4,0.2,radius);
+
     glVertex3d(0,0.2,0.6+radius);
+
     glEnd();
 
+
+
     glBegin(GL_LINES);
+
     glVertex3d(0,0.2,0);
+
     glVertex3d(0,0.2,radius);
+
     glEnd();
+
 #endif//GL_ON
+
 }
 
+
+
 void drawLine(const Point2d & p1,const Point2d & p2, float * color)
+
 {   
+
 #if GL_ON
+
     glPushAttrib(GL_CURRENT_BIT);
+
     glBegin(GL_LINES);
+
     glColor3fv(color);
+
         glVertex3d(p1[0],0.2f,p1[1]);
+
         glVertex3d(p2[0],0.2f,p2[1]);
+
     glEnd();
+
     glPopAttrib();
+
 #endif
+
 }
 
 //copied from meshlab
@@ -119,6 +175,22 @@ void DisplayBackground(void)
 
 void DrawTree(RRT* planner, const RRT_TREE& tree)
 {
+	glPointSize(3);
+	glColor3f(0,0,0);
+	for(CTIT it = tree.begin(); it != tree.end(); ++it)
+	{
+		const RRT_NODE* node = *it;
+		CFG cfg=planner->to_physical(node->cfg);
+		if(show_roadmap_node_as_robot)
+			DrawRobot(planner->getRobot(), cfg);
+		else
+		{
+			glBegin(GL_POINTS);
+			glVertex2d(cfg.x,cfg.y);
+			glEnd();
+		}
+    }
+    
 	glLineWidth(0.5);
 	glColor3f(0,0,0);
 	glBegin(GL_LINES);
@@ -139,49 +211,82 @@ void DrawTree(RRT* planner, const RRT_TREE& tree)
 void DrawGraph(PRM* planner, const WDG& graph)
 {
     float radius=10;
+
     glDisable(GL_LIGHTING);
 
+
+
     ///////////////////////////////////////////////////////////////////////////
+
 	glLineWidth(0.5);
 	glColor3f(0,0,0);
+
     //glColor3fv(m_color.get());
+
     ///////////////////////////////////////////////////////////////////////////
+
     //draw nodes
-	vector<VID> vids;
-	graph.GetVerticesVID(vids);
-    typedef vector<VID>::iterator NIT;
-	glPointSize(3);
-	glBegin(GL_POINTS);
-    {for(NIT i=vids.begin();i!=vids.end();i++)
-	{
-		CFG cfg=planner->to_physical( graph.GetData(*i).getCFG() );
 
-		//DrawRobot(planner->getRobot(), cfg);
-		/*
-		glPushMatrix();
-		glTranslatef(cfg.x,cfg.y,0);
-		drawCircle(radius,PI2,true);
-		glPopMatrix();
-		*/
-		glVertex2d(cfg.x,cfg.y);
+	vector<VID> vids;
+
+	graph.GetVerticesVID(vids);
+
+    typedef vector<VID>::iterator NIT;
+
+	glPointSize(3);
+
+	
+
+    {for(NIT i=vids.begin();i!=vids.end();i++)
+
+	{
+
+		CFG cfg=planner->to_physical( graph.GetData(*i).getCFG() );
+		
+		if(show_roadmap_node_as_robot)
+			DrawRobot(planner->getRobot(), cfg);
+		else
+		{
+			glBegin(GL_POINTS);
+			glVertex2d(cfg.x,cfg.y);
+			glEnd();
+		}
     }}
-	glEnd();
+
+	
+
+
 
     ///////////////////////////////////////////////////////////////////////////
+
     //draw edges
 
+
+
 	glColor4f(0.5,0.5,0.5,0.5);
+
     glPushAttrib(GL_CURRENT_BIT);
+
     vector< pair<VID,VID> > edges;
+
     typedef vector< pair<VID,VID> >::iterator EIT;
+
     graph.GetEdges(edges);
+
     glBegin(GL_LINES);
+
     {for(EIT i=edges.begin();i!=edges.end();i++){
+
 		CFG p1=planner->to_physical(graph.GetData(i->first).getCFG());
+
 		CFG p2=planner->to_physical(graph.GetData(i->second).getCFG());
+
 		glVertex2d(p1.x,p1.y);
+
         glVertex2d(p2.x,p2.y);
+
     }}//end for
+
     glEnd();
 }
 
@@ -225,6 +330,15 @@ void DrawPath(Planner* planner, const PATH& path)
 		glVertex2d(cfg.x, cfg.y);
 	}
 	glEnd();
+	
+	if(show_path_node_as_robot)
+	{
+		for(CPIT it = path.begin(); it != path.end(); ++it)
+		{
+			CFG cfg= planner->to_physical(*it);
+			DrawRobot(planner->getRobot(), cfg);
+		}
+	}
 }
 
 void DrawRobot(RRT_ROBOT& robot, const CFG& cfg)
@@ -248,6 +362,33 @@ void DrawRobot(RRT_ROBOT& robot, const CFG& cfg)
 	glEnd();
 }
 
+void interpolate_path(PATH& path)
+{
+	PATH tmp;
+	for(PATH::iterator i=path.begin();i!=path.end();i++)
+	{
+		PATH::iterator n=i;
+		n++;
+		if(n==path.end()){ tmp.push_back(*i); break; }
+		CFG vec=((*n)-(*i));
+		double dT=vec.normT();
+		double dR=vec.normR();
+		int steps=(int)ceil(max(dT/env_TR,dR/env_RR));
+		
+		CFG step=vec/steps;
+		
+		for(int s=0;s<steps;s++)
+		{
+			CFG cfg=(*i)+step*s;
+			tmp.push_back(cfg);
+		}
+		
+	}//end for
+	
+	//
+	tmp.swap(path);
+}
+
 void DrawAll()
 {
 	DrawPolygons(planner->getPolygons());
@@ -267,15 +408,22 @@ void DrawAll()
 	}
 	glPopMatrix();
 
+
+	
+	if(path.empty())
+	{
+		path=planner->getPath();
+		interpolate_path(path);
+	}
+	
+	
 	glPushMatrix();
 	glTranslated(0,0,-.1);
-	DrawPath(planner, planner->getPath());
+	DrawPath(planner, path);
 	glPopMatrix();
 
 	DrawRobot(planner->getRobot(), planner->to_physical(planner->getStart()));
 	DrawRobot(planner->getRobot(), planner->to_physical(planner->getGoal()));
-
-	static const PATH& path = planner->getPath();
 
 	if(path_index < 0) path_index = 0;
 	if(path_index >= path.size()) path_index = path.size()-1;
@@ -388,6 +536,8 @@ void printGUIKeys()
 	printf("      r:  reset\n");
 	printf("      ,:  previous frame\n");
 	printf("      .:  next frame\n");
+	printf("      1:  show roadmap node as robot\n");
+	printf("      2:  show path node as robot\n");
 }
 
 void updateWindownTitle()
@@ -405,7 +555,7 @@ void animate(int value)
 {
 	if(!animation) return;
 
-	if(path_index + 1 < planner->getPath().size())
+	if(path_index + 1 < path.size())
 	{
 		path_index++;
 		glutTimerFunc(50, animate, value);
@@ -429,6 +579,8 @@ void Keyboard( unsigned char key, int x, int y )
         case 'r': path_index = 0; break;
         case ',': path_index --;  break;
         case '.': path_index ++;  break;
+        case '1': show_roadmap_node_as_robot=!show_roadmap_node_as_robot; break;
+        case '2': show_path_node_as_robot=!show_path_node_as_robot; break;
     }
 
     glutPostRedisplay();

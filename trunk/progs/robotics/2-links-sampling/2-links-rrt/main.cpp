@@ -22,10 +22,10 @@ int l1,l2;
 float scale=1.0;
 float deltaX=0.0, deltaY=0.0;
 
-const float env_width = 512;			// ENV WIDTH
-const float env_height = 512;			// ENV HEIGHT
-const float env_TR = 0.001;				// TRANSLATIONAL RESOLUTION
-const float env_RR = 0.01;				// Rotational RESOLUTION (deg)
+float env_width = 512;			// ENV WIDTH
+float env_height = 512;			// ENV HEIGHT
+float env_TR = 0.02;				// TRANSLATIONAL RESOLUTION
+float env_RR = 0.02;				// Rotational RESOLUTION (deg)
 
 //common samping-based motion planner parameters
 string method="planner"; //planner, prm, ...
