@@ -334,7 +334,7 @@ eg4 egbug bug: ./2-links
 	@echo "--  If you decrease the epsilon from 5 to 4, there is a path."
 	@echo "--  If you decrease the longer link from 79 to 78, there is a path."
 	./2-links $(interactive) 200 320 30 60 30 30 90 120 \
-		2 45 75 16 bugtrap.txt \
+		2 45 66 16 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -365,7 +365,7 @@ eg5 egbug2 bug2: ./2-links
 	@echo "Target 'eg5 or bug2':  runs 2-links on bugtrap2.txt"
 	@echo "--  this examples shows there is PATH, but barely so!"
 	./2-links $(interactive) 190 210 180 300 30 30 90 0\
-		2 50 40 9 bugtrap2.txt \
+		2 43 43 9 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -411,7 +411,7 @@ eg8 hsu: ./2-links
 	@echo "	There is a path passage... when radius=6, epsilon=1"
 	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 10 490 0 270 495 180 270 0\
-		8 40 60 $(thickness) input200.txt \
+		2 40 50 14 input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -465,10 +465,10 @@ eg9 narrow: ./2-links
 		
 eg10 twoChambers: ./2-links
 	@echo "Target eg10: two Chamber environment using Greedy"
-	./2-links $(interactive) 415 400 180 270 105 90 90 0\
-		2 65 73 13 2chambers.txt \
+	./2-links $(interactive) 425 410 180 270 105 90 90 0\
+		2 45 45 18 2chambers.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		2 $(seed)  $(inputDir) \
+		1 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) "Eg 10: 2 Chambers" \
 		$(smarterStrategy) \
@@ -693,7 +693,7 @@ eg300a: ./2-links
 
 eg12: ./2-links
 	./2-links $(interactive) 405 400 180 270 105 60 0 180\
-		2 38 38 9 input4.txt \
+		2 35 35 9 input4.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
