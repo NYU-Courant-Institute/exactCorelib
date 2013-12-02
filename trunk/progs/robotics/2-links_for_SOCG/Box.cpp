@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Polygon.h"
 #include "QuadTree.h"
+#include <map>
 //
 //#define OVERRIDE_NEW_DELETE
 //#include "MemProCpp\MemPro.cpp"
@@ -20,6 +21,7 @@ extern int sizeOfPhiB;
 double Box::r0 = 0;
 double Box::l1 = 0;
 double Box::l2 = 0;
+double Box::thickness = 0;
 //double Box::THETA_MIN = 0;
 int Box::counter = 0;
 
@@ -53,13 +55,13 @@ bool hasIntersectionLR(double xs, double ys, double xe, double ye, double xleft,
 		double ytop, double xr, double yb);
 void getExpandedLine(Wall* wall, double width, double height, double& newSrcX,
 		double& newSrcY, double& newDstX, double& newDstY);
-AngleRange calcAngleRangeCB(double l, double xc, double yc, Box* b);
+AngleRange calcAngleRangeCB(double l, double t, double xc, double yc, Box* b);
 double getSeparation(double xa, double ya, double xb, double yb, double x,
 		double y);
 vector<Point> calcIntersectionCW(double l, double xc, double yc, Wall* wall,
 		bool& checkSrc, bool& checkDst);
 double calcAngle(double srcX, double srcY, double dstX, double dstY);
-AngleRange calcAngleRange(vector<double> angles);
+AngleRange calcAngleRange(map<double, double> angles, double t);
 vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges);
 vector<AngleRange> calcOppoZone(vector<AngleRange>& srcAngleRanges);
 double getPointDistance(double x1, double y1, double x2, double y2);
@@ -101,7 +103,6 @@ bool Box::split2D(double epsilon, vector<Box*>& chldn) {
 //	}
 
 	if (!this->isLeaf || this->status == FREE || this->status == STUCK) {
-
 
 		return 0;
 	}
@@ -346,12 +347,12 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 			for (int i = 0; i < 2; i++) {
 				double tempL = 0;
 				if (i == 0) {
-					tempL = l1;
+					tempL = l1 + thickness / 2;
 				} else {
-					tempL = l2;
+					tempL = l2 + thickness / 2;
 				}
-				AngleRange tempAngleRange = calcAngleRangeCB(tempL, closerX,
-						closerY, this);
+				AngleRange tempAngleRange = calcAngleRangeCB(tempL, thickness,
+						closerX, closerY, this);
 //				std::cout << "l1 ==" << l1 << endl;
 //				std::cout << "l2 ==" << l2 << endl;
 //				std::cout << "tempAngleRangel" << i + 1 << " lowerbound ="
@@ -418,9 +419,9 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 			for (int i = 0; i < 2; i++) {
 				double tempL = 0;
 				if (i == 0) {
-					tempL = l1;
+					tempL = l1 + thickness / 2;
 				} else {
-					tempL = l2;
+					tempL = l2 + thickness / 2;
 				}
 				bool checkSrc = true;
 				bool checkDst = true;
@@ -444,17 +445,21 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 					}
 
 					AngleRange tempAngleRange(0, 0);
-					vector<double> tempAngles;
+					map<double, double> tempAngles;
 					for (vector<Point>::iterator itP = tempIntersection.begin();
 							itP != tempIntersection.end(); itP++) {
 						Point temp = *itP;
 						double tempAngle = calcAngle(closestCornerX,
 								closestCornerY, temp.x, temp.y);
-						tempAngles.push_back(tempAngle);
+						tempAngles.insert(
+								pair<double, double>(tempAngle,
+										getPointDistance(closestCornerX,
+												closestCornerY, temp.x,
+												temp.y)));
 //						std::cout << "tempAngle= " << tempAngle << " tempL="
 //								<< tempL << endl;
 					}
-					tempAngleRange = calcAngleRange(tempAngles);
+					tempAngleRange = calcAngleRange(tempAngles, thickness);
 //					std::cout << "tempAngleRange= " << tempAngleRange.lowerBound
 //							<< " " << tempAngleRange.upperBound << endl;
 					if (tempAngleRange.lowerBound != 0
@@ -470,7 +475,8 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 				if (true || checkSrc) {
 //					std::cout << "checkSrc == true " << endl;
 					AngleRange tempAngleRange = calcAngleRangeCB(tempL,
-							(double) w->src->x, (double) w->src->y, this);
+							thickness, (double) w->src->x, (double) w->src->y,
+							this);
 //					std::cout << "checkSrc tempAngleRange= " << tempAngleRange.lowerBound
 //												<< " " << tempAngleRange.upperBound << endl;
 
@@ -487,7 +493,8 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 				if (true || checkDst) {
 //					std::cout << "checkDst == true " << endl;
 					AngleRange tempAngleRange = calcAngleRangeCB(tempL,
-							(double) w->dst->x, (double) w->dst->y, this);
+							thickness, (double) w->dst->x, (double) w->dst->y,
+							this);
 
 //					std::cout << "checkDst tempAngleRange= " << tempAngleRange.lowerBound
 //							<< " " << tempAngleRange.upperBound << endl;
@@ -806,11 +813,13 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 //		std::cout << "checkChildStatus nearestWall " << nearestWall->src->x
 //				<< " " << nearestWall->src->y << " " << nearestWall->dst->x
 //				<< " " << nearestWall->dst->y << endl;
-		if (nearestWall->isRight(x, y) && mindistW > r0 + rB / 2) {
+		if (nearestWall->isRight(x, y)
+				&& mindistW > r0 + rB / 2 + thickness / 2) {
 //			std::cout << "checkChildStatus 688" << endl;
 			tempStatus = FREE;
 			return tempStatus;
-		} else if (!nearestWall->isRight(x, y) && mindistW > rB / 2) {
+		} else if (!nearestWall->isRight(x, y)
+				&& mindistW > rB / 2 - thickness / 2) {
 			tempStatus = STUCK;
 			return tempStatus;
 		}
@@ -833,9 +842,11 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 //			tempStatus = FREE;
 //		}
 
-		if (nearestCorner->isConvex() && mindistC > r0 + rB / 2) {
+		if (nearestCorner->isConvex()
+				&& mindistC > r0 + rB / 2 + thickness / 2) {
 			tempStatus = FREE;
-		} else if (!nearestCorner->isConvex() && mindistC > rB / 2) {
+		} else if (!nearestCorner->isConvex()
+				&& mindistC > rB / 2 - thickness / 2) {
 			tempStatus = STUCK;
 		}
 
@@ -944,7 +955,7 @@ void Box::updateStatusBig() {
 	}
 //	cout<<"updateStatusBig 881"<<endl;
 	// TODO should add the clearance filter to determine a box stuck or free directly. this part is unnecessary.
-	double outerDomain = r0 + rB;
+	double outerDomain = r0 + rB + thickness / 2;
 //	double innerDomain = r0 > rB ? r0 - rB : 0;
 	for (list<Corner*>::iterator it = corners.begin(); it != corners.end();) {
 		Corner* c = *it;
@@ -1305,7 +1316,7 @@ vector<Point> calcIntersectionCB(double l, double xc, double yc, double xleft,
 	return points;
 }
 
-AngleRange calcAngleRangeCB(double l, double xc, double yc, Box* b) {
+AngleRange calcAngleRangeCB(double l, double t, double xc, double yc, Box* b) {
 	vector<Point> tempPoints;
 	tempPoints = calcIntersectionCB(l, xc, yc, b->x - b->width / 2,
 			b->y + b->height / 2, b->x + b->width / 2, b->y - b->height / 2);
@@ -1340,15 +1351,17 @@ AngleRange calcAngleRangeCB(double l, double xc, double yc, Box* b) {
 
 	// calculate the anglerange of the specific wall
 	AngleRange tempAngleRange(0, 0);
-	vector<double> tempAngles;
+	map<double, double> tempAngles;
 	for (vector<Point>::iterator it = tempPoints.begin();
 			it != tempPoints.end(); it++) {
 		Point temp = *it;
 		double tempAngle = calcAngle(xc, yc, temp.x, temp.y);
 		calcOppoAngle(tempAngle);
-		tempAngles.push_back(tempAngle);
+		tempAngles.insert(
+				pair<double, double>(tempAngle,
+						getPointDistance(xc, yc, temp.x, temp.y)));
 	}
-	tempAngleRange = calcAngleRange(tempAngles);
+	tempAngleRange = calcAngleRange(tempAngles, t);
 //	std::cout << "calcAngleRangeCB  tempAngleRange ="
 //			<< tempAngleRange.lowerBound << " " << tempAngleRange.upperBound
 //			<< endl;
@@ -1478,23 +1491,27 @@ void calcOppoAngle(double& angle) {
 
 // calculate the angleRange spanned by several angles, in our case the angleRange is no more than 180 degree
 // 0 < lowerbound < upperbound < 360
-AngleRange calcAngleRange(vector<double> angles) {
+AngleRange calcAngleRange(map<double, double> angles, double t) {
 	AngleRange angleRange(0, 0);
 	if (angles.empty()) {
 		return angleRange;
 	}
 	double minAngle = 540, maxAngle = 0;
-	for (vector<double>::iterator it = angles.begin(); it != angles.end();
+	double minAngleDistance = 0, maxAngleDistance = 0;
+	for (map<double, double>::iterator it = angles.begin(); it != angles.end();
 			it++) {
-		double temp = *it;
+		double tempAngle = it->first;
+		double tempDistance = it->second;
 //		if (temp < 0) {
 //			temp = temp + 360;
 //		}
-		if (temp <= minAngle) {
-			minAngle = temp;
+		if (tempAngle <= minAngle) {
+			minAngle = tempAngle;
+			minAngleDistance = tempDistance;
 		}
-		if (temp >= maxAngle) {
-			maxAngle = temp;
+		if (tempAngle >= maxAngle) {
+			maxAngle = tempAngle;
+			maxAngleDistance = tempDistance;
 		}
 	}
 //	if (maxAngle - minAngle > 180) {
@@ -1506,22 +1523,26 @@ AngleRange calcAngleRange(vector<double> angles) {
 	if (maxAngle - minAngle < 180) {
 		angleRange.lowerBound = minAngle;
 		angleRange.upperBound = maxAngle;
-		return angleRange;
+
 	} else {
 		minAngle = 540, maxAngle = 0;
-		for (vector<double>::iterator it = angles.begin(); it != angles.end();
-				it++) {
-			double temp = *it;
+		for (map<double, double>::iterator it = angles.begin();
+				it != angles.end(); it++) {
+//			double temp = *it;
+			double tempAngle = it->first;
+			double tempDistance = it->second;
 			// important here
-			if (temp < 180) {
-				temp = temp + 360;
+			if (tempAngle < 180) {
+				tempAngle = tempAngle + 360;
 			}
 
-			if (temp <= minAngle) {
-				minAngle = temp;
+			if (tempAngle <= minAngle) {
+				minAngle = tempAngle;
+				minAngleDistance = tempDistance;
 			}
-			if (temp >= maxAngle) {
-				maxAngle = temp;
+			if (tempAngle >= maxAngle) {
+				maxAngle = tempAngle;
+				maxAngleDistance = tempDistance;
 			}
 		}
 
@@ -1531,8 +1552,23 @@ AngleRange calcAngleRange(vector<double> angles) {
 			angleRange.upperBound = maxAngle - 360;
 		}
 
-		return angleRange;
 	}
+
+	// if robot has thickness, expand the forbidden range.
+	double fixRange1 = atan2(t / 2, minAngleDistance) * 180 / PI;
+	double fixRange2 = atan2(t / 2, maxAngleDistance) * 180 / PI;
+//	cout<<t<<endl;
+	if (fixRange1 < 0) {
+		fixRange1 = -fixRange1;
+	}
+	if (fixRange2 < 0) {
+		fixRange2 = -fixRange2;
+	}
+//	cout<<fixRange1<<endl;
+	angleRange.lowerBound -= fixRange1;
+	angleRange.upperBound += fixRange2;
+
+	return angleRange;
 
 }
 // sorting function

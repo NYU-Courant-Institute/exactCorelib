@@ -138,6 +138,10 @@ double boxHeight = 512;			// Initial box height
 // length of 2 links
 double L1 = 35;
 double L2 = 30;
+
+// thickness of robot
+double thickness = 10;
+
 double R0 = 0;				// will be set to max(L1,L2)
 // Added by Zhongdi 05/08/2013 end
 
@@ -230,6 +234,7 @@ GLUI_EditText* editDir;
 //GLUI_EditText* editRadius;
 GLUI_EditText* editL1;
 GLUI_EditText* editL2;
+GLUI_EditText* editThickness;
 GLUI_EditText* editEpsilon;
 GLUI_EditText* editAlphaX;
 GLUI_EditText* editAlphaY;
@@ -263,6 +268,8 @@ void drawPath(vector<Box*>&);
 extern int fileProcessor(string inputfile);
 void drawCircle(float Radius, int numPoints, double x, double y, double r,
 		double g, double b);
+void filledCircle(double radius, double x, double y, double r, double g,
+		double b);
 void drawLine();
 //void drawTri(Box*);
 //void drawTri(Box*, double, double);
@@ -493,7 +500,7 @@ void processMouse(int button, int state, int x, int y) {
 						&& x <= tempBox->x + tempWidth / 2
 						&& reverseY > tempBox->y - tempWidth / 2
 						&& reverseY <= tempBox->y + tempWidth / 2) {
-					if (tempWidth < minWidth){
+					if (tempWidth < minWidth) {
 						boxClicked.clear();
 						minWidth = tempWidth;
 					}
@@ -525,9 +532,9 @@ void processMouse(int button, int state, int x, int y) {
 				tempStream << "Stuck";
 				break;
 			case MIXED:
-				if(boxClicked.back()->status == Box::FREE){
+				if (boxClicked.back()->status == Box::FREE) {
 					tempStream << "Partially Free";
-				}else{
+				} else {
 					tempStream << "Mixed";
 				}
 				break;
@@ -651,6 +658,9 @@ int main(int argc, char* argv[]) {
 		editL2 = glui->add_edittext_to_panel(robot_box_panel, "L2:",
 				GLUI_EDITTEXT_FLOAT);
 		editL2->set_float_val(L2);
+		editThickness = glui->add_edittext_to_panel(robot_box_panel,
+				"Thickness:", GLUI_EDITTEXT_FLOAT);
+		editThickness->set_float_val(thickness);
 		editEpsilon = glui->add_edittext_to_panel(robot_box_panel, "Epsilon:",
 				GLUI_EDITTEXT_FLOAT);
 		editEpsilon->set_float_val(epsilon);
@@ -878,6 +888,7 @@ void genEmptyTree() {
 	Box::r0 = R0;
 	Box::l1 = L1;
 	Box::l2 = L2;
+	Box::thickness = thickness;
 
 //todo
 //	Box::THETA_MIN = min(min(triRobo[0], triRobo[1] - triRobo[0]),
@@ -1081,6 +1092,7 @@ void run() {
 		} else {
 			R0 = L2;
 		}
+		thickness = editThickness->get_float_val();
 		epsilon = editEpsilon->get_float_val();
 		alpha[0] = editAlphaX->get_float_val();
 		alpha[1] = editAlphaY->get_float_val();
@@ -1321,51 +1333,68 @@ void run() {
 void drawLinks(Box* b) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor3f(0x00 / 255.0, 0x00 / 255.0, 0x33 / 255.0);
-	glLineWidth(4);
+	glLineWidth(thickness);
+	if (thickness < 3) {
+		glLineWidth(3);
+	}
 // draw link1
 	glBegin(GL_LINES);
 	glVertex2f(b->x, b->y);
 	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
 			L1 * sin((b->xi[0] / 180) * PI) + b->y);
 	glEnd();
-// draw the arrows
-	glLineWidth(2);
-	glBegin(GL_LINES);
-	glVertex2f((L1 - 5) * cos(((b->xi[0] - 5) / 180) * PI) + b->x,
-			(L1 - 5) * sin(((b->xi[0] - 5) / 180) * PI) + b->y);
-	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
-			L1 * sin((b->xi[0] / 180) * PI) + b->y);
-	glEnd();
-	glBegin(GL_LINES);
-	glVertex2f((double) ((L1 - 5) * cos(((b->xi[0] + 5) / 180) * PI) + b->x),
-			(double) ((L1 - 5) * sin(((b->xi[0] + 5) / 180) * PI) + b->y));
-	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
-			L1 * sin((b->xi[0] / 180) * PI) + b->y);
-	glEnd();
+	glLineWidth(0.1);
+//	filledCircle(thickness / 2, b->x, b->y, 0x00 / 255.0, 0x00 / 255.0,
+//			0x33 / 255.0);
+	filledCircle(thickness / 2, L1 * cos((b->xi[0] / 180) * PI) + b->x,
+				L1 * sin((b->xi[0] / 180) * PI) + b->y, 0x00 / 255.0, 0x00 / 255.0,
+				0x33 / 255.0);
+//// draw the arrows
+//	glLineWidth(2);
+//	glBegin(GL_LINES);
+//	glVertex2f((L1 - 5) * cos(((b->xi[0] - 5) / 180) * PI) + b->x,
+//			(L1 - 5) * sin(((b->xi[0] - 5) / 180) * PI) + b->y);
+//	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
+//			L1 * sin((b->xi[0] / 180) * PI) + b->y);
+//	glEnd();
+//	glBegin(GL_LINES);
+//	glVertex2f((double) ((L1 - 5) * cos(((b->xi[0] + 5) / 180) * PI) + b->x),
+//			(double) ((L1 - 5) * sin(((b->xi[0] + 5) / 180) * PI) + b->y));
+//	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
+//			L1 * sin((b->xi[0] / 180) * PI) + b->y);
+//	glEnd();
 
 // draw link2
-	glLineWidth(4);
+	glLineWidth(thickness);
+	if (thickness < 3) {
+		glLineWidth(3);
+	}
 	glColor3f(0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
 	glBegin(GL_LINES);
 	glVertex2f(b->x, b->y);
 	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
 			L2 * sin((b->xi[2] / 180) * PI) + b->y);
 	glEnd();
-
-// draw the arrows
-	glLineWidth(2);
-	glBegin(GL_LINES);
-	glVertex2f((L2 - 5) * cos(((b->xi[2] - 5) / 180) * PI) + b->x,
-			(L2 - 5) * sin(((b->xi[2] - 5) / 180) * PI) + b->y);
-	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
-			L2 * sin((b->xi[2] / 180) * PI) + b->y);
-	glEnd();
-	glBegin(GL_LINES);
-	glVertex2f((L2 - 5) * cos(((b->xi[2] + 5) / 180) * PI) + b->x,
-			(L2 - 5) * sin(((b->xi[2] + 5) / 180) * PI) + b->y);
-	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
-			L2 * sin((b->xi[2] / 180) * PI) + b->y);
-	glEnd();
+	glLineWidth(0.1);
+//	filledCircle(thickness / 2, b->x, b->y, 0xFF / 255.0, 0x00 / 255.0,
+//			0x33 / 255.0);
+	filledCircle(thickness / 2, L2 * cos((b->xi[2] / 180) * PI) + b->x,
+				L2 * sin((b->xi[2] / 180) * PI) + b->y, 0xFF / 255.0, 0x00 / 255.0,
+				0x33 / 255.0);
+//// draw the arrows
+//	glLineWidth(2);
+//	glBegin(GL_LINES);
+//	glVertex2f((L2 - 5) * cos(((b->xi[2] - 5) / 180) * PI) + b->x,
+//			(L2 - 5) * sin(((b->xi[2] - 5) / 180) * PI) + b->y);
+//	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
+//			L2 * sin((b->xi[2] / 180) * PI) + b->y);
+//	glEnd();
+//	glBegin(GL_LINES);
+//	glVertex2f((L2 - 5) * cos(((b->xi[2] + 5) / 180) * PI) + b->x,
+//			(L2 - 5) * sin(((b->xi[2] + 5) / 180) * PI) + b->y);
+//	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
+//			L2 * sin((b->xi[2] / 180) * PI) + b->y);
+//	glEnd();
 //	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box x=" << b->x << " y=" << b->y
 //			<< endl;
 //	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box xi[0]=" << b->xi[0] << " xi[1]="
@@ -1376,18 +1405,44 @@ void drawLinks(Box* b) {
 void drawLinksSrcDst(double* configuration) {
 //	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor3f(0x00 / 255.0, 0x00 / 255.0, 0x33 / 255.0);
-	glLineWidth(4);
+	glLineWidth(thickness);
+	if (thickness < 3) {
+		glLineWidth(3);
+	}
 	glBegin(GL_LINES);
 	glVertex2f(configuration[0], configuration[1]);
 	glVertex2f(L1 * cos((configuration[2] / 180) * PI) + configuration[0],
 			L1 * sin((configuration[2] / 180) * PI) + configuration[1]);
 	glEnd();
+	glLineWidth(0.1);
+//	filledCircle(thickness / 2,
+//			configuration[0], configuration[1],
+//			0x00 / 255.0, 0x00 / 255.0, 0x33 / 255.0);
+	filledCircle(thickness / 2,
+				L1 * cos((configuration[2] / 180) * PI) + configuration[0],
+				L1 * sin((configuration[2] / 180) * PI) + configuration[1],
+				0x00 / 255.0, 0x00 / 255.0, 0x33 / 255.0);
+
+	glLineWidth(thickness);
+	if (thickness < 3) {
+		glLineWidth(3);
+	}
 	glColor3f(0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
 	glBegin(GL_LINES);
 	glVertex2f(configuration[0], configuration[1]);
 	glVertex2f(L2 * cos((configuration[3] / 180) * PI) + configuration[0],
 			L2 * sin(configuration[3] / 180 * PI) + configuration[1]);
 	glEnd();
+
+	glLineWidth(0.1);
+//	filledCircle(thickness / 2,
+//			configuration[0], configuration[1],
+//			0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
+	filledCircle(thickness / 2,
+				L2 * cos((configuration[3] / 180) * PI) + configuration[0],
+				L2 * sin(configuration[3] / 180 * PI) + configuration[1],
+				0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
+
 	glLineWidth(1.0);
 }
 
@@ -1618,12 +1673,12 @@ void drawWalls(Box* b) {
 
 	if (shadeOption == 1) {
 		glColor4f(0.8, 0.8, 0.8, 0.7);
-		for (int i = 0; (unsigned)i < polygons.size(); i++) {
+		for (int i = 0; (unsigned) i < polygons.size(); i++) {
 			if (i == 0 && firstPolygonClockwise == 1) {
 				continue;
 			}
 			glBegin(GL_POLYGON);
-			for (int j = 0; (unsigned)j < polygons[i].corners.size(); j++) {
+			for (int j = 0; (unsigned) j < polygons[i].corners.size(); j++) {
 				glVertex2f(polygons[i].corners[j]->x,
 						polygons[i].corners[j]->y);
 			}
@@ -1673,7 +1728,7 @@ void drawLine() {
 //	}
 	glLineWidth(3.0);
 	glEnable(GL_LINE_STIPPLE);
-	glLineStipple (1, 0x0F0F);
+	glLineStipple(1, 0x0F0F);
 	glBegin(GL_LINES);
 	glVertex2f(alpha[0], alpha[1]);
 	glVertex2f(beta[0], beta[1]);
@@ -2001,6 +2056,7 @@ void resetAndRun() {
 	editEpsilon->set_float_val(epsilon);
 	editL1->set_float_val(L1);
 	editL2->set_float_val(L2);
+	editThickness->set_float_val(thickness);
 	radioQType->set_int_val(QType);
 	editSeed->set_int_val(seed);
 	radioVerboseOption->set_int_val(verboseOption);
@@ -2040,35 +2096,37 @@ void reset() {
 	if (argcSave > 12)
 		L2 = atof(argvSave[12]);		// robot length2
 	if (argcSave > 13)
-		fileName = argvSave[13]; 		// Input file name
+		thickness = atof(argvSave[13]);		// robot thickness
 	if (argcSave > 14)
-		boxWidth = atof(argvSave[14]);		// boxWidth
+		fileName = argvSave[14]; 		// Input file name
 	if (argcSave > 15)
-		boxHeight = atof(argvSave[15]);	// boxHeight
+		boxWidth = atof(argvSave[15]);		// boxWidth
 	if (argcSave > 16)
-		windowPosX = atoi(argvSave[16]);	// window X pos
+		boxHeight = atof(argvSave[16]);	// boxHeight
 	if (argcSave > 17)
-		windowPosY = atoi(argvSave[17]);	// window Y pos
+		windowPosX = atoi(argvSave[17]);	// window X pos
 	if (argcSave > 18)
-		QType = atoi(argvSave[18]);	// PriorityQ Type (random or no)
+		windowPosY = atoi(argvSave[18]);	// window Y pos
 	if (argcSave > 19)
-		seed = atoi(argvSave[19]);		// for random number generator
+		QType = atoi(argvSave[19]);	// PriorityQ Type (random or no)
 	if (argcSave > 20)
-		inputDir = argvSave[20];		// path for input files
+		seed = atoi(argvSave[20]);		// for random number generator
 	if (argcSave > 21)
-		deltaX = atof(argvSave[21]);	// x-translation of input file
+		inputDir = argvSave[21];		// path for input files
 	if (argcSave > 22)
-		deltaY = atof(argvSave[22]);	// y-translation of input file
+		deltaX = atof(argvSave[22]);	// x-translation of input file
 	if (argcSave > 23)
-		scale = atof(argvSave[23]);		// scaling of input file
+		deltaY = atof(argvSave[23]);	// y-translation of input file
 	if (argcSave > 24)
-		verboseOption = atoi(argvSave[24]);	// verboseOption
+		scale = atof(argvSave[24]);		// scaling of input file
 	if (argcSave > 25)
-		title = argvSave[25];		// title
+		verboseOption = atoi(argvSave[25]);	// verboseOption
 	if (argcSave > 26)
-		twoStrategyOption = atoi(argvSave[26]);	// two Strategy Option (0: original 1: smarter)
+		title = argvSave[26];		// title
 	if (argcSave > 27)
-		sizeOfPhiB = atoi(argvSave[27]);// threshold for splitting angles  |Phi(B)|
+		twoStrategyOption = atoi(argvSave[27]);	// two Strategy Option (0: original 1: smarter)
+	if (argcSave > 28)
+		sizeOfPhiB = atoi(argvSave[28]);// threshold for splitting angles  |Phi(B)|
 }
 
 //init FBO
@@ -2143,7 +2201,7 @@ int checkClockwise(Polygon p) {
 	int prevI = -1;
 	int nextI = -1;
 //	cout<< p.corners.size()<<endl;
-	for (int i = 0; (unsigned)i < p.corners.size(); i++) {
+	for (int i = 0; (unsigned) i < p.corners.size(); i++) {
 		if (p.corners[i]->x > maxX) {
 			maxX = p.corners[i]->x;
 			maxI = i;
@@ -2153,7 +2211,7 @@ int checkClockwise(Polygon p) {
 				prevI = maxI - 1;
 			}
 
-			if ((unsigned)maxI == p.corners.size() - 2) {
+			if ((unsigned) maxI == p.corners.size() - 2) {
 				nextI = 0;
 			} else {
 				nextI = maxI + 1;

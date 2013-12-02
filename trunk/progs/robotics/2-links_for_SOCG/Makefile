@@ -93,6 +93,8 @@ epsilon = 5		# resolution parameter
 len1 = 65		# link1 length
 len2 = 85		# link2 length
 
+thickness = 10   # thickness of robot
+
 inputDir = inputs	# where to find input files
 fileName = input2d.txt	# input environment file
 fileName = input2.txt	# input environment file
@@ -149,7 +151,7 @@ testb: $(TARGETS)
 	./2-links 1 \
     $(startX) $(startY)  $(startTheta1) $(startTheta2) \
     $(goalX) $(goalY) $(goalTheta1) $(goalTheta2) \
-    $(epsilon)  $(len1) $(len2) input2.txt  $(boxWidth) $(boxHt) \
+    $(epsilon)  $(len1) $(len2) $(thickness) input2.txt  $(boxWidth) $(boxHt) \
     $(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
     $(xtrans) $(ytrans) $(scale) \
     $(verbose) $(title) \
@@ -215,7 +217,7 @@ eg: eg10
 egx: 
 	./2-links $(interactive) $(startX) $(startY)  $(startTheta1) $(startTheta2) \
 	    	$(goalX) $(goalY) $(goalTheta1) $(goalTheta2) \
-		$(epsilon) $(len1) $(len2) \
+		$(epsilon) $(len1) $(len2) $(thickness) \
 		$(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
@@ -237,7 +239,7 @@ egb: $(TARGETS)
 	./2-links $(interactive) \
 	    60 350 330 140 \
 	    300 60 90 30 \
-	    5 45 65 input2f.txt \
+	    5 45 65 $(thickness) input2f.txt \
 	    $(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 	    0 222 $(inputDir) \
 	    $(xtrans) $(ytrans) $(scale) \
@@ -253,7 +255,7 @@ nopath eg0:	./2-links
 	./2-links $(interactive) \
 	    	60 350 330 140 \
 	    	200 160 90 0 \
-	    	5 45 65 input0.txt \
+	    	5 45 65 $(thickness) input0.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -265,7 +267,7 @@ nopath eg0:	./2-links
 eg1: ./2-links
 	@echo "Target eg1: Barrier environment" 
 	./2-links $(interactive) 195 340 0 150 260 80  70 120\
-		4 50 80 basic3.txt \
+		4 50 70 $(thickness) basic3.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		0 0 1 \
@@ -277,7 +279,7 @@ eg1: ./2-links
 eg2: ./2-links
 	@echo "Target eg2: 8-way junction" 
 	./2-links $(interactive) 216 297 115 155 210 220 260 200\
-		4 85 80 zigzagrotation.txt \
+		2 75 70 8 zigzagrotation.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		0 0 1 \
@@ -290,7 +292,7 @@ eg2: ./2-links
 eg3 8way: ./2-links
 	@echo "Target eg3: Hall way with 8 convergent hallways"
 	./2-links $(interactive) 262 250 180 270 271 256 90 0\
-		4 90 80 8way.txt \
+		2 80 70 6 8way.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
@@ -302,7 +304,7 @@ eg3 8way: ./2-links
 eg3a 8waya: ./2-links
 	@echo "Target eg3b: Hall way with 8 convergent hallways"
 	./2-links $(interactive) 145 145 33 235 262 346 280 80\
-		4 90 70 8way.txt \
+		4 90 70 $(thickness) 8way.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		4 $(seed)  $(inputDir) \
 		-220 0 0.065 \
@@ -314,7 +316,7 @@ eg3a 8waya: ./2-links
 eg3b 8wayb: ./2-links
 	@echo "Target eg3: Hall way with 8 convergent hallways"
 	./2-links $(interactive) 262 160 90 270 271 346 270 90\
-		4 90 70 8way.txt \
+		4 90 70 $(thickness) 8way.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		4 $(seed)  $(inputDir) \
 		-220 0 0.065 \
@@ -332,7 +334,7 @@ eg4 egbug bug: ./2-links
 	@echo "--  If you decrease the epsilon from 5 to 4, there is a path."
 	@echo "--  If you decrease the longer link from 79 to 78, there is a path."
 	./2-links $(interactive) 200 320 30 60 30 30 90 120 \
-		5 45 79 bugtrap.txt \
+		2 45 75 16 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -348,7 +350,7 @@ eg4a egbuga buga: ./2-links
 	@echo "--  If you decrease the longer link from 79 to 78, there is a path"
 	@echo "--  Or, you decrease the epsilon from 5 to 4, there is a path"
 	./2-links $(interactive) 200 320 30 60 30 30 90 120 \
-		4 45 79 bugtrap.txt \
+		4 45 79 $(thickness) bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -363,7 +365,7 @@ eg5 egbug2 bug2: ./2-links
 	@echo "Target 'eg5 or bug2':  runs 2-links on bugtrap2.txt"
 	@echo "--  this examples shows there is PATH, but barely so!"
 	./2-links $(interactive) 190 210 180 300 30 30 90 0\
-		4 60 50 bugtrap2.txt \
+		2 50 40 9 bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -377,10 +379,10 @@ eg5 egbug2 bug2: ./2-links
 #  	(because dimensions came from xfig)
 eg6: ./2-links
 	@echo "Target DemoSE2_PRM (from Kavraki's group)"
-	./2-links $(interactive) 75 350 90 270 320 100 0 90\
-		8 60 40 DemoSE2_PRM.txt \
+	./2-links $(interactive) 190 420 180 270 300 65 0 70\
+		2 125 60 25 DemoSE2_PRM.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		2 $(seed)  $(inputDir) \
 		250 250 0.04 \
 		$(verbose) "Eg6: Target DemoSE2_PRM (from Kavraki's group)"\
 		$(smarterStrategy) \
@@ -392,7 +394,7 @@ eg6: ./2-links
 # 	TODO: develop a better search (e.g. Best First Search)
 eg7 egtunnel tunnel: ./2-links
 	./2-links $(interactive) 200 280 90 0 450 300 0 90\
-		4 10 15 tunnel.poly \
+		4 10 15 $(thickness) tunnel.poly \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		100 200 0.05 \
@@ -409,7 +411,7 @@ eg8 hsu: ./2-links
 	@echo "	There is a path passage... when radius=6, epsilon=1"
 	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 10 490 0 270 495 180 270 0\
-		8 40 60 input200.txt \
+		8 40 60 $(thickness) input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -423,7 +425,7 @@ eg8a hsua: ./2-links
 	@echo "	There is a path passage... when radius=6, epsilon=1"
 	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 75 350 0 380 205 0\
-		1 7 hsu-latombe-kurniawati.txt \
+		1 7 $(thickness) hsu-latombe-kurniawati.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-70 -70 0.065 \
@@ -437,7 +439,7 @@ eg8a hsua: ./2-links
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
 #	./2-links $(interactive) 75 350 0 90 380 205 270 0\
-#		8 5 10 hsu-latombe-kurniawati2.txt \
+#		8 5 10 $(thickness) hsu-latombe-kurniawati2.txt \
 #		512 512 $(windowPosX) $(windowPosY) \
 #		$(Qtype) $(seed)  $(inputDir) \
 #		-70 -70 0.065 \
@@ -452,7 +454,7 @@ eg9 narrow: ./2-links
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 215 370 0 125 195 160 270 0\
-		4 95 70 narrowCorridor.txt \
+		4 90 65 $(thickness) narrowCorridor.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		0 0 0.065 \
@@ -464,7 +466,7 @@ eg9 narrow: ./2-links
 eg10 twoChambers: ./2-links
 	@echo "Target eg10: two Chamber environment using Greedy"
 	./2-links $(interactive) 415 400 180 270 105 90 90 0\
-		4 65 80 2chambers.txt \
+		2 65 73 13 2chambers.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
@@ -478,7 +480,7 @@ eg10a twoChambersa: ./2-links
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 415 400 180 270 105 90 90 0\
-		4 8 10 2chambers.txt \
+		4 8 10 $(thickness) 2chambers.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		0 $(seed)  $(inputDir) \
 		-220 0 0.065 \
@@ -492,7 +494,7 @@ eg10b twoChambersb: ./2-links
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 415 400 180 270 105 90 90 0\
-		4 15 20 2chambers.txt \
+		4 15 20 $(thickness) 2chambers.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		3 $(seed)  $(inputDir) \
 		-220 0 0.065 \
@@ -506,7 +508,7 @@ eg11 nestedRectangle: ./2-links
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 425 390 180 270 95 100 0 90\
-		2 60 40 nestedRectangle.txt \
+		2 50 40 6 nestedRectangle.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-220 0 0.065 \
@@ -520,7 +522,7 @@ eg11a nestedRectangleA: ./2-links
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 425 390 180 270 95 100 0 90\
-		2 10 10 nestedRectangle.txt \
+		2 10 10 $(thickness) nestedRectangle.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-220 0 0.065 \
@@ -541,7 +543,7 @@ eg11a nestedRectangleA: ./2-links
 eg100 100: ./2-links
 	@echo "Target eg100:  runs 2-links amidst 100 randomly generated triangles"
 	./2-links $(interactive) 10 490 0 270 495 180 270 0\
-		8 40 60 input100.txt \
+		8 40 60 $(thickness) input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		3 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -555,7 +557,7 @@ eg100a 100a: ./2-links
 	@echo "Target eg100a:  runs 2-links amidst 100 randomly generated triangles"
 	@echo "This one is a bit harder than eg100 (with radius 8 instead of 5)"
 	./2-links $(interactive) 200 270 0 20 20 0\
-		10 8 input100.txt \
+		10 8 $(thickness) input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -568,7 +570,7 @@ eg100a 100a: ./2-links
 eg150 150: ./2-links
 	@echo "Target eg150:  runs 2-links amidst 150 randomly generated triangles"
 	./2-links $(interactive) 5 300 0 270 380 380 270 45\
-		4 40 60 input150.txt \
+		4 40 60 $(thickness) input150.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		4 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -581,7 +583,7 @@ eg150 150: ./2-links
 eg150a 150a: ./2-links
 	@echo "Target eg150a:  runs 2-links amidst 150 randomly generated triangles"
 	./2-links $(interactive) 5 300 0 270 380 240 270 0\
-		4 40 60 input150.txt \
+		4 40 60 $(thickness) input150.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		3 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -594,7 +596,7 @@ eg150a 150a: ./2-links
 eg150c 150c: ./2-links
 	@echo "Target eg150c:  runs 2-links amidst 150 randomly generated triangles"
 	./2-links $(interactive) 5 500 0 270 380 240 270 0\
-		8 40 60 input150.txt \
+		8 40 60 $(thickness) input150.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		3 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -610,7 +612,7 @@ eg200 200: ./2-links
 	./2-links $(interactive) \
 	    	10 490 0 270 \
 		320 280 270 0 \
-		4 40 60 input200.txt \
+		4 40 60 $(thickness) input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -629,7 +631,7 @@ eg200a 200a: ./2-links
 	./2-links $(interactive) \
 	    	10 490 0 270 \
 		495 180 270 0 \
-		5 40 60 input200.txt \
+		5 40 60 $(thickness) input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -647,7 +649,7 @@ eg200b: ./2-links
 	./2-links $(interactive) \
 	    	10 490 0 270 \
 		495 180 270 0 \
-		5 40 60 input200.txt \
+		5 40 60 $(thickness) input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -665,7 +667,7 @@ eg300: ./2-links
 	./2-links $(interactive) \
 	    	10 400 90 270 \
 		330 40 270 0 \
-		4 40 30 input300.txt \
+		4 40 30 $(thickness) input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -680,7 +682,7 @@ eg300a: ./2-links
 	./2-links $(interactive) \
 	    	10 400 90 270 \
 		250 200 290 30 \
-		4 40 30 input300.txt \
+		4 40 30 $(thickness) input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -691,7 +693,7 @@ eg300a: ./2-links
 
 eg12: ./2-links
 	./2-links $(interactive) 405 400 180 270 105 60 0 180\
-		4 45 45 input4.txt \
+		2 38 38 9 input4.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -702,7 +704,7 @@ eg12: ./2-links
 		
 eg12a: ./2-links
 	./2-links $(interactive) 405 400 180 270 105 60 0 180\
-		4 15 15 input4.txt \
+		4 15 15 $(thickness) input4.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		3 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -729,7 +731,7 @@ ex-all: ex-bug ex-150 ex-200 ex-300
 ex-bug experiment-bug: ./2-links
 	@echo "Target 'ex-bug':  runs 2-links for bugtrap input, bugtrap.txt"
 	./2-links 1 200 350 0 30 30 0 \
-		17 40 bugtrap.txt \
+		17 40 $(thickness) bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -740,7 +742,7 @@ ex-bug experiment-bug: ./2-links
 ex-buga: ./2-links
 	@echo "Target 'ex-bug':  runs 2-links for bugtrap input, bugtrap.txt"
 	./2-links 1 200 350 0 30 30 0 \
-		1 15 bugtrap.txt \
+		1 15 $(thickness) bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -751,7 +753,7 @@ ex-buga: ./2-links
 ex-150: ./2-links
 	@echo "Target ex-150:  runs 2-links amidst 150 randomly generated 2-links"
 	./2-links 1 200 270 0 20 20 0\
-		1 7 input150.txt \
+		1 7 $(thickness) input150.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -762,7 +764,7 @@ ex-150: ./2-links
 ex-200: ./2-links
 	@echo "Target 2x-200:  runs 2-links on randomly generated obstacles"
 	./2-links 0 130 460 0 20 20 0 \
-		5 2 input1.txt \
+		5 2 $(thickness) input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -774,7 +776,7 @@ ex-200: ./2-links
 ex-300: ./2-links
 	@echo "Target ex-300:  runs 2-links amidst 300 randomly generated 2-links"
 	./2-links 0 230 210 0 480 10 0\
-		3 3 input300.txt \
+		3 3 $(thickness) input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \

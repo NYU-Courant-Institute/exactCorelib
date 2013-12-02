@@ -185,6 +185,7 @@ public:
 	bool isLeaf;
 	static double r0;
 	static double l1, l2;
+	static double thickness;
 //	static double THETA_MIN;
 	double rB;
 	double cl_m; //clearance of the mid point of the box
