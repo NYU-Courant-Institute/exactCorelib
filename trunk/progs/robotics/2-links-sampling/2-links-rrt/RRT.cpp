@@ -508,7 +508,7 @@ void PRM::sample()
         Graph_Node node; 
 		node.setCFG(cfg);
 		node.setID(m_graph.GetNextVID());
-		m_graph.AddVertex(node);
+		int id=m_graph.AddVertex(node);
     }
     
 	//double et=getTime();    
@@ -526,6 +526,7 @@ void PRM::connect()
 
     //for each node find k cloest 
     sortedPairs(closest);
+    
 	connectNodes(closest);
 	
 	//done
@@ -542,16 +543,16 @@ void PRM::sortedPairs(list< pair<int,int> >& close)
 
 	vector<VID> vids;
 	int nSize=m_graph.GetVerticesVID(vids);
+	
     for( int i=0;i<nSize;i++ )
 	{
-		const CFG& cfg_i=m_graph.GetData(vids[i]).getCFG();
-
+		CFG cfg_i=m_graph.GetData(vids[i]).getCFG();
         list< pair<float,VPAIR> > sorted_i;
         for( int j=0;j<nSize;j++ ){
 
 			if(i==j) continue;
 
-			const CFG& cfg_j=m_graph.GetData(vids[j]).getCFG();
+			CFG cfg_j=m_graph.GetData(vids[j]).getCFG();
 
             VPAIR v(vids[i],vids[j]);
 			
@@ -594,7 +595,7 @@ void PRM::connectNodes(list< pair<int,int> >& closest)
 	    //check the pair    
         int vid1=i->first;
         int vid2=i->second;
-		
+        
 		if( m_graph.IsEdge(vid1,vid2) ) continue;
 		
 		if(m_skip_same_cc||m_create_good_loops)
@@ -605,11 +606,13 @@ void PRM::connectNodes(list< pair<int,int> >& closest)
 			}
 		}//end if
 		
-		const CFG& cfg1=m_graph.GetData(vid1).getCFG();
-		const CFG& cfg2=m_graph.GetData(vid2).getCFG();
-
+		CFG cfg1=m_graph.GetData(vid1).getCFG();
+		CFG cfg2=m_graph.GetData(vid2).getCFG();
+		
         if( isValid(cfg1,cfg2) )
-			m_graph.AddEdge(vid1,vid2, Graph_Edge( (cfg1-cfg2).norm() ) );
+        {
+			m_graph.AddEdge(vid1, vid2, Graph_Edge( (cfg1-cfg2).norm() ) );
+    	}
     }
 	
 	//find good loops! (this is very slow...)
@@ -722,7 +725,7 @@ void GaussianPRM::sample()
         Graph_Node node; 
 		node.setCFG(cfg2);
 		node.setID(m_graph.GetNextVID());
-		m_graph.AddVertex(node);
+		int id=m_graph.AddVertex(node);
     }
     
 	//double et=getTime();    

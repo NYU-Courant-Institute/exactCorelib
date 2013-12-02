@@ -20,7 +20,9 @@
 //
 //
 #include "RectangleTree.h"
+
 typedef itree::RectKD<itree::EndPoint,2> Rect2D; //2d rectangle...
+
 typedef itree::MiddleStructure<Rect2D,2> MTree;
 typedef itree::RectangleTree<MTree, 2> ITree; //interval tree
 
@@ -157,7 +159,7 @@ struct CFG
     inline double normsqr() const
     {
         assert(ws);
-        return SQR(x) + SQR(y) + .01*SQR(t1) + .01*SQR(t2);
+        return SQR(x) + SQR(y) + .01*SQR(t1) + .1*SQR(t2);
     }
 
 	CFG normalize() const
@@ -179,7 +181,9 @@ struct CFG
 
 	CFG operator-(const CFG& rhs) const
 	{
+	//cout<<"rhs="<<rhs<<endl;
 	    assert(ws);
+	    assert(rhs.ws);
 		CFG r(this->x - rhs.x, this->y - rhs.y, this->t1-rhs.t1, this->t2-rhs.t2);
 		r.round();
 		return r;
@@ -432,6 +436,7 @@ protected:
 	void build_itree();
 
 	/// return true if there is collision
+
 	/// otherwise return false...
 	bool query_itree(const CFG& cfg);
 
@@ -524,6 +529,7 @@ protected:
 	void connectNodes(list< pair<int,int> >& close);
 
 	int connect2Map(const CFG& cfg);
+
 
 	bool findPathV1V2(int v1, int v2, PATH& path);
 

@@ -148,7 +148,7 @@ all :  release
 debug: CXXFLAGS +=  -O1 -g
 debug: $(TARGET)
 
-dev: CXXFLAGS += -O2 -g
+dev: CXXFLAGS += -O2 
 dev: $(TARGET)
 
 release: CXXFLAGS += -O3
@@ -198,13 +198,19 @@ eg1-prm: $(TARGET)
 	
 eg1-gauss: $(TARGET)
 	@echo "Target eg: Default" 
-	./$(TARGET) inputs/basic3.txt 195 340 0 150 260 80 70 120 50 80   1 0 0 prm $(seed) 20000 $(prm_closest_k) $(gauss_mean_d) $(gauss_std)
+	./$(TARGET) inputs/basic3.txt 195 340 0 150 260 80 70 120 50 80   1 0 0 gauss $(seed) 1000000 $(prm_closest_k) $(gauss_mean_d) $(gauss_std)
 
 	
-eg2: $(TARGET)
+eg2-rrt: $(TARGET)
 	@echo "Target eg2: 8-way junction"  
 	./$(TARGET) inputs/zigzagrotation.txt 216 297 115 155  210 220 260 200  85 85 1 0 0 \
 	 rrt $(seed) 100000 $(rrt_step_size) $(rrt_goal_bias) $(rrt_close_to_goal)
+
+	
+eg2-gauss: $(TARGET)
+	@echo "Target eg2: 8-way junction"  
+	./$(TARGET) inputs/zigzagrotation.txt 216 297 115 155  210 220 260 200  85 85 1 0 0 \
+	 gauss $(seed) 5000000 $(prm_closest_k) $(gauss_mean_d) $(gauss_std)
 
 
 eg3: $(TARGET)
