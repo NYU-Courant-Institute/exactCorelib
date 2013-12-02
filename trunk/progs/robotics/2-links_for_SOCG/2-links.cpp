@@ -1344,9 +1344,9 @@ void drawLinks(Box* b) {
 			L1 * sin((b->xi[0] / 180) * PI) + b->y);
 	glEnd();
 	glLineWidth(0.1);
-//	filledCircle(thickness / 2, b->x, b->y, 0x00 / 255.0, 0x00 / 255.0,
-//			0x33 / 255.0);
-	filledCircle(thickness / 2, L1 * cos((b->xi[0] / 180) * PI) + b->x,
+	filledCircle(thickness / 2 - 0.1, b->x, b->y, 0x00 / 255.0, 0x00 / 255.0,
+			0x33 / 255.0);
+	filledCircle(thickness / 2 - 0.1, L1 * cos((b->xi[0] / 180) * PI) + b->x,
 				L1 * sin((b->xi[0] / 180) * PI) + b->y, 0x00 / 255.0, 0x00 / 255.0,
 				0x33 / 255.0);
 //// draw the arrows
@@ -1376,9 +1376,9 @@ void drawLinks(Box* b) {
 			L2 * sin((b->xi[2] / 180) * PI) + b->y);
 	glEnd();
 	glLineWidth(0.1);
-//	filledCircle(thickness / 2, b->x, b->y, 0xFF / 255.0, 0x00 / 255.0,
-//			0x33 / 255.0);
-	filledCircle(thickness / 2, L2 * cos((b->xi[2] / 180) * PI) + b->x,
+	filledCircle(thickness / 2 - 0.1, b->x, b->y, 0xFF / 255.0, 0x00 / 255.0,
+			0x33 / 255.0);
+	filledCircle(thickness / 2 - 0.1, L2 * cos((b->xi[2] / 180) * PI) + b->x,
 				L2 * sin((b->xi[2] / 180) * PI) + b->y, 0xFF / 255.0, 0x00 / 255.0,
 				0x33 / 255.0);
 //// draw the arrows
@@ -1415,10 +1415,10 @@ void drawLinksSrcDst(double* configuration) {
 			L1 * sin((configuration[2] / 180) * PI) + configuration[1]);
 	glEnd();
 	glLineWidth(0.1);
-//	filledCircle(thickness / 2,
-//			configuration[0], configuration[1],
-//			0x00 / 255.0, 0x00 / 255.0, 0x33 / 255.0);
-	filledCircle(thickness / 2,
+	filledCircle(thickness / 2 - 0.1,
+			configuration[0], configuration[1],
+			0x00 / 255.0, 0x00 / 255.0, 0x33 / 255.0);
+	filledCircle(thickness / 2 - 0.1,
 				L1 * cos((configuration[2] / 180) * PI) + configuration[0],
 				L1 * sin((configuration[2] / 180) * PI) + configuration[1],
 				0x00 / 255.0, 0x00 / 255.0, 0x33 / 255.0);
@@ -1435,10 +1435,10 @@ void drawLinksSrcDst(double* configuration) {
 	glEnd();
 
 	glLineWidth(0.1);
-//	filledCircle(thickness / 2,
-//			configuration[0], configuration[1],
-//			0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
-	filledCircle(thickness / 2,
+	filledCircle(thickness / 2 - 0.1,
+			configuration[0], configuration[1],
+			0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
+	filledCircle(thickness / 2 - 0.1,
 				L2 * cos((configuration[3] / 180) * PI) + configuration[0],
 				L2 * sin(configuration[3] / 180 * PI) + configuration[1],
 				0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
