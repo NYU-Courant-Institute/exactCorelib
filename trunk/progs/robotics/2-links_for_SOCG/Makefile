@@ -1,5 +1,8 @@
 # Makefile for progs/robotics/2-links
 #
+# NOTE: this is the version for "thick 2-link robot" (Dec 2013)
+# 	The new parameter is "thickness".
+#
 #  HOW TO USE THIS Makefile:
 #
 # (A)	To compile run this demo, you can use this Makefile and just have to type:
@@ -24,7 +27,7 @@
 #
 #	       > 2-links $(interactive) $(startX) $(startY)  $(startTheta) \
 #	       		$(goalX) $(goalY) $(goalTheta) \
-#			$(epsilon) $(len1) $(len2) \
+#			$(epsilon) $(len1) $(len2) $(thickness) \
 #			$(fileName) \
 #			$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 #			$(Qtype) $(seed)  $(inputDir) \
@@ -93,7 +96,7 @@ epsilon = 5		# resolution parameter
 len1 = 65		# link1 length
 len2 = 85		# link2 length
 
-thickness = 10   # thickness of robot
+thickness = 10   	# thickness of robot
 
 inputDir = inputs	# where to find input files
 fileName = input2d.txt	# input environment file
