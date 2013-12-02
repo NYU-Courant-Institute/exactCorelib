@@ -204,7 +204,7 @@ eg1-gauss: $(TARGET)
 eg2-rrt: $(TARGET)
 	@echo "Target eg2: 8-way junction"  
 	./$(TARGET) inputs/zigzagrotation.txt 216 297 115 155  210 220 260 200  85 85 1 0 0 \
-	 rrt $(seed) 100000 $(rrt_step_size) $(rrt_goal_bias) $(rrt_close_to_goal)
+	 rrt $(seed) 1000000 0.1 0.5 $(rrt_close_to_goal)
 
 	
 eg2-gauss: $(TARGET)

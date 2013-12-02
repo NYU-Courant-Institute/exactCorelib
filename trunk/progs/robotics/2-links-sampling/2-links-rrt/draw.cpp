@@ -395,21 +395,23 @@ void DrawAll()
 {
 	DrawPolygons(planner->getPolygons());
 
-	glPushMatrix();
-	glTranslated(0,0,-.2);
-	if(dynamic_cast<RRT*>(planner)!=NULL)
+	if(show_roadmap)
 	{
-		RRT * rrt=dynamic_cast<RRT*>(planner);
-		DrawTree(rrt, rrt->getTree());
-	}
+		glPushMatrix();
+		glTranslated(0,0,-.2);
+		if(dynamic_cast<RRT*>(planner)!=NULL)
+		{
+			RRT * rrt=dynamic_cast<RRT*>(planner);
+			DrawTree(rrt, rrt->getTree());
+		}
 
-	if(dynamic_cast<PRM*>(planner)!=NULL)
-	{
-		PRM * prm=dynamic_cast<PRM*>(planner);
-		DrawGraph(prm, prm->getGraph());
+		if(dynamic_cast<PRM*>(planner)!=NULL)
+		{
+			PRM * prm=dynamic_cast<PRM*>(planner);
+			DrawGraph(prm, prm->getGraph());
+		}
+		glPopMatrix();
 	}
-	glPopMatrix();
-
 
 	
 	if(path.empty())
@@ -418,11 +420,13 @@ void DrawAll()
 		interpolate_path(path);
 	}
 	
-	
-	glPushMatrix();
-	glTranslated(0,0,-.1);
-	DrawPath(planner, path);
-	glPopMatrix();
+	if(show_path)
+	{
+		glPushMatrix();
+		glTranslated(0,0,-.1);
+		DrawPath(planner, path);
+		glPopMatrix();
+	}
 
 	DrawRobot(planner->getRobot(), planner->to_physical(planner->getStart()));
 	DrawRobot(planner->getRobot(), planner->to_physical(planner->getGoal()));
