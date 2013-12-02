@@ -158,48 +158,77 @@ release: $(TARGET)
 eg-rrt: $(TARGET)
 	@echo "Target eg: Default" 
 	./$(TARGET) input/$(fileName) $(startX) $(startY) $(startTheta1) $(startTheta2)\
-	  $(goalX) $(goalY) $(goalTheta1) $(goalTheta2) $(len1) $(len2) $(scale)\
-	  $(xtrans) $(ytrans) rrt $(seed) $(sample_size) $(rrt_step_size) $(rrt_goal_bias) $(rrt_close_to_goal)
+	  $(goalX) $(goalY) $(goalTheta1) $(goalTheta2) \
+	  $(len1) $(len2) $(scale)\
+	  $(xtrans) $(ytrans) rrt $(seed) \
+	  $(sample_size) $(rrt_step_size) $(rrt_goal_bias) $(rrt_close_to_goal)
 
 
 eg-prm: $(TARGET)
 	@echo "Target eg: Default" 
 	./$(TARGET) input/$(fileName) $(startX) $(startY) $(startTheta1) $(startTheta2)\
-	  $(goalX) $(goalY) $(goalTheta1) $(goalTheta2) $(len1) $(len2) $(scale)\
-	  $(xtrans) $(ytrans)   prm $(seed) $(sample_size) $(prm_closest_k)
+	  $(goalX) $(goalY) $(goalTheta1) $(goalTheta2) \
+	  $(len1) $(len2) $(scale)\
+	  $(xtrans) $(ytrans)   prm $(seed) \
+	  $(sample_size) $(prm_closest_k)
 
 # for same reason this one crashes, debugging....
 eg-gauss: $(TARGET)
 	@echo "Target eg: Default" 
 	./$(TARGET) input/$(fileName) $(startX) $(startY) $(startTheta1) $(startTheta2)\
-	  $(goalX) $(goalY) $(goalTheta1) $(goalTheta2) $(len1) $(len2) $(scale)\
-	  $(xtrans) $(ytrans)   gauss $(seed) $(sample_size)  $(prm_closest_k) $(gauss_mean_d) $(gauss_std)
+	  $(goalX) $(goalY) $(goalTheta1) $(goalTheta2) \
+	  $(len1) $(len2) $(scale)\
+	  $(xtrans) $(ytrans)   gauss $(seed)\
+	  $(sample_size)  $(prm_closest_k) $(gauss_mean_d) $(gauss_std)
 
 
 eg0-rrt: $(TARGET)
 	@echo "Target eg: Default" 
-	./$(TARGET) inputs/basic1.txt 195 340 0 150 260 80 70 120 50 80  1 0 0  rrt $(seed) 100000 0.05 $(rrt_goal_bias) $(rrt_close_to_goal)
+	./$(TARGET) inputs/basic1.txt 195 340 0 150 \
+	    260 80 70 120 \
+	    50 80  1 \
+	    0 0  rrt $(seed) \
+	    100000 0.05 $(rrt_goal_bias) $(rrt_close_to_goal)
 
 eg0-prm: $(TARGET)
 	@echo "Target eg: Default" 
-	./$(TARGET) inputs/basic1.txt 195 340 0 150 260 80 70 120 50 80  1 0 0  prm $(seed) 1000 $(prm_closest_k)
+	./$(TARGET) inputs/basic1.txt 195 340 0 150 \
+	    260 80 70 120 \
+	    50 80  1 \
+	    0 0  prm $(seed) \
+	    1000 $(prm_closest_k)
 
 eg0-gauss: $(TARGET)
 	@echo "Target eg: Default" 
-	./$(TARGET) inputs/basic1.txt 195 340 0 150 260 80 70 120 50 80  1 0 0  gauss $(seed) 100000 $(prm_closest_k) 0.01 0.001
+	./$(TARGET) inputs/basic1.txt 195 340 0 150 \
+	    260 80 70 120 \
+	    50 80  1 \
+	    0 0  gauss $(seed) \
+	    100000 $(prm_closest_k) 0.01 0.001
 
 eg1-rrt: $(TARGET)
 	@echo "Target eg: Default" 
-	./$(TARGET) inputs/basic3.txt 195 340 0 150 260 80 70 120 50 80   1 0 0 rrt $(seed) 100000 $(rrt_step_size) $(rrt_goal_bias) $(rrt_close_to_goal)
+	./$(TARGET) inputs/basic3.txt 195 340 0 150 \
+	    260 80 70 120 \
+	    50 80   1 \
+	    0 0 rrt $(seed) \
+	    100000 $(rrt_step_size) $(rrt_goal_bias) $(rrt_close_to_goal)
 
 eg1-prm: $(TARGET)
 	@echo "Target eg: Default" 
-	./$(TARGET) inputs/basic3.txt 195 340 0 150 260 80 70 120 50 80   1 0 0 prm $(seed) 10000 $(prm_closest_k)
+	./$(TARGET) inputs/basic3.txt 195 340 0 150 \
+	    260 80 70 120 \
+	    50 80   1 \
+	    0 0 prm $(seed) \
+	    10000 $(prm_closest_k)
 	
 eg1-gauss: $(TARGET)
 	@echo "Target eg: Default" 
-	./$(TARGET) inputs/basic3.txt 195 340 0 150 260 80 70 120 50 80   1 0 0 gauss $(seed) 1000000 $(prm_closest_k) 0.005 0.01
-
+	./$(TARGET) inputs/basic3.txt 195 340 0 150 \
+	    260 80 70 120 \
+	    50 80   1 \
+	    0 0 gauss $(seed) \
+	    1000000 $(prm_closest_k) 0.005 0.01
 	
 eg2-rrt: $(TARGET)
 	@echo "Target eg2: 8-way junction"  
