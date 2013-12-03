@@ -6,6 +6,26 @@ NOTES:
 	However, still if we want to compute the common tangent with thickness at full
 	accuracy, the whole part of splitting angle in box.cpp should be rewritten in
 	the future.
+	
+	The brief change logs of computing with thickness:
+	
+	1. Box.cpp line 350 & 352 & 422 & 424, thinkness/2 is added when
+	compuing the common tangent.
+	
+	2. Box.cpp line 817 & 822 & 846 & 849, thinkness/2 is added or
+	deducted when checking the status of box when do 2d splitting.
+	
+	3. Box.cpp line 958, thinkness/2 is added when computing the
+	outerdomain.
+	
+	4. Box.cpp line 1558, the calcAngleRangea function is rewritten
+	and a fixed angler range is added.
+	
+	Known issues:
+	
+	Based on our current strategy it is not exact computing near the
+	origin of the 2 links when considering the thickness, also there is a
+	small drawing offset in the demo.
 
 (1) WHEN ARE TWO d-dimensional boxes adjacent?   
 
