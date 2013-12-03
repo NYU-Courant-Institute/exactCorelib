@@ -233,76 +233,123 @@ eg1-gauss: $(TARGET)
 eg2-rrt: $(TARGET)
 	@echo "Target eg2: 8-way junction"  
 	./$(TARGET) inputs/zigzagrotation.txt 216 297 115 155  210 220 260 200  85 85 1 0 0 \
-	 rrt $(seed) 1000000 0.1 0.5 $(rrt_close_to_goal)
+	 rrt $(seed) 1000000 0.05 0.5 $(rrt_close_to_goal)
 	
 eg2-gauss: $(TARGET)
 	@echo "Target eg2: 8-way junction"  
 	./$(TARGET) inputs/zigzagrotation.txt 216 297 115 155  210 220 260 200  85 85 1 0 0 \
 	 gauss $(seed) 5000000 $(prm_closest_k) 0.01 0.01
 
-eg3: $(TARGET)
+eg3-rrt: $(TARGET)
 	@echo "Target eg3: Hall way with 8 convergent hallways"
 	./$(TARGET) inputs/8way.txt 262 250 180 270   271 256 90 0   90 80   0.065 -220 0 \
 	 rrt $(seed) 100000 0.001 $(rrt_goal_bias) $(rrt_close_to_goal)
+
+eg3-gauss: $(TARGET)
+	@echo "Target eg3: Hall way with 8 convergent hallways"
+	./$(TARGET) inputs/8way.txt 262 250 180 270   271 256 90 0   90 80   0.065 -220 0 \
+	 gauss $(seed) 8000000 20 0.01 0.01
+
 
 eg4a: $(TARGET)
 	./$(TARGET) inputs/bugtrap.txt 200 320 30 60  40 30 90 120  45 79 1 0 0 \
 	 rrt $(seed) 200000 0.05 $(rrt_goal_bias) $(rrt_close_to_goal)
 
-eg5: $(TARGET)
+eg4a-gauss: $(TARGET)
+	./$(TARGET) inputs/bugtrap.txt 200 320 30 60  40 30 90 120  45 79 1 0 0 \
+	 	 gauss 4 200000 20 0.01 0.01
+
+eg5-rrt: $(TARGET)
 	./$(TARGET) inputs/bugtrap2.txt 190 210 180 300  30 30 90 0  60 50 1 0 0 \
 	 rrt $(seed) 100000 0.05 $(rrt_goal_bias) $(rrt_close_to_goal)
+
+eg5-gauss: $(TARGET)
+	./$(TARGET) inputs/bugtrap2.txt 190 210 180 300  30 30 90 0  60 50 1 0 0 \
+	 gauss $(seed) 1000000 20 0.01 0.01
+
 
 eg6: $(TARGET)
 	./$(TARGET) inputs/DemoSE2_PRM.txt 75 350 90 270  320 100 0 90  60 40  0.04 250 250 \
 	 rrt $(seed) 100000 0.05 $(rrt_goal_bias) $(rrt_close_to_goal)
 
-eg7: $(TARGET)
+eg7-rrt: $(TARGET)
 	./$(TARGET) inputs/tunnel.poly 200 280 90 0  450 300 0 90  10 15 0.05 100 200 \
 	 rrt $(seed) 100000 0.05 $(rrt_goal_bias) $(rrt_close_to_goal)
 
-eg8: $(TARGET)
+eg7-gauss: $(TARGET)
+	./$(TARGET) inputs/tunnel.poly 200 280 90 0  450 300 0 90  10 15 0.05 100 200 \
+	 gauss $(seed) 80000 20 0.01 0.01
+
+eg8-rrt: $(TARGET)
 	./$(TARGET) inputs/input200.txt 10 490 0 270 495 180 270 0 40 60 1 0 0 \
 	 rrt $(seed) 100000 0.05 $(rrt_goal_bias) $(rrt_close_to_goal)
+
+eg8-gauss: $(TARGET)
+	./$(TARGET) inputs/input200.txt 10 490 0 270  495 180 270 0   40 60   1 0 0 \
+	  gauss $(seed) 400000 20 0.01 0.01
 
 eg9: $(TARGET)
 	./$(TARGET) inputs/narrowCorridor.txt 215 370 0 125 195 160 270 0 95 70  0.065  \
 	 rrt $(seed) 100000 0.05 $(rrt_goal_bias) $(rrt_close_to_goal)
-
-eg10: $(TARGET)
+	
+eg10-rrt: $(TARGET)
 	./$(TARGET) inputs/2chambers.txt 415 400 180 270   105 90 90 0   65 80   0.065 -220 0 \
 	 rrt $(seed) 100000 0.05 $(rrt_goal_bias) $(rrt_close_to_goal) 
 	
 	
-eg11 nestedRectangle: $(TARGET)
+eg10-gauss: $(TARGET)
+	./$(TARGET) inputs/2chambers.txt 415 400 180 270   105 90 90 0   65 80   0.065 -220 0 \
+	gauss $(seed) 1000000 20 0.01 0.01
+
+		
+eg11-rrt nestedRectangle-rrt: $(TARGET)
 	./$(TARGET) inputs/nestedRectangle.txt 425 390 180 270 95 100 0 90    60 40    0.065   -220 0 \
 	 rrt $(seed) 100000 0.05 $(rrt_goal_bias) $(rrt_close_to_goal)
+
+eg11-gauss nestedRectangle-gauss: $(TARGET)
+	./$(TARGET) inputs/nestedRectangle.txt 425 390 180 270 95 100 0 90    60 40    0.065   -220 0 \
+	 gauss $(seed) 2000000 $(prm_closest_k)  0.01 0.01
 	
-	
-eg100 100: $(TARGET)
+eg100-rrt 100-rrt: $(TARGET)
 	./$(TARGET) inputs/input100.txt 10 490 0 270 465 180 270 0    60 40  1 0 0 \
 	 rrt $(seed) 100000 0.05 0.5 $(rrt_close_to_goal)
-	
+
+eg100-gauss 100-gauss: $(TARGET)
+	./$(TARGET) inputs/input100.txt 10 490 0 270 465 180 270 0    60 40  1 0 0 \
+	 gauss $(seed) 400000 $(prm_closest_k)  0.01 0.01
 	
 eg100a: $(TARGET)
 	./$(TARGET) inputs/input100.txt 10 490 0 270 470 180 270 0    38 35  1 0 0 \
 	 rrt $(seed) 150000 0.05 0.5 $(rrt_close_to_goal)
 	
-eg150 150: $(TARGET)
+eg150-rrt 150-rrt: $(TARGET)
 	./$(TARGET) inputs/input150.txt 5 300 0 270 380 380 270 45    40 60  1 0 0 \
 	 rrt $(seed) 100000 0.05 $(rrt_goal_bias) $(rrt_close_to_goal)
 	
+eg150-gauss 150-gauss: $(TARGET)
+	./$(TARGET) inputs/input150.txt 5 300 0 270 380 380 270 45    40 60  1 0 0 \
+	 gauss $(seed) 600000 $(prm_closest_k)  0.01 0.01
+	
+		
 eg200 200: $(TARGET)
 	./$(TARGET) inputs/input200.txt 10 490 0 270 320 280 270 0   40 60   1 0 0 \
 	 rrt $(seed) 100000 0.05 0.8 $(rrt_close_to_goal)
 
-eg300 300: $(TARGET)
+eg300-rrt 300-rrt: $(TARGET)
 	./$(TARGET) inputs/input300.txt 0 400 90 270 330 40 270 0   40 30  1 0 0 \
 	 rrt $(seed) 100000 0.05 $(rrt_goal_bias) $(rrt_close_to_goal)
 
-eg12: $(TARGET)
+eg300-gauss 300-gauss: $(TARGET)
+	./$(TARGET) inputs/input300.txt 0 400 90 270 330 40 270 0   40 30  1 0 0 \
+	 gauss $(seed) 600000 20 0.01 0.01
+
+eg12-rrt: $(TARGET)
 	./$(TARGET) inputs/input4.txt 405 400 180 270 105 60 0 180   15 15   1 0 0 \
 	 rrt $(seed) 200000 0.05 0.5 $(rrt_close_to_goal)
+
+eg12-gauss: $(TARGET)
+	./$(TARGET) inputs/input4.txt 405 400 180 270 105 60 0 180   15 15   1 0 0 \
+	 gauss $(seed) 40000 20 0.01 0.01
 						
 #--------------------------------------------------------------------
 

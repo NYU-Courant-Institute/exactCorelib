@@ -295,7 +295,8 @@ void DrawGraph(PRM* planner, const WDG& graph)
 void DrawPolygons(RRT_OBJS& objs)
 {
 
-	glColor3f(1.0, 0.5, 0.1);
+	//glColor3f(1.0, 0.5, 0.1);
+	glColor3f(0,0,0);
 	glLineWidth(1);
 
 	for(RIT it = objs.begin(); it != objs.end(); ++it){
