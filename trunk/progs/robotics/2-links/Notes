@@ -20,9 +20,8 @@ NOTES:
 			we do binary splits only, this is equivalent
 			to B[j] contained in B'[j] or vice-versa.)
 
-I am not sure that you are implementing this logic!
-
-In particular, I do not see you checking for condition (1) anywhere!
+I am not sure that you are implementing this logic.
+I do not see checks for condition (1).
 
 HERE IS THE LOGIC FOR CHECKING CONDITION (1) for adjacency of intervals:
 	Let B[i]=[a,b], and B'[i] = [a', b'].
@@ -50,7 +49,6 @@ HERE IS THE LOGIC FOR CHECKING CONDITION (2) for overlap of intervals:
 				or
 				(a=a' and b=b')
 	
-
 Current code in Box.cpp:
 
 //
