@@ -1,0 +1,17 @@
+Notes:
+
+This is trying out the source code from Bican Xia and his student Liyun Dai
+who submitted a paper on "LogCF" to JSC.
+
+Unfortunately, their main theorem (root bound) is well known.
+But their running time seems impressive (2-3 times faster than known
+methods). 
+
+The code is in source forge:
+	http://sourceforge.net/projects/logcf/
+
+To checkout:
+	> svn checkout svn://svn.code.sf.net/p/logcf/code-0/trunk logcf-code-0
+
+Compiling:
+	I need to tell it where to find gmp...
