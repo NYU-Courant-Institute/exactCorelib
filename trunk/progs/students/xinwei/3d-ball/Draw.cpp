@@ -458,6 +458,8 @@ float Vector::dot(Vector v1, Vector v2) {
 	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
+// CHEE said: we should be able to do a much cleaner version!
+//
 // Readapted from http://www.mathworks.com/matlabcentral/fileexchange/22857-distance-between-a-point-and-a-triangle-in-3d
 float getDistToFace(float x, float y, float z, int faceID) {
 
@@ -684,7 +686,7 @@ int getBoxType(int boxID) {
 
 	for (int i = 0; i < obstacleCounter; i++) {
 		
-		// Check Coreners
+		// Check Corners
 
 		for (int j = 0; j < 3; j++) {
 			float distToCorner = getDistToPoint(boxes[boxID].x, boxes[boxID].y, boxes[boxID].z, i, j);

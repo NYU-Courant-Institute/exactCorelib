@@ -1,0 +1,22 @@
+file: README for progs/triangles
+Core2 Library
+
+The file "code-original.cpp" is from website of Shimshoni at Haifa.
+It is based on a paper
+
+"Fast triangle to triangle intersection test for collision detection",
+	by O.Tropp, A.Tal and I.Shimshoni,
+	Computer Animation and Virtual Worlds 17(5) 2006, pp 527-535.
+
+It implements the current fastest code for tri-tri intersection
+in 3-space.
+
+We want to adapt this for Core Library for our applications:
+
+(1) to check if a surface triangulation
+or volume tetrahedralization is consistent
+
+(2) to fine-tune Core to do these checks efficiently.
+
+--Chee and Jihun
+(Oct, 2010)

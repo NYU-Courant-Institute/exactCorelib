@@ -46,8 +46,7 @@ COMMENTS ON CODE:
 		epsilon = eps parameter
 		sphereradius = robot radius
 		
-	
-		E.g., in cmpr,
+	E.g., in cmpr,
 		obstacles.txt:
 			description of the obstacles given by a list of triangles
 			in this case, a tetrahedron
