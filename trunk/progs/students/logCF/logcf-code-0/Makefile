@@ -7,6 +7,9 @@
 ##        "make d"  for a debug version (no optimizations).
 ##        "make"    for the standard version (optimized, but with debug information and assertions active)
 
+-include ../Make.options
+
+
 PWD        = $(shell pwd)
 EXEC      = lcf
 
@@ -34,9 +37,9 @@ LFLAGS    ?= -Wall
 
 COPTIMIZE ?= -O2
 
-CFLAGS    += -I include   
+CFLAGS    += -I include  $(CORE_INC)
 
-LFLAGS    += -lgmp -lm 
+LFLAGS    += -lgmp -lm  $(CORE_LIB)
 
 
 .PHONY : s p d r rs clean 
