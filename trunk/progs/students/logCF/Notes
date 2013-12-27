@@ -15,3 +15,7 @@ To checkout:
 
 Compiling:
 	"make" did not work:  I need to tell it where to find gmp...
+
+	So I copied from the "Make.options" in Corelib, and it worked.
+
+	But how to run the examples???
