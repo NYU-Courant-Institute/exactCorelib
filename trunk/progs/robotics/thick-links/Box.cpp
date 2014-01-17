@@ -957,7 +957,7 @@ void Box::updateStatusBig() {
 //	cout<<"updateStatusBig 881"<<endl;
 	// TODO should add the clearance filter to determine a box stuck or free directly. this part is unnecessary.
 	double outerDomain = r0 + rB + thickness / 2;
-//	double innerDomain = r0 > rB ? r0 - rB : 0;
+	double innerDomain = thickness / 2 > rB ? thickness / 2 - rB : 0;
 	for (list<Corner*>::iterator it = corners.begin(); it != corners.end();) {
 		Corner* c = *it;
 //		if (c->x < this->x + this->width / 2 && c->x > this->x - this->width / 2
@@ -970,6 +970,9 @@ void Box::updateStatusBig() {
 
 		if (c->distance(this->x, this->y) <= outerDomain) {
 			status = MIXED;
+			++it;
+		} else if (c->distance(this->x, this->y) < innerDomain) {
+			status = STUCK;
 			++it;
 		} else {
 			it = corners.erase(it);
@@ -991,6 +994,9 @@ void Box::updateStatusBig() {
 
 		if (distWall <= outerDomain) {
 			status = MIXED;
+			++it;
+		} else if (distWall < innerDomain) {
+			status = STUCK;
 			++it;
 		} else {
 			it = walls.erase(it);
