@@ -529,6 +529,22 @@ eg11a nestedRectangleA: ./2-links
 		4 \
 		&
 
+# This is example with a solution, but the 2 links must cross.
+#   If we use the non-crossing model, there would be no solution!
+#   (Chee -- Jan 2014)
+eg11b nestedRectangleB: ./2-links
+	@echo "Target eg11: 3nd test example from Chee and Zhongdi"
+#	@echo "	There is a path passage... when radius=6, epsilon=1"
+#	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./2-links $(interactive) 425 390 180 170 95 90 0 10\
+		2 60 40 nestedRectangle.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		-220 0 0.065 \
+		$(verbose) "Eg 11: Nested Rectangle" \
+		$(smarterStrategy) \
+		$(threshold) \
+		&
 		
 
 # RANDOMLY GENERATED ENVIRONMENT:
