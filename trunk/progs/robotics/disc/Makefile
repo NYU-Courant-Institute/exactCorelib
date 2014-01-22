@@ -519,7 +519,7 @@ eg300: disc
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
 	./disc $(interactive) 10 400 350 20 \
-		1 3 input300.txt \
+		3 11 input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
