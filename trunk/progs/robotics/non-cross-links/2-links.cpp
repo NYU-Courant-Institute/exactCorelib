@@ -417,7 +417,7 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 		if (current->status == Box::FREE
 				&& current->contains(beta[0], beta[1], beta[2], beta[3])) {
 			if (crossingOption) {
-				if ((current->order == ALL || current->order == tempOrder)
+				if ((current->order == Box::ALL || current->order == tempOrder)
 						&& current->dist2Source == 0) {
 					isPath = true;
 					break;
