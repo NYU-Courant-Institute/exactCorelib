@@ -48,23 +48,32 @@ enum Status {
 	FREE, STUCK, MIXED, UNKNOWN
 };
 
+enum Order {
+	NON, ALL, LT, GT
+};
+
 class QuadTree {
 private:
 	void insertNode(Box* b) {
 		switch (b->getStatus()) {
 		case Box::FREE: {
-			Set* st = new Set(b);
-			allSet.push_back(st);
-		}
+			if (b->pSet == 0) {
+				Set* st = new Set(b);
+				allSet.push_back(st);
+			}
+
+//			cout << "QuadTree.h-58\n";
 			unionAdjacent(b);
+//			cout << "QuadTree.h-60\n";
 			++freeCount;
+		}
 			break;
 		case Box::STUCK:
 			++stuckCount;
 			break;
 		case Box::MIXED:
 			++mixCount;
-			if (b->height/2 < epsilon || b->width/2 < epsilon)
+			if (b->height / 2 < epsilon || b->width / 2 < epsilon)
 				++mixSmallCount;
 			PQ->push(b);
 			break;
@@ -111,11 +120,27 @@ public:
 	Box* getBox(double x, double y, double a1, double a2, int& ct) {
 		std::queue<Box*> q;
 //		std::cout << "getBox 113" << endl;
+		Order tempOrder;
+		if (a1 > a2) {
+			tempOrder = GT;
+		} else {
+			tempOrder = LT;
+		}
 		for (int i = 0; i < (int) allLeaf.size(); ++i) {
 			if (allLeaf[i]->contains(x, y, a1, a2)) {
 				//TODO added by Zhongdi 7/22/2013
 				if (allLeaf[i]->isFree()) {
-					return allLeaf[i];
+					if (crossingOption) {
+						if (allLeaf[i]->order == ALL
+								|| allLeaf[i]->order == tempOrder) {
+							return allLeaf[i];
+						} else {
+							continue;
+						}
+					} else {
+						return allLeaf[i];
+					}
+
 				}
 				if (allLeaf[i]->status == Box::STUCK) {
 					std::cout << "getBox 121" << endl;
@@ -141,6 +166,7 @@ public:
 			}
 
 			vector<Box*> cldrn;
+//			cout << "QuadTree.h-144\n";
 			if (!expand(b, cldrn)) {
 //				std::cout<<"getBox 142"<< endl;
 //				return 0;
@@ -150,6 +176,7 @@ public:
 					continue;
 				}
 			}
+//			cout << "QuadTree.h-154\n";
 
 //			std::cout << "getBox 149" << endl;
 			if (b->shouldSplit2D) {
@@ -170,7 +197,17 @@ public:
 //							break;
 //						}
 //						std::cout<<"getBox 153"<< endl;
-						return cldrn[i];
+						if (crossingOption) {
+							if (cldrn[i]->order == ALL
+									|| cldrn[i]->order == tempOrder) {
+								return cldrn[i];
+							} else {
+								continue;
+							}
+						} else {
+							return cldrn[i];
+						}
+
 					} else if (cldrn[i]->status == Box::STUCK) {
 //						if (b->shouldSplit2D) {
 //							std::cout << q.size() << endl;
@@ -215,7 +252,9 @@ public:
 		for (int i = 0; i < (int) cldrn.size(); ++i) {
 			//TODO determine whether it is fine to delete this
 //			cldrn[i]->updateStatus();
+//			cout << "QuadTree.h-220\n";
 			insertNode(cldrn[i]);
+//			cout << "QuadTree.h-222\n";
 		}
 
 		return true;
@@ -254,12 +293,28 @@ public:
 	}
 
 	void unionAdjacent(Box* b) {
-		for (int i = 0; i < 4; ++i) {
+		for (int i = 0; i < 5; ++i) {
 			for (vector<Box*>::iterator it = b->Nhbrs[i].begin();
 					it != b->Nhbrs[i].end(); ++it) {
 				Box* neighbor = *it;
 				if (neighbor->status == Box::FREE) {
-					pSets->Union(b, neighbor);
+//					cout << "QuadTree.h-268\n";
+//					cout << i << "\n";
+//					cout << b->xi[0] << " " << b->xi[1] << " " << b->xi[2]
+//							<< " " << b->xi[3] << "\n";
+//					cout << neighbor->xi[0] << " " << neighbor->xi[1] << " "
+//							<< neighbor->xi[2] << " " << neighbor->xi[3]
+//							<< "\n";
+					if (neighbor->pSet != 0) {
+						pSets->Union(b, neighbor);
+					}
+//					else {
+//						Set* st = new Set(neighbor);
+//						allSet.push_back(st);
+//						pSets->Union(b, neighbor);
+//					}
+
+//					cout << "QuadTree.h-273\n";
 				}
 			}
 		}

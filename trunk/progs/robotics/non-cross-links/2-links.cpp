@@ -167,6 +167,7 @@ bool verboseOption = false;		// don't print various statistics
 
 int drawPathOption = 0;
 int twoStrategyOption = 0; //  Two-Strategy Option    0: original 1: smarter
+int crossingOption = 0; //  Crossing Option    0: original  1: non-crossing
 string title("2-links Control Panel");	// title for control panel
 int sizeOfPhiB = 0;
 
@@ -227,6 +228,7 @@ GLUI_RadioGroup* radioQType;
 GLUI_RadioGroup* radioDrawOption;
 GLUI_RadioGroup* radioShadeOption;
 GLUI_RadioGroup* radio2StrategyOption;
+GLUI_RadioGroup* radioCrossingOption;
 GLUI_EditText* textPhiB;
 GLUI_RadioGroup* radioVerboseOption;
 GLUI_EditText* editInput;
@@ -321,6 +323,12 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 	dijkstraQueue<Cmp> dijQ;
 	dijQ.push(a);
 	toReset.push_back(a);
+	Order tempOrder;
+	if (beta[2] > beta[3]) {
+		tempOrder = GT;
+	} else {
+		tempOrder = LT;
+	}
 	while (!dijQ.empty()) {
 
 		Box* current = dijQ.extract();
@@ -340,7 +348,7 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 					// go through neighbors of each child to see if it's in source set
 					// if yes, this child go into the dijQ					
 					bool isNeighborOfSourceSet = false;
-					for (int j = 0; j < 4 && !isNeighborOfSourceSet; ++j) {
+					for (int j = 0; j < 5 && !isNeighborOfSourceSet; ++j) {
 						for (vector<Box*>::iterator iter =
 								cldrn[i]->Nhbrs[j].begin();
 								iter < cldrn[i]->Nhbrs[j].end(); ++iter) {
@@ -408,15 +416,23 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 		//found path!
 		if (current->status == Box::FREE
 				&& current->contains(beta[0], beta[1], beta[2], beta[3])) {
-			isPath = true;
-			break;
+			if (crossingOption) {
+				if (current->order == ALL || current->order == tempOrder) {
+					isPath = true;
+					break;
+				}
+			} else {
+				isPath = true;
+				break;
+			}
+
 		}
 
 		if (current->status == Box::FREE) {
 			// if current is not MIXED, then must be FREE
 			// go through it's neighbors and add FREE and MIXED ones to dijQ
 			// also add FREE ones to source set
-			for (int i = 0; i < 4; ++i) {
+			for (int i = 0; i < 5; ++i) {
 				for (vector<Box*>::iterator iter = current->Nhbrs[i].begin();
 						iter < current->Nhbrs[i].end(); ++iter) {
 					Box* neighbor = *iter;
@@ -796,8 +812,8 @@ int main(int argc, char* argv[]) {
 		glui->add_radiobutton_to_group(radioQType, "(1) BFS");
 		glui->add_radiobutton_to_group(radioQType, "(2) Greedy");
 		glui->add_radiobutton_to_group(radioQType, "(3) Dist+Size");
-		glui->add_radiobutton_to_group(radioQType,
-				"(4) Voronoi Heuristic (deprecated)");
+//		glui->add_radiobutton_to_group(radioQType,
+//				"(4) Voronoi Heuristic (deprecated)");
 		radioQType->set_int_val(QType);
 
 		glui->add_separator();
@@ -837,10 +853,18 @@ int main(int argc, char* argv[]) {
 		radio2StrategyOption->set_int_val(twoStrategyOption);
 		glui->add_separator();
 
+		radioCrossingOption = glui->add_radiogroup();
+
+		glui->add_radiobutton_to_group(radioCrossingOption, "Allow-crossing");
+		glui->add_radiobutton_to_group(radioCrossingOption, "Non-crossing");
+		radioCrossingOption->set_int_val(crossingOption);
+
+		glui->add_separator();
+
 		// box selected info
 		boxSelectedInfo = new GLUI_TextBox(glui, true);
 //		boxSelectedInfo->set_name("box selected");
-		boxSelectedInfo->set_h(120);
+		boxSelectedInfo->set_h(70);
 		boxSelectedInfo->set_w(310);
 
 		textBox = new GLUI_TextBox(glui, true);
@@ -1081,6 +1105,7 @@ void run() {
 		buttonReplay->set_name("Replay Spliting");
 		buttonAnimation->set_name("Path Animation");
 		twoStrategyOption = radio2StrategyOption->get_int_val();
+		crossingOption = radioCrossingOption->get_int_val();
 		sizeOfPhiB = textPhiB->get_int_val();
 
 		//update from glui live variables
@@ -1159,13 +1184,15 @@ void run() {
 
 	if (QType == 0 || QType == 1) {
 		boxA = QT->getBox(alpha[0], alpha[1], alpha[2], alpha[3], ct);
+		cout << "2-links.cpp-1173\n";
 		if (!boxA) {
 			noPath = true;
 			cout << "Start Configuration is not free\n";
 			ssout << "Start Configuration is not free\n";
 		}
-
+		cout << "2-links.cpp-1179\n";
 		boxB = QT->getBox(beta[0], beta[1], beta[2], beta[3], ct);
+		cout << "2-links.cpp-1181\n";
 		if (!boxB) {
 			noPath = true;
 			cout << "Goal Configuration is not free\n";
@@ -1198,6 +1225,14 @@ void run() {
 			cout << "Goal Configuration is not free\n";
 			ssout << "Goal Configuration is not free\n";
 		}
+
+		cout << boxA->x << " " << boxA->y << " " << boxA->xi[0] << " "
+				<< boxA->xi[1] << " " << boxA->xi[2] << " " << boxA->xi[3]
+				<< endl;
+		cout << boxB->x << " " << boxB->y << " " << boxB->xi[0] << " "
+				<< boxB->xi[1] << " " << boxB->xi[2] << " " << boxB->xi[3]
+				<< endl;
+
 		if (!noPath) {
 			if (QType == 2) {
 				noPath = !findPath<DistCmp>(boxA, boxB, QT, ct);
@@ -1340,11 +1375,24 @@ void drawLinks(Box* b) {
 		glLineWidth(3);
 	}
 // draw link1
-	glBegin(GL_LINES);
-	glVertex2f(b->x, b->y);
-	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
-			L1 * sin((b->xi[0] / 180) * PI) + b->y);
-	glEnd();
+	if (crossingOption) {
+		double tempAngle = b->xi[0];
+		if (b->order == GT) {
+			tempAngle = b->xi[1];
+		}
+		glBegin(GL_LINES);
+		glVertex2f(b->x, b->y);
+		glVertex2f(L1 * cos((tempAngle / 180) * PI) + b->x,
+				L1 * sin((tempAngle / 180) * PI) + b->y);
+		glEnd();
+
+	} else {
+		glBegin(GL_LINES);
+		glVertex2f(b->x, b->y);
+		glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
+				L1 * sin((b->xi[0] / 180) * PI) + b->y);
+		glEnd();
+	}
 	glLineWidth(0.1);
 	filledCircle(thickness / 2 - 0.1, b->x, b->y, 0x00 / 255.0, 0x00 / 255.0,
 			0x33 / 255.0);
@@ -1372,11 +1420,24 @@ void drawLinks(Box* b) {
 		glLineWidth(3);
 	}
 	glColor3f(0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
-	glBegin(GL_LINES);
-	glVertex2f(b->x, b->y);
-	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
-			L2 * sin((b->xi[2] / 180) * PI) + b->y);
-	glEnd();
+	if (crossingOption) {
+		double tempAngle = b->xi[2];
+		if (b->order == LT) {
+			tempAngle = b->xi[3];
+		}
+		glBegin(GL_LINES);
+		glVertex2f(b->x, b->y);
+		glVertex2f(L2 * cos((tempAngle / 180) * PI) + b->x,
+				L2 * sin((tempAngle / 180) * PI) + b->y);
+		glEnd();
+	} else {
+		glBegin(GL_LINES);
+		glVertex2f(b->x, b->y);
+		glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
+				L2 * sin((b->xi[2] / 180) * PI) + b->y);
+		glEnd();
+	}
+
 	glLineWidth(0.1);
 	filledCircle(thickness / 2 - 0.1, b->x, b->y, 0xFF / 255.0, 0x00 / 255.0,
 			0x33 / 255.0);
@@ -2074,59 +2135,63 @@ void reset() {
 	if (argcSave > 1)
 		interactive = atoi(argvSave[1]);	// Interactive (0) or no (>0)
 	if (argcSave > 2)
-		alpha[0] = atof(argvSave[2]);		// start x
+		alpha[0] = atof(argvSave[2]);	// start x
 	if (argcSave > 3)
-		alpha[1] = atof(argvSave[3]);		// start y
+		alpha[1] = atof(argvSave[3]);	// start y
 	if (argcSave > 4)
 		alpha[2] = atof(argvSave[4]);// start theta1, convert from degree to radian
 	if (argcSave > 5)
 		alpha[3] = atof(argvSave[5]);// start theta2, convert from degree to radian
 	if (argcSave > 6)
-		beta[0] = atof(argvSave[6]);		// goal x
+		beta[0] = atof(argvSave[6]);	// goal x
 	if (argcSave > 7)
-		beta[1] = atof(argvSave[7]);		// goal y
+		beta[1] = atof(argvSave[7]);	// goal y
 	if (argcSave > 8)
 		beta[2] = atof(argvSave[8]);// goal theta1, convert from degree to radian
 	if (argcSave > 9)
 		beta[3] = atof(argvSave[9]);// goal theta2, convert from degree to radian
 	if (argcSave > 10)
-		epsilon = atof(argvSave[10]);		// epsilon (resolution)
+		epsilon = atof(argvSave[10]);	// epsilon (resolution)
 	if (argcSave > 11)
-		L1 = atof(argvSave[11]);		// robot length1
+		L1 = atof(argvSave[11]);	// robot length1
 	if (argcSave > 12)
-		L2 = atof(argvSave[12]);		// robot length2
-	if (argcSave > 13)
+		L2 = atof(argvSave[12]);	// robot length2
+	if (argcSave > 13) {
 		thickness = atof(argvSave[13]);		// robot thickness
+		thickness = 0;// temporarily set thickness to 0 in non-crossing version
+	}
 	if (argcSave > 14)
 		fileName = argvSave[14]; 		// Input file name
 	if (argcSave > 15)
-		boxWidth = atof(argvSave[15]);		// boxWidth
+		boxWidth = atof(argvSave[15]); 		// boxWidth
 	if (argcSave > 16)
-		boxHeight = atof(argvSave[16]);	// boxHeight
+		boxHeight = atof(argvSave[16]); 		// boxHeight
 	if (argcSave > 17)
-		windowPosX = atoi(argvSave[17]);	// window X pos
+		windowPosX = atoi(argvSave[17]); 		// window X pos
 	if (argcSave > 18)
-		windowPosY = atoi(argvSave[18]);	// window Y pos
+		windowPosY = atoi(argvSave[18]); 		// window Y pos
 	if (argcSave > 19)
-		QType = atoi(argvSave[19]);	// PriorityQ Type (random or no)
+		QType = atoi(argvSave[19]); 		// PriorityQ Type (random or no)
 	if (argcSave > 20)
-		seed = atoi(argvSave[20]);		// for random number generator
+		seed = atoi(argvSave[20]); 		// for random number generator
 	if (argcSave > 21)
-		inputDir = argvSave[21];		// path for input files
+		inputDir = argvSave[21]; 		// path for input files
 	if (argcSave > 22)
-		deltaX = atof(argvSave[22]);	// x-translation of input file
+		deltaX = atof(argvSave[22]); 		// x-translation of input file
 	if (argcSave > 23)
-		deltaY = atof(argvSave[23]);	// y-translation of input file
+		deltaY = atof(argvSave[23]); 		// y-translation of input file
 	if (argcSave > 24)
-		scale = atof(argvSave[24]);		// scaling of input file
+		scale = atof(argvSave[24]); 		// scaling of input file
 	if (argcSave > 25)
-		verboseOption = atoi(argvSave[25]);	// verboseOption
+		verboseOption = atoi(argvSave[25]); 		// verboseOption
 	if (argcSave > 26)
-		title = argvSave[26];		// title
+		title = argvSave[26]; 		// title
 	if (argcSave > 27)
-		twoStrategyOption = atoi(argvSave[27]);	// two Strategy Option (0: original 1: smarter)
+		twoStrategyOption = atoi(argvSave[27]); // two Strategy Option (0: original 1: smarter)
 	if (argcSave > 28)
-		sizeOfPhiB = atoi(argvSave[28]);// threshold for splitting angles  |Phi(B)|
+		sizeOfPhiB = atoi(argvSave[28]); // threshold for splitting angles  |Phi(B)|
+	if (argcSave > 29)
+		crossingOption = atoi(argvSave[29]); // crossing option (0: original 1:non-crossing)
 }
 
 //init FBO
@@ -2177,7 +2242,7 @@ void initFbo() {
 	if (status != GL_FRAMEBUFFER_COMPLETE)
 		exit(1);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);	// Unbind the FBO for now
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); 		// Unbind the FBO for now
 }
 
 void redrawFBO() {

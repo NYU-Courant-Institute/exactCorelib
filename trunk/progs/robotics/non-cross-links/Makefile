@@ -130,6 +130,7 @@ smarterStrategy = 0 # Two-Strategy Option    0: original 1: smarter
 smarterStrategy = 1 # Two-Strategy Option    0: original 1: smarter
 
 threshold = 4		# threshold for angular split: if |phi(B)| <= threshold,
+crossing = 1        # the crossing option (0: original 1: non-crossing)
 			#	then we may do angular split
 			# threshold = 0,1,2,...
 #=================================================
@@ -289,6 +290,19 @@ eg2: ./2-links
 		$(verbose) "Eg2: 8-ways with 3 more obstacles" \
 		$(smarterStrategy) \
 		$(threshold) \
+		&
+		
+eg2a: ./2-links
+	@echo "Target eg2: 8-way junction non-crossing test" 
+	./2-links $(interactive) 216 297 155 115 210 220 260 200\
+		4 85 80 8 zigzagrotation.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		0 0 1 \
+		$(verbose) "Eg2: 8-ways with 3 more obstacles" \
+		$(smarterStrategy) \
+		$(threshold) \
+		$(crossing) \
 		&
 
 # eg3: input3.txt is a junction with 8 convergent passages
@@ -454,8 +468,6 @@ eg8a hsua: ./2-links
 
 eg9 narrow: ./2-links
 	@echo "Target eg9: 1st test example from Chee and Zhongdi"
-#	@echo "	There is a path passage... when radius=6, epsilon=1"
-#	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 215 370 0 125 195 160 270 0\
 		4 90 65 $(thickness) narrowCorridor.txt \
 		512 512 $(windowPosX) $(windowPosY) \
@@ -464,6 +476,20 @@ eg9 narrow: ./2-links
 		$(verbose) "Eg 9:  Narrow Corridor" \
 		$(smarterStrategy) \
 		$(threshold) \
+		&
+		
+eg9b narrowb: ./2-links
+	@echo "Target eg9b: test the differences between crossing and non-crossing"
+
+	./2-links $(interactive) 185 370 0 270 175 160 270 0\
+		4 110 90 $(thickness) narrowCorridor.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		0 0 0.065 \
+		$(verbose) "Eg 9b:  Narrow Corridor non-crossing test" \
+		$(smarterStrategy) \
+		$(threshold) \
+		$(crossing) \
 		&
 		
 eg10 twoChambers: ./2-links
@@ -504,6 +530,19 @@ eg10b twoChambersb: ./2-links
 		$(verbose) "Eg 10b: 2 Chambers with shorter links - Greedy" \
 		1 \
 		6 \
+		&
+		
+eg10c twoChambersc: ./2-links
+	@echo "Target eg10c: test the differences between crossing and non-crossing"
+	./2-links $(interactive) 425 410 180 270 105 90 0 90\
+		4 87 87 $(thickness) 2chambers.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		-220 0 0.065 \
+		$(verbose) "Eg10c: 2 Chambers non-crossing test" \
+		$(smarterStrategy) \
+		$(threshold) \
+		$(crossing) \
 		&
 
 eg11 nestedRectangle: ./2-links

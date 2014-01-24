@@ -15,6 +15,7 @@
 //extern vector<int> srcInPolygons;
 
 extern int twoStrategyOption;
+extern int crossingOption;
 extern QuadTree* QT;
 extern int sizeOfPhiB;
 
@@ -49,7 +50,7 @@ public:
 
 };
 
-int Box::oppositeDir[4] = { 2, 3, 0, 1 };
+int Box::oppositeDir[5] = { 2, 3, 0, 1, 4 };
 
 bool hasIntersectionLR(double xs, double ys, double xe, double ye, double xleft,
 		double ytop, double xr, double yb);
@@ -124,6 +125,8 @@ bool Box::split2D(double epsilon, vector<Box*>& chldn) {
 		children[i]->xi[1] = this->xi[1];
 		children[i]->xi[2] = this->xi[2];
 		children[i]->xi[3] = this->xi[3];
+
+		children[i]->order = ALL;
 	}
 
 	children[0]->Nhbrs[1].push_back(children[1]);
@@ -543,20 +546,119 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 
 	this->isLeaf = false;
 //	vector<Box*> children;
+	if (crossingOption) {
+		vector<AngleRange> tempZone1;
+		for (vector<AngleRange>::iterator it = l1SafeZone.begin();
+				it != l1SafeZone.end(); it++) {
+			if (it->lowerBound > it->upperBound) {
+				if (360 - it->lowerBound > 0.01) {
+					AngleRange tempRange1(it->lowerBound, 360);
+					tempZone1.push_back(tempRange1);
+				}
+				if (it->upperBound > 0.01) {
+					AngleRange tempRange2(0, it->upperBound);
+					tempZone1.push_back(tempRange2);
+				}
+//				it = l1SafeZone.erase(it);
+
+			} else {
+				if (it->upperBound - it->lowerBound > 0.01) {
+					AngleRange tempRange(it->lowerBound, it->upperBound);
+					tempZone1.push_back(tempRange);
+				}
+			}
+
+		}
+		l1SafeZone = tempZone1;
+		vector<AngleRange> tempZone2;
+		for (vector<AngleRange>::iterator it = l2SafeZone.begin();
+				it != l2SafeZone.end(); it++) {
+			if (it->lowerBound > it->upperBound) {
+				if (360 - it->lowerBound > 0.01) {
+					AngleRange tempRange1(it->lowerBound, 360);
+					tempZone2.push_back(tempRange1);
+				}
+				if (it->upperBound > 0.01) {
+					AngleRange tempRange2(0, it->upperBound);
+					tempZone2.push_back(tempRange2);
+				}
+				//				it = l1SafeZone.erase(it);
+
+			} else {
+				if (it->upperBound - it->lowerBound > 0.01) {
+					AngleRange tempRange(it->lowerBound, it->upperBound);
+					tempZone2.push_back(tempRange);
+				}
+			}
+		}
+		l2SafeZone = tempZone2;
+	}
+
+//	double oldL1LowerBound = -1;
+//	double oldL1UpperBound = -1;
+//	double oldL2LowerBound = -1;
+//	double oldL2UpperBound = -1;
 
 	for (int i = 0; i < (int) l1SafeZone.size(); i++) {
 		for (int j = 0; j < (int) l2SafeZone.size(); j++) {
-			Box* child = new Box(x, y, width, height);
+			for (int l = 0; l < crossingOption + 1; l++) {
+
+				Box* child = new Box(x, y, width, height);
 //					child->depth = this->depth + 1;
-			child->isBig = false;
-			child->pParent = this;
-			child->rChildID = i;
-			child->status = FREE;
+				child->isBig = false;
+				child->pParent = this;
+				child->rChildID = i * j * l + j * l + l;
+				child->status = FREE;
+
+				child->xi[0] = l1SafeZone[i].lowerBound;
+				child->xi[1] = l1SafeZone[i].upperBound;
+				child->xi[2] = l2SafeZone[j].lowerBound;
+				child->xi[3] = l2SafeZone[j].upperBound;
+
+				if (crossingOption) {
+					if (l == 0) {
+						child->order = LT;
+						if (child->xi[0] > child->xi[3]) {
+							continue;
+						}
+					} else {
+						child->order = GT;
+						if (child->xi[2] > child->xi[1]) {
+							continue;
+						}
+					}
+					for (vector<Box*>::iterator it = chldn.begin();
+							it != chldn.end(); it++) {
+						if ((*it)->xi[1] == 360 && child->xi[0] == 0
+								&& (*it)->xi[2] == child->xi[2]
+								&& (*it)->xi[3] == child->xi[3]
+								&& (*it)->order != child->order) {
+//							if (child->Nhbrs[4].size() == 0) {
+							child->Nhbrs[4].push_back(*it);
+//							}
+							if (std::find((*it)->Nhbrs[4].begin(),
+									(*it)->Nhbrs[4].end(), child)
+									== (*it)->Nhbrs[4].end()) {
+								(*it)->Nhbrs[4].push_back(child);
+							}
+						}
+						if ((*it)->xi[3] == 360 && child->xi[2] == 0
+								&& (*it)->xi[0] == child->xi[0]
+								&& (*it)->xi[1] == child->xi[1]
+								&& (*it)->order != child->order) {
+//							if (child->Nhbrs[4].size() == 0) {
+							child->Nhbrs[4].push_back(*it);
+//							}
+							if (std::find((*it)->Nhbrs[4].begin(),
+									(*it)->Nhbrs[4].end(), child)
+									== (*it)->Nhbrs[4].end()) {
+								(*it)->Nhbrs[4].push_back(child);
+							}
+						}
+					}
+				}
 //			this->status = FREE;
-			child->xi[0] = l1SafeZone[i].lowerBound;
-			child->xi[1] = l1SafeZone[i].upperBound;
-			child->xi[2] = l2SafeZone[j].lowerBound;
-			child->xi[3] = l2SafeZone[j].upperBound;
+
 //			std::cout << "Box::splitAngle i=" << i << endl;
 //			std::cout << "Box::splitAngle j=" << j << endl;
 //			std::cout << "Box::splitAngle xi=" << child->xi[0] << " "
@@ -565,17 +667,18 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 
 //			children.push_back(child);
 
-			for (int k = 0; k < 4; ++k) {
-				for (vector<Box*>::iterator itBNhbrs = this->Nhbrs[k].begin();
-						itBNhbrs != this->Nhbrs[k].end(); ++itBNhbrs) {
-					Box* b = *itBNhbrs;
+				for (int k = 0; k < 4; ++k) {
+					for (vector<Box*>::iterator itBNhbrs =
+							this->Nhbrs[k].begin();
+							itBNhbrs != this->Nhbrs[k].end(); ++itBNhbrs) {
+						Box* b = *itBNhbrs;
 //					int foundDst = 0;
 //					for (int j = 0; j < 2; ++j) {
-					int idx = isNhbr(child, b);
-					if (idx != -1) {
-						child->Nhbrs[idx].push_back(b);
+						int idx = isNhbr(child, b);
+						if (idx != -1) {
+							child->Nhbrs[idx].push_back(b);
 //						if (foundDst == 0) {
-						//TODO commented by Zhongdi 08/27/2013
+							//TODO commented by Zhongdi 08/27/2013
 //						for (vector<Box*>::iterator itBNhbrsOppo =
 //								b->Nhbrs[oppositeDir[idx]].begin();
 //								itBNhbrsOppo != b->Nhbrs[oppositeDir[idx]].end();
@@ -589,19 +692,23 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 //						}
 
 //						} else {
-						b->Nhbrs[oppositeDir[idx]].push_back(child);
+							b->Nhbrs[oppositeDir[idx]].push_back(child);
 //						}
 //						++foundDst;
-					}
+						}
 //					}
 //					assert(foundDst > 0 && foundDst < 3);
+					}
 				}
+
+				pAllLeaf->push_back(child);
+				chldn.push_back(child);
 			}
-
-			pAllLeaf->push_back(child);
-			chldn.push_back(child);
-
+//			oldL2LowerBound = l2SafeZone[i].lowerBound;
+//			oldL2UpperBound = l2SafeZone[i].upperBound;
 		}
+//		oldL1LowerBound = l1SafeZone[i].lowerBound;
+//		oldL1UpperBound = l1SafeZone[i].upperBound;
 	}
 
 //	Box* children[2];
@@ -789,7 +896,7 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 		}
 	}
 //	cout<<"checkChildStatus 722"<<endl;
-	double mindistC = mindistW + 1; //mindistC may not exist, so init to a bigger number
+	double mindistC = mindistW + 1;	//mindistC may not exist, so init to a bigger number
 	Corner* nearestCorner = NULL;
 	if (corners.size()) {
 		list<Corner*>::iterator iterC = corners.begin();
@@ -899,6 +1006,7 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 //    1: b2 is above b1
 //    2: b2 is on the left of b1
 //    3  b2 is under b1
+//    4  b1 and b2 have the same translational position
 int Box::isNhbr(Box* b1, Box* b2) {
 	double xmin1 = b1->x - b1->width / 2;
 	double xmax1 = b1->x + b1->width / 2;
@@ -913,18 +1021,28 @@ int Box::isNhbr(Box* b1, Box* b2) {
 			|| !isArcIntsct(b1->xi[2], b1->xi[3], b2->xi[2], b2->xi[3])) {
 		return -1;
 	}
-	if (isEq(xmin1, xmax2) && isOneContainAnotherY(b1, b2)) {
+	if (isEq(xmin1, xmax2) && isOneContainAnotherY(b1, b2)
+			&& (!crossingOption || (b1->order == b2->order && b1->order != NON)
+					|| b1->order == ALL || b2->order == ALL)) {
 		return 2;
 	}
-	if (isEq(xmax1, xmin2) && isOneContainAnotherY(b1, b2)) {
+	if (isEq(xmax1, xmin2) && isOneContainAnotherY(b1, b2)
+			&& (!crossingOption || (b1->order == b2->order && b1->order != NON)
+					|| b1->order == ALL || b2->order == ALL)) {
 		return 0;
 	}
-	if (isEq(ymin1, ymax2) && isOneContainAnotherX(b1, b2)) {
+	if (isEq(ymin1, ymax2) && isOneContainAnotherX(b1, b2)
+			&& (!crossingOption || (b1->order == b2->order && b1->order != NON)
+					|| b1->order == ALL || b2->order == ALL)) {
 		return 3;
 	}
-	if (isEq(ymax1, ymin2) && isOneContainAnotherX(b1, b2)) {
+	if (isEq(ymax1, ymin2) && isOneContainAnotherX(b1, b2)
+			&& (!crossingOption || (b1->order == b2->order && b1->order != NON)
+					|| b1->order == ALL || b2->order == ALL)) {
 		return 1;
 	}
+	// for case 4, we are not using this function to check the connectivity. We maintain the connectivity just after the angler splitting
+
 //	//down
 //	if (isEq(b1->xi[0], b2->xi[1]) && isOneContainAnotherX(b1, b2)
 //			&& isOneContainAnotherY(b1, b2)) {
@@ -947,6 +1065,9 @@ void Box::updateStatusBig() {
 	if (pParent) {
 		status = pParent->checkChildStatus(this->x, this->y, this->width,
 				false);
+		if (status == FREE) {
+			order == ALL;
+		}
 	} else {
 		status = MIXED;
 	}
@@ -955,7 +1076,7 @@ void Box::updateStatusBig() {
 		return;
 	}
 //	cout<<"updateStatusBig 881"<<endl;
-	// TODO should add the clearance filter to determine a box stuck or free directly. this part is unnecessary.
+// TODO should add the clearance filter to determine a box stuck or free directly. this part is unnecessary.
 	double outerDomain = r0 + rB + thickness / 2;
 	double innerDomain = thickness / 2 > rB ? thickness / 2 - rB : 0;
 	for (list<Corner*>::iterator it = corners.begin(); it != corners.end();) {
@@ -1356,7 +1477,7 @@ AngleRange calcAngleRangeCB(double l, double t, double xc, double yc, Box* b) {
 		tempPoints.push_back(tempPoint);
 	}
 
-	// calculate the anglerange of the specific wall
+// calculate the anglerange of the specific wall
 	AngleRange tempAngleRange(0, 0);
 	map<double, double> tempAngles;
 	for (vector<Point>::iterator it = tempPoints.begin();
@@ -1561,7 +1682,7 @@ AngleRange calcAngleRange(map<double, double> angles, double l, double t) {
 
 	}
 
-	// if robot has thickness, expand the forbidden range.
+// if robot has thickness, expand the forbidden range.
 	bool isStuck = 0;
 	double fixRange1 = 0;
 	if (minAngleDistance < t / 2) {

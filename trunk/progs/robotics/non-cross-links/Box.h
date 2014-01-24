@@ -22,6 +22,7 @@ const int BOARDHEIGHT = 512;
 
 using namespace std;
 
+extern int crossingOption;
 class BoxNode {
 public:
 	BoxNode() {
@@ -173,7 +174,7 @@ private:
 
 	void updateStatusBig();
 
-	static int oppositeDir[4];	// = {2, 3, 0, 1, 6, 5};
+	static int oppositeDir[5];	// = {2, 3, 0, 1, 4};
 
 public:
 	//friend class BoxIter;
@@ -192,7 +193,7 @@ public:
 
 	static vector<Box*>* pAllLeaf;
 
-	vector<Box*> Nhbrs[4];
+	vector<Box*> Nhbrs[5];
 	bool isBig;
 	int tChildID;
 	int rChildID;
@@ -209,6 +210,12 @@ public:
 		FREE, STUCK, MIXED, UNKNOWN
 	};
 	Status status;
+	enum Order {
+		NON, ALL, LT, GT
+	};
+
+	Order order;
+
 	Set* pSet;
 	list<Corner*> corners;
 	list<Wall*> walls;
@@ -226,8 +233,8 @@ public:
 	Box(double xx, double yy, double w, double h) :
 			depth(1), x(xx), y(yy), width(w), height(h), isLeaf(true), isBig(
 					true), tChildID(-1), rChildID(-1), pParent(0), status(
-					UNKNOWN), pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(
-					false), shouldSplit2D(false), safeRanges(0) {
+					UNKNOWN), order(NON), pSet(0), dist2Source(-1), heapId(-1), prev(
+					0), visited(false), shouldSplit2D(false), safeRanges(0) {
 		rB = sqrt(width * width + height * height) / 2;
 		priority = Box::counter;
 
@@ -454,6 +461,18 @@ public:
 	bool contains(double x, double y, double a1, double a2) {
 		bool containsA1 = false;
 		bool containsA2 = false;
+
+//		if (crossingOption) {
+//			Order tempOrder = NON;
+//			if (a1 > a2) {
+//				tempOrder = GT;
+//			} else {
+//				tempOrder = LT;
+//			}
+//			if (order != ALL || order != tempOrder) {
+//				return false;
+//			}
+//		}
 
 		if (this->x + width / 2 >= x && this->x - width / 2 <= x
 				&& this->y + height / 2 >= y && this->y - height / 2 <= y) {

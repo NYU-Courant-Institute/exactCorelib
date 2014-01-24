@@ -85,7 +85,7 @@ public:
 	void decreaseKey(vector<Box*>& bv, Box* b, double dist) {
 		//CmpFunctor cmp;
 		assert(bv[b->heapId] == b);
-		assert(b->dist2Source > dist);
+		assert(b->dist2Source >= dist);
 
 		b->dist2Source = dist;
 		int bid = b->heapId;
@@ -214,7 +214,7 @@ public:
 				path.push_back(current);
 				break;
 			}
-			for (int i = 0; i < 4; ++i) {
+			for (int i = 0; i < 5; ++i) {
 //				cout << "current->Nhbrs[i].size() = "
 //						<< current->Nhbrs[i].size() << endl;
 				for (vector<Box*>::iterator it = current->Nhbrs[i].begin();
@@ -238,7 +238,7 @@ public:
 							dist_heap.insert(bv, neighbor);
 
 						} else {
-							if (neighbor->dist2Source > dist2src
+							if (neighbor->dist2Source >= dist2src
 //									|| (neighbor->dist2Source == 0
 //											&& neighbor != a)
 											) {
@@ -290,7 +290,7 @@ public:
 				foundB = true;
 				break;
 			}
-			for (int i = 0; i < 4; ++i) {
+			for (int i = 0; i < 5; ++i) {
 				for (vector<Box*>::iterator it = current->Nhbrs[i].begin();
 						it != current->Nhbrs[i].end(); ++it) {
 					Box* neighbor = *it;
