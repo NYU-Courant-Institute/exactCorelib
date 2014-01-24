@@ -466,24 +466,24 @@ eg8a hsua: ./2-links
 #		&
 
 
-#eg9 narrow: ./2-links
-#	@echo "Target eg9: 1st test example from Chee and Zhongdi"
-#	./2-links $(interactive) 215 370 0 125 195 160 270 0\
-#		4 90 65 $(thickness) narrowCorridor.txt \
-#		512 512 $(windowPosX) $(windowPosY) \
-#		$(Qtype) $(seed)  $(inputDir) \
-#		0 0 0.065 \
-#		$(verbose) "Eg 9:  Narrow Corridor" \
-#		$(smarterStrategy) \
-#		$(threshold) \
-#		$(crossing) \
-#		&
-
 eg9 narrow: ./2-links
-	@echo "Target eg9c: test the differences between crossing and non-crossing"
+	@echo "Target eg9: 1st test example from Chee and Zhongdi"
+	./2-links $(interactive) 215 370 0 125 195 160 270 0\
+		4 90 65 $(thickness) narrowCorridor.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		$(Qtype) $(seed)  $(inputDir) \
+		0 0 0.065 \
+		$(verbose) "Eg 9:  Narrow Corridor" \
+		$(smarterStrategy) \
+		$(threshold) \
+		$(crossing) \
+		&
+		
+eg9b narrowb: ./2-links
+	@echo "Target eg9b: test the differences between crossing and non-crossing"
 
-	./2-links $(interactive) 185 370 0 270 175 160 270 280 \
-		4 110 110 $(thickness) narrowCorridor.txt \
+	./2-links $(interactive) 185 370 0 270 175 160 270 0\
+		4 110 90 $(thickness) narrowCorridor.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		0 0 0.065 \
@@ -492,12 +492,11 @@ eg9 narrow: ./2-links
 		$(threshold) \
 		1 \
 		&
+eg9c narrowb: ./2-links
+	@echo "Target eg9c: test the differences between crossing and non-crossing"
 
-eg9b narrowb: ./2-links
-	@echo "Target eg9b: test the differences between crossing and non-crossing"
-
-	./2-links $(interactive) 185 370 0 270 175 160 270 0\
-		4 110 90 $(thickness) narrowCorridor.txt \
+	./2-links $(interactive) 185 370 0 270 175 160 270 290 \
+		4 110 100 $(thickness) narrowCorridor.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		0 0 0.065 \

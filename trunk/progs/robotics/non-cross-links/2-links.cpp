@@ -1335,40 +1335,24 @@ void run() {
 
 }		//run
 
-//void drawTri(Box* b) {
-//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-//	glColor3f(1, 0, 0);
-//	glLineWidth(2);
-//	glBegin(GL_TRIANGLES);
-//
-//	glVertex2f(R0 * cos((b->xi[0]) * PI) + b->x,
-//			R0 * sin((b->xi[0]) * PI) + b->y);
-//	glVertex2f(R0 * cos((triRobo[0] + b->xi[0]) * PI) + b->x,
-//			R0 * sin((triRobo[0] + b->xi[0]) * PI) + b->y);
-//	glVertex2f(R0 * cos((triRobo[1] + b->xi[0]) * PI) + b->x,
-//			R0 * sin((triRobo[1] + b->xi[0]) * PI) + b->y);
-//
-//	glEnd();
-//	glLineWidth(1.0);
-//}
-//
-//void drawTri(Box* b, double x, double y) {
-//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-//	glColor3f(1, 0, 0);
-//	glLineWidth(2);
-//	glBegin(GL_TRIANGLES);
-//
-//	glVertex2f(R0 * cos((b->xi[0]) * PI) + x, R0 * sin((b->xi[0]) * PI) + y);
-//	glVertex2f(R0 * cos((triRobo[0] + b->xi[0]) * PI) + x,
-//			R0 * sin((triRobo[0] + b->xi[0]) * PI) + y);
-//	glVertex2f(R0 * cos((triRobo[1] + b->xi[0]) * PI) + x,
-//			R0 * sin((triRobo[1] + b->xi[0]) * PI) + y);
-//
-//	glEnd();
-//	glLineWidth(1.0);
-//}
 
-void drawLinks(Box* b) {
+//void drawLink(Box* b, double LinkLength)
+//	-- to draw a link at a box.  
+//	-- this is assuming non-crossing boxes
+void drawLink(Box* b, Box* bNext, int LinkNo, double len){
+		double tempAngle = b->xi[2*LinkNo];
+		if (b->order == Box::GT) {
+			tempAngle = b->xi[2*LinkNo+1];
+		}
+		glBegin (GL_LINES);
+		glVertex2f(b->x, b->y);
+		glVertex2f(len * cos((tempAngle / 180) * PI) + b->x,
+				len * sin((tempAngle / 180) * PI) + b->y);
+		glEnd();
+}
+
+
+void drawLinks(Box* b, Box* bNext) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor3f(0x00 / 255.0, 0x00 / 255.0, 0x33 / 255.0);
 	glLineWidth(thickness);
@@ -1376,29 +1360,20 @@ void drawLinks(Box* b) {
 		glLineWidth(3);
 	}
 // draw link1
-	if (crossingOption) {
-		double tempAngle = b->xi[0];
-		if (b->order == Box::GT) {
-			tempAngle = b->xi[1];
-		}
+	if (crossingOption) { // this means the non-crossing case
+	    drawLink(b, bNext, 0, L1);
+	} else { // crossing-case (draw the mid-value of the angular range
 		glBegin (GL_LINES);
 		glVertex2f(b->x, b->y);
-		glVertex2f(L1 * cos((tempAngle / 180) * PI) + b->x,
-				L1 * sin((tempAngle / 180) * PI) + b->y);
-		glEnd();
-
-	} else {
-		glBegin (GL_LINES);
-		glVertex2f(b->x, b->y);
-		glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
-				L1 * sin((b->xi[0] / 180) * PI) + b->y);
+		glVertex2f(L1 * cos(((b->xi[0]+b->xi[1])/ 360) * PI) + b->x,
+				L1 * sin(((b->xi[0]+b->xi[1]) / 360) * PI) + b->y);
 		glEnd();
 	}
 	glLineWidth(0.1);
 	filledCircle(thickness / 2 - 0.1, b->x, b->y, 0x00 / 255.0, 0x00 / 255.0,
 			0x33 / 255.0);
-	filledCircle(thickness / 2 - 0.1, L1 * cos((b->xi[0] / 180) * PI) + b->x,
-			L1 * sin((b->xi[0] / 180) * PI) + b->y, 0x00 / 255.0, 0x00 / 255.0,
+	filledCircle(thickness / 2 - 0.1, L1 * cos(((b->xi[0]+b->xi[1]) / 360) * PI) + b->x,
+			L1 * sin(((b->xi[0]+b->xi[1]) / 360) * PI) + b->y, 0x00 / 255.0, 0x00 / 255.0,
 			0x33 / 255.0);
 //// draw the arrows
 //	glLineWidth(2);
@@ -1422,28 +1397,20 @@ void drawLinks(Box* b) {
 	}
 	glColor3f(0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
 	if (crossingOption) {
-		double tempAngle = b->xi[2];
-		if (b->order == Box::LT) {
-			tempAngle = b->xi[3];
-		}
+	    	drawLink(b, 1, L2);
+	} else { // crossing-case (draw the mid-value of the angular range
 		glBegin (GL_LINES);
 		glVertex2f(b->x, b->y);
-		glVertex2f(L2 * cos((tempAngle / 180) * PI) + b->x,
-				L2 * sin((tempAngle / 180) * PI) + b->y);
-		glEnd();
-	} else {
-		glBegin (GL_LINES);
-		glVertex2f(b->x, b->y);
-		glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
-				L2 * sin((b->xi[2] / 180) * PI) + b->y);
+		glVertex2f(L2 * cos(((b->xi[2] +b->xi[3])/ 360) * PI) + b->x,
+				L2 * sin(((b->xi[2]+b->xi[3]) / 360) * PI) + b->y);
 		glEnd();
 	}
 
 	glLineWidth(0.1);
 	filledCircle(thickness / 2 - 0.1, b->x, b->y, 0xFF / 255.0, 0x00 / 255.0,
 			0x33 / 255.0);
-	filledCircle(thickness / 2 - 0.1, L2 * cos((b->xi[2] / 180) * PI) + b->x,
-			L2 * sin((b->xi[2] / 180) * PI) + b->y, 0xFF / 255.0, 0x00 / 255.0,
+	filledCircle(thickness / 2 - 0.1, L2 * cos(((b->xi[2]+b->xi[3]) / 360) * PI) + b->x,
+			L2 * sin(((b->xi[2]+b->xi[3]) / 360) * PI) + b->y, 0xFF / 255.0, 0x00 / 255.0,
 			0x33 / 255.0);
 //// draw the arrows
 //	glLineWidth(2);
@@ -1543,7 +1510,7 @@ void drawPath(vector<Box*>& path) {
 
 	if (path.size() != 0) {
 //		cout<<"drawPath path.size() = "<<path.size() << endl;
-		for (int i = path.size() - 1; i >= 0; i--) {
+		for (int i = path.size() - 2; i >= 0; i--) {
 			if ((animationOption == 3 || animationOption == 4)
 					&& (unsigned) i != path.size() - 1 - currentPathStep) {
 
@@ -1570,14 +1537,14 @@ void drawPath(vector<Box*>& path) {
 //						|| distSkipped >= DIST_TO_SKIP
 				))// && dist>= 1e-9 )
 				{
-					drawLinks(path[i]);
+					drawLinks(path[i],path[+1]);
 //					cout<<"drawLinks"<<endl;
 //					drawCircle(R0, 100, path[i]->x, path[i]->y, 0, 0, 1);
 					skipped = 0;
 					distSkipped = 0;
 				}
 			} else {
-				drawLinks(path[i]);
+				drawLinks(path[i],path[i+1]);
 //				drawCircle(R0, 100, path[i]->x, path[i]->y, 0, 0, 1);
 			}
 			if ((animationOption == 3 || animationOption == 4)

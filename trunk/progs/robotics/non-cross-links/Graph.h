@@ -215,6 +215,7 @@ public:
 			if (current->contains(beta[0], beta[1], beta[2], beta[3])
 					&& (!crossingOption || current->order == tempOrder)) {
 				path.push_back(current);
+				path.push_back(current);	// we duplicate this goal box in path for smooth animation
 				break;
 			}
 			for (int i = 0; i < 5; ++i) {
@@ -279,6 +280,7 @@ public:
 		while (path.back()->prev) {
 			path.push_back(path.back()->prev);
 		}
+		path.push_back(path.back());  // duplicate
 		return path;
 	}
 
