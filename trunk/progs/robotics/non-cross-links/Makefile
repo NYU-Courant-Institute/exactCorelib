@@ -130,7 +130,7 @@ smarterStrategy = 0 # Two-Strategy Option    0: original 1: smarter
 smarterStrategy = 1 # Two-Strategy Option    0: original 1: smarter
 
 threshold = 4		# threshold for angular split: if |phi(B)| <= threshold,
-crossing = 1        # the crossing option (0: original 1: non-crossing)
+crossing = 1        	# the crossing option (0: original 1: non-crossing)
 			#	then we may do angular split
 			# threshold = 0,1,2,...
 #=================================================
@@ -476,6 +476,7 @@ eg9 narrow: ./2-links
 		$(verbose) "Eg 9:  Narrow Corridor" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
 		&
 		
 eg9b narrowb: ./2-links
@@ -489,9 +490,22 @@ eg9b narrowb: ./2-links
 		$(verbose) "Eg 9b:  Narrow Corridor non-crossing test" \
 		$(smarterStrategy) \
 		$(threshold) \
-		$(crossing) \
+		1 \
 		&
-		
+eg9c narrowb: ./2-links
+	@echo "Target eg9c: test the differences between crossing and non-crossing"
+
+	./2-links $(interactive) 185 370 0 270 175 160 270 290 \
+		4 110 100 $(thickness) narrowCorridor.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		0 0 0.065 \
+		$(verbose) "Eg 9b:  Narrow Corridor non-crossing test" \
+		$(smarterStrategy) \
+		$(threshold) \
+		1 \
+		&
+				
 eg10 twoChambers: ./2-links
 	@echo "Target eg10: two Chamber environment using Greedy"
 	./2-links $(interactive) 425 410 180 270 105 90 90 0\

@@ -48,9 +48,11 @@ enum Status {
 	FREE, STUCK, MIXED, UNKNOWN
 };
 
+/* We defined this in Box.h (Box::NON, etc)
 enum Order {
 	NON, ALL, LT, GT
 };
+*/
 
 class QuadTree {
 private:
@@ -120,18 +122,18 @@ public:
 	Box* getBox(double x, double y, double a1, double a2, int& ct) {
 		std::queue<Box*> q;
 //		std::cout << "getBox 113" << endl;
-		Order tempOrder;
+		Box::Order tempOrder;
 		if (a1 > a2) {
-			tempOrder = GT;
+			tempOrder = Box::GT;
 		} else {
-			tempOrder = LT;
+			tempOrder = Box::LT;
 		}
 		for (int i = 0; i < (int) allLeaf.size(); ++i) {
 			if (allLeaf[i]->contains(x, y, a1, a2)) {
 				//TODO added by Zhongdi 7/22/2013
 				if (allLeaf[i]->isFree()) {
 					if (crossingOption) {
-						if (allLeaf[i]->order == ALL
+						if (allLeaf[i]->order == Box::ALL
 								|| allLeaf[i]->order == tempOrder) {
 							return allLeaf[i];
 						} else {
@@ -198,7 +200,7 @@ public:
 //						}
 //						std::cout<<"getBox 153"<< endl;
 						if (crossingOption) {
-							if (cldrn[i]->order == ALL
+							if (cldrn[i]->order == Box::ALL
 									|| cldrn[i]->order == tempOrder) {
 								return cldrn[i];
 							} else {

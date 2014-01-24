@@ -323,11 +323,11 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 	dijkstraQueue<Cmp> dijQ;
 	dijQ.push(a);
 	toReset.push_back(a);
-	Order tempOrder;
+	Box::Order tempOrder;
 	if (beta[2] > beta[3]) {
-		tempOrder = GT;
+		tempOrder = Box::GT;
 	} else {
-		tempOrder = LT;
+		tempOrder = Box::LT;
 	}
 	while (!dijQ.empty()) {
 
@@ -417,7 +417,7 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 		if (current->status == Box::FREE
 				&& current->contains(beta[0], beta[1], beta[2], beta[3])) {
 			if (crossingOption) {
-				if (current->order == ALL || current->order == tempOrder) {
+				if (current->order == Box::ALL || current->order == tempOrder) {
 					isPath = true;
 					break;
 				}
@@ -650,7 +650,7 @@ int main(int argc, char* argv[]) {
 
 		//Chee: trying to get demos to take a "title string"
 		std::stringstream sss;
-		sss << "2-Links Control: " << title;	// create full file name
+		sss << "NonCrossing 2-Links Control: " << title;	// create full file name
 		std::string title_string = sss.str();
 //		const char * test("2-Links Demo");
 
@@ -1225,14 +1225,14 @@ void run() {
 			cout << "Goal Configuration is not free\n";
 			ssout << "Goal Configuration is not free\n";
 		}
-
+		/*
 		cout << boxA->x << " " << boxA->y << " " << boxA->xi[0] << " "
 				<< boxA->xi[1] << " " << boxA->xi[2] << " " << boxA->xi[3]
 				<< endl;
 		cout << boxB->x << " " << boxB->y << " " << boxB->xi[0] << " "
 				<< boxB->xi[1] << " " << boxB->xi[2] << " " << boxB->xi[3]
 				<< endl;
-
+		*/
 		if (!noPath) {
 			if (QType == 2) {
 				noPath = !findPath<DistCmp>(boxA, boxB, QT, ct);
@@ -1377,7 +1377,7 @@ void drawLinks(Box* b) {
 // draw link1
 	if (crossingOption) {
 		double tempAngle = b->xi[0];
-		if (b->order == GT) {
+		if (b->order == Box::GT) {
 			tempAngle = b->xi[1];
 		}
 		glBegin(GL_LINES);
@@ -1422,7 +1422,7 @@ void drawLinks(Box* b) {
 	glColor3f(0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
 	if (crossingOption) {
 		double tempAngle = b->xi[2];
-		if (b->order == LT) {
+		if (b->order == Box::LT) {
 			tempAngle = b->xi[3];
 		}
 		glBegin(GL_LINES);

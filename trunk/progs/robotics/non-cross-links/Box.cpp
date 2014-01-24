@@ -1065,9 +1065,9 @@ void Box::updateStatusBig() {
 	if (pParent) {
 		status = pParent->checkChildStatus(this->x, this->y, this->width,
 				false);
-		if (status == FREE) {
-			order == ALL;
-		}
+		//if (status == FREE) {
+		//	order = ALL;
+		//}
 	} else {
 		status = MIXED;
 	}
