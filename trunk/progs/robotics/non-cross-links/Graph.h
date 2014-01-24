@@ -195,22 +195,25 @@ public:
 		dist_heap.insert(bv, a);
 //		cout<< "bv.size()"<<bv.size()<<endl;
 		vector<Box*> path;
-
+		Box::Order tempOrder = Box::LT;
+		if (beta[2] > beta[3]) {
+			tempOrder = Box::GT;
+		}
 
 		while (bv.size()) {
 //			cout << "bv.size() = " << bv.size() << endl;
 //			cout<< "b->prev " << b->prev<<endl;
 
-
 			Box* current = dist_heap.extractMin(bv);
-			if(current->visited){
+			if (current->visited) {
 				continue;
 			}
 			current->visited = true;
 
 //			cout<<current->x<< " "<<current->y<<" "<<current->width<<" "<<current->status<<" "<<endl;
 
-			if (current->contains(beta[0], beta[1], beta[2], beta[3])) {
+			if (current->contains(beta[0], beta[1], beta[2], beta[3])
+					&& (!crossingOption || current->order == tempOrder)) {
 				path.push_back(current);
 				break;
 			}
@@ -241,7 +244,7 @@ public:
 							if (neighbor->dist2Source >= dist2src
 //									|| (neighbor->dist2Source == 0
 //											&& neighbor != a)
-											) {
+									) {
 								neighbor->prev = current;
 								dist_heap.decreaseKey(bv, neighbor, dist2src);
 							}
