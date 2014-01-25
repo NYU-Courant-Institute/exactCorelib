@@ -190,16 +190,18 @@ private:
 
 public:
 	vector<Box*> dijkstraShortestPath(Box* a, Box* b) {
+//		cout << "Graph.h line193" << endl;
 		a->dist2Source = 0;
 		vector<Box*> bv;
 		dist_heap.insert(bv, a);
+//		cout << "Graph.h line196" << endl;
 //		cout<< "bv.size()"<<bv.size()<<endl;
 		vector<Box*> path;
 		Box::Order tempOrder = Box::LT;
 		if (beta[2] > beta[3]) {
 			tempOrder = Box::GT;
 		}
-
+//		cout << "Graph.h line202" << endl;
 		while (bv.size()) {
 //			cout << "bv.size() = " << bv.size() << endl;
 //			cout<< "b->prev " << b->prev<<endl;
@@ -209,13 +211,12 @@ public:
 				continue;
 			}
 			current->visited = true;
-
+//			cout << "Graph.h line212" << endl;
 //			cout<<current->x<< " "<<current->y<<" "<<current->width<<" "<<current->status<<" "<<endl;
 
 			if (current->contains(beta[0], beta[1], beta[2], beta[3])
-					&& (!crossingOption || current->order == tempOrder)) {
+					&& (!crossingOption || current->order == Box::ALL ||current->order == tempOrder)) {
 				path.push_back(current);
-				path.push_back(current);	// we duplicate this goal box in path for smooth animation
 				break;
 			}
 			for (int i = 0; i < 5; ++i) {
@@ -234,7 +235,7 @@ public:
 
 //						cout << "neighbor->dist2Source = "
 //								<< neighbor->dist2Source << endl;
-
+//						cout << "Graph.h line236" << endl;
 //						dist_heap.insert(bv, neighbor);
 						if (neighbor->dist2Source == -1) {
 							neighbor->prev = current;
@@ -276,11 +277,15 @@ public:
 //				}
 //			}
 //		}
+//		cout << "Graph.h line278" << endl;
 // TODO check whether the src box is not the same box in path.
-		while (path.back()->prev) {
+		while (path.size() > 0 && path.back()->prev) {
+//			cout << "Graph.h line283" << endl;
+//			cout<<path.back()->prev->x<<" "<< path.back()->prev->y<<endl;
 			path.push_back(path.back()->prev);
+
 		}
-		path.push_back(path.back());  // duplicate
+//		cout << "Graph.h line285" << endl;
 		return path;
 	}
 
