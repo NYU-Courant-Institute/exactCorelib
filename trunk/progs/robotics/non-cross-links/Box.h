@@ -23,6 +23,9 @@ const int BOARDHEIGHT = 512;
 using namespace std;
 
 extern int crossingOption;
+
+double angleDistance(double a1, double a2);
+
 class BoxNode {
 public:
 	BoxNode() {
@@ -247,6 +250,8 @@ public:
 	}
 
 	static int isNhbr(Box* b1, Box* b2);
+
+
 
 	void updateStatus() {
 		if (this->isBig) {

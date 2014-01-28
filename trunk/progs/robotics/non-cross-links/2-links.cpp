@@ -78,6 +78,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+//#include <math.h>
 #include "Graph.h"
 #include "Timer.h"
 #include "stdlib.h"
@@ -170,6 +171,7 @@ int twoStrategyOption = 0; //  Two-Strategy Option    0: original 1: smarter
 int crossingOption = 0; //  Crossing Option    0: original  1: non-crossing
 string title("2-links Control Panel");	// title for control panel
 int sizeOfPhiB = 0;
+double bandwidth = 0;
 
 vector<Box*> PATH;
 
@@ -189,7 +191,7 @@ int mixSmallCount = 0;
 
 //controls triangle drawing along path
 const int TRIS_TO_SKIP = 20;
-const double DIST_TO_SKIP = 2;
+const double DIST_TO_SKIP = 0;
 
 int renderCount = 0;
 //int countAAA = 0;
@@ -230,6 +232,7 @@ GLUI_RadioGroup* radioShadeOption;
 GLUI_RadioGroup* radio2StrategyOption;
 GLUI_RadioGroup* radioCrossingOption;
 GLUI_EditText* textPhiB;
+GLUI_EditText* textBandwidth;
 GLUI_RadioGroup* radioVerboseOption;
 GLUI_EditText* editInput;
 GLUI_EditText* editDir;
@@ -846,12 +849,12 @@ int main(int argc, char* argv[]) {
 				"Split Until Epsilon or Phi(B) empty");
 		glui->add_radiobutton_to_group(radio2StrategyOption,
 				"Smarter Strategy");
+		radio2StrategyOption->set_int_val(twoStrategyOption);
 		textPhiB = glui->add_edittext("Phi(B) = ", GLUI_EDITTEXT_INT);
 		textPhiB->set_int_val(sizeOfPhiB);
 //		glui->add_radiobutton_to_group(radio2StrategyOption,
 //				"Smarter Strategy With Voronoi Approach");
 
-		radio2StrategyOption->set_int_val(twoStrategyOption);
 		glui->add_separator();
 
 		radioCrossingOption = glui->add_radiogroup();
@@ -859,6 +862,9 @@ int main(int argc, char* argv[]) {
 		glui->add_radiobutton_to_group(radioCrossingOption, "Allow-crossing");
 		glui->add_radiobutton_to_group(radioCrossingOption, "Non-crossing");
 		radioCrossingOption->set_int_val(crossingOption);
+
+		textBandwidth = glui->add_edittext("Bandwidth = ", GLUI_EDITTEXT_FLOAT);
+		textBandwidth->set_float_val(bandwidth);
 
 		glui->add_separator();
 
@@ -869,7 +875,7 @@ int main(int argc, char* argv[]) {
 		boxSelectedInfo->set_w(310);
 
 		textBox = new GLUI_TextBox(glui, true);
-		textBox->set_h(250);
+		textBox->set_h(220);
 		textBox->set_w(310);
 //		textBox->disable();
 
@@ -1107,6 +1113,14 @@ void run() {
 		twoStrategyOption = radio2StrategyOption->get_int_val();
 		crossingOption = radioCrossingOption->get_int_val();
 		sizeOfPhiB = textPhiB->get_int_val();
+		bandwidth = textBandwidth->get_float_val();
+		if (bandwidth > 180) {
+			bandwidth = 180;
+		}
+		if (bandwidth < 0) {
+			bandwidth = 0;
+		}
+		textBandwidth->set_float_val(bandwidth);
 
 		//update from glui live variables
 		fileName = editInput->get_text();
@@ -1159,6 +1173,7 @@ void run() {
 		editBetaTheta2->set_float_val(beta[3]);
 
 		QType = radioQType->get_int_val();
+
 	}
 
 	if (verboseOption) {
@@ -1186,7 +1201,9 @@ void run() {
 	if (QType == 0 || QType == 1) {
 		boxA = QT->getBox(alpha[0], alpha[1], alpha[2], alpha[3], ct);
 //		cout << "2-links.cpp-1173\n";
-		if (!boxA) {
+		if (!boxA
+				|| (crossingOption
+						&& angleDistance(alpha[2], alpha[3]) <= bandwidth)) {
 			noPath = true;
 			cout << "Start Configuration is not free\n";
 			ssout << "Start Configuration is not free\n";
@@ -1194,7 +1211,9 @@ void run() {
 //		cout << "2-links.cpp-1179\n";
 		boxB = QT->getBox(beta[0], beta[1], beta[2], beta[3], ct);
 //		cout << "2-links.cpp-1181\n";
-		if (!boxB) {
+		if (!boxB
+				|| (crossingOption
+						&& angleDistance(beta[2], beta[3]) <= bandwidth)) {
 			noPath = true;
 			cout << "Goal Configuration is not free\n";
 			ssout << "Goal Configuration is not free\n";
@@ -1214,14 +1233,18 @@ void run() {
 		}
 	} else if (QType == 2 || QType == 3 || QType == 4) {
 		boxA = QT->getBox(alpha[0], alpha[1], alpha[2], alpha[3], ct);
-		if (!boxA) {
+		if (!boxA
+				|| (crossingOption
+						&& angleDistance(alpha[2], alpha[3]) <= bandwidth)) {
 			noPath = true;
 			cout << "Start Configuration is not free\n";
 			ssout << "Start Configuration is not free\n";
 		}
 
 		boxB = QT->getBox(beta[0], beta[1], beta[2], beta[3], ct);
-		if (!boxB) {
+		if (!boxB
+				|| (crossingOption
+						&& angleDistance(beta[2], beta[3]) <= bandwidth)) {
 			noPath = true;
 			cout << "Goal Configuration is not free\n";
 			ssout << "Goal Configuration is not free\n";
@@ -1388,14 +1411,48 @@ void drawLinks(Box* b) {
 		}
 		// draw link1
 		if (crossingOption) {
-			double tempAngle = b->xi[i == 0 ? 0 : 3];
-//			if (i == 1 && tempAngle == 360) {
-//				if (tempAngle - angleFix > b->xi[1]) {
-//					tempAngle -= angleFix;
-//				}
-//			}
+			double tempAngle = 0;
+
+			double tempAngle1 = 0;
+			double tempAngle2 = 0;
+			double max = 0;
+			for (int j = 0; j <= 1; j++) {
+				for (int k = 2; k <= 3; k++) {
+					if (angleDistance(b->xi[j], b->xi[k]) > max
+							&& b->xi[j] < b->xi[k]) {
+						max = angleDistance(b->xi[j], b->xi[k]);
+						tempAngle1 = b->xi[j];
+						tempAngle2 = b->xi[k];
+					}
+				}
+			}
+			if (i == 0) {
+				tempAngle = tempAngle1;
+			} else {
+				tempAngle = tempAngle2;
+			}
+
 			if (b->order == Box::GT) {
-				tempAngle = b->xi[i == 0 ? 1 : 2];
+				tempAngle = 0;
+				tempAngle1 = 0;
+				tempAngle2 = 0;
+				max = 0;
+
+				for (int j = 0; j <= 1; j++) {
+					for (int k = 2; k <= 3; k++) {
+						if (angleDistance(b->xi[j], b->xi[k]) > max
+								&& b->xi[j] > b->xi[k]) {
+							max = angleDistance(b->xi[j], b->xi[k]);
+							tempAngle1 = b->xi[j];
+							tempAngle2 = b->xi[k];
+						}
+					}
+				}
+				if (i == 0) {
+					tempAngle = tempAngle1;
+				} else {
+					tempAngle = tempAngle2;
+				}
 
 //				if (i == 0 && tempAngle == 360) {
 //					if (tempAngle - angleFix > b->xi[3]) {
@@ -1446,7 +1503,6 @@ void drawLinks(Box* b) {
 		//	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
 		//			L1 * sin((b->xi[0] / 180) * PI) + b->y);
 		//	glEnd();
-
 	}
 
 //// draw link2
@@ -2166,6 +2222,7 @@ void resetAndRun() {
 	radioVerboseOption->set_int_val(verboseOption);
 	radio2StrategyOption->set_int_val(0);
 	textPhiB->set_int_val(sizeOfPhiB);
+	textBandwidth->set_float_val(bandwidth);
 	radioDrawOption->set_int_val(0);
 	radioShadeOption->set_int_val(0);
 	radioDrawPathOption->set_int_val(0);
@@ -2235,6 +2292,8 @@ void reset() {
 		sizeOfPhiB = atoi(argvSave[28]); // threshold for splitting angles  |Phi(B)|
 	if (argcSave > 29)
 		crossingOption = atoi(argvSave[29]); // crossing option (0: original 1:non-crossing)
+	if (argcSave > 30)
+		bandwidth = atof(argvSave[30]); // threshold for splitting angles  |Phi(B)|
 }
 
 //init FBO

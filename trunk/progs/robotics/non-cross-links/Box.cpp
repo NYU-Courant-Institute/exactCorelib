@@ -18,6 +18,7 @@ extern int twoStrategyOption;
 extern int crossingOption;
 extern QuadTree* QT;
 extern int sizeOfPhiB;
+extern double bandwidth;
 
 double Box::r0 = 0;
 double Box::l1 = 0;
@@ -618,12 +619,22 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 				if (crossingOption) {
 					if (l == 0) {
 						child->order = LT;
-						if (child->xi[0] > child->xi[3]) {
+						if (child->xi[0] + bandwidth >= child->xi[3]) {
+							continue;
+						}
+						if (angleDistance(child->xi[1], child->xi[2])
+								< bandwidth
+								&& abs(child->xi[1]- child->xi[2]) > 180) {
 							continue;
 						}
 					} else {
 						child->order = GT;
-						if (child->xi[2] > child->xi[1]) {
+						if (child->xi[2] + bandwidth >= child->xi[1]) {
+							continue;
+						}
+						if (angleDistance(child->xi[0], child->xi[3])
+								< bandwidth
+								&& abs(child->xi[0]- child->xi[3]) > 180) {
 							continue;
 						}
 					}
@@ -1055,6 +1066,10 @@ int Box::isNhbr(Box* b1, Box* b2) {
 //	}
 
 	return -1;
+}
+
+double angleDistance(double a1, double a2) {
+	return fmin(abs(a1 - a2), 360 - abs(a1 - a2));
 }
 
 void Box::updateStatusBig() {
