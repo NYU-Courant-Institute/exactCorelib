@@ -1370,116 +1370,141 @@ void run() {
 
 void drawLinks(Box* b) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glColor3f(0x00 / 255.0, 0x00 / 255.0, 0x33 / 255.0);
-	glLineWidth(thickness);
-	if (thickness < 3) {
-		glLineWidth(3);
-	}
-// draw link1
-	if (crossingOption) {
-		double tempAngle = b->xi[0];
-		if (b->order == Box::GT) {
-			tempAngle = b->xi[1];
+
+	double tempL = 0;
+	double angleFix = 10;
+	for (int i = 0; i < 2; i++) {
+		if (i == 0) {
+			tempL = L1;
+			glColor3f(0x00 / 255.0, 0x00 / 255.0, 0x33 / 255.0);
+		} else {
+			tempL = L2;
+			glColor3f(0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
 		}
-		glBegin(GL_LINES);
-		glVertex2f(b->x, b->y);
-		glVertex2f(L1 * cos((tempAngle / 180) * PI) + b->x,
-				L1 * sin((tempAngle / 180) * PI) + b->y);
-		glEnd();
-		glLineWidth(0.1);
-		filledCircle(thickness / 2 - 0.1, b->x, b->y, 0x00 / 255.0,
-				0x00 / 255.0, 0x33 / 255.0);
-		filledCircle(thickness / 2 - 0.1,
-				L1 * cos((tempAngle / 180) * PI) + b->x,
-				L1 * sin((tempAngle / 180) * PI) + b->y, 0x00 / 255.0,
-				0x00 / 255.0, 0x33 / 255.0);
 
-	} else {
-		glBegin(GL_LINES);
-		glVertex2f(b->x, b->y);
-		glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
-				L1 * sin((b->xi[0] / 180) * PI) + b->y);
-		glEnd();
-		glLineWidth(0.1);
-		filledCircle(thickness / 2 - 0.1, b->x, b->y, 0x00 / 255.0,
-				0x00 / 255.0, 0x33 / 255.0);
-		filledCircle(thickness / 2 - 0.1,
-				L1 * cos((b->xi[0] / 180) * PI) + b->x,
-				L1 * sin((b->xi[0] / 180) * PI) + b->y, 0x00 / 255.0,
-				0x00 / 255.0, 0x33 / 255.0);
-	}
-
-//// draw the arrows
-//	glLineWidth(2);
-//	glBegin(GL_LINES);
-//	glVertex2f((L1 - 5) * cos(((b->xi[0] - 5) / 180) * PI) + b->x,
-//			(L1 - 5) * sin(((b->xi[0] - 5) / 180) * PI) + b->y);
-//	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
-//			L1 * sin((b->xi[0] / 180) * PI) + b->y);
-//	glEnd();
-//	glBegin(GL_LINES);
-//	glVertex2f((double) ((L1 - 5) * cos(((b->xi[0] + 5) / 180) * PI) + b->x),
-//			(double) ((L1 - 5) * sin(((b->xi[0] + 5) / 180) * PI) + b->y));
-//	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
-//			L1 * sin((b->xi[0] / 180) * PI) + b->y);
-//	glEnd();
-
-// draw link2
-	glLineWidth(thickness);
-	if (thickness < 3) {
-		glLineWidth(3);
-	}
-	glColor3f(0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
-	if (crossingOption) {
-		double tempAngle = b->xi[2];
-		if (b->order == Box::LT) {
-			tempAngle = b->xi[3];
+		glLineWidth(thickness);
+		if (thickness < 3) {
+			glLineWidth(3);
 		}
-		glBegin(GL_LINES);
-		glVertex2f(b->x, b->y);
-		glVertex2f(L2 * cos((tempAngle / 180) * PI) + b->x,
-				L2 * sin((tempAngle / 180) * PI) + b->y);
-		glEnd();
-		glLineWidth(0.1);
-		filledCircle(thickness / 2 - 0.1, b->x, b->y, 0xFF / 255.0,
-				0x00 / 255.0, 0x33 / 255.0);
-		filledCircle(thickness / 2 - 0.1,
-				L2 * cos((tempAngle / 180) * PI) + b->x,
-				L2 * sin((tempAngle / 180) * PI) + b->y, 0xFF / 255.0,
-				0x00 / 255.0, 0x33 / 255.0);
-	} else {
-		glBegin(GL_LINES);
-		glVertex2f(b->x, b->y);
-		glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
-				L2 * sin((b->xi[2] / 180) * PI) + b->y);
-		glEnd();
-		glLineWidth(0.1);
-		filledCircle(thickness / 2 - 0.1, b->x, b->y, 0xFF / 255.0,
-				0x00 / 255.0, 0x33 / 255.0);
-		filledCircle(thickness / 2 - 0.1,
-				L2 * cos((b->xi[2] / 180) * PI) + b->x,
-				L2 * sin((b->xi[2] / 180) * PI) + b->y, 0xFF / 255.0,
-				0x00 / 255.0, 0x33 / 255.0);
+		// draw link1
+		if (crossingOption) {
+			double tempAngle = b->xi[i == 0 ? 0 : 3];
+//			if (i == 1 && tempAngle == 360) {
+//				if (tempAngle - angleFix > b->xi[1]) {
+//					tempAngle -= angleFix;
+//				}
+//			}
+			if (b->order == Box::GT) {
+				tempAngle = b->xi[i == 0 ? 1 : 2];
+
+//				if (i == 0 && tempAngle == 360) {
+//					if (tempAngle - angleFix > b->xi[3]) {
+//						tempAngle -= angleFix;
+//					}
+//				}
+			}
+
+			glBegin(GL_LINES);
+			glVertex2f(b->x, b->y);
+			glVertex2f(tempL * cos((tempAngle / 180) * PI) + b->x,
+					tempL * sin((tempAngle / 180) * PI) + b->y);
+			glEnd();
+			glLineWidth(0.1);
+			filledCircle(thickness / 2 - 0.1, b->x, b->y,
+					(i == 0 ? 0x00 : 0xFF) / 255.0, 0x00 / 255.0, 0x33 / 255.0);
+			filledCircle(thickness / 2 - 0.1,
+					tempL * cos((tempAngle / 180) * PI) + b->x,
+					tempL * sin((tempAngle / 180) * PI) + b->y,
+					(i == 0 ? 0x00 : 0xFF) / 255.0, 0x00 / 255.0, 0x33 / 255.0);
+
+		} else {
+			glBegin(GL_LINES);
+			glVertex2f(b->x, b->y);
+			glVertex2f(tempL * cos((b->xi[i == 0 ? 0 : 3] / 180) * PI) + b->x,
+					tempL * sin((b->xi[i == 0 ? 0 : 3] / 180) * PI) + b->y);
+			glEnd();
+			glLineWidth(0.1);
+			filledCircle(thickness / 2 - 0.1, b->x, b->y,
+					(i == 0 ? 0x00 : 0xFF) / 255.0, 0x00 / 255.0, 0x33 / 255.0);
+			filledCircle(thickness / 2 - 0.1,
+					tempL * cos((b->xi[i == 0 ? 0 : 3] / 180) * PI) + b->x,
+					tempL * sin((b->xi[i == 0 ? 0 : 3] / 180) * PI) + b->y,
+					(i == 0 ? 0x00 : 0xFF) / 255.0, 0x00 / 255.0, 0x33 / 255.0);
+		}
+
+		//// draw the arrows
+		//	glLineWidth(2);
+		//	glBegin(GL_LINES);
+		//	glVertex2f((L1 - 5) * cos(((b->xi[0] - 5) / 180) * PI) + b->x,
+		//			(L1 - 5) * sin(((b->xi[0] - 5) / 180) * PI) + b->y);
+		//	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
+		//			L1 * sin((b->xi[0] / 180) * PI) + b->y);
+		//	glEnd();
+		//	glBegin(GL_LINES);
+		//	glVertex2f((double) ((L1 - 5) * cos(((b->xi[0] + 5) / 180) * PI) + b->x),
+		//			(double) ((L1 - 5) * sin(((b->xi[0] + 5) / 180) * PI) + b->y));
+		//	glVertex2f(L1 * cos((b->xi[0] / 180) * PI) + b->x,
+		//			L1 * sin((b->xi[0] / 180) * PI) + b->y);
+		//	glEnd();
+
 	}
 
-//// draw the arrows
-//	glLineWidth(2);
-//	glBegin(GL_LINES);
-//	glVertex2f((L2 - 5) * cos(((b->xi[2] - 5) / 180) * PI) + b->x,
-//			(L2 - 5) * sin(((b->xi[2] - 5) / 180) * PI) + b->y);
-//	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
-//			L2 * sin((b->xi[2] / 180) * PI) + b->y);
-//	glEnd();
-//	glBegin(GL_LINES);
-//	glVertex2f((L2 - 5) * cos(((b->xi[2] + 5) / 180) * PI) + b->x,
-//			(L2 - 5) * sin(((b->xi[2] + 5) / 180) * PI) + b->y);
-//	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
-//			L2 * sin((b->xi[2] / 180) * PI) + b->y);
-//	glEnd();
-//	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box x=" << b->x << " y=" << b->y
-//			<< endl;
-//	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box xi[0]=" << b->xi[0] << " xi[1]="
-//			<< b->xi[1] << endl;
+//// draw link2
+//	glLineWidth(thickness);
+//	if (thickness < 3) {
+//		glLineWidth(3);
+//	}
+//	glColor3f(0xFF / 255.0, 0x00 / 255.0, 0x33 / 255.0);
+//	if (crossingOption) {
+//		double tempAngle = b->xi[2];
+//		if (b->order == Box::LT) {
+//			tempAngle = b->xi[3];
+//		}
+//		glBegin(GL_LINES);
+//		glVertex2f(b->x, b->y);
+//		glVertex2f(L2 * cos((tempAngle / 180) * PI) + b->x,
+//				L2 * sin((tempAngle / 180) * PI) + b->y);
+//		glEnd();
+//		glLineWidth(0.1);
+//		filledCircle(thickness / 2 - 0.1, b->x, b->y, 0xFF / 255.0,
+//				0x00 / 255.0, 0x33 / 255.0);
+//		filledCircle(thickness / 2 - 0.1,
+//				L2 * cos((tempAngle / 180) * PI) + b->x,
+//				L2 * sin((tempAngle / 180) * PI) + b->y, 0xFF / 255.0,
+//				0x00 / 255.0, 0x33 / 255.0);
+//	} else {
+//		glBegin(GL_LINES);
+//		glVertex2f(b->x, b->y);
+//		glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
+//				L2 * sin((b->xi[2] / 180) * PI) + b->y);
+//		glEnd();
+//		glLineWidth(0.1);
+//		filledCircle(thickness / 2 - 0.1, b->x, b->y, 0xFF / 255.0,
+//				0x00 / 255.0, 0x33 / 255.0);
+//		filledCircle(thickness / 2 - 0.1,
+//				L2 * cos((b->xi[2] / 180) * PI) + b->x,
+//				L2 * sin((b->xi[2] / 180) * PI) + b->y, 0xFF / 255.0,
+//				0x00 / 255.0, 0x33 / 255.0);
+//	}
+//
+////// draw the arrows
+////	glLineWidth(2);
+////	glBegin(GL_LINES);
+////	glVertex2f((L2 - 5) * cos(((b->xi[2] - 5) / 180) * PI) + b->x,
+////			(L2 - 5) * sin(((b->xi[2] - 5) / 180) * PI) + b->y);
+////	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
+////			L2 * sin((b->xi[2] / 180) * PI) + b->y);
+////	glEnd();
+////	glBegin(GL_LINES);
+////	glVertex2f((L2 - 5) * cos(((b->xi[2] + 5) / 180) * PI) + b->x,
+////			(L2 - 5) * sin(((b->xi[2] + 5) / 180) * PI) + b->y);
+////	glVertex2f(L2 * cos((b->xi[2] / 180) * PI) + b->x,
+////			L2 * sin((b->xi[2] / 180) * PI) + b->y);
+////	glEnd();
+////	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box x=" << b->x << " y=" << b->y
+////			<< endl;
+////	std::cout << "hahahahhhhhhhhhhhhhhhhhh  box xi[0]=" << b->xi[0] << " xi[1]="
+////			<< b->xi[1] << endl;
 	glLineWidth(1.0);
 }
 
