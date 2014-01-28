@@ -97,6 +97,7 @@ len1 = 65		# link1 length
 len2 = 85		# link2 length
 
 thickness = 10   	# thickness of robot
+bandwidth = 10   	# the minimum angle separation between the 2 links 
 
 inputDir = inputs	# where to find input files
 fileName = input2d.txt	# input environment file
@@ -156,11 +157,14 @@ testb: $(TARGETS)
     $(startX) $(startY)  $(startTheta1) $(startTheta2) \
     $(goalX) $(goalY) $(goalTheta1) $(goalTheta2) \
     $(epsilon)  $(len1) $(len2) $(thickness) input2.txt  $(boxWidth) $(boxHt) \
-    $(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
+    $(windowPosX) $(windowPosY) \
+    $(Qtype) $(seed) $(inputDir) \
     $(xtrans) $(ytrans) $(scale) \
     $(verbose) $(title) \
     $(smarterStrategy) \
-	$(threshold) \
+	$(threshold) 
+	$(crossing)\
+	$(bandwidth)\
 	&
 
 help:
@@ -229,6 +233,8 @@ egx:
 		$(verbose) $(title) \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # run with default compiled options:
@@ -250,6 +256,8 @@ egb: $(TARGETS)
 	    $(verbose) $(title) \
 	    $(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # Simple NO PATH example:
@@ -266,30 +274,36 @@ nopath eg0:	./2-links
 		$(verbose) $(title) \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 eg1: ./2-links
 	@echo "Target eg1: Barrier environment" 
-	./2-links $(interactive) 195 340 0 150 260 80  70 120\
-		4 50 70 $(thickness) basic3.txt \
+	./2-links $(interactive) 195 340 0 150 270 80  55 146\
+		4 46 60 $(thickness) basic3.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		0 0 1 \
 		$(verbose) "Eg1: Barrier environment" \
 		$(smarterStrategy) \
 		4 \
+		$(crossing) \
+		90 \
 		&
 
 eg2: ./2-links
 	@echo "Target eg2: 8-way junction" 
 	./2-links $(interactive) 216 297 115 155 210 220 260 200\
-		2 75 70 8 zigzagrotation.txt \
+		4 85 80 8 zigzagrotation.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		0 0 1 \
 		$(verbose) "Eg2: 8-ways with 3 more obstacles" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		30 \
 		&
 		
 eg2a: ./2-links
@@ -303,6 +317,7 @@ eg2a: ./2-links
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
+		$(bandwidth) \
 		&
 
 # eg3: input3.txt is a junction with 8 convergent passages
@@ -316,6 +331,8 @@ eg3 8way: ./2-links
 		$(verbose) "Eg3: 8 ways" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 eg3a 8waya: ./2-links
@@ -328,6 +345,8 @@ eg3a 8waya: ./2-links
 		$(verbose) "Eg3a: 8 ways" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 eg3b 8wayb: ./2-links
@@ -340,6 +359,8 @@ eg3b 8wayb: ./2-links
 		$(verbose) "Eg3b: 8 ways" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # BUG TRAPS:
@@ -358,6 +379,8 @@ eg4 egbug bug: ./2-links
 		$(verbose) "Eg4: Bugtrap" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # Bugtrap example -- Existence of path, but barely!
@@ -374,6 +397,8 @@ eg4a egbuga buga: ./2-links
 		$(verbose) "Eg4: Bugtrap" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 
@@ -389,6 +414,8 @@ eg5 egbug2 bug2: ./2-links
 		$(verbose) "Eg 5: Double Bugtrap"\
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # eg6: This environment is taken from Kavraki's groups Demo for OOPSMP:
@@ -404,20 +431,24 @@ eg6: ./2-links
 		$(verbose) "Eg6: Target DemoSE2_PRM (from Kavraki's group)"\
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # eg7, egtunnel:  tunnel example from Salzman et al.
 # 	NOTE that the current search strategy seems to miss the direct path!!
 # 	TODO: develop a better search (e.g. Best First Search)
 eg7 egtunnel tunnel: ./2-links
-	./2-links $(interactive) 200 280 90 0 450 300 0 90\
-		4 10 15 $(thickness) tunnel.poly \
+	./2-links $(interactive) 130 330 90 0 450 220 0 150\
+		4 40 35 $(thickness) tunnel.poly \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
+		3 1111 $(inputDir) \
 		100 200 0.05 \
 		$(verbose) "Eg7: Target DemoSE2_PRM (from Kavraki's group)"\
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 		
 
@@ -435,6 +466,8 @@ eg8 hsu: ./2-links
 		$(verbose) "Eg8: From paper of Hsu, Latombe, Kurniawatti (2006)" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 eg8a hsua: ./2-links
@@ -449,6 +482,8 @@ eg8a hsua: ./2-links
 		$(verbose) "Eg8a: From paper of Hsu, Latombe, Kurniawatti (2006)" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # eg8b hsub: ./2-links
@@ -463,6 +498,8 @@ eg8a hsua: ./2-links
 #		$(verbose) $(title) \
 #		$(smarterStrategy) \
 #		$(threshold) \
+		$(crossing) \
+#		$(bandwidth) \
 #		&
 
 
@@ -476,14 +513,16 @@ eg8a hsua: ./2-links
 #		$(verbose) "Eg 9:  Narrow Corridor" \
 #		$(smarterStrategy) \
 #		$(threshold) \
+		$(crossing) \
+#		$(bandwidth) \
 #		$(crossing) \
 #		&
 
 eg9 narrow: ./2-links
 	@echo "Target eg9: test the differences between crossing and non-crossing"
 
-	./2-links $(interactive) 185 370 0 270 175 160 270 280 \
-		4 110 110 $(thickness) narrowCorridor.txt \
+	./2-links $(interactive) 185 370 0 270 175 160 270 350 \
+		4 70 90 $(thickness) narrowCorridor.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		0 0 0.065 \
@@ -491,6 +530,7 @@ eg9 narrow: ./2-links
 		$(smarterStrategy) \
 		$(threshold) \
 		1 \
+		53 \
 		&
 
 eg9b narrowb: ./2-links
@@ -505,6 +545,7 @@ eg9b narrowb: ./2-links
 		$(smarterStrategy) \
 		$(threshold) \
 		1 \
+		$(bandwidth) \
 		&
 				
 eg10 twoChambers: ./2-links
@@ -517,6 +558,8 @@ eg10 twoChambers: ./2-links
 		$(verbose) "Eg 10: 2 Chambers" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 eg10a twoChambersa: ./2-links
@@ -531,6 +574,8 @@ eg10a twoChambersa: ./2-links
 		$(verbose) "Eg10a: 2 Chambers with shorter links - Random" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 		
 eg10b twoChambersb: ./2-links
@@ -558,6 +603,7 @@ eg10c twoChambersc: ./2-links
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
+		$(bandwidth) \
 		&
 
 eg11 nestedRectangle: ./2-links
@@ -572,6 +618,8 @@ eg11 nestedRectangle: ./2-links
 		$(verbose) "Eg 11: Nested Rectangle" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 		
 eg11a nestedRectangleA: ./2-links
@@ -607,6 +655,8 @@ eg100 100: ./2-links
 		$(verbose) "Eg 100: 100 randomly generated triangles" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # eg100a: 100 random triangles
@@ -621,6 +671,8 @@ eg100a 100a: ./2-links
 		$(verbose) "Eg 100a: 100 randomly generated triangles" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # eg150: 150 random triangles
@@ -634,6 +686,8 @@ eg150 150: ./2-links
 		$(verbose) "Eg 150: 150 randomly generated triangles" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # eg150a: 150 random triangles
@@ -647,6 +701,8 @@ eg150a 150a: ./2-links
 		$(verbose) "Eg 150a: 150 randomly generated triangles" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # eg150c: 150 random triangles
@@ -660,6 +716,8 @@ eg150c 150c: ./2-links
 		$(verbose) "Eg 150c: 150 randomly generated triangles" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # eg200: 200 random triangles
@@ -676,6 +734,8 @@ eg200 200: ./2-links
 		$(verbose) "Eg 200: 200 randomly generated triangles" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # eg200a: there is an obvious path but probabilistic methods might waste
@@ -695,6 +755,8 @@ eg200a 200a: ./2-links
 		$(verbose) "Eg 200: 200 randomly generated triangles" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # eg200b: there is no path because eps=10
@@ -713,6 +775,8 @@ eg200b: ./2-links
 		$(verbose) "Eg 200: 200 randomly generated triangles" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 # eg300: 300 random 2-links
@@ -731,6 +795,8 @@ eg300: ./2-links
 		$(verbose) "Eg 300: 300 randomly generated triangles" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 eg300a: ./2-links
@@ -746,6 +812,8 @@ eg300a: ./2-links
 		$(verbose) "Eg 300a: 300 randomly generated triangles" \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 
 eg12: ./2-links
@@ -757,6 +825,8 @@ eg12: ./2-links
 		$(verbose) $(title) \
 		$(smarterStrategy) \
 		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
 		&
 		
 eg12a: ./2-links
@@ -768,6 +838,8 @@ eg12a: ./2-links
 		$(verbose) $(title) \
 		1 \
 		1 \
+		1 \
+		$(bandwidth) \
 		&
 		
 # under development...
