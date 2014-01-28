@@ -324,7 +324,7 @@ eg2a: ./2-links
 eg3 8way: ./2-links
 	@echo "Target eg3: Hall way with 8 convergent hallways"
 	./2-links $(interactive) 262 250 180 270 271 256 90 0\
-		2 80 70 6 8way.txt \
+		4 80 70 6 8way.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
@@ -332,7 +332,7 @@ eg3 8way: ./2-links
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
-		$(bandwidth) \
+		30 \
 		&
 
 eg3a 8waya: ./2-links
