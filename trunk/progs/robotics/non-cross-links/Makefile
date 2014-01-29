@@ -551,15 +551,15 @@ eg9b narrowb: ./2-links
 eg10 twoChambers: ./2-links
 	@echo "Target eg10: two Chamber environment using Greedy"
 	./2-links $(interactive) 425 410 180 270 105 90 90 0\
-		2 45 45 18 2chambers.txt \
+		2 75 75 0 2chambers.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 $(seed)  $(inputDir) \
+		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) "Eg 10: 2 Chambers" \
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
-		$(bandwidth) \
+		80 \
 		&
 
 eg10a twoChambersa: ./2-links
