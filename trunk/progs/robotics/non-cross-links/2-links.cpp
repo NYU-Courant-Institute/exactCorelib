@@ -189,6 +189,10 @@ int stuckCount = 0;
 int mixCount = 0;
 int mixSmallCount = 0;
 
+// save these two variables for animation stability which make the 2 links would not turn sharply.
+double oldAngleForRender1 = -1;
+double oldAngleForRender2 = -1;
+
 //controls triangle drawing along path
 const int TRIS_TO_SKIP = 20;
 const double DIST_TO_SKIP = 0;
@@ -1395,7 +1399,7 @@ void drawLinks(Box* b) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	double tempL = 0;
-	double angleFix = 10;
+//	double angleFix = 10;
 	for (int i = 0; i < 2; i++) {
 		if (i == 0) {
 			tempL = L1;
@@ -1416,51 +1420,50 @@ void drawLinks(Box* b) {
 			double tempAngle1 = 0;
 			double tempAngle2 = 0;
 			double max = 0;
-			for (int j = 0; j <= 1; j++) {
-				for (int k = 2; k <= 3; k++) {
-					if (angleDistance(b->xi[j], b->xi[k]) > max
-							&& b->xi[j] < b->xi[k]) {
-						max = angleDistance(b->xi[j], b->xi[k]);
-						tempAngle1 = b->xi[j];
-						tempAngle2 = b->xi[k];
+			if (oldAngleForRender1 <= b->xi[1] && oldAngleForRender1 >= b->xi[0]
+					&& oldAngleForRender2 <= b->xi[3]
+					&& oldAngleForRender2 >= b->xi[2]
+					&& angleDistance(oldAngleForRender1, oldAngleForRender2)
+							> bandwidth) {
+				tempAngle1 = oldAngleForRender1;
+				tempAngle2 = oldAngleForRender2;
+			} else if (b->order == Box::LT) {
+
+				for (int j = b->xi[0]; j <= b->xi[1]; j += 3) {
+					for (int k = b->xi[2]; k <= b->xi[3]; k += 3) {
+						if (angleDistance(j, k) > max && j < k) {
+							max = angleDistance(j, k);
+							tempAngle1 = j;
+							tempAngle2 = k;
+							if (max == 180) {
+								break;
+							}
+						}
 					}
 				}
+			} else if (b->order == Box::GT) {
+
+				for (int j = b->xi[0]; j <= b->xi[1]; j += 3) {
+					for (int k = b->xi[2]; k <= b->xi[3]; k += 3) {
+						if (angleDistance(j, k) > max && j > k) {
+							max = angleDistance(j, k);
+							tempAngle1 = j;
+							tempAngle2 = k;
+							if (max == 180) {
+								break;
+							}
+						}
+					}
+				}
+
 			}
 			if (i == 0) {
 				tempAngle = tempAngle1;
 			} else {
 				tempAngle = tempAngle2;
 			}
-
-			if (b->order == Box::GT) {
-				tempAngle = 0;
-				tempAngle1 = 0;
-				tempAngle2 = 0;
-				max = 0;
-
-				for (int j = 0; j <= 1; j++) {
-					for (int k = 2; k <= 3; k++) {
-						if (angleDistance(b->xi[j], b->xi[k]) > max
-								&& b->xi[j] > b->xi[k]) {
-							max = angleDistance(b->xi[j], b->xi[k]);
-							tempAngle1 = b->xi[j];
-							tempAngle2 = b->xi[k];
-						}
-					}
-				}
-				if (i == 0) {
-					tempAngle = tempAngle1;
-				} else {
-					tempAngle = tempAngle2;
-				}
-
-//				if (i == 0 && tempAngle == 360) {
-//					if (tempAngle - angleFix > b->xi[3]) {
-//						tempAngle -= angleFix;
-//					}
-//				}
-			}
-
+			oldAngleForRender1 = tempAngle1;
+			oldAngleForRender2 = tempAngle2;
 			glBegin(GL_LINES);
 			glVertex2f(b->x, b->y);
 			glVertex2f(tempL * cos((tempAngle / 180) * PI) + b->x,
@@ -1625,16 +1628,6 @@ void drawLinksSrcDst(double* configuration) {
 //}
 
 void drawPath(vector<Box*>& path) {
-	glColor3f(0x99 / 255.0, 0xCC / 255.0, 0xFF / 255.0);
-	glLineWidth(3.0);
-	glBegin(GL_LINE_STRIP);
-	glVertex2f(beta[0], beta[1]);
-	for (int i = 0; i < (int) path.size(); ++i) {
-		glVertex2f(path[i]->x, path[i]->y);
-	}
-	glVertex2f(alpha[0], alpha[1]);
-	glEnd();
-	glLineWidth(1.0);
 
 	int skipped = 0;
 	double distSkipped = 0;
@@ -1735,6 +1728,19 @@ void drawPath(vector<Box*>& path) {
 			}
 		}
 	}
+	glColor3f(0x99 / 255.0, 0xCC / 255.0, 0xFF / 255.0);
+	glLineWidth(5.0);
+	glEnable(GL_LINE_STIPPLE);
+	glLineStipple(1, 0xF0F0);
+	glBegin(GL_LINE_STRIP);
+	glVertex2f(beta[0], beta[1]);
+	for (int i = 0; i < (int) path.size(); ++i) {
+		glVertex2f(path[i]->x, path[i]->y);
+	}
+	glVertex2f(alpha[0], alpha[1]);
+	glEnd();
+	glDisable(GL_LINE_STIPPLE);
+	glLineWidth(1.0);
 
 //	if (animationOption == 3) {
 //		currentPathStep++;

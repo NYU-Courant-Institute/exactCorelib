@@ -622,10 +622,12 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 						if (child->xi[0] + bandwidth >= child->xi[3]) {
 							continue;
 						}
-						if (angleDistance(child->xi[1], child->xi[2])
-								< bandwidth
-								&& abs(child->xi[1] - child->xi[2]) > 180
-								&& child->xi[1] < child->xi[2]) {
+//						if (angleDistance(child->xi[1], child->xi[2])
+//								< bandwidth
+//								&& abs(child->xi[1] - child->xi[2]) > 180
+//								&& child->xi[1] < child->xi[2])
+						if(child->xi[2] - child->xi[1] >= 360 - bandwidth)
+						{
 //							cout << child->xi[1] << " " << child->xi[2] << endl;
 							continue;
 						}
@@ -634,10 +636,12 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
 						if (child->xi[2] + bandwidth >= child->xi[1]) {
 							continue;
 						}
-						if (angleDistance(child->xi[0], child->xi[3])
-								< bandwidth
-								&& abs(child->xi[0] - child->xi[3]) > 180
-								&& child->xi[0] > child->xi[3]) {
+//						if (angleDistance(child->xi[0], child->xi[3])
+//								< bandwidth
+//								&& abs(child->xi[0] - child->xi[3]) > 180
+//								&& child->xi[0] > child->xi[3])
+						if(child->xi[0] - child->xi[3] >= 360 - bandwidth)
+						{
 							continue;
 						}
 					}
