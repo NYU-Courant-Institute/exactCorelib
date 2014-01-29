@@ -372,7 +372,7 @@ eg4 egbug bug: ./2-links
 	@echo "--  If you decrease the epsilon from 5 to 4, there is a path."
 	@echo "--  If you decrease the longer link from 79 to 78, there is a path."
 	./2-links $(interactive) 200 320 30 60 30 30 90 120 \
-		2 45 66 0 bugtrap.txt \
+		4 45 66 0 bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \

@@ -1,15 +1,9 @@
 TODO:
 
-(1) The green boxes should be called "free" not "mixed"
-	Please change the output function
+(1) Jan 28, 2014,
+	Funny Bug: Why is the start config of eg4 "stuck"????
 
-(2) Use **dashed** line to connect start/goal configuration
-
-(3) I am confused: why are some boxes in the middle of
-	the regions colored grey, but others green???
-
-(4) More strategies
-
-(5) Develop a true Voronoi strategy.
+(2) The "smarter strategy" is not properly implemented.
+	I want the case |Phi(B)|=2 to have the highest priority!
 
 
