@@ -127,8 +127,8 @@ scale = 1		# scaling of input file
 verbose = 0		# if true, display statistics
 title = Demos		# Title of control panel
 
-smarterStrategy = 0 # Two-Strategy Option    0: original 1: smarter
-smarterStrategy = 1 # Two-Strategy Option    0: original 1: smarter
+smarterStrategy = 1	# Two-Strategy Option    0: original 1: smarter
+smarterStrategy = 0 	# Two-Strategy Option    0: original 1: smarter
 
 threshold = 4		# threshold for angular split: if |phi(B)| <= threshold,
 crossing = 1        	# the crossing option (0: original 1: non-crossing)
@@ -818,7 +818,7 @@ eg300a: ./2-links
 
 eg12: ./2-links
 	./2-links $(interactive) 405 400 180 270 105 60 0 180\
-		2 35 35 9 input4.txt \
+		4 30 33 9 input4.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -840,6 +840,38 @@ eg12a: ./2-links
 		1 \
 		1 \
 		$(bandwidth) \
+		&
+
+# eg13:  T-Room example -- to show clearly the difference between
+# 		self-crossing and non-crossing
+eg13: ./2-links
+	./2-links $(interactive) 190 280 255 285 190 470 285 255\
+		4 75 65 \
+		0 T-room.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		0 0 0.065 \
+		$(verbose) $(title) \
+		$(smarterStrategy) \
+		$(threshold) \
+		1 \
+		28 \
+		&
+		
+# eg13b:  T-Room example -- to show clearly the difference between
+# 		self-crossing and non-crossing
+eg13b: ./2-links
+	./2-links $(interactive) 190 280 255 285 190 470 285 255\
+		4 75 65 \
+		0 T-room.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		0 -170 0.09 \
+		$(verbose) $(title) \
+		$(smarterStrategy) \
+		$(threshold) \
+		1 \
+		28 \
 		&
 		
 # under development...
