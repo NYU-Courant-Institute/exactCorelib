@@ -1890,6 +1890,7 @@ void drawLine() {
 //	if (noPath) {
 //		glColor3f(0, 0, 0);
 //	} else {
+	//draw line from src to dst
 	glColor3f(0xFF / 255.0, 0x99 / 255.0, 0x66 / 255.0);
 //	}
 	glLineWidth(3.0);
@@ -1900,6 +1901,16 @@ void drawLine() {
 	glVertex2f(beta[0], beta[1]);
 	glEnd();
 	glDisable(GL_LINE_STIPPLE);
+
+	//draw window frame
+	glLineWidth(5.0);
+	glColor3f(0x00 / 255.0, 0x00 / 255.0, 0x33 / 255.0);
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(0, 0);
+	glVertex2f(0, 512);
+	glVertex2f(512, 512);
+	glVertex2f(512, 0);
+	glEnd();
 	glLineWidth(1.0);
 }
 
@@ -2053,6 +2064,8 @@ void renderScene(void) {
 
 	drawLinksSrcDst(alpha);
 	drawLinksSrcDst(beta);
+
+	//draw the window frame
 
 //	glFlush();
 	glutSwapBuffers();
