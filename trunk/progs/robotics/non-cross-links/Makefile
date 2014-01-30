@@ -132,7 +132,7 @@ smarterStrategy = 1	# Two-Strategy Option    0: original 1: smarter
 smarterStrategy = 0 	# Two-Strategy Option    0: original 1: smarter
 
 threshold = 4		# threshold for angular split: if |phi(B)| <= threshold,
-crossing = 1        	# the crossing option (0: original 1: non-crossing)
+crossing = 1        	# crossing option (0: original self-crossing, 1: non-crossing)
 			#	then we may do angular split
 			# threshold = 0,1,2,...
 #=================================================
@@ -701,7 +701,7 @@ eg12a mazea: ./2-links
 		&
 
 # eg13:  T-Room example -- to show clearly the difference between
-# 		self-crossing and non-crossing
+# 		self-crossing and non-crossing  (fix! 29/30 is not a good demo!)
 eg13 troom: ./2-links
 	./2-links $(interactive) 190 280 255 285 190 470 285 255\
 		4 75 65 \
@@ -729,7 +729,39 @@ eg13a trooma: ./2-links
 		$(smarterStrategy) \
 		$(threshold) \
 		1 \
-		30 \
+		29 \
+		&
+
+# eg13b:  T-Room example -- bigger magnification (for images in paper)
+# 		Difference if allow self-crossing or not
+eg13b troomb: ./2-links
+	./2-links $(interactive) 240 280 256 286 240 490 278 245\
+		4 130 80 \
+		0 T-room.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		3 $(seed)  $(inputDir) \
+		0 -100 0.08 \
+		$(verbose) "Eg13b: T-room with path (no self-crossing)" \
+		$(smarterStrategy) \
+		$(threshold) \
+		0 \
+		29 \
+		&
+		
+# eg13c:  T-Room example -- bigger magnification (for images in paper)
+# 		Difference if allow self-crossing or not
+eg13c troomc: ./2-links
+	./2-links $(interactive) 240 280 256 286 240 490 278 245\
+		4 130 80 \
+		0 T-room.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		3 $(seed)  $(inputDir) \
+		0 -100 0.08 \
+		$(verbose) "Eg13c: T-room with path (allow self-crossing)" \
+		$(smarterStrategy) \
+		$(threshold) \
+		0 \
+		29 \
 		&
 		
 
