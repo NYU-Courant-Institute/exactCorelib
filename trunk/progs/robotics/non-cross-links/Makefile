@@ -326,6 +326,21 @@ eg2a: ./2-links
 		$(bandwidth) \
 		&
 
+# eg2b has smaller epsilon and longer links. It generates a more interesting path
+
+eg2b: ./2-links
+	@echo "Target eg2: 8-way junction" 
+	./2-links $(interactive) 216 297 95 175 210 220 270 190\
+		2 88 98 8 zigzagrotation.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		3 $(seed)  $(inputDir) \
+		0 0 1 \
+		$(verbose) "Eg2: 8-ways with 3 more obstacles" \
+		$(smarterStrategy) \
+		$(threshold) \
+		$(crossing) \
+		79 \
+		&
 # eg3: input3.txt is a junction with 8 convergent passages
 eg3 8way: ./2-links
 	@echo "Target eg3: Hall way with 8 convergent hallways"
