@@ -177,14 +177,15 @@ help:
 	@echo "        eg2, eg2a, eg2b, [simple environment without bounding box]"
 	@echo "        eg3  [8-way environment with door]"
 	@echo "        eg4 (= egbug, bug), eg4a (= egbuga, buga),"
-	@echo "        eg5 (= egbug2, bug2), eg5a (= egbug2a, bug2a),"
+	@echo "        eg5 (= egbug2, bug2), eg5a (= bug2a), eg5b (= bug2b)"
 	@echo "        eg6 (= kavraki), eg6a (= kavrakia),"
-	@echo "        eg7 (= tunnel), eg7a (= tunnela), eg7b (= tunnelb)"
+	@echo "        eg7 (= salzman, tunnel), eg7a (= salzmana)"
+	@echo "        eg8 (= hsu), eg8a (= hsua)"
+	@echo "        eg9 (= narrow), eg9a, eg9b"
 	@echo "        eg10 (= 2chambers), eg10a, eg10b, etc"
 	@echo "        eg11 (= nestedRectangle), eg11a (=nestedRectanglea)"
 	@echo "        eg12 (= maze), eg12a"
 	@echo "        eg13 (= troom), eg13a"
-	@echo "        eg10 (= 2chambers), eg10a, eg10b, etc"
 	@echo "        eg100, eg100a"
 	@echo "        eg150"
 	@echo "        eg200, eg200a, eg200b"
@@ -384,7 +385,7 @@ eg6: ./2-links
 	./2-links $(interactive) 75 350 90 270 320 100 0 90\
 		8 60 40 DemoSE2_PRM.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		3 $(seed)  $(inputDir) \
 		250 250 0.04 \
 		$(verbose) "Eg6: Target DemoSE2_PRM (from Kavraki's group)"\
 		$(smarterStrategy) \
@@ -398,7 +399,7 @@ eg7 egtunnel tunnel: ./2-links
 	./2-links $(interactive) 200 330 90 0 450 280 0 70\
 		4 45 40 tunnel.poly \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 $(seed) $(inputDir) \
+		3 $(seed) $(inputDir) \
 		100 200 0.05 \
 		$(verbose) "Eg7: Target DemoSE2_PRM (from Kavraki's group)"\
 		$(smarterStrategy) \
@@ -458,7 +459,7 @@ eg9 narrow: ./2-links
 	./2-links $(interactive) 215 370 0 125 195 160 270 0\
 		4 95 70 narrowCorridor.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		3 $(seed)  $(inputDir) \
 		0 0 0.065 \
 		$(verbose) "Eg 9:  Narrow Corridor" \
 		$(smarterStrategy) \
@@ -507,49 +508,92 @@ eg10b twoChambersb: ./2-links
 
 eg11 nestedRectangle: ./2-links
 	@echo "Target eg11: 3nd test example from Chee and Zhongdi"
-#	@echo "	There is a path passage... when radius=6, epsilon=1"
-#	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 425 390 180 270 95 100 0 90\
-		2 60 40 nestedRectangle.txt \
+		4 50 40 nestedRectangle.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) "Eg 11: Nested Rectangle" \
+		$(verbose) "Eg 11: Nested Rectangle (path! but see eg11a)" \
 		$(smarterStrategy) \
 		$(threshold) \
 		&
 		
-eg11a nestedRectangleA: ./2-links
-	@echo "Target eg11: 3nd test example from Chee and Zhongdi"
-#	@echo "	There is a path passage... when radius=6, epsilon=1"
-#	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./2-links $(interactive) 425 390 180 270 95 100 0 90\
-		2 10 10 nestedRectangle.txt \
+eg11a nestedRectanglea: ./2-links
+	@echo "Target eg11a: 3nd test example from Chee and Zhongdi"
+	./2-links $(interactive) 425 390 270 180 95 100 0 90\
+		4 50 40 nestedRectangle.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) "Eg 11a: Nested Rectangle with shorter links" \
-		1 \
-		4 \
+		$(verbose) "Eg 11a: Nested Rectangle (NOPATH! but see eg11)" \
+		$(smarterStrategy) \
+		$(threshold) \
 		&
 
 # This is example with a solution, but the 2 links must cross.
 #   If we use the non-crossing model, there would be no solution!
 #   (Chee -- Jan 2014)
 eg11b nestedRectangleB: ./2-links
-	@echo "Target eg11: 3nd test example from Chee and Zhongdi"
-#	@echo "	There is a path passage... when radius=6, epsilon=1"
-#	@echo " 	There is No Path... when radius=7, epsilon=1"
+	@echo "Target eg11b: 3nd test example from Chee and Zhongdi"
 	./2-links $(interactive) 425 390 180 170 95 90 0 10\
-		2 60 40 nestedRectangle.txt \
+		4 52 40 nestedRectangle.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) "Eg 11: Nested Rectangle" \
+		$(verbose) "Eg 11b: Nested Rectangle (L1=52/53 => path/NOPATH)" \
 		$(smarterStrategy) \
 		$(threshold) \
 		&
 
+# maze environment: path case
+eg12: ./2-links
+	./2-links $(interactive) 405 400 180 270 105 60 0 180\
+		4 34 30 input4.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		3 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) "Eg12: Maze with path (L1=34/35 => path/NOPATH, see eg12a)" \
+		$(smarterStrategy) \
+		$(threshold) \
+		&
+		
+# maze environment: NOPATH case
+eg12a: ./2-links
+	./2-links $(interactive) 405 400 180 270 105 60 0 180\
+		4 35 30 input4.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		3 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) "Eg12a: Maze with NOPATH (L1=34/35 => path/NOPATH, see eg12)" \
+		1 \
+		1 \
+		&
+# eg13:  T-Room environment (path with L2=120)
+eg13 troom: ./2-links
+	./2-links $(interactive) 100 160 5 355 190 470 275 265\
+		4 100 120 T-room.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		0 0 0.065 \
+		$(verbose) $(title) \
+		$(verbose) "Eg13: T-room, path! (L2=120/121 => path/NOPATH)" \
+		$(smarterStrategy) \
+		$(threshold) \
+		&
+		
+# eg13a:  T-Room environment (path with L2=121)
+eg13a trooma: ./2-links
+	./2-links $(interactive) 100 160 5 355 190 470 275 265\
+		4 100 121 T-room.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		0 0 0.065 \
+		$(verbose) "Eg13a: T-room, NOPATH (L2=120/121 => path/NOPATH)" \
+		$(smarterStrategy) \
+		$(threshold) \
+		&
+		
+		
 # RANDOMLY GENERATED ENVIRONMENT:
 #	This one, generated using our Python Generator, has 200 2-links.
 #	Note that these 2-links are not disjoint, but our theory remains
@@ -708,30 +752,6 @@ eg300a: ./2-links
 		$(threshold) \
 		&
 
-# maze environment:
-eg12: ./2-links
-	./2-links $(interactive) 405 400 180 270 105 60 0 180\
-		4 33 30 input4.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		2 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
-		$(smarterStrategy) \
-		$(threshold) \
-		&
-		
-# maze environment:
-eg12a: ./2-links
-	./2-links $(interactive) 405 400 180 270 105 60 0 180\
-		4 15 15 input4.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		3 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
-		1 \
-		1 \
-		&
-		
 # under development...
 # (1) Run all series of examples using Qtypes=0,1,2 and compare timing
 
