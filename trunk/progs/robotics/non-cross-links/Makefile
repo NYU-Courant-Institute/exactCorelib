@@ -60,6 +60,7 @@
 #		eg100, eg100a
 #		eg150
 #		eg200, eg200a, eg200b
+#		eg300
 #
 # 	These targets uses different input files, all taken from
 # 	the subdirectory "inputs".   
@@ -187,10 +188,11 @@ help:
 	@echo "        eg2, eg2a, eg2b, [simple environment without bounding box]"
 	@echo "        eg3  [simple environment with door]"
 	@echo "        eg4 (= egbug, bug), eg4a (= egbuga, buga),"
-	@echo "        eg5 (= egbug2, bug2), eg5a (= egbug2a, bug2a),"
+	@echo "        eg5 (= egbug2, bug2), eg5a (= bug2a), eg5b (= bug2b)"
 	@echo "        eg6 (= kavraki), eg6a (= kavrakia),"
-	@echo "        eg7 (= tunnel), eg7a (= tunnela), eg7b (= tunnelb)"
-	@echo "        eg9 (= narrow), eg9a (= narrowa)"
+	@echo "        eg7 (= salzman, tunnel), eg7a (= salzmana)"
+	@echo "        eg8 (= hsu), eg8a (= hsua)"
+	@echo "        eg9 (= narrow), eg9a, eg9b"
 	@echo "        eg10 (= 2chambers), eg10a, eg10b, etc"
 	@echo "        eg11 (= nestedRectangle), eg11a (=nestedRectanglea)"
 	@echo "        eg12 (= maze), eg12a"
@@ -396,7 +398,7 @@ eg4a egbuga buga: ./2-links
 	./2-links $(interactive) 200 320 30 60 30 30 90 120 \
 		4 45 79 $(thickness) bugtrap.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		2 11 $(inputDir) \
+		2 $(seed) $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) "Eg4: Bugtrap" \
 		$(smarterStrategy) \
@@ -408,18 +410,52 @@ eg4a egbuga buga: ./2-links
 
 # Bugtrap2 example -- Existance of path.
 eg5 egbug2 bug2: ./2-links
-	@echo "Target 'eg5 or bug2':  runs 2-links on bugtrap2.txt"
+	@echo "Target 'eg5 or bug2':  Double bugtrap -- path!"
 	@echo "--  this examples shows there is PATH, but barely so!"
-	./2-links $(interactive) 190 210 180 300 30 30 90 0\
-		2 43 43 9 bugtrap2.txt \
+	./2-links $(interactive) 190 210 180 300 30 30 90 340\
+		4 55 50 $(thickness) bugtrap2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		2 11 $(inputDir) \
+		2 $(seed) $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) "Eg 5: Double Bugtrap"\
+		$(verbose) "Eg5: Double Bugtrap (bandwidth=95/100 => path/NOPATH)"\
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
-		$(bandwidth) \
+		95 \
+		&
+
+# Bugtrap2 example -- Non-existance of path.
+eg5a egbug2a bug2a: ./2-links
+	@echo "Target 'eg5a or bug2a':  Double bugtrap -- NOPATH"
+	@echo "--  this examples shows there is PATH, but barely so!"
+	./2-links $(interactive) 190 210 180 300 30 30 90 340\
+		4 55 50 $(thickness) bugtrap2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed) $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) "Eg5a: Double Bugtrap (bandwidth=95/100 => path/NOPATH)"\
+		$(smarterStrategy) \
+		$(threshold) \
+		$(crossing) \
+		100 \
+		&
+
+# Bugtrap2 example -- Non-existance of path (but compare with eg5a)
+eg5b egbug2b bug2b: ./2-links
+	@echo "Target 'eg5b or bug2b':  Double bugtrap -- NOPATH, but compare to eg5a"
+	@echo "--  this examples shows NOPATH, but barely so!"
+	./2-links $(interactive) \
+		30 30 90 340 \
+		190 210 180 300 \
+		4 55 50 $(thickness) bugtrap2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed) $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) "Eg5b: Double Bugtrap (NOPATH, but compare to eg5a)"\
+		$(smarterStrategy) \
+		$(threshold) \
+		$(crossing) \
+		100 \
 		&
 
 # eg6: This environment is taken from Kavraki's groups Demo for OOPSMP:
@@ -428,9 +464,9 @@ eg5 egbug2 bug2: ./2-links
 eg6: ./2-links
 	@echo "Target DemoSE2_PRM (from Kavraki's group)"
 	./2-links $(interactive) 190 420 180 270 300 65 0 70\
-		2 125 60 25 DemoSE2_PRM.txt \
+		4 125 160 $(thickness) DemoSE2_PRM.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		2 $(seed)  $(inputDir) \
+		3 $(seed)  $(inputDir) \
 		250 250 0.04 \
 		$(verbose) "Eg6: Target DemoSE2_PRM (from Kavraki's group)"\
 		$(smarterStrategy) \
@@ -439,16 +475,17 @@ eg6: ./2-links
 		$(bandwidth) \
 		&
 
-# eg7, egtunnel:  tunnel example from Salzman et al.
+# eg7, egtunnel:  tunnel example from Salzman et al.(2013)
 # 	NOTE that the current search strategy seems to miss the direct path!!
 # 	TODO: develop a better search (e.g. Best First Search)
-eg7 egtunnel tunnel: ./2-links
-	./2-links $(interactive) 130 330 90 0 450 220 0 150\
-		4 40 35 $(thickness) tunnel.poly \
+eg7 salzman tunnel: ./2-links
+	@echo "Eg7: Target tunnel.poly (from Salzman et al.(2013))"
+	./2-links $(interactive) 210 330 110 0 450 220 0 170\
+		4 50 75 $(thickness) tunnel.poly \
 		512 512 $(windowPosX) $(windowPosY) \
-		3 1111 $(inputDir) \
+		3 $(seed) $(inputDir) \
 		100 200 0.05 \
-		$(verbose) "Eg7: Target DemoSE2_PRM (from Kavraki's group)"\
+		$(verbose) "Eg7: Target tunnel.poly (paper of Salzman et al.(2013))"\
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
@@ -472,6 +509,7 @@ eg8 hsu: ./2-links
 		7 \
 		&
 
+# eg8a: from Paper of Hsu-Lathombe-Kurniawati
 eg8a hsua: ./2-links
 	@echo "Target eg8a: example from paper of Hsu, Latombe, Kurniawati (2006)"
 	@echo "	There is a path passage... when bandwidth=7, epsilon=2"
@@ -488,56 +526,38 @@ eg8a hsua: ./2-links
 		8 \
 		&
 
-# eg8b hsub: ./2-links
-#	@echo "Target eg8b: example from the paper of Hsu, Latombe, Kurniawati (2006)"
-#	@echo "	There is a path passage... when radius=6, epsilon=1"
-#	@echo " 	There is No Path... when radius=7, epsilon=1"
-#	./2-links $(interactive) 75 350 0 90 380 205 270 0\
-#		8 5 10 $(thickness) hsu-latombe-kurniawati2.txt \
-#		512 512 $(windowPosX) $(windowPosY) \
-#		$(Qtype) $(seed)  $(inputDir) \
-#		-70 -70 0.065 \
-#		$(verbose) $(title) \
-#		$(smarterStrategy) \
-#		$(threshold) \
-		$(crossing) \
-#		$(bandwidth) \
-#		&
-
-
-#eg9 narrow: ./2-links
-#	@echo "Target eg9: 1st test example from Chee and Zhongdi"
-#	./2-links $(interactive) 215 370 0 125 195 160 270 0\
-#		4 90 65 $(thickness) narrowCorridor.txt \
-#		512 512 $(windowPosX) $(windowPosY) \
-#		$(Qtype) $(seed)  $(inputDir) \
-#		0 0 0.065 \
-#		$(verbose) "Eg 9:  Narrow Corridor" \
-#		$(smarterStrategy) \
-#		$(threshold) \
-		$(crossing) \
-#		$(bandwidth) \
-#		$(crossing) \
-#		&
-
+# eg9: narrow corridor (path, but see eg9a)
 eg9 narrow: ./2-links
-	@echo "Target eg9: test the differences between crossing and non-crossing"
-
+	@echo "Target eg9: Shows the differences with bandwidth"
 	./2-links $(interactive) 185 370 0 270 175 160 270 350 \
 		4 70 90 $(thickness) narrowCorridor.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		0 0 0.065 \
-		$(verbose) "Eg 9:  Narrow Corridor non-crossing test" \
+		$(verbose) "Eg 9/9a:  Corridor (bandwidth=53/54 => path/NOPATH)" \
+		$(smarterStrategy) \
+		$(threshold) \
+		1 \
+		53 \
+		&
+# eg9a: narrow corridor (NOPATH, but see eg9)
+eg9a narrowa: ./2-links
+	@echo "Target eg9a: Shows the differences between with bandwidth"
+	./2-links $(interactive) 185 370 0 270 175 160 270 350 \
+		4 70 90 $(thickness) narrowCorridor.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		0 0 0.065 \
+		$(verbose) "Eg 9/9a:  Corridor (bandwidth=53/54 => path/NOPATH)" \
 		$(smarterStrategy) \
 		$(threshold) \
 		1 \
 		53 \
 		&
 
-eg9a narrowa: ./2-links
+# eg9b: narrow corridor (NOPATH, but see eg9)
+eg9b narrowa: ./2-links
 	@echo "Target eg9b: test the differences between crossing and non-crossing"
-
 	./2-links $(interactive) 185 370 0 270 175 160 270 0\
 		4 110 90 $(thickness) narrowCorridor.txt \
 		512 512 $(windowPosX) $(windowPosY) \
@@ -547,6 +567,20 @@ eg9a narrowa: ./2-links
 		$(smarterStrategy) \
 		$(threshold) \
 		1 \
+		$(bandwidth) \
+		&
+# eg9c: narrow corridor (NOPATH, but see eg9)
+eg9c narrowa: ./2-links
+	@echo "Target eg9c: test the differences between crossing and non-crossing"
+	./2-links $(interactive) 185 370 0 270 175 160 270 0\
+		4 110 90 $(thickness) narrowCorridor.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		0 0 0.065 \
+		$(verbose) "Eg 9b:  Narrow Corridor non-crossing test" \
+		$(smarterStrategy) \
+		$(threshold) \
+		0 \
 		$(bandwidth) \
 		&
 				
@@ -644,9 +678,9 @@ eg12 maze: ./2-links
 	./2-links $(interactive) 405 400 180 270 105 60 0 180\
 		4 30 33 9 input4.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		2 1111 $(inputDir) \
+		3 $(seed) $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) "Eg 12: Maze " \
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
@@ -657,9 +691,9 @@ eg12a mazea: ./2-links
 	./2-links $(interactive) 405 400 180 270 105 60 0 180\
 		4 15 15 $(thickness) input4.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		3 1111 $(inputDir) \
+		3 $(seed) $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) "Eg 12a: Maze " \
 		1 \
 		1 \
 		1 \
@@ -673,29 +707,29 @@ eg13 troom: ./2-links
 		4 75 65 \
 		0 T-room.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		2 $(seed)  $(inputDir) \
+		3 $(seed)  $(inputDir) \
 		0 0 0.065 \
-		$(verbose) $(title) \
+		$(verbose) "Eg13: T-room with path (bandwidth=29/30=>path/NOPATH)" \
 		$(smarterStrategy) \
 		$(threshold) \
 		1 \
-		28 \
+		29 \
 		&
 		
 # eg13b:  T-Room example -- to show clearly the difference between
 # 		self-crossing and non-crossing
-eg13b trooma: ./2-links
+eg13a trooma: ./2-links
 	./2-links $(interactive) 190 280 255 285 190 470 285 255\
 		4 75 65 \
 		0 T-room.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		2 $(seed)  $(inputDir) \
-		0 -170 0.09 \
-		$(verbose) $(title) \
+		3 $(seed)  $(inputDir) \
+		0 0 0.065 \
+		$(verbose) "Eg13: T-room with NOPATH (bandwidth=29/30=>path/NOPATH)" \
 		$(smarterStrategy) \
 		$(threshold) \
 		1 \
-		28 \
+		30 \
 		&
 		
 
