@@ -1,4 +1,38 @@
-188
+# maze environment:
+#  Chee, Jan 2014: Added a bounding box! 
+#	Otherwise, the robot goes outside the bounding box.
+#	
+#	SOLUTION 1:
+# 	Add four new corners, so the number of points goes from 188 to 192,
+#		and number of polygons goes from 47 to 48.
+#
+#	Add a bounding box that must be "concave" i.e., listed clockwise: 
+#	(0,0) --->	(0,512) --->	(512,512) --->	(512,0) --->	(0,0)
+#	189		190		191		192 		189
+#
+#	BUT, this solution messes up the shading of obstacles!
+#
+#	SOLUTION 2: 
+#	Add another four more points,
+#	(1,1)   	(1,511)   	(511,511)   	(511,1)   
+#	193		194		195		196 	
+#	
+#	NOW, replace the previous bounding box by four "convex" long trapezoids:
+#	
+#	(0,0) --->	(1,1) --->	(1,511) --->	(0,512) --->	(0,0)
+#	189		193		194		190 		189
+#	(0,0) --->	(512,0) --->	(511,1) --->	(1,1) --->	(0,0)
+#	189		192		196		193 		189
+#	(512,0) --->	(512,512) --->	(511,511) --->	(511,1) --->	(512,0)
+#	192		191		195		196 		192
+#	(512,512) --->	(0,512) --->	(1,511) --->	(511,511) ---> 	(512,512)
+#	191		190		194		195 		191
+#
+#	Therefore, the number of points is now 196,
+#	and number of polygons is 51.
+#
+# NUMBER OF POINTS:
+196
 24.380952381 24.380952381
 146.285714286 24.380952381
 146.285714286 48.7619047619
@@ -187,7 +221,17 @@
 487.619047619 268.19047619
 487.619047619 487.619047619
 463.238095238 487.619047619
-47
+# Added 8 additional points to form bounding box, but avoiding 0 or 512!
+0.5 0.5
+0.5 511.5 
+511.5 511.5
+511.5 0.5
+1.0 1.0
+1.0 511.0 
+511.0 511.0
+511.0 1.0
+
+51
 1 2 3 4 1
 5 6 7 8 5
 9 10 11 12 9
@@ -235,3 +279,10 @@
 177 178 179 180 177
 181 182 183 184 181
 185 186 187 188 185
+# four "bounding" boxes
+189		193		194		190 		189
+189		192		196		193 		189
+192		191		195		196 		192
+191		190		194		195 		191
+
+# END OF FILE

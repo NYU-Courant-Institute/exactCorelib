@@ -175,7 +175,7 @@ help:
 	@echo "        egb [simple example from input2.txt]"
 	@echo "        eg1, eg1a, eg1b, [environment with various box barriers]"
 	@echo "        eg2, eg2a, eg2b, [simple environment without bounding box]"
-	@echo "        eg3  [simple environment with door]"
+	@echo "        eg3  [8-way environment with door]"
 	@echo "        eg4 (= egbug, bug), eg4a (= egbuga, buga),"
 	@echo "        eg5 (= egbug2, bug2), eg5a (= egbug2a, bug2a),"
 	@echo "        eg6 (= kavraki), eg6a (= kavrakia),"
@@ -545,7 +545,6 @@ eg11b nestedRectangleB: ./2-links
 		$(smarterStrategy) \
 		$(threshold) \
 		&
-		
 
 # RANDOMLY GENERATED ENVIRONMENT:
 #	This one, generated using our Python Generator, has 200 2-links.
@@ -705,9 +704,10 @@ eg300a: ./2-links
 		$(threshold) \
 		&
 
+# maze environment:
 eg12: ./2-links
 	./2-links $(interactive) 405 400 180 270 105 60 0 180\
-		4 45 45 input4.txt \
+		4 33 30 input4.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -716,6 +716,7 @@ eg12: ./2-links
 		$(threshold) \
 		&
 		
+# maze environment:
 eg12a: ./2-links
 	./2-links $(interactive) 405 400 180 270 105 60 0 180\
 		4 15 15 input4.txt \
