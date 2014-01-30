@@ -181,6 +181,10 @@ help:
 	@echo "        eg6 (= kavraki), eg6a (= kavrakia),"
 	@echo "        eg7 (= tunnel), eg7a (= tunnela), eg7b (= tunnelb)"
 	@echo "        eg10 (= 2chambers), eg10a, eg10b, etc"
+	@echo "        eg11 (= nestedRectangle), eg11a (=nestedRectanglea)"
+	@echo "        eg12 (= maze), eg12a"
+	@echo "        eg13 (= troom), eg13a"
+	@echo "        eg10 (= 2chambers), eg10a, eg10b, etc"
 	@echo "        eg100, eg100a"
 	@echo "        eg150"
 	@echo "        eg200, eg200a, eg200b"
@@ -391,10 +395,10 @@ eg6: ./2-links
 # 	NOTE that the current search strategy seems to miss the direct path!!
 # 	TODO: develop a better search (e.g. Best First Search)
 eg7 egtunnel tunnel: ./2-links
-	./2-links $(interactive) 200 280 90 0 450 300 0 90\
-		4 10 15 tunnel.poly \
+	./2-links $(interactive) 200 330 90 0 450 280 0 70\
+		4 45 40 tunnel.poly \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
+		1 $(seed) $(inputDir) \
 		100 200 0.05 \
 		$(verbose) "Eg7: Target DemoSE2_PRM (from Kavraki's group)"\
 		$(smarterStrategy) \
@@ -408,11 +412,11 @@ eg8 hsu: ./2-links
 	@echo "Target eg8: example from the paper of Hsu, Latombe, Kurniawati (2006)"
 	@echo "	There is a path passage... when radius=6, epsilon=1"
 	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./2-links $(interactive) 10 490 0 270 495 180 270 0\
-		8 40 60 input200.txt \
+	./2-links $(interactive) 20 390 0 270 275 180 270 0\
+		2 30 25 hsu-latombe-kurniawati3.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
+		-70 -70 0.065 \
 		$(verbose) "Eg8: From paper of Hsu, Latombe, Kurniawatti (2006)" \
 		$(smarterStrategy) \
 		$(threshold) \
@@ -422,10 +426,10 @@ eg8a hsua: ./2-links
 	@echo "Target eg8a: example from the paper of Hsu, Latombe, Kurniawati (2006)"
 	@echo "	There is a path passage... when radius=6, epsilon=1"
 	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./2-links $(interactive) 75 350 0 380 205 0\
-		1 7 hsu-latombe-kurniawati.txt \
+	./2-links $(interactive) 75 350 0 90 380 205 0 90 \
+		2 30 25 hsu-latombe-kurniawati3.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		3 $(seed)  $(inputDir) \
 		-70 -70 0.065 \
 		$(verbose) "Eg8a: From paper of Hsu, Latombe, Kurniawatti (2006)" \
 		$(smarterStrategy) \
