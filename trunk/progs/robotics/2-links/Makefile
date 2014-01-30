@@ -570,25 +570,25 @@ eg12a: ./2-links
 		&
 # eg13:  T-Room environment (path with L2=120)
 eg13 troom: ./2-links
-	./2-links $(interactive) 100 160 5 355 190 470 275 265\
-		4 100 120 T-room.txt \
+	./2-links $(interactive) 125 115 355 5 230 470 275 265\
+		4 149 140 T-room.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
-		0 0 0.065 \
+		0 -95 0.08 \
 		$(verbose) $(title) \
-		$(verbose) "Eg13: T-room, path! (L2=120/121 => path/NOPATH)" \
+		$(verbose) "Eg13: T-room, path! (L1=149/150 => path/NOPATH)" \
 		$(smarterStrategy) \
 		$(threshold) \
 		&
 		
 # eg13a:  T-Room environment (path with L2=121)
 eg13a trooma: ./2-links
-	./2-links $(interactive) 100 160 5 355 190 470 275 265\
-		4 100 121 T-room.txt \
+	./2-links $(interactive) 125 115 355 5 230 470 275 265\
+		4 150 140 T-room.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
-		0 0 0.065 \
-		$(verbose) "Eg13a: T-room, NOPATH (L2=120/121 => path/NOPATH)" \
+		0 -95 0.08 \
+		$(verbose) "Eg13a: T-room, NOPATH (L2=149/150 => path/NOPATH)" \
 		$(smarterStrategy) \
 		$(threshold) \
 		&
