@@ -190,7 +190,11 @@ help:
 	@echo "        eg5 (= egbug2, bug2), eg5a (= egbug2a, bug2a),"
 	@echo "        eg6 (= kavraki), eg6a (= kavrakia),"
 	@echo "        eg7 (= tunnel), eg7a (= tunnela), eg7b (= tunnelb)"
+	@echo "        eg9 (= narrow), eg9a (= narrowa)"
 	@echo "        eg10 (= 2chambers), eg10a, eg10b, etc"
+	@echo "        eg11 (= nestedRectangle), eg11a (=nestedRectanglea)"
+	@echo "        eg12 (= maze), eg12a"
+	@echo "        eg13 (= troom), eg13a"
 	@echo "        eg100, eg100a"
 	@echo "        eg150"
 	@echo "        eg200, eg200a, eg200b"
@@ -451,39 +455,37 @@ eg7 egtunnel tunnel: ./2-links
 		$(bandwidth) \
 		&
 		
-
-
 # eg8: from Paper of Hsu-Lathombe-Kurniawati
 eg8 hsu: ./2-links
-	@echo "Target eg8: example from the paper of Hsu, Latombe, Kurniawati (2006)"
-	@echo "	There is a path passage... when radius=6, epsilon=1"
-	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./2-links $(interactive) 10 490 0 270 495 180 270 0\
-		2 40 50 14 input200.txt \
+	@echo "Target eg8: example from paper of Hsu, Latombe, Kurniawati (2006)"
+	@echo "	There is a path passage... when bandwidth=7, epsilon=2"
+	@echo " 	There is NO PATH... when bandwidth=8, epsilon=2"
+	./2-links $(interactive) 20 390 0 270 275 180 270 0\
+		2 30 25 $(thickness) hsu-latombe-kurniawati3.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) "Eg8: From paper of Hsu, Latombe, Kurniawatti (2006)" \
+		-70 -70 0.065 \
+		$(verbose) "Eg8: From Hsu, Latombe, Kurniawatti (2006), path" \
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
-		$(bandwidth) \
+		7 \
 		&
 
 eg8a hsua: ./2-links
-	@echo "Target eg8a: example from the paper of Hsu, Latombe, Kurniawati (2006)"
-	@echo "	There is a path passage... when radius=6, epsilon=1"
-	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./2-links $(interactive) 75 350 0 380 205 0\
-		1 7 $(thickness) hsu-latombe-kurniawati.txt \
+	@echo "Target eg8a: example from paper of Hsu, Latombe, Kurniawati (2006)"
+	@echo "	There is a path passage... when bandwidth=7, epsilon=2"
+	@echo " 	There is NO PATH... when bandwidth=8, epsilon=2"
+	./2-links $(interactive) 20 390 0 270 275 180 270 0\
+		2 30 25 $(thickness) hsu-latombe-kurniawati3.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		2 $(seed)  $(inputDir) \
 		-70 -70 0.065 \
-		$(verbose) "Eg8a: From paper of Hsu, Latombe, Kurniawatti (2006)" \
+		$(verbose) "Eg8a: From Hsu, Latombe, Kurniawatti (2006), NO-PATH!" \
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
-		$(bandwidth) \
+		8 \
 		&
 
 # eg8b hsub: ./2-links
@@ -533,7 +535,7 @@ eg9 narrow: ./2-links
 		53 \
 		&
 
-eg9b narrowb: ./2-links
+eg9a narrowa: ./2-links
 	@echo "Target eg9b: test the differences between crossing and non-crossing"
 
 	./2-links $(interactive) 185 370 0 270 175 160 270 0\
@@ -548,7 +550,7 @@ eg9b narrowb: ./2-links
 		$(bandwidth) \
 		&
 				
-eg10 twoChambers: ./2-links
+eg10 2chambers: ./2-links
 	@echo "Target eg10: two Chamber environment using Greedy"
 	./2-links $(interactive) 425 410 180 270 105 90 90 0\
 		2 75 75 0 2chambers.txt \
@@ -562,7 +564,7 @@ eg10 twoChambers: ./2-links
 		80 \
 		&
 
-eg10a twoChambersa: ./2-links
+eg10a 2chambersa: ./2-links
 	@echo "Target eg10: two Chamber environment using Random Search"
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
@@ -578,7 +580,7 @@ eg10a twoChambersa: ./2-links
 		$(bandwidth) \
 		&
 		
-eg10b twoChambersb: ./2-links
+eg10b 2chambersb: ./2-links
 	@echo "Target eg10: two Chamber environment using Greedy and shorter links"
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
@@ -592,7 +594,7 @@ eg10b twoChambersb: ./2-links
 		6 \
 		&
 		
-eg10c twoChambersc: ./2-links
+eg10c 2chambersc: ./2-links
 	@echo "Target eg10c: test the differences between crossing and non-crossing"
 	./2-links $(interactive) 425 410 180 270 105 90 0 90\
 		4 87 87 $(thickness) 2chambers.txt \
@@ -622,7 +624,7 @@ eg11 nestedRectangle: ./2-links
 		$(bandwidth) \
 		&
 		
-eg11a nestedRectangleA: ./2-links
+eg11a nestedRectanglea: ./2-links
 	@echo "Target eg11: 3nd test example from Chee and Zhongdi"
 #	@echo "	There is a path passage... when radius=6, epsilon=1"
 #	@echo " 	There is No Path... when radius=7, epsilon=1"
@@ -636,6 +638,65 @@ eg11a nestedRectangleA: ./2-links
 		4 \
 		&
 
+		
+# maze example!
+eg12 maze: ./2-links
+	./2-links $(interactive) 405 400 180 270 105 60 0 180\
+		4 30 33 9 input4.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
+		$(smarterStrategy) \
+		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
+		&
+		
+eg12a mazea: ./2-links
+	./2-links $(interactive) 405 400 180 270 105 60 0 180\
+		4 15 15 $(thickness) input4.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		3 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) \
+		1 \
+		1 \
+		1 \
+		$(bandwidth) \
+		&
+
+# eg13:  T-Room example -- to show clearly the difference between
+# 		self-crossing and non-crossing
+eg13 troom: ./2-links
+	./2-links $(interactive) 190 280 255 285 190 470 285 255\
+		4 75 65 \
+		0 T-room.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		0 0 0.065 \
+		$(verbose) $(title) \
+		$(smarterStrategy) \
+		$(threshold) \
+		1 \
+		28 \
+		&
+		
+# eg13b:  T-Room example -- to show clearly the difference between
+# 		self-crossing and non-crossing
+eg13b trooma: ./2-links
+	./2-links $(interactive) 190 280 255 285 190 470 285 255\
+		4 75 65 \
+		0 T-room.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		0 -170 0.09 \
+		$(verbose) $(title) \
+		$(smarterStrategy) \
+		$(threshold) \
+		1 \
+		28 \
+		&
 		
 
 # RANDOMLY GENERATED ENVIRONMENT:
@@ -816,64 +877,6 @@ eg300a: ./2-links
 		$(bandwidth) \
 		&
 
-eg12: ./2-links
-	./2-links $(interactive) 405 400 180 270 105 60 0 180\
-		4 30 33 9 input4.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		2 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
-		$(smarterStrategy) \
-		$(threshold) \
-		$(crossing) \
-		$(bandwidth) \
-		&
-		
-eg12a: ./2-links
-	./2-links $(interactive) 405 400 180 270 105 60 0 180\
-		4 15 15 $(thickness) input4.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		3 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
-		1 \
-		1 \
-		1 \
-		$(bandwidth) \
-		&
-
-# eg13:  T-Room example -- to show clearly the difference between
-# 		self-crossing and non-crossing
-eg13: ./2-links
-	./2-links $(interactive) 190 280 255 285 190 470 285 255\
-		4 75 65 \
-		0 T-room.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		2 $(seed)  $(inputDir) \
-		0 0 0.065 \
-		$(verbose) $(title) \
-		$(smarterStrategy) \
-		$(threshold) \
-		1 \
-		28 \
-		&
-		
-# eg13b:  T-Room example -- to show clearly the difference between
-# 		self-crossing and non-crossing
-eg13b: ./2-links
-	./2-links $(interactive) 190 280 255 285 190 470 285 255\
-		4 75 65 \
-		0 T-room.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		2 $(seed)  $(inputDir) \
-		0 -170 0.09 \
-		$(verbose) $(title) \
-		$(smarterStrategy) \
-		$(threshold) \
-		1 \
-		28 \
-		&
-		
 # under development...
 # (1) Run all series of examples using Qtypes=0,1,2 and compare timing
 
