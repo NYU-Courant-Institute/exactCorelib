@@ -571,7 +571,7 @@ eg9a narrowa: ./2-links
 		&
 
 # eg9b: narrow corridor (NOPATH, but see eg9)
-eg9b narrowa: ./2-links
+eg9b narrowb: ./2-links
 	@echo "Target eg9b: test the differences between crossing and non-crossing"
 	./2-links $(interactive) 185 370 0 270 175 160 270 0\
 		4 110 90 $(thickness) narrowCorridor.txt \
@@ -585,7 +585,7 @@ eg9b narrowa: ./2-links
 		$(bandwidth) \
 		&
 # eg9c: narrow corridor (NOPATH, but see eg9)
-eg9c narrowa: ./2-links
+eg9c narrowc: ./2-links
 	@echo "Target eg9c: test the differences between crossing and non-crossing"
 	./2-links $(interactive) 185 370 0 270 175 160 270 0\
 		4 110 90 $(thickness) narrowCorridor.txt \
@@ -714,64 +714,63 @@ eg12a mazea: ./2-links
 		1 \
 		$(bandwidth) \
 		&
-
 # eg13:  T-Room example -- to show clearly the difference between
-# 		self-crossing and non-crossing  (fix! 29/30 is not a good demo!)
+# 		self-crossing and non-crossing  
 eg13 troom: ./2-links
-	./2-links $(interactive) 190 280 255 285 190 470 285 255\
-		4 75 65 \
-		0 T-room.txt \
+	./2-links $(interactive) 257 230 251 294 252 420 294 251\
+		4 94 85 \
+		0 T-room2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		3 $(seed)  $(inputDir) \
-		0 0 0.065 \
-		$(verbose) "Eg13: T-room with path (bandwidth=29/30=>path/NOPATH)" \
+		25 -120 0.08 \
+		$(verbose) "Eg13: T-room with path (bandwidth=10/11=>path/NOPATH)" \
 		$(smarterStrategy) \
 		$(threshold) \
 		1 \
-		29 \
+		10 \
 		&
-		
-# eg13b:  T-Room example -- to show clearly the difference between
+
+# eg13a:  T-Room example -- to show clearly the difference between
 # 		self-crossing and non-crossing
 eg13a trooma: ./2-links
-	./2-links $(interactive) 190 280 255 285 190 470 285 255\
-		4 75 65 \
-		0 T-room.txt \
+	./2-links $(interactive) 257 230 251 294 252 420 294 251\
+		4 94 85 \
+		0 T-room2.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		3 $(seed)  $(inputDir) \
-		0 0 0.065 \
-		$(verbose) "Eg13: T-room with NOPATH (bandwidth=29/30=>path/NOPATH)" \
+		25 -120 0.08 \
+		$(verbose) "Eg13a: T-room with NOPATH (bandwidth=10/11=>path/NOPATH)" \
 		$(smarterStrategy) \
 		$(threshold) \
 		1 \
-		29 \
+		11 \
 		&
 
 # eg13b:  T-Room example -- bigger magnification (for images in paper)
 # 		Difference if allow self-crossing or not
 eg13b troomb: ./2-links
-	./2-links $(interactive) 240 280 256 286 240 490 278 245\
+	./2-links $(interactive) 260 280 256 286 260 490 278 245\
 		4 130 80 \
 		0 T-room.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		3 $(seed)  $(inputDir) \
-		0 -100 0.08 \
+		20 -100 0.08 \
 		$(verbose) "Eg13b: T-room with path (no self-crossing)" \
 		$(smarterStrategy) \
 		$(threshold) \
-		0 \
+		1 \
 		29 \
 		&
 		
 # eg13c:  T-Room example -- bigger magnification (for images in paper)
 # 		Difference if allow self-crossing or not
 eg13c troomc: ./2-links
-	./2-links $(interactive) 240 280 256 286 240 490 278 245\
+	./2-links $(interactive) 260 280 256 286 260 490 278 245\
 		4 130 80 \
 		0 T-room.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		3 $(seed)  $(inputDir) \
-		0 -100 0.08 \
+		20 -100 0.08 \
 		$(verbose) "Eg13c: T-room with path (allow self-crossing)" \
 		$(smarterStrategy) \
 		$(threshold) \
