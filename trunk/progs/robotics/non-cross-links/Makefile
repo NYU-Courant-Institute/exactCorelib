@@ -185,7 +185,7 @@ help:
 	@echo "        ega [compiled defaults, no arguments taken]"
 	@echo "        egb [simple example from input2.txt]"
 	@echo "        eg1, eg1a, eg1b, [environment with various box barriers]"
-	@echo "        eg2, eg2a, eg2b, [simple environment without bounding box]"
+	@echo "        eg2, eg2a, eg2b, [8-way corridor with 3 obstacles]"
 	@echo "        eg3  [simple environment with door]"
 	@echo "        eg4 (= egbug, bug), eg4a (= egbuga, buga),"
 	@echo "        eg5 (= egbug2, bug2), eg5a (= bug2a), eg5b (= bug2b)"
@@ -659,15 +659,13 @@ eg10c 2chambersc: ./2-links
 
 eg11 nestedRectangle: ./2-links
 	@echo "Target eg11: 3nd test example from Chee and Zhongdi"
-#	@echo "	There is a path passage... when radius=6, epsilon=1"
-#	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./2-links $(interactive) 425 390 180 270 95 100 0 90\
 		2 50 40 6 nestedRectangle.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
 		$(verbose) "Eg 11: Nested Rectangle" \
-		$(smarterStrategy) \
+		0 \
 		$(threshold) \
 		$(crossing) \
 		$(bandwidth) \
@@ -900,20 +898,20 @@ eg200a 200a: ./2-links
 		$(bandwidth) \
 		&
 
-# eg200b: there is no path because eps=10
+# eg200b: there is no path because eps=5, but path if eps=4
 #
 eg200b: ./2-links
 	@echo "Target eg200a:  runs 2-links on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
 	./2-links $(interactive) \
-	    	10 490 0 270 \
-		495 180 270 0 \
-		5 40 60 $(thickness) input200.txt \
+	    	50 190 0 270 \
+		335 300 270 0 \
+		4 40 60 $(thickness) input200.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) "Eg 200: 200 randomly generated triangles" \
+		$(verbose) "Eg 200b: 200 triangles (eps: 4->5, path->NOPATH)" \
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
