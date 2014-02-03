@@ -688,8 +688,8 @@ eg11a nestedRectanglea: ./2-links
 		
 # maze example!
 eg12 maze: ./2-links
-	./2-links $(interactive) 405 400 180 270 105 60 0 180\
-		4 30 33 9 input4.txt \
+	./2-links $(interactive) 375 400 180 0 105 60 0 180\
+		4 30 33 0 input4.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		3 $(seed) $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -697,7 +697,7 @@ eg12 maze: ./2-links
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
-		$(bandwidth) \
+		146 \
 		&
 		
 eg12a mazea: ./2-links
@@ -926,8 +926,8 @@ eg300: ./2-links
 	@echo "    depending on the search strategy"
 	./2-links $(interactive) \
 	    	10 400 90 270 \
-		330 40 270 0 \
-		4 40 30 $(thickness) input300.txt \
+		270 190 270 90 \
+		4 40 35 $(thickness) input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -935,7 +935,7 @@ eg300: ./2-links
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
-		$(bandwidth) \
+		127 \
 		&
 
 eg300a: ./2-links
