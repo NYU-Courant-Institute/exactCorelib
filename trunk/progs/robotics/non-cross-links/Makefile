@@ -870,7 +870,7 @@ eg200 200: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) "Eg 200: 200 randomly generated triangles" \
+		$(verbose) "Eg 200: 200 randomly generated triangles (has path)" \
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
@@ -891,7 +891,7 @@ eg200a 200a: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) "Eg 200: 200 randomly generated triangles" \
+		$(verbose) "Eg 200a: 200 randomly generated triangles (NO-PATH)" \
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
@@ -901,7 +901,7 @@ eg200a 200a: ./2-links
 # eg200b: there is no path because eps=5, but path if eps=4
 #
 eg200b: ./2-links
-	@echo "Target eg200a:  runs 2-links on randomly generated obstacles"
+	@echo "Target eg200b:  runs 2-links on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
 	./2-links $(interactive) \
@@ -912,6 +912,26 @@ eg200b: ./2-links
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) "Eg 200b: 200 triangles (eps: 4->5, path->NOPATH)" \
+		$(smarterStrategy) \
+		$(threshold) \
+		$(crossing) \
+		$(bandwidth) \
+		&
+
+# eg200c: there is no path because eps=5, but path if eps=4
+#
+eg200c: ./2-links
+	@echo "Target eg200c:  runs 2-links on randomly generated obstacles"
+	@echo "--  This may take a noticeable amount bit of time, "
+	@echo "    depending on the search strategy"
+	./2-links $(interactive) \
+	    	50 190 0 270 \
+		335 300 270 0 \
+		5 40 60 $(thickness) input200.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) "Eg 200c: 200 triangles (eps: 4->5, path->NOPATH)" \
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
