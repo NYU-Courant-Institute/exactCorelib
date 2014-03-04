@@ -32,10 +32,14 @@ viewer:  viewer.o
 points:  points.o
 
 %: %.o	
-	$(CXX) $(LIBS) $< -o $@
+	$(CXX) $(CORE_LIB) $< -o $@
+
+#	ORIG: $(CXX) $(LIBS) $< -o $@
 
 .cpp.o:
-	$(CXX) $(CXXFLAGS) -c $(INCS) $< -o $@
+	$(CXX) $(CXXFLAGS) -c $(CORE_INC) $< -o $@
+
+#	ORIG:	$(CXX) $(CXXFLAGS) -c $(INCS) $< -o $@
 
 test:
 	./cdt input/src$(n).noff > output/src$(n).noff
