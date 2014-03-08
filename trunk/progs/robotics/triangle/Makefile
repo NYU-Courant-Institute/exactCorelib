@@ -525,6 +525,16 @@ eg10: ./tri
 		-220 0 .065 \ #$(xtrans) $(ytrans) $(scale) \
 		&
 
+eg20: ./tri
+	@echo "Target eg20: example using 2-chambers"
+	@echo "	There is a path passage... when radius=6, epsilon=1"
+	@echo " 	There is No Path... when radius=7, epsilon=1"
+	./tri $(interactive) 415 400 180 105 90 90 \
+		4 22 2chambers.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		-220 0 .065 \ #$(xtrans) $(ytrans) $(scale) \
+		&
 
 # RANDOMLY GENERATED ENVIRONMENT:
 #	This one, generated using our Python Generator, has 200 triangles.
