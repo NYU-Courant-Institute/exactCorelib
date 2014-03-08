@@ -58,8 +58,12 @@ README
 # ################################################################################
 # 	The COLOR SCHEME:
 # ################################################################################
-	... to be provided...
-
+	Basic colors are
+		Green for FREE, Red for STUCK, Yellow for MIXED but >Epsilon width,
+		and Grey for MIXED be <=Epsilon width.
+	The colors are shown on the translation component of the box.
+		But several boxes may have the same translational component,
+		in which case we blend their colors.
 # ################################################################################
 # 	SAMPLE TIMINGS: May 30, 2012:
 # ################################################################################
@@ -90,7 +94,7 @@ README
 		its impact on yes-path examples?
 	(3) Hybrid search strategies
 	(4) Implement Astar
-	(5) Compare to PRM
+	(5) Compare to PRM and RRT
 
 # ################################################################################
 # ################################################################################
