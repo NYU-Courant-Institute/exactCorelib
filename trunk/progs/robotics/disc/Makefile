@@ -152,7 +152,7 @@ help:
 	@echo "	eg1, eg1a, (bug, buga)		-- bugtrap"
 	@echo "	eg2, eg2a			-- like input2.txt, but with bounding box"
 	@echo "	eg3, eg3a, eg3b			-- 100 random triangles"
-	@echo "	eg4				-- maze"
+	@echo "	eg4 (maze)			-- maze"
 	@echo "	eg5, eg5a (bug2, bug2a)		-- double bugtrap"
 	@echo "	eg6, eg6a 			-- example from Kavraki's OOPSMP"
 	@echo "	eg100, eg100a, eg100b		-- 100 random triangles"
@@ -357,7 +357,7 @@ eg3c eg100c: disc
 		&
 	
 # This environment is a maze
-eg4: disc
+eg4 maze: disc
 	@echo "Target eg4:  runs disc in a randomly generated maze "
 	./disc $(interactive) 10 350  280 205 \
 		5 5 input4.txt \
