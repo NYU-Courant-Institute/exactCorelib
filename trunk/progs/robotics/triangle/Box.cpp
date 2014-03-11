@@ -443,24 +443,27 @@ void Box::updateStatusBig()
 	{
 		Corner* c = *it;
 		if( c->distance(this->x, this->y) <= outerDomain ) {
-			status = MIXED;
 			++it;
 		}
 		else {
 			it = corners.erase(it);
 		}
+       if (corners.size())
+          status = MIXED;
 	}
 
 	for (list<Wall*>::iterator it = walls.begin(); it != walls.end(); )
 	{
 		Wall* w = *it;
 		double distWall = w->distance(this->x, this->y);
-		if (distWall < innerDomain)
-		{
-			status = STUCK;
-			return;				
-		} 
-		else if (distWall <= outerDomain)
+//		if (distWall < innerDomain)
+//		{
+//			status = STUCK;
+//			return;				
+//		} 
+//		else
+        
+       if (distWall <= outerDomain)
 		{
 			status = MIXED;
 			++it;

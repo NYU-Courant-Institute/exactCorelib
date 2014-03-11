@@ -63,6 +63,10 @@ ifstream ifile;
 
 int counter=0;	// for debugging
 
+extern double deltaX;			// x-translation of input environment
+extern double deltaY;			// y-translation of input environment
+extern double scale;				// scaling of input environment
+
 /* *************************************************** 
  * HELPERS 
  *************************************************** */

@@ -238,6 +238,7 @@ public:
 		{
 			path.push_back(path.back()->prev);
 		}
+        reverse(path.begin(), path.end());
 		return path;
 	}
 

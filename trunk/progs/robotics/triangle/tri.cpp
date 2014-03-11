@@ -189,6 +189,8 @@ double triRobo[2] = {0.833333333, 1.0};
 
 	GLUI_TextBox* textBox;
 
+    double winWidth = 512;			// Initial window width
+    double winHeight = 512;			// Initial window height
     GLuint fbo;
     GLuint depthBuffer;			// Our handle to the depth render buffer
     GLuint img;					// Our handle to a texture
@@ -343,7 +345,7 @@ void initFbo()
     glClearDepth(1.0f);					
     glEnable(GL_DEPTH_TEST);			
     glDepthFunc(GL_LEQUAL);				
-    glViewport(0,0,boxWidth, boxHeight);
+    glViewport(0,0,winWidth, winHeight);
 
     // Setup our FBO
     glGenFramebuffers(1, &fbo);
@@ -352,12 +354,12 @@ void initFbo()
     // Create the render buffer for depth	
     glGenRenderbuffers(1, &depthBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, boxWidth, boxHeight);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, winWidth, winHeight);
 
     // Now setup a texture to render to
     glGenTextures(1, &img);
     glBindTexture(GL_TEXTURE_2D, img);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,  boxWidth, boxHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,  winWidth, winHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -400,6 +402,12 @@ void redrawFBO()
 {
     leafBoxesDrawed = false;
 }
+
+//essentially disable reshape
+void reshape(int w, int h)
+{
+}
+
 
 // MAIN PROGRAM: ========================================
 int main(int argc, char* argv[])
@@ -449,15 +457,16 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 //cout<<"before glutInit\n";
 		glutInit(&argc, argv);
 		glutInitWindowPosition(windowPosX, windowPosY);
-		glutInitWindowSize(boxWidth, boxWidth);
+		glutInitWindowSize(winWidth, winHeight);
 		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 		int windowID = glutCreateWindow("Motion Planning for Triangle");
 
         initFbo();
 		glutDisplayFunc(renderScene);
 		glutTimerFunc(50, idle, 0);
+        glutReshapeFunc(reshape);
 //		GLUI_Master.set_glutIdleFunc(idle); //replaces glutIdleFunc
-		GLUI *glui = GLUI_Master.create_glui( "Control Triangle Demo", 0, windowPosX + boxWidth + 20, windowPosY );
+		GLUI *glui = GLUI_Master.create_glui( "Control Triangle Demo", 0, windowPosX + winWidth + 20, windowPosY );
 	
 		// SETTING UP THE CONTROL PANEL:
 		editInput = glui->add_edittext( "Input file:", GLUI_EDITTEXT_TEXT );
@@ -1051,8 +1060,8 @@ void renderScene()
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glLoadIdentity();
-        glScalef(2.0/boxWidth, 2.0/boxHeight, 0);
-        glTranslatef(-boxWidth/2, -boxHeight/2, 0);
+        glScalef(2.0/winWidth, 2.0/winHeight, 0);
+        glTranslatef(-winWidth/2, -winHeight/2, 0);
 
 
 	    glDisable( GL_BLEND );
@@ -1111,8 +1120,8 @@ void renderScene()
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
-    glScalef(2.0/boxWidth, 2.0/boxHeight, 0);
-    glTranslatef(-boxWidth/2, -boxHeight/2, 0);
+    glScalef(2.0/winWidth, 2.0/winHeight, 0);
+    glTranslatef(-winWidth/2, -winHeight/2, 0);
 
 	//draw fbo to screen by render GL_QUADS usig texture mapping
     glBindTexture(GL_TEXTURE_2D, img);
@@ -1242,6 +1251,7 @@ void parseConfigFile(Box* b)
 				// output-tmp.txt
 	
 	ifstream ifs( "output-tmp.txt" );
+    ofstream ofs( "output-converted.txt" );
 	if (!ifs)
 	{
 		cerr<< "cannot open input file" << endl;
@@ -1253,16 +1263,19 @@ void parseConfigFile(Box* b)
 
 	int nPt, nPolygons;	// previously, nPolygons was misnamed as nFeatures
 	ifs >> nPt;
+    ofs << nPt << endl;
 
 	//skip_comment_line ( ifs );	// again, clear white space
 	vector<double> pts(nPt*2);
 	for (int i = 0; i < nPt; ++i)
 	{
 		ifs >> pts[i*2] >> pts[i*2+1];
+        ofs << pts[i*2]*scale+deltaX << " " << pts[i*2+1]*scale+deltaY << endl;
 	}
 
 	//skip_comment_line ( ifs );	// again, clear white space
 	ifs >> nPolygons;
+    ofs << nPolygons << endl;
 	//skip_comment_line ( ifs );	// again, clear white space
 	string temp;
 	std::getline(ifs, temp);
@@ -1270,6 +1283,7 @@ void parseConfigFile(Box* b)
 	{
 		string s;
 		std::getline(ifs, s);
+        ofs << s << endl;
 		stringstream ss(s);
 		vector<Corner*> ptVec;
 		set<int> ptSet;
@@ -1307,6 +1321,7 @@ void parseConfigFile(Box* b)
 		}
 	}
 	ifs.close();
+    ofs.close();
 	if (verboseOption){
 	  cout << "input file name = " << s << endl;	
 	  cout<< "nPt=" << nPt << endl;

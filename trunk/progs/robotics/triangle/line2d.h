@@ -18,18 +18,18 @@ public:
 		c = c / n;
 	}
 
-	void expand(double d)
-	{
-		//assert(d >= 0);
-		if (c > 0)
-		{
-			c += d;
-		} 
-		else 
-		{
-			c -= d;
-		}
-	}
+//	void expand(double d)
+//	{
+//		//assert(d >= 0);
+//		if (c > 0)
+//		{
+//			c += d;
+//		} 
+//		else 
+//		{
+//			c -= d;
+//		}
+//	}
 
 	//expand L1 based on position to L2, L3
 	//we want L1 to "go away" from L2 x L3
@@ -46,14 +46,15 @@ public:
 		//sc is the c for line parallel but go through intersection of L2 and L3
 		double sc = -this->a * x - this->b * y;
 		
+        double n = sqrt(a*a + b*b);
 
 		if (c > sc)
 		{
-			c += d;
+			c += d * n;
 		} 
 		else 
 		{
-			c -= d;
+			c -= d * n;
 		}
 
 		return true;
