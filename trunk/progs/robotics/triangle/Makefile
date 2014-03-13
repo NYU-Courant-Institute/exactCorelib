@@ -26,7 +26,7 @@
 #			$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 #			$(Qtype) $(seed)  $(inputDir) \
 #			$(xtrans) $(ytrans) $(scale) \
-#			$(verbose) $(title) \
+#			$(verbose) $(title) $(colonOn) \
 #
 #	where the arguments to tri correspond to the values $(var) of
 #	various Makefile variables.   
@@ -145,8 +145,9 @@ xtrans = 0		# x-translation of input file
 ytrans = 0		# y-translation of input file
 scale = 1		# scaling of input file
 
-verbose = 0		# if true, display statistics
+verbose = 0		# if 1 or true, display statistics
 title = Demos		# Title of control panel
+colorOn = 1		# if 1 or true, show color
 
 tri = triangle		# name of executable program
 tri = tri		# name of executable program
@@ -175,7 +176,7 @@ testb: $(TARGETS)
 		$(epsilon)  $(radius)  input2.txt  $(boxWidth) $(boxHt) \
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 
 help:
 	@echo "USAGE:  The main program is called tri.  Demos can be invoked thus:"
@@ -220,7 +221,7 @@ eg:	./tri
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # run with default compiled options:
@@ -241,7 +242,7 @@ egb:	./tri
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # Simple NO PATH example:
@@ -253,7 +254,7 @@ nopath eg0:	./tri
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg1:	input2e.txt is like input2, but there is a bounding box
@@ -264,7 +265,7 @@ eg1: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg2: input 2.text, no bounding box
@@ -275,7 +276,7 @@ eg2: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg3: input3.txt is line input2e, but there is a narrow door
@@ -286,7 +287,7 @@ eg3: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg3a: input3a.txt is line input2e, but there is a narrow door
@@ -297,7 +298,7 @@ eg3a: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # BUG TRAPS:
@@ -313,7 +314,7 @@ eg4 egbug bug: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # Bugtrap example -- Non-existence of path, but barely!
@@ -327,7 +328,7 @@ eg4a egbuga buga: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # Bugtrap example -- Interesting because robot is about as big as can get through
@@ -344,7 +345,7 @@ eg4b egbugb bugb: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		4 $(seed) $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # Bugtrap example -- Interesting because robot is about as big as can get through
@@ -364,7 +365,7 @@ eg5 egbug2 bug2: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		3 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 # same as eg5, but we reverse the role of start and finish position!
 eg5a egbug2a bug2a: ./tri
@@ -375,7 +376,7 @@ eg5a egbug2a bug2a: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # Bugtrap2 example -- Non-Existence of path.
@@ -393,7 +394,7 @@ eg5b egbug2b bug2b: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		2 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg6: This environment is taken from Kavraki's groups Demo for OOPSMP:
@@ -562,7 +563,7 @@ eg100 100: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg100a: 100 random triangles

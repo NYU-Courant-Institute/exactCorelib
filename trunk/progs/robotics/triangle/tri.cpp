@@ -434,7 +434,7 @@ int main(int argc, char* argv[])
 	if (argc > 20) scale  = atof(argv[20]);		// scaling of input file
 	if (argc > 21) verboseOption = atoi(argv[21]);	// verboseOption
 	if (argc > 22) title = argv[22];		// title
-	if (argc > 23) colorSchemeOn = argv[23];	// true=show color, false=no show
+	if (argc > 23) colorSchemeOn = atoi(argv[23]);	// true=show color, false=no show
 
 cout<<"Before interactive, Qtype= " << QType << "\n";
 
