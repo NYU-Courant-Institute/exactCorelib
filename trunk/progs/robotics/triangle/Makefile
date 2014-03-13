@@ -193,8 +193,10 @@ help:
 	@echo "        eg3  [simple environment with door]"
 	@echo "        eg4 (= egbug, bug), eg4a (= egbuga, buga),"
 	@echo "        eg5 (= egbug2, bug2), eg5a (= egbug2a, bug2a), eg5b, eg5c"
-	@echo "        eg6 (= kavraki), eg6a (= kavrakia),"
+	@echo "        eg6 (= kavraki), eg6a (= kavrakia)"
 	@echo "        eg7 (= tunnel), eg7a (= tunnela), eg7b (= tunnelb)"
+	@echo "        eg8 (= hsu), eg8a (= hsua), eg8b (=hsub) [Hsu-Lathombe-Kurniawati]"
+	@echo "        eg9 (= corridor)"
 	@echo "        eg100, eg100a"
 	@echo "        eg150"
 	@echo "        eg200, eg200a, eg200b"
@@ -502,11 +504,9 @@ eg8b hsub: ./tri
 		$(Qtype) $(seed)  $(inputDir) \
 		-70 -70 0.065 \
 		&
-
+# eg9: narrow corridor
 eg9: ./tri
-	@echo "Target eg9: example from the paper of Hsu, Latombe, Kurniawati (2006)"
-	@echo "	There is a path passage... when radius=6, epsilon=1"
-	@echo " 	There is No Path... when radius=7, epsilon=1"
+	@echo "Target eg9: narror corridor"
 	./tri $(interactive) 250 370 -60 220 150 30\
 		5 30 narrowCorridor.txt \
 		512 512 $(windowPosX) $(windowPosY) \
@@ -514,15 +514,26 @@ eg9: ./tri
 		0 0 0.065 \
 		&
 
-eg10: ./tri
+# eg10: 2-chamber
+eg10 2chamber: ./tri
 	@echo "Target eg10: example using 2-chambers"
 	@echo "	There is a path passage... when radius=6, epsilon=1"
 	@echo " 	There is No Path... when radius=7, epsilon=1"
 	./tri $(interactive) 415 400 -60 120 100 30\
-		4 22 2chambers.txt \
+		5 22 2chambers.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 .065 \ #$(xtrans) $(ytrans) $(scale) \
+		&
+
+# eg11: maze
+eg11 maze: ./tri
+	@echo "Target eg11: maze"
+	./tri $(interactive) 385 400 0 105 60 30\
+		4 10 input4.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 $(seed)  $(inputDir) \
+		0 0 1 \ #$(xtrans) $(ytrans) $(scale) \
 		&
 
 eg20: ./tri

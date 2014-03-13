@@ -279,11 +279,14 @@ bool Box::splitAngle( double epsilon, vector<Box*>& chldn )
 
 bool Box::split( double epsilon, vector<Box*>& chldn )
 {
-	if (!this->isBig)
+	if (!this->isBig) // not isBig:
 	{
 		return split3D(epsilon, chldn);
 	} 
-	else if( rB / 2 < r0 * 2 / THETA_MIN / 20 )
+	else if( rB / 2 < r0 * 2 / THETA_MIN / 20 ) // one-shot intermediate split before
+	    		// doing split3D( ).  After this, isBig is false.
+			// This intermediate step speeds up the code...
+			// THETA_MIN is roughly the minimum angle of the triangle robot
 	{
 		//int n = ceil( 2 / THETA_MIN );
 		//int m = 1;
@@ -299,7 +302,7 @@ bool Box::split( double epsilon, vector<Box*>& chldn )
 		recursiveSplitAngle(epsilon, chldn, n, m);
 		return true;
 	}
-	else
+	else // do translational degree
 	{
 		return split2D(epsilon, chldn);
 	}
@@ -438,7 +441,8 @@ void Box::updateStatusBig()
 	}
 
 	double outerDomain = r0 + rB;
-	double innerDomain = r0 > rB ? r0 - rB : 0;
+	// innerDomain unused:
+	// double innerDomain = r0 > rB ? r0 - rB : 0;
 	for (list<Corner*>::iterator it = corners.begin(); it != corners.end(); )
 	{
 		Corner* c = *it;
@@ -501,7 +505,8 @@ void Box::updateStatusSmall()
 	Line2d L1(v02x, v02y, v11x, v11y);
 	Line2d L2(v12x, v12y, v21x, v21y);
 	Line2d L3(v22x, v22y, v01x, v01y);
-	bool expandSuccess = L1.expand(rB, L2, L3) && L2.expand(rB, L1, L3) && L3.expand(rB, L1, L2) && !L1.isNegative(L2, L3);
+	// unused:
+	// bool expandSuccess = L1.expand(rB, L2, L3) && L2.expand(rB, L1, L3) && L3.expand(rB, L1, L2) && !L1.isNegative(L2, L3);
 	assert(expandSuccess);
 
 
