@@ -167,14 +167,14 @@ double triRobo[2] = {0.833333333, 1.0};
     bool finishedAnim = false;
 	int idleTime = 50;
 
-    bool colorSchemeOn = 1;
+    bool colorSchemeOn = false; 	// true=show color, false=do not show color
 
 // GLUI controls ========================================
 //////////////////////////////////////////////////////////////////////////////////
 	GLUI_RadioGroup* radioQType;
 	GLUI_RadioGroup* radioDrawOption;
 	GLUI_RadioGroup* radioVerboseOption;
-    GLUI_RadioGroup* radioColorSchemeOption;
+	GLUI_RadioGroup* radioColorSchemeOption;
 	GLUI_EditText* editInput;
 	GLUI_EditText* editDir;
 	GLUI_EditText* editRadius;
@@ -434,6 +434,7 @@ int main(int argc, char* argv[])
 	if (argc > 20) scale  = atof(argv[20]);		// scaling of input file
 	if (argc > 21) verboseOption = atoi(argv[21]);	// verboseOption
 	if (argc > 22) title = argv[22];		// title
+	if (argc > 23) colorSchemeOn = argv[23];	// true=show color, false=no show
 
 cout<<"Before interactive, Qtype= " << QType << "\n";
 
