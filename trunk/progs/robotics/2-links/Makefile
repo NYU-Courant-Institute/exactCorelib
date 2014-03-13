@@ -184,7 +184,7 @@ help:
 	@echo "        eg9 (= narrow), eg9a, eg9b"
 	@echo "        eg10 (= 2chambers), eg10a, eg10b, etc"
 	@echo "        eg11 (= nestedRectangle), eg11a (=nestedRectanglea)"
-	@echo "        eg12 (= maze), eg12a"
+	@echo "        eg12 (= maze), eg12a (= mazea)"
 	@echo "        eg13 (= troom), eg13a"
 	@echo "        eg100, eg100a"
 	@echo "        eg150"
@@ -546,7 +546,7 @@ eg11b nestedRectangleB: ./2-links
 		&
 
 # maze environment: path case
-eg12: ./2-links
+eg12 maze: ./2-links
 	./2-links $(interactive) 405 400 180 270 105 60 0 180\
 		4 34 30 input4.txt \
 		512 512 $(windowPosX) $(windowPosY) \
@@ -558,7 +558,7 @@ eg12: ./2-links
 		&
 		
 # maze environment: NOPATH case
-eg12a: ./2-links
+eg12a mazea: ./2-links
 	./2-links $(interactive) 405 400 180 270 105 60 0 180\
 		4 35 30 input4.txt \
 		512 512 $(windowPosX) $(windowPosY) \
@@ -568,6 +568,7 @@ eg12a: ./2-links
 		1 \
 		1 \
 		&
+	#
 # eg13:  T-Room environment (path with L2=120)
 eg13 troom: ./2-links
 	./2-links $(interactive) 125 115 355 5 230 470 275 265\
