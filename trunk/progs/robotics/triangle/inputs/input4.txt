@@ -1,3 +1,7 @@
+# file: input4.txt
+#
+#   A maze environment comprising of horizontal and vertical passages.
+
 188
 24.380952381 24.380952381
 146.285714286 24.380952381
