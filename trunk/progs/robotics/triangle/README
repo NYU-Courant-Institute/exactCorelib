@@ -94,7 +94,8 @@ README
 		its impact on yes-path examples?
 	(3) Hybrid search strategies
 	(4) Implement Astar
-	(5) Compare to PRM and RRT
+	(5) Compare to PRM and RRT (done in CGTA paper)
+	(6) Display in degree, not in (radians/pi) !
 
 # ################################################################################
 # ################################################################################

@@ -212,8 +212,8 @@ help:
 #
 eg:	./tri
 	@echo "Target 'eg':  runs tri with the default options of Makefile"
-	@echo "--  You can all of them in you 'make' command line, e.g.,"
-	@echo "--      > make eg radius=60 goalX=111 goalY=450 goalTheta=90 startY=200 startX=20"
+	@echo "-- You can all of them in you 'make' command line, e.g.,"
+	@echo "--   > make eg radius=60 goalX=111 goalY=450 goalTheta=90 startY=200 startX=20"
 	./tri $(interactive) $(startX) $(startY)  $(startTheta) \
 	    	$(goalX) $(goalY) $(goalTheta) \
 		$(epsilon) $(radius) $(fileName) \
@@ -529,8 +529,8 @@ eg10 2chamber: ./tri
 # eg11: maze
 eg11 maze: ./tri
 	@echo "Target eg11: maze"
-	./tri $(interactive) 385 400 0 105 60 30\
-		4 10 input4.txt \
+	./tri $(interactive) 385 400 -30 105 60 30\
+		5 10 input4.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		0 0 1 \ #$(xtrans) $(ytrans) $(scale) \

@@ -167,7 +167,7 @@ double triRobo[2] = {0.833333333, 1.0};
     bool finishedAnim = false;
 	int idleTime = 50;
 
-    bool colorSchemeOn = 0;
+    bool colorSchemeOn = 1;
 
 // GLUI controls ========================================
 //////////////////////////////////////////////////////////////////////////////////
@@ -422,7 +422,7 @@ int main(int argc, char* argv[])
 	if (argc > 8) epsilon = atof(argv[8]);		// epsilon (resolution)
 	if (argc > 9) R0      = atof(argv[9]);		// robot radius
 	if (argc > 10) fileName = argv[10]; 		// Input file name
-	if (argc > 11) boxWidth = atof(argv[11]);		// boxWidth
+	if (argc > 11) boxWidth = atof(argv[11]);	// boxWidth
 	if (argc > 12) boxHeight = atof(argv[12]);	// boxHeight
 	if (argc > 13) windowPosX = atoi(argv[13]);	// window X pos
 	if (argc > 14) windowPosY = atoi(argv[14]);	// window Y pos
@@ -447,8 +447,9 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 	    //return 0;
 	}
 
-	alpha[2] /= 180.0;		// start theta, convert from degree to radian
-	beta[2] /= 180.0;		// goal theta, convert from degree to radian
+	alpha[2] /= 180.0;	// start theta, convert from degree to (radian/pi)
+				// NOTE: alpha[2] is not in radians, but radians/3.1412!)
+	beta[2] /= 180.0;	// goal theta, convert from degree to (radian/pi)
 
 	// Else, set up for GLUT/GLUI interactive display:
 	
@@ -496,7 +497,7 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 	   editAlphaY->set_float_val(alpha[1]);
 	   editAlphaTheta = glui->add_edittext_to_panel(alpha_box_panel,
 		   	"theta (degrees)", GLUI_EDITTEXT_FLOAT );
-	   editAlphaTheta->set_float_val(alpha[2]);
+	   editAlphaTheta->set_float_val(alpha[2]*180); // Chee: display as degree!
 	   	// ORIGINAL:
 		//editAlphaX = glui->add_edittext( "alpha.x:", GLUI_EDITTEXT_FLOAT );
 		//editAlphaX->set_float_val(alpha[0]);
@@ -515,7 +516,7 @@ cout<<"Before interactive, Qtype= " << QType << "\n";
 	   editBetaY->set_float_val(beta[1]);
 	   editBetaTheta = glui->add_edittext_to_panel(beta_box_panel,
 		   	"theta (degrees)", GLUI_EDITTEXT_FLOAT );
-	   editBetaTheta->set_float_val(beta[2]);
+	   editBetaTheta->set_float_val(beta[2]*180); // Chee: display as degree!
 	   	// ORIGINAL:
 		//editBetaX = glui->add_edittext( "beta.x:", GLUI_EDITTEXT_FLOAT );
 		//editBetaX->set_float_val(beta[0]);
