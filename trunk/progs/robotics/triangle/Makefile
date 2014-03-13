@@ -407,39 +407,51 @@ eg6: ./tri
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		250 250 0.04 \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg6a:  Variant of eg6a where their "robot" is shown.
+# 	 I THINK THIS EXAMPLE IS INSTRUCTIVE: too slow with Greedy or Boundary Tracker
+# 	 MUST FIX THIS.  (If you change to Dist+Size heuristic, it is actually quite fast)
 eg6a: ./tri
 	@echo "Target DemoSE2_PRM (from Kavraki's group) -- their robot is shown"
-	@echo "	There is a narrow path... when radius=15, epsilon=2"
-	@echo " 	There is No Path... when radius=15, epsilon=3"
+	@echo "	 THIS EXAMPLE IS INSTRUCTIVE!"
+	@echo "   TOO slow with Greedy Heuristic (6 s) or Boundary Tracker Heuristic!"
+	@echo "	  But with Dist+Size Heuristic, it is fast (10 ms)!"
 	./tri $(interactive) 75 350 0 380 205 0\
 		2 15 DemoSE2_PRMa.txt \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		3 $(seed)  $(inputDir) \
 		250 250 0.04 \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg7, egtunnel:  tunnel example from Salzman et al.
 # 	NOTE that the current search strategy seems to miss the direct path!!
 # 	TODO: develop a better search (e.g. Best First Search)
 eg7 egtunnel tunnel: ./tri
+	@echo "Target tunnel (from paper of Salzman et al.)"
+	@echo "Very fast with boundary tracker heuristic"
 	./tri $(interactive) 200 280 0 450 300 0\
 		10 15 tunnel.poly \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		100 200 0.05
+		4 1111 $(inputDir) \
+		100 200 0.05 \
+		$(verbose) $(title) 0 \
+		&
 
 # eg7a or tunnela:  Variant of tunnel.  We introduce a confining box to force 
 # 	the robot to go through the tunnel.  This one is reasonably fast
 # 	(radius=10, epsilon=10).  Path is found.  See tunnelXa for a much harder instance.
+# 	TODO: Bug (penetrate obstacle?) (Chee March 2014)
 eg7a egtunnela tunnela: ./tri
 	./tri $(interactive) 200 280 0 450 300 0\
 		10 10 tunnelx.poly \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
-		100 200 0.05
+		100 200 0.05 \
+		$(verbose) $(title) $(colorOn) \
+		&
 
 # eg7b or tunnelb:  Variant of tunnel.  We introduce a confining box to force 
 # 	the robot to go through the tunnel.  
@@ -470,7 +482,9 @@ eg7b tunnelb: ./tri
 		10 15 tunnelx.poly \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
-		100 200 0.05
+		100 200 0.05 \
+		$(verbose) $(title) $(colorOn) \
+		&
 
 # eg8: from Paper of Hsu-Lathombe-Kurniawati
 eg8 hsu: ./tri
@@ -482,6 +496,7 @@ eg8 hsu: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-70 -70 0.065 \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 eg8a hsua: ./tri
@@ -493,6 +508,7 @@ eg8a hsua: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-70 -70 0.065 \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 eg8b hsub: ./tri
@@ -504,6 +520,7 @@ eg8b hsub: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		-70 -70 0.065 \
+		$(verbose) $(title) $(colorOn) \
 		&
 # eg9: narrow corridor
 eg9: ./tri
@@ -513,6 +530,7 @@ eg9: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		0 0 0.065 \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg10: 2-chamber
@@ -525,6 +543,7 @@ eg10 2chamber: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 .065 \ #$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg11: maze
@@ -535,6 +554,7 @@ eg11 maze: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		0 0 1 \ #$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 eg20: ./tri
@@ -546,6 +566,7 @@ eg20: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 .065 \ #$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # RANDOMLY GENERATED ENVIRONMENT:
@@ -575,7 +596,7 @@ eg100a 100a: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg150: 150 random triangles (use radius=1)
@@ -586,7 +607,7 @@ eg150 150: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg200: 200 random triangles
@@ -602,7 +623,7 @@ eg200 200: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg200a: there is an obvious path but probabilistic methods might waste
@@ -618,7 +639,7 @@ eg200a 200a: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		4 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg200b: there is no path because eps=10
@@ -632,7 +653,7 @@ eg200b: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # eg300: 300 random triangles
@@ -645,7 +666,7 @@ eg300: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 
@@ -677,7 +698,7 @@ ex-bug experiment-bug: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # Bugtrap example 
@@ -688,7 +709,7 @@ ex-buga: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # ex-150: 150 random triangles (use radius=1)
@@ -699,7 +720,7 @@ ex-150: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # ex-200: 200 random triangles
@@ -710,7 +731,7 @@ ex-200: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 	#
 # ex-300: 300 random triangles
@@ -722,7 +743,7 @@ ex-300: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 #=================================================
@@ -749,7 +770,7 @@ demo1: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		3 11 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 # Demo2 is same as eg100 (the greedy strategy is fastest, but try
@@ -765,7 +786,7 @@ demo2: ./tri
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
-		$(verbose) $(title) \
+		$(verbose) $(title) $(colorOn) \
 		&
 
 #=================================================
