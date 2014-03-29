@@ -1334,7 +1334,7 @@ void run() {
 		ssout << "    ---->>  NO PATH !" << endl;
 	ssout << "    ---->>   TIME USED: " << t.getElapsedTimeInMilliSec() << " ms"
 			<< endl;
-	ssout << "    ---->>   TOTAL STEPS: " << totalSteps << endl;
+	ssout << "    ---->>   NUMBER OF BOXES: " << totalSteps << endl;
 	ssout << "    ---->>   Strategy No (" << QType << ")" << endl;
 	if (verboseOption) {
 		ssout << "    Expanded " << ct << " times" << endl;

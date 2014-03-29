@@ -345,11 +345,11 @@ eg2b: ./2-links
 eg3 8way: ./2-links
 	@echo "Target eg3: Hall way with 8 convergent hallways"
 	./2-links $(interactive) 262 250 180 270 271 256 90 0\
-		4 80 70 6 8way.txt \
+		4 85 74 6 8way.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) "Eg3: 8 ways" \
+		$(verbose) "Eg3: 8 ways (L2=74->75, path->NOPATH" \
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
@@ -358,16 +358,16 @@ eg3 8way: ./2-links
 
 eg3a 8waya: ./2-links
 	@echo "Target eg3b: Hall way with 8 convergent hallways"
-	./2-links $(interactive) 145 145 33 235 262 346 280 80\
-		4 90 70 $(thickness) 8way.txt \
+	./2-links $(interactive) 262 250 180 270 271 256 90 0\
+		4 85 75 $(thickness) 8way.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		4 $(seed)  $(inputDir) \
+		2 $(seed)  $(inputDir) \
 		-220 0 0.065 \
-		$(verbose) "Eg3a: 8 ways" \
+		$(verbose) "Eg3a: 8 ways (L2=75->74, NOPATH->path" \
 		$(smarterStrategy) \
 		$(threshold) \
 		$(crossing) \
-		$(bandwidth) \
+		30 \
 		&
 
 eg3b 8wayb: ./2-links

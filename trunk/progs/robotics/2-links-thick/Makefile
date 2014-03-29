@@ -534,8 +534,6 @@ eg11a nestedRectangleA: ./2-links
 		4 \
 		&
 
-		
-
 # RANDOMLY GENERATED ENVIRONMENT:
 #	This one, generated using our Python Generator, has 200 2-links.
 #	Note that these 2-links are not disjoint, but our theory remains
