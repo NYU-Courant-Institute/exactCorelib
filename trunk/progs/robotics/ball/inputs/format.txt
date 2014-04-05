@@ -1,24 +1,86 @@
-# BASIC FORMAT:
-#     FOR NOW, MAKE SURE THAT ALL OBSTACLES ARE CONVEX 
+# FORMAT for input of polyhedral environment:
 #
-#     V            # number of vertices
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# GEOMETRY:
+# 	For now, all faces are assumed triangular.
+# 	But we should be able to general the faces to convex polygons.
 #
-#    x1 y1 z1 x2 y2 z2 ...    xN yN zN    # vertices
+# 	A polyhedron is a set of faces with disjoint interiors
+# 	such that every edge is shared by exactly two faces.
+#
+# 	Right Hand Convention for Inside/Outside of polyhedra:
+# 	the vertices of each face appear counterclockiwse when we seen
+# 	from the outside.   Using the righthand rule,
+# 	the thumb points in the outward normal when the other fingers
+# 	point in counterclockwise direction.
+#
+# SYNTAX:
+# 	Comment character is "#" and continuation character is "\".
+# 	The rest of an input line is ignored after "#" or "\".
+# 	While "#" terminates the current line, "\" joins the current line
+# 		to the next line.
+# 	White spaces at the start of a line or trailing a line are ignored,
+# 		as are empty lines.
+# 	Contiguous white spaces can be replaced by a single space
+# 	After all this processing, our file is a sequence of non-empty
+# 	lines, with no extraneous characters.
+#
+#	We then break these lines into an initial section of vertices,
+# 	followed by any number of sections, one for each polygon:
+#
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#
+#    N            # number of vertices, on a single line
+#
+#    x1 y1 z1	# vertex 1 where x1,y1,z1 are decimal numbers, one per line
+#    x2 y2 z2	# vertex 2
+#    ...  
+#    xN yN zN   # vertex N.  This is self-terminating, as N is known.
 #
 #    F1            # number of faces in polyhedron 1  (all faces are triangles)
 #
-#    u11 v11 w11        # first triangle (face)   given by a list of vertices
+#    u11 v11 w11        # first triangle (face)   given by 3 vertex indices
 #    u12 v12 w12        # second triangle (face)
 #    ...
-#    u1F1 v1F1 w1F1        # last triangle (face)
+#    u1F1 v1F1 w1F1     # last triangle (face)
 #
 #    F2            # number of faces in polyhedron 2 
 #
 #    u21 v21 w21        # first triangle (face)
 #    u22 v22 w22        # second triangle (face)
 #    ...
-#    u2F2 v2F2 w2F2        # last triangle (face)
+#    u2F2 v2F2 w2F2     # last triangle (face)
+#
+#    ...
 #
 #    0            # zero indicates no more polyhedra
 #
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# EXTENSIONS:
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# (1) Named vertices:
+# 	To specify a named vertex, we write (say),
+#
+#	   "origin" x1 y1 z1	   # "origin" (in quotes) names point (x1,y1,z1)
+#	   "corner" x2 y2 z2	   # "corner" is the name of (x2,y2,z2)
+#
+#	To use a named point in a face, we just use its name (in quotes):
+#
+#	   v1 "origin" v3	   # triangle which uses "origin" as one of its vertices
+#	   "origin" v3 "corner"	   # triangular using "origin" and "corner"
+#
+# (2) Parallelogram faces:
+# 	Four or more general points tend to be non-coplanar.
+# 	We propose a method to specify four points forming a planar parallelogram.
+# 	In place of a triangular face, we can write:
+#
+# 	u v w "quad"		   # where the special name "quad"
+# 				   # tells us that the fourth point of
+# 				   # this quadrilateral is w+u-v. 
+# 				   # Note that (u,v,w,w+u-v) forms a
+# 				   # parallelogram listed counterclockwise.
+#
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# -- Chee Yap (2013)
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 
