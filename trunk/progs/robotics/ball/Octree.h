@@ -1,7 +1,7 @@
 /* **************************************
    File: Octree.h
 
-   Description: 
+   Description:
 
    HISTORY: July, 2013: Surin Ahn
 
@@ -71,7 +71,7 @@ public:
 			PQ = new dijkstraQueue();
 			break;
 		}
-		
+
 		//PQ = new randQueue();
 
 		pRoot->updateStatus();
@@ -93,7 +93,7 @@ public:
 			double dx = x - b->x;
 			double dy = y - b->y;
 			double dz = z - b->z;
-					
+
 			if (dx <= 0 && dy >= 0 && dz >= 0)
 			{
 				b = b->pChildren[3];
@@ -109,7 +109,7 @@ public:
 			else if (dx <= 0 && dy >= 0 && dz <= 0)
 			{
 				b = b->pChildren[0];
-			}			
+			}
 			else if (dx <= 0 && dy <= 0 && dz >= 0)
 			{
 				b = b->pChildren[7];
@@ -163,9 +163,9 @@ public:
 				{
 					b->pChildren[i]->updateStatus();
 					insertNode(b->pChildren[i]);
-				}			
+				}
 				return true;
-			}			
+			}
 		}
 		return false;
 	}
@@ -192,7 +192,6 @@ public:
 					pSets->Union(b, neighbor);
 				}
 				neighbor = iter->Next();
-				cout << endl;
 			}
 		}
 	}
