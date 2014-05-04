@@ -152,6 +152,9 @@ void resetRotationMatrix() {
 }
 
 void resetEyePosition() {
+  obj_pos[0] = eye[0];
+  obj_pos[1] = eye[1];
+  obj_pos[2] = eye[2];
   obj_pos[0] = (float) (-boxWidth/2.);
   obj_pos[1] = (float) (-boxWidth/2.);
   obj_pos[2] = (float) (2.*boxWidth);
@@ -181,19 +184,15 @@ void logNonInteractiveRun(bool noPath) {
   }
 }
 
-void genEmptyTree() {
+Octree* genEmptyTree() {
   Box* root = new Box(boxWidth/2, boxWidth/2, boxWidth/2, boxWidth);
   Box::r0 = R0;
 
   parseConfigFile(root);
   root->updateStatus();
 
-  if (OT) {
-    delete(OT);
-  }
-  OT = new Octree(root, epsilon, QType, seed++);  // Note that seed keeps changing!
-
   cout<<"inside genEmpty:  Qtype= " << QType << "\n";
+  return new Octree(root, epsilon, QType, seed++);  // Note that seed keeps changing!
 }
 
 Box* findEnclosingFreeBox(Octree* octree, double coordinate[3], Box* box, int& expandCounter) {
@@ -228,11 +227,14 @@ void run() {
   // start timer
   t.start();
 
-  genEmptyTree();
+  if (OT) {
+    delete(OT);
+  }
+
+  OT = genEmptyTree();
 
   if (showAnim) {
-    finishedAnim = 0;
-    iPathSeg = 0;
+    animReplay();
   }
 
   noPath = false;  // Confusing use of "noPath"
@@ -315,7 +317,7 @@ void drawQuad(Box* b) {
       break;
   }
 
-  if (!hideBoxBoundary) {
+  if (!radioDrawOption->get_int_val()) {
     glPushMatrix();
     glTranslated(b->x, b->y, b->z);
     glutWireCube(b->width);
@@ -326,12 +328,12 @@ void drawQuad(Box* b) {
 void drawEdges(Box* b) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glColor4f(1.0, 1.0, 1.0, transparency / 100.0);
   for (list<Wall*>::iterator iter = b->Walls.begin(); iter != b->Walls.end(); ++iter) {
     Wall* w = *iter;
     double A[3] = {w->b->x - w->a->x, w->b->y - w->a->y, w->b->z - w->a->z};
     double B[3] = {w->c->x - w->a->x, w->c->y - w->a->y, w->c->z - w->a->z};
     double normal[3] = {A[1]*B[2] - B[1]*A[2], B[0]*A[2] - A[0]*B[2], A[0]*B[1] - A[1]*B[0]};
+    glColor4f(1.0, 1.0, 1.0, transparency / 100.0);
     glBegin(GL_TRIANGLES);
     glNormal3d(normal[0], normal[1], normal[2]);
     glVertex3f(w->a->x, w->a->y, w->a->z);
@@ -363,36 +365,7 @@ void filledSphere(double radius, double x, double y, double z, double r, double 
   glPopMatrix();
 }
 
-void drawLine() {
-  if (noPath) {
-    glColor3f(1, 1, 1);
-  } else {
-    glColor3f(1, 0, 0);
-  }
-  glLineWidth(3.0);
-  glBegin(GL_LINES);
-  glVertex3f(alpha[0], alpha[1], alpha[2]);
-  glVertex3f(beta[0], beta[1], beta[2]);
-  glEnd();
-  glLineWidth(1.0);
-}
-
 void renderScene(void) {
-  hideBoxBoundary = radioDrawOption->get_int_val();
-
-  glClearColor(0.6, 0.8, 1.0, 0.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glFrustum(-xy_aspect*.04, xy_aspect*.04, -.04, .04, .1, 15.0);
-
-  glMatrixMode (GL_MODELVIEW);
-  glLoadIdentity();
-  glScalef(2.0/boxWidth, 2.0/boxWidth, 2.0/boxWidth);
-  glTranslated (obj_pos[0], obj_pos[1], -obj_pos[2]);
-  glMultMatrixf(view_rotate);
-
   treeTraverse(OT->pRoot);
   glBegin(GL_LINES);
   glColor3f(1, 0, 0);
@@ -407,7 +380,9 @@ void renderScene(void) {
   glEnd();
 
   double r0 = 5;
-  if (r0>R0) r0=R0;
+  if (r0 > R0) {
+    r0 = R0;
+  }
 
   glPolygonMode(GL_FRONT, GL_LINE);
 
@@ -420,16 +395,11 @@ void renderScene(void) {
 	float dy = path[iPathSeg + 1]->y - path[iPathSeg]->y;
 	float dz = path[iPathSeg + 1]->z - path[iPathSeg]->z;
 	float segLength = sqrt(dx * dx + dy * dy + dz * dz);
-	float segCount = segLength / epsilon;
+	segCount = segLength / epsilon;
 	float x = path[iPathSeg]->x + dx / segCount * inSegCount;
 	float y = path[iPathSeg]->y + dy / segCount * inSegCount;
 	float z = path[iPathSeg]->z + dz / segCount * inSegCount;
 	filledSphere(R0, x, y, z, 0, 0, 1);
-	inSegCount++;
-	if (inSegCount > segCount) {
-	  iPathSeg++;
-	  inSegCount = 1;
-	}
       }
     }
     drawPath(path);
@@ -442,7 +412,45 @@ void renderScene(void) {
   glutSwapBuffers();
 }
 
-void reshape(int width, int height) {
+void renderTopView(void) {
+  glClearColor(0.6, 0.8, 1.0, 0.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glFrustum(-xy_aspect*.04, xy_aspect*.04, -.04, .04, .1, 15.0);
+
+  glMatrixMode (GL_MODELVIEW);
+  glLoadIdentity();
+  glScalef(2.0/boxWidth, 2.0/boxWidth, 2.0/boxWidth);
+  gluLookAt(boxWidth / 2, boxWidth * 2.5, boxWidth / 2, boxWidth / 2, 0, boxWidth / 2, 1, 0, 0);
+  renderScene();
+}
+
+void reshapeTopView(int width, int height) {
+  reshapeCustomView(width, height);
+}
+
+void renderCustomView(void) {
+  glClearColor(0.6, 0.8, 1.0, 0.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glFrustum(-xy_aspect*.04, xy_aspect*.04, -.04, .04, .1, 15.0);
+
+  glMatrixMode (GL_MODELVIEW);
+  glLoadIdentity();
+  glScalef(2.0/boxWidth, 2.0/boxWidth, 2.0/boxWidth);
+  cout << obj_pos[0] << '\t' << obj_pos[1] << '\t' << obj_pos[2] << endl;
+  gluLookAt(-obj_pos[0], -obj_pos[1], obj_pos[2], -obj_pos[0], -obj_pos[1], obj_pos[2] - 1280, 0, 1, 0);
+  // glTranslated (obj_pos[0], obj_pos[1], -obj_pos[2]);
+  glMultMatrixf(view_rotate);
+
+  renderScene();
+}
+
+void reshapeCustomView(int width, int height) {
   int tx, ty, tw, th;
   GLUI_Master.get_viewport_area(&tx, &ty, &tw, &th);
   glViewport(tx, ty, tw, th);
@@ -452,9 +460,32 @@ void reshape(int width, int height) {
   glutPostRedisplay();
 }
 
+void setLightsForWindow(int windowID) {
+  glutSetWindow(windowID);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_COLOR_MATERIAL);
+  glEnable(GL_NORMALIZE);
+
+  glEnable(GL_LIGHT0);
+  glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_diffuse);
+  glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, light0_specular);
+  glEnable(GL_DEPTH_TEST);
+}
+
 void idle (int v) {
   glutTimerFunc(1000.0 / frameRate, idle, 0);
-  glutSetWindow(windowID);
+  inSegCount++;
+  if (inSegCount > segCount) {
+    iPathSeg++;
+    inSegCount = 1;
+  }
+  glutSetWindow(customViewWindowID);
+  // renderCustomView();
+  glutPostRedisplay();
+  glutSetWindow(topViewWindowID);
+  // renderTopView();
   glutPostRedisplay();
 }
 
@@ -501,15 +532,23 @@ int main(int argc, char* argv[]) {
 
   // Else, set up for GLUT/GLUI interactive display:
   glutInit(&argc, argv);
-  glutInitWindowPosition(windowPosX, windowPosY);
   glutInitWindowSize(boxWidth, boxWidth);
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-  windowID = glutCreateWindow("Motion Planning");
 
-  glutDisplayFunc(renderScene);
-  glutReshapeFunc(reshape); // Tell GLUT to use the method "reshape" for reshaping
+  glutInitWindowPosition(windowPosX + boxWidth * 2, windowPosY);
+  topViewWindowID = glutCreateWindow("Top View");
+
+  glutDisplayFunc(renderTopView);
+  glutReshapeFunc(reshapeTopView);
+
+  glutInitWindowPosition(windowPosX, windowPosY);
+  customViewWindowID = glutCreateWindow("Custom View");
+
+  glutDisplayFunc(renderCustomView);
+  glutReshapeFunc(reshapeCustomView);
 
   glutTimerFunc(50, idle, 0);
+
   GLUI *glui = GLUI_Master.create_glui("control", 0, windowPosX + boxWidth + 20, windowPosY);
 
   // SETTING UP THE CONTROL PANEL:
@@ -579,7 +618,7 @@ int main(int argc, char* argv[]) {
   radioQType->set_int_val(QType);
 
   glui->add_separator();
-  radioDrawOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)renderScene);
+  radioDrawOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)renderCustomView);
   glui->add_radiobutton_to_group(radioDrawOption, "Show Box Boundary");
   glui->add_radiobutton_to_group(radioDrawOption, "Hide Box Boundary");
 
@@ -591,27 +630,13 @@ int main(int argc, char* argv[]) {
   /****************************************/
   /*       Set up OpenGL lights           */
   /****************************************/
-  glEnable(GL_LIGHTING);
-  glEnable(GL_COLOR_MATERIAL);
-  glEnable(GL_NORMALIZE);
-
-  glEnable(GL_LIGHT0);
-  glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_diffuse);
-  glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
-  glLightfv(GL_LIGHT0, GL_SPECULAR, light0_specular);
-
+  setLightsForWindow(topViewWindowID);
+  setLightsForWindow(customViewWindowID);
 
   /****************************************/
   /*          Initial Viewing Position     */
   /****************************************/
   resetViewPoint();
-
-  /****************************************/
-  /*          Enable z-buferring          */
-  /****************************************/
-
-  glEnable(GL_DEPTH_TEST);
 
   GLUI_Translation *trans_xy = new GLUI_Translation(glui, "Objects XY",
                 GLUI_TRANSLATION_XY, obj_pos);
@@ -624,7 +649,7 @@ int main(int argc, char* argv[]) {
   // Quit button
   glui->add_button("Quit", 0, (GLUI_Update_CB)exit);
 
-  glui->set_main_gfx_window(windowID);
+  glui->set_main_gfx_window(customViewWindowID);
 
   // PERFORM THE INITIAL RUN OF THE ALGORITHM
   //==========================================

@@ -24,15 +24,15 @@
 
 // External Routines ========================================
 //
-void renderScene(void);
+void renderCustomView(void);
 void keyOperations(void);
-void reshape(int width, int height);
+void reshapeCustomView(int width, int height);
 void idle(int v);
 void keyPressed (unsigned char key, int x, int y);
 void keyUp (unsigned char key, int x, int y);
 void parseConfigFile(Box*);
 void run();
-void genEmptyTree();
+Octree* genEmptyTree();
 void drawPath(vector<Box*>&);
 
 Octree* OT;
@@ -59,8 +59,6 @@ int transparency = 80;
 vector<Box*> path;
 bool noPath = true;      // True means there is "No path".
 
-bool hideBoxBoundary = false;           //don't draw box boundary
-
 // GLUI controls ========================================
 //
 GLUI_RadioGroup* radioQType;
@@ -80,7 +78,8 @@ GLUI_Rotation *viewRot;
 
 // Global Variables ========================================
 //
-int windowID;
+int customViewWindowID;
+int topViewWindowID;
 float xy_aspect;
 float obj_pos[] = { (float)(-boxWidth/2.), (float)(-boxWidth/2.), (float)(2.*boxWidth) };
 float view_rotate[16] = { 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 };
@@ -95,6 +94,7 @@ unsigned int iPathSeg = 0;
 unsigned int inSegCount = 0;
 bool finishedAnim = false;
 int frameRate = 65;
+float segCount = 0;
 
 int freeCount = 0;
 int stuckCount = 0;
