@@ -151,27 +151,17 @@ void resetRotationMatrix() {
   viewRot->set_float_array_val(view_rotate);
 }
 
-void resetEyePosition() {
+void resetViewPoint() {
+  resetRotationMatrix();
   obj_pos[0] = eye[0];
   obj_pos[1] = eye[1];
   obj_pos[2] = eye[2];
-  obj_pos[0] = (float) (-boxWidth/2.);
-  obj_pos[1] = (float) (-boxWidth/2.);
-  obj_pos[2] = (float) (2.*boxWidth);
-  // Unfortunately, we also need to translate along the x-axis to get
-  //   the model back to the center of the viewport:
-  // The vector obj_pos represents the translational position:
-  //   it is initially set to:
-  //  float obj_pos[] = { -boxWidth/2, -boxWidth/2, 2*boxWidth };
-  // Here is the x-translation:
-  obj_pos[0] = obj_pos[0] + boxWidth / 2;  // shift the model to the right
-  // Here is the z-translation:
-  obj_pos[2] = obj_pos[2] + boxWidth / 2;  // shift the model to away from the eye
 }
 
-void resetViewPoint() {
-  resetRotationMatrix();
-  resetEyePosition();
+void resetTopViewPoint() {
+  topViewPos[0] = (float) (boxWidth / 2.0);
+  topViewPos[1] = (float) (boxWidth / 2.0);
+  topViewPos[2] = (float) (boxWidth * 2.5);
 }
 
 void logNonInteractiveRun(bool noPath) {
@@ -379,10 +369,7 @@ void renderScene(void) {
   glVertex3f(0, 0, boxWidth * 2);
   glEnd();
 
-  double r0 = 5;
-  if (r0 > R0) {
-    r0 = R0;
-  }
+  double r0 = min(R0, 5.0);
 
   glPolygonMode(GL_FRONT, GL_LINE);
 
@@ -412,7 +399,7 @@ void renderScene(void) {
   glutSwapBuffers();
 }
 
-void renderTopView(void) {
+void setUpView(float xy_aspect) {
   glClearColor(0.6, 0.8, 1.0, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -423,41 +410,39 @@ void renderTopView(void) {
   glMatrixMode (GL_MODELVIEW);
   glLoadIdentity();
   glScalef(2.0/boxWidth, 2.0/boxWidth, 2.0/boxWidth);
-  gluLookAt(boxWidth / 2, boxWidth * 2.5, boxWidth / 2, boxWidth / 2, 0, boxWidth / 2, 1, 0, 0);
+}
+
+void renderTopView(void) {
+  setUpView(topViewXYAspect);
+  gluLookAt(topViewPos[1], topViewPos[2], topViewPos[0], topViewPos[1], topViewPos[2] - 1, topViewPos[0], 1, 0, 0);
   renderScene();
 }
 
-void reshapeTopView(int width, int height) {
-  reshapeCustomView(width, height);
-}
-
 void renderCustomView(void) {
-  glClearColor(0.6, 0.8, 1.0, 0.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glFrustum(-xy_aspect*.04, xy_aspect*.04, -.04, .04, .1, 15.0);
-
-  glMatrixMode (GL_MODELVIEW);
-  glLoadIdentity();
-  glScalef(2.0/boxWidth, 2.0/boxWidth, 2.0/boxWidth);
-  cout << obj_pos[0] << '\t' << obj_pos[1] << '\t' << obj_pos[2] << endl;
-  gluLookAt(-obj_pos[0], -obj_pos[1], obj_pos[2], -obj_pos[0], -obj_pos[1], obj_pos[2] - 1280, 0, 1, 0);
-  // glTranslated (obj_pos[0], obj_pos[1], -obj_pos[2]);
+  setUpView(customViewXYAspect);
+  gluLookAt(obj_pos[0], obj_pos[1], obj_pos[2], obj_pos[0] + eyeVector[0], obj_pos[1] + eyeVector[1], obj_pos[2] + eyeVector[2], up[0], up[1], up[2]);
   glMultMatrixf(view_rotate);
 
   renderScene();
 }
 
-void reshapeCustomView(int width, int height) {
+void reshapeView(int windowID, float& viewXYAspect) {
+  glutSetWindow(windowID);
   int tx, ty, tw, th;
   GLUI_Master.get_viewport_area(&tx, &ty, &tw, &th);
   glViewport(tx, ty, tw, th);
 
-  xy_aspect = (float)tw / (float)th;
+  viewXYAspect = (float)tw / (float)th;
 
   glutPostRedisplay();
+}
+
+void reshapeTopView(int width, int height) {
+  reshapeView(topViewWindowID, topViewXYAspect);
+}
+
+void reshapeCustomView(int width, int height) {
+  reshapeView(customViewWindowID, customViewXYAspect);
 }
 
 void setLightsForWindow(int windowID) {
@@ -482,10 +467,8 @@ void idle (int v) {
     inSegCount = 1;
   }
   glutSetWindow(customViewWindowID);
-  // renderCustomView();
   glutPostRedisplay();
   glutSetWindow(topViewWindowID);
-  // renderTopView();
   glutPostRedisplay();
 }
 
@@ -636,6 +619,9 @@ int main(int argc, char* argv[]) {
   /****************************************/
   /*          Initial Viewing Position     */
   /****************************************/
+  eyeVector[0] = at[0] - eye[0];
+  eyeVector[1] = at[1] - eye[1];
+  eyeVector[2] = at[2] - eye[2];
   resetViewPoint();
 
   GLUI_Translation *trans_xy = new GLUI_Translation(glui, "Objects XY",
@@ -644,7 +630,14 @@ int main(int argc, char* argv[]) {
   GLUI_Translation *trans_z =
     new GLUI_Translation(glui, "Translate Z", GLUI_TRANSLATION_Z, &obj_pos[2]);
   trans_z->set_speed(5);
-  glui->add_button("Reset", 0, (GLUI_Update_CB) resetViewPoint);
+  glui->add_button("Reset Custom", 0, (GLUI_Update_CB) resetViewPoint);
+  GLUI_Translation *topViewTransXY = new GLUI_Translation(glui, "Top View XY",
+                GLUI_TRANSLATION_XY, topViewPos);
+  topViewTransXY->set_speed(5);
+  GLUI_Translation *topViewZoom =
+    new GLUI_Translation(glui, "Top View Zoom", GLUI_TRANSLATION_Z, &topViewPos[2]);
+  trans_z->set_speed(5);
+  glui->add_button("Reset Top", 0, (GLUI_Update_CB) resetTopViewPoint);
 
   // Quit button
   glui->add_button("Quit", 0, (GLUI_Update_CB)exit);

@@ -27,7 +27,7 @@
 #			&
 #
 #	where the arguments to ball correspond to the values $(var) of
-#	various Makefile variables.   
+#	various Makefile variables.
 #
 # (C)	You can override any of these values at the command line.
 #	For instance, to change the radius of the robot
@@ -50,7 +50,7 @@
 #		eg300				-- 300 random triangles
 #
 # 	These targets uses different input files, all taken from
-# 	the subdirectory "inputs".   
+# 	the subdirectory "inputs".
 #
 #
 # April 13, 2012
@@ -68,7 +68,7 @@ interactive = 0		# 0=interactive, >0 is non-interactive
 
 startX = 75		# start configuration
 startY = 360
-startZ = 100 
+startZ = 100
 goalX = 450		# goal configuration
 goalY = 50
 goalZ = 400
@@ -87,12 +87,12 @@ fileName = input1.txt	# input environment file
 boxWidth = 512		# initial configuration box size
 
 windowPosX = 200	# initial Window position
-windowPosY = 200	
+windowPosY = 200
 windowPosX = 250	# initial Window position
-windowPosY = 150	
+windowPosY = 150
 
 Qtype = 2		# type of priority queue
-			#	(0 = random, 1 = BFS, 3 = astar) 
+			#	(0 = random, 1 = BFS, 3 = astar)
 seed = 11		# seed for random
 step = 0		# number of steps to run
 			#	(step=0 means run to completion)
@@ -100,7 +100,20 @@ xtrans = 0		# x-translation of input file
 ytrans = 0		# y-translation of input file
 ztrans = 0
 scale = 1		# scaling of input file
-		
+
+eyeX = 0
+eyeY = 256
+eyeZ = 1280
+atX = 0
+atY = 256
+atZ = 0
+upX = 0
+upY = 1
+upZ = 0
+
+transparency = 70
+frameRate = 60
+
 #=================================================
 # Define target files (put all your files here)
 #=================================================
@@ -117,9 +130,9 @@ all: $(TARGETS)
 test: $(TARGETS)
 	./ball 1 \
 		$(startX) $(startY) $(startZ) $(goalX) $(goalY) $(goalZ) \
-	
+
 	make $(epsilon)  $(radius)  input.txt  $(boxWidth) \
-       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
+	        $(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
 		$(xtrans) $(ytrans) $(ztrans) $(scale) \
 		&
 
@@ -135,7 +148,7 @@ testb: $(TARGETS)
 	./ball 1 \
 		$(startX) $(startY)  $(goalX) $(goalY) \
 		$(epsilon)  $(radius)  input2.txt  $(boxWidth) \
-       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
+                $(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
@@ -196,6 +209,8 @@ egb:	ball
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(ztrans) $(scale) \
+                $(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
+                $(transparency) $(frameRate) \
 		&
 
 # Using input2.txt: using the "random strategy", if you "hit run" enough times
@@ -207,7 +222,9 @@ egc:	ball
 		$(epsilon) 20 input3.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
+		$(xtrans) $(ytrans) 1 $(scale) \
+		$(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
+                $(transparency) $(frameRate) \
 		&
 
 # Simple NO PATH example:
@@ -283,7 +300,7 @@ eg5a egbug2a bug2a: ball
 		&
 
 
-# eg2:	the input environment is "input2.txt" but has a bounding box 
+# eg2:	the input environment is "input2.txt" but has a bounding box
 #
 eg2: ball
 	@echo "Target eg2:  runs ball on input2e.txt which has a bounding box"
@@ -332,7 +349,7 @@ eg3b eg100b: ball
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		&
-	
+
 # This environment has 100 randomly generated triangles (this has PATH)
 eg3c eg100c: ball
 	@echo "Target eg100c:  runs ball amidst 100 randomly generated triangles"
@@ -342,7 +359,7 @@ eg3c eg100c: ball
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		&
-	
+
 # This environment is a maze
 eg4: ball
 	@echo "Target eg4:  runs ball in a randomly generated maze "
@@ -352,10 +369,10 @@ eg4: ball
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		&
-	
+
 # Bugtrap2 example (see above)
-# eg5 egbug2 bug2: 
-# eg5a egbug2a bug2a: 
+# eg5 egbug2 bug2:
+# eg5a egbug2a bug2a:
 
 # eg6: This environment is taken from Kavraki's groups Demo for OOPSMP:
 #  NOTE: we must do scaling of the input
@@ -429,7 +446,7 @@ eg8b: ball
 
 # RANDOMLY GENERATED ENVIRONMENT:
 # eg100 (similar to eg3 above)
-	
+
 # eg200:
 #	This one, generated using our Python Generator, has 200 triangles.
 #	Note that these triangles are not disjoint, but our theory remains
@@ -488,7 +505,7 @@ eg200b: ball
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
-# eg300: 
+# eg300:
 # 	RESULTS:
 #				input file name = inputs/input300.txt
 #				nPt=900
@@ -550,6 +567,5 @@ vclean veryclean: clean
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
 
 #=================================================
-# END Makefile 
+# END Makefile
 #=================================================
-

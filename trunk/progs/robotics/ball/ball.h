@@ -51,9 +51,10 @@ int windowPosY = 150;      // Y Position of Window
 int QType = 1;        // The Priority Queue can be sequential (1) or random (0)
 int interactive = 0;      // Run interactively? Yes (0) or No (1)
 int seed = 111;        // seed for random number generator (Could also be used for BFS, etc)
-double eye[3] = {0, 0, 0};
-double at[3] = {0, 0, -1};
+double eye[3] = {0, 256, 1280};
+double at[3] = {0, 256, 0};
 double up[3] = {0, 1, 0};
+double eyeVector[3];
 int transparency = 80;
 
 vector<Box*> path;
@@ -80,9 +81,11 @@ GLUI_Rotation *viewRot;
 //
 int customViewWindowID;
 int topViewWindowID;
-float xy_aspect;
+float topViewXYAspect;
+float customViewXYAspect;
 float obj_pos[] = { (float)(-boxWidth/2.), (float)(-boxWidth/2.), (float)(2.*boxWidth) };
 float view_rotate[16] = { 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 };
+float topViewPos[3] = { (float) (boxWidth / 2.0), (float) (boxWidth / 2.0), (float) (boxWidth * 2.5) };
 
 GLfloat light0_ambient[] =  {0.0, 0.0, 0.0};
 GLfloat light0_diffuse[] =  {1.0, 1.0, 1.0};
