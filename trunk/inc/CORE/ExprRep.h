@@ -2038,6 +2038,7 @@ class MulRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   using BinaryOpRep::check_exact;	// This line added Apr24'2013 (Chee)
   using BinaryOpRep::first; 
   using BinaryOpRep::second; 
+  using BinaryOpRep::check_exact;
   using ExprRep::filter;
   using ExprRep::rootBd;
   using ExprRep::sign;
@@ -2093,6 +2094,7 @@ class DivRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   using BinaryOpRep::check_exact;	// This line added Apr24'2013 (Chee)
   using BinaryOpRep::first; 
   using BinaryOpRep::second; 
+  using BinaryOpRep::check_exact;	// Chee: April 2013
   using ExprRep::filter;
   using ExprRep::rootBd;
   using ExprRep::sign;
@@ -2121,8 +2123,9 @@ protected:
   virtual void compute_rootBd()
   { rootBd().div(first->get_rootBd(), second->get_rootBd()); }
   virtual bool compute_r_approx(prec_t prec) {
-    return check_exact(appValue().div(first->r_approx(prec+2),
+    return this->check_exact(appValue().div(first->r_approx(prec+2),
 			    second->r_approx(prec+2), prec+1));
+    // Chee: April 2013: added "this->" to check_exact to try to remove warning.
   }
   BigInt getZTVal() { return first->getZTVal() / second->getZTVal(); }
   BigFloat getFTVal() { return first->getFTVal() / second->getFTVal(); }
