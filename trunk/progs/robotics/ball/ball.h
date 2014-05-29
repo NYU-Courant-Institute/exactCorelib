@@ -59,6 +59,7 @@ int transparency = 80;
 
 vector<Box*> path;
 bool noPath = true;      // True means there is "No path".
+vector<Box*> toReset;
 
 // GLUI controls ========================================
 //
@@ -76,9 +77,12 @@ GLUI_EditText* editBetaY;
 GLUI_EditText* editBetaZ;
 GLUI_EditText* editSeed;
 GLUI_Rotation *viewRot;
+GLUI_TextBox * output;
+stringstream outputStream;
 
 // Global Variables ========================================
 //
+int runCounter = 1;
 int customViewWindowID;
 int topViewWindowID;
 float topViewXYAspect;

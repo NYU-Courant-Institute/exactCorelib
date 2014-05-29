@@ -25,7 +25,7 @@ using namespace std;
 //use distance to beta as key in PQ, see dijkstraQueue
 bool findPath(Box* a, Box* b, Octree* OT, int& ct) {
   bool isPath = false;
-  vector<Box*> toReset;
+  toReset.clear();
   a->dist2Source = 0;
   dijkstraQueue dijQ;
   dijQ.push(a);
@@ -43,12 +43,14 @@ bool findPath(Box* a, Box* b, Octree* OT, int& ct) {
 	  // go through neighbors of each child to see if it's in source set
 	  // if yes, this child go into the dijQ
 	  bool isNeighborOfSourceSet = false;
+	  Box * prev;
 	  for (int j = 0; j < 6 && !isNeighborOfSourceSet; ++j) {
 	    BoxIter* iter = new BoxIter(current->pChildren[i], j);
 	    Box* n = iter->First();
 	    while (n && n != iter->End()) {
 	      if (n->dist2Source == 0) {
 		isNeighborOfSourceSet = true;
+		prev = n;
 		break;
 	      }
 	      n = iter->Next();
@@ -59,9 +61,8 @@ bool findPath(Box* a, Box* b, Octree* OT, int& ct) {
 	      //if it's FREE, also insert to source set
 	    case Box::FREE:
 	      current->pChildren[i]->dist2Source = 0;
-	      dijQ.push(current->pChildren[i]);
-	      toReset.push_back(current->pChildren[i]);
-	      break;
+	      current->pChildren[i]->prev = prev;
+	      // fallthrough
 	    case Box::MIXED:
 	      dijQ.push(current->pChildren[i]);
 	      toReset.push_back(current->pChildren[i]);
@@ -76,36 +77,35 @@ bool findPath(Box* a, Box* b, Octree* OT, int& ct) {
 	  }
 	}
       }
-      continue;
-    }
-
-    //found path!
-    if (current == b) {
-      isPath = true;
-      break;
-    }
-
-    // if current is not MIXED, then must be FREE
-    // go through its neighbors and add FREE and MIXED ones to dijQ
-    // also add FREE ones to source set
-    for (int i = 0; i < 6; ++i) {
-      BoxIter* iter = new BoxIter(current, i);
-      Box* neighbor = iter->First();
-      while (neighbor && neighbor != iter->End()) {
-        if (!neighbor->visited && neighbor->dist2Source == -1 &&
-	    (neighbor->status == Box::FREE || neighbor->status == Box::MIXED)) {
-	  if (neighbor->status == Box::FREE) {
-	    neighbor->dist2Source = 0;
+    } else {
+      // if current is not MIXED, then must be FREE
+      // go through its neighbors and add FREE and MIXED ones to dijQ
+      // also add FREE ones to source set
+      //found path!
+      if (current == b && b->dist2Source == 0) {
+	isPath = true;
+	break;
+      }
+      for (int i = 0; i < 6; ++i) {
+	BoxIter* iter = new BoxIter(current, i);
+	Box* neighbor = iter->First();
+	while (neighbor && neighbor != iter->End()) {
+	  if (!neighbor->visited && neighbor->dist2Source == -1 &&
+	      (neighbor->status == Box::FREE || neighbor->status == Box::MIXED)) {
+	    if (neighbor->status == Box::FREE) {
+	      neighbor->dist2Source = 0;
+	      neighbor->prev = current;
+	    }
+	    dijQ.push(neighbor);
+	    toReset.push_back(neighbor);
 	  }
-	  dijQ.push(neighbor);
-	  toReset.push_back(neighbor);
+	  neighbor = iter->Next();
 	}
-        neighbor = iter->Next();
       }
     }
   }
 
-  //these two fields are also used in dijkstraShortestPath
+  // these two fields are also used in dijkstraShortestPath
   // need to reset
   for (int i = 0; i < (int)toReset.size(); ++i) {
     toReset[i]->visited = false;
@@ -199,6 +199,10 @@ Box* findEnclosingFreeBox(Octree* octree, double coordinate[3], Box* box, int& e
 
 void run() {
   //update from glui live variables
+  string previousResults = outputStream.str();
+  outputStream.str(string());
+  outputStream.clear();
+  outputStream << "Run " << runCounter++ << ":" << endl;
   fileName = editInput->get_text();
   inputDir = editDir->get_text();
   R0 = editRadius->get_float_val();
@@ -211,7 +215,7 @@ void run() {
   beta[2] = editBetaZ->get_float_val();
   QType = radioQType->get_int_val();
 
-  cout<<"inside run:  Qtype = " << QType << "\n";
+  outputStream<<"inside run:  Qtype = " << QType << "\n";
 
   Timer t;
   // start timer
@@ -242,36 +246,52 @@ void run() {
       }
       ++ct;
     }
+    path = Graph::dijkstraShortestPath(boxA, boxB);
   } else if (QType == 2) {
     noPath = !findPath(boxA, boxB, OT, ct);
+    boxA->prev = NULL;
+    path.clear();
+    path.push_back(boxB);
+    while (path.back()->prev) {
+      path.push_back(path.back()->prev);
+    }
+    for (int i = 0; i < (int)toReset.size(); ++i) {
+      toReset[i]->prev = NULL;
+    }
+    vector<Box*> dijkstraShortestPath = Graph::dijkstraShortestPath(boxA, boxB);
+    if (dijkstraShortestPath.back() == boxA) {
+      path = dijkstraShortestPath;
+    } else {
+      cerr << "Something went wrong in the dijkstra path generation algorithm, defaulting to subdivision generated path" << endl;
+    }
   }
-
-  path = Graph::dijkstraShortestPath(boxA, boxB);
-
   // stop timer
   t.stop();
   // print the elapsed time in millisec
-  cout << ">>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>\n";
-  cout << ">>\n";
-  cout << ">>     Time used: " << t.getElapsedTimeInMilliSec() << " ms\n";
-  cout << ">>\n";
+  outputStream << ">>>>>>>>>>>>>>>>>>>>>>>>\n";
+  outputStream << ">>\n";
+  outputStream << ">>     Time used: " << t.getElapsedTimeInMilliSec() << " ms\n";
+  outputStream << ">>\n";
 
   if (!noPath) {
-    cout << ">>     Path found !" << endl;
+    outputStream << ">>     Path found !" << endl;
   } else {
-    cout << ">>     No Path !" << endl;
+    outputStream << ">>     No Path !" << endl;
   }
-  cout << ">>\n";
-  cout << ">>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>\n";
-  cout << "Expanded " << ct << " times" << endl;
-  cout << "total Free boxes: " << freeCount << endl;
-  cout << "total Stuck boxes: " << stuckCount << endl;
-  cout << "total Mixed boxes smaller than epsilon: " << mixSmallCount << endl;
-  cout << "total Mixed boxes bigger than epsilon: " << mixCount - ct - mixSmallCount << endl;
+  outputStream << ">>\n";
+  outputStream << ">>>>>>>>>>>>>>>>>>>>>>>>\n";
+  outputStream << "Expanded " << ct << " times" << endl;
+  outputStream << "total Free boxes: " << freeCount << endl;
+  outputStream << "total Stuck boxes: " << stuckCount << endl;
+  outputStream << "total Mixed boxes < epsilon: " << mixSmallCount << endl;
+  outputStream << "total Mixed boxes > epsilon: " << mixCount - ct - mixSmallCount << endl;
   freeCount = 0;
   stuckCount = 0;
   mixCount = 0;
   mixSmallCount = 0;
+  outputStream << endl;
+  outputStream << previousResults;
+  output->set_text(outputStream.str().c_str());
 }
 
 void drawPath(vector<Box*>& path) {
@@ -288,7 +308,7 @@ void drawPath(vector<Box*>& path) {
 }
 
 void drawQuad(Box* b) {
-  glLineWidth(epsilon > 4 ? epsilon / 4 : 1);
+  glLineWidth(1);
   switch (b->status) {
     case Box::FREE:
       glColor3f(0.25, 1, 0.25);
@@ -639,6 +659,9 @@ int main(int argc, char* argv[]) {
   trans_z->set_speed(5);
   glui->add_button("Reset Top", 0, (GLUI_Update_CB) resetTopViewPoint);
 
+  output = new GLUI_TextBox(glui, true);
+  output->set_h(300);
+  output->set_w(200);
   // Quit button
   glui->add_button("Quit", 0, (GLUI_Update_CB)exit);
 
