@@ -1,3 +1,9 @@
+// Parser.h
+//	We read a text file following the conventions of "inputs/format.h".
+//
+//	We must be sure that each triangular face follows the CCW convention
+//		when seen from the "outside"
+
 #include <iostream>
 
 string fileName("input1.txt");     // Input file name
@@ -55,7 +61,10 @@ int skip_backslash_new_line (std::istream & in) {
 /* ********************************************************************** */
 
 void parseConfigFile(Box* b) {
-  bool isQuad = false; // used to check whether the face is a quadrilateral or triangle
+  //bool isQuad = false; // used to check whether the face is a quadrilateral or triangle
+  int isQuad = 0; // used to check whether the face is a quadrilateral or triangle
+  		  // isQuad=0 means a triangle
+		  // isQuad=1 means a quadrilateral
 
   std::stringstream ss;
   ss << inputDir << "/" << fileName;  // create full file name
@@ -96,6 +105,42 @@ void parseConfigFile(Box* b) {
     for (int i = 0; i < numFaces; ++i) {
       vector<Corner*> ptVec;
 
+      ifs >> isQuad;
+
+      for (int j=0; j< 3; ++j){
+	int pt;
+	ifs >> pt;
+	pt--;	// to get indexing from 0
+	ptVec.push_back(new Corner(pts[pt*3]*scale+deltaX,
+				   pts[pt*3+1]*scale+deltaY, pts[pt*3+2]*scale+deltaZ));
+	b -> addCorner(ptVec.back());
+      }
+      // First triangle
+	Edge* e1 = new Edge (ptVec[0], ptVec[1]);
+	Edge* e2 = new Edge (ptVec[1], ptVec[2]);
+	Edge* e3 = new Edge (ptVec[2], ptVec[0]);
+	b -> addEdge(e1);
+	b -> addEdge(e2);
+	b -> addEdge(e3);
+
+	Wall* w = new Wall (ptVec[0], ptVec[1], ptVec[2]);
+	b -> addWall(w);
+      // Possible Second triangle:
+      if (isQuad == 1) {   // i.e., a quadrilateral
+	Corner* fourthPt = new Corner(ptVec[0], ptVec[1], ptVec[2]); // use special
+				// constructor of fourth corner from 3 others.
+	Edge* e1 = new Edge (ptVec[2], ptVec[1]);
+	Edge* e2 = new Edge (ptVec[1], fourthPt);
+	Edge* e3 = new Edge (fourthPt, ptVec[2]);
+	b -> addEdge(e1);
+	b -> addEdge(e2);
+	b -> addEdge(e3);
+
+	Wall* w = new Wall (ptVec[1], fourthPt, ptVec[2]);
+	b -> addWall(w);
+      }
+      // THIS LOGIC IS WRONG FOR QUAD FACES:
+      /**
       for (int j = 0; j < 4; ++j) {
 	int pt;
 	ifs >> pt;
@@ -147,8 +192,10 @@ void parseConfigFile(Box* b) {
 	Wall* w = new Wall (ptVec[0], ptVec[1], ptVec[2]);
 	b -> addWall(w);
       }
-    }
-  }
+      **/
+
+    }//for i
+  }//while
 
   cout<< "nPolyhedra=" << nPolyhedra << endl;
   ifs.close();

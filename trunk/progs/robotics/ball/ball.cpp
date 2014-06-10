@@ -15,6 +15,9 @@
    Author: Surin Ahn (June 2013)
    -- supervised by Professor Yap
 
+NOTE:	Surin was a Regional Finalist (one out of 100 nationwide)
+	from New York in the 2013 Siemens Science & Math Competition
+
    ************************************** */
 
 #include "ball.h"
@@ -291,7 +294,7 @@ void run() {
   mixSmallCount = 0;
   outputStream << endl;
   outputStream << previousResults;
-  output->set_text(outputStream.str().c_str());
+  //output->set_text(outputStream.str().c_str());
 }
 
 void drawPath(vector<Box*>& path) {
@@ -376,7 +379,12 @@ void filledSphere(double radius, double x, double y, double z, double r, double 
 }
 
 void renderScene(void) {
-  treeTraverse(OT->pRoot);
+  treeTraverse(OT->pRoot);	// draws the octree
+
+
+  // Drawing the axes:
+  glLineWidth(3.0);	// we should visibly identify the 3 coordinate axes
+  			// put an arrow head.
   glBegin(GL_LINES);
   glColor3f(1, 0, 0);
   glVertex3f(0, 0, 0);
@@ -568,7 +576,10 @@ int main(int argc, char* argv[]) {
               "Epsilon:", GLUI_EDITTEXT_FLOAT);
   editEpsilon->set_float_val(epsilon);
 
-  GLUI_Panel * alpha_box_panel = glui->add_panel("Alpha (start configuration)");
+  // NOTE: this is a quick and dirty solution to the bug where Start and Goal
+  //    configurations are interchanged!   
+  //GLUI_Panel * alpha_box_panel = glui->add_panel("Alpha (start configuration)");
+  GLUI_Panel * alpha_box_panel = glui->add_panel("Beta (goal configuration)");
   editAlphaX = glui->add_edittext_to_panel(alpha_box_panel,
              "x:", GLUI_EDITTEXT_FLOAT);
   editAlphaX->set_float_val(alpha[0]);
@@ -578,7 +589,10 @@ int main(int argc, char* argv[]) {
   editAlphaZ = glui->add_edittext_to_panel(alpha_box_panel, "z:", GLUI_EDITTEXT_FLOAT);
   editAlphaZ->set_float_val(alpha[2]);
 
-  GLUI_Panel * beta_box_panel = glui->add_panel("Beta (goal configuration)");
+  // NOTE: this is a quick and dirty solution to the bug where Start and Goal
+  //    configurations are interchanged!   
+  // GLUI_Panel * beta_box_panel = glui->add_panel("Beta (goal configuration)");
+  GLUI_Panel * beta_box_panel = glui->add_panel("Alpha (start configuration)");
   editBetaX = glui->add_edittext_to_panel(beta_box_panel,
             "x:", GLUI_EDITTEXT_FLOAT);
   editBetaX->set_float_val(beta[0]);
@@ -616,8 +630,9 @@ int main(int argc, char* argv[]) {
   glui->add_separator();
   radioQType = glui->add_radiogroup();
   glui->add_radiobutton_to_group(radioQType, "Random");
-  glui->add_radiobutton_to_group(radioQType, "BFS");
-  glui->add_radiobutton_to_group(radioQType, "A-star");
+  glui->add_radiobutton_to_group(radioQType, "BFS (Breadth First)");
+  //glui->add_radiobutton_to_group(radioQType, "A-star");
+  glui->add_radiobutton_to_group(radioQType, "Best First Search");
   radioQType->set_int_val(QType);
 
   glui->add_separator();
@@ -659,9 +674,9 @@ int main(int argc, char* argv[]) {
   trans_z->set_speed(5);
   glui->add_button("Reset Top", 0, (GLUI_Update_CB) resetTopViewPoint);
 
-  output = new GLUI_TextBox(glui, true);
-  output->set_h(300);
-  output->set_w(200);
+  //output = new GLUI_TextBox(glui, true);
+  //output->set_h(300);
+  //output->set_w(200);
   // Quit button
   glui->add_button("Quit", 0, (GLUI_Update_CB)exit);
 

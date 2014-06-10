@@ -188,6 +188,8 @@ eg:	ball
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(ztrans) $(scale) \
+                $(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
+                $(transparency) $(frameRate) \
 		&
 
 # run with default compiled options:
@@ -247,288 +249,42 @@ eg0a nopatha:	ball
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
-# BUG TRAP:
+# EXAMPLES 
 ###################################################
-# Bugtrap example -- Non-existence of path, but barely!
-eg1 egbug bug: ball
-	@echo "Target 'egbug':  runs ball for bugtrap input, bugtrap.txt"
-	@echo "--  this examples shows there is NO PATH, but barely so!"
-	@echo "--  you could see a green path that must pass between two green boxes"
-	@echo "--  that are NOT adjacent but shares a corner."
-	./ball $(interactive) $(startX) $(startY) $(startZ)  $(goalX) $(goalY) $(goalZ) \
-		$(epsilon) $(radius) bugtrap.txt \
+# 
+eg1:	ball
+	@echo "Target 'eg1':  runs ball with default Makefile options for file input2.txt"
+	./ball $(interactive) 200 360 50 275 200 450 \
+		$(epsilon) $(radius) input2.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
+		$(Qtype) 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(ztrans) $(scale) \
+                $(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
+                $(transparency) $(frameRate) \
 		&
 
-# Bugtrap example -- Existence of path, but barely!
-eg1a egbuga buga: ball
-	@echo "Target 'egbuga':  runs ball for bugtrap input, bugtrap.txt"
-	@echo "--  this examples shows there is a PATH, but barely so!"
-	@echo "--  the only change from target 'egbug' is that epsilon is now 4, not 5"
-	@echo "--  that are NOT adjacent but shares a corner."
-	./ball $(interactive) 200 350 30 30 \
-		4 10 bugtrap.txt \
-		512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-# BUG2 TRAP: (one trap inside another)
-###################################################
-# Bugtrap2 example -- Existence of path, but barely! (eps=1)
-eg5 egbug2 bug2: ball
-	@echo "Target 'egbug2':  runs ball for bugtrap input, bugtrap2.txt"
-	@echo "--  this example shows a PATH, but barely so!"
-	./ball $(interactive) 180 220 20 20 \
-		1 8 bugtrap2.txt \
-		512 512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-# Bugtrap2 example -- Non-existence of path, but barely! (eps=2)
-eg5a egbug2a bug2a: ball
-	@echo "Target 'egbug2':  runs ball for bugtrap input, bugtrap2.txt"
-	@echo "--  this example shows NO PATH, but barely so!"
-	./ball $(interactive) 180 220 20 20 \
-		2 8 bugtrap2.txt \
-		512 $(windowPosX) $(windowPosY) \
-		1 11 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-
-# eg2:	the input environment is "input2.txt" but has a bounding box
-#
-eg2: ball
-	@echo "Target eg2:  runs ball on input2e.txt which has a bounding box"
-	./ball $(interactive) 150 260 20 20 \
-		4 15 input2e.txt \
-		512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-eg2a: ball
-	@echo "Target eg2a: runs ball on input2e.txt which has a bounding box"
-	./ball $(interactive) 10 350  500 20 \
-		10 20 input2e.txt \
+eg2:	ball
+	@echo "Target 'eg2':  runs ball with default Makefile options for file input3.txt"
+	./ball $(interactive) 320 300 230 320 200 475 \
+		$(epsilon) 20 input3.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
+		$(Qtype) 1111 $(inputDir) \
+		$(xtrans) $(ytrans) 1 $(scale) \
+		$(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
+                $(transparency) $(frameRate) \
 		&
 
-# This environment has 100 randomly generated triangles (this has a path)
-eg3 eg100: ball
-	@echo "Target eg3:  100 randomly generated triangles (path exists)"
-	./ball $(interactive) 10 350  280 220 \
-		1 10 input3.txt \
+# testing quadrilaterl input files
+eg3:	ball
+	@echo "Target 'eg3':  runs ball with default Makefile options for file input10.txt"
+	./ball $(interactive) 200 360 50 275 200 450 \
+		$(epsilon) $(radius) input10.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
+		$(Qtype) 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(ztrans) 2 \
+                $(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
+                $(transparency) $(frameRate) \
 		&
-
-# This environment has 100 randomly generated triangles (this has NO PATH)
-eg3a eg100a: ball
-	@echo "Target eg3a:  100 randomly generated triangles (NO PATH)"
-	./ball $(interactive) 10 350  280 220 \
-		1 15 input3.txt \
-		$(boxWidth) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-# This environment has 100 randomly generated triangles (this has PATH)
-eg3b eg100b: ball
-	@echo "Target eg100b:  runs ball amidst 100 randomly generated triangles"
-	./ball $(interactive) 200 270 20 20 \
-		2 5 input100.txt \
-		512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-# This environment has 100 randomly generated triangles (this has PATH)
-eg3c eg100c: ball
-	@echo "Target eg100c:  runs ball amidst 100 randomly generated triangles"
-	./ball $(interactive) 350 370 20 20 \
-		2 5 input100.txt \
-		512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-# This environment is a maze
-eg4: ball
-	@echo "Target eg4:  runs ball in a randomly generated maze "
-	./ball $(interactive) 10 350  280 205 \
-		5 5 input4.txt \
-		$(boxWidth) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-# Bugtrap2 example (see above)
-# eg5 egbug2 bug2:
-# eg5a egbug2a bug2a:
-
-# eg6: This environment is taken from Kavraki's groups Demo for OOPSMP:
-#  NOTE: we must do scaling of the input
-#  	(because dimensions came from xfig)
-eg6: ball
-	@echo "Target DemoSE2_PRM (from Kavraki's group)"
-	./ball $(interactive) 75 350  380 205 \
-		5 20 DemoSE2_PRM.txt \
-		$(boxWidth) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		250 250 0.04 \
-		&
-
-# eg6a:  Variant of eg6 where their "robot" is shown.
-eg6a: ball
-	@echo "Target eg6a, (DemoSE2_PRM from Kavraki's group) -- their robot is shown"
-	@echo "	There is a narrow path... when radius=15, epsilon=2"
-	@echo " 	There is No Path... when radius=15, epsilon=3"
-	./ball $(interactive) 75 350  380 205 \
-		2 15 DemoSE2_PRMa.txt \
-		$(boxWidth) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		250 250 0.04 \
-		&
-
-# eg7: this should be the tunnel example from triangle...
-
-# eg8: from Paper of Hsu-Lathombe-Kurniawati
-# 	THIS IS SLOW under random strategy!!!
-#	          --------------------->>  PATH FOUND !
-#	Expanded 219159 times
-#	Time used: 94334.1 ms
-#	total Free boxes: 789023
-#	total Stuck boxes: 24404
-#	total Mixed boxes smaller than epsilon: 662771
-#	total Mixed boxes bigger than epsilon: 57932
-#
-eg8: ball
-	@echo "Target eg8: example from the paper of Hsu, Latombe, Kurniawati (2006)"
-	@echo "	There is a path passage... when radius=6, epsilon=1"
-	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./ball $(interactive) 75 350  380 205 \
-		1 5 hsu-latombe-kurniawati.txt \
-		$(boxWidth) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		-70 -70 0.065 \
-		&
-
-eg8a: ball
-	@echo "Target eg8: example from the paper of Hsu, Latombe, Kurniawati (2006)"
-	@echo "	There is a path passage... when radius=6, epsilon=1"
-	@echo " 	There is No Path... when radius=7, epsilon=1"
-	./ball $(interactive) 75 350  380 205 \
-		1 7 hsu-latombe-kurniawati.txt \
-		$(boxWidth) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		-70 -70 0.065 \
-		&
-
-eg8b: ball
-	@echo "Target eg8a: example from the paper of Hsu, Latombe, Kurniawati (2006)"
-	@echo "	The environment here is slightly irregular: the polygons have overlapping"
-	@echo "      edges.  This caused our soft predicate to be confused -- you see"
-	@echo "      some green cells that ought to be red."
-	./ball $(interactive) 75 350  380 205 \
-		1 5 hsu-latombe-kurniawati2.txt \
-		$(boxWidth) $(windowPosX) $(windowPosY) \
-		$(Qtype) $(seed)  $(inputDir) \
-		-70 -70 0.065 \
-		&
-
-# RANDOMLY GENERATED ENVIRONMENT:
-# eg100 (similar to eg3 above)
-
-# eg200:
-#	This one, generated using our Python Generator, has 200 triangles.
-#	Note that these triangles are not disjoint, but our theory remains
-#	valid for such inputs.  This is the power of the SSS approach (over
-#	the exact algorithms. RESULTS:
-#	    			input file name = inputs/input200.txt
-#	    			nPt=600
-#	    			nPolygons=200
-#	    			Time used: 1726.62 ms.
-#	    			Path found !
-#	    			Expanded 13720 times
-#	    			total Free boxes: 9370
-#	    			total Stuck boxes: 16404
-#	    			total Mixed boxes smaller than epsilon: 13599
-#	    			total Mixed boxes bigger than epsilon: 1788
-#
-#
-eg200: ball
-	@echo "Target eg200:  runs ball amidst 200 randomly generated triangles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
-	./ball $(interactive) 150 260 20 20 \
-		2 5 input200.txt \
-		512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-# eg200a: there is an obvious path but probabilistic methods might waste
-# 	lots of time checking elsewhere!
-#
-eg200a: ball
-	@echo "Target eg200a:  runs ball amidst 200 randomly generated triangles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
-	./ball $(interactive) 10 360 20 20 \
-		2 10 input200.txt \
-		512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-# eg200b: there is no path because eps=10
-#
-# 	The display seems to show some current bugs in the
-# 	code.   THIS IS A GOOD PLACE TO RUN IN LEVEL 2 to CHECK!!!
-#
-eg200b: ball
-	@echo "Target eg200b:  runs ball amidst 200 randomly generated triangles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
-	./ball $(interactive) 150 260 20 20 \
-		10 5 input200.txt \
-		512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
-# eg300:
-# 	RESULTS:
-#				input file name = inputs/input300.txt
-#				nPt=900
-#				nPolygons=300
-#				Time used: 28243.1 ms.
-#				Path found !
-#				Expanded 64220 times
-#				total Free boxes: 37999
-#				total Stuck boxes: 87069
-#				total Mixed boxes smaller than epsilon: 67198
-#				total Mixed boxes bigger than epsilon: 395
-#
-eg300: ball
-	@echo "Target eg300:  runs ball amidst 300 randomly generated triangles"
-	@echo "--  This may take a noticeable amount bit of time, "
-	@echo "    depending on the search strategy"
-	./ball $(interactive) 10 400 350 20 \
-		1 3 input300.txt \
-		512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
-		&
-
 
 moretest: $(TARGETS)
 # nothing to do

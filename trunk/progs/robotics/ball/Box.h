@@ -206,10 +206,10 @@ public:
 		
 		//assert(Edges.size());
 		
-		Edge* nearestEdge;
+		//Edge* nearestEdge;
 		list<Edge*>::iterator iterE = Edges.begin();
 		double mindistE = (*iterE)->distance(x, y, z);
-		nearestEdge = *iterE;
+		//nearestEdge = *iterE;
 		++iterE;
 		for (; iterE != Edges.end(); ++iterE) 
 		{
@@ -218,17 +218,17 @@ public:
 			if (dist < mindistE)
 			{
 				mindistE = dist;
-				nearestEdge = *iterE;
+				//nearestEdge = *iterE;
 			}
 		}
 
 		double mindistC = mindistE +1; //mindistC may not exist, so init to a bigger number
-		Corner* nearestCorner = NULL;
+		//Corner* nearestCorner = NULL;
 		if (corners.size())
 		{			
 			list<Corner*>::iterator iterC = corners.begin();
 			mindistC = (*iterC)->distance(x, y, z);
-			nearestCorner = *iterC;
+			// nearestCorner = *iterC;
 			++iterC;
 			for (; iterC != corners.end(); ++iterC)
 			{
@@ -237,7 +237,7 @@ public:
 				if (dist < mindistC)
 				{
 					mindistC = dist;
-					nearestCorner = *iterC;
+					// nearestCorner = *iterC;
 				}
 			}
 		}
