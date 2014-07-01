@@ -38,22 +38,17 @@
 # (D)	Instead of the target "eg" you can use any of these targets:
 #
 #		ega, egb, egc
-#		eg0,				-- no path example
-#		eg1, eg1a, (bug, buga)		-- bugtrap
+#		eg1,				-- no path example
 #		eg2, eg2a			-- like input2.txt, but with bounding box
 #		eg3, eg3a, eg3b			-- 100 random triangles
-#		eg4				-- maze
-#		eg5, eg5a (bug2, bug2a)		-- double bugtrap
-#		eg6, eg6a 			-- example from Kavraki's OOPSMP
-#		eg100, eg100a, eg100b		-- 100 random triangles
-#		eg200, eg200a			-- 200 random triangles
-#		eg300				-- 300 random triangles
+#		eg4				-- no path example
 #
 # 	These targets uses different input files, all taken from
 # 	the subdirectory "inputs".
 #
 #
-# April 13, 2012
+# June 1, 2014
+# --Surin Ahh, Chee Yap, Ziyao Wei
 #
 # Since Core Library 2.1
 # $Id: Makefile,v 1.1 2012/10/26 03:58:52 cheeyap Exp cheeyap $

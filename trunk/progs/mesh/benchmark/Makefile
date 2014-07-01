@@ -129,7 +129,6 @@ eg4 : main_ceval
 eg5 : main_ceval
 	./main_ceval --poly ./data/chrma22.pol --display --use_root_bounds
 
-=======
 # eg6 -- chrmc23.pol from the frisco Suite has 22 complex roots.  
 # 	The default arguments for main_ceval in Level 1 only
 # 	isolates 12 of these roots, leaving 72 ambiguous boxes, as this output shows:

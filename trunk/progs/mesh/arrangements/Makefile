@@ -45,6 +45,32 @@ mk: main.o tmp-display.o
 	${CXX} $(LDFLAGS) main.o tmp-display.o $(CORE_LIB) -o $@
 
 #=================================================
+# Help
+#=================================================
+help:
+	@echo "USAGE:  The main program is called mk.  Demos can be invoked thus:"
+	@echo "         > make eg"
+	@echo "         > make egX"
+	@echo "     where X is replaced by 1,2,...,14."
+	@echo "     Some demos have variants, such as eg6a, eg6b or eg6c."
+	@echo "     LIST OF TARGETS:"
+	@echo "	eg, eg1		-- intersecting a parabola and circle"
+	@echo "	eg2		-- intersecting two cubic curves"
+	@echo "	eg3      	-- circle and an interesting quartic curve"
+	@echo "	eg4      	-- circle and an degree 9 curve"
+	@echo "	eg5      	-- 5th roots of unity: real and complex part of z^5-1"
+	@echo "	eg6      	-- Laguerre polynomial of degree 6 (6 real roots in [0,20]"
+	@echo " eg7		-- some polynomial of degree 6"
+	@echo " eg8		-- 10th roots of unity"
+	@echo " eg9		-- 20th roots of unity"
+	@echo " eg10		-- Hermite polynomial of degree 20"
+	@echo " eg11		-- Chebyshev polynomial of degree 20"
+	@echo " eg12		-- Wilkinson Polynomial of degree 20"
+	@echo " eg13		-- Laguerre Polynomial of degree 4"
+	@echo " eg14		-- Laguerre Polynomial of degree 5"
+	@echo " ======================================================"
+
+#=================================================
 # Sample examples for testing only (cited from 
 # krawczyk examples)
 #=================================================

@@ -728,6 +728,20 @@ eg13 troom: ./2-links
 		10 \
 		&
 
+# eg23: L-Room example -- this is a variation of the T-Room example (with no path)
+eg23 lroom: ./2-links
+	./2-links $(interactive) 257 230 251 294 252 420 294 251\
+		4 94 85 \
+		0 L-room2.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		3 $(seed)  $(inputDir) \
+		25 -120 0.08 \
+		$(verbose) "Eg23: L-room with NOPATH" \
+		$(smarterStrategy) \
+		$(threshold) \
+		1 \
+		10 \
+		&
 # eg13a:  T-Room example -- to show clearly the difference between
 # 		self-crossing and non-crossing
 eg13a trooma: ./2-links

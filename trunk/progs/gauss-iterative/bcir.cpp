@@ -6,7 +6,6 @@
         from bit ...  This algorithm solves the linear system
         Ax=b to an arbitrary specified accuracy 'epsilon. 
           
-
    Usage:
 	bcir <input_matrix_file> <input_vector_file> <epsilon>
 

@@ -611,7 +611,7 @@ int main(int argc,char **argv){
 	    int eqPos=line.find('=');
 	    //cout<<"line "<<line<<endl;
             /*If it contains =, it is not a command, it is a variable*/
-	    if (eqPos<line.size()&&eqPos>=0){
+	    if ((unsigned)eqPos<line.size()&&eqPos>=0){
 		/*Read variables*/
             	string first=line.substr(0,eqPos);
 		istringstream iss2(first);
@@ -656,7 +656,7 @@ int main(int argc,char **argv){
 	         //cout<<"haha "<<var<<endl;
 		 /*Parse the variable*/
 		 int varPos=var.find('$');
-		 if (varPos<var.size()&&varPos>=0){
+		 if ((unsigned)varPos<var.size()&&varPos>=0){
 			string tempVar;          // string which will contain the result
 
 			ostringstream convert;   // stream used for the conversion
