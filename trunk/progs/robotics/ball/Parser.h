@@ -5,6 +5,8 @@
 //              when seen from the "outside"
 
 #include <iostream>
+#include <map>
+#include <cstring>
 
 string fileName("input1.txt");     // Input file name
 string inputDir("inputs");     // Path for input files
@@ -12,6 +14,8 @@ double scale=1;        // scaling of input environment
 double deltaX=0;      // x-translation of input environment
 double deltaY=0;      // y-translation of input environment
 double deltaZ=0;      // z-translation of input environment
+
+using namespace std;
 
 extern int fileProcessor(string inputfile);
 
@@ -95,8 +99,13 @@ void parseConfigFile(Box* b) {
   cout << "nPt=" << nPt << endl;
 
   vector<double> pts(nPt * 3);
+  map<string, int> ptsNames;
+  // declare a 256-char buffer 
   for (int i = 0; i < nPt; ++i) {
+    // readline into buffer, and convert buffer into a input stream ifsbuffer
     ifs >> pts[i * 3] >> pts[i * 3 + 1] >> pts[i * 3 + 2];
+    // check if there is a string in the buffer, and if so, assigning this
+    // to the map.
   }
 
   while (true) {
@@ -108,22 +117,37 @@ void parseConfigFile(Box* b) {
       break;
     }
     nPolyhedra++;
+    
     for (int i = 0; i < numFaces; ++i) {
       vector<Corner*> ptVec;
 
+      // readline into buffer, and convert buffer into input stream "ifsbuffer"
       int faceType = 0; // used to check whether the face is a quadrilateral or triangle
                         // faceType=0 means a triangle
                         // faceType=1 means a quadrilateral
 
-      ifs >> faceType;
+      ifs >> faceType; // move this after the for-loop
 
+      // declare temporary point xx, yy, zz
+      // ifsBuffer >> xx, and if necessary, use hash map to convert into an index
+      // ifsBuffer >> yy, and if necessary, use hash map to convert into an index
+      // ifsBuffer >> zz, and if necessary, use hash map to convert into an index
+      // if there are more stuff in the buffer, we will read the faceType:
+      //     ifsBuffer >> faceType
+      // xxOffset = yyOffset = zzOffset = 0;
+      // if there are even more stuff in the buffer, we will read the offsets:
+      //     ifsBuffer >> xxOffset
+      //     ifsBuffer >> yyOffset
+      //     ifsBuffer >> yyOffset
+      
+      //The following loop is removed:
       for (int j=0; j< 3; ++j){
         int pt;
-        ifs >> pt;
+        ifs >> pt; 
         pt--;   // to get indexing from 0
-        ptVec.push_back(new Corner(pts[pt*3]*scale+deltaX,
-                                   pts[pt*3+1]*scale+deltaY,
-                                   pts[pt*3+2]*scale+deltaZ));
+        ptVec.push_back(new Corner(pts[pt*3]*scale+deltaX,// + xxOffset
+                                   pts[pt*3+1]*scale+deltaY,// + yyOffset
+                                   pts[pt*3+2]*scale+deltaZ));// + zzOffset
         b -> addCorner(ptVec.back());
       }
       // First triangle
@@ -138,8 +162,11 @@ void parseConfigFile(Box* b) {
         b -> addWall(w);
       /* addTriangle(b, *ptVec[0], *ptVec[1], *ptVec[2]); */
       // Possible Second triangle:
+
+      // read the code for faceType from ifsbuffer: if no code or code=1, do
+      // nothing:
       if (faceType == 1) {   // i.e., a quadrilateral
-        Corner fourthPt = *ptVec[1] + *ptVec[2] - *ptVec[0];
+        Corner fourthPt = *ptVec[1] + *ptVec[2] - *ptVec[0];// + xx,yy,zz Offsets
         Edge* e1 = new Edge (*ptVec[2], *ptVec[1]);
         Edge* e2 = new Edge (*ptVec[1], fourthPt);
         Edge* e3 = new Edge (fourthPt, *ptVec[2]);

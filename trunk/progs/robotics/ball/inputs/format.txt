@@ -61,12 +61,12 @@
 # (1) Named vertices:
 # 	To specify a named vertex, we write (say),
 #
-#	   "origin" x1 y1 z1	   # "origin" (in quotes) names point (x1,y1,z1)
-#	   "corner" x2 y2 z2	   # "corner" is the name of (x2,y2,z2)
+#	   x1 y1 z1 "origin"	   # "origin" (in quotes) names point (x1,y1,z1)
+#	   x2 y2 z2 "corner"	   # "corner" is the name of (x2,y2,z2)
 #
 #	To use a named point in a face, we just use its name (in quotes):
 #
-#	   v1 "origin" v3	   # triangle which uses "origin" as one of its vertices
+#	   v1 "origin" v3 	   # triangle which uses "origin" as one of its vertices
 #	   "origin" v3 "corner"	   # triangular using "origin" and "corner"
 #
 # (2) Parallelogram faces:
@@ -74,11 +74,42 @@
 # 	We propose a method to specify four points forming a planar parallelogram.
 # 	In place of a triangular face, we can write:
 #
-# 	u v w "quad"		   # where the special name "quad"
-# 				   # tells us that the fourth point of
-# 				   # this quadrilateral is w+u-v. 
-# 				   # Note that (u,v,w,w+u-v) forms a
+# 	[c] u v w 		   # where the optional c is either 0 or 1
+# 				   # 0 tells us that this is just a triangle
+# 				   # and 1 tells us that this is a
+# 				   # quadrilateral where the fourth point is w+u-v. 
+# 				   # IMPORTANT CONVENTION: (u,v,w,w+u-v) forms a
 # 				   # parallelogram listed counterclockwise.
+# 	[c] u v w [x y z]		   # Here, c is either 0 or 1 as before, with
+# 				   # the same interpretation, and x y z
+# 				   # specifies the offset for each point of the
+# 				   # triangle or quadrilateral.
+# 	E.g., 
+# 	v1 "origin" v3 2	   # this is a quadrilateral
+# 	v1 "origin" v3 1 1 0 1	   # this is the triangle (v1, origin, v3)
+# 				   # translated by (1, 0, 1)
+# (3) Further extensions to polygons with 4 or more points:
+# 	2 u1 u2 ... uk		   # for a polygon with k vertices
+# 				   # CONVENTION: we want the vertices to be
+# 				   # listed in a counter clockwise order
+# 				   # --this will generates k-2 triangles
+# 				   # (u1, u2, u3),
+# 				   # (u1, u3, u4),
+# 				   # ...
+# 				   # (u1, u{k-1}, uk)
+# 				   # NOTE: by our convention, these triangles 
+# 				   #   are given in counter clockwise order.
+# 				   # WARNING: if the polygon is convex, then
+# 				   #    the resulting triangles will not be
+# 				   #    overlapping.  But designer beware in
+# 				   #    case of non-convex polygons.
+# 				   # E.g., if you want a square face with a
+# 				   #   square hole, you can use two such non-convex
+# 				   #   polygons to define the face (and choose
+# 				   #   the first vertex properly!)
+# 				   #
+# 	3 u1 u2 ... uk + x y z	   # This is like the previous case except
+# 				   # that we also have an offset of (x,y,z)
 #
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # -- Chee Yap (2013)

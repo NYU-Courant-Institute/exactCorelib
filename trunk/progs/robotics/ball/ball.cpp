@@ -429,13 +429,13 @@ int main(int argc, char* argv[]) {
   glutInitWindowSize(boxWidth, boxWidth);
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 
-  glutInitWindowPosition(windowPosX + boxWidth * 2, windowPosY);
+  glutInitWindowPosition(windowPosX + 800, windowPosY);
   topViewWindowID = glutCreateWindow("Top View");
 
   glutDisplayFunc(renderTopView);
   glutReshapeFunc(reshapeTopView);
 
-  glutInitWindowPosition(windowPosX, windowPosY);
+  glutInitWindowPosition(10, windowPosY);
   customViewWindowID = glutCreateWindow("Custom View");
 
   glutDisplayFunc(renderCustomView);
@@ -443,7 +443,7 @@ int main(int argc, char* argv[]) {
 
   glutTimerFunc(50, idle, 0);
 
-  GLUI *glui = GLUI_Master.create_glui("control", 0, windowPosX + boxWidth + 20, windowPosY);
+  GLUI *glui = GLUI_Master.create_glui("control", 0, windowPosX + 300, windowPosY);
 
   // SETTING UP THE CONTROL PANEL:
   editInput = glui->add_edittext("Input file:", GLUI_EDITTEXT_TEXT);
