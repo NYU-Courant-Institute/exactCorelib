@@ -8,19 +8,7 @@
 #include "Timer.h"
 #include <set>
 #include "Parser.h"
-
-#ifdef __CYGWIN32__
-#include "glui.h"
-#endif
-#ifdef _WIN32
-#include <gl/glui.h>
-#endif
-#ifdef __APPLE__
-#include "glui.h"
-#endif
-#ifdef __linux__
-#include <GL/glui.h>
-#endif
+#include "RenderUtils.h"
 
 // External Routines ========================================
 //
@@ -33,7 +21,6 @@ void keyUp (unsigned char key, int x, int y);
 void parseConfigFile(Box*);
 void run();
 Octree* genEmptyTree();
-void drawPath(vector<Box*>&);
 
 Octree* OT;
 
@@ -90,11 +77,6 @@ float customViewXYAspect;
 float obj_pos[] = { (float)(-boxWidth/2.), (float)(-boxWidth/2.), (float)(2.*boxWidth) };
 float view_rotate[16] = { 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 };
 float topViewPos[3] = { (float) (boxWidth / 2.0), (float) (boxWidth / 2.0), (float) (boxWidth * 2.5) };
-
-GLfloat light0_ambient[] =  {0.0, 0.0, 0.0};
-GLfloat light0_diffuse[] =  {1.0, 1.0, 1.0};
-GLfloat light0_position[] = {.5f, .5f, 1.0f, 0.0f};
-GLfloat light0_specular[] = {1.0, 1.0, 1.0};
 
 bool showAnim = true;
 unsigned int iPathSeg = 0;

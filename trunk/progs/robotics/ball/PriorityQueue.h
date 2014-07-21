@@ -11,141 +11,115 @@
 
 using namespace std;
 
-class PQCmp
-{
-public:
-	bool operator() (const Box* a, const Box* b)
-	{
-		//use depth for now
-		if (a->depth > b->depth)
-		{
-			return true;
-		}
-		//if same depth, expand box created earlier first
-		else if (a->depth == b->depth)
-		{
-			return a->priority > b->priority;
-		}
-		return false;
-	}
+class PQCmp {
+ public:
+  bool operator() (const Box* a, const Box* b) {
+    //use depth for now
+    if (a->depth > b->depth) {
+      return true;
+    }
+    //if same depth, expand box created earlier first
+    if (a->depth == b->depth) {
+      return a->priority > b->priority;
+    }
+    return false;
+  }
 };
 
 
-class BoxQueue
-{
-private:
+class BoxQueue {
+ public:
 
-public:
+  BoxQueue(void) { }
 
-	BoxQueue(void)
-	{
-	}
+  virtual void push(Box* b) = 0;
 
-	virtual void push(Box* b) = 0;
+  virtual Box* extract() = 0;
 
-	virtual Box* extract() = 0;
+  virtual bool empty() = 0;
 
-	virtual bool empty() = 0;
+  virtual int size() = 0;
 
-	virtual int size() = 0;
-
-	~BoxQueue(void)
-	{
-	}
+  ~BoxQueue(void) { }
 };
 
-class seqQueue : public BoxQueue
-{
-private:
-	priority_queue<Box*, vector<Box*>, PQCmp> PQ;
-public:
-	void push(Box* b)
-	{
-		PQ.push(b);
-	}
+class seqQueue : public BoxQueue {
+ private:
+  priority_queue<Box*, vector<Box*>, PQCmp> PQ;
+ public:
+  void push(Box* b) {
+    PQ.push(b);
+  }
 
-	Box* extract()
-	{
-		Box* r = PQ.top();
-		PQ.pop();
-		return r;
-	}
+  Box* extract() {
+    Box* r = PQ.top();
+    PQ.pop();
+    return r;
+  }
 
-	bool empty()
-	{
-		return PQ.empty();
-	}
+  bool empty() {
+    return PQ.empty();
+  }
 
-	int size()
-	{
-		return PQ.size();
-	}
+  int size() {
+    return PQ.size();
+  }
 };
 
 class randQueue : public BoxQueue
 {
-private:
-	list<Box*> L;
-	int Qseed;
+ private:
+  list<Box*> L;
+  int Qseed;
 
-public:
-	randQueue(int s): Qseed(s) {
-		//srand( time(0) );
-		srand( Qseed ); 
-	}
+ public:
+ randQueue(int s): Qseed(s) {
+    srand( Qseed );
+  }
 
-	void push(Box* b)
-	{
-		L.push_back(b);
-	}
+  void push(Box* b) {
+    L.push_back(b);
+  }
 
-	Box* extract()
-	{
-		int i = rand() % L.size();
-		list<Box*>::iterator iter = L.begin();
-		advance(iter, i);
-		Box* r = *iter;
-		L.erase(iter);
-		return r;
-	}
+  Box* extract() {
+    int i = rand() % L.size();
+    list<Box*>::iterator iter = L.begin();
+    advance(iter, i);
+    Box* r = *iter;
+    L.erase(iter);
+    return r;
+  }
 
-	bool empty()
-	{
-		return L.empty();
-	}
+  bool empty() {
+    return L.empty();
+  }
 
-	int size()
-	{
-		return L.size();
-	}
+  int size() {
+    return L.size();
+  }
 
 };
 
 class dijkstraQueue : public BoxQueue
 {
-private:
-	vector<Box*> bv;
+ private:
+  vector<Box*> bv;
 
-public:
+ public:
 
-	void push(Box* b)
-	{
-		distHeap<PQCmp3>::insert(bv, b);
-	}
+  void push(Box* b) {
+    distHeap<PQCmp3>::insert(bv, b);
+  }
 
-	Box* extract()
-	{
-		Box* current = distHeap<PQCmp3>::extractMin(bv);
-		return current;
-	}
+  Box* extract() {
+    return distHeap<PQCmp3>::extractMin(bv);
+  }
 
-	bool empty()
-	{
-		return bv.empty();
-	}
+  bool empty() {
+    return bv.empty();
+  }
 
-	int size()
-	{
-		return bv.size();
-	}
+  int size() {
+    return bv.size();
+  }
 };

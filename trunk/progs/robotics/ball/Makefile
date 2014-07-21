@@ -244,9 +244,9 @@ eg0a nopatha:	ball
 		$(xtrans) $(ytrans) $(scale) \
 		&
 
-# EXAMPLES 
+# EXAMPLES
 ###################################################
-# 
+#
 eg1:	ball
 	@echo "Target 'eg1':  runs ball with default Makefile options for file input2.txt"
 	./ball $(interactive) 200 360 50 275 200 450 \
@@ -280,6 +280,17 @@ eg3:	ball
                 $(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
                 $(transparency) $(frameRate) \
 		&
+eg3b:	ball
+	@echo "Target 'eg3b':  runs ball with default Makefile options for file input11.txt"
+	./ball $(interactive) 200 360 50 275 200 450 \
+		$(epsilon) $(radius) input11.txt \
+		$(boxWidth) $(windowPosX) $(windowPosY) \
+		$(Qtype) 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(ztrans) 2 \
+                $(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
+                $(transparency) $(frameRate) \
+		&
+
 
 moretest: $(TARGETS)
 # nothing to do
