@@ -619,7 +619,7 @@ eg200 200: ./tri
 	@echo "--  This may take a noticeable amount bit of time!!!"
 	@echo "--  Using Greedy Strategy"
 	./tri $(interactive) 150 260 0 20 20 90 \
-		4 8 input1.txt \
+		5 15 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -635,7 +635,7 @@ eg200a 200a: ./tri
 	@echo "    depending on the search strategy"
 	@echo "--  Using Vor Heuristic"
 	./tri $(interactive) 10 360 0 320 20 90 \
-		5 7 input1.txt \
+		5 15 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		4 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
@@ -644,27 +644,40 @@ eg200a 200a: ./tri
 
 # eg200b: there is no path because eps=10
 #
-eg200b: ./tri
+eg200b 200b: ./tri
 	@echo "Target eg200b:  runs tri on randomly generated obstacles"
 	@echo "--  This may take a noticeable amount bit of time, "
 	@echo "    depending on the search strategy"
 	./tri $(interactive) 150 260 0 20 20 0 \
-		10 5 input1.txt \
+		5 15 input1.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) $(colorOn) \
 		&
 
-# eg300: 300 random triangles
+# eg300 200: 300 random triangles
 #
-eg300: ./tri
+eg300 300: ./tri
 	@echo "Target eg300:  runs tri amidst 300 randomly generated triangles"
 	@echo "--  This may take a noticeable amount bit of time!!! "
 	./tri $(interactive) 10 400 0 350 20 0\
-		2 3 input300.txt \
+		4 16 input300.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
+		2 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(scale) \
+		$(verbose) $(title) $(colorOn) \
+		&
+	
+# eg300a 300a: 300 random triangles
+#
+eg300a 300a: ./tri
+	@echo "Target eg300:  runs tri amidst 300 randomly generated triangles"
+	@echo "--  This may take a noticeable amount bit of time!!! "
+	./tri $(interactive) 10 400 0 250 200 0\
+		5 15 input300.txt \
+		512 512 $(windowPosX) $(windowPosY) \
+		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) $(colorOn) \
 		&
