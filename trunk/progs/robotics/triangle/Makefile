@@ -592,20 +592,20 @@ eg100a 100a: ./tri
 	@echo "Target eg100a:  runs tri amidst 100 randomly generated triangles"
 	@echo "This one is a bit harder than eg100 (with radius 8 instead of 5)"
 	./tri $(interactive) 20 20 45 310 310 -45\
-		10 8 input100.txt \
+		5 28 input100.txt \
 		512 512 $(windowPosX) $(windowPosY) \
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) $(colorOn) \
 		&
 
-# eg150: 150 random triangles (use radius=1)
+# eg150: 150 random triangles (use radius=15)
 eg150 150: ./tri
 	@echo "Target eg150:  runs tri amidst 100 randomly generated triangles"
-	./tri $(interactive) 200 270 0 20 20 0\
-		10 1 input150.txt \
+	./tri $(interactive) 200 320 0 20 20 0\
+		3 18 input150.txt \
 		512 512 $(windowPosX) $(windowPosY) \
-		1 1111 $(inputDir) \
+		2 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		$(verbose) $(title) $(colorOn) \
 		&
