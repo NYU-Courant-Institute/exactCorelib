@@ -56,6 +56,8 @@ SOFTWARE:
 		You can dump the subdivision image into a postscript file
 		"vor2d_screen_dump.ps" by pressing button "save image"
 		in the control panel.
+	The input files are found in subdirectory "inputs" and are
+		ASCII files that can be hand coded (we recommend using xfig).
 
 	EXPLORATION in the interactive mode:
 

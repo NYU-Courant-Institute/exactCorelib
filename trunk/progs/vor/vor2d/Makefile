@@ -125,6 +125,8 @@ fileName = input300.txt	# input environment file
 fileName = bugtrap.txt	# input environment file
 
 boxWidth = 512		# initial configuration box size
+			# See eg20 for configuration size 768 (1.5 times
+			# larger)
 boxHt = 512
 
 windowPosX = 200	# initial Window position
@@ -555,7 +557,7 @@ eg15a :	$(VOR2D)
 	
 # Eg16: degenerate
 eg16 :	$(VOR2D)
-	@echo "Target 'eg16' :"
+	@echo "Target 'eg16 (degenerate)' :"
 	$(VOR2D) $(interactive) \
 		0.1 $(pseudo) $(interior) input7.txt \
 		512 512 $(windowPosX) $(windowPosY) \
@@ -564,6 +566,18 @@ eg16 :	$(VOR2D)
 		$(c1) $(c2) $(maxEps) \
 		&
 										
+
+# Eg20: contour examples
+eg20 :	$(VOR2D)
+	@echo "Target 'eg20 (contour problem)' :"
+	$(VOR2D) $(interactive) \
+		0.1 $(pseudo) $(interior) contour.txt \
+		512 768 350 20 \
+		$(inputDir) \
+		-50 100 0.06 $(closePoly) \
+		$(c1) $(c2) $(maxEps) \
+		&
+
 # Eg50: standard parabola
 eg50 parabola:	$(VOR2D)
 	@echo "Target 'eg50' or 'line': "
