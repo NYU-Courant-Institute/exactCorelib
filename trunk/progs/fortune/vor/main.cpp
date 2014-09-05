@@ -47,7 +47,7 @@
  ***************************************************** */
 
 #include <ctime>
-// #include "getopt.h"
+#include "getopt.h"
 #define INCLUDEGLOBAL
 #include "definitions.h"
 
