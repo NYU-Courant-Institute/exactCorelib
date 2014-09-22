@@ -35,23 +35,35 @@ for i in range(numFaces):
     face = facesLines[i].split()
     faceType = int(face[0])
     face = face[1:]
-    for i in range(len(face)):
-        if not face[i].isdigit():
-            face[i] = str(points2Indices[face[i]])
+    for j in range(len(face)):
+        if not face[j].isdigit():
+            face[j] = str(points2Indices[face[j]])
     if ((faceType == 0 or faceType == 1) and len(face) == 6) or faceType == 3:
         p = (face[-3], face[-2], face[-1])
         face = face[:-3]
-        for i in range(len(face)):
-            basePoint = points[int(face[i]) - 1]
+        for j in range(len(face)):
+            basePoint = points[int(face[j]) - 1]
             newPoint = addTriples(p, basePoint)
             points.append(newPoint)
-            face[i] = str(len(points))
-    f = str(faceType) + " " + " ".join(face)
-    faces.append(f)
+            face[j] = str(len(points))
+    if faceType == 1:
+        # f = str(faceType) + " " + " ".join(face) + "\n"
+        faces.append("0 " + " ".join([str(x) for x in face]) + "\n")
+        base = points[int(face[0]) - 1]
+        p = addTriples(addTriples(points[int(face[1]) - 1], points[int(face[2]) - 1]), (-base[0], -base[1], -base[2]))
+        points.append(p)
+        faces.append("0 " + str(face[1]) + " " + str(len(points)) + " " + str(face[2]) + "\n")
+    elif faceType == 2 or faceType == 3:
+        base = face[0]
+        face = face[1:]
+        for j in range(len(face) - 1):
+            faces.append("0 " + str(base) + " " + str(face[j]) + " " + str(face[j + 1]) + "\n")
+    else:
+        faces.append(str(faceType) + " " + " ".join(face) + "\n")
 
-output.write(str(numPoints) + "\n")
+output.write(str(len(points)) + "\n")
 output.write("\n".join([" ".join([str(j) for j in i]) for i in points]) + "\n")
-output.write(str(numFaces) + "\n")
-output.write("\n".join(faces))
-output.write("\n0\n")
+output.write(str(len(faces)) + "\n")
+output.write("".join(faces))
+output.write("0\n")
 output.flush()
