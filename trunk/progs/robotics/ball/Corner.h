@@ -1,15 +1,15 @@
 #pragma once
+#include "./Vector.h"
 #include <math.h>
 class Edge;
 
-class Corner {
+class Corner : public Vector {
  public:
-  double x, y, z;
   Edge* preEdge;
   Edge* nextEdge;
   // Constructor from (x,y,z):
-  Corner(double xx, double yy, double zz):x(xx), y(yy), z(zz) { }
-  Corner(const Corner& c): x(c.x), y(c.y), z(c.z) { }
+  Corner(double xx, double yy, double zz) : Vector(xx, yy, zz) { }
+  Corner(const Corner& c) : Vector(c) { }
 
   Corner operator+(const Corner& other) {
     return Corner(x + other.x, y + other.y, z + other.z);

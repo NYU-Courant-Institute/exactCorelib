@@ -23,11 +23,11 @@ class distCmp {
 template <typename CmpFunctor>
 class distHeap {
  private:
-  static void siftDown(vector<Box*>& bv, int i) {
+  static void siftDown(vector<Box*>& bv, unsigned long i) {
     CmpFunctor cmp;
     unsigned int l = 2 * i + 1;
     unsigned int r = 2 * i + 2;
-    int smallest = i;
+    unsigned long smallest = i;
     if (l < bv.size() && cmp(bv[i], bv[l])) {
       smallest = l;
     }
@@ -67,12 +67,13 @@ class distHeap {
 
   static void decreaseKey(vector<Box*>& bv, Box* b, double dist) {
     CmpFunctor cmp;
-    assert(bv[b->heapId] == b);
+    assert(b->heapId >= 0);
+    unsigned long bid = static_cast<unsigned long>(b->heapId);
+    unsigned long pid = (bid - 1) / 2;
+    assert(bv[bid] == b);
     assert(b->dist2Source >= dist);
 
     b->dist2Source = dist;
-    int bid = b->heapId;
-    int pid = (bid - 1) / 2;
     while (bid > 0 && cmp(bv[pid], bv[bid])) {
       Box* tmp = bv[bid];
       bv[bid] = bv[pid];

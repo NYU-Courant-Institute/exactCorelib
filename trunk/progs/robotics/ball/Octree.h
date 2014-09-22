@@ -41,7 +41,11 @@ class Octree {
       PQ->push(b);
       break;
     case Box::UNKNOWN:
-      std::cout << "UNKNOWN not handled?" << std::endl;
+      std::cout << "UNKNOWN not handled" << std::endl;
+      break;
+    default:
+      std::cerr << "Wrong Status" << std::endl;
+      exit(1);
     }
   }
 
@@ -52,7 +56,7 @@ class Octree {
   double epsilon;
   int QType;
 
-  Octree(Box* root, double e, int qType, int s):
+  Octree(Box* root, double e, int qType, unsigned int s):
   pRoot(root), epsilon(e), QType(qType) {
     switch (QType) {
     case 1:
@@ -64,6 +68,9 @@ class Octree {
     case 2:
       PQ = new dijkstraQueue();
       break;
+    default:
+      std::cerr << "Wrong QType" << std::endl;
+      exit(1);
     }
 
     pRoot->updateStatus();

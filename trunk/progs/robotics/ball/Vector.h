@@ -7,7 +7,6 @@ class Vector {
   // Constructor from (x,y,z):
   Vector(double xx, double yy, double zz):x(xx), y(yy), z(zz) { }
   Vector(const Vector& c): x(c.x), y(c.y), z(c.z) { }
-  explicit Vector(const Corner& c): x(c.x), y(c.y), z(c.z) { }
 
   Vector operator+(const Vector& other) {
     return Vector(x + other.x, y + other.y, z + other.z);
