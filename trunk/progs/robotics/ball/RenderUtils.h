@@ -65,21 +65,24 @@ void drawEdges(Box* b, int transparency) {
 void drawQuad(Box* b, double epsilon, int val) {
   glLineWidth(1);
   switch (b->status) {
-    case Box::FREE:
-      glColor3f(0.25, 1, 0.25);
-      break;
-    case Box::STUCK:
-      glColor3f(1, 0.25, 0.25);
-      break;
-    case Box::MIXED:
-      glColor3f(1, 1, 0.25);
-      if (b->width < epsilon) {
-	glColor3f(0.5, 0.5, 0.5);
-      }
-      break;
-    case Box::UNKNOWN:
-      std::cout << "UNKNOWN in drawQuad" << std::endl;
-      break;
+  case Box::FREE:
+    glColor3f(0.25, 1, 0.25);
+    break;
+  case Box::STUCK:
+    glColor3f(1, 0.25, 0.25);
+    break;
+  case Box::MIXED:
+    glColor3f(1, 1, 0.25);
+    if (b->width < epsilon) {
+      glColor3f(0.5, 0.5, 0.5);
+    }
+    break;
+  case Box::UNKNOWN:
+    std::cout << "UNKNOWN in drawQuad" << std::endl;
+    break;
+  default:
+    std::cerr << "Wrong Box Type" << std::endl;
+    exit(1);
   }
 
   if (!val) {
@@ -95,7 +98,7 @@ void drawPath(vector<Box*>& path, double alpha[3], double beta[3]) {
   glLineWidth(5.0);
   glBegin(GL_LINE_STRIP);
   glVertex3f(beta[0], beta[1], beta[2]);
-  for (int i = 0; i < (int) path.size(); ++i) {
+  for (unsigned int i = 0; i < path.size(); ++i) {
     glVertex3f(path[i]->x, path[i]->y, path[i]->z);
   }
   glVertex3f(alpha[0], alpha[1], alpha[2]);
@@ -122,7 +125,7 @@ void reshapeView(int windowID, float& viewXYAspect) {
   GLUI_Master.get_viewport_area(&tx, &ty, &tw, &th);
   glViewport(tx, ty, tw, th);
 
-  viewXYAspect = (float)tw / (float)th;
+  viewXYAspect = static_cast<float>(tw) / static_cast<float>(th);
 
   glutPostRedisplay();
 }

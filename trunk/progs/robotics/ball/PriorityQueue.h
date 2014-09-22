@@ -70,19 +70,19 @@ class randQueue : public BoxQueue
 {
  private:
   list<Box*> L;
-  int Qseed;
+  unsigned int Qseed;
 
  public:
- randQueue(int s): Qseed(s) {
-    srand( Qseed );
-  }
+ randQueue(unsigned int s): Qseed(s) {
+   srand( Qseed );
+ }
 
   void push(Box* b) {
     L.push_back(b);
   }
 
   Box* extract() {
-    int i = rand() % L.size();
+    unsigned long i = static_cast<unsigned long>(rand()) % L.size();
     list<Box*>::iterator iter = L.begin();
     advance(iter, i);
     Box* r = *iter;

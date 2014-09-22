@@ -77,5 +77,8 @@ void BoxIter::storeNeighbors (Box* n) {
   case 5:
     storeAllNeighbors(n, 2, 3, 6, 7);
     break;
+  default:
+    std::cerr << "Direction should be 0 - 5" << std::endl;
+    exit(1);
   }
 }

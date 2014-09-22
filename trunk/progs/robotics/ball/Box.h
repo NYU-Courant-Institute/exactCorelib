@@ -21,7 +21,7 @@ class BoxIter {
   const Box* b;
   vector<Box*> neighborVec;
   int direction;
-  int index;
+  unsigned long index;
   void storeNeighbors(Box* n);
   void storeAllNeighbors(Box* n, int a, int b, int c, int d);
 
@@ -153,8 +153,7 @@ class Box {
       }
     }
 
-
-    if (corners.size() == 0 && Edges.size() == 0 && Walls.size() == 0) {
+    if (corners.empty() && Edges.empty() && Walls.empty()) {
       if (!pParent) {
         status = FREE;
       } else {
@@ -194,7 +193,7 @@ class Box {
     }
 
     double mindistC = mindistE + 1;  //mindistC may not exist, so init to a bigger number
-    if (corners.size()) {
+    if (!corners.empty()) {
       list<Corner*>::iterator iterC = corners.begin();
       mindistC = (*iterC)->distance(x, y, z);
       ++iterC;
@@ -317,6 +316,10 @@ class Box {
         children[i]->pChildren[0] = children[5];
         children[i]->pChildren[3] = children[6];
         children[i]->pChildren[5] = children[4];
+        break;
+      default:
+        std::cerr << "Only eight children" << std::endl;
+        exit(1);
       }
     }
 
@@ -683,6 +686,9 @@ class Box {
           neighbor = iter->Next();
         }
         break;
+      default:
+        std::cerr << "Only six neighbors" << std::endl;
+        exit(1);
       }
     }
 

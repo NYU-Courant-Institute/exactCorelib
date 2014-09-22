@@ -81,6 +81,9 @@ bool findPath(Box* a, Box* b, Octree* OT, int& ct) {
             case Box::UNKNOWN:
               cerr << "inside FindPath: UNKNOWN case not treated" << endl;
               break;
+            default:
+              std::cerr << "Wrong Status" << std::endl;
+              exit(1);
             }
           }
         }
@@ -115,7 +118,7 @@ bool findPath(Box* a, Box* b, Octree* OT, int& ct) {
 
   // these two fields are also used in dijkstraShortestPath
   // need to reset
-  for (int i = 0; i < (int)toReset.size(); ++i) {
+  for (unsigned int i = 0; i < toReset.size(); ++i) {
     toReset[i]->visited = false;
     toReset[i]->dist2Source = -1;
   }
@@ -209,7 +212,7 @@ void run() {
     while (path.back()->prev) {
       path.push_back(path.back()->prev);
     }
-    for (int i = 0; i < (int)toReset.size(); ++i) {
+    for (unsigned int i = 0; i < toReset.size(); ++i) {
       toReset[i]->prev = NULL;
     }
     vector<Box*> dijkstraShortestPath = Graph::dijkstraShortestPath(boxA, boxB);
@@ -287,9 +290,9 @@ void resetViewPoint() {
 }
 
 void resetTopViewPoint() {
-  topViewPos[0] = (float) (boxWidth / 2.0);
-  topViewPos[1] = (float) (boxWidth / 2.0);
-  topViewPos[2] = (float) (boxWidth * 2.5);
+  topViewPos[0] = static_cast<float>(boxWidth / 2.0);
+  topViewPos[1] = static_cast<float>(boxWidth / 2.0);
+  topViewPos[2] = static_cast<float>(boxWidth * 2.5);
 }
 
 void logNonInteractiveRun(bool noPath) {
@@ -399,7 +402,7 @@ int main(int argc, char* argv[]) {
   if (argc > 12) windowPosX = atoi(argv[12]);  // window X pos
   if (argc > 13) windowPosY = atoi(argv[13]);  // window Y pos
   if (argc > 14) QType   = atoi(argv[14]);  // PriorityQ Type (random or no)
-  if (argc > 15) seed   = atoi(argv[15]);    // for random number generator
+  if (argc > 15) seed   = static_cast<unsigned int>(atoi(argv[15]));    // for random number generator
   if (argc > 16) inputDir  = argv[16];    // path for input files
   if (argc > 17) deltaX  = atof(argv[17]);  // x-translation of input file
   if (argc > 18) deltaY  = atof(argv[18]);  // y-translation of input file
@@ -447,9 +450,9 @@ int main(int argc, char* argv[]) {
 
   // SETTING UP THE CONTROL PANEL:
   editInput = glui->add_edittext("Input file:", GLUI_EDITTEXT_TEXT);
-  editInput->set_text((char*)fileName.c_str());
+  editInput->set_text(const_cast<char*>(fileName.c_str()));
   editDir = glui->add_edittext("Input Directory:", GLUI_EDITTEXT_TEXT);
-  editDir->set_text((char*)inputDir.c_str());
+  editDir->set_text(const_cast<char*>(inputDir.c_str()));
 
   GLUI_Panel * robot_box_panel = glui->add_panel("Robot Specs");
   editRadius = glui->add_edittext_to_panel(robot_box_panel,
@@ -487,7 +490,7 @@ int main(int argc, char* argv[]) {
   editBetaZ->set_float_val(beta[2]);
 
   editSeed = glui->add_edittext("seed:", GLUI_EDITTEXT_INT);
-  editSeed->set_int_val(seed);
+  editSeed->set_int_val(static_cast<int>(seed));
 
   GLUI_Panel* animation_panel = glui->add_panel("Animation Control");
 
@@ -499,12 +502,12 @@ int main(int argc, char* argv[]) {
   editTransparency->set_int_val(transparency);
   editTransparency->set_int_limits(0, 100);
 
-  GLUI_Button* buttonReplay = glui->add_button_to_panel(animation_panel, "Replay Animation", -1, (GLUI_Update_CB)animReplay);
+  GLUI_Button* buttonReplay = glui->add_button_to_panel(animation_panel, "Replay Animation", -1, reinterpret_cast<GLUI_Update_CB>(animReplay));
   buttonReplay->set_name("replay");
   buttonReplay->set_w(1);
 
   glui->add_separator();
-  GLUI_Button* buttonRun = glui->add_button("Run", -1, (GLUI_Update_CB)run);
+  GLUI_Button* buttonRun = glui->add_button("Run", -1, reinterpret_cast<GLUI_Update_CB>(run));
   buttonRun->set_name("Run me"); // Hack, but to avoid "unused warning" (Chee)
 
   // New column:
@@ -519,7 +522,7 @@ int main(int argc, char* argv[]) {
   radioQType->set_int_val(QType);
 
   glui->add_separator();
-  radioDrawOption = glui->add_radiogroup(0, -1, (GLUI_Update_CB)renderCustomView);
+  radioDrawOption = glui->add_radiogroup(0, -1, reinterpret_cast<GLUI_Update_CB>(renderCustomView));
   glui->add_radiobutton_to_group(radioDrawOption, "Show Box Boundary");
   glui->add_radiobutton_to_group(radioDrawOption, "Hide Box Boundary");
 
@@ -548,20 +551,20 @@ int main(int argc, char* argv[]) {
   GLUI_Translation *trans_z =
     new GLUI_Translation(glui, "Translate Z", GLUI_TRANSLATION_Z, &obj_pos[2]);
   trans_z->set_speed(5);
-  glui->add_button("Reset Custom", 0, (GLUI_Update_CB) resetViewPoint);
+  glui->add_button("Reset Custom", 0, reinterpret_cast<GLUI_Update_CB>(resetViewPoint));
   GLUI_Translation *topViewTransXY = new GLUI_Translation(glui, "Top View XY",
                 GLUI_TRANSLATION_XY, topViewPos);
   topViewTransXY->set_speed(5);
   GLUI_Translation *topViewZoom =
     new GLUI_Translation(glui, "Top View Zoom", GLUI_TRANSLATION_Z, &topViewPos[2]);
   trans_z->set_speed(5);
-  glui->add_button("Reset Top", 0, (GLUI_Update_CB) resetTopViewPoint);
+  glui->add_button("Reset Top", 0, reinterpret_cast<GLUI_Update_CB>(resetTopViewPoint));
 
   // output = new GLUI_TextBox(glui, true);
   // output->set_h(300);
   // output->set_w(200);
   // Quit button
-  glui->add_button("Quit", 0, (GLUI_Update_CB)exit);
+  glui->add_button("Quit", 0, static_cast<GLUI_Update_CB>(exit));
 
   glui->set_main_gfx_window(customViewWindowID);
 

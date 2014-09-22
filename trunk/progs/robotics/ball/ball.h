@@ -18,7 +18,6 @@ void reshapeCustomView(int width, int height);
 void idle(int v);
 void keyPressed (unsigned char key, int x, int y);
 void keyUp (unsigned char key, int x, int y);
-void parseConfigFile(Box*);
 void run();
 Octree* genEmptyTree();
 
@@ -37,7 +36,7 @@ int windowPosX = 250;      // X Position of Window
 int windowPosY = 150;      // Y Position of Window
 int QType = 1;        // The Priority Queue can be sequential (1) or random (0)
 int interactive = 0;      // Run interactively? Yes (0) or No (1)
-int seed = 111;        // seed for random number generator (Could also be used for BFS, etc)
+unsigned int seed = 111;        // seed for random number generator (Could also be used for BFS, etc)
 double eye[3] = {0, 256, 1280};
 double at[3] = {0, 256, 0};
 double up[3] = {0, 1, 0};
@@ -74,9 +73,12 @@ int customViewWindowID;
 int topViewWindowID;
 float topViewXYAspect;
 float customViewXYAspect;
-float obj_pos[] = { (float)(-boxWidth/2.), (float)(-boxWidth/2.), (float)(2.*boxWidth) };
-float view_rotate[16] = { 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 };
-float topViewPos[3] = { (float) (boxWidth / 2.0), (float) (boxWidth / 2.0), (float) (boxWidth * 2.5) };
+float obj_pos[] = { static_cast<float>(-boxWidth/2.), static_cast<float>(-boxWidth/2.), static_cast<float>(2.*boxWidth) };
+float view_rotate[16] = { 1.0, 0.0, 0.0, 0.0,
+                          0.0, 1.0, 0.0, 0.0,
+                          0.0, 0.0, 1.0, 0.0,
+                          0.0, 0.0, 0.0, 1.0 };
+float topViewPos[3] = { static_cast<float>(boxWidth / 2.0), static_cast<float>(boxWidth / 2.0), static_cast<float>(boxWidth * 2.5) };
 
 bool showAnim = true;
 unsigned int iPathSeg = 0;

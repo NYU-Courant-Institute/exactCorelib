@@ -2,7 +2,6 @@
 #include <iostream>
 #include "./Box.h"
 
-
 class Set {
  public:
   Box* pBox;
