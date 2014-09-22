@@ -34,7 +34,7 @@
 #
 #    x1 y1 z1	# vertex 1 where x1,y1,z1 are decimal numbers, one per line
 #    x2 y2 z2	# vertex 2
-#    ...  
+#    ...
 #    xN yN zN   # vertex N.  This is self-terminating, as N is known.
 #
 #    F1            # number of faces in polyhedron 1  (all faces are triangles)
@@ -44,7 +44,7 @@
 #    ...
 #    u1F1 v1F1 w1F1     # last triangle (face)
 #
-#    F2            # number of faces in polyhedron 2 
+#    F2            # number of faces in polyhedron 2
 #
 #    u21 v21 w21        # first triangle (face)
 #    u22 v22 w22        # second triangle (face)
@@ -77,16 +77,16 @@
 # 	c u v w 		   # where c is either 0 or 1
 # 				   # 0 tells us that this is just a triangle
 # 				   # and 1 tells us that this is a
-# 				   # quadrilateral where the fourth point is w+u-v. 
+# 				   # quadrilateral where the fourth point is w+u-v.
 # 				   # IMPORTANT CONVENTION: (u,v,w,w+u-v) forms a
 # 				   # parallelogram listed counterclockwise.
 # 	c u v w [x y z]		   # Here, c is either 0 or 1 as before, with
 # 				   # the same interpretation, and x y z
 # 				   # specifies the offset for each point of the
 # 				   # triangle or quadrilateral.
-# 	E.g., 
-# 	2 v1 "origin" v3 	   # this is a quadrilateral
-# 	1 v1 "origin" v3 1 0 1	   # this is the triangle (v1, origin, v3)
+# 	E.g.,
+# 	1 v1 "origin" v3 	   # this is a quadrilateral
+# 	0 v1 "origin" v3 1 0 1	   # this is the triangle (v1, origin, v3)
 # 				   # translated by (1, 0, 1)
 # (3) Further extensions to polygons with 4 or more points:
 # 	2 u1 u2 ... uk		   # for a polygon with k vertices
@@ -97,7 +97,7 @@
 # 				   # (u1, u3, u4),
 # 				   # ...
 # 				   # (u1, u{k-1}, uk)
-# 				   # NOTE: by our convention, these triangles 
+# 				   # NOTE: by our convention, these triangles
 # 				   #   are given in counter clockwise order.
 # 				   # WARNING: if the polygon is convex, then
 # 				   #    the resulting triangles will not be
@@ -114,4 +114,3 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # -- Chee Yap (2013)
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-
