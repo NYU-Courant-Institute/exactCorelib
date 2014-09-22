@@ -45,14 +45,14 @@
 #    		# 1, not 0.
 #		###############################
 #
-#    F1            # number of faces in polyhedron 1  (all faces are triangles)
+#    Poly[hedron] ["name1"]      # beginning of triangles in polyhedron 1 
 #
 #    u11 v11 w11        # first triangle (face)   given by 3 vertex indices
 #    u12 v12 w12        # second triangle (face)
 #    ...
 #    u1F1 v1F1 w1F1     # last triangle (face)
 #
-#    F2            # number of faces in polyhedron 2
+#    Poly[hedron] ["name2"]       # beginning of triangles in polyhedron 2
 #
 #    u21 v21 w21        # first triangle (face)
 #    u22 v22 w22        # second triangle (face)
@@ -140,6 +140,14 @@
 # 	2 u1 u2 ... uk + x y z	   # This is a variant of the previous case except
 # 				   # that we also have an offset of (x,y,z)
 # 				   # (or "-" instead of "+")
+# (4) Thick polygons
+# 	3 u v w [+ x y z]	   # this is the thick version of "0 u v w [+ x y z]"
+# 	4 u v w [+ x y z] 	   # this is the thick version of "1 u v w [+ x y z]"
+# 	5 u1 u2 ... uk [+ x y z]   # the thick version of "2 u1 u2 ... uk [+ x y z]"
+# 			
+# 				   # By the "thick version" of a polyhedra, we
+# 				   # mean that every triangle is duplicated and
+# 				   # given the opposite orientation.
 #
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # -- Chee Yap & Ziyao Wei (2013)
