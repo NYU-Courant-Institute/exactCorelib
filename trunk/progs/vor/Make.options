@@ -38,9 +38,9 @@ CORE_INC=-I. -I../../third_party -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include 
 
 # Note (Huck): the -L/usr/lib/nvidia-<driver version> works around the following bug:
 # https://bugs.launchpad.net/ubuntu/+source/nvidia-graphics-drivers-319/+bug/1248642
-CORE_LIB=-L/usr/lib/nvidia-331 -L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib -L$(CORE_PATH)/gmp/lib\
-	 -lcore++$(VAR) -lmpfr -lgmp  -lglut -lGLU -lGL
 CORE_LIB=-L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib -L$(CORE_PATH)/gmp/lib\
+	 -lcore++$(VAR) -lmpfr -lgmp  -lglut -lGLU -lGL
+CORE_LIB=-L/usr/lib/nvidia-331 -L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib -L$(CORE_PATH)/gmp/lib\
 	 -lcore++$(VAR) -lmpfr -lgmp  -lglut -lGLU -lGL
 
 #lmpfr -lgmp -lm -lglut32 -lglu32 -lopengl32

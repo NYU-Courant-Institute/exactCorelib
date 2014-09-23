@@ -98,6 +98,7 @@ CORE_INC=-I. -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
 		-L/usr/unsupported/installers/exact/glut-3.7/lib/glut \
 		-lglut -lGL -lGLU -lXmu -lXi -lXext -lX11 -lm -lsocket -lnsl
 	LIBS= -lglut -lGLU -lGL -lm -L/usr/X11R6/lib -lXi -lXmu
+	LIBS= -lglut -lGLU -lGL -lm -L/usr/X11R6/lib
         endif
    endif
 

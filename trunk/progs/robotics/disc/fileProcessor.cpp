@@ -45,7 +45,9 @@
  *
  * ***************************************************/
 
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 #include <string>
 #include <iostream>
 #include <fstream>

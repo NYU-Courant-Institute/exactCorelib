@@ -156,7 +156,7 @@ SUBDIRS = .
 SRCS=$(wildcard $(addsuffix /*.cpp,$(SUBDIRS)))
 OBJS=${SRCS:.cpp=.o}
 OBJ_FILES = $(OBJS)
-CXXFLAGS += -MMD
+CXXFLAGS += -g -MMD
 
 DEPENDS=Box.o fileProcessor.o QuadTree.o Corner.o Wall.o Timer.o
 
@@ -630,7 +630,8 @@ vi:
 #=================================================
 
 %: %.o
-	${CXX} $(OBJ_FILES) $(LDFLAGS) $(CORE_LIB) -o $@
+#	${CXX} $(OBJ_FILES) $(LDFLAGS) $(CORE_LIB) -o $@
+	${CXX} $(OBJ_FILES) $(LDFLAGS) -L/usr/lib -lglui $(CORE_LIB) -o $@
 
 .cpp.o:
 	${CXX} $(CXXFLAGS) $(CORE_INC) -DCORE_LEVEL=$(LEV) -c $< -o $@

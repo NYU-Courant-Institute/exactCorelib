@@ -61,6 +61,7 @@
 #include "glui.h"
 #endif
 
+#include <GL/glui.h>
 
 double boxWidth = 512;          // Initial box width
 double boxHeight = 512;         // Initial box height

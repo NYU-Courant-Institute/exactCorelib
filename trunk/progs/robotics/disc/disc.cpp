@@ -46,6 +46,8 @@
 
 #include "QuadTree.h"
 #include "PriorityQueue.h"
+#include <cstdlib>
+#include <cstdio>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -62,6 +64,8 @@
 #ifdef __APPLE__
 #include "glui.h"
 #endif
+
+#include <GL/glui.h>
 
 #include <set>
 //#include "CoreIo.h"
