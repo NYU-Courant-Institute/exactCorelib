@@ -203,7 +203,7 @@ moretest: $(TARGETS)
 # 2-links-orig: $(OBJ_FILES) 2-links.o
 #	${CXX} $(OBJ_FILES) $(LDFLAGS) 2-links.cpp $(CORE_LIB) -o 2-links
 2-links: $(OBJ_FILES) 2-links.o
-	${CXX} $(OBJ_FILES) $(LDFLAGS) 2-links.cpp $(CORE_LIB) -o 2-links
+	${CXX} $(OBJ_FILES) $(LDFLAGS) 2-links.cpp $(CORE_INC) $(CORE_LIB) -o 2-links
 
 # Cmake version:
 # 2-links: build/2-links/2-links
