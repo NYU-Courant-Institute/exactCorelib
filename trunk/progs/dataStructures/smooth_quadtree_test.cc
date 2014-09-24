@@ -8,13 +8,15 @@
  */
 
 #include "smooth_quadtree.h"
+#include <assert.h>
 #include <iostream>
 
 using namespace std;
 
 struct Pair {
-  int x;
-  int y;
+  Pair (int x, int y) : x_(x), y_(y) {}
+  int x_;
+  int y_;
 };
 
 int main(int argc, char** argv) {
@@ -23,17 +25,42 @@ int main(int argc, char** argv) {
   cout << root->center()[0] << " " << root->center()[1] << "\n";
 
   root->smooth_split();
+  root->children()[0]->smooth_split();
+  SmoothQuadTreeBox<Pair>* cur_child = root->children()[1];
 
-  for (int i = 0; i < 4; i++) {
-    SmoothQuadTreeBox<Pair>* child = root->children()[i];
-    cout << "  " << child->center()[0] << " " << child->center()[1] << "\n";
-    child->smooth_split();
-    
-    for (int j = 0; j < 4; j++) {
-      SmoothQuadTreeBox<Pair>* grand_child = child->children()[j];
-      cout << "    " << grand_child->center()[0] << " " << grand_child->center()[1] << "\n";
-    }
+  Pair p1 (3, 4);
+  Pair p2 (4, 5);
+
+  root->set_data(&p1);
+  cur_child->set_data(&p2);
+  assert(!cur_child->is_split());
+  root->children()[0]->children()[3]->smooth_split();
+  root->children()[0]->children()[3]->children()[3]->smooth_split();
+  assert(cur_child->is_split());
+  assert(root->children()[3]->is_split());
+  cout << "Data: " << cur_child->data()->x_ << " " << cur_child->data()->y_ << "\n";
+
+  cout << "Dir 1 neighbors:\n";
+  shared_ptr<vector<SmoothQuadTreeBox<Pair>*>> neighbors = cur_child->leaf_neighbors_dir(1);
+  for (SmoothQuadTreeBox<Pair>* neighbor : *neighbors) {
+    cout << neighbor->center()[0] << " " << neighbor->center()[1] << "\n";
   }
+
+  cout << "Dir -1 neighbors:\n";
+  neighbors = cur_child->leaf_neighbors_dir(-1); 
+  for (SmoothQuadTreeBox<Pair>* neighbor : *neighbors) {
+    cout << neighbor->center()[0] << " " << neighbor->center()[1] << "\n";
+  }
+
+  cout << "Dir 2 neighbors:\n";
+  neighbors = cur_child->leaf_neighbors_dir(2);
+  for (SmoothQuadTreeBox<Pair>* neighbor : *neighbors) {
+    cout << neighbor->center()[0] << " " << neighbor->center()[1] << "\n";
+  }
+
+  assert(tree->splits() == 9);
+  cout << "# splits: " << tree->splits() << "\n";
+  cout << "# smooth splits: " << tree->smooth_splits() << "\n";
 
   delete tree;
   exit(0);
