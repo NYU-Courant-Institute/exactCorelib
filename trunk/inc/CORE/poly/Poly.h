@@ -1107,7 +1107,8 @@ IntervalT<T> evalSlopeForm(const IntervalT<T> & x) const {	// interval evaluatio
 
 	T fmid = (*this).coeff()[0] + xmid*tmp.coeff()[0];// val is (*this) evaluated at xmid
 	
-	IntervalT<T> val = IntervalT<T>(fmid)+(x-IntervalT<T>(xmid))*tmp.eval<IntervalT<T> >(x);
+	IntervalT<T> val =
+	    IntervalT<T>(fmid)+(x-IntervalT<T>(xmid))*tmp.template eval<IntervalT<T> >(x);
 	
 	return val;
 		
@@ -2021,7 +2022,7 @@ BigFloat2 height(const Polynomial<NT> &p) {
 template < class NT >
 BigFloat2 length(Polynomial<NT> &p) {
   if (zeroP(p))
-    return BigFloat(0);
+    return BigFloat2(0); //Sep'2014, Chee: fixed fatal error: "return BigFloat(0);" 
   int deg = p.getTrueDegree();
   NT length = 0;
   for (int i = 0; i< deg; i++)
