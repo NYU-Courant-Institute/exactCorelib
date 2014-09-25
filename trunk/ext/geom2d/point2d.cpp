@@ -284,7 +284,7 @@ std::istream& operator>>(std::istream& in, Point2d& p)
 
 // readPoints(iS, pA, MaxN, N) :
 //    reads a sequence of points from istream iS into Point2d array pA.
-int readPoints(std::istream & iS, Point2d *pA, int MaxN, int N){
+int readPoints(std::istream & iS, Point2d *pA, int MaxN=1000, int N=0){
   // DEFAULT VALUES: MaxN=1000, N=0
   // The input stream constains a sequence of 2K+1 numbers of the form
   //
