@@ -107,7 +107,7 @@ public:
   // 	1.0, -.2 
 
   friend int readPoints(std::istream &iS,
-		  Point2d *pA, int MaxN = 1000, int N = 0);
+		  Point2d *pA, int MaxN, int N);
   // reads a sequence of points from input stream iS into Point2d array pA.
   // The input stream constains a sequence of 2K+1 numbers of the form
   //     [NN]   ( x1 ,  y1 )  ( x2 , y2 )  ... ( xK , yK )
