@@ -101,6 +101,7 @@ class BfsFilter {
   // which seems to be correct (i.e., not |fpVal| > maxAbs * ind * 2^{-52})
   // Apr'07, Jihun : Above is wrong. The correct test is |fpVal| > maxAbs * ind * 2^{-52}
   //  This is because when value is very close to zero, fpVal = maxAbs = 0
+  //  Sep'14, Chee: finite(fpVal) is deprecated on MacOS!  use isfinite(fpVal)
   typedef BfsFilter thisClass;
   typedef typename Kernel::ZT ZT;
   typedef typename Kernel::QT QT;
@@ -108,7 +109,7 @@ class BfsFilter {
 private:
   void compute_cache () {
     double Val = maxAbs*ind*CORE_EPS;
-    _isok = finite(fpVal)&&(::fabs(fpVal)>Val);
+    _isok = isfinite(fpVal)&&(::fabs(fpVal)>Val);
     if (!_isok) return;
     _sign = (fpVal == 0.0) ? 0 : (fpVal > 0.0 ? 1: -1);
     _lMSB = (sign() == 0) ? MSB_MIN : long(ilogb(::fabs(fpVal) - Val));
