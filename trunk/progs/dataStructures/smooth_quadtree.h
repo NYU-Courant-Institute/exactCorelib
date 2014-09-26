@@ -202,7 +202,7 @@ class SmoothQuadTreeBox {
   double* center_;
   T* data_;
   SmoothQuadTreeBox<T>** children_;
-  SmoothQuadTreeBox<T>* neighbors_[];
+  SmoothQuadTreeBox<T>** neighbors_;
   SmoothQuadTree<T>* tree_;
 
   friend class SmoothQuadTree<T>;
