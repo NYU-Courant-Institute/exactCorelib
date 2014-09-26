@@ -20,7 +20,7 @@ struct Pair {
 };
 
 int main(int argc, char** argv) {
-  SmoothQuadTree<Pair>* tree = new SmoothQuadTree<Pair>(2);
+  SmoothQuadTree<Pair>* tree = new SmoothQuadTree<Pair>(2, 1.0);
   SmoothQuadTreeBox<Pair>* root = tree->root();
   cout << root->center()[0] << " " << root->center()[1] << "\n";
 

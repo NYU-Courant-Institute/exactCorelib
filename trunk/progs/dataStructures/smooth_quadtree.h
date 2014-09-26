@@ -10,7 +10,10 @@
  *  Scandinavian Symposium and Workshops on Algorithm Theory (SWAT) 2014.
  *
  *  Written by Huck Bennett, 9/21/2014
- *  TODO(Huck): Cleanup direction/child indicator bit logic.
+ *  TODO(Huck):
+ *  - Cleanup direction/child indicator bit logic.
+ *  - Replace raw pointers with smart pointers.
+ *  - Simplify and document the public API.
  */
 
 #ifndef SMOOTH_QUADTREE_H
@@ -79,11 +82,15 @@ class SmoothQuadTreeBox {
     return children_ != nullptr;
   }
 
-  shared_ptr<vector<SmoothQuadTreeBox<T>*>> leaf_neighbors_dir(int dir) {
-    shared_ptr<vector<SmoothQuadTreeBox<T>*>> neighbors (new vector<SmoothQuadTreeBox<T>*>());
+  SmoothQuadTreeBox<T>* principal_neighbor_dir(int dir) {
     int axis = fabs(dir);
     int sign = (dir < 0) ? 0 : 1;
-    SmoothQuadTreeBox<T>* cur_neighbor = neighbors_[(axis - 1) + sign * dimension()];
+    return neighbors_[(axis - 1) + sign * dimension()];
+  }
+
+  shared_ptr<vector<SmoothQuadTreeBox<T>*>> leaf_neighbors_dir(int dir) {
+    shared_ptr<vector<SmoothQuadTreeBox<T>*>> neighbors (new vector<SmoothQuadTreeBox<T>*>());
+    SmoothQuadTreeBox<T>* cur_neighbor = principal_neighbor_dir(dir);
 
     if (cur_neighbor == nullptr) {
       return neighbors;
@@ -91,7 +98,7 @@ class SmoothQuadTreeBox {
       neighbors->push_back(cur_neighbor);
       return neighbors;
     } else { // cur_neighbor is non-null and split.
-      return cur_neighbor->enumerate_halfspace_children(-dir);
+      return cur_neighbor->enumerate_halfspace_leaf_descendants(-dir);
     }
   }
 
@@ -104,7 +111,7 @@ class SmoothQuadTreeBox {
     return neighbors_;
   }
 
-  shared_ptr<vector<SmoothQuadTreeBox<T>*>> enumerate_halfspace_children(int dir) {
+  shared_ptr<vector<SmoothQuadTreeBox<T>*>> enumerate_halfspace_leaf_descendants(int dir) {
     assert(is_split());
 
     shared_ptr<vector<SmoothQuadTreeBox<T>*>> neighbors (new vector<SmoothQuadTreeBox<T>*>());
@@ -116,13 +123,12 @@ class SmoothQuadTreeBox {
     for (int i = 0; i < (1 << (dimension() - 1)); i++) {
       int ind = ((i & top_mask) << 1) | dir_bit | (i & bottom_mask);
       assert(ind >= 0 && ind < 1 << dimension());
-
       SmoothQuadTreeBox<T>* cur_child = children_[ind];
       if (!cur_child->is_split()) {
 	neighbors->push_back(cur_child);
       } else {
-	shared_ptr<vector<SmoothQuadTreeBox<T>*>> grandchildren = cur_child->enumerate_halfspace_children(dir);
-        neighbors->insert(neighbors->begin(), grandchildren->begin(), grandchildren->end()); 
+	shared_ptr<vector<SmoothQuadTreeBox<T>*>> descendants = cur_child->enumerate_halfspace_leaf_descendants(dir);
+        neighbors->insert(neighbors->begin(), descendants->begin(), descendants->end()); 
       }
     }
 
@@ -144,7 +150,7 @@ class SmoothQuadTreeBox {
       // Compute the center of the new child.
       center = new double[dimension()];
       for (int j = 0; j < dimension(); j++) {
-	center[j] = center_[j] + ((i & (1 << j)) == 0 ? -1 : 1) * pow(2, -(depth_ + 1));
+	center[j] = center_[j] + ((i & (1 << j)) == 0 ? -1 : 1) * pow(2, -(depth_ + 1) * tree_->width());
       }
       children_[i] = new SmoothQuadTreeBox<T>(depth_ + 1, i, center, tree_);
     }
@@ -196,7 +202,7 @@ class SmoothQuadTreeBox {
   double* center_;
   T* data_;
   SmoothQuadTreeBox<T>** children_;
-  SmoothQuadTreeBox<T>** neighbors_;
+  SmoothQuadTreeBox<T>* neighbors_[];
   SmoothQuadTree<T>* tree_;
 
   friend class SmoothQuadTree<T>;
@@ -205,14 +211,15 @@ class SmoothQuadTreeBox {
 template <typename T>
 class SmoothQuadTree {
  public:
-  SmoothQuadTree<T>(int dimension) : dimension_(dimension) {
-    assert(1 <= dimension && dimension <= 31); // 
-    double* root_center = new double[dimension];
-    for (int i = 0; i < dimension; i++) {
-      root_center[i] = 0.0;
-    }
-    root_ = new SmoothQuadTreeBox<T>(0 /* depth */, 0 /* indicator */, root_center, this);
+  SmoothQuadTree<T>(int dimension, double width) : dimension_(dimension), width_(width) {
+    assert(1 <= dimension && dimension <= 31);
 
+    double* center = new double[dimension];
+    for (int i = 0; i < dimension; i++) {
+      center[i] = 0.0;
+    }
+
+    root_ = new SmoothQuadTreeBox<T>(0 /* depth */, 0 /* indicator */, center, this);
     SmoothQuadTreeBox<T>** neighbors = root_->neighbors();
     for (int i = 0; i < 2 * dimension; i++) {
       neighbors[i] = nullptr;
@@ -247,9 +254,16 @@ class SmoothQuadTree {
     return num_smooth_splits_;
   }
 
+  double width() {
+    return width_;
+  }
+
  private:
   const int dimension_;
   SmoothQuadTreeBox<T>* root_;
+
+  // Box specification.
+  double width_;
 
   // Statistics
   int num_splits_ = 0;
