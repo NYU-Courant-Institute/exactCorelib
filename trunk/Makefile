@@ -189,6 +189,14 @@ eleventh moretime:
 #################################################################
 #	Check Options
 #################################################################
+help:
+	@echo "Try these targets:"
+	@echo "   help -- this message"
+	@echo "   opt -- currently selected options"
+	@echo "   allopt -- all the possible options"
+	@echo "   core -- same as choosing the 3 targets of corelib+corex+demo"
+	@echo "   testgmp -- to test if you have installed gmp"
+	@echo "   testmpfr -- to test if you have installed mpfr"
 
 opt options check:
 	@echo "YOUR CURRENT CORE ENVIRONMENT VARIABLES ARE: "
