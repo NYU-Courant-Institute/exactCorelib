@@ -256,8 +256,32 @@ void Box::distribute_features2box(Box * child)
     //double y=child->y;
     const Point2d& c_o=child->o;
 
+    double max_weight = 1.0;
+    double min_weight = 1.0;
+
+    // Determine the maximum and minimum weights of active features.
+    for (WIT iterW = walls.begin(); iterW != walls.end(); ++iterW) {
+      Wall* wall = *iterW;
+      if (wall->weight > max_weight) {
+	max_weight = wall->weight;
+      }
+      if (wall->weight < min_weight || min_weight == 1.0) {
+	min_weight = wall->weight;
+      }
+    }
+
+    for (CIT iterC = corners.begin(); iterC != corners.end(); ++iterC) {
+      Corner* corner = *iterC;
+      if (corner->weight > max_weight) {
+	max_weight = corner->weight;
+      }
+      if (corner->weight < min_weight || min_weight == 1.0) {
+	min_weight = corner->weight;
+      }
+    }
+
     //clearance+2*radius of the box
-    double cl2r=child->rB*2+child->cl_m; //clearance + 2*rB
+    double cl2r = child->cl_m + 2 * child->rB * (max_weight / min_weight); //clearance + 2 * rB * max(weight)/min(weight)
 
     //
     //compute the separation to walls

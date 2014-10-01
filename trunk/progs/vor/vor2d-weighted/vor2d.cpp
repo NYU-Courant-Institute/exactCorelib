@@ -871,6 +871,7 @@ void parseConfigFile(Box* b)
 	if (ptVec.size() > 1)
 	{
 	  Wall* w = new Wall(ptVec[ptVec.size()-1], ptVec[0]);
+	  w->weight = weight;
 	  b->addWall(w);
 	  break;
 	}
