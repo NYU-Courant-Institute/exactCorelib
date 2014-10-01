@@ -26,9 +26,9 @@
 
 #include <iostream>
 
-#include <CORE/BigFloat2.h>
 #include <cmath>
 #include <cfloat>
+#include <CORE/BigFloat2.h>
 
 #if defined (_MSC_VER) || defined (__MINGW32__) // add support for MinGW
   #define finite(x)	_finite(x)
@@ -64,6 +64,11 @@ public:
 };
 
 extern bool fpFilterFlag;
+
+// Chee: this is needed to avoid the isfinite() error below:
+extern bool isfinite (float x);
+extern bool isfinite (double x);
+extern bool isfinite (long double x);
 
 /// turn floating-point filter on/off
 inline bool setFpFilterFlag(bool f) {
@@ -101,7 +106,6 @@ class BfsFilter {
   // which seems to be correct (i.e., not |fpVal| > maxAbs * ind * 2^{-52})
   // Apr'07, Jihun : Above is wrong. The correct test is |fpVal| > maxAbs * ind * 2^{-52}
   //  This is because when value is very close to zero, fpVal = maxAbs = 0
-  //  Sep'14, Chee: finite(fpVal) is deprecated on MacOS!  use isfinite(fpVal)
   typedef BfsFilter thisClass;
   typedef typename Kernel::ZT ZT;
   typedef typename Kernel::QT QT;
@@ -109,6 +113,12 @@ class BfsFilter {
 private:
   void compute_cache () {
     double Val = maxAbs*ind*CORE_EPS;
+  //  Sep'14, Chee: finite(fpVal) is deprecated on MacOS!  so must use isfinite(fpVal)
+  //  Furthermore, there is a error of this nature:
+  //	"there are no arguments to 'isfinite' that depend on a template parameter"
+  //	See:
+  //http://stackoverflow.com/questions/9941987/there-are-no-arguments-that-depend-on-a-template-parameter
+  //  Solution is to declare the "extern bool isfinite()" above.
     _isok = isfinite(fpVal)&&(::fabs(fpVal)>Val);
     if (!_isok) return;
     _sign = (fpVal == 0.0) ? 0 : (fpVal > 0.0 ? 1: -1);
