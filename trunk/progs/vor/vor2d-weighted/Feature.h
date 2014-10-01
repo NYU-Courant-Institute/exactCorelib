@@ -37,41 +37,43 @@ class Feature
 {
 public:
 
-    static int LEVEL;
+  static int LEVEL;
 
-    static int corelevel()
-    {
+  static int corelevel()
+  {
 
 #if CORE_LEVEL==1
-        LEVEL=1;
+    LEVEL=1;
 #elif CORE_LEVEL==2
-        LEVEL=2;
+    LEVEL=2;
 #elif CORE_LEVEL==3
-        LEVEL=3;
+    LEVEL=3;
 #else
-        LEVEL=4;
+    LEVEL=4;
 #endif
-        return LEVEL;
-    }
+    return LEVEL;
+  }
 
-    Feature() { pSet=NULL; }
-    virtual ~Feature(){}
+  double weight;
 
-    void static showLevel()
-    {
-        std::cout << "Core Level = " << LEVEL << std::endl;
-    }
+  Feature() { pSet=NULL; }
+  virtual ~Feature(){}
 
-    //
-    virtual double distance(const Point2d& p)=0;
+  void static showLevel()
+  {
+    std::cout << "Core Level = " << LEVEL << std::endl;
+  }
 
-    //
-    virtual bool inZone(const Point2d& p)=0;
-    virtual bool inZone_star(const Point2d& p)=0;
+  //
+  virtual double distance(const Point2d& p)=0;
 
-    //
-    virtual bool inZone(Box * b)=0;
-    virtual bool inZone_star(Box * b)=0;
+  //
+  virtual bool inZone(const Point2d& p)=0;
+  virtual bool inZone_star(const Point2d& p)=0;
+
+  //
+  virtual bool inZone(Box * b)=0;
+  virtual bool inZone_star(Box * b)=0;
 
 	Set* pSet;   //?
 };

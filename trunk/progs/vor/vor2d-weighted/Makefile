@@ -282,6 +282,17 @@ eg:	$(VOR2D)
 		$(c1) $(c2) $(maxEps) \
 		&
 
+# A first weighted Voronoi diagram example.
+egw0:	$(VOR2D)
+	$(VOR2D) $(interactive) \
+		1 $(pseudo) $(interior) weighted-input0.txt \
+		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
+		$(inputDir) \
+		$(xtrans) $(ytrans) $(scale) $(closePoly) \
+		$(c1) $(c2) $(maxEps) \
+		&
+
+
 # Eg0: Simple NO PATH example (an triangular annulus region)
 nopath eg0:	$(VOR2D)
 	$(VOR2D) $(interactive) \

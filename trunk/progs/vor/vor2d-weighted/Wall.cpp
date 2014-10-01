@@ -34,7 +34,7 @@ double Wall::distance(const Point2d& p)
 	u = u > 1 ? 1 : u;
 	double x0 = u*x2 + (1-u)*x1;
 	double y0 = u*y2 + (1-u)*y1;
-	return sqrt( sqr(p[0]-x0) + sqr(p[1]-y0) );
+	return sqrt( sqr(p[0]-x0) + sqr(p[1]-y0) ) / weight;
 }
 
 double Wall::distance_star(const Point2d& p)
@@ -51,7 +51,7 @@ double Wall::distance_star(const Point2d& p)
     double x0 = u*x2 + (1-u)*x1;
     double y0 = u*y2 + (1-u)*y1;
 
-    return sqrt( sqr(p[0]-x0) + sqr(p[1]-y0) );
+    return sqrt( sqr(p[0]-x0) + sqr(p[1]-y0) ) / weight;
 }
 
 short Wall::distance_sign(const Point2d& p)

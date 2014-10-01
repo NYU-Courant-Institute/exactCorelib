@@ -1,6 +1,7 @@
+
 /* **************************************
    File: vor2d.cpp
-   $Id: vor2d.cpp 2414 2013-10-07 16:36:11Z jmlien $
+   $Id: vor2d.cpp 3472 2014-09-23 01:27:40Z bennett $
 
    Description: 
 	This is the entry point for our Subdivision Algorithm for
@@ -60,8 +61,9 @@
 #ifdef __APPLE__
 #include "glui.h"
 #endif
-
+#ifdef __linux__
 #include <GL/glui.h>
+#endif
 
 double boxWidth = 512;          // Initial box width
 double boxHeight = 512;         // Initial box height
@@ -790,84 +792,92 @@ int skip_backslash_new_line (std::istream & in) {
 
 void parseConfigFile(Box* b)
 {	
-	std::stringstream ss;
-	ss << inputDir << "/" << fileName;	// create full file name 
-	std::string s = ss.str();
-	cout << "\n- Input file name = " << s << endl;
+  std::stringstream ss;
+  ss << inputDir << "/" << fileName;	// create full file name 
+  std::string s = ss.str();
+  cout << "\n- Input file name = " << s << endl;
 
-	fileProcessor(s);	// this will clean the input and put in
-				// output-tmp.txt
+  fileProcessor(s);	// this will clean the input and put in
+  // output-tmp.txt
 	
-	ifstream ifs( "output-tmp.txt" );
-	if (!ifs)
+  ifstream ifs( "output-tmp.txt" );
+  if (!ifs)
+  {
+    cerr<< "cannot open input file" << endl;
+    exit(1);
+  }
+
+  // First, get to the beginning of the first token:
+  skip_comment_line ( ifs );
+
+  int nPt, nPolygons;	// previously, nPolygons was misnamed as nFeatures
+  ifs >> nPt;
+  cout<< "- nPt=" << nPt << endl;
+
+  //skip_comment_line ( ifs );	// again, clear white space
+  vector<double> pts(nPt*2);
+  for (int i = 0; i < nPt; ++i)
+  {
+    ifs >> pts[i*2] >> pts[i*2+1];;
+  }
+
+  //skip_comment_line ( ifs );	// again, clear white space
+  ifs >> nPolygons;
+  //skip_comment_line ( ifs );	// again, clear white space
+
+  cout<< "- nPolygons=" << nPolygons << endl;
+
+  string temp;
+  std::getline(ifs, temp);
+  for (int i = 0; i < nPolygons; ++i)
+  {
+    double weight;
+    string s;
+    std::getline(ifs, s);
+
+    if (s[0] == 'w') {
+      weight = (double) atoi(s.substr(2).c_str()); // TODO: change to CORE::Todouble ?
+      std::getline(ifs, s);
+    } else {
+      weight = 1.0;
+    }
+
+    stringstream ss(s);
+    vector<Corner*> ptVec;
+    set<int> ptSet;
+    while (ss)
+    {
+      int pt;
+      ss >> pt;
+      pt -= 1; //1 based array
+      if (ptSet.find(pt) == ptSet.end())
+      {
+	Point2d pos(pts[pt*2]*uscale+deltaX, pts[pt*2+1]*uscale+deltaY);
+	Corner* corner = new Corner(pos);
+	corner->weight = weight;
+	ptVec.push_back(corner);
+	b->addCorner(ptVec.back());
+	ptSet.insert(pt);
+	if (ptVec.size() > 1)
 	{
-		cerr<< "cannot open input file" << endl;
-		exit(1);
-	}
-
-	// First, get to the beginning of the first token:
-	skip_comment_line ( ifs );
-
-	int nPt, nPolygons;	// previously, nPolygons was misnamed as nFeatures
-	ifs >> nPt;
-	cout<< "- nPt=" << nPt << endl;
-
-	//skip_comment_line ( ifs );	// again, clear white space
-	vector<double> pts(nPt*2);
-	for (int i = 0; i < nPt; ++i)
+	  Wall* wall = new Wall(ptVec[ptVec.size()-2], ptVec[ptVec.size()-1]);
+	  wall->weight = weight;
+	  b->addWall(wall);
+	}				
+      }
+      //new pt already appeared, a loop is formed. should only happen on first and last pt
+      else if(closing_poly)
+      {
+	if (ptVec.size() > 1)
 	{
-		ifs >> pts[i*2] >> pts[i*2+1];;
+	  Wall* w = new Wall(ptVec[ptVec.size()-1], ptVec[0]);
+	  b->addWall(w);
+	  break;
 	}
-
-	//skip_comment_line ( ifs );	// again, clear white space
-	ifs >> nPolygons;
-	//skip_comment_line ( ifs );	// again, clear white space
-
-	cout<< "- nPolygons=" << nPolygons << endl;
-
-	string temp;
-	std::getline(ifs, temp);
-	for (int i = 0; i < nPolygons; ++i)
-	{
-		string s;
-		std::getline(ifs, s);
-		stringstream ss(s);
-		vector<Corner*> ptVec;
-		set<int> ptSet;
-		while (ss)
-		{
-			int pt;
-			ss >> pt;
-			pt -= 1; //1 based array
-			if (ptSet.find(pt) == ptSet.end())
-			{
-			    Point2d pos(pts[pt*2]*uscale+deltaX, pts[pt*2+1]*uscale+deltaY);
-				ptVec.push_back(new Corner(pos));
-				b->addCorner(ptVec.back());
-				ptSet.insert(pt);
-				if (ptVec.size() > 1)
-				{
-					Wall* w = new Wall(ptVec[ptVec.size()-2], ptVec[ptVec.size()-1]);
-					b->addWall(w);
-				}				
-			}
-			//new pt already appeared, a loop is formed. should only happen on first and last pt
-			else
-			{
-			    if(closing_poly)
-			    {
-                    if (ptVec.size() > 1)
-                    {
-                        Wall* w = new Wall(ptVec[ptVec.size()-1], ptVec[0]);
-                        b->addWall(w);
-                        break;
-                    }
-			    }//end closing_poly
-			}
-		}
-	}
-	ifs.close();
-
+      }//end closing_poly
+    }
+  }
+  ifs.close();
 }
 
 // gather information and show it on the GUI diagram

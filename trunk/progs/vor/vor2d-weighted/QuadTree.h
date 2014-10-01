@@ -1,7 +1,7 @@
 /* **************************************
 
    File: QuadTree.h
-   $Id: QuadTree.h 1317 2012-09-03 21:06:19Z jmlien $
+   $Id$
 
    Description: 
 

@@ -10,7 +10,7 @@
 //   ON: the VOR is cross the border
 //   TRICKY: tricky case (see def below)
 //
-// $Id: Box.h 1351 2012-09-10 21:58:28Z jmlien $
+// $Id$
 //
 
 #pragma once

@@ -24,7 +24,7 @@ public:
 
 	virtual double distance(const Point2d& p)
 	{
-		return (p-this->pos).norm();
+	  return (p - this->pos).norm() / weight;
 	}
 
 	virtual bool inZone(Box * box);

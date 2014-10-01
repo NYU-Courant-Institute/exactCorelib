@@ -131,59 +131,59 @@ void Box::updateStatus()
     int sfc=separable_features_count();
     bool separable=(sfc>1);
     if(total_feature_size<=6)
-        total_feature_size=sfc;
+      total_feature_size=sfc;
 
     //C_0
     if(total_feature_size>3){
-        status = IN; //need more split
-        return;
+      status = IN; //need more split
+      return;
     }
 
     if(total_feature_size<=1){
-        status = OUT;
-        return;
+      status = OUT;
+      return;
     }
 
     //C_1
     if(c1){ //new definition
-        if(cl_m<rB)
-        {
-            //then the feature is either inseparable
-            if( separable==false ){
-                status = OUT;
-            }
-            else //or has segments that may split the cell
-            {
-                //we only need to look at walls
-                if(corners.empty() && walls.size()==2)
-                {
-                    //overlapping wall
-                    if(walls.front()->src==walls.back()->dst && walls.front()->dst==walls.back()->src)
-                        status = OUT;
-                    else
-                    {
-                        //check if walls are facing the opposing directions
-                        Wall * w1=walls.front();
-                        Wall * w2=walls.back();
+      if(cl_m<rB)
+      {
+	//then the feature is either inseparable
+	if( separable==false ){
+	  status = OUT;
+	}
+	else //or has segments that may split the cell
+	{
+	  //we only need to look at walls
+	  if(corners.empty() && walls.size()==2)
+	  {
+	    //overlapping wall
+	    if(walls.front()->src==walls.back()->dst && walls.front()->dst==walls.back()->src)
+	      status = OUT;
+	    else
+	    {
+	      //check if walls are facing the opposing directions
+	      Wall * w1=walls.front();
+	      Wall * w2=walls.back();
 
-                        //check if the lines are opposing...
-                        bool r1=w1->isRight(w2->src->pos);
-                        bool r2=w1->isRight(w2->dst->pos);
-                        bool r3=w2->isRight(w1->src->pos);
-                        bool r4=w2->isRight(w1->dst->pos);
+	      //check if the lines are opposing...
+	      bool r1=w1->isRight(w2->src->pos);
+	      bool r2=w1->isRight(w2->dst->pos);
+	      bool r3=w2->isRight(w1->src->pos);
+	      bool r4=w2->isRight(w1->dst->pos);
 
-                        if(!r1 && !r2 && !r3 && !r4){ //opposing
-                            status = OUT;
-                        }
-                        else //facing each other
-                            status = ON;
-                    }
-                }
-                else
-                    status = IN; //need more split
-            }
-            return;
-        }
+	      if(!r1 && !r2 && !r3 && !r4){ //opposing
+		status = OUT;
+	      }
+	      else //facing each other
+		status = ON;
+	    }
+	  }
+	  else
+	    status = IN; //need more split
+	}
+	return;
+      }
     }
     else {//old definition
         if( (cl_m<rB) && separable ){
@@ -335,7 +335,6 @@ void Box::determine_clearance(BoxNode& node)
     for (list<Wall*>::iterator iterW = walls.begin(); iterW != walls.end(); ++iterW)
     {
         Wall* w = *iterW;
-
         double dist = w->distance(np);
 
         if( fabs(dist-mindistW)<1e-10 )
