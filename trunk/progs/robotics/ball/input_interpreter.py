@@ -1,18 +1,27 @@
 import sys
 
+
+def readNextSetOfLines(lines):
+    """Given a set of lines beginning with a number n, return a pair with n and the list of the next n lines, and remove the content of the tuple from the input"""
+    n = int(lines[0])
+    nLines = lines[1 : n + 1]
+    lines[:n + 1] = []
+    return (n, nLines)
+
+class Triple(tuple):
+    def __new__(cls, *args):
+        return tuple.__new__(cls, args)
+    def __add__(self, other):
+        return Triple(*([sum(x) for x in zip(self, other)]))
+    def __sub__(self, other):
+        return self.__add__(-i for i in other)
+
 input = open('output-tmp.txt', 'r')
 output = open('output-tmp-py.txt', 'w')
 lines = [x.strip(' \t\n\r') for x in input.readlines()]
-numPoints = int(lines[0])
-pointsLines = lines[1 : numPoints + 1]
-numFaces = int(lines[numPoints + 1])
-facesLines = lines[numPoints + 2 : numPoints + numFaces + 2]
-if len(lines) <> numPoints + numFaces + 3 or int(lines[-1]) <> 0:
-    print "Wrong input format"
-    sys.exit(-1)
+(numPoints, pointsLines) = readNextSetOfLines(lines)
+(numFaces, facesLines) = readNextSetOfLines(lines)
 
-def addTriples(a, b):
-    return (int(a[0]) + int(b[0]), int(a[1]) + int(b[1]), int(a[2]) + int(b[2]))
 
 points2Indices = {}
 points = []
@@ -22,12 +31,12 @@ for i in range(numPoints):
         points2Indices[point[0][1:-1]] = i + 1
         point = point[1:]
     it = iter(list(range(len(point))))
-    p = (0, 0, 0)
+    p = Triple(0, 0, 0)
     for j in it:
         if point[j].isdigit():
-            p = addTriples(p, (int(point[j]), int(point[next(it)]), int(point[next(it)])))
+            p = p + Triple(int(point[j]), int(point[next(it)]), int(point[next(it)]))
         else:
-            p = addTriples(p, points[points2Indices[point[j]] - 1])
+            p = p + points[points2Indices[point[j]] - 1]
     points.append(p)
 
 faces = []
@@ -43,14 +52,14 @@ for i in range(numFaces):
         face = face[:-3]
         for j in range(len(face)):
             basePoint = points[int(face[j]) - 1]
-            newPoint = addTriples(p, basePoint)
+            newPoint = p + basePoint
             points.append(newPoint)
             face[j] = str(len(points))
     if faceType == 1:
         # f = str(faceType) + " " + " ".join(face) + "\n"
         faces.append("0 " + " ".join([str(x) for x in face]) + "\n")
         base = points[int(face[0]) - 1]
-        p = addTriples(addTriples(points[int(face[1]) - 1], points[int(face[2]) - 1]), (-base[0], -base[1], -base[2]))
+        p = points[int(face[1]) - 1] + points[int(face[2]) - 1] + Triple(-base[0], -base[1], -base[2])
         points.append(p)
         faces.append("0 " + str(face[1]) + " " + str(len(points)) + " " + str(face[2]) + "\n")
     elif faceType == 2 or faceType == 3:
