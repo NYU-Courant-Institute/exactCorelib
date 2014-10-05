@@ -41,10 +41,10 @@ for i in range(numPoints):
             p = p + points[points2Indices[point[j]] - 1]
     points.append(p)
 
+faces = []
 for j in range(len(listFaces)):
     numFaces = listFaces[j][0]
     facesLines = listFaces[j][1]
-    faces = []
     for i in range(numFaces):
         face = facesLines[i].split()
         faceType = int(face[0])
