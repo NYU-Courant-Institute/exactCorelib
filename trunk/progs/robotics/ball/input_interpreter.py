@@ -40,6 +40,15 @@ def string2Triple(s, points2Indices, points):
     else:
         raise Exception()
 
+def reduceListOps(operands, operators):
+    for j in zip(operands, operators):
+    temp = string2Triple(j[0], points2Indices, points)
+    if j[1] == '+':
+        p += temp
+    elif j[1] == '-':
+        p -= temp
+    return p
+
 input = open('output-tmp.txt', 'r')
 output = open('output-tmp-py.txt', 'w')
 lines = [x.strip(' \t\n\r') for x in input.readlines()]
@@ -61,12 +70,7 @@ for i in range(numPoints):
     (base, baseOperator, operands, operators) = splitLineByOperator(line)
     operators = baseOperator + operators
     p = string2Triple(base, points2Indices, points)
-    for j in zip(operands, operators):
-        temp = string2Triple(j[0], points2Indices, points)
-        if j[1] == '+':
-            p += temp
-        elif j[1] == '-':
-            p -= temp
+    p += reduceListOps(operands, operators)
     points.append(p)
 
 faces = []
