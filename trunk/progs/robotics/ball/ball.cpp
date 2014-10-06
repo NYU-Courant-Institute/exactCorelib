@@ -38,7 +38,6 @@ bool findPath(Box* a, Box* b, Octree* OT, int& ct) {
   toReset.push_back(a);
   while (!dijQ.empty()) {
     Box* current = dijQ.extract();
-    cout << current << endl;
     current->visited = true;
 
     // if current is MIXED, try expand it and push the children that is
