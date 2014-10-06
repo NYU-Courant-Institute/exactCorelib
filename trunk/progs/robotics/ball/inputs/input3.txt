@@ -1,4 +1,4 @@
-
+# Basic Format:
 # Three tetrahedron obstacles
 
 # four points
@@ -19,21 +19,21 @@
 300 500 300
 
 # Polytope 1
-4
+Poly
 0 3 2 1
 0 3 4 2
 0 2 4 1
 0 1 4 3
 
 # Polytope 2
-4
+Poly
 0 7 6 5 
 0 7 8 6 
 0 6 8 5 
 0 5 8 7 
 
 # Polytope 3
-4
+Poly
 0 11 10 9
 0 11 12 10
 0 10 12 9

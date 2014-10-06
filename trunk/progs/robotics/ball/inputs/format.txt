@@ -3,7 +3,7 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # GEOMETRY:
 # 	For now, all faces are assumed triangular.
-# 	But we should be able to general the faces to convex polygons.
+# 	But we should be able to generalize the faces to convex polygons.
 #
 # 	A polyhedron is a set of faces with disjoint interiors
 # 	such that every edge is shared by exactly two faces.
