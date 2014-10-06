@@ -1,4 +1,5 @@
 import sys
+import re
 
 def readNextSetOfLines(lines):
     """Given a set of lines beginning with a number n, return a pair with n and the list of the next n lines, and remove the content of the tuple from the input"""
@@ -17,6 +18,28 @@ class Triple(tuple):
     def __sub__(self, other):
         return self.__add__(-i for i in other)
 
+def splitLineByOperator(line):
+    operands = [x.strip() for x in re.split('\+|-', line)]
+    operators = [x.strip() for x in re.findall('\+|-', line)]
+    base = operands[0]
+    baseOperator = operators[:1]
+    operands = operands[1:]
+    operators = operators[1:]
+    return (base, baseOperator, operands, operators)
+
+def string2Triple(s, points2Indices, points):
+    """ Input a string that is either a variable name, or x, y, z values, return
+    the Triple for the point"""
+    s = s.split()
+    if len(s) == 1:
+        # name
+        return points[points2Indices[s[0]] - 1]
+    elif len(s) == 3:
+        # coordinates
+        return Triple(*map(int, s))
+    else:
+        raise Exception()
+
 input = open('output-tmp.txt', 'r')
 output = open('output-tmp-py.txt', 'w')
 lines = [x.strip(' \t\n\r') for x in input.readlines()]
@@ -28,17 +51,22 @@ while int(lines[0]) != 0:
 points2Indices = {}
 points = []
 for i in range(numPoints):
-    point = pointsLines[i].split()
-    if point[0][0] == "\"":
-        points2Indices[point[0][1:-1]] = i + 1
-        point = point[1:]
-    it = iter(list(range(len(point))))
-    p = Triple(0, 0, 0)
-    for j in it:
-        if point[j].isdigit():
-            p = p + Triple(int(point[j]), int(point[next(it)]), int(point[next(it)]))
-        else:
-            p = p + points[points2Indices[point[j]] - 1]
+    line = pointsLines[i]
+    if line[0] == '"':
+        line = line[1:]
+        lst = line.split('"')
+        name = lst[0]
+        points2Indices[name] = i + 1
+        line = lst[1]
+    (base, baseOperator, operands, operators) = splitLineByOperator(line)
+    operators = baseOperator + operators
+    p = string2Triple(base, points2Indices, points)
+    for j in zip(operands, operators):
+        temp = string2Triple(j[0], points2Indices, points)
+        if j[1] == '+':
+            p += temp
+        elif j[1] == '-':
+            p -= temp
     points.append(p)
 
 faces = []
