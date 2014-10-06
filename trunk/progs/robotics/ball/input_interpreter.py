@@ -22,10 +22,8 @@ def splitLineByOperator(line):
     operands = [x.strip() for x in re.split('\+|-', line)]
     operators = [x.strip() for x in re.findall('\+|-', line)]
     base = operands[0]
-    baseOperator = operators[:1]
     operands = operands[1:]
-    operators = operators[1:]
-    return (base, baseOperator, operands, operators)
+    return (base, operands, operators)
 
 def string2Triple(s, points2Indices, points):
     """ Input a string that is either a variable name, or x, y, z values, return
@@ -33,7 +31,10 @@ def string2Triple(s, points2Indices, points):
     s = s.split()
     if len(s) == 1:
         # name
-        return points[points2Indices[s[0]] - 1]
+        if s[0].isdigit():
+            return points[int(s[0]) - 1]
+        else:
+            return points[points2Indices[s[0]] - 1]
     elif len(s) == 3:
         # coordinates
         return Triple(*map(int, s))
@@ -68,8 +69,7 @@ for i in range(numPoints):
         name = lst[0]
         points2Indices[name] = i + 1
         line = lst[1]
-    (base, baseOperator, operands, operators) = splitLineByOperator(line)
-    operators = baseOperator + operators
+    (base, operands, operators) = splitLineByOperator(line)
     p = string2Triple(base, points2Indices, points)
     p += reduceListOps(operands, operators)
     points.append(p)
@@ -82,35 +82,37 @@ for j in range(len(listFaces)):
         face = facesLines[i].split()
         faceType = int(face[0])
         face = face[1:]
-        for j in range(len(face)):
-            if not face[j].isdigit():
-                face[j] = str(points2Indices[face[j]])
-        if ((faceType == 0 or faceType == 1) and len(face) == 6) or faceType == 3:
-            p = Triple(*face[-3:])
-            face = face[:-3]
+        line = ' '.join(face)
+        if re.search('\+|-', line):
+            (base, operands, operators) = splitLineByOperator(line)
+            p = reduceListOps(operands, operators)
+            face = base.split()
+            # use real indices
+            for j in range(len(face)):
+                if not face[j].isdigit():
+                    face[j] = str(points2Indices[face[j]])
             for j in range(len(face)):
                 basePoint = points[int(face[j]) - 1]
                 newPoint = p + basePoint
                 points.append(newPoint)
                 face[j] = str(len(points))
         if faceType == 1:
-            # f = str(faceType) + " " + " ".join(face) + "\n"
-            faces.append("0 " + " ".join([str(x) for x in face]) + "\n")
+            faces.append('0 ' + ' '.join([str(x) for x in face]) + "\n")
             base = points[int(face[0]) - 1]
             p = points[int(face[1]) - 1] + points[int(face[2]) - 1] + Triple(-base[0], -base[1], -base[2])
             points.append(p)
-            faces.append("0 " + str(face[1]) + " " + str(len(points)) + " " + str(face[2]) + "\n")
+            faces.append('0 ' + str(face[1]) + ' ' + str(len(points)) + ' ' + str(face[2]) + "\n")
         elif faceType == 2 or faceType == 3:
             base = face[0]
             face = face[1:]
             for j in range(len(face) - 1):
-                faces.append("0 " + str(base) + " " + str(face[j]) + " " + str(face[j + 1]) + "\n")
+                faces.append('0 ' + str(base) + ' ' + str(face[j]) + ' ' + str(face[j + 1]) + "\n")
         else:
-            faces.append(str(faceType) + " " + " ".join(face) + "\n")
+            faces.append(str(faceType) + ' ' + ' '.join(face) + "\n")
 
 output.write(str(len(points)) + "\n")
-output.write("\n".join([" ".join([str(j) for j in i]) for i in points]) + "\n")
+output.write("\n".join([' '.join([str(j) for j in i]) for i in points]) + "\n")
 output.write(str(len(faces)) + "\n")
-output.write("".join(faces))
+output.write(''.join(faces))
 output.write("0\n")
 output.flush()
