@@ -41,12 +41,13 @@ def string2Triple(s, points2Indices, points):
         raise Exception()
 
 def reduceListOps(operands, operators):
+    p = Triple(0, 0, 0)
     for j in zip(operands, operators):
-    temp = string2Triple(j[0], points2Indices, points)
-    if j[1] == '+':
-        p += temp
-    elif j[1] == '-':
-        p -= temp
+        temp = string2Triple(j[0], points2Indices, points)
+        if j[1] == '+':
+            p += temp
+        elif j[1] == '-':
+            p -= temp
     return p
 
 input = open('output-tmp.txt', 'r')
@@ -85,7 +86,7 @@ for j in range(len(listFaces)):
             if not face[j].isdigit():
                 face[j] = str(points2Indices[face[j]])
         if ((faceType == 0 or faceType == 1) and len(face) == 6) or faceType == 3:
-            p = (face[-3], face[-2], face[-1])
+            p = Triple(*face[-3:])
             face = face[:-3]
             for j in range(len(face)):
                 basePoint = points[int(face[j]) - 1]
