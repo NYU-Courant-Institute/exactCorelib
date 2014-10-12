@@ -7,7 +7,7 @@
 #include <gl/glui.h>
 #endif
 #ifdef __APPLE__
-#include "glui.h"
+#include <GLUI/glui.h>
 #endif
 #ifdef __linux__
 #include <GL/glui.h>

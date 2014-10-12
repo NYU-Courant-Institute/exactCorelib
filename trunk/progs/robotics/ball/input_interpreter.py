@@ -3,9 +3,16 @@ import re
 
 def readNextSetOfLines(lines):
     """Given a set of lines beginning with a number n, return a pair with n and the list of the next n lines, and remove the content of the tuple from the input"""
-    n = int(lines[0])
-    nLines = lines[1 : n + 1]
+    nLines = []
+    n = 0
+    if lines[0].strip() != "End":
+        i = 1
+        while not lines[i].startswith("Poly") and not lines[i].startswith("Points") and not lines[i].startswith ("End"):
+            nLines.append(lines[i])
+            n += 1
+            i += 1
     lines[:n + 1] = []
+    print n
     return (n, nLines)
 
 class Triple(tuple):
@@ -56,7 +63,7 @@ output = open('output-tmp-py.txt', 'w')
 lines = [x.strip(' \t\n\r') for x in input.readlines()]
 (numPoints, pointsLines) = readNextSetOfLines(lines)
 listFaces = []
-while int(lines[0]) != 0:
+while lines[0] != "End":
     listFaces.append(readNextSetOfLines(lines))
 
 points2Indices = {}
@@ -91,11 +98,16 @@ for j in range(len(listFaces)):
             for j in range(len(face)):
                 if not face[j].isdigit():
                     face[j] = str(points2Indices[face[j]])
+            print face
             for j in range(len(face)):
                 basePoint = points[int(face[j]) - 1]
                 newPoint = p + basePoint
                 points.append(newPoint)
                 face[j] = str(len(points))
+        else:
+            for j in range(len(face)):
+                if not face[j].isdigit():
+                    face[j] = str(points2Indices[face[j]])
         if faceType == 1:
             faces.append('0 ' + ' '.join([str(x) for x in face]) + "\n")
             base = points[int(face[0]) - 1]
