@@ -1,19 +1,20 @@
 import sys
 import re
+import os
+
+OPERATOR_REGEX = '\+|-'
 
 def readNextSetOfLines(lines):
-    """Given a set of lines beginning with a number n, return a pair with n and the list of the next n lines, and remove the content of the tuple from the input"""
+    """Given a set of lines beginning with the input type, return a pair with n and the list of the next n lines, and remove the content of the tuple from the input"""
     nLines = []
-    n = 0
-    if lines[0].strip() != "End":
-        i = 1
-        while not lines[i].startswith("Poly") and not lines[i].startswith("Points") and not lines[i].startswith ("End"):
-            nLines.append(lines[i])
-            n += 1
-            i += 1
-    lines[:n + 1] = []
-    print n
-    return (n, nLines)
+    if lines[0].strip() == "End":
+        return (0, [])
+    i = 1
+    while lines[i][0] == '"' or lines[i][0].isdigit():
+        nLines.append(lines[i])
+        i += 1
+    lines[:len(nLines) + 1] = []
+    return (len(nLines), nLines)
 
 class Triple(tuple):
     """Triple class"""
@@ -25,9 +26,13 @@ class Triple(tuple):
     def __sub__(self, other):
         return self.__add__(-i for i in other)
 
-def splitLineByOperator(line):
-    operands = [x.strip() for x in re.split('\+|-', line)]
-    operators = [x.strip() for x in re.findall('\+|-', line)]
+def splitLineByOperator(string):
+    """Given a string, returns a 3-tuple (base, operands, operators):
+    base: the first operand. This could be a special operand (e.g., a polygon)
+    operands: the other operands (all points)
+    operators: the list of operators"""
+    operands = [x.strip() for x in re.split(OPERATOR_REGEX, string)]
+    operators = [x.strip() for x in re.findall(OPERATOR_REGEX, string)]
     base = operands[0]
     operands = operands[1:]
     return (base, operands, operators)
@@ -59,6 +64,7 @@ def reduceListOps(operands, operators):
     return p
 
 input = open('output-tmp.txt', 'r')
+os.remove('output-tmp-py.txt')
 output = open('output-tmp-py.txt', 'w')
 lines = [x.strip(' \t\n\r') for x in input.readlines()]
 (numPoints, pointsLines) = readNextSetOfLines(lines)
@@ -90,24 +96,19 @@ for j in range(len(listFaces)):
         faceType = int(face[0])
         face = face[1:]
         line = ' '.join(face)
-        if re.search('\+|-', line):
-            (base, operands, operators) = splitLineByOperator(line)
-            p = reduceListOps(operands, operators)
-            face = base.split()
-            # use real indices
-            for j in range(len(face)):
-                if not face[j].isdigit():
-                    face[j] = str(points2Indices[face[j]])
-            print face
+        (base, operands, operators) = splitLineByOperator(line)
+        p = reduceListOps(operands, operators)
+        face = base.split()
+        # use real indices
+        for j in range(len(face)):
+            if not face[j].isdigit():
+                face[j] = str(points2Indices[face[j]])
+        if p != Triple(0, 0, 0):
             for j in range(len(face)):
                 basePoint = points[int(face[j]) - 1]
                 newPoint = p + basePoint
                 points.append(newPoint)
                 face[j] = str(len(points))
-        else:
-            for j in range(len(face)):
-                if not face[j].isdigit():
-                    face[j] = str(points2Indices[face[j]])
         if faceType == 1:
             faces.append('0 ' + ' '.join([str(x) for x in face]) + "\n")
             base = points[int(face[0]) - 1]
