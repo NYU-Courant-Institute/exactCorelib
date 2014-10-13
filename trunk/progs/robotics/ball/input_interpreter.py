@@ -53,7 +53,7 @@ def string2Triple(s, points2Indices, points):
     else:
         raise Exception()
 
-def reduceListOps(operands, operators):
+def reduceListOps(operands, operators, points2Indices, points):
     p = Triple(0, 0, 0)
     for j in zip(operands, operators):
         temp = string2Triple(j[0], points2Indices, points)
@@ -67,25 +67,35 @@ input = open('output-tmp.txt', 'r')
 os.remove('output-tmp-py.txt')
 output = open('output-tmp-py.txt', 'w')
 lines = [x.strip(' \t\n\r') for x in input.readlines()]
-(numPoints, pointsLines) = readNextSetOfLines(lines)
 listFaces = []
+numPoints = 0
+pointsLines = []
 while lines[0] != "End":
-    listFaces.append(readNextSetOfLines(lines))
+    if lines[0] == "Points":
+        (n, pl) = readNextSetOfLines(lines)
+        numPoints += n
+        pointsLines += pl
+    else:
+        listFaces.append(readNextSetOfLines(lines))
 
-points2Indices = {}
-points = []
-for i in range(numPoints):
-    line = pointsLines[i]
-    if line[0] == '"':
-        line = line[1:]
-        lst = line.split('"')
-        name = lst[0]
-        points2Indices[name] = i + 1
-        line = lst[1]
-    (base, operands, operators) = splitLineByOperator(line)
-    p = string2Triple(base, points2Indices, points)
-    p += reduceListOps(operands, operators)
-    points.append(p)
+def parsePointsSection(pointsLines):
+    points2Indices = {}
+    points = []
+    for i in range(numPoints):
+        line = pointsLines[i]
+        if line[0] == '"':
+            line = line[1:]
+            lst = line.split('"')
+            name = lst[0]
+            points2Indices[name] = i + 1
+            line = lst[1]
+        (base, operands, operators) = splitLineByOperator(line)
+        p = string2Triple(base, points2Indices, points)
+        p += reduceListOps(operands, operators, points2Indices, points)
+        points.append(p)
+    return (points2Indices, points)
+
+(points2Indices, points) = parsePointsSection(pointsLines)
 
 faces = []
 for j in range(len(listFaces)):
@@ -97,7 +107,7 @@ for j in range(len(listFaces)):
         face = face[1:]
         line = ' '.join(face)
         (base, operands, operators) = splitLineByOperator(line)
-        p = reduceListOps(operands, operators)
+        p = reduceListOps(operands, operators, points2Indices, points)
         face = base.split()
         # use real indices
         for j in range(len(face)):
@@ -110,19 +120,36 @@ for j in range(len(listFaces)):
                 points.append(newPoint)
                 face[j] = str(len(points))
         if faceType == 1:
-            faces.append('0 ' + ' '.join([str(x) for x in face]) + "\n")
+            faces.append(face)
             base = points[int(face[0]) - 1]
             p = points[int(face[1]) - 1] + points[int(face[2]) - 1] + Triple(-base[0], -base[1], -base[2])
             points.append(p)
-            faces.append('0 ' + str(face[1]) + ' ' + str(len(points)) + ' ' + str(face[2]) + "\n")
+            faces.append([face[1], len(points), face[2]])
         elif faceType == 2 or faceType == 3:
             base = face[0]
             face = face[1:]
             for j in range(len(face) - 1):
-                faces.append('0 ' + str(base) + ' ' + str(face[j]) + ' ' + str(face[j + 1]) + "\n")
+                faces.append([base, face[j], face[j + 1]])
+        elif faceType == 4:
+            faces.append(face[:])
+            face.reverse()
+            faces.append(face[:])
+        elif faceType == 5:
+            # faces.append(face[:])
+            # face.reverse()
+            # faces.append(face[:])
+            # face.reverse()
+            base = points[int(face[0]) - 1]
+            p = points[int(face[1]) - 1] + points[int(face[2]) - 1] + Triple(-base[0], -base[1], -base[2])
+            points.append(p)
+            otherFace = [face[1], len(points), face[2]]
+            faces.append(otherFace[:])
+            otherFace.reverse()
+            faces.append(otherFace[:])
         else:
-            faces.append(str(faceType) + ' ' + ' '.join(face) + "\n")
+            faces.append(face)
 
+faces = ['0 ' + ' '.join([str(j) for j in i]) + "\n" for i in faces]
 output.write(str(len(points)) + "\n")
 output.write("\n".join([' '.join([str(j) for j in i]) for i in points]) + "\n")
 output.write(str(len(faces)) + "\n")
