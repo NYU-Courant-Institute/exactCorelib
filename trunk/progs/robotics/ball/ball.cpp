@@ -205,6 +205,9 @@ void run() {
     path = Graph::dijkstraShortestPath(boxA, boxB);
   } else if (QType == 2) {
     noPath = !findPath(boxA, boxB, OT, ct);
+    if (!noPath) {
+      cout << "Path found!" << endl;
+    }
     boxA->prev = NULL;
     path.clear();
     path.push_back(boxB);
