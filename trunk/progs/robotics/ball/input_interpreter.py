@@ -78,6 +78,7 @@ while lines[0] != "End":
     else:
         listFaces.append(readNextSetOfLines(lines))
 
+# Processing the explicitly defined input points:
 def parsePointsSection(pointsLines):
     points2Indices = {}
     points = []
@@ -95,6 +96,7 @@ def parsePointsSection(pointsLines):
         points.append(p)
     return (points2Indices, points)
 
+# Processing the explicitly defined input points:
 (points2Indices, points) = parsePointsSection(pointsLines)
 
 faces = []
