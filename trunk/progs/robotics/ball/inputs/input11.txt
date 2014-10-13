@@ -32,8 +32,6 @@ Points
 120 40 160	# C'
 120 120 60	# D'.  Vertex 8
 "X" 60 0 0
-"Y" 0 210 0
-"Z" 0 0 180
 
 # six quadrilaterals
 Poly "Box"
@@ -53,6 +51,4 @@ Poly "Box'"
 1 5 8 7
 1 5 6 8
 
-# Thick
-# 4 X Y Z + 80 0 0
 End

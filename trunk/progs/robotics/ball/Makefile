@@ -291,6 +291,16 @@ eg3b:	ball
                 $(transparency) $(frameRate) \
 		&
 
+eg3c:	ball
+	@echo "Target 'eg3c':  runs ball with default Makefile options for file input12.txt"
+	./ball $(interactive) 200 360 50 275 200 450 \
+		$(epsilon) $(radius) input12.txt \
+		$(boxWidth) $(windowPosX) $(windowPosY) \
+		$(Qtype) 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(ztrans) 2 \
+                $(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
+                $(transparency) $(frameRate) \
+		&
 
 moretest: $(TARGETS)
 # nothing to do

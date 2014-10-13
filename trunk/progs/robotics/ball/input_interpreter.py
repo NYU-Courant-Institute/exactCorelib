@@ -135,10 +135,10 @@ for j in range(len(listFaces)):
             face.reverse()
             faces.append(face[:])
         elif faceType == 5:
-            # faces.append(face[:])
-            # face.reverse()
-            # faces.append(face[:])
-            # face.reverse()
+            faces.append(face[:])
+            face.reverse()
+            faces.append(face[:])
+            face.reverse()
             base = points[int(face[0]) - 1]
             p = points[int(face[1]) - 1] + points[int(face[2]) - 1] + Triple(-base[0], -base[1], -base[2])
             points.append(p)
