@@ -57,20 +57,33 @@
 #    #######################
 #    # Polyhedron Section
 #    #######################
-#    Poly[hedron] ["name"]	# The identifer "Poly" or "Polyhedron"
+#    Poly[hedron] ["name"] 	# The identifer "Poly" or "Polyhedron"
 #    				# followed by an optional name for the
 #    				# polyhedron.  The rest of the section is a list
 #				# triangular faces.
+#
 #    u11 v11 w11        # first triangle (face)   given by 3 vertex indices
 #    u12 v12 w12        # second triangle (face)
 #    ...
 #    u1F1 v1F1 w1F1     # last triangle (face)
 #
 #    #######################
+#    # Put Statements
+#    			# We can either put points or polyhedrons.
+#    #######################
+#    PutPoly name-of-poly + vector	# vector can be "x y z" or named points
+#    PutPoint name-of-point + radius 	# conceptually, this is a sphere 
+#    			# REMARK: This construction allows us to put many copies of
+#    			# an object (with different translational vectors)
+#    			# When we define a polyhedron, we are implicitly
+#    			# putting a copy of it into the scene.
+#    			# But the points we define are not automatically put
+#    			# into the scene.
+#
+#    #######################
 #    # Termination
 #    #######################
 #    End          	# Marks the end of input file.
-#			# Alternatively, a "0" can be used.
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # EXTENDED SYNTAX:
 # 	The extended syntax allows named vertices and basic
@@ -166,7 +179,11 @@
 # 				   # By the "thick version" of a polyhedra, we
 # 				   # mean that every triangle is duplicated and
 # 				   # given the opposite orientation.
-#
+# (5) Put Box			# Just make this a generalization of thick polygons?
+# 	PutBox x y z + a b c	# a box with (x,y,z) and (x,y,z)+(a,b,c)
+# 				# as diagonally opposite corners 
+# 	PutBox x y z : a b c	# a box with (x,y,z) and (a,b,c)
+# 				# as diagonally opposite corners 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# -- Chee Yap & Ziyao Wei (2013)
+# -- Chee Yap & Ziyao Wei (2013-2014)
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
