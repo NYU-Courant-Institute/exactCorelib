@@ -10,11 +10,15 @@ def readNextSetOfLines(lines):
     if lines[0].strip() == "End":
         return (0, [])
     i = 1
+    title = lines[0]
+    name = ""
+    if title.startswith("Poly") or title.startswith("Wall"):
+        name = title.split()[1].strip()[1:-1]
     while lines[i][0] == '"' or lines[i][0].isdigit():
         nLines.append(lines[i])
         i += 1
     lines[:len(nLines) + 1] = []
-    return (len(nLines), nLines)
+    return (len(nLines), nLines, name)
 
 class Triple(tuple):
     """Triple class"""
@@ -70,11 +74,15 @@ lines = [x.strip(' \t\n\r') for x in input.readlines()]
 listFaces = []
 numPoints = 0
 pointsLines = []
+puts = []
 while lines[0] != "End":
     if lines[0] == "Points":
-        (n, pl) = readNextSetOfLines(lines)
+        (n, pl, name) = readNextSetOfLines(lines)
         numPoints += n
         pointsLines += pl
+    elif lines[0].startswith("Put"):
+        puts.append(lines[0])
+        lines[0:1] = []
     else:
         listFaces.append(readNextSetOfLines(lines))
 
@@ -100,9 +108,12 @@ def parsePointsSection(pointsLines):
 (points2Indices, points) = parsePointsSection(pointsLines)
 
 faces = []
+poly2faces = {}
 for j in range(len(listFaces)):
     numFaces = listFaces[j][0]
     facesLines = listFaces[j][1]
+    name = listFaces[j][2]
+    start = len(faces)
     for i in range(numFaces):
         face = facesLines[i].split()
         faceType = int(face[0])
@@ -150,6 +161,22 @@ for j in range(len(listFaces)):
             faces.append(otherFace[:])
         else:
             faces.append(face)
+    end = len(faces)
+    poly2faces[name] = (start, end)
+
+for i in puts:
+    poly = i.split(' ', 1)[1]
+    facesRange = poly2faces[poly.split()[0]]
+    op = poly.split()[1]
+    p = Triple(0, 0, 0) if len(poly.split()) < 3 else Triple(*[int(x) for x in poly.split()[2:]])
+    for j in range(*facesRange):
+        face = []
+        for k in range(len(faces[j])):
+            basePoint = points[int(faces[j][k]) - 1]
+            newPoint = p + basePoint
+            points.append(newPoint)
+            face.append(str(len(points)))
+        faces.append(face)
 
 faces = ['0 ' + ' '.join([str(j) for j in i]) + "\n" for i in faces]
 output.write(str(len(points)) + "\n")
