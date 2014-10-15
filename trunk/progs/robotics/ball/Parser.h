@@ -44,7 +44,7 @@ void parseConfigFile(Box* b) {
   std::stringstream ss;
   ss << inputDir << "/" << fileName;  // create full file name
   std::string s = ss.str();
-  s = "inputs/input22.txt";
+  s = "inputs/input21.txt";
   cout << "input file name = " << s << endl;
 
   fileProcessor(s);  // this will clean the input and put in
