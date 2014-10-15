@@ -7,18 +7,21 @@ OPERATOR_REGEX = '\+|-'
 def readNextSetOfLines(lines):
     """Given a set of lines beginning with the input type, return a pair with n and the list of the next n lines, and remove the content of the tuple from the input"""
     nLines = []
-    if lines[0].strip() == "End":
+    if lines[0].strip() == 'End':
         return (0, [])
     i = 1
     title = lines[0]
-    name = ""
-    if title.startswith("Poly") or title.startswith("Wall"):
+    name = None
+    if title.startswith('Poly') or title.startswith('Wall'):
         name = title.split()[1].strip()[1:-1]
+    elif title.startswith('Points'):
+        if len(title.split()) == 2:
+            name = title.split()[1].strip()
     while lines[i][0] == '"' or lines[i][0].isdigit():
         nLines.append(lines[i])
         i += 1
     lines[:len(nLines) + 1] = []
-    return (len(nLines), nLines, name)
+    return (name, nLines)
 
 class Triple(tuple):
     """Triple class"""
@@ -77,11 +80,10 @@ lines = [x.strip(' \t\n\r') for x in input.readlines()]
 listFaces = []
 pointsLines = []
 puts = []
-while lines[0] != "End":
-    if lines[0].startswith("Points"):
-        (n, pl, name) = readNextSetOfLines(lines)
-        pointsLines += pl
-    elif lines[0].startswith("Put"):
+while lines[0] != 'End':
+    if lines[0].startswith('Points'):
+        pointsLines.append(readNextSetOfLines(lines))
+    elif lines[0].startswith('Put'):
         puts.append(lines[0])
         lines[0:1] = []
     else:
@@ -97,6 +99,7 @@ def parsePointsSection(pointsLines, points, points2Indices, pointId = None):
     else:
         if not pointId:
             pointId = 1
+    pointId = int(pointId)
     for i in range(len(pointsLines)):
         line = pointsLines[i]
         if line[0] == '"':
@@ -115,14 +118,15 @@ def parsePointsSection(pointsLines, points, points2Indices, pointId = None):
 # Processing the explicitly defined input points:
 points2Indices = {}
 points = {}
-(points2Indices, points) = parsePointsSection(pointsLines, points, points2Indices)
+for i in pointsLines:
+    (points2Indices, points) = parsePointsSection(i[1], points, points2Indices, i[0])
 
 faces = []
 poly2faces = {}
 for j in range(len(listFaces)):
-    numFaces = listFaces[j][0]
+    name = listFaces[j][0]
     facesLines = listFaces[j][1]
-    name = listFaces[j][2]
+    numFaces = len(facesLines)
     start = len(faces)
     for i in range(numFaces):
         face = facesLines[i].split()
@@ -195,6 +199,25 @@ for i in puts:
             face.append(max(points))
         faces.append(face)
 
+def compressPointsFaces(points, faces):
+    if any([not isinstance(x, (int, long)) for x in points.keys()]):
+           raise Exception()
+    keys = points.keys()
+    keys.sort()
+    newId = list(range(1, len(keys) + 1))
+    oldId2new = dict(zip(keys, newId))
+    newPoints = {}
+    newFaces = []
+    for i in points:
+        newPoints[oldId2new[i]] = points[i]
+    for i in faces:
+        face = []
+        for j in i:
+            face.append(oldId2new[int(j)])
+        newFaces.append(face)
+    return (newPoints, newFaces)
+
+(points, faces) = compressPointsFaces(points, faces)
 faces = ['0 ' + ' '.join([str(j) for j in i]) + "\n" for i in faces]
 output.write(str(max(points)) + "\n")
 output.write("\n".join([' '.join([str(j) for j in points[i]]) for i in points]) + "\n")

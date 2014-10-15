@@ -286,7 +286,7 @@ eg3b:	ball
 		$(epsilon) $(radius) input11.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(ztrans) 2 \
+		$(xtrans) $(ytrans) $(ztrans) 3 \
                 $(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
                 $(transparency) $(frameRate) \
 		&
