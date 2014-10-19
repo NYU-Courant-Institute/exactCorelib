@@ -47,8 +47,8 @@ Poly "Box"
 1 5 7 6 - X
 1 5 8 7 - X
 1 5 6 8 - X
-PutPoly Box + 60 0 0
-PutPoly Box + 120 0 0
+# PutPoly Box + 60 0 0
+# PutPoly Box + 120 0 0
 
 # Wall "floor_and_ceiling"
 # 5 X' Y' Z' + 0 0 0

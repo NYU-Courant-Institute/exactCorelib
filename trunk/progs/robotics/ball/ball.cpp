@@ -405,7 +405,12 @@ int main(int argc, char* argv[]) {
   if (argc > 13) windowPosY = atoi(argv[13]);  // window Y pos
   if (argc > 14) QType   = atoi(argv[14]);  // PriorityQ Type (random or no)
   if (argc > 15) seed   = static_cast<unsigned int>(atoi(argv[15]));    // for random number generator
-  if (argc > 16) inputDir  = argv[16];    // path for input files
+  if (argc > 16) {
+    inputDir  = argv[16];    // path for input files
+    std::stringstream ss;
+    ss << inputDir << "/" << fileName;  // create full file name
+    defaultFilePath = ss.str();
+  }
   if (argc > 17) deltaX  = atof(argv[17]);  // x-translation of input file
   if (argc > 18) deltaY  = atof(argv[18]);  // y-translation of input file
   if (argc > 19) deltaZ = atof(argv[19]);    // z-translation of input file

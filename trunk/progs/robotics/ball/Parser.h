@@ -11,6 +11,7 @@
 #include <cstring>
 
 string fileName("input1.txt");     // Input file name
+string defaultFilePath("inputs/input1.txt");
 string inputDir("inputs");     // Path for input files
 double scale=1;        // scaling of input environment
 double deltaX=0;      // x-translation of input environment
@@ -44,7 +45,12 @@ void parseConfigFile(Box* b) {
   std::stringstream ss;
   ss << inputDir << "/" << fileName;  // create full file name
   std::string s = ss.str();
-  s = "inputs/input1.txt";
+  if (FILE *file = fopen(s.c_str(), "r")) {
+    fclose(file);
+  } else {
+    s = defaultFilePath;
+  }
+  s = "inputs/input11.txt";
   cout << "input file name = " << s << endl;
 
   fileProcessor(s);  // this will clean the input and put in
