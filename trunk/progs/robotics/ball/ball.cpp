@@ -207,21 +207,23 @@ void run() {
     noPath = !findPath(boxA, boxB, OT, ct);
     if (!noPath) {
       cout << "Path found!" << endl;
-    }
-    boxA->prev = NULL;
-    path.clear();
-    path.push_back(boxB);
-    while (path.back()->prev) {
-      path.push_back(path.back()->prev);
-    }
-    for (unsigned int i = 0; i < toReset.size(); ++i) {
-      toReset[i]->prev = NULL;
-    }
-    vector<Box*> dijkstraShortestPath = Graph::dijkstraShortestPath(boxA, boxB);
-    if (dijkstraShortestPath.back() == boxA) {
-      path = dijkstraShortestPath;
+      boxA->prev = NULL;
+      path.clear();
+      path.push_back(boxB);
+      while (path.back()->prev) {
+        path.push_back(path.back()->prev);
+      }
+      for (unsigned int i = 0; i < toReset.size(); ++i) {
+        toReset[i]->prev = NULL;
+      }
+      vector<Box*> dijkstraShortestPath = Graph::dijkstraShortestPath(boxA, boxB);
+      if (dijkstraShortestPath.back() == boxA) {
+        path = dijkstraShortestPath;
+      } else {
+        cerr << "Something went wrong in the dijkstra path generation algorithm, defaulting to subdivision generated path" << endl;
+      }
     } else {
-      cerr << "Something went wrong in the dijkstra path generation algorithm, defaulting to subdivision generated path" << endl;
+      cout << "No Path!" << endl;
     }
   }
   // stop timer

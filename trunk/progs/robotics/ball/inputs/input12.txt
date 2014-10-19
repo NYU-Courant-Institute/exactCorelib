@@ -27,5 +27,5 @@ Points
 "Z" 0 0 230
 
 Wall
-5 X Y Z + 0 40 0
+5 X Y Z + 0 120 0
 End

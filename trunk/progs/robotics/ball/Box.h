@@ -168,21 +168,24 @@ class Box {
   // find the nearest feature, and check
   Status checkChildStatus(double x, double y, double z) {
     Wall* nearestWall;
-    list<Wall*>::iterator iterW = Walls.begin();
-    double minDistW = (*iterW)->distance(x, y, z);
-    nearestWall = *iterW;
-    ++iterW;
-    for (; iterW != Walls.end(); ++iterW) {
-      double dist = (*iterW)->distance(x, y, z);
-      if (dist < minDistW) {
-        minDistW = dist;
-        nearestWall = *iterW;
+    double minDistW = std::numeric_limits<double>::max();
+    if (!Walls.empty()) {
+      list<Wall*>::iterator iterW = Walls.begin();
+      minDistW = (*iterW)->distance(x, y, z);
+      nearestWall = *iterW;
+      ++iterW;
+      for (; iterW != Walls.end(); ++iterW) {
+        double dist = (*iterW)->distance(x, y, z);
+        if (dist < minDistW) {
+          minDistW = dist;
+          nearestWall = *iterW;
+        }
       }
     }
 
-    list<Edge*>::iterator iterE = Edges.begin();
     double minDistE = std::numeric_limits<double>::max();
-    if (iterE != Edges.end()) {
+    if (!Edges.empty()) {
+      list<Edge*>::iterator iterE = Edges.begin();
       minDistE = (*iterE)->distance(x, y, z);
       ++iterE;
       for (; iterE != Edges.end(); ++iterE) {
@@ -194,7 +197,7 @@ class Box {
       }
     }
 
-    double minDistC = minDistE + 1;  //minDistC may not exist, so init to a bigger number
+    double minDistC = std::numeric_limits<double>::max();  //minDistC may not exist, so init to a bigger number
     if (!corners.empty()) {
       list<Corner*>::iterator iterC = corners.begin();
       minDistC = (*iterC)->distance(x, y, z);

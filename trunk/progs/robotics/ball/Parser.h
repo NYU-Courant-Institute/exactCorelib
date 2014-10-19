@@ -50,7 +50,6 @@ void parseConfigFile(Box* b) {
   } else {
     s = defaultFilePath;
   }
-  s = "inputs/input11.txt";
   cout << "input file name = " << s << endl;
 
   fileProcessor(s);  // this will clean the input and put in
