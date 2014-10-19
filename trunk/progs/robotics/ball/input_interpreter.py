@@ -13,7 +13,8 @@ def readNextSetOfLines(lines):
     title = lines[0]
     name = None
     if title.startswith('Poly') or title.startswith('Wall'):
-        name = title.split()[1].strip()[1:-1]
+        if (len(title.split()) > 1):
+            name = title.split()[1].strip()[1:-1]
     elif title.startswith('Points'):
         if len(title.split()) == 2:
             name = title.split()[1].strip()

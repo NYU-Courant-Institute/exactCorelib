@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <list>
+#include <limits>
 #include "./Wall.h"
 #include "./Edge.h"
 #include "./Corner.h"
@@ -168,40 +169,41 @@ class Box {
   Status checkChildStatus(double x, double y, double z) {
     Wall* nearestWall;
     list<Wall*>::iterator iterW = Walls.begin();
-    double mindistW = (*iterW)->distance(x, y, z);
+    double minDistW = (*iterW)->distance(x, y, z);
     nearestWall = *iterW;
     ++iterW;
     for (; iterW != Walls.end(); ++iterW) {
-      Wall* w = *iterW;
-      double dist = w->distance(x, y, z);
-      if (dist < mindistW) {
-        mindistW = dist;
+      double dist = (*iterW)->distance(x, y, z);
+      if (dist < minDistW) {
+        minDistW = dist;
         nearestWall = *iterW;
       }
     }
 
     list<Edge*>::iterator iterE = Edges.begin();
-    double mindistE = (*iterE)->distance(x, y, z);
-    ++iterE;
-    for (; iterE != Edges.end(); ++iterE) {
-      Edge* e = *iterE;
-      double dist = e->distance(x, y, z);
-      if (dist < mindistE) {
-        mindistE = dist;
-        // nearestEdge = *iterE;
+    double minDistE = std::numeric_limits<double>::max();
+    if (iterE != Edges.end()) {
+      minDistE = (*iterE)->distance(x, y, z);
+      ++iterE;
+      for (; iterE != Edges.end(); ++iterE) {
+        double dist = (*iterE)->distance(x, y, z);
+        if (dist < minDistE) {
+          minDistE = dist;
+          // nearestEdge = *iterE;
+        }
       }
     }
 
-    double mindistC = mindistE + 1;  //mindistC may not exist, so init to a bigger number
+    double minDistC = minDistE + 1;  //minDistC may not exist, so init to a bigger number
     if (!corners.empty()) {
       list<Corner*>::iterator iterC = corners.begin();
-      mindistC = (*iterC)->distance(x, y, z);
+      minDistC = (*iterC)->distance(x, y, z);
       ++iterC;
       for (; iterC != corners.end(); ++iterC) {
         Corner* c = *iterC;
         double dist = c->distance(x, y, z);
-        if (dist < mindistC) {
-          mindistC = dist;
+        if (dist < minDistC) {
+          minDistC = dist;
         }
       }
     }
@@ -210,7 +212,7 @@ class Box {
 
     // if the nearest feature is a wall...
     // check the orientation of m(B) with respect to the wall
-    if (mindistW < mindistE && mindistW < mindistC) {
+    if (minDistW < minDistE && minDistW < minDistC) {
       if (nearestWall->isRight(x, y, z)) {
         isFree = true;
       }

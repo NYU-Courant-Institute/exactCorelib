@@ -3,7 +3,7 @@
 # 	It is in the "basic format".
 
 # four vertices:
-4
+Points
 100 40 60
 300 40 60
 200 40 400
@@ -16,4 +16,4 @@ Poly
 0 2 4 1
 0 1 4 3
 
-0
+End
