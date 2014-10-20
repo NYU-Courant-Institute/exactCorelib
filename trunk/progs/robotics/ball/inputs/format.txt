@@ -38,10 +38,17 @@
 #
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # BASIC SYNTAX:
-# 	The basic syntax has 2 sections: Points and Polyhedrons
+# 	The basic syntax has 3 sections: Constants, Points and Polyhedrons
 # 	Note that [...] marks an optional part of the syntax
 # 		E.g., Poly[hedron] means that we can write Poly or Polyhedron.
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+#    #######################
+#    # Constant Section
+#    #######################
+#    Constants		# Each constant must be given a name
+#    Pi      3.14159
+#    height  100
+#    width   30
 #    #######################
 #    # Point Section
 #    #######################
@@ -49,7 +56,7 @@
 #    			#   with points numbered N, N+1, N+2, etc.
 #    			# If the optional N is omitted, then assume N=1
 #
-#    x1 y1 z1	# vertex N where x1,y1,z1 are decimal numbers, one per line
+#    x1 y1 z1	# vertex N where x1,y1,z1 are decimal numbers or constants, one per line
 #    x2 y2 z2	# vertex N+1
 #    ...
 #    xM yM zM   # vertex N+M. 
