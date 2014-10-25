@@ -24,6 +24,7 @@ ifeq ($(PLATFORM), mac)
    TCLAP_INC_PATH=../ceval/third_party/
    TCLAP_INC_PATH=../../third_party/
    GLEW_PATH=/Users/cheeyap/svn-localcopy2/prog/graphics/glew/glew-1.9.0/
+   GLEW_PATH=/opt/local/
 
   CORE_INC=-I. -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
 	 -I$(CORE_PATH)/gmp/include -I/usr/include/ \

@@ -167,6 +167,8 @@ help:
 #=================================================
 #
 # this is default, but every option may be changed at command line:
+# NOTE: in the random mode, after 11 runs, you will find the middle path.
+# 	After an additional 21 runs, you will find the third path.
 #
 eg:	disc
 	@echo "Target 'eg':  runs disc with the default options of Makefile"
