@@ -14,6 +14,33 @@ Description:
 	paper "Numerical Subdivision Methods in Motion Planning" by
 	Y.-J.Chiang and C.Yap (2011).
 
+	(2) Subdirectory triangle:
+	This implements the SSS algorithm for moving a disc amidst polygonal
+	obstacles, using the soft-predicated described in the
+	paper "On Soft Predicates in Subdivision Motion Planning"
+	by C.Wang, Y.-J. Chiang and C.~Yap, SoCG 2013, Rio de Janeiro.
+        To appear CGTA, Special Issue for SoCG'13.
+
+	(3) Subdirectory 2-links:
+	This implements the SSS algorithm for a 2-link robot using the T/R
+	technique for subdivision described in the paper
+	"Resolution Exact Algorithms for Link Robots",
+	by Z. Luo, Y.-J. Chiang, J.-M. Lien and C. Yap,
+	in WAFR 2014, Istanbul Turkey.  It is also in the MS thesis of
+	Z.Luo (2014) at Courant Institute, NYU.
+
+	(4) Subdirectory non-cross-links:
+	This extends 2-link robot to a restricted free space in which
+	the links are not allowed to self-cross (so the free-space is
+	a Torus minus non-disconnecting a closed loop).  See the MS thesis of
+	Z.Luo (2014) at Courant Institute, NYU.
+
+	(5) Subdirectory ball:
+	This is the work of Surin Ahn, a high school student at Mamaroneck
+	Union Free School, supervised by Chee Yap.  She was a Regional Finalist
+	from New York State in the 2013 Siemens Math, Science and Technology
+	Competition (one of 100 students nationwide).  
+
 Author:
 	Y.-J.Chiang, C.Yap, C.Wang (2012).
 
