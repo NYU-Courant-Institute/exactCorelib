@@ -87,53 +87,33 @@ void parseConfigFile(Box* b) {
 
       ifs >> faceType; // move this after the for-loop
 
-      // declare temporary point xx, yy, zz
-      // ifsBuffer >> xx, and if necessary, use hash map to convert into an index
-      // ifsBuffer >> yy, and if necessary, use hash map to convert into an index
-      // ifsBuffer >> zz, and if necessary, use hash map to convert into an index
-      // if there are more stuff in the buffer, we will read the faceType:
-      //     ifsBuffer >> faceType
-      // xxOffset = yyOffset = zzOffset = 0;
-      // if there are even more stuff in the buffer, we will read the offsets:
-      //     ifsBuffer >> xxOffset
-      //     ifsBuffer >> yyOffset
-      //     ifsBuffer >> yyOffset
-
-      //The following loop is removed:
-      for (int j=0; j< 3; ++j){
-        unsigned long pt;
-        ifs >> pt;
-        pt--;   // to get indexing from 0
-        ptVec.push_back(new Corner(pts[pt].x * scale,
-                                   pts[pt].y * scale,
-                                   pts[pt].z * scale));
-        b -> addCorner(ptVec.back());
-      }
-      // First triangle
-      Edge* e1 = new Edge (ptVec[0], ptVec[1]);
-      Edge* e2 = new Edge (ptVec[1], ptVec[2]);
-      Edge* e3 = new Edge (ptVec[2], ptVec[0]);
-      b -> addEdge(e1);
-      b -> addEdge(e2);
-      b -> addEdge(e3);
-
-      Wall* w = new Wall (ptVec[0], ptVec[1], ptVec[2]);
-      b -> addWall(w);
-      // Possible Second triangle:
-
-      // read the code for faceType from ifsbuffer: if no code or code=1, do
-      // nothing:
-      if (faceType == 1) {   // i.e., a quadrilateral
-        Corner fourthPt = *ptVec[1] + *ptVec[2] - *ptVec[0];// + xx,yy,zz Offsets
-        Edge* e1 = new Edge (*ptVec[2], *ptVec[1]);
-        Edge* e2 = new Edge (*ptVec[1], fourthPt);
-        Edge* e3 = new Edge (fourthPt, *ptVec[2]);
-        Wall* w = new Wall (*ptVec[1], fourthPt, *ptVec[2]);
+      if (faceType == 0) {
+        //The following loop is removed:
+        for (int j=0; j< 3; ++j){
+          unsigned long pt;
+          ifs >> pt;
+          pt--;   // to get indexing from 0
+          ptVec.push_back(new Corner(pts[pt].x * scale,
+                                     pts[pt].y * scale,
+                                     pts[pt].z * scale));
+          b -> addCorner(ptVec.back());
+        }
+        // First triangle
+        Edge* e1 = new Edge (ptVec[0], ptVec[1]);
+        Edge* e2 = new Edge (ptVec[1], ptVec[2]);
+        Edge* e3 = new Edge (ptVec[2], ptVec[0]);
         b -> addEdge(e1);
         b -> addEdge(e2);
         b -> addEdge(e3);
 
+        Wall* w = new Wall (ptVec[0], ptVec[1], ptVec[2]);
         b -> addWall(w);
+      } else if (faceType == 7) {
+        unsigned long pt;
+        b->addCorner(new Corner(pts[pt].x * scale,
+                                pts[pt].y * scale,
+                                pts[pt].z * scale));
+        ifs >> pt;
       }
 
     }  // for i

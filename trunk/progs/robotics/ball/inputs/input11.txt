@@ -52,7 +52,7 @@ PutPoly Box + 120 0 0
 
 Wall "floor_and_ceiling"
 5 X' Y' Z' + 0 0 0
-# 5 X' Y' Z' + 0 256 0
-# 5 X' Y' Z' + 0 128 0
+5 X' Y' Z' + 0 256 0
+5 X' Y' Z' + 0 128 0
 
 End

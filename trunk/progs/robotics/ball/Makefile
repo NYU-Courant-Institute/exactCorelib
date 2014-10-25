@@ -308,9 +308,10 @@ eg4:	ball
 		$(epsilon) $(radius) input21.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(ztrans) 3 \
-                $(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
+		$(xtrans) $(ytrans) $(ztrans) 4 \
+                74 200 1580 $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
                 $(transparency) $(frameRate) \
+                -0.135 0.333 -0.075 \
 		&
 
 moretest: $(TARGETS)

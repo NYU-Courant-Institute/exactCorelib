@@ -123,6 +123,7 @@ for i in pointsLines:
     (points2Indices, points) = parsePointsSection(i[1], points, points2Indices, i[0])
 
 faces = []
+spheres = []
 poly2faces = {}
 for j in range(len(listFaces)):
     name = listFaces[j][0]
@@ -181,6 +182,8 @@ for j in range(len(listFaces)):
             for j in range(len(face) - 1):
                 faces.append([base, face[j], face[j + 1]])
                 faces.append([face[j + 1], face[j], base])
+        elif faceType == 7:
+            spheres.append(str(face[0]))
         else:
             faces.append(face)
     end = len(faces)
@@ -200,7 +203,7 @@ for i in puts:
             face.append(max(points))
         faces.append(face)
 
-def compressPointsFaces(points, faces):
+def compressPointsFaces(points, faces, spheres):
     if any([not isinstance(x, (int, long)) for x in points.keys()]):
            raise Exception()
     keys = points.keys()
@@ -209,6 +212,7 @@ def compressPointsFaces(points, faces):
     oldId2new = dict(zip(keys, newId))
     newPoints = {}
     newFaces = []
+    newSpheres = []
     for i in points:
         newPoints[oldId2new[i]] = points[i]
     for i in faces:
@@ -216,13 +220,16 @@ def compressPointsFaces(points, faces):
         for j in i:
             face.append(oldId2new[int(j)])
         newFaces.append(face)
-    return (newPoints, newFaces)
+    for i in spheres:
+        newSpheres.append(oldId2new[int(i)])
+    return (newPoints, newFaces, newSpheres)
 
-(points, faces) = compressPointsFaces(points, faces)
+(points, faces, spheres) = compressPointsFaces(points, faces, spheres)
 faces = ['0 ' + ' '.join([str(j) for j in i]) + "\n" for i in faces]
 output.write(str(max(points)) + "\n")
 output.write("\n".join([' '.join([str(j) for j in points[i]]) for i in points]) + "\n")
-output.write(str(len(faces)) + "\n")
+output.write(str(len(faces) + len(spheres)) + "\n")
 output.write(''.join(faces))
-output.write("0\n")
+output.write('\n'.join(['7 ' + str(i) for i in spheres]))
+output.write("\n0\n")
 output.flush()

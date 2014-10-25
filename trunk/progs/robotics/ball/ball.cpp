@@ -255,34 +255,83 @@ void run() {
   //output->set_text(outputStream.str().c_str());
 }
 
+void printRotationAngles() {
+  double x = atan2(view_rotate[9], view_rotate[10]);
+  double y = atan2(-view_rotate[8], sqrt(pow(view_rotate[9], 2) + pow(view_rotate[10], 2)));;
+  double z = atan2(view_rotate[4], view_rotate[0]);
+  cout << "X = " << x << endl;
+  cout << "Y = " << y << endl;
+  cout << "Z = " << z << endl;
+}
+
+void resetViewRotate(float* view_rotate) {
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      view_rotate[i * 4 + j] = 0;
+    }
+    view_rotate[i * 4 + i] = 1;
+  }
+}
+
+void multiplyRotationMatrix(float* view_rotate_x) {
+  float tmp[16];
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      tmp[i * 4 + j] = 0;
+      for (int k = 0; k < 4; k++) {
+        tmp[i * 4 + j] += view_rotate[i * 4 + k] * view_rotate_x[k * 4 + j];
+      }
+    }
+  }
+
+  for (int i = 0; i < 16; i++) {
+    view_rotate[i] = tmp[i];
+  }
+}
+
 void resetRotationMatrix() {
-  // Chee:
-  // The vector view_rotate in GLUI is a 4x4 rotation matrix
-  // We want to rotate the view by "yAng" about the vertical (y) axis:
-  //
-  // First we define yAng:
-  float yAng = 3.14 / 4;    // 45degrees
-  //
-  // row 1:
-  view_rotate[0] = cos(yAng);
-  view_rotate[1] = .0;
-  view_rotate[2] = sin(yAng);
-  view_rotate[3] = 0.;
-  // row 2:
-  view_rotate[4] = 0.;
-  view_rotate[5] = 1.;
-  view_rotate[6] = 0.;
-  view_rotate[7] = 0.;
-  // row 3:
-  view_rotate[8] = -sin(yAng);
-  view_rotate[9] = 0.;
-  view_rotate[10] = cos(yAng);
-  view_rotate[11] = 0.;
-  // row 4:
-  view_rotate[12] = 0.;
-  view_rotate[13] = 0.;
-  view_rotate[14] = 0.;
-  view_rotate[15] = 1.;
+  resetViewRotate(view_rotate);
+  if (!useCustomViewAngles) {
+    // Chee:
+    // The vector view_rotate in GLUI is a 4x4 rotation matrix
+    // We want to rotate the view by "yAng" about the vertical (y) axis:
+    //
+    // First we define yAng:
+    float yAng = 3.14 / 4;    // 45degrees
+    //
+    // row 1:
+    view_rotate[0] = cos(yAng);
+    view_rotate[2] = sin(yAng);
+    // row 3:
+    view_rotate[8] = -sin(yAng);
+    view_rotate[10] = cos(yAng);
+  } else {
+    resetViewRotate(view_rotate_x);
+    float xAng = view_rotate_angles[0];
+    // row 2:
+    view_rotate_x[5] = cos(xAng);
+    view_rotate_x[6] = -sin(xAng);
+    // row 3:
+    view_rotate_x[9] = sin(xAng);
+    view_rotate_x[10] = cos(xAng);
+    float yAng = view_rotate_angles[1];
+    view_rotate_y[0] = cos(yAng);
+    view_rotate_y[2] = sin(yAng);
+    // row 3:
+    view_rotate_y[8] = -sin(yAng);
+    view_rotate_y[10] = cos(yAng);
+    float zAng = view_rotate_angles[2];
+    // row 1:
+    view_rotate_z[0] = cos(zAng);
+    view_rotate_z[1] = -sin(zAng);
+    // row 2:   
+    view_rotate_z[4] = sin(zAng);
+    view_rotate_z[5] = cos(zAng);
+
+    multiplyRotationMatrix(view_rotate_x);
+    multiplyRotationMatrix(view_rotate_y);
+    multiplyRotationMatrix(view_rotate_z);
+  }
   viewRot->set_float_array_val(view_rotate);
 }
 
@@ -363,6 +412,12 @@ void renderTopView(void) {
 
 void renderCustomView(void) {
   setUpView(customViewXYAspect, 2.0 / boxWidth);
+  editEyeX->set_float_val(obj_pos[0]);
+  editEyeY->set_float_val(obj_pos[1]);
+  editEyeZ->set_float_val(obj_pos[2]);
+  editLookAtX->set_float_val(at[0]);
+  editLookAtY->set_float_val(at[1]);
+  editLookAtZ->set_float_val(at[2]);
   gluLookAt(obj_pos[0], obj_pos[1], obj_pos[2], obj_pos[0] + eyeVector[0], obj_pos[1] + eyeVector[1], obj_pos[2] + eyeVector[2], up[0], up[1], up[2]);
   glMultMatrixf(view_rotate);
 
@@ -428,6 +483,12 @@ int main(int argc, char* argv[]) {
   if (argc > 29) up[2] = atof(argv[29]);
   if (argc > 30) transparency = atoi(argv[30]);
   if (argc > 31) frameRate = atoi(argv[31]);
+  if (argc > 34) {
+    useCustomViewAngles = true;
+    view_rotate_angles[0] = atof(argv[32]);
+    view_rotate_angles[1] = atof(argv[33]);
+    view_rotate_angles[2] = atof(argv[34]);
+  }
 
   cout << "before interactive, Qtype= " << QType << endl;
 
@@ -497,6 +558,22 @@ int main(int argc, char* argv[]) {
   editBetaZ = glui->add_edittext_to_panel(beta_box_panel,
             "z:", GLUI_EDITTEXT_FLOAT);
   editBetaZ->set_float_val(beta[2]);
+
+  GLUI_Panel * eye_box_panel = glui->add_panel("Eye Position");
+  editEyeX = glui->add_edittext_to_panel(eye_box_panel,
+            "x:", GLUI_EDITTEXT_FLOAT);
+  editEyeY = glui->add_edittext_to_panel(eye_box_panel,
+            "y:", GLUI_EDITTEXT_FLOAT);
+  editEyeZ = glui->add_edittext_to_panel(eye_box_panel,
+            "z:", GLUI_EDITTEXT_FLOAT);
+
+  GLUI_Panel * look_at_box_panel = glui->add_panel("Look At Position");
+  editLookAtX = glui->add_edittext_to_panel(look_at_box_panel,
+            "at x:", GLUI_EDITTEXT_FLOAT);
+  editLookAtY = glui->add_edittext_to_panel(look_at_box_panel,
+            "at y:", GLUI_EDITTEXT_FLOAT);
+  editLookAtZ = glui->add_edittext_to_panel(look_at_box_panel,
+            "at z:", GLUI_EDITTEXT_FLOAT);
 
   editSeed = glui->add_edittext("seed:", GLUI_EDITTEXT_INT);
   editSeed->set_int_val(static_cast<int>(seed));
@@ -568,6 +645,7 @@ int main(int argc, char* argv[]) {
     new GLUI_Translation(glui, "Top View Zoom", GLUI_TRANSLATION_Z, &topViewPos[2]);
   trans_z->set_speed(5);
   glui->add_button("Reset Top", 0, reinterpret_cast<GLUI_Update_CB>(resetTopViewPoint));
+  glui->add_button("Print Rotation Angles", 0, reinterpret_cast<GLUI_Update_CB>(printRotationAngles));
 
   // output = new GLUI_TextBox(glui, true);
   // output->set_h(300);
