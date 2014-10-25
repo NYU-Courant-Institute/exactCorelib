@@ -41,19 +41,18 @@ class BoxIter {
 
 class Box {
  private:
+  static bool inIntervalAtXByY(double p, double x, double y) {
+    return (p > x - y) && (p < x + y);
+  }
+  
   static bool isOverLimit(const Box* base, const Box* nextBox) {
-    if ( ((nextBox->x > base->x - base->width / 2 &&
-           nextBox->x < base->x + base->width / 2) &&
-          (nextBox->y > base->y - base->width / 2 &&
-           nextBox->y < base->y + base->width / 2)) ||
-         ((nextBox->x > base->x - base->width / 2 &&
-           nextBox->x < base->x + base->width / 2) &&
-          (nextBox->z > base->z - base->width / 2 &&
-           nextBox->z < base->z + base->width / 2)) ||
-         ((nextBox->y > base->y - base->width / 2 &&
-           nextBox->y < base->y + base->width / 2) &&
-          (nextBox->z > base->z - base->width / 2 &&
-           nextBox->z < base->z + base->width / 2)) ) {
+    double halfWidth = base->width / 2;
+    if ( (inIntervalAtXByY(nextBox->x, base->x, halfWidth) &&
+          inIntervalAtXByY(nextBox->y, base->y, halfWidth)) ||
+         (inIntervalAtXByY(nextBox->x, base->x, halfWidth) &&
+          inIntervalAtXByY(nextBox->z, base->z, halfWidth)) ||
+         (inIntervalAtXByY(nextBox->y, base->y, halfWidth) &&
+          inIntervalAtXByY(nextBox->z, base->z, halfWidth)) ) {
       return false;
     }
     return true;
@@ -164,7 +163,6 @@ class Box {
 
   }
 
-
   // find the nearest feature, and check
   Status checkChildStatus(double x, double y, double z) {
     Wall* nearestWall;
@@ -223,10 +221,7 @@ class Box {
     // else, the nearest feature is either an edge or corner, and the box must be free (since all obstacles are convex)
     else isFree = true;
 
-    if (isFree) {
-      return FREE;
-    }
-    return STUCK;
+    return isFree ? FREE : STUCK;
   }
 
   void addCorner(Corner* c) {

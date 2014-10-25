@@ -291,47 +291,40 @@ void multiplyRotationMatrix(float* view_rotate_x) {
 
 void resetRotationMatrix() {
   resetViewRotate(view_rotate);
+  float xAng = 0;
+  float yAng = 0;
+  float zAng = 0;
   if (!useCustomViewAngles) {
-    // Chee:
-    // The vector view_rotate in GLUI is a 4x4 rotation matrix
-    // We want to rotate the view by "yAng" about the vertical (y) axis:
-    //
-    // First we define yAng:
-    float yAng = 3.14 / 4;    // 45degrees
-    //
-    // row 1:
-    view_rotate[0] = cos(yAng);
-    view_rotate[2] = sin(yAng);
-    // row 3:
-    view_rotate[8] = -sin(yAng);
-    view_rotate[10] = cos(yAng);
+    yAng = 3.14 / 4;
   } else {
-    resetViewRotate(view_rotate_x);
-    float xAng = view_rotate_angles[0];
-    // row 2:
-    view_rotate_x[5] = cos(xAng);
-    view_rotate_x[6] = -sin(xAng);
-    // row 3:
-    view_rotate_x[9] = sin(xAng);
-    view_rotate_x[10] = cos(xAng);
-    float yAng = view_rotate_angles[1];
-    view_rotate_y[0] = cos(yAng);
-    view_rotate_y[2] = sin(yAng);
-    // row 3:
-    view_rotate_y[8] = -sin(yAng);
-    view_rotate_y[10] = cos(yAng);
-    float zAng = view_rotate_angles[2];
-    // row 1:
-    view_rotate_z[0] = cos(zAng);
-    view_rotate_z[1] = -sin(zAng);
-    // row 2:   
-    view_rotate_z[4] = sin(zAng);
-    view_rotate_z[5] = cos(zAng);
-
-    multiplyRotationMatrix(view_rotate_x);
-    multiplyRotationMatrix(view_rotate_y);
-    multiplyRotationMatrix(view_rotate_z);
+    xAng = view_rotate_angles[0];
+    yAng = view_rotate_angles[1];
+    zAng = view_rotate_angles[2];
   }
+  
+  // row 2:
+  view_rotate_x[5] = cos(xAng);
+  view_rotate_x[6] = -sin(xAng);
+  // row 3:
+  view_rotate_x[9] = sin(xAng);
+  view_rotate_x[10] = cos(xAng);
+    
+  view_rotate_y[0] = cos(yAng);
+  view_rotate_y[2] = sin(yAng);
+  // row 3:
+  view_rotate_y[8] = -sin(yAng);
+  view_rotate_y[10] = cos(yAng);
+    
+  // row 1:
+  view_rotate_z[0] = cos(zAng);
+  view_rotate_z[1] = -sin(zAng);
+  // row 2:   
+  view_rotate_z[4] = sin(zAng);
+  view_rotate_z[5] = cos(zAng);
+
+  multiplyRotationMatrix(view_rotate_x);
+  multiplyRotationMatrix(view_rotate_y);
+  multiplyRotationMatrix(view_rotate_z);
   viewRot->set_float_array_val(view_rotate);
 }
 
