@@ -8,6 +8,7 @@
 #include <vector>
 #include <list>
 #include <limits>
+#include <utility>
 #include "./Wall.h"
 #include "./Edge.h"
 #include "./Corner.h"
@@ -85,6 +86,7 @@ class Box {
   list<Corner*> corners;
   list<Edge*> Edges;
   list<Wall*> Walls;
+  list<pair<Corner*, int> > spheres;
 
   // for shortest path
   double dist2Source;
@@ -153,7 +155,22 @@ class Box {
       }
     }
 
-    if (corners.empty() && Edges.empty() && Walls.empty()) {
+    for (list<pair<Corner*, int> >::iterator it = spheres.begin(); it != spheres.end(); ) {
+      Corner* c = it->first;
+      double distSphere = c->distance(this->x, this->y, this->z) - it->second;
+      distSphere = distSphere < 0 ? -distSphere : distSphere;
+      if (distSphere < innerDomain) {
+        status = STUCK;
+        return;
+      } else if (distSphere <= outerDomain) {
+        status = MIXED;
+        ++it;
+      } else {
+        it = spheres.erase(it);
+      }
+    }
+
+    if (corners.empty() && Edges.empty() && Walls.empty() && spheres.empty()) {
       if (!pParent) {
         status = FREE;
       } else {
@@ -234,6 +251,10 @@ class Box {
 
   void addWall(Wall* w) {
     Walls.push_back(w);
+  }
+
+  void addSphere(Corner* s, double radius) {
+    spheres.push_back(make_pair(s, radius));
   }
 
   bool isFree() {
@@ -708,6 +729,9 @@ class Box {
       this->pChildren[i]->corners.insert(
                                          this->pChildren[i]->corners.begin(),
                                          this->corners.begin(), this->corners.end() );
+      this->pChildren[i]->spheres.insert(
+                                         this->pChildren[i]->spheres.begin(),
+                                         this->spheres.begin(), this->spheres.end() );
     }
     this->isLeaf = false;
 

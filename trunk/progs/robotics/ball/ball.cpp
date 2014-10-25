@@ -392,6 +392,7 @@ void renderScene(void) {
   filledSphere(R0, alpha[0], alpha[1], alpha[2], 1.0, 0.0, 0.498);  // start
   filledSphere(R0, beta[0], beta[1], beta[2], 0, 0, 1);  // goal
   drawEdges(OT->pRoot, transparency);
+  drawSpheres(OT->pRoot, transparency);
 
   glEnable(GL_LIGHTING);
   glutSwapBuffers();

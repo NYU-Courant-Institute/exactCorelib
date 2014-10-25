@@ -110,10 +110,13 @@ void parseConfigFile(Box* b) {
         b -> addWall(w);
       } else if (faceType == 7) {
         unsigned long pt;
-        b->addCorner(new Corner(pts[pt].x * scale,
-                                pts[pt].y * scale,
-                                pts[pt].z * scale));
         ifs >> pt;
+        unsigned long radius;
+        ifs >> radius;
+        b->addSphere(new Corner(pts[pt].x * scale,
+                                pts[pt].y * scale,
+                                pts[pt].z * scale),
+                     radius);
       }
 
     }  // for i

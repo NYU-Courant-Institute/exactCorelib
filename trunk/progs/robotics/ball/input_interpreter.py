@@ -159,23 +159,18 @@ for j in range(len(listFaces)):
             face = face[1:]
             for j in range(len(face) - 1):
                 faces.append([base, face[j], face[j + 1]])
-                print faces
         elif faceType == 4:
             faces.append(face[:])
-            face.reverse()
-            faces.append(face[:])
+            faces.append(face[::-1])
         elif faceType == 5:
             faces.append(face[:])
-            face.reverse()
-            faces.append(face[:])
-            face.reverse()
+            faces.append(face[::-1])
             base = points[int(face[0])]
             p = points[int(face[1])] + points[int(face[2])] + Triple(-base[0], -base[1], -base[2])
             points[max(points) + 1] = p
             otherFace = [face[1], max(points), face[2]]
             faces.append(otherFace[:])
-            otherFace.reverse()
-            faces.append(otherFace[:])
+            faces.append(otherFace[::-1])
         elif faceType == 6:
             base = face[0]
             face = face[1:]
@@ -183,7 +178,11 @@ for j in range(len(listFaces)):
                 faces.append([base, face[j], face[j + 1]])
                 faces.append([face[j + 1], face[j], base])
         elif faceType == 7:
-            spheres.append(str(face[0]))
+            if len(face) == 1:
+                radius = 10
+            else:
+                radius = face[1]
+            spheres.append(str(face[0]) + ' ' + str(radius))
         else:
             faces.append(face)
     end = len(faces)
@@ -221,7 +220,8 @@ def compressPointsFaces(points, faces, spheres):
             face.append(oldId2new[int(j)])
         newFaces.append(face)
     for i in spheres:
-        newSpheres.append(oldId2new[int(i)])
+        j = i.split()
+        newSpheres.append((oldId2new[int(j[0])], j[1]))
     return (newPoints, newFaces, newSpheres)
 
 (points, faces, spheres) = compressPointsFaces(points, faces, spheres)
@@ -230,6 +230,6 @@ output.write(str(max(points)) + "\n")
 output.write("\n".join([' '.join([str(j) for j in points[i]]) for i in points]) + "\n")
 output.write(str(len(faces) + len(spheres)) + "\n")
 output.write(''.join(faces))
-output.write('\n'.join(['7 ' + str(i) for i in spheres]))
+output.write('\n'.join(['7 ' + ' '.join([str(j) for j in i]) for i in spheres]))
 output.write("\n0\n")
 output.flush()

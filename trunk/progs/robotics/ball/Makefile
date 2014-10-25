@@ -313,6 +313,17 @@ eg4:	ball
                 $(transparency) $(frameRate) \
                 -0.135 0.333 -0.075 \
 		&
+egPoints:	ball
+	@echo "Target 'egPoints':  runs ball with default Makefile options for file points.txt"
+	./ball $(interactive) 200 360 50 275 200 450 \
+		$(epsilon) $(radius) points.txt \
+		$(boxWidth) $(windowPosX) $(windowPosY) \
+		$(Qtype) 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(ztrans) 1 \
+                74 200 1580 $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
+                $(transparency) $(frameRate) \
+                -0.135 0.333 -0.075 \
+		&
 
 moretest: $(TARGETS)
 # nothing to do

@@ -40,8 +40,10 @@ Wall "floor_and_ceiling"
 5 X' Y' Z' + 0 128 0
 # 5 X' Y' Z' + 0 90 0
 
-# Poly "Point"
-# 7 X'
+Poly "Point"
+7 X' 40
+7 Y'
+7 Z' 10
 
 PutPoly Hole + 0 70 0
 PutPoly Hole + 0 30 0
