@@ -11,10 +11,11 @@
 
 #pragma once
 #include "math.h"
+#include "./Obstacle.h"
 
 class Corner;
 
-class Edge {
+class Edge : public Obstacle {
  public:
   Corner* src;
   Corner* dst;

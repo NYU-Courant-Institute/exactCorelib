@@ -22,22 +22,23 @@ using namespace std;
 
 extern int fileProcessor(string inputfile);
 
-void parseVertices(vector<Vector> &pts, map<string, int> &ptsNames, ifstream &ifs);
+void parseVertices(vector<Vector> &pts,
+                   map<string, int> &ptsNames,
+                   ifstream &ifs);
+
 void parseConfigFile(Box* b);
 
-void parseVertices(vector<Vector> &pts, map<string, int> &ptsNames, ifstream &ifs) {
+void parseVertices(vector<Vector> &pts,
+                   map<string, int> &ptsNames,
+                   ifstream &ifs) {
   int nPt = 0;
   ifs >> nPt;
   cout << "nPt=" << nPt << endl;
 
-  // declare a 256-char buffer
   for (int i = 0; i < nPt; ++i) {
     double x, y, z;
-    // readline into buffer, and convert buffer into a input stream ifsbuffer
     ifs >> x >> y >> z;
     pts.push_back(Vector(x, y, z));
-    // check if there is a string in the buffer, and if so, assigning this
-    // to the map.
   }
 }
 
@@ -80,14 +81,14 @@ void parseConfigFile(Box* b) {
     for (int i = 0; i < numFaces; ++i) {
       vector<Corner*> ptVec;
 
-      // readline into buffer, and convert buffer into input stream "ifsbuffer"
-      int faceType = 0; // used to check whether the face is a quadrilateral or triangle
-                        // faceType=0 means a triangle
-                        // faceType=1 means a quadrilateral
+      int objType = 0; // used to check whether the object is a triangle or a
+                        // sphere
+                        // objType=0 means a triangle
+                        // objType=7 means a sphere
 
-      ifs >> faceType; // move this after the for-loop
+      ifs >> objType; // move this after the for-loop
 
-      if (faceType == 0) {
+      if (objType == 0) {
         //The following loop is removed:
         for (int j=0; j< 3; ++j){
           unsigned long pt;
@@ -98,7 +99,6 @@ void parseConfigFile(Box* b) {
                                      pts[pt].z * scale));
           b -> addCorner(ptVec.back());
         }
-        // First triangle
         Edge* e1 = new Edge (ptVec[0], ptVec[1]);
         Edge* e2 = new Edge (ptVec[1], ptVec[2]);
         Edge* e3 = new Edge (ptVec[2], ptVec[0]);
@@ -108,7 +108,7 @@ void parseConfigFile(Box* b) {
 
         Wall* w = new Wall (ptVec[0], ptVec[1], ptVec[2]);
         b -> addWall(w);
-      } else if (faceType == 7) {
+      } else if (objType == 7) {
         unsigned long pt;
         ifs >> pt;
         pt--;

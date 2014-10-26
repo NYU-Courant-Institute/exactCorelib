@@ -8,11 +8,12 @@
    ************************************** */
 
 #pragma once
+#include "./Obstacle.h"
 
 class Corner;
 class Edge;
 
-class Wall {
+class Wall : public Obstacle {
  public:
   Corner* a;
   Corner* b;

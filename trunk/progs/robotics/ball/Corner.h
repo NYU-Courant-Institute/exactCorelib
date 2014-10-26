@@ -1,9 +1,10 @@
 #pragma once
 #include "./Vector.h"
+#include "./Obstacle.h"
 #include <math.h>
 class Edge;
 
-class Corner : public Vector {
+class Corner : public Vector, public Obstacle {
  public:
   Edge* preEdge;
   Edge* nextEdge;
