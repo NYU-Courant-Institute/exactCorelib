@@ -111,6 +111,7 @@ void parseConfigFile(Box* b) {
       } else if (faceType == 7) {
         unsigned long pt;
         ifs >> pt;
+        pt--;
         unsigned long radius;
         ifs >> radius;
         b->addSphere(new Corner(pts[pt].x * scale,
