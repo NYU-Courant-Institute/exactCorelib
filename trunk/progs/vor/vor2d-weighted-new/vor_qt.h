@@ -27,94 +27,31 @@
 
 #pragma once
 
-#include <iostream>
+#include "vor_box.h"
+
 #include <memory>
 #include <vector>
-#include <assert.h>
-#include <math.h>
 
 namespace vor2d {
 
 using std::shared_ptr;
 using std::vector;
 
-template <typename T>
 class vor_qt {
  public:
-  vor_qt(int dimension, double width) : dimension_(dimension), width_(width) {
-    assert(1 <= dimension && dimension <= 31);
+  vor_qt(int dimension, double width);
+  ~vor_qt();
 
-    double* center = new double[dimension];
-    for (int i = 0; i < dimension; i++) {
-      center[i] = 0.0;
-    }
-
-    root_ = new vor_qtBox(0 /* depth */, 0 /* indicator */, center, this);
-    vor_qtBox** neighbors = root_->neighbors();
-    for (int i = 0; i < 2 * dimension; i++) {
-      neighbors[i] = nullptr;
-    }
-  }
-
-  ~vor_qt() {
-    delete root_;
-  }
-
-  vor_qtBox* root() const {
-    return root_;
-  }
-
-  vor_qtBox* get_box(const vector<double>& point) {
-    if (point.size() != dimension_) {
-      return nullptr;
-    }
-
-    // Verify that the query point is within the initial bounding box.
-    for (int i = 0; i < dimension_; i++) {
-      if (point[i] < -width_ || point[i] > width_) {
-	return nullptr;
-      }
-    }
-
-    // Recurse through the tree.
-    vor_qtBox* cur_box = root_;
-    while (!cur_box->is_leaf()) {
-      int ind = 0;
-      for (int i = 0; i < dimension_; i++) {
-    	if (point[i] > cur_box->center()[i]) {
-	  ind |= (1 << i);
-    	}	
-      }
-      cur_box = cur_box->children()[ind];
-    }
-
-    return cur_box;
-  }
-
-  const int dimension() const {
-    return dimension_;
-  }
-
-  int splits() {
-    return num_splits_;
-  }
-
-  int smooth_splits() {
-    return num_smooth_splits_;
-  }
-
-  double width() {
-    return width_;
-  }
+  vor_box* root();
+  vor_box* get_box(const vector<double>& point);
+  const int dimension() const;
+  int splits();
+  int smooth_splits();
+  double width();
 
  protected:
-  void inc_splits() {
-    num_splits_++;
-  }
-
-  void inc_smooth_splits() {
-    num_smooth_splits_++;
-  }
+  void inc_splits();
+  void inc_smooth_splits();
 
   const int dimension_;
   vor_box* root_;

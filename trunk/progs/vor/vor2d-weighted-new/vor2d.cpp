@@ -1,9 +1,8 @@
-#include "vor_quadtree.h"
+#include "vor_qt.h"
+#include "vor_box.h"
 #include "vor2d.h"
 #include "Corner.h"
 #include "Edge.h"
-// #include "VorBox.h"
-// #include "Graphics.h"
 #include "Object.h"
 #include "Point.h"
 
@@ -20,6 +19,8 @@ using std::queue;
 using std::string;
 using std::stringstream;
 
+using vor2d::vor_box;
+using vor2d::vor_qt;
 using vor2d::Corner;
 using vor2d::Edge;
 using vor2d::Feature;
@@ -29,12 +30,11 @@ void parse();
 void run();
 
 // Global variables.
-VorQuadTree* tree;
-queue<* unprocessed;
+vor_qt* tree;
+queue<vor_box*> unprocessed;
 
 void initialize() {
-  tree = new VorSmoothQuadTree(2 /* dimension */, 1.0 /* width */);
-  
+  tree = new vor_qt(2 /* dimension */, 1.0 /* width */);
 }
 
 void cleanup() {
@@ -103,8 +103,8 @@ void parse() {
       weight = 1.0;
     }
 
-    vector<Corner*>* verts = new vector();
-    vector<Edge*>* edges = new vector();
+    vector<Corner*> verts;
+    vector<Edge*> edges;
     while (!ss.eof()) {
       ss >> vert;
       Corner* corner = new Corner(points[vert]);
