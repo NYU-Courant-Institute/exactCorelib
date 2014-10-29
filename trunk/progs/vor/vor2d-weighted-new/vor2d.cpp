@@ -57,13 +57,33 @@ void cleanup() {
 }
 
 void draw_rect() {
-  glColor3f(0.0, 0.0, 1.0);
-  glRectf(-0.5, -0.75, 0.75, 0.5);
+  glColor3f(0.0, 0.0, 0.0); // Black.
+  glLineWidth(2.0);
+  glBegin(GL_LINE_LOOP);
+  glVertex2d(-1.0, -1.0);
+  glVertex2d(-1.0, 1.0);
+  glVertex2d(.75, .75);
+  glVertex2d(1.0, -1.0);
+  glEnd();
+}
+
+void draw_box(const vor_box& box) {
+  double cx = box.center()[0];
+  double cy = box.center()[1];
+  double w = box.width();
+  cout << cx << " " << cy << " " << w << "\n";
+  glColor3f(1.0, 0.0, 0.0); // Black.
+  glLineWidth(20.0);
+  glBegin(GL_LINE_LOOP);
+  glVertex2d(cx - w, cy - w);
+  glVertex2d(cx - w, cy + w);
+  glVertex2d(cx + w, cy + w);
+  glVertex2d(cx + w, cy - w);
+  glEnd();
 }
 
 void display () {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  draw_rect();
   glutSwapBuffers();
 }
 
@@ -76,10 +96,15 @@ int main(int argc, char* argv[]) {
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
   glutCreateWindow("");
 
-  // GLUI* glui = GLUI_Master.create_glui("", 0, 1024, 1024);
-  // glui->set_main_gfx_window(windowID);
+  // Antialiasing.
+  glEnable(GL_LINE_SMOOTH);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+  draw_box(*tree->root());
   glutDisplayFunc(display);
   glutMainLoop();
   

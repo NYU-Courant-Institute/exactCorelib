@@ -18,7 +18,7 @@ class vor_box {
   vor_box(int depth, int indicator, double center[], vor_qt* tree);
   ~vor_box();
   void smooth_split();
-  double* width() const;
+  double width() const;
   double* center() const;
   vor_box** children() const;
   bool is_leaf() const;

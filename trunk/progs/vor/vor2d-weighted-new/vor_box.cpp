@@ -35,7 +35,7 @@ void vor_box::smooth_split() {
   tree_->inc_smooth_splits();
 }
 
-double* vor_box::width() const {
+double vor_box::width() const {
   pow(2, -depth_) * tree_->width();
 }
 
