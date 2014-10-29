@@ -13,11 +13,26 @@
 #include <vector>
 #include <boost/algorithm/string.hpp>
 
-using std::cout;
-using std::ifstream;
-using std::queue;
-using std::string;
-using std::stringstream;
+#ifdef __CYGWIN32__
+#include "glui.h"
+#endif
+#ifdef _WIN32
+#include <gl/glui.h>
+#endif
+#ifdef __APPLE__
+#include "glui.h"
+#endif
+#ifdef __linux__
+#include <GL/glui.h>
+#endif
+
+using namespace std;
+
+// using std::cout;
+// using std::ifstream;
+// using std::queue;
+// using std::string;
+// using std::stringstream;
 
 using vor2d::vor_box;
 using vor2d::vor_qt;
@@ -43,8 +58,21 @@ void cleanup() {
    
 int main(int argc, char* argv[]) {
   initialize();
+
+  // Initialize GUI.
+  glutInit(&argc, argv);
+  glutInitWindowPosition(0, 0);
+  glutInitWindowSize(1024, 1024);
+  glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+  
+  int windowID = glutCreateWindow("");
+  GLUI* glui = GLUI_Master.create_glui("", 0, 1024, 1024);
+  glui->set_main_gfx_window(windowID);
+  glutMainLoop();
+  
   parse();
   run();
+
   cleanup();
 }
 

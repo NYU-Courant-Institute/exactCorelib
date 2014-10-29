@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Corner.h"
+#include "Edge.h"
+
 #include <memory>
 #include <vector>
 
@@ -23,6 +26,13 @@ class vor_box {
   int depth() const;
   shared_ptr<vector<vor_box*>> leaf_neighbors_dir(int dir);
   shared_ptr<vector<vor_box*>> enumerate_halfspace_leaf_descendants(int dir);
+  
+  // Voronoi specific methods.
+  void add_corner(Corner* corner);
+  void add_edge(Edge* edge);
+
+  vector<Corner*>* get_corners();
+  vector<Edge*>* get_edges();
 
  protected:
   vor_box** neighbors() const;
@@ -36,6 +46,9 @@ class vor_box {
   vor_box** children_;
   vor_box** neighbors_;
   vor_qt* tree_;
+
+  vector<Corner*> corners_;
+  vector<Edge*> edges_;
 
   friend class vor_qt;
 };

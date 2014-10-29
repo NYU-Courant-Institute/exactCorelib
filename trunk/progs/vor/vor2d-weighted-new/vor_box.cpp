@@ -165,4 +165,20 @@ void vor_box::smooth_split_aux() {
   split();
 }
 
+void vor_box::add_corner(Corner* corner) {
+  corners_.push_back(corner);
+}
+
+void vor_box::add_edge(Edge* edge) {
+  edges_.push_back(edge);
+}
+
+vector<Corner*>* vor_box::get_corners() {
+  return &corners_;
+}
+
+vector<Edge*>* vor_box::get_edges() {
+  return &edges_;
+}
+
 } // namespace vor2d

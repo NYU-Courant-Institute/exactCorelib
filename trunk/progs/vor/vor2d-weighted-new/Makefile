@@ -1,6 +1,9 @@
 # Makefile for weighted Voronoi cell diagrams.
+CORE_PATH=../../..
+include ../Make.options
+
 CXX = g++
-CXXFLAGS = -std=c++11
+CXXFLAGS = -std=c++11 -g
 
 TARGET = vor2d
 SRCS = $(wildcard *.cpp)
@@ -10,10 +13,10 @@ DEPS = $(SRCS:.cpp=.depends)
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $(OBJS) -o $(TARGET)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJS) $(LDFLAGS) -L/usr/lib -lglui $(CORE_LIB) -o $(TARGET)
 
 .cpp.o:
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(CORE_INC) $(CORE_LIB) -DCORE_LEVEL=$(LEV) -c $< -o $@
 
 %.depends: %.cpp
 	$(CXX) -M $(CXXFLAGS) $< > $@
@@ -23,6 +26,3 @@ clean:
 
 test:
 	./vor2d
-
-qt:
-	$(CXX) $(CXXFLAGS)
