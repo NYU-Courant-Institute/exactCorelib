@@ -55,19 +55,32 @@ void initialize() {
 void cleanup() {
   delete tree;
 }
-   
+
+void draw_rect() {
+  glColor3f(0.0, 0.0, 1.0);
+  glRectf(-0.5, -0.75, 0.75, 0.5);
+}
+
+void display () {
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  draw_rect();
+  glutSwapBuffers();
+}
+
 int main(int argc, char* argv[]) {
   initialize();
 
   // Initialize GUI.
   glutInit(&argc, argv);
-  glutInitWindowPosition(0, 0);
   glutInitWindowSize(1024, 1024);
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-  
-  int windowID = glutCreateWindow("");
-  GLUI* glui = GLUI_Master.create_glui("", 0, 1024, 1024);
-  glui->set_main_gfx_window(windowID);
+  glutCreateWindow("");
+
+  // GLUI* glui = GLUI_Master.create_glui("", 0, 1024, 1024);
+  // glui->set_main_gfx_window(windowID);
+
+  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+  glutDisplayFunc(display);
   glutMainLoop();
   
   parse();
