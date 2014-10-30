@@ -3,6 +3,7 @@
 #include "vor2d.h"
 #include "Corner.h"
 #include "Edge.h"
+#include "Graphics.h"
 #include "Object.h"
 #include "Point.h"
 
@@ -28,12 +29,6 @@
 
 using namespace std;
 
-// using std::cout;
-// using std::ifstream;
-// using std::queue;
-// using std::string;
-// using std::stringstream;
-
 using vor2d::vor_box;
 using vor2d::vor_qt;
 using vor2d::Corner;
@@ -49,68 +44,42 @@ vor_qt* tree;
 queue<vor_box*> unprocessed;
 
 void initialize() {
+  // Initialize global variables.
   tree = new vor_qt(2 /* dimension */, 1.0 /* width */);
+
+  // Set up antialiasing.
+  glEnable(GL_LINE_SMOOTH);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+  // Set up window.
+  glutInitWindowSize(WINDOW_WIDTH, WINDOW_WIDTH);
+  glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+  glutCreateWindow("");
+  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void cleanup() {
   delete tree;
 }
 
-void draw_rect() {
-  glColor3f(0.0, 0.0, 0.0); // Black.
-  glLineWidth(2.0);
-  glBegin(GL_LINE_LOOP);
-  glVertex2d(-1.0, -1.0);
-  glVertex2d(-1.0, 1.0);
-  glVertex2d(.75, .75);
-  glVertex2d(1.0, -1.0);
-  glEnd();
-}
-
-void draw_box(const vor_box& box) {
-  double cx = box.center()[0];
-  double cy = box.center()[1];
-  double w = box.width();
-  cout << cx << " " << cy << " " << w << "\n";
-  glColor3f(1.0, 0.0, 0.0); // Black.
-  glLineWidth(20.0);
-  glBegin(GL_LINE_LOOP);
-  glVertex2d(cx - w, cy - w);
-  glVertex2d(cx - w, cy + w);
-  glVertex2d(cx + w, cy + w);
-  glVertex2d(cx + w, cy - w);
-  glEnd();
-}
-
 void display () {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  draw_box_rec(*tree->root());
+  parse();
   glutSwapBuffers();
 }
 
 int main(int argc, char* argv[]) {
+  // Initialize GUI and global variables.
+  glutInit(&argc, argv);
   initialize();
 
-  // Initialize GUI.
-  glutInit(&argc, argv);
-  glutInitWindowSize(1024, 1024);
-  glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-  glutCreateWindow("");
-
-  // Antialiasing.
-  glEnable(GL_LINE_SMOOTH);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-
-  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-  draw_box(*tree->root());
   glutDisplayFunc(display);
   glutMainLoop();
   
-  parse();
   run();
-
   cleanup();
 }
 
@@ -137,17 +106,18 @@ void parse() {
   int x, y;
   ifstream ifs("test_input", std::ifstream::in);
 
+  cout << "Parse\n";
+
   // 1. Parse points.
   stringstream ss(get_line(ifs));
   ss.seekg(0);
   ss >> num_points;
-  vector<Point2d> points(num_points);
+  vector<double> px(num_points);
+  vector<double> py(num_points);
   for (int i = 0; i < num_points; i++) {
     stringstream ss(get_line(ifs));
     ss.seekg(0);
-    ss >> x >> y;
-    Point2d point(x, y);
-    points.push_back(point);
+    ss >> px[i] >> py[i];
   }
 
   // 2. Parse objects.	  
@@ -165,6 +135,7 @@ void parse() {
       ss.seekg(1);
       ss >> weight;
       ss.str(get_line(ifs));
+      ss.seekg(0);
     } else {
       weight = 1.0;
     }
@@ -173,15 +144,21 @@ void parse() {
     vector<Edge*> edges;
     while (!ss.eof()) {
       ss >> vert;
-      Corner* corner = new Corner(points[vert]);
+      const Point2d point(px[vert] / (WINDOW_WIDTH / 2) - 1, py[vert] / (WINDOW_WIDTH / 2) - 1);
+      Corner* corner = new Corner(point);
+      draw_corner(*corner);
       if (verts.empty() || !(*corner == *verts[0])) {
 	verts.push_back(corner);
 	if (verts.size() > 1) {
-	  edges.push_back(new Edge(verts[verts.size() - 2], verts[verts.size() - 1]));
+	  Edge* edge = new Edge(verts[verts.size() - 2], verts[verts.size() - 1]);
+	  edges.push_back(edge);
+	  draw_edge(*edge);
 	}
       } else if (verts.size() > 2) {
 	// Close the polygon.
-	edges.push_back(new Edge(verts[verts.size() - 1], verts[0]));
+	Edge* edge = new Edge(verts[verts.size() - 1], verts[0]);
+	edges.push_back(edge);
+	draw_edge(*edge);
       }
     }
   }

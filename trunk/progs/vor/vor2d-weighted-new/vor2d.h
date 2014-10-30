@@ -13,3 +13,5 @@
 #ifdef __linux__
 #include <GL/glui.h>
 #endif
+
+#define WINDOW_WIDTH 1024

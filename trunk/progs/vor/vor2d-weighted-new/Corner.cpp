@@ -4,7 +4,7 @@
 
 namespace vor2d {
 
-Corner::Corner(const Point2d& position) : position_(position) {
+Corner::Corner(const Point2d& position) : position_(position[0], position[1]) {
   prev_edge = next_edge = nullptr;
 }
 Corner::~Corner() {}

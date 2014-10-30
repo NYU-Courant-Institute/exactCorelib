@@ -23,6 +23,7 @@ class vor_box {
   vor_box** children() const;
   bool is_leaf() const;
   vor_box* principal_neighbor_dir(int dir) const;
+  const int dimension() const;
   int depth() const;
   shared_ptr<vector<vor_box*>> leaf_neighbors_dir(int dir);
   shared_ptr<vector<vor_box*>> enumerate_halfspace_leaf_descendants(int dir);
@@ -36,7 +37,6 @@ class vor_box {
 
  protected:
   vor_box** neighbors() const;
-  const int dimension() const;
   void split();
   void smooth_split_aux();
 

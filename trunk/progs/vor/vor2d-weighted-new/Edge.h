@@ -12,8 +12,9 @@ class Corner;
 class Edge : public Feature {
  public:
   Edge(Corner* source, Corner* dest);
-
   double distance(const Point2d& p) override;
+  Corner* source() const;
+  Corner* dest() const;
   
  private:
   Corner* source_;

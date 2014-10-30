@@ -22,4 +22,12 @@ double Edge::distance(const Point2d& p) {
   return sqrt(sqr(p[0] - x0) + sqr(p[1] - y0)) / parent_->weight();
 }
 
+Corner* Edge::dest() const {
+  return dest_;
+}
+
+Corner* Edge::source() const {
+  return source_;
+}
+
 } // namespace vor2d
