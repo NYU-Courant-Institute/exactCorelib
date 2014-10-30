@@ -19,7 +19,7 @@ void draw_box(const vor_box& box) {
   double w = box.width();
 
   glColor3f(0.0, 0.0, 0.0); // Black.
-  glLineWidth(25.0);
+  glLineWidth(1.0);
   glBegin(GL_LINE_LOOP);
   glVertex2d(cx - w, cy - w);
   glVertex2d(cx - w, cy + w);
