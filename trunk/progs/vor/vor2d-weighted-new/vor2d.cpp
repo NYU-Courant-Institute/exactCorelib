@@ -36,12 +36,15 @@ using vor2d::Edge;
 using vor2d::Feature;
 using vor2d::Object;
 
-void parse();
+void Mouse(int button, int state, int x, int y);
+void parse(string input);
 void run();
 
 // Global variables.
 vor_qt* tree;
 queue<vor_box*> unprocessed;
+vector<Object*> objects;
+bool show_grid = true;
 
 void initialize() {
   // Initialize global variables.
@@ -55,31 +58,52 @@ void initialize() {
 
   // Set up window.
   glutInitWindowSize(WINDOW_WIDTH, WINDOW_WIDTH);
-  glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+  glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
   glutCreateWindow("");
-  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+
+  // Other.
+  GLUI_Master.set_glutMouseFunc(Mouse);
 }
 
 void cleanup() {
   delete tree;
 }
 
-void display () {
+void display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  draw_box_rec(*tree->root());
-  parse();
+
+  if (show_grid) {
+    draw_box_rec(*tree->root());
+  }
+  
+  // Draw all corners.
+  vector<Corner*>* corners = tree->root()->get_corners();
+  for (auto it = corners->begin(); it < corners->end(); ++it) {
+    draw_corner(**it);
+  }
+
+  // Draw all edges.
+  vector<Edge*>* edges = tree->root()->get_edges();
+  for (auto it = edges->begin(); it < edges->end(); ++it) {
+    draw_edge(**it);
+  }
+  
   glutSwapBuffers();
 }
 
 int main(int argc, char* argv[]) {
-  // Initialize GUI and global variables.
+  if (argc < 2) {
+    cout << "No input file.\n";
+    exit(1);
+  }
+  
   glutInit(&argc, argv);
   initialize();
-
+  parse(argv[1]);
   glutDisplayFunc(display);
-  glutMainLoop();
-  
   run();
+  glutMainLoop();
   cleanup();
 }
 
@@ -98,15 +122,14 @@ string get_line(ifstream& ifs) {
   return s;
 }
 
-void parse() {
+void parse(string input) {
   int num_points;
   int point_count;
   int num_objects;
   int vert;
   int x, y;
-  ifstream ifs("test_input", std::ifstream::in);
-
-  cout << "Parse\n";
+  vor_box* root = tree->root();
+  ifstream ifs(input, std::ifstream::in);
 
   // 1. Parse points.
   stringstream ss(get_line(ifs));
@@ -125,7 +148,6 @@ void parse() {
   ss.seekg(0);
   ss >> num_objects;
   double weight;
-  vector<Object*> objects(num_objects);
   for (int i = 0; i < num_objects; i++) {
     ss.str(get_line(ifs));
     ss.seekg(0);
@@ -139,34 +161,65 @@ void parse() {
     } else {
       weight = 1.0;
     }
+    Object* o = new Object(weight);
+    objects.push_back(o);
 
     vector<Corner*> verts;
-    vector<Edge*> edges;
     while (!ss.eof()) {
       ss >> vert;
       const Point2d point(px[vert] / (WINDOW_WIDTH / 2) - 1, py[vert] / (WINDOW_WIDTH / 2) - 1);
-      Corner* corner = new Corner(point);
-      draw_corner(*corner);
+      Corner* corner = new Corner(point, o);
       if (verts.empty() || !(*corner == *verts[0])) {
+	o->add_feature(corner);
+	root->add_corner(corner);
 	verts.push_back(corner);
 	if (verts.size() > 1) {
-	  Edge* edge = new Edge(verts[verts.size() - 2], verts[verts.size() - 1]);
-	  edges.push_back(edge);
-	  draw_edge(*edge);
+	  Edge* edge = new Edge(verts[verts.size() - 2], verts[verts.size() - 1], o);
+	  o->add_feature(edge);
+	  root->add_edge(edge);
 	}
       } else if (verts.size() > 2) {
 	// Close the polygon.
-	Edge* edge = new Edge(verts[verts.size() - 1], verts[0]);
-	edges.push_back(edge);
-	draw_edge(*edge);
+	Edge* edge = new Edge(verts[verts.size() - 1], verts[0], o);
+	o->add_feature(edge);
+	root->add_edge(edge);
       }
     }
+    root->add_object(o);
   }
 
   ifs.close();
 }
 
+void Mouse(int button, int state, int x, int y) {
+  if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
+    show_grid = !show_grid;
+    display();
+  }
+}
+
+#define MAX_OBJECTS_FOR_CONSTRUCTION 2
 void run() {
   // Subdivision phase.
+  unprocessed.push(tree->root());
+  while (!unprocessed.empty()) {
+    vor_box* box = unprocessed.front();
+    unprocessed.pop();
+    double width = box->width();
+    double num_obj = box->num_objects();
+    if (width > ABS_EPS
+	&& ((num_obj > MAX_OBJECTS_FOR_CONSTRUCTION)
+	    || (num_obj > 1 && ((box->clearance() < 2 * width) || (width > GEOM_EPS))))) {
+      box->smooth_split();
+      vor_box** children = box->children();
+      for (int i = 0; i < box->num_children(); i++) {
+	unprocessed.push(children[i]);
+      }
+    }
+  }
+
   // Construction phase.
+
+  // Display.
+  display();
 }

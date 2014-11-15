@@ -3,15 +3,20 @@
 
 namespace vor2d {
 
-Edge::Edge(Corner* source, Corner* dest) : source_(source), dest_(dest) {
+Edge::Edge(Corner* source, Corner* dest, Object* parent) : source_(source), dest_(dest) {
+  parent_ = parent;
   source->set_next_edge(this);
   dest->set_prev_edge(this);
 }
 
+double Edge::lipschitz() const {
+  return parent_->weight();
+}
+
 double Edge::distance(const Point2d& p) {
   double x1 = source_->position()[0];
-  double x2 = dest_->position()[0];
   double y1 = source_->position()[1];
+  double x2 = dest_->position()[0];
   double y2 = dest_->position()[1];
   double u = ((p[0] - x1) * (x2 - x1) + (p[1] - y1) * (y2 - y1)) 
     / ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));

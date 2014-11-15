@@ -1,17 +1,16 @@
 #include "vor_box.h"
 #include "vor_qt.h"
 
-#include <memory>
-#include <vector>
-#include <assert.h>
-#include <math.h>
+#include "assert.h"
 
 namespace vor2d {
 
 vor_box::vor_box(int depth, int indicator, double center[], vor_qt* tree)
-  : depth_(depth), indicator_(indicator), center_(center), tree_(tree) {
+  : depth_(depth), indicator_(indicator), center_(center), tree_(tree),
+    children_(nullptr), num_children_(0) {
+  width_ = pow(2, -depth_) * tree_->width();
+  radius_ = sqrt(2 * width_ * width_);
   neighbors_ = new vor_box*[2 * dimension()];
-  children_ = nullptr;
 }
 
 vor_box::~vor_box() {
@@ -36,7 +35,11 @@ void vor_box::smooth_split() {
 }
 
 double vor_box::width() const {
-  pow(2, -depth_) * tree_->width();
+  return width_;
+}
+
+double vor_box::radius() const {
+  return radius_;
 }
 
 double* vor_box::center() const {
@@ -108,12 +111,12 @@ const int vor_box::dimension() const {
 }
 
 void vor_box::split() {
-  int num_children = 1 << dimension();
+  num_children_ = 1 << dimension();
   double* center;
 
   // Initialize the children.
-  children_ = new vor_box*[num_children];
-  for (int i = 0; i < num_children; i++) {
+  children_ = new vor_box*[num_children_];
+  for (int i = 0; i < num_children_; i++) {
 
     // Compute the center of the new child.
     center = new double[dimension()];
@@ -121,13 +124,37 @@ void vor_box::split() {
       center[j] = center_[j] + ((i & (1 << j)) == 0 ? -1 : 1) * pow(2, -(depth_ + 1)) * tree_->width();
     }
     children_[i] = new vor_box(depth_ + 1, i, center, tree_);
+
+    // Compute active features for the new child.
+    double lip = max_lipschitz(); // Maximum Lipschitz constant of relevant features.
+    Point2d mid_point(center[0], center[1]);
+    double child_clearance = clearance(mid_point);
+
+    // TODO: Consolidate these loops.
+    for (auto it = corners_.begin(); it != corners_.end(); ++it) {
+      if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
+	children_[i]->add_corner(*it);
+      }
+    }
+
+    for (auto it = edges_.begin(); it != edges_.end(); ++it) {
+      if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
+	children_[i]->add_edge(*it);
+      }
+    }
+
+    for (auto it = objects_.begin(); it != objects_.end(); ++it) {
+      if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
+	children_[i]->add_object(*it);
+      }
+    }
   }
 
   // Initialize neighbors of new children.
   // Each box has 2 * d principal neighbor pointers, one in each semi-axis direction.
   // Specifically, each box has exactly one sibling neighbor and one non-sibling or null neighbor
   // in the opposite direction along each axis.
-  for (int child_ind = 0; child_ind < num_children; child_ind++) {
+  for (int child_ind = 0; child_ind < num_children_; child_ind++) {
     vor_box* cur_child = children_[child_ind];
     for (int d = 0; d < dimension(); d++) {
       int neighbor_child_ind = child_ind ^ (1 << d);
@@ -173,12 +200,82 @@ void vor_box::add_edge(Edge* edge) {
   edges_.push_back(edge);
 }
 
+void vor_box::add_object(Object* object) {
+  objects_.push_back(object);
+}
+
 vector<Corner*>* vor_box::get_corners() {
   return &corners_;
 }
 
 vector<Edge*>* vor_box::get_edges() {
   return &edges_;
+}
+
+int vor_box::num_children() const {
+  return num_children_;
+}
+
+double vor_box::clearance(const Point2d& point) const {
+  double min_sep = std::numeric_limits<double>::max();
+  
+  // Compute clearance in terms of objects.
+  for (auto it = objects_.begin(); it != objects_.end(); ++it) {
+    double dist = (*it)->distance(point);
+    if (dist < min_sep) {
+      min_sep = dist;
+    }
+  }
+
+  // // TODO(Huck): Consolidate these loops into a single loop iterating over all types of features.
+  // for (auto it = corners_.begin(); it != corners_.end(); ++it) {
+  //   double dist = (*it)->distance(point);
+  //   if (dist < min_sep) {
+  //     min_sep = dist;
+  //   }
+  // }
+  // for (auto it = edges_.begin(); it != edges_.end(); ++it) {
+  //   double dist = (*it)->distance(point);
+  //   if (dist < min_sep) {
+  //     min_sep = dist;
+  //   }
+  // }
+
+  return min_sep;
+}
+
+double vor_box::clearance() const {
+  Point2d mid_point(center_[0], center_[1]);
+  return clearance(mid_point);
+}
+
+double vor_box::max_lipschitz() const {
+  double lip = 1.0;
+  
+  // TODO(Huck): Consolidate these loops into a single loop iterating over all types of features.
+  for (auto it = corners_.begin(); it != corners_.end(); ++it) {
+    double l = (*it)->lipschitz();
+    if (l > lip) {
+      lip = l;
+    }
+  }
+
+  for (auto it = edges_.begin(); it != edges_.end(); ++it) {
+    double l = (*it)->lipschitz();
+    if (l > lip) {
+      lip = l;
+    }
+  }
+
+  return lip;
+}
+
+int vor_box::num_features() const {
+  return corners_.size() + edges_.size();
+}
+
+int vor_box::num_objects() const {
+  return objects_.size();
 }
 
 } // namespace vor2d

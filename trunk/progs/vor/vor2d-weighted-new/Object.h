@@ -8,8 +8,7 @@ namespace vor2d {
 
 class Feature;
 
-// A class to represent a semantically related
-// collection of features.
+// A class to represent a collection of features.
 class Object {
  public:
   Object(double weight);

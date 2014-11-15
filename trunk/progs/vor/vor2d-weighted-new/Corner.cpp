@@ -4,10 +4,17 @@
 
 namespace vor2d {
 
-Corner::Corner(const Point2d& position) : position_(position[0], position[1]) {
-  prev_edge = next_edge = nullptr;
+Corner::Corner(const Point2d& position, Object* parent) :
+  position_(position[0], position[1]),
+  prev_edge(nullptr), next_edge(nullptr) {
+  parent_ = parent;
 }
+
 Corner::~Corner() {}
+
+double Corner::lipschitz() const {
+  return parent_->weight();
+}
 
 double Corner::distance(const Point2d& point) {
   return (point - position_).norm() / parent_->weight();

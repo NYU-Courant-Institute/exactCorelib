@@ -2,7 +2,11 @@
 
 #include "Corner.h"
 #include "Edge.h"
+#include "Object.h"
+#include "Point.h"
+#include "vor2d.h"
 
+#include <limits>
 #include <memory>
 #include <vector>
 
@@ -19,21 +23,29 @@ class vor_box {
   ~vor_box();
   void smooth_split();
   double width() const;
+  double radius() const;
   double* center() const;
   vor_box** children() const;
   bool is_leaf() const;
   vor_box* principal_neighbor_dir(int dir) const;
   const int dimension() const;
   int depth() const;
+  int num_children() const;
   shared_ptr<vector<vor_box*>> leaf_neighbors_dir(int dir);
   shared_ptr<vector<vor_box*>> enumerate_halfspace_leaf_descendants(int dir);
   
   // Voronoi specific methods.
   void add_corner(Corner* corner);
   void add_edge(Edge* edge);
-
+  void add_object(Object* object);
   vector<Corner*>* get_corners();
   vector<Edge*>* get_edges();
+  vector<Object*>* get_objects();
+  int num_features() const;
+  double max_lipschitz() const;
+  double clearance() const;
+  double clearance(const Point2d&) const;
+  int num_objects() const;
 
  protected:
   vor_box** neighbors() const;
@@ -42,13 +54,17 @@ class vor_box {
 
   const int depth_;
   const int indicator_;
+  double width_;
+  double radius_;
   double* center_;
+  int num_children_;
   vor_box** children_;
   vor_box** neighbors_;
   vor_qt* tree_;
 
   vector<Corner*> corners_;
   vector<Edge*> edges_;
+  vector<Object*> objects_;
 
   friend class vor_qt;
 };

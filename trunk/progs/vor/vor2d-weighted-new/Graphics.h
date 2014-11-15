@@ -18,7 +18,7 @@ void draw_box(const vor_box& box) {
   double cy = box.center()[1];
   double w = box.width();
 
-  glColor3f(0.0, 0.0, 0.0); // Black.
+  glColor3f(0.7, 0.7, 0.7); // Gray.
   glLineWidth(1.0);
   glBegin(GL_LINE_LOOP);
   glVertex2d(cx - w, cy - w);
@@ -32,14 +32,13 @@ void draw_box_rec(const vor_box& box) {
   draw_box(box);
   if (!box.is_leaf()) {
     vor_box** children = box.children();
-    for (int i = 0; i < (2 << box.dimension()); i++) {
+    for (int i = 0; i < box.num_children(); i++) {
       draw_box_rec(*children[i]);
     }
   }
 }
 
 void draw_edge(const Edge& edge) {
-  cout << "Draw edge.\n";
   const Point2d s_pos = edge.source()->position();
   const Point2d d_pos = edge.dest()->position();
   glColor3f(0.0, 0.0, 0.0); // Black.
@@ -52,7 +51,6 @@ void draw_edge(const Edge& edge) {
 
 void draw_corner(const Corner& corner) {
   const Point2d point = corner.position();
-  cout << "Draw corner " << point[0] <<  " " << point[1] << "\n";
   glColor3f(0.0, 0.0, 0.0); // Black.
   glPointSize(7.0);
   glBegin(GL_POINTS);

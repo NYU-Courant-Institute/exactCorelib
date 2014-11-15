@@ -25,4 +25,7 @@ clean:
 	rm -f *~ *.o $(TARGET)
 
 test:
-	./vor2d
+	./vor2d test_input
+
+valgrind:
+	valgrind ./vor2d test_input
