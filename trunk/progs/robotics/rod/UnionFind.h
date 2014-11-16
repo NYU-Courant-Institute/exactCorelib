@@ -31,6 +31,13 @@ class UnionFind {
     return root->pBox;
   }
 
+  bool isConnect(Box* a, Box* b) {
+    if (Find(a) == Find(b)) {
+      return true;
+    }
+    return false;
+  }
+
   void Union(Box*a, Box* b) {
     Set* roota = Find(a)->pSet;
     Set* rootb = Find(b)->pSet;

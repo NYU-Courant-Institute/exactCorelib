@@ -1,4 +1,4 @@
-#include "Octree.h"
+#include "SoftSubdivisionSearch.h"
 #include "PriorityQueue.h"
 #include <iostream>
 #include <fstream>
@@ -19,9 +19,9 @@ void idle(int v);
 void keyPressed (unsigned char key, int x, int y);
 void keyUp (unsigned char key, int x, int y);
 void run();
-Octree* genEmptyTree();
+SoftSubdivisionSearch* genEmptyTree();
 
-Octree* OT;
+SoftSubdivisionSearch* OT;
 
 // GLOBAL INPUT Parameters ========================================
 //

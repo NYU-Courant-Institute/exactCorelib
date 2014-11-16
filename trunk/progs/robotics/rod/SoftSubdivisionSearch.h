@@ -1,5 +1,5 @@
 /* **************************************
-   File: Octree.h
+   File: SoftSubdivisionSearch.h
 
    Description:
 
@@ -22,7 +22,7 @@ extern int mixSmallCount;
 
 using namespace std;
 
-class Octree {
+class SoftSubdivisionSearch {
  private:
   void insertNode(Box* b) {
     switch (b->getStatus()) {
@@ -56,7 +56,7 @@ class Octree {
   double epsilon;
   int QType;
 
-  Octree(Box* root, double e, int qType, unsigned int s):
+  SoftSubdivisionSearch(Box* root, double e, int qType, unsigned int s):
   pRoot(root), epsilon(e), QType(qType) {
     switch (QType) {
     case 1:
@@ -144,13 +144,6 @@ class Octree {
     return false;
   }
 
-  bool isConnect(Box* a, Box* b) {
-    if (pSets->Find(a) == pSets->Find(b)) {
-      return true;
-    }
-    return false;
-  }
-
   void unionAdjacent(Box* b) {
     for (int i = 0; i < 6; ++i) {
       BoxIter* iter = new BoxIter(b, i);
@@ -164,5 +157,5 @@ class Octree {
     }
   }
 
-  ~Octree(void) { }
+  ~SoftSubdivisionSearch(void) { }
 };

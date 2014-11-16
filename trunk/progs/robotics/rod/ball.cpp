@@ -29,7 +29,7 @@ using namespace std;
 
 // find path using simple heuristic:
 // use distance to beta as key in PQ, see dijkstraQueue
-bool findPath(Box* a, Box* b, Octree* OT, int& ct) {
+bool findPath(Box* a, Box* b, SoftSubdivisionSearch* OT, int& ct) {
   bool isPath = false;
   toReset.clear();
   a->dist2Source = 0;
@@ -125,25 +125,25 @@ bool findPath(Box* a, Box* b, Octree* OT, int& ct) {
   return isPath;
 }
 
-Octree* genEmptyTree() {
+SoftSubdivisionSearch* initializeSSS() {
   Box* root = new Box(boxWidth/2, boxWidth/2, boxWidth/2, boxWidth);
   Box::r0 = R0;
 
   parseConfigFile(root);
   root->updateStatus();
 
-  cout<<"inside genEmpty:  Qtype= " << QType << "\n";
-  return new Octree(root, epsilon, QType, seed++);  // Note that seed keeps changing!
+  cout<<"inside : initializeSSS Qtype= " << QType << "\n";
+  return new SoftSubdivisionSearch(root, epsilon, QType, seed++);  // Note that seed keeps changing!
 }
 
-Box* findEnclosingFreeBox(Octree* octree, double coordinate[3], int& expandCounter) {
-  Box* box = octree->getBox(coordinate[0], coordinate[1], coordinate[2]);
+Box* findEnclosingFreeBox(SoftSubdivisionSearch* sss, double coordinate[3], int& expandCounter) {
+  Box* box = sss->getBox(coordinate[0], coordinate[1], coordinate[2]);
   while (box && !(box)->isFree()) {
-    if (!octree->expand(box)) {
+    if (!sss->expand(box)) {
       return NULL; // Does not have a free box for the given resolution
     }
     ++expandCounter;
-    box = octree->getBox(box, coordinate[0], coordinate[1], coordinate[2]);
+    box = sss->getBox(box, coordinate[0], coordinate[1], coordinate[2]);
   }
   return box;
 }
@@ -181,7 +181,7 @@ void run() {
     delete(OT);
   }
 
-  OT = genEmptyTree();
+  OT = initializeSSS();
 
   if (showAnim) {
     animReplay();
@@ -196,35 +196,34 @@ void run() {
     noPath = true;
   }
   if (QType == 0 || QType == 1) {
-    while (!noPath && !OT->isConnect(boxA, boxB)) {
+    while (!noPath && !OT->pSets->isConnect(boxA, boxB)) {
       if (!OT->expand()) { // should ct be passed to expand?
         noPath = true;
       }
       ++ct;
     }
-    path = Graph::dijkstraShortestPath(boxA, boxB);
   } else if (QType == 2) {
     noPath = !findPath(boxA, boxB, OT, ct);
-    if (!noPath) {
-      cout << "Path found!" << endl;
-      boxA->prev = NULL;
-      path.clear();
-      path.push_back(boxB);
-      while (path.back()->prev) {
-        path.push_back(path.back()->prev);
-      }
-      for (unsigned int i = 0; i < toReset.size(); ++i) {
-        toReset[i]->prev = NULL;
-      }
-      vector<Box*> dijkstraShortestPath = Graph::dijkstraShortestPath(boxA, boxB);
-      if (dijkstraShortestPath.back() == boxA) {
-        path = dijkstraShortestPath;
-      } else {
-        cerr << "Something went wrong in the dijkstra path generation algorithm, defaulting to subdivision generated path" << endl;
-      }
-    } else {
-      cout << "No Path!" << endl;
+  }
+  if (!noPath) {
+    cout << "Path found!" << endl;
+    boxA->prev = NULL;
+    path.clear();
+    path.push_back(boxB);
+    while (path.back()->prev) {
+      path.push_back(path.back()->prev);
     }
+    for (unsigned int i = 0; i < toReset.size(); ++i) {
+      toReset[i]->prev = NULL;
+    }
+    vector<Box*> dijkstraShortestPath = Graph::dijkstraShortestPath(boxA, boxB);
+    if (dijkstraShortestPath.back() == boxA) {
+      path = dijkstraShortestPath;
+    } else {
+      cerr << "Something went wrong in the dijkstra path generation algorithm, defaulting to subdivision generated path" << endl;
+    }
+  } else {
+    cout << "No Path!" << endl;
   }
   // stop timer
   t.stop();
@@ -388,7 +387,7 @@ void renderScene(void) {
         rod(R0 * 2, x, y, z, 1, 1, 1);
       }
     }
-    // drawPath(path, alpha, beta);
+    drawPath(path, alpha, beta);
   }
   rod(R0 * 2, alpha[0], alpha[1], alpha[2], 0, 1, 1.0, 0.0, 0.498);  // start
   rod(R0 * 2, beta[0], beta[1], beta[2], 1, 1, 0, 0, 1);  // goal
