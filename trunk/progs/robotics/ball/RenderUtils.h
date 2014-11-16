@@ -34,9 +34,9 @@ void drawAxis(double length) {
   glEnable(GL_LIGHTING);
 }
 
-void filledSphere(double radius, double x, double y, double z, double r, double g, double b) {
+void filledSphere(double radius, double x, double y, double z, double r, double g, double b, double transparency = 1) {
   glPushMatrix();
-  glColor3d(r,g,b);
+  glColor4f(r, g, b, transparency);
   glTranslated(x, y, z);
   glutSolidSphere(radius, 100, 100);
   glPopMatrix();
@@ -67,8 +67,7 @@ void drawSpheres(Box* b, int transparency) {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   for (list<pair<Corner*, int> >::iterator iter = b->spheres.begin(); iter != b->spheres.end(); ++iter) {
     pair<Corner*, int> c = *iter;
-    glColor4f(1.0, 1.0, 1.0, transparency / 100.0);
-    filledSphere(c.second, c.first->x, c.first->y, c.first->z, 0, 0, 1);
+    filledSphere(c.second, c.first->x, c.first->y, c.first->z, 1.0, 1.0, 1.0, transparency / 100.0);
   }
 }
 

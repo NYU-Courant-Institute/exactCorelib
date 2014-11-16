@@ -229,29 +229,29 @@ void run() {
   // stop timer
   t.stop();
   // print the elapsed time in millisec
-  outputStream << ">>>>>>>>>>>>>>>>>>>>>>>>\n";
-  outputStream << ">>\n";
-  outputStream << ">>     Time used: " << t.getElapsedTimeInMilliSec() << " ms\n";
-  outputStream << ">>\n";
+  cout << ">>>>>>>>>>>>>>>>>>>>>>>>\n";
+  cout << ">>\n";
+  cout << ">>     Time used: " << t.getElapsedTimeInMilliSec() << " ms\n";
+  cout << ">>\n";
 
   if (!noPath) {
-    outputStream << ">>     Path found !" << endl;
+    cout << ">>     Path found !" << endl;
   } else {
-    outputStream << ">>     No Path !" << endl;
+    cout << ">>     No Path !" << endl;
   }
-  outputStream << ">>\n";
-  outputStream << ">>>>>>>>>>>>>>>>>>>>>>>>\n";
-  outputStream << "Expanded " << ct << " times" << endl;
-  outputStream << "total Free boxes: " << freeCount << endl;
-  outputStream << "total Stuck boxes: " << stuckCount << endl;
-  outputStream << "total Mixed boxes < epsilon: " << mixSmallCount << endl;
-  outputStream << "total Mixed boxes > epsilon: " << mixCount - ct - mixSmallCount << endl;
+  cout << ">>\n";
+  cout << ">>>>>>>>>>>>>>>>>>>>>>>>\n";
+  cout << "Expanded " << ct << " times" << endl;
+  cout << "total Free boxes: " << freeCount << endl;
+  cout << "total Stuck boxes: " << stuckCount << endl;
+  cout << "total Mixed boxes < epsilon: " << mixSmallCount << endl;
+  cout << "total Mixed boxes > epsilon: " << mixCount - ct - mixSmallCount << endl;
   freeCount = 0;
   stuckCount = 0;
   mixCount = 0;
   mixSmallCount = 0;
-  outputStream << endl;
-  outputStream << previousResults;
+  cout << endl;
+  cout << previousResults;
   //output->set_text(outputStream.str().c_str());
 }
 
@@ -322,9 +322,10 @@ void resetRotationMatrix() {
   view_rotate_z[4] = sin(zAng);
   view_rotate_z[5] = cos(zAng);
 
-  multiplyRotationMatrix(view_rotate_x);
-  multiplyRotationMatrix(view_rotate_y);
   multiplyRotationMatrix(view_rotate_z);
+  multiplyRotationMatrix(view_rotate_y);
+  multiplyRotationMatrix(view_rotate_x);
+
   viewRot->set_float_array_val(view_rotate);
 }
 

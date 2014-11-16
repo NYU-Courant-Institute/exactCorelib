@@ -311,8 +311,9 @@ eg4:	ball
 		$(xtrans) $(ytrans) $(ztrans) 4 \
                 74 200 1580 $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
                 $(transparency) $(frameRate) \
-                -0.135 0.333 -0.075 \
+                0.275 0.47 0.068 \
 		&
+
 egPoints:	ball
 	@echo "Target 'egPoints':  runs ball with default Makefile options for file points.txt"
 	./ball $(interactive) 200 360 50 275 200 450 \
