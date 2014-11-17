@@ -59,7 +59,7 @@ void initialize() {
   // Set up window.
   glutInitWindowSize(WINDOW_WIDTH, WINDOW_WIDTH);
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-  glutCreateWindow("");
+  glutCreateWindow("2D Subdivison-based Voronoi Diagram");
   glClearColor(1.0, 1.0, 1.0, 1.0);
 
   // Other.
@@ -147,7 +147,7 @@ void parse(string input) {
   ss.str(get_line(ifs));
   ss.seekg(0);
   ss >> num_objects;
-  double weight;
+  double inv_weight;
   for (int i = 0; i < num_objects; i++) {
     ss.str(get_line(ifs));
     ss.seekg(0);
@@ -155,13 +155,13 @@ void parse(string input) {
     // Parse metric information.
     if (ss.peek() == 'w') {
       ss.seekg(1);
-      ss >> weight;
+      ss >> inv_weight;
       ss.str(get_line(ifs));
       ss.seekg(0);
     } else {
-      weight = 1.0;
+      inv_weight = 1.0;
     }
-    Object* o = new Object(weight);
+    Object* o = new Object(1.0 / inv_weight);
     objects.push_back(o);
 
     vector<Corner*> verts;
@@ -198,18 +198,21 @@ void Mouse(int button, int state, int x, int y) {
   }
 }
 
-#define MAX_OBJECTS_FOR_CONSTRUCTION 2
+#define MAX_OBJECTS_FOR_CONSTRUCTION 3
 void run() {
   // Subdivision phase.
   unprocessed.push(tree->root());
   while (!unprocessed.empty()) {
     vor_box* box = unprocessed.front();
     unprocessed.pop();
-    double width = box->width();
+    double radius = box->radius();
     double num_obj = box->num_objects();
-    if (width > ABS_EPS
-	&& ((num_obj > MAX_OBJECTS_FOR_CONSTRUCTION)
-	    || (num_obj > 1 && ((box->clearance() < 2 * width) || (width > GEOM_EPS))))) {
+    if (box->width() <= ABS_EPS || num_obj < 2) {
+      continue;
+    }
+
+    if (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION || box->clearance() < 2 * radius || radius > GEOM_EPS) {
+      assert(num_obj > 1);
       box->smooth_split();
       vor_box** children = box->children();
       for (int i = 0; i < box->num_children(); i++) {
@@ -219,6 +222,7 @@ void run() {
   }
 
   // Construction phase.
+  
 
   // Display.
   display();

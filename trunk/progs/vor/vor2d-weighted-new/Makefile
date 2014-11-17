@@ -25,7 +25,12 @@ clean:
 	rm -f *~ *.o $(TARGET)
 
 test:
-	./vor2d test_input
+	./vor2d test_input &
+
+conics:
+	./vor2d conics/ellipse &
+	./vor2d conics/parabola &
+	./vor2d conics/hyperbola &
 
 valgrind:
 	valgrind ./vor2d test_input

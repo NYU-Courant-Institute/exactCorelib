@@ -250,7 +250,7 @@ double vor_box::clearance() const {
 }
 
 double vor_box::max_lipschitz() const {
-  double lip = 1.0;
+  double lip = 0.0;
   
   // TODO(Huck): Consolidate these loops into a single loop iterating over all types of features.
   for (auto it = corners_.begin(); it != corners_.end(); ++it) {

@@ -17,7 +17,7 @@ double Corner::lipschitz() const {
 }
 
 double Corner::distance(const Point2d& point) {
-  return (point - position_).norm() / parent_->weight();
+  return parent_->weight() * (point - position_).norm();
 }
 
 bool Corner::is_isolated() {

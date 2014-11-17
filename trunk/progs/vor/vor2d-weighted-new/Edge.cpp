@@ -24,7 +24,7 @@ double Edge::distance(const Point2d& p) {
   u = u > 1 ? 1 : u;
   double x0 = u * x2 + (1 - u) * x1;
   double y0 = u * y2 + (1 - u) * y1;
-  return sqrt(sqr(p[0] - x0) + sqr(p[1] - y0)) / parent_->weight();
+  return parent_->weight() * sqrt(sqr(p[0] - x0) + sqr(p[1] - y0));
 }
 
 Corner* Edge::dest() const {
