@@ -97,14 +97,10 @@ void run() {
   cout << ">>\n";
   cout << ">>>>>>>>>>>>>>>>>>>>>>>>\n";
   cout << "Expanded " << ct << " times" << endl;
-  cout << "total Free boxes: " << freeCount << endl;
-  cout << "total Stuck boxes: " << stuckCount << endl;
-  cout << "total Mixed boxes < epsilon: " << mixSmallCount << endl;
-  cout << "total Mixed boxes > epsilon: " << mixCount - ct - mixSmallCount << endl;
-  freeCount = 0;
-  stuckCount = 0;
-  mixCount = 0;
-  mixSmallCount = 0;
+  cout << "total Free boxes: " << sss->freeCount << endl;
+  cout << "total Stuck boxes: " << sss->stuckCount << endl;
+  cout << "total Mixed boxes < epsilon: " << sss->mixSmallCount << endl;
+  cout << "total Mixed boxes > epsilon: " << sss->mixCount - ct - sss->mixSmallCount << endl;
   cout << endl;
   cout << previousResults;
   //output->set_text(outputStream.str().c_str());

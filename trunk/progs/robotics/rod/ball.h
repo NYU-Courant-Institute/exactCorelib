@@ -103,10 +103,5 @@ bool finishedAnim = false;
 int frameRate = 65;
 float segCount = 0;
 
-int freeCount = 0;
-int stuckCount = 0;
-int mixCount = 0;
-int mixSmallCount = 0;
-
 bool useUserDefinedViewpoint = false;
 bool useCustomViewAngles = false;

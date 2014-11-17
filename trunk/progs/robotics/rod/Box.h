@@ -45,7 +45,7 @@ class Box {
   static bool inIntervalAtXByY(double p, double x, double y) {
     return (p > x - y) && (p < x + y);
   }
-  
+
   static bool isOverLimit(const Box* base, const Box* nextBox) {
     double halfWidth = base->width / 2;
     if ( (inIntervalAtXByY(nextBox->x, base->x, halfWidth) &&
@@ -103,6 +103,40 @@ class Box {
     }
     rB = (width * sqrt(3))/2;
     priority = Box::counter;
+  }
+
+  Box* getBox(double xx, double yy, double zz) {
+    if (xx > x + width / 2 || xx < x - width / 2 ||
+        yy > y + width / 2 || yy < y - width / 2 ||
+        zz > z + width / 2 || zz < z - width / 2) {
+      return 0;
+    }
+
+    Box* b = this;
+    while (!b->isLeaf) {
+      double dx = xx - b->x;
+      double dy = yy - b->y;
+      double dz = zz - b->z;
+
+      if (dx <= 0 && dy >= 0 && dz >= 0) {
+        b = b->pChildren[3];
+      } else if (dx >= 0 && dy >= 0 && dz >= 0) {
+        b = b->pChildren[2];
+      } else if (dx >= 0 && dy >= 0 && dz <= 0) {
+        b = b->pChildren[1];
+      } else if (dx <= 0 && dy >= 0 && dz <= 0) {
+        b = b->pChildren[0];
+      } else if (dx <= 0 && dy <= 0 && dz >= 0) {
+        b = b->pChildren[7];
+      } else if (dx >= 0 && dy <= 0 && dz >= 0) {
+        b = b->pChildren[6];
+      } else if (dx >= 0 && dy <= 0 && dz <= 0) {
+        b = b->pChildren[5];
+      } else if (dx <= 0 && dy <= 0 && dz <= 0) {
+        b = b->pChildren[4];
+      }
+    }
+    return b;
   }
 
   void updateStatus() {

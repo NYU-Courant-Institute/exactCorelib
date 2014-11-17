@@ -114,7 +114,7 @@ frameRate = 60
 #=================================================
 TARGETS = ball
 
-OBJ_FILES = Box.o Corner.o Edge.o Wall.o fileProcessor.o Timer.o
+OBJ_FILES = Box.o Corner.o Edge.o SoftSubdivisionSearch.o Wall.o fileProcessor.o Timer.o
 
 all: $(TARGETS)
 

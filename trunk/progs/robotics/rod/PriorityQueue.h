@@ -40,6 +40,8 @@ class BoxQueue {
 
   virtual int size() = 0;
 
+  virtual void clear() = 0;
+
   ~BoxQueue(void) { }
 };
 
@@ -63,6 +65,10 @@ class SeqQueue : public BoxQueue {
 
   int size() {
     return PQ.size();
+  }
+
+  void clear() {
+    PQ = priority_queue<Box*, vector<Box*>, PQCmp>();
   }
 };
 
@@ -98,6 +104,10 @@ class RandQueue : public BoxQueue
     return L.size();
   }
 
+  void clear() {
+    L.clear();
+  }
+
 };
 
 class DijkstraQueue : public BoxQueue
@@ -121,5 +131,9 @@ class DijkstraQueue : public BoxQueue
 
   int size() {
     return bv.size();
+  }
+
+  void clear() {
+    bv.clear();
   }
 };
