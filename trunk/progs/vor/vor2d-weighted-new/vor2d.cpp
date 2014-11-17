@@ -46,7 +46,7 @@ queue<vor_box*> unprocessed;
 vector<Object*> objects;
 bool show_grid = true;
 
-void initialize() {
+void initialize(string input_file_name) {
   // Initialize global variables.
   tree = new vor_qt(2 /* dimension */, 1.0 /* width */);
 
@@ -57,9 +57,10 @@ void initialize() {
   glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
   // Set up window.
+  string title_prefix = string();
   glutInitWindowSize(WINDOW_WIDTH, WINDOW_WIDTH);
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-  glutCreateWindow("2D Subdivison-based Voronoi Diagram");
+  glutCreateWindow((title_prefix + input_file_name).c_str());
   glClearColor(1.0, 1.0, 1.0, 1.0);
 
   // Other.
@@ -99,7 +100,7 @@ int main(int argc, char* argv[]) {
   }
   
   glutInit(&argc, argv);
-  initialize();
+  initialize(argv[1]);
   parse(argv[1]);
   glutDisplayFunc(display);
   run();

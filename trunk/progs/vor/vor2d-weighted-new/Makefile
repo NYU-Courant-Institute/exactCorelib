@@ -27,7 +27,7 @@ clean:
 test:
 	./vor2d test_input &
 
-conics:
+test_conics:
 	./vor2d conics/ellipse &
 	./vor2d conics/parabola &
 	./vor2d conics/hyperbola &
