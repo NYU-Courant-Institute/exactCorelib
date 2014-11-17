@@ -27,104 +27,6 @@ NOTE:   Surin was a Regional Finalist (one out of 100 nationwide)
 
 using namespace std;
 
-// find path using simple heuristic:
-// use distance to beta as key in PQ, see dijkstraQueue
-bool findPath(Box* a, Box* b, SoftSubdivisionSearch* sss, int& ct) {
-  bool isPath = false;
-  toReset.clear();
-  a->dist2Source = 0;
-  dijkstraQueue dijQ;
-  dijQ.push(a);
-  toReset.push_back(a);
-  while (!dijQ.empty()) {
-    Box* current = dijQ.extract();
-    current->visited = true;
-
-    // if current is MIXED, try expand it and push the children that is
-    // ACTUALLY neighbors of the source set (set containing alpha) into the
-    // dijQ again
-    if (current->status == Box::MIXED) {
-      if (sss->expand(current)) {
-        ++ct;
-        for (int i = 0; i < 8; ++i) {
-          // go through neighbors of each child to see if it's in source set
-          // if yes, this child go into the dijQ
-          bool isNeighborOfSourceSet = false;
-          Box * prev = NULL;
-          for (int j = 0; j < 6 && !isNeighborOfSourceSet; ++j) {
-            BoxIter* iter = new BoxIter(current->pChildren[i], j);
-            Box* n = iter->First();
-            while (n && n != iter->End()) {
-              if (n->dist2Source == 0) {
-                isNeighborOfSourceSet = true;
-                prev = n;
-                break;
-              }
-              n = iter->Next();
-            }
-          }
-          if (isNeighborOfSourceSet) {
-            switch (current->pChildren[i]->getStatus()) {
-              //if it's FREE, also insert to source set
-            case Box::FREE:
-              current->pChildren[i]->dist2Source = 0;
-              current->pChildren[i]->prev = prev;
-              // fallthrough
-            case Box::MIXED:
-              dijQ.push(current->pChildren[i]);
-              toReset.push_back(current->pChildren[i]);
-              break;
-            case Box::STUCK:
-              cerr << "inside FindPath: STUCK case not treated" << endl;
-              break;
-            case Box::UNKNOWN:
-              cerr << "inside FindPath: UNKNOWN case not treated" << endl;
-              break;
-            default:
-              std::cerr << "Wrong Status" << std::endl;
-              exit(1);
-            }
-          }
-        }
-      }
-    } else {
-      // if current is not MIXED, then must be FREE
-      // go through its neighbors and add FREE and MIXED ones to dijQ
-      // also add FREE ones to source set
-      //found path!
-      if (current == b && b->dist2Source == 0) {
-        isPath = true;
-        break;
-      }
-      for (int i = 0; i < 6; ++i) {
-        BoxIter* iter = new BoxIter(current, i);
-        Box* neighbor = iter->First();
-        while (neighbor && neighbor != iter->End()) {
-          if (!neighbor->visited && neighbor->dist2Source == -1 &&
-              (neighbor->status == Box::FREE || neighbor->status == Box::MIXED)) {
-            if (neighbor->status == Box::FREE) {
-              neighbor->dist2Source = 0;
-              neighbor->prev = current;
-            }
-            dijQ.push(neighbor);
-            toReset.push_back(neighbor);
-          }
-          neighbor = iter->Next();
-        }
-      }
-    }
-  }
-
-  // these two fields are also used in dijkstraShortestPath
-  // need to reset
-  for (unsigned int i = 0; i < toReset.size(); ++i) {
-    toReset[i]->visited = false;
-    toReset[i]->dist2Source = -1;
-  }
-
-  return isPath;
-}
-
 SoftSubdivisionSearch* initializeSSS() {
   Box* root = new Box(boxWidth/2, boxWidth/2, boxWidth/2, boxWidth);
   Box::r0 = R0;
@@ -175,9 +77,8 @@ void run() {
 
   sss = initializeSSS();
 
-  int ct = 0;
-
-  path = sss->softSubdivisionSearch(alpha, beta, ct);
+  path = sss->softSubdivisionSearch(alpha, beta);
+  int ct = sss->getNumSubdivisions();
   noPath = path.empty();
 
   // stop timer

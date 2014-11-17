@@ -43,7 +43,7 @@ class BoxQueue {
   ~BoxQueue(void) { }
 };
 
-class seqQueue : public BoxQueue {
+class SeqQueue : public BoxQueue {
  private:
   priority_queue<Box*, vector<Box*>, PQCmp> PQ;
  public:
@@ -66,14 +66,14 @@ class seqQueue : public BoxQueue {
   }
 };
 
-class randQueue : public BoxQueue
+class RandQueue : public BoxQueue
 {
  private:
   list<Box*> L;
   unsigned int Qseed;
 
  public:
- randQueue(unsigned int s): Qseed(s) {
+ RandQueue(unsigned int s): Qseed(s) {
    srand( Qseed );
  }
 
@@ -100,7 +100,7 @@ class randQueue : public BoxQueue
 
 };
 
-class dijkstraQueue : public BoxQueue
+class DijkstraQueue : public BoxQueue
 {
  private:
   vector<Box*> bv;

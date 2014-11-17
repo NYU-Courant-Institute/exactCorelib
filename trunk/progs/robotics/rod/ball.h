@@ -44,7 +44,6 @@ float view_rotate_angles[3] = {0, 0, 0};
 
 vector<Box*> path;
 bool noPath = true;      // True means there is "No path".
-vector<Box*> toReset;
 
 // GLUI controls ========================================
 //

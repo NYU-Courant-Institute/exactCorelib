@@ -55,18 +55,19 @@ class SoftSubdivisionSearch {
   Box* pRoot;
   double epsilon;
   int QType;
+  int ct;
 
   SoftSubdivisionSearch(Box* root, double e, int qType, unsigned int s):
-  pRoot(root), epsilon(e), QType(qType) {
+  pRoot(root), epsilon(e), QType(qType), ct(0) {
     switch (QType) {
     case 1:
-      PQ = new seqQueue();
+      PQ = new SeqQueue();
       break;
     case 0:
-      PQ = new randQueue(s);
+      PQ = new RandQueue(s);
       break;
     case 2:
-      PQ = new dijkstraQueue();
+      PQ = new DijkstraQueue();
       break;
     default:
       std::cerr << "Wrong QType" << std::endl;
@@ -157,13 +158,13 @@ class SoftSubdivisionSearch {
     }
   }
 
-  Box* findEnclosingFreeBox(double coordinate[3], int& expandCounter) {
+  Box* findEnclosingFreeBox(double coordinate[3]) {
     Box* box = getBox(coordinate[0], coordinate[1], coordinate[2]);
     while (box && !(box)->isFree()) {
       if (!expand(box)) {
         return NULL; // Does not have a free box for the given resolution
       }
-      ++expandCounter;
+      ++ct;
       box = getBox(box, coordinate[0], coordinate[1], coordinate[2]);
     }
     return box;
@@ -193,15 +194,14 @@ class SoftSubdivisionSearch {
 
   // find path using simple heuristic:
   // use distance to beta as key in PQ, see dijkstraQueue
-  bool findPath(Box* a, Box* b, int& ct) {
-    bool isPath = false;
+  void findPath(Box* boxA, Box* boxB) {
     toReset.clear();
-    a->dist2Source = 0;
-    dijkstraQueue PQ;
-    PQ.push(a);
-    toReset.push_back(a);
-    while (!PQ.empty()) {
-      Box* current = PQ.extract();
+    boxA->dist2Source = 0;
+    BoxQueue* PQ = new DijkstraQueue();
+    PQ->push(boxA);
+    toReset.push_back(boxA);
+    while (!PQ->empty()) {
+      Box* current = PQ->extract();
       current->visited = true;
 
       // if current is MIXED, try expand it and push the children that is
@@ -235,7 +235,7 @@ class SoftSubdivisionSearch {
                 current->pChildren[i]->prev = prev;
                 // fallthrough
               case Box::MIXED:
-                PQ.push(current->pChildren[i]);
+                PQ->push(current->pChildren[i]);
                 toReset.push_back(current->pChildren[i]);
                 break;
               case Box::STUCK:
@@ -256,8 +256,7 @@ class SoftSubdivisionSearch {
         // go through its neighbors and add FREE and MIXED ones to PQ
         // also add FREE ones to source set
         //found path!
-        if (current == b && b->dist2Source == 0) {
-          isPath = true;
+        if (current == boxB && boxB->dist2Source == 0) {
           break;
         }
         for (int i = 0; i < 6; ++i) {
@@ -270,7 +269,7 @@ class SoftSubdivisionSearch {
                 neighbor->dist2Source = 0;
                 neighbor->prev = current;
               }
-              PQ.push(neighbor);
+              PQ->push(neighbor);
               toReset.push_back(neighbor);
             }
             neighbor = iter->Next();
@@ -285,15 +284,17 @@ class SoftSubdivisionSearch {
       toReset[i]->visited = false;
       toReset[i]->dist2Source = -1;
     }
-
-    return isPath;
   }
 
-  vector<Box*> softSubdivisionSearch(double alpha[3], double beta[3], int& ct) {
+  int getNumSubdivisions() {
+    return ct;
+  }
+
+  vector<Box*> softSubdivisionSearch(double alpha[3], double beta[3]) {
     vector<Box*> path;
     path.clear();
-    Box* boxA = findEnclosingFreeBox(alpha, ct);
-    Box* boxB = findEnclosingFreeBox(beta, ct);
+    Box* boxA = findEnclosingFreeBox(alpha);
+    Box* boxB = findEnclosingFreeBox(beta);
     if (boxA == NULL || boxB == NULL) {
       return path;
     }
@@ -306,10 +307,11 @@ class SoftSubdivisionSearch {
         ++ct;
       }
     } else if (QType == 2) {
-      noPath = !findPath(boxA, boxB, ct);
+      findPath(boxA, boxB);
     }
     path = optimizePath(boxA, boxB, toReset);
     return path;
   }
+
   ~SoftSubdivisionSearch(void) { }
 };
