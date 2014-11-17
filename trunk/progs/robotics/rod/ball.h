@@ -21,15 +21,13 @@ void keyUp (unsigned char key, int x, int y);
 void run();
 SoftSubdivisionSearch* genEmptyTree();
 
-SoftSubdivisionSearch* OT;
+SoftSubdivisionSearch* sss;
 
 // GLOBAL INPUT Parameters ========================================
 //
 double alpha[3] = {75, 360, 100};  // start configuration
 double beta[3] = {450, 50, 400};  // goal configuration
 double epsilon = 5;      // resolution parameter
-Box* boxA;        // start box (containing alpha)
-Box* boxB;        // goal box (containing beta)
 double boxWidth = 512;      // Initial box width
 double R0 = 30;        // Robot radius
 int windowPosX = 250;      // X Position of Window

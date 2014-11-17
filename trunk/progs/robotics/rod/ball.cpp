@@ -29,7 +29,7 @@ using namespace std;
 
 // find path using simple heuristic:
 // use distance to beta as key in PQ, see dijkstraQueue
-bool findPath(Box* a, Box* b, SoftSubdivisionSearch* OT, int& ct) {
+bool findPath(Box* a, Box* b, SoftSubdivisionSearch* sss, int& ct) {
   bool isPath = false;
   toReset.clear();
   a->dist2Source = 0;
@@ -44,7 +44,7 @@ bool findPath(Box* a, Box* b, SoftSubdivisionSearch* OT, int& ct) {
     // ACTUALLY neighbors of the source set (set containing alpha) into the
     // dijQ again
     if (current->status == Box::MIXED) {
-      if (OT->expand(current)) {
+      if (sss->expand(current)) {
         ++ct;
         for (int i = 0; i < 8; ++i) {
           // go through neighbors of each child to see if it's in source set
@@ -136,18 +136,6 @@ SoftSubdivisionSearch* initializeSSS() {
   return new SoftSubdivisionSearch(root, epsilon, QType, seed++);  // Note that seed keeps changing!
 }
 
-Box* findEnclosingFreeBox(SoftSubdivisionSearch* sss, double coordinate[3], int& expandCounter) {
-  Box* box = sss->getBox(coordinate[0], coordinate[1], coordinate[2]);
-  while (box && !(box)->isFree()) {
-    if (!sss->expand(box)) {
-      return NULL; // Does not have a free box for the given resolution
-    }
-    ++expandCounter;
-    box = sss->getBox(box, coordinate[0], coordinate[1], coordinate[2]);
-  }
-  return box;
-}
-
 void animReplay() {
   iPathSeg = 0;
   finishedAnim = 0;
@@ -177,54 +165,21 @@ void run() {
   // start timer
   t.start();
 
-  if (OT) {
-    delete(OT);
-  }
-
-  OT = initializeSSS();
-
   if (showAnim) {
     animReplay();
   }
 
-  noPath = false;  // Confusing use of "noPath"
+  if (sss) {
+    delete(sss);
+  }
+
+  sss = initializeSSS();
+
   int ct = 0;
 
-  boxA = findEnclosingFreeBox(OT, alpha, ct);
-  boxB = findEnclosingFreeBox(OT, beta, ct);
-  if (boxA == NULL || boxB == NULL) {
-    noPath = true;
-  }
-  if (QType == 0 || QType == 1) {
-    while (!noPath && !OT->pSets->isConnect(boxA, boxB)) {
-      if (!OT->expand()) { // should ct be passed to expand?
-        noPath = true;
-      }
-      ++ct;
-    }
-  } else if (QType == 2) {
-    noPath = !findPath(boxA, boxB, OT, ct);
-  }
-  if (!noPath) {
-    cout << "Path found!" << endl;
-    boxA->prev = NULL;
-    path.clear();
-    path.push_back(boxB);
-    while (path.back()->prev) {
-      path.push_back(path.back()->prev);
-    }
-    for (unsigned int i = 0; i < toReset.size(); ++i) {
-      toReset[i]->prev = NULL;
-    }
-    vector<Box*> dijkstraShortestPath = Graph::dijkstraShortestPath(boxA, boxB);
-    if (dijkstraShortestPath.back() == boxA) {
-      path = dijkstraShortestPath;
-    } else {
-      cerr << "Something went wrong in the dijkstra path generation algorithm, defaulting to subdivision generated path" << endl;
-    }
-  } else {
-    cout << "No Path!" << endl;
-  }
+  path = sss->softSubdivisionSearch(alpha, beta, ct);
+  noPath = path.empty();
+
   // stop timer
   t.stop();
   // print the elapsed time in millisec
@@ -367,7 +322,7 @@ void drawTree(Box* b) {
 void renderScene(void) {
   drawAxis(boxWidth * 2);
 
-  drawTree(OT->pRoot);        // draws the octree
+  drawTree(sss->pRoot);        // draws the octree
 
   glPolygonMode(GL_FRONT, GL_LINE);
 
@@ -391,8 +346,8 @@ void renderScene(void) {
   }
   rod(R0 * 2, alpha[0], alpha[1], alpha[2], 0, 1, 1.0, 0.0, 0.498);  // start
   rod(R0 * 2, beta[0], beta[1], beta[2], 1, 1, 0, 0, 1);  // goal
-  drawEdges(OT->pRoot, transparency);
-  drawSpheres(OT->pRoot, transparency);
+  drawEdges(sss->pRoot, transparency);
+  drawSpheres(sss->pRoot, transparency);
 
   glEnable(GL_LIGHTING);
   glutSwapBuffers();
