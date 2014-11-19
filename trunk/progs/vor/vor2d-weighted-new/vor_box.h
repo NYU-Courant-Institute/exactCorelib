@@ -18,8 +18,9 @@ namespace vor2d {
 class vor_qt;
 
 struct vor_seg {
-  Point2d p;
-  Point2d q;
+  vor_seg(Point2d p, Point2d q) : p_(p), q_(q) {}
+  Point2d p_;
+  Point2d q_;
 };
 
 class vor_box {
@@ -32,7 +33,7 @@ class vor_box {
   double* center() const;
   vor_box** children() const;
   bool is_leaf() const;
-  vor_box* principal_neighbor_dir(int dir) const;
+  vor_box* principal_neighbor(int dir) const;
   const int dimension() const;
   int depth() const;
   int num_children() const;
@@ -46,6 +47,7 @@ class vor_box {
   vector<Corner*>* get_corners();
   vector<Edge*>* get_edges();
   vector<Object*>* get_objects();
+  const vector<vor_seg*>* get_segments() const;
   int num_features() const;
   double max_lipschitz() const;
   double clearance() const;

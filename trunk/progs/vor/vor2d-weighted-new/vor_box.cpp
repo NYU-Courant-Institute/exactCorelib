@@ -57,7 +57,7 @@ bool vor_box::is_leaf() const {
   return children_ == nullptr;
 }
 
-vor_box* vor_box::principal_neighbor_dir(int dir) const {
+vor_box* vor_box::principal_neighbor(int dir) const {
   int axis = fabs(dir);
   int sign = (dir < 0) ? 0 : 1;
   return neighbors_[(axis - 1) + sign * dimension()];
@@ -65,7 +65,7 @@ vor_box* vor_box::principal_neighbor_dir(int dir) const {
 
 shared_ptr<vector<vor_box*>> vor_box::leaf_neighbors_dir(int dir) {
   shared_ptr<vector<vor_box*>> neighbors (new vector<vor_box*>());
-  vor_box* cur_neighbor = principal_neighbor_dir(dir);
+  vor_box* cur_neighbor = principal_neighbor(dir);
 
   if (cur_neighbor == nullptr) {
     return neighbors;
@@ -215,6 +215,10 @@ vector<Edge*>* vor_box::get_edges() {
   return &edges_;
 }
 
+const vector<vor_seg*>* vor_box::get_segments() const {
+  return &segments_;
+}
+
 int vor_box::num_children() const {
   return num_children_;
 }
@@ -306,16 +310,16 @@ Object* vor_box::nearest_obj(const Point2d& point) const {
   return nearest;
 }
 
+Point2d* get_midpoint(const Point2d& p, const Point2d& q) {
+  return new Point2d((p[0] + q[0]) / 2.0, (p[1] + q[1]) / 2.0);
+}
+
+// TODO: Factor construction logic out into a separate file?
 void vor_box::gen_vertices() {
   double x = center_[0];
   double y = center_[1];
   double hw = width_ / 2.0;
   set<Object*> objects;
-
-  Point2d NE = Point2d(x + hw, y + hw);
-  Point2d SE = Point2d(x + hw, y - hw);
-  Point2d SW = Point2d(x - hw, y - hw);
-  Point2d NW = Point2d(x - hw, y + hw);
 
   Point2d corners[4];
   corners[0] = Point2d(x + hw, y + hw);
@@ -334,26 +338,51 @@ void vor_box::gen_vertices() {
     return;
   }
 
-  is_active_ = true;
   for (int i = 0; i < 4; i++) {
     int j = (i + 1) % 4;
     if (objs[i] != objs[j]) {
-      // TODO: Check neighboring smaller boxes for vor_nodes.
-      // TODO: Get vector addition/scalar multiplication to work with operator overloading.
-      double nx = (corners[i][0] + corners[j][0]) / 2.0;
-      double ny = (corners[i][1] + corners[j][1]) / 2.0;
-      nodes_.push_back(new Point2d(nx, ny));
+      // TODO: Improve direction computation logic.
+      int dir;
+
+      if (j == 0) {
+	dir = 2;
+      } else if (j == 1) {
+	dir = 1;
+      } else if (j == 2) {
+	dir = -2;
+      } else if (j == 3) {
+	dir = -1;
+      } else {
+	cout << "Warning: Failed to compute direction.\n";
+      }
+
+      Point2d* midpoint = get_midpoint(corners[i], corners[j]);
+      vor_box* neighbor = principal_neighbor(dir);
+      if (neighbor != nullptr && !neighbor->is_leaf()) {
+	// TODO: Use voronoi nodes from neighbor instead of recomputing them?
+	Object* mid_closest = nearest_obj(*midpoint);
+	if (objs[i] != mid_closest) {
+	  nodes_.push_back(get_midpoint(corners[i], *midpoint));
+	} else if (objs[j] != mid_closest) {
+	  nodes_.push_back(get_midpoint(corners[j], *midpoint));
+	} else {
+	  cout << "Warning: No node added.\n";
+	}
+      } else {
+	nodes_.push_back(midpoint);
+      }
     }
   }
-
-  // Object* obj_ne = nearest_obj(NE);
-  // objects.insert(obj_ne);
-  // Object* obj_se = nearest_obj(SE);
-  // objects.insert(obj_se);
-  // Object* obj_sw = nearest_obj(SW);
-  // objects.insert(obj_sw);
-  // Object* obj_nw = nearest_obj(NW);
-  // objects.insert(obj_nw);
+  
+  // Generate Voronoi segments.
+  if (nodes_.size() == 2) {
+    segments_.push_back(new vor_seg(*nodes_[0], *nodes_[1]));
+  } else {
+    Point2d center(center_[0], center_[1]);
+    for (Point2d* node : nodes_) {
+      segments_.push_back(new vor_seg(*node, center));
+    }
+  }
 }
 
 } // namespace vor2d

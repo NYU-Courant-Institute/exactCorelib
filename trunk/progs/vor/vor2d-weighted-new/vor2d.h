@@ -16,7 +16,7 @@
 
 #define WINDOW_WIDTH 1024
 #define ABS_EPS 1.0d / (1 << 10)
-#define GEOM_EPS 1.0d // / (1 << 10)
+#define GEOM_EPS 1.0d / (1 << 10)
 
 // Directions.
 // #define E 1

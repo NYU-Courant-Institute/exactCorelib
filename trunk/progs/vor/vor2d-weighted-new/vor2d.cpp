@@ -75,10 +75,7 @@ void cleanup() {
 
 void display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  if (show_grid) {
-    draw_box_rec(*tree->root());
-  }
+  draw_box_rec(*tree->root(), show_grid);
   
   // Draw all corners.
   vector<Corner*>* corners = tree->root()->get_corners();
@@ -211,7 +208,6 @@ void run() {
     double radius = box->radius();
     double num_obj = box->num_objects();
 
-    assert(box != nullptr);
     if (num_obj > 1) {
       if (box->width() > ABS_EPS 
 	  && (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION || box->clearance() < 2 * radius || radius > GEOM_EPS)) {
@@ -230,7 +226,6 @@ void run() {
   while (!construct.empty()) {
     vor_box* box = construct.front();
     construct.pop();
-    assert(box != nullptr);
     box->gen_vertices();
   }
 
