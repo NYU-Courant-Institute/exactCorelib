@@ -16,15 +16,25 @@ using vor2d::Object;
 void draw_box(const vor_box& box) {
   double cx = box.center()[0];
   double cy = box.center()[1];
-  double w = box.width();
+  double hw = box.width() / 2;
 
-  glColor3f(0.7, 0.7, 0.7); // Gray.
+  if (box.is_active()) {
+    glColor3f(1.0, 0, 0); // Red
+    glBegin(GL_POLYGON);
+    glVertex2d(cx - hw, cy - hw);
+    glVertex2d(cx - hw, cy + hw);
+    glVertex2d(cx + hw, cy + hw);
+    glVertex2d(cx + hw, cy - hw);
+    glEnd();
+  }
+
+  glColor3f(0.7, 0.7, 0.7); // Gray
   glLineWidth(1.0);
   glBegin(GL_LINE_LOOP);
-  glVertex2d(cx - w, cy - w);
-  glVertex2d(cx - w, cy + w);
-  glVertex2d(cx + w, cy + w);
-  glVertex2d(cx + w, cy - w);
+  glVertex2d(cx - hw, cy - hw);
+  glVertex2d(cx - hw, cy + hw);
+  glVertex2d(cx + hw, cy + hw);
+  glVertex2d(cx + hw, cy - hw);
   glEnd();
 }
 

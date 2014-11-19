@@ -2,14 +2,17 @@
 #include "vor_qt.h"
 
 #include "assert.h"
+#include <set>
 
 namespace vor2d {
 
+using std::set;
+
 vor_box::vor_box(int depth, int indicator, double center[], vor_qt* tree)
   : depth_(depth), indicator_(indicator), center_(center), tree_(tree),
-    children_(nullptr), num_children_(0) {
+    children_(nullptr), num_children_(0), is_active_(false) {
   width_ = pow(2, -depth_) * tree_->width();
-  radius_ = sqrt(2 * width_ * width_);
+  radius_ = width_ / sqrt(2);
   neighbors_ = new vor_box*[2 * dimension()];
 }
 
@@ -121,7 +124,7 @@ void vor_box::split() {
     // Compute the center of the new child.
     center = new double[dimension()];
     for (int j = 0; j < dimension(); j++) {
-      center[j] = center_[j] + ((i & (1 << j)) == 0 ? -1 : 1) * pow(2, -(depth_ + 1)) * tree_->width();
+      center[j] = center_[j] + ((i & (1 << j)) == 0 ? -1 : 1) * width_ / 4.0;
     }
     children_[i] = new vor_box(depth_ + 1, i, center, tree_);
 
@@ -276,6 +279,81 @@ int vor_box::num_features() const {
 
 int vor_box::num_objects() const {
   return objects_.size();
+}
+
+void vor_box::set_active(bool is_active) {
+  is_active_ = is_active;
+}
+
+bool vor_box::is_active() const {
+  return is_active_;
+}
+
+Object* vor_box::nearest_obj(const Point2d& point) const {
+  double min_dist = std::numeric_limits<double>::max();
+  Object* nearest = nullptr;
+
+  for (Object* obj : objects_) {
+    double cur_dist = obj->distance(point);
+    if (cur_dist < min_dist) {
+      min_dist = cur_dist;
+      nearest = obj;
+    } else if (cur_dist == min_dist) {
+      cout << "Warning: possible degeneracy.\n";
+    }
+  }
+
+  return nearest;
+}
+
+void vor_box::gen_vertices() {
+  double x = center_[0];
+  double y = center_[1];
+  double hw = width_ / 2.0;
+  set<Object*> objects;
+
+  Point2d NE = Point2d(x + hw, y + hw);
+  Point2d SE = Point2d(x + hw, y - hw);
+  Point2d SW = Point2d(x - hw, y - hw);
+  Point2d NW = Point2d(x - hw, y + hw);
+
+  Point2d corners[4];
+  corners[0] = Point2d(x + hw, y + hw);
+  corners[1] = Point2d(x + hw, y - hw);
+  corners[2] = Point2d(x - hw, y - hw);
+  corners[3] = Point2d(x - hw, y + hw);
+
+  // Compute nearest objects for each corner.
+  Object* objs[4];
+  for (int i = 0; i < 4; i++) {
+    objs[i] = nearest_obj(corners[i]);
+    objects.insert(objs[i]);
+  }
+
+  if (objects.size() == 1) {
+    return;
+  }
+
+  is_active_ = true;
+  for (int i = 0; i < 4; i++) {
+    int j = (i + 1) % 4;
+    if (objs[i] != objs[j]) {
+      // TODO: Check neighboring smaller boxes for vor_nodes.
+      // TODO: Get vector addition/scalar multiplication to work with operator overloading.
+      double nx = (corners[i][0] + corners[j][0]) / 2.0;
+      double ny = (corners[i][1] + corners[j][1]) / 2.0;
+      nodes_.push_back(new Point2d(nx, ny));
+    }
+  }
+
+  // Object* obj_ne = nearest_obj(NE);
+  // objects.insert(obj_ne);
+  // Object* obj_se = nearest_obj(SE);
+  // objects.insert(obj_se);
+  // Object* obj_sw = nearest_obj(SW);
+  // objects.insert(obj_sw);
+  // Object* obj_nw = nearest_obj(NW);
+  // objects.insert(obj_nw);
 }
 
 } // namespace vor2d

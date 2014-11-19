@@ -17,6 +17,11 @@ namespace vor2d {
 
 class vor_qt;
 
+struct vor_seg {
+  Point2d p;
+  Point2d q;
+};
+
 class vor_box {
  public:
   vor_box(int depth, int indicator, double center[], vor_qt* tree);
@@ -46,25 +51,34 @@ class vor_box {
   double clearance() const;
   double clearance(const Point2d&) const;
   int num_objects() const;
+  void set_active(bool is_active);
+  bool is_active() const;
+  void gen_vertices();
 
  protected:
   vor_box** neighbors() const;
   void split();
   void smooth_split_aux();
+  Object* nearest_obj(const Point2d&) const;
 
+  // Fields.
+  bool is_active_;
   const int depth_;
   const int indicator_;
   double width_;
   double radius_;
   double* center_;
   int num_children_;
-  vor_box** children_;
-  vor_box** neighbors_;
   vor_qt* tree_;
 
+  // Collections.
+  vor_box** children_;
+  vor_box** neighbors_;
   vector<Corner*> corners_;
   vector<Edge*> edges_;
   vector<Object*> objects_;
+  vector<Point2d*> nodes_;
+  vector<vor_seg*> segments_;
 
   friend class vor_qt;
 };

@@ -42,13 +42,16 @@ void run();
 
 // Global variables.
 vor_qt* tree;
-queue<vor_box*> unprocessed;
+queue<vor_box*> subdiv;
+queue<vor_box*> construct;
 vector<Object*> objects;
 bool show_grid = true;
 
 void initialize(string input_file_name) {
+  const string title_prefix = "2D subdivision-based Voronoi diagram - ";
+
   // Initialize global variables.
-  tree = new vor_qt(2 /* dimension */, 1.0 /* width */);
+  tree = new vor_qt(2 /* dimension */, 4.0 /* width */);
 
   // Set up antialiasing.
   glEnable(GL_LINE_SMOOTH);
@@ -57,7 +60,6 @@ void initialize(string input_file_name) {
   glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
   // Set up window.
-  string title_prefix = string();
   glutInitWindowSize(WINDOW_WIDTH, WINDOW_WIDTH);
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
   glutCreateWindow((title_prefix + input_file_name).c_str());
@@ -202,28 +204,35 @@ void Mouse(int button, int state, int x, int y) {
 #define MAX_OBJECTS_FOR_CONSTRUCTION 3
 void run() {
   // Subdivision phase.
-  unprocessed.push(tree->root());
-  while (!unprocessed.empty()) {
-    vor_box* box = unprocessed.front();
-    unprocessed.pop();
+  subdiv.push(tree->root());
+  while (!subdiv.empty()) {
+    vor_box* box = subdiv.front();
+    subdiv.pop();
     double radius = box->radius();
     double num_obj = box->num_objects();
-    if (box->width() <= ABS_EPS || num_obj < 2) {
-      continue;
-    }
 
-    if (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION || box->clearance() < 2 * radius || radius > GEOM_EPS) {
-      assert(num_obj > 1);
-      box->smooth_split();
-      vor_box** children = box->children();
-      for (int i = 0; i < box->num_children(); i++) {
-	unprocessed.push(children[i]);
+    assert(box != nullptr);
+    if (num_obj > 1) {
+      if (box->width() > ABS_EPS 
+	  && (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION || box->clearance() < 2 * radius || radius > GEOM_EPS)) {
+	box->smooth_split();
+	vor_box** children = box->children();
+	for (int i = 0; i < box->num_children(); i++) {
+	  subdiv.push(children[i]);
+	}
+      } else {
+	construct.push(box);
       }
     }
   }
 
   // Construction phase.
-  
+  while (!construct.empty()) {
+    vor_box* box = construct.front();
+    construct.pop();
+    assert(box != nullptr);
+    box->gen_vertices();
+  }
 
   // Display.
   display();
