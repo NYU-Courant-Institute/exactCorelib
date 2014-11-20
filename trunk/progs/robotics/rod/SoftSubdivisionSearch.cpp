@@ -1,8 +1,16 @@
 #include "./SoftSubdivisionSearch.h"
 
-SoftSubdivisionSearch::SoftSubdivisionSearch(Box* root, double e, int qType, unsigned int s):
+// TODO: Let the constructor accept alpha and beta as configurations of the robot
+SoftSubdivisionSearch::SoftSubdivisionSearch(Box* root, double e, int qType, unsigned int s, double alpha[3], double beta[3]):
   epsilon(e), QType(qType), ct(0), pRoot(root),
   freeCount(0), stuckCount(0), mixCount(0), mixSmallCount(0) {
+  this->alpha[0] = alpha[0];
+  this->alpha[1] = alpha[1];
+  this->alpha[2] = alpha[2];
+
+  this->beta[0] = beta[0];
+  this->beta[1] = beta[1];
+  this->beta[2] = beta[2];
   switch (QType) {
   case 1:
     PQ = new SeqQueue();
@@ -11,7 +19,7 @@ SoftSubdivisionSearch::SoftSubdivisionSearch(Box* root, double e, int qType, uns
     PQ = new RandQueue(s);
     break;
   case 2:
-    PQ = new DijkstraQueue();
+    PQ = new DijkstraQueue(alpha, beta);
     break;
   default:
     std::cerr << "Wrong QType" << std::endl;
@@ -62,7 +70,7 @@ bool SoftSubdivisionSearch::expand(Box* b) {
 void SoftSubdivisionSearch::findPath(Box* boxA, Box* boxB) {
   toReset.clear();
   boxA->dist2Source = 0;
-  BoxQueue* PQ = new DijkstraQueue();
+  BoxQueue* PQ = new DijkstraQueue(alpha, beta);
   PQ->push(boxA);
   toReset.push_back(boxA);
   while (!PQ->empty()) {
@@ -197,7 +205,7 @@ vector<Box*> SoftSubdivisionSearch::getCanonicalPath(Box* boxA, Box* boxB) {
 }
 
 // The SSS Framework as described in the RSS 2013 RCV Paper, section 7
-vector<Box*> SoftSubdivisionSearch::softSubdivisionSearch(double alpha[3], double beta[3]) {
+vector<Box*> SoftSubdivisionSearch::softSubdivisionSearch() {
   vector<Box*> path;
   path.clear();
 

@@ -8,6 +8,7 @@
 #include <iterator>
 #include "Graph.h"
 #include <math.h>
+#include "UnionFind.h"
 
 using namespace std;
 
@@ -114,8 +115,21 @@ class DijkstraQueue : public BoxQueue
 {
  private:
   vector<Box*> bv;
+  double alpha[3];
+  double beta[3];
 
  public:
+
+  DijkstraQueue(double alpha[3], double beta[3]) {
+    this->alpha[0] = alpha[0];
+    this->alpha[1] = alpha[1];
+    this->alpha[2] = alpha[2];
+
+    this->beta[0] = beta[0];
+    this->beta[1] = beta[1];
+    this->beta[2] = beta[2];
+  }
+
 
   void push(Box* b) {
     distHeap<PQCmp3>::insert(bv, b);

@@ -21,6 +21,7 @@ BoxIter::BoxIter(const Box* bb, int direc):b(bb), direction(direc) {
 }
 
 double Box::r0 = 0;
+int Box::boxId = 0;
 int Box::counter = 0;
 
 int BoxIter::size() {

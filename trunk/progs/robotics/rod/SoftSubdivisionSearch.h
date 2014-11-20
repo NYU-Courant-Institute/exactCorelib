@@ -25,6 +25,8 @@ class SoftSubdivisionSearch {
   int ct;
   BoxQueue* PQ;
   vector<Box*> toReset;
+  double alpha[3];
+  double beta[3];
 
   BoxQueue* getPriorityQueue();
 
@@ -49,13 +51,13 @@ class SoftSubdivisionSearch {
   int mixCount;
   int mixSmallCount;
 
-  SoftSubdivisionSearch(Box* root, double e, int qType, unsigned int s);
+  SoftSubdivisionSearch(Box* root, double e, int qType, unsigned int s, double alpha[3], double beta[3]);
 
   int getNumSubdivisions() {
     return ct;
   }
 
-  vector<Box*> softSubdivisionSearch(double alpha[3], double beta[3]);
+  vector<Box*> softSubdivisionSearch();
 
   ~SoftSubdivisionSearch(void) { }
 };

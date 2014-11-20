@@ -27,7 +27,7 @@ NOTE:   Surin was a Regional Finalist (one out of 100 nationwide)
 
 using namespace std;
 
-SoftSubdivisionSearch* initializeSSS() {
+SoftSubdivisionSearch* initializeSSS(double alpha[3], double beta[3]) {
   Box* root = new Box(boxWidth/2, boxWidth/2, boxWidth/2, boxWidth);
   Box::r0 = R0;
 
@@ -35,7 +35,7 @@ SoftSubdivisionSearch* initializeSSS() {
   root->updateStatus();
 
   cout<<"inside : initializeSSS Qtype= " << QType << "\n";
-  return new SoftSubdivisionSearch(root, epsilon, QType, seed++);  // Note that seed keeps changing!
+  return new SoftSubdivisionSearch(root, epsilon, QType, seed++, alpha, beta);  // Note that seed keeps changing!
 }
 
 void animReplay() {
@@ -75,9 +75,9 @@ void run() {
     delete(sss);
   }
 
-  sss = initializeSSS();
+  sss = initializeSSS(alpha, beta);
 
-  path = sss->softSubdivisionSearch(alpha, beta);
+  path = sss->softSubdivisionSearch();
   int ct = sss->getNumSubdivisions();
   noPath = path.empty();
 
