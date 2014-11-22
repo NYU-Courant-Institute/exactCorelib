@@ -1,6 +1,7 @@
 #include <iostream>
-#include "Box.h"
+#include "./Box.h"
 #include <assert.h>
+#include "./Predicate.h"
 
 using namespace std;
 
@@ -24,6 +25,7 @@ double Box::r0 = 0;
 int Box::boxIdCounter = 0;
 int Box::counter = 0;
 vector<Box*> Box::boxes;
+Predicate* Box::predicate;
 
 int BoxIter::size() {
   return neighborVec.size();
@@ -83,4 +85,24 @@ void BoxIter::storeNeighbors (Box* n) {
     std::cerr << "Direction should be 0 - 5" << std::endl;
     exit(1);
   }
+}
+
+Box::Box(double xx, double yy, double zz, double w):
+  depth(1), x(xx), y(yy), z(zz), width(w), isLeaf(true),
+  pParent(0), status(UNKNOWN),
+  pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(false) {
+  Box::boxIdCounter++;
+  boxId = boxIdCounter;
+  for (int i = 0; i < 8; ++i) {
+    pChildren[i] = 0;
+  }
+  rB = (width * sqrt(3))/2;
+  priority = Box::counter;
+  boxes.push_back(this);
+  predicate = new BoxPredicate();
+}
+
+Box::Status Box::getStatus() {
+  predicate->classify(this);
+  return status;
 }

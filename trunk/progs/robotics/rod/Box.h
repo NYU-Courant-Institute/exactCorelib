@@ -15,6 +15,8 @@
 
 class Set;
 class Box;
+class Predicate;
+class BoxPredicate;
 
 using namespace std;
 
@@ -74,6 +76,7 @@ class Box {
 
   static int counter;   // time of expansion (used in BFS strategy)
   static vector<Box*> boxes;
+  static Predicate* predicate;
 
   // Pointers to children, but when no children (i.e., leaf),
   //    the pointers are used as neighbor pointers
@@ -97,19 +100,7 @@ class Box {
   Box* prev;
   bool visited;
 
- Box(double xx, double yy, double zz, double w):
-  depth(1), x(xx), y(yy), z(zz), width(w), isLeaf(true),
-    pParent(0), status(UNKNOWN),
-    pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(false) {
-    Box::boxIdCounter++;
-    boxId = boxIdCounter;
-    for (int i = 0; i < 8; ++i) {
-      pChildren[i] = 0;
-    }
-    rB = (width * sqrt(3))/2;
-    priority = Box::counter;
-    boxes.push_back(this);
-  }
+  Box(double xx, double yy, double zz, double w);
 
   Box* getBox(double xx, double yy, double zz) {
     if (xx > x + width / 2 || xx < x - width / 2 ||
@@ -301,10 +292,7 @@ class Box {
     return status == FREE;
   }
 
-  Status getStatus() {
-    updateStatus();
-    return status;
-  }
+  Status getStatus();
 
   // split(eps)
   //         returns false if we fail to split for some reason

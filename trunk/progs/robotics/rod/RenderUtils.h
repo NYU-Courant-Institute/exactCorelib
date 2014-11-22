@@ -93,12 +93,12 @@ void drawQuad(Box* b, double epsilon, int val) {
     glColor3f(0.25, 1, 0.25);
     break;
   case Box::STUCK:
-    val = 1;
+    /* val = 1; */
   glLineWidth(1);
     glColor3f(1, 0.25, 0.25);
     break;
   case Box::MIXED:
-    val = 1;
+    /* val = 1; */
   glLineWidth(1);
     glColor3f(1, 1, 0.25);
     if (b->width < epsilon) {
