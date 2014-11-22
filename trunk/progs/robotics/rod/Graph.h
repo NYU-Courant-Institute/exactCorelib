@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <unordered_set>
 #include "./Box.h"
 
 using namespace std;
@@ -117,8 +118,66 @@ class PQCmp3 {
   }
 };
 
-class Graph {
+class Path {
  public:
+  static bool isNeighbor(Box* a, Box* b) {
+    double dx = abs(a->x - b->x);
+    double dy = abs(a->y - b->y);
+    double dz = abs(a->z - b->z);
+    double wa = a->width / 2;
+    double wb = b->width / 2;
+    return
+      (abs(dx - (wa + wb)) < 0.001 && abs(dy - abs(wa - wb)) < 0.001 && abs(dz - abs(wa - wb)) < 0.001) ||
+      (abs(dx - (wa - wb)) < 0.001 && abs(dy - abs(wa + wb)) < 0.001 && abs(dz - abs(wa - wb)) < 0.001) ||
+      (abs(dx - (wa - wb)) < 0.001 && abs(dy - abs(wa - wb)) < 0.001 && abs(dz - abs(wa + wb)) < 0.001);
+  }
+
+  static vector<Box*> bfsShortestPath(Box* a, Box* b) {
+    unordered_set<Box*> visited;
+    vector<Box*> fringe;
+    fringe.push_back(a);
+    visited.insert(a);
+    cout << a->boxId <<"\t" << a->x << "\t" << a->y << "\t" << a->z << "\t" << a->width << endl;
+    int begin = 0;
+    while (begin < fringe.size()) {
+      Box* c = fringe[begin];
+      begin++;
+      /* for (int j = 0; j < Box::boxes.size(); j++) { */
+        /* Box* n = Box::boxes[j]; */
+        /* if (n->status == Box::FREE && n->isLeaf && visited.find(n) == visited.end() && isNeighbor(n, c)) { */
+          /* cout << n->boxId <<"\t" << n->x << "\t" << n->y << "\t" << n->z << "\t" << n->width << "\t" << "prev: " << c->boxId << endl; */
+          /* n->prev = c; */
+          /* fringe.push_back(n); */
+          /* visited.insert(n); */
+        /* } */
+      for (int j = 0; j < 6; ++j) {
+        BoxIter* iter = new BoxIter(c, j);
+        Box* n = iter->First();
+        while (n && n != iter->End()) {
+          if (c->boxId == 162) {
+            cout << "162: " << j << " " << n->boxId <<"\t" << n->x << "\t" << n->y << "\t" << n->z << "\t" << n->width << endl;
+          }
+          if (n->getStatus() == Box::FREE && visited.find(n) == visited.end()) {
+            n->prev = c;
+          cout << n->boxId <<"\t" << n->x << "\t" << n->y << "\t" << n->z << "\t" << n->width << "\t" << "prev: " << c->boxId << endl;
+            fringe.push_back(n);
+            visited.insert(n);
+          }
+          n = iter->Next();
+        }
+      }
+    }
+
+    vector<Box*> path;
+    cout << b->boxId <<"\t" << b->x << "\t" << b->y << "\t" << b->z << "\t" << b->width << endl;
+    path.push_back(b);
+    while (path.back()->prev) {
+      path.push_back(path.back()->prev);
+    }
+    /* return path.size() == 1 ? fringe : path; */
+    return path;
+  }
+
   static vector<Box*> dijkstraShortestPath(Box* a, Box* b) {
     a->dist2Source = 0;
     vector<Box*> bv;

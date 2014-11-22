@@ -14,13 +14,11 @@ Points
 "PP" P + 30 50 30
 "PPP" P + 40 60 40
 Poly "Hole"
-6 b c cc bb aa a + 0 30 0
-6 d c cc dd aa a + 0 30 0
+6 b c cc bb aa a + 0 70 0
+6 d c cc dd aa a + 0 70 0
 Wall "floor_and_ceiling"
 5 X' Y' Z' + 0 0 0
-PutPoly Hole + 0 40 0
 Poly "Point"
-7 P 10
 7 PP 10
 7 PPP 10
 End

@@ -8,6 +8,7 @@
 #include <iterator>
 #include "Graph.h"
 #include <math.h>
+#include <unordered_set>
 #include "UnionFind.h"
 
 using namespace std;
@@ -42,6 +43,12 @@ class BoxQueue {
   virtual int size() = 0;
 
   virtual void clear() = 0;
+
+  virtual void process(Box* b) {
+    if (b->getStatus() == Box::MIXED) {
+      push(b);
+    }
+  }
 
   ~BoxQueue(void) { }
 };
@@ -117,6 +124,45 @@ class DijkstraQueue : public BoxQueue
   vector<Box*> bv;
   double alpha[3];
   double beta[3];
+  unordered_set<Box*> sourceSet;
+  unordered_set<Box*> fringe;
+
+  bool hasNeighborInSourceSet(Box* b) {
+    for (int j = 0; j < 6; ++j) {
+      BoxIter* iter = new BoxIter(b, j);
+      Box* n = iter->First();
+      while (n && n != iter->End()) {
+        if (sourceSet.find(n) != sourceSet.end()) {
+          /* b->prev = n; */
+          return true;
+        }
+        n = iter->Next();
+      }
+    }
+    return false;
+  }
+
+  void recursiveAddToSourceSet(Box* b) {
+    sourceSet.insert(b);
+    for (int j = 0; j < 6; ++j) {
+      BoxIter* iter = new BoxIter(b, j);
+      Box* n = iter->First();
+      while (n && n != iter->End()) {
+        if (n->getStatus() == Box::FREE) {
+          if (sourceSet.find(n) == sourceSet.end()) {
+            /* n->prev = b; */
+            recursiveAddToSourceSet(n);
+          }
+        } else if (n->getStatus() == Box::MIXED) {
+          if (fringe.find(n) == fringe.end()) {
+            fringe.insert(n);
+            push(n);
+          }
+        }
+        n = iter->Next();
+      }
+    }
+  }
 
  public:
 
@@ -136,7 +182,8 @@ class DijkstraQueue : public BoxQueue
   }
 
   Box* extract() {
-    return distHeap<PQCmp3>::extractMin(bv);
+    Box* b = distHeap<PQCmp3>::extractMin(bv);
+    return b;
   }
 
   bool empty() {
@@ -149,5 +196,14 @@ class DijkstraQueue : public BoxQueue
 
   void clear() {
     bv.clear();
+  }
+
+  void process(Box* b) {
+    if (b->getStatus() == Box::FREE) {
+      if ((sourceSet.empty() && b->getBox(alpha[0], alpha[1], alpha[2]) == b) ||
+          hasNeighborInSourceSet(b)) {
+        recursiveAddToSourceSet(b);
+      }
+    }
   }
 };

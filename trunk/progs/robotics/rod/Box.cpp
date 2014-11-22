@@ -17,12 +17,13 @@ BoxIter::BoxIter(const Box* bb, int direc):b(bb), direction(direc) {
     // n is an internal node, and we need to recursively add the relevant leaves to neighborVec
     storeNeighbors(n);
   }
-  neighborVec.push_back(new Box(0,0,0,0));
+  neighborVec.push_back(0);
 }
 
 double Box::r0 = 0;
-int Box::boxId = 0;
+int Box::boxIdCounter = 0;
 int Box::counter = 0;
+vector<Box*> Box::boxes;
 
 int BoxIter::size() {
   return neighborVec.size();

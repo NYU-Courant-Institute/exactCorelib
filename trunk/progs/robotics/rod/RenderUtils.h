@@ -87,15 +87,19 @@ void drawSpheres(Box* b, int transparency) {
 }
 
 void drawQuad(Box* b, double epsilon, int val) {
-  glLineWidth(1);
   switch (b->status) {
   case Box::FREE:
+  glLineWidth(1);
     glColor3f(0.25, 1, 0.25);
     break;
   case Box::STUCK:
+    val = 1;
+  glLineWidth(1);
     glColor3f(1, 0.25, 0.25);
     break;
   case Box::MIXED:
+    val = 1;
+  glLineWidth(1);
     glColor3f(1, 1, 0.25);
     if (b->width < epsilon) {
       glColor3f(0.5, 0.5, 0.5);
@@ -127,7 +131,15 @@ void drawPath(vector<Box*>& path, double alpha[3], double beta[3]) {
   }
   glVertex3f(alpha[0], alpha[1], alpha[2]);
   glEnd();
-  glLineWidth(1.0);
+  /* glLineWidth(1.0); */
+  /* for (unsigned int i = 0; i < path.size(); i++) { */
+    /* glLineWidth(2); */
+    /* glColor3f(1, 0.25, 0.25); */
+    /* glPushMatrix(); */
+    /* glTranslated(path[i]->x, path[i]->y, path[i]->z); */
+    /* glutWireCube(path[i]->width); */
+    /* glPopMatrix(); */
+  /* } */
 }
 
 void setUpView(float xy_aspect, double scale) {

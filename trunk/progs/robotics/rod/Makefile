@@ -301,6 +301,8 @@ eg3c:	ball
                 $(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
                 $(transparency) $(frameRate) \
 		&
+#	./ball $(interactive) 375 420 50 175 200 450 \
+#		30 45 input21.txt
 
 eg4:	ball
 	@echo "Target 'eg4':  runs ball with default Makefile options for file input21.txt"

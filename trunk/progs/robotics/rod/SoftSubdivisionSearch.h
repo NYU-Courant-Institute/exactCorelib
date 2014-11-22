@@ -14,6 +14,7 @@
 #include "./Box.h"
 #include "./UnionFind.h"
 #include "./PriorityQueue.h"
+#include "./Predicate.h"
 
 using namespace std;
 
@@ -27,6 +28,7 @@ class SoftSubdivisionSearch {
   vector<Box*> toReset;
   double alpha[3];
   double beta[3];
+  Predicate* predicate;
 
   BoxQueue* getPriorityQueue();
 

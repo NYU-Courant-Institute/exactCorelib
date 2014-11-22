@@ -32,7 +32,7 @@ SoftSubdivisionSearch* initializeSSS(double alpha[3], double beta[3]) {
   Box::r0 = R0;
 
   parseConfigFile(root);
-  root->updateStatus();
+  // root->updateStatus();
 
   cout<<"inside : initializeSSS Qtype= " << QType << "\n";
   return new SoftSubdivisionSearch(root, epsilon, QType, seed++, alpha, beta);  // Note that seed keeps changing!

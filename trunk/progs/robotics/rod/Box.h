@@ -69,9 +69,11 @@ class Box {
   bool isLeaf;
   static double r0;
   double rB;
-  static int boxId;
+  static int boxIdCounter;
+  int boxId;
 
   static int counter;   // time of expansion (used in BFS strategy)
+  static vector<Box*> boxes;
 
   // Pointers to children, but when no children (i.e., leaf),
   //    the pointers are used as neighbor pointers
@@ -99,12 +101,14 @@ class Box {
   depth(1), x(xx), y(yy), z(zz), width(w), isLeaf(true),
     pParent(0), status(UNKNOWN),
     pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(false) {
-    Box::boxId++;
+    Box::boxIdCounter++;
+    boxId = boxIdCounter;
     for (int i = 0; i < 8; ++i) {
       pChildren[i] = 0;
     }
     rB = (width * sqrt(3))/2;
     priority = Box::counter;
+    boxes.push_back(this);
   }
 
   Box* getBox(double xx, double yy, double zz) {
