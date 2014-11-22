@@ -27,8 +27,8 @@ SoftSubdivisionSearch::SoftSubdivisionSearch(Box* root, double e, int qType, uns
   }
   predicate = new BoxPredicate();
 
-  // predicate->classify(pRoot);
-  pRoot->updateStatus();
+  predicate->classify(pRoot);
+  // pRoot->updateStatus();
   insertNode(pRoot);
 }
 
@@ -60,7 +60,8 @@ void SoftSubdivisionSearch::insertNode(Box* b) {
 bool SoftSubdivisionSearch::expand(Box* b) {
   if (b->split(epsilon)) {
     for (int i = 0; i < 8; ++i) {
-      b->pChildren[i]->updateStatus();
+      predicate->classify(b->pChildren[i]);
+      // b->pChildren[i]->updateStatus();
       insertNode(b->pChildren[i]);
     }
     return true;
