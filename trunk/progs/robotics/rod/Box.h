@@ -12,6 +12,7 @@
 #include "./Wall.h"
 #include "./Edge.h"
 #include "./Corner.h"
+#include "./Box3d.h"
 
 class Set;
 class Box;
@@ -44,22 +45,9 @@ class BoxIter {
 
 class Box {
  private:
-  static bool inIntervalAtXByY(double p, double x, double y) {
-    return (p > x - y) && (p < x + y);
-  }
+  static bool inIntervalAtXByY(double p, double x, double y);
 
-  static bool isOverLimit(const Box* base, const Box* nextBox) {
-    double halfWidth = base->width / 2;
-    if ( (inIntervalAtXByY(nextBox->x, base->x, halfWidth) &&
-          inIntervalAtXByY(nextBox->y, base->y, halfWidth)) ||
-         (inIntervalAtXByY(nextBox->x, base->x, halfWidth) &&
-          inIntervalAtXByY(nextBox->z, base->z, halfWidth)) ||
-         (inIntervalAtXByY(nextBox->y, base->y, halfWidth) &&
-          inIntervalAtXByY(nextBox->z, base->z, halfWidth)) ) {
-      return false;
-    }
-    return true;
-  }
+  static bool isOverLimit(const Box* base, const Box* nextBox);
 
  public:
   friend class BoxIter;

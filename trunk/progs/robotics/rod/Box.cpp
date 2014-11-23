@@ -21,12 +21,6 @@ BoxIter::BoxIter(const Box* bb, int direc):b(bb), direction(direc) {
   neighborVec.push_back(0);
 }
 
-double Box::r0 = 0;
-int Box::boxIdCounter = 0;
-int Box::counter = 0;
-vector<Box*> Box::boxes;
-Predicate* Box::predicate;
-
 int BoxIter::size() {
   return neighborVec.size();
 }
@@ -85,6 +79,29 @@ void BoxIter::storeNeighbors (Box* n) {
     std::cerr << "Direction should be 0 - 5" << std::endl;
     exit(1);
   }
+}
+
+double Box::r0 = 0;
+int Box::boxIdCounter = 0;
+int Box::counter = 0;
+vector<Box*> Box::boxes;
+Predicate* Box::predicate;
+
+bool Box::inIntervalAtXByY(double p, double x, double y) {
+  return (p > x - y) && (p < x + y);
+}
+
+bool Box::isOverLimit(const Box* base, const Box* nextBox) {
+  double halfWidth = base->width / 2;
+  if ( (inIntervalAtXByY(nextBox->x, base->x, halfWidth) &&
+        inIntervalAtXByY(nextBox->y, base->y, halfWidth)) ||
+       (inIntervalAtXByY(nextBox->x, base->x, halfWidth) &&
+        inIntervalAtXByY(nextBox->z, base->z, halfWidth)) ||
+       (inIntervalAtXByY(nextBox->y, base->y, halfWidth) &&
+        inIntervalAtXByY(nextBox->z, base->z, halfWidth)) ) {
+    return false;
+  }
+  return true;
 }
 
 Box::Box(double xx, double yy, double zz, double w):
