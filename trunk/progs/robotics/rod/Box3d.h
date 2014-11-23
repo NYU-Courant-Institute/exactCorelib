@@ -42,11 +42,11 @@ class Box3d {
       return 0;
     }
     for (int i = 0; i < 2; i++) {
-      double nx = origin->x - width / 2 + width * i;
+      double nx = origin->x - width / 4 + width / 2 * i;
       for (int j = 0; j < 2; j++) {
-        double ny = origin->y - width / 2 + width * i;
+        double ny = origin->y - width / 4 + width / 2 * i;
         for (int k = 0; k < 2; k++) {
-          double nz = origin->z - width / 2 + width * i;
+          double nz = origin->z - width / 4 + width / 2 * i;
           children->push_back(new Box3d(nx, ny, nz, width / 2));
         }
       }

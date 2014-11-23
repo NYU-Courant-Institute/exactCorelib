@@ -114,10 +114,10 @@ void parseConfigFile(Box* b) {
         pt--;
         unsigned long radius;
         ifs >> radius;
-        b->addSphere(new Corner(pts[pt].x * scale,
+        b->addSphere(new Sphere(pts[pt].x * scale,
                                 pts[pt].y * scale,
-                                pts[pt].z * scale),
-                     radius);
+                                pts[pt].z * scale,
+                                radius));
       }
 
     }  // for i

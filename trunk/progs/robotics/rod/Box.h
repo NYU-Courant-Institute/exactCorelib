@@ -80,7 +80,7 @@ class Box {
   list<Corner*> corners;
   list<Edge*> Edges;
   list<Wall*> Walls;
-  list<pair<Corner*, int> > spheres;
+  list<Sphere*> spheres;
 
   // for shortest path
   double dist2Source;
@@ -136,8 +136,8 @@ class Box {
     Walls.push_back(w);
   }
 
-  void addSphere(Corner* s, double radius) {
-    spheres.push_back(make_pair(s, radius));
+  void addSphere(Sphere* s) {
+    spheres.push_back(s);
   }
 
   bool isFree() {

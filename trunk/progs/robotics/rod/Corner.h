@@ -1,7 +1,7 @@
 #pragma once
 #include "./Vector.h"
 #include "./Obstacle.h"
-#include <math.h>
+#include <cmath>
 class Edge;
 
 class Corner : public Vector, public Obstacle {
@@ -9,8 +9,8 @@ class Corner : public Vector, public Obstacle {
   Edge* preEdge;
   Edge* nextEdge;
   // Constructor from (x,y,z):
-  Corner(double xx, double yy, double zz) : Vector(xx, yy, zz) { }
-  Corner(const Corner& c) : Vector(c) { }
+ Corner(double xx, double yy, double zz) : Vector(xx, yy, zz) { }
+ Corner(const Corner& c) : Vector(c) { }
 
   Corner operator+(const Corner& other) {
     return Corner(x + other.x, y + other.y, z + other.z);
@@ -24,5 +24,20 @@ class Corner : public Vector, public Obstacle {
       sqrt((x - x2) * (x - x2) +
            (y - y2) * (y - y2) +
            (z - z2) * (z - z2) );
+  }
+};
+
+class Sphere : public Corner {
+ public:
+  double radius;
+
+ Sphere(double xx, double yy, double zz, double r):
+  Corner(xx, yy, zz), radius(r) { }
+
+  double distance(double xx, double yy, double zz) {
+    return
+      std::abs(sqrt((x - xx) * (x - xx) +
+               (y - yy) * (y - yy) +
+               (z - zz) * (z - zz) ) - radius);
   }
 };

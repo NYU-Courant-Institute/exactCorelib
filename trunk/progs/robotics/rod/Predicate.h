@@ -16,10 +16,11 @@ class BoxPredicate : public Predicate {
     double innerDomain = Box::r0 > b->rB ? Box::r0 - b->rB : 0;
     for (list<Corner*>::iterator it = b->corners.begin(); it != b->corners.end(); ) {
       Corner* c = *it;
-      if (c->distance(b->x, b->y, b->z) <= innerDomain) {
+      double distCorner = c->distance(b->x, b->y, b->z);
+      if (distCorner <= innerDomain) {
         b->status = Box::STUCK;
         return;
-      } else if ( c->distance(b->x, b->y, b->z) <= outerDomain ) {
+      } else if (distCorner <= outerDomain ) {
         b->status = Box::MIXED;
         ++it;
       } else {
@@ -57,10 +58,9 @@ class BoxPredicate : public Predicate {
       }
     }
 
-    for (list<pair<Corner*, int> >::iterator it = b->spheres.begin(); it != b->spheres.end(); ) {
-      Corner* c = it->first;
-      double distSphere = c->distance(b->x, b->y, b->z) - it->second;
-      distSphere = distSphere < 0 ? -distSphere : distSphere;
+    for (list<Sphere*>::iterator it = b->spheres.begin(); it != b->spheres.end(); ) {
+      Sphere* s = *it;
+      double distSphere = s->distance(b->x, b->y, b->z);
       if (distSphere < innerDomain) {
         b->status = Box::STUCK;
         return;

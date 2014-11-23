@@ -80,9 +80,9 @@ void drawEdges(Box* b, int transparency) {
 void drawSpheres(Box* b, int transparency) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  for (list<pair<Corner*, int> >::iterator iter = b->spheres.begin(); iter != b->spheres.end(); ++iter) {
-    pair<Corner*, int> c = *iter;
-    filledSphere(c.second, c.first->x, c.first->y, c.first->z, 1.0, 1.0, 1.0, transparency / 100.0);
+  for (list<Sphere*>::iterator iter = b->spheres.begin(); iter != b->spheres.end(); ++iter) {
+    Sphere* s = *iter;
+    filledSphere(s->radius, s->x, s->y, s->z, 1.0, 1.0, 1.0, transparency / 100.0);
   }
 }
 
