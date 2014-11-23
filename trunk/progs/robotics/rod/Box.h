@@ -51,7 +51,6 @@ class Box {
 
  public:
   friend class BoxIter;
-  friend class QuadTree;
   int depth;
   double x, y, z;
   double width;

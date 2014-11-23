@@ -1,4 +1,5 @@
 #include "./Box.h"
+#include "./ConfBox3d.h"
 
 class Predicate {
  public:

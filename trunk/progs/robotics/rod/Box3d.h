@@ -5,13 +5,12 @@
 using namespace std;
 
 class Box3d {
- private:
+ public:
   Vector* origin;
   double width;
   vector<Box3d*>* children;
   vector<Box3d*>* neighbor;
 
- public:
   Box3d(double x, double y, double z, double width) {
     origin = new Vector(x, y, z);
     this->width = width;
@@ -19,6 +18,16 @@ class Box3d {
 
   bool approxEqual(double x, double y) {
     return abs(x - y) < 0.001;
+  }
+
+  bool containsPoint(double xx, double yy, double zz) {
+    double x = origin->x;
+    double y = origin->y;
+    double z = origin->z;
+    return
+      !(xx > x + width / 2 || xx < x - width / 2 ||
+        yy > y + width / 2 || yy < y - width / 2 ||
+        zz > z + width / 2 || zz < z - width / 2);
   }
 
   bool isAdjacent(Box3d* other) {
@@ -41,6 +50,7 @@ class Box3d {
     if (width < epsilon) {
       return 0;
     }
+    children->clear();
     for (int i = 0; i < 2; i++) {
       double nx = origin->x - width / 4 + width / 2 * i;
       for (int j = 0; j < 2; j++) {
@@ -51,14 +61,14 @@ class Box3d {
         }
       }
     }
-    for (int i = 0; i < 8; i++) {
-      for (int j = i + 1; j < 8; j++) {
-        if ((*children)[i]->isAdjacent((*children)[j])) {
-          (*children)[i]->neighbor->push_back((*children)[j]);
-          (*children)[j]->neighbor->push_back((*children)[i]);
-        }
-      }
-    }
+    /* for (int i = 0; i < 8; i++) { */
+      /* for (int j = i + 1; j < 8; j++) { */
+        /* if ((*children)[i]->isAdjacent((*children)[j])) { */
+          /* (*children)[i]->neighbor->push_back((*children)[j]); */
+          /* (*children)[j]->neighbor->push_back((*children)[i]); */
+        /* } */
+      /* } */
+    /* } */
     return children;
   }
 };

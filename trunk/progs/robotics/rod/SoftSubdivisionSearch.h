@@ -15,6 +15,7 @@
 #include "./UnionFind.h"
 #include "./PriorityQueue.h"
 #include "./Predicate.h"
+#include "./ConfBox3d.h"
 
 using namespace std;
 
