@@ -1,7 +1,21 @@
 #include "./SoftSubdivisionSearch.h"
 
+void printConfBoxes() {
+  string enumNames[4] = { "FREE", "STUCK", "MIXED", "UNKNOWN" };
+  for (int i = 0; i < ConfBox3d::boxes.size(); i++) {
+    ConfBox3d* b = ConfBox3d::boxes[i];
+    cout << "===================" << endl;
+    cout << b->boxId << "\t" << b->x << "\t" << b->y << "\t" << b->z << "\t" << b->width << "\t" << enumNames[b->status] << endl;
+    for (int i = 0; i < b->neighbors.size(); i++) {
+      cout << b->neighbors[i]->boxId << "\t";
+    }
+    cout << endl;
+    cout << "===================" << endl;
+  }
+}
+
 // TODO: Let the constructor accept alpha and beta as configurations of the robot
-SoftSubdivisionSearch::SoftSubdivisionSearch(Box* root, double e, int qType, unsigned int s, double alpha[3], double beta[3]):
+SoftSubdivisionSearch::SoftSubdivisionSearch(ConfBox3d* root, double e, int qType, unsigned int s, double alpha[3], double beta[3]):
   epsilon(e), QType(qType), ct(0), pRoot(root),
   freeCount(0), stuckCount(0), mixCount(0), mixSmallCount(0) {
   this->alpha[0] = alpha[0];
@@ -25,30 +39,29 @@ SoftSubdivisionSearch::SoftSubdivisionSearch(Box* root, double e, int qType, uns
     std::cerr << "Wrong QType" << std::endl;
     exit(1);
   }
-  predicate = new BoxPredicate();
+  predicate = new ConfBox3dPredicate();
 
   predicate->classify(pRoot);
-  // pRoot->updateStatus();
   insertNode(pRoot);
 }
 
-void SoftSubdivisionSearch::insertNode(Box* b) {
+void SoftSubdivisionSearch::insertNode(ConfBox3d* b) {
   PQ->process(b);
   switch (b->getStatus()) {
-  case Box::FREE:
+  case FREE:
     unionAdjacent(b);
     ++freeCount;
     break;
-  case Box::STUCK:
+  case STUCK:
     ++stuckCount;
     break;
-  case Box::MIXED:
+  case MIXED:
     ++mixCount;
     if (b->width < epsilon) {
       ++mixSmallCount;
     }
     break;
-  case Box::UNKNOWN:
+  case UNKNOWN:
     std::cout << "UNKNOWN not handled" << std::endl;
     break;
   default:
@@ -57,43 +70,38 @@ void SoftSubdivisionSearch::insertNode(Box* b) {
   }
 }
 
-bool SoftSubdivisionSearch::expand(Box* b) {
+bool SoftSubdivisionSearch::expand(ConfBox3d* b) {
   if (b->split(epsilon)) {
-    for (int i = 0; i < 8; ++i) {
-      predicate->classify(b->pChildren[i]);
-      // b->pChildren[i]->updateStatus();
-      insertNode(b->pChildren[i]);
+    for (int i = 0; i < b->children.size(); ++i) {
+      predicate->classify(b->children[i]);
+      insertNode(b->children[i]);
     }
     return true;
   }
   return false;
 }
 
-void SoftSubdivisionSearch::unionAdjacent(Box* b) {
-  if (b->getStatus() != Box::FREE) {
+void SoftSubdivisionSearch::unionAdjacent(ConfBox3d* b) {
+  if (b->getStatus() != FREE) {
     cerr << "Cannot union boxes that are mixed or stuck" << endl;
     exit(1);
   }
   if (b->pSet == 0) {
     new Set(b);
   }
-  for (int i = 0; i < 6; ++i) {
-    BoxIter* iter = new BoxIter(b, i);
-    Box* neighbor = iter->First();
-    while (neighbor && neighbor != iter->End()) {
-      if (neighbor->status == Box::FREE) {
-        if (neighbor->pSet == 0) {
-          new Set(neighbor);
-        }
-        pSets->Union(b, neighbor);
+  for (int i = 0; i < b->neighbors.size(); i++) {
+    ConfBox3d* n = b->neighbors[i];
+    if (n->status == FREE) {
+      if (n->pSet == 0) {
+        new Set(n);
       }
-      neighbor = iter->Next();
+      pSets->Union(b, n);
     }
   }
 }
 
-Box* SoftSubdivisionSearch::findEnclosingFreeBox(double coordinate[3]) {
-  Box* box = pRoot->getBox(coordinate[0], coordinate[1], coordinate[2]);
+ConfBox3d* SoftSubdivisionSearch::findEnclosingFreeBox(double coordinate[3]) {
+  ConfBox3d* box = pRoot->getBox(coordinate[0], coordinate[1], coordinate[2]);
   while (box && !(box)->isFree()) {
     if (!expand(box)) {
       return NULL; // Does not have a free box for the given resolution
@@ -105,29 +113,31 @@ Box* SoftSubdivisionSearch::findEnclosingFreeBox(double coordinate[3]) {
 }
 
 // The SSS Framework as described in the RSS 2013 RCV Paper, section 7
-vector<Box*> SoftSubdivisionSearch::softSubdivisionSearch() {
-  Box::boxes.clear();
-  Box::boxIdCounter = 0;
-  vector<Box*> path;
+vector<ConfBox3d*> SoftSubdivisionSearch::softSubdivisionSearch() {
+  ConfBox3d::boxes.clear();
+  vector<ConfBox3d*> path;
   path.clear();
 
   // 1. Initialization
-  Box* boxA = findEnclosingFreeBox(alpha);
-  Box* boxB = findEnclosingFreeBox(beta);
+  ConfBox3d* boxA = findEnclosingFreeBox(alpha);
+  ConfBox3d* boxB = findEnclosingFreeBox(beta);
   if (boxA == NULL || boxB == NULL) {
     return path;
   }
+  printConfBoxes();
+  cout << boxA->boxId << "\t" << boxB->boxId << endl;
 
   // 2. Main
   while (!pSets->isConnect(boxA, boxB)) {
     if (PQ->empty()) {
+      printConfBoxes();
       path.clear();
       return path;
     }
-    Box* b = PQ->extract();
+    ConfBox3d* b = PQ->extract();
     // b might not be a leaf since it could already be split in
-    // expand(Box* b), and PQ is not updated there
-    if (b->isLeaf && b->getStatus() == Box::MIXED) {
+    // expand(ConfBox3d* b), and PQ is not updated there
+    if (b->isLeaf() && b->getStatus() == MIXED) {
       expand(b);
     }
     ++ct;
@@ -136,11 +146,6 @@ vector<Box*> SoftSubdivisionSearch::softSubdivisionSearch() {
   // 3. Compute Free Channel
   // path = getCanonicalPath(boxA, boxB);
   path = Path::bfsShortestPath(boxA, boxB);
-  for (int i = 0; i < Box::boxes.size(); i++) {
-    Box* b = Box::boxes[i];
-    if (b->getStatus() == Box::FREE) {
-      cout << b->boxId << "\t" << b->x << "\t" << b->y << "\t" << b->z << "\t" << b->width << endl;
-    }
-  }
+  printConfBoxes();
   return path;
 }

@@ -1,15 +1,14 @@
 #pragma once
 #include <vector>
 #include "./Vector.h"
-
+#include <iostream>
 using namespace std;
 
 class Box3d {
  public:
   Vector* origin;
   double width;
-  vector<Box3d*>* children;
-  vector<Box3d*>* neighbor;
+  vector<Box3d*> children;
 
   Box3d(double x, double y, double z, double width) {
     origin = new Vector(x, y, z);
@@ -30,45 +29,49 @@ class Box3d {
         zz > z + width / 2 || zz < z - width / 2);
   }
 
+  bool intervalContains(double x, double xx, double w, double ww) {
+    w += 0.0001;
+    w /= 2;
+    ww += 0.0001;
+    ww /= 2;
+    return (x + w > xx && x - w < xx) || (xx + ww > x && xx - ww < x);
+  }
+
+  bool includeFace(double x, double y, double w, double xx, double yy, double ww) {
+    return intervalContains(x, xx, w, ww) && intervalContains(y, yy, w, ww);
+  }
+
   bool isAdjacent(Box3d* other) {
     double dx = abs(other->origin->x - origin->x);
     double dy = abs(other->origin->y - origin->y);
     double dz = abs(other->origin->z - origin->z);
-    double sw = width + other->width;
-    double dw = abs(width - other->width);
-    return
-      (approxEqual(dx, sw) && approxEqual(dy, dw) && approxEqual(dz, dw)) ||
-      (approxEqual(dx, dw) && approxEqual(dy, sw) && approxEqual(dz, dw)) ||
-      (approxEqual(dx, dw) && approxEqual(dy, dw) && approxEqual(dz, sw));
+    double sw = width / 2 + other->width / 2;
+    bool adj =
+      (approxEqual(dx, sw) && includeFace(origin->y, origin->z, width, other->origin->y, other->origin->z, other->width)) ||
+      (approxEqual(dy, sw) && includeFace(origin->x, origin->z, width, other->origin->x, other->origin->z, other->width)) ||
+      (approxEqual(dz, sw) && includeFace(origin->x, origin->y, width, other->origin->x, other->origin->y, other->width));
+    return adj;
   }
 
   bool isIdentical(Box3d* other) {
     return origin == other->origin && width == other->width;
   }
 
-  vector<Box3d*>* split(double epsilon) {
+  bool split(double epsilon) {
     if (width < epsilon) {
-      return 0;
+      return false;
     }
-    children->clear();
+    children.clear();
     for (int i = 0; i < 2; i++) {
       double nx = origin->x - width / 4 + width / 2 * i;
       for (int j = 0; j < 2; j++) {
-        double ny = origin->y - width / 4 + width / 2 * i;
+        double ny = origin->y - width / 4 + width / 2 * j;
         for (int k = 0; k < 2; k++) {
-          double nz = origin->z - width / 4 + width / 2 * i;
-          children->push_back(new Box3d(nx, ny, nz, width / 2));
+          double nz = origin->z - width / 4 + width / 2 * k;
+          children.push_back(new Box3d(nx, ny, nz, width / 2));
         }
       }
     }
-    /* for (int i = 0; i < 8; i++) { */
-      /* for (int j = i + 1; j < 8; j++) { */
-        /* if ((*children)[i]->isAdjacent((*children)[j])) { */
-          /* (*children)[i]->neighbor->push_back((*children)[j]); */
-          /* (*children)[j]->neighbor->push_back((*children)[i]); */
-        /* } */
-      /* } */
-    /* } */
-    return children;
+    return true;
   }
 };

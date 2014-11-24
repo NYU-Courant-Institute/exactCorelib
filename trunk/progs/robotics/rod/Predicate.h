@@ -1,5 +1,4 @@
 #include "./Box.h"
-#include "./ConfBox3d.h"
 
 class Predicate {
  public:
@@ -9,6 +8,7 @@ class Predicate {
 class BoxPredicate : public Predicate {
  public:
   void classify(Box* b) {
+    cout << Box::r0 << endl;
     if (b->status != Box::UNKNOWN) {
       return;
     }

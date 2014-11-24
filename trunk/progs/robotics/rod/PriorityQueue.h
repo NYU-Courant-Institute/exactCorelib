@@ -1,5 +1,5 @@
 #pragma once
-#include "Box.h"
+#include "./ConfBox3d.h"
 #include <queue>
 #include <vector>
 #include <list>
@@ -15,7 +15,7 @@ using namespace std;
 
 class PQCmp {
  public:
-  bool operator() (const Box* a, const Box* b) {
+  bool operator() (const ConfBox3d* a, const ConfBox3d* b) {
     //use depth for now
     if (a->depth > b->depth) {
       return true;
@@ -34,9 +34,9 @@ class BoxQueue {
 
   BoxQueue(void) { }
 
-  virtual void push(Box* b) = 0;
+  virtual void push(ConfBox3d* b) = 0;
 
-  virtual Box* extract() = 0;
+  virtual ConfBox3d* extract() = 0;
 
   virtual bool empty() = 0;
 
@@ -44,8 +44,8 @@ class BoxQueue {
 
   virtual void clear() = 0;
 
-  virtual void process(Box* b) {
-    if (b->getStatus() == Box::MIXED) {
+  virtual void process(ConfBox3d* b) {
+    if (b->getStatus() == MIXED) {
       push(b);
     }
   }
@@ -55,14 +55,14 @@ class BoxQueue {
 
 class SeqQueue : public BoxQueue {
  private:
-  priority_queue<Box*, vector<Box*>, PQCmp> PQ;
+  priority_queue<ConfBox3d*, vector<ConfBox3d*>, PQCmp> PQ;
  public:
-  void push(Box* b) {
+  void push(ConfBox3d* b) {
     PQ.push(b);
   }
 
-  Box* extract() {
-    Box* r = PQ.top();
+  ConfBox3d* extract() {
+    ConfBox3d* r = PQ.top();
     PQ.pop();
     return r;
   }
@@ -76,14 +76,14 @@ class SeqQueue : public BoxQueue {
   }
 
   void clear() {
-    PQ = priority_queue<Box*, vector<Box*>, PQCmp>();
+    PQ = priority_queue<ConfBox3d*, vector<ConfBox3d*>, PQCmp>();
   }
 };
 
 class RandQueue : public BoxQueue
 {
  private:
-  list<Box*> L;
+  list<ConfBox3d*> L;
   unsigned int Qseed;
 
  public:
@@ -91,15 +91,15 @@ class RandQueue : public BoxQueue
    srand( Qseed );
  }
 
-  void push(Box* b) {
+  void push(ConfBox3d* b) {
     L.push_back(b);
   }
 
-  Box* extract() {
+  ConfBox3d* extract() {
     unsigned long i = static_cast<unsigned long>(rand()) % L.size();
-    list<Box*>::iterator iter = L.begin();
+    list<ConfBox3d*>::iterator iter = L.begin();
     advance(iter, i);
-    Box* r = *iter;
+    ConfBox3d* r = *iter;
     L.erase(iter);
     return r;
   }
@@ -121,45 +121,37 @@ class RandQueue : public BoxQueue
 class DijkstraQueue : public BoxQueue
 {
  private:
-  vector<Box*> bv;
+  vector<ConfBox3d*> bv;
   double alpha[3];
   double beta[3];
-  unordered_set<Box*> sourceSet;
-  unordered_set<Box*> fringe;
+  unordered_set<ConfBox3d*> sourceSet;
+  unordered_set<ConfBox3d*> fringe;
 
-  bool hasNeighborInSourceSet(Box* b) {
-    for (int j = 0; j < 6; ++j) {
-      BoxIter* iter = new BoxIter(b, j);
-      Box* n = iter->First();
-      while (n && n != iter->End()) {
-        if (sourceSet.find(n) != sourceSet.end()) {
+  bool hasNeighborInSourceSet(ConfBox3d* b) {
+    for (int i = 0; i < b->neighbors.size(); i++) {
+      ConfBox3d* n = b->neighbors[i];
+      if (sourceSet.find(n) != sourceSet.end()) {
           /* b->prev = n; */
-          return true;
-        }
-        n = iter->Next();
+        return true;
       }
     }
     return false;
   }
 
-  void recursiveAddToSourceSet(Box* b) {
+  void recursiveAddToSourceSet(ConfBox3d* b) {
     sourceSet.insert(b);
-    for (int j = 0; j < 6; ++j) {
-      BoxIter* iter = new BoxIter(b, j);
-      Box* n = iter->First();
-      while (n && n != iter->End()) {
-        if (n->getStatus() == Box::FREE) {
-          if (sourceSet.find(n) == sourceSet.end()) {
-            /* n->prev = b; */
-            recursiveAddToSourceSet(n);
-          }
-        } else if (n->getStatus() == Box::MIXED) {
-          if (fringe.find(n) == fringe.end()) {
-            fringe.insert(n);
-            push(n);
-          }
+    for (int i = 0; i < b->neighbors.size(); i++) {
+      ConfBox3d* n = b->neighbors[i];
+      if (n->getStatus() == FREE) {
+        if (sourceSet.find(n) == sourceSet.end()) {
+          /* n->prev = b; */
+          recursiveAddToSourceSet(n);
         }
-        n = iter->Next();
+      } else if (n->getStatus() == MIXED) {
+        if (fringe.find(n) == fringe.end()) {
+          fringe.insert(n);
+          push(n);
+        }
       }
     }
   }
@@ -177,12 +169,12 @@ class DijkstraQueue : public BoxQueue
   }
 
 
-  void push(Box* b) {
+  void push(ConfBox3d* b) {
     distHeap<PQCmp3>::insert(bv, b);
   }
 
-  Box* extract() {
-    Box* b = distHeap<PQCmp3>::extractMin(bv);
+  ConfBox3d* extract() {
+    ConfBox3d* b = distHeap<PQCmp3>::extractMin(bv);
     return b;
   }
 
@@ -198,8 +190,8 @@ class DijkstraQueue : public BoxQueue
     bv.clear();
   }
 
-  void process(Box* b) {
-    if (b->getStatus() == Box::FREE) {
+  void process(ConfBox3d* b) {
+    if (b->getStatus() == FREE) {
       if ((sourceSet.empty() && b->getBox(alpha[0], alpha[1], alpha[2]) == b) ||
           hasNeighborInSourceSet(b)) {
         recursiveAddToSourceSet(b);

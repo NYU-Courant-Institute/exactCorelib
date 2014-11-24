@@ -1,14 +1,14 @@
 #pragma once
 #include <iostream>
-#include "./Box.h"
+#include "./ConfBox3d.h"
 
 class Set {
  public:
-  Box* pBox;
+  ConfBox3d* pBox;
   Set* pParent;  // parent in union find
   int rank;
 
-  explicit Set(Box* b):pBox(b), rank(1) {
+  explicit Set(ConfBox3d* b):pBox(b), rank(1) {
     pParent = this;
     b->pSet = this;
   }
@@ -26,19 +26,19 @@ class UnionFind {
   }
 
  public:
-  Box* Find(Box* b) {
+  ConfBox3d* Find(ConfBox3d* b) {
     Set* root = pathCompress(b->pSet);
     return root->pBox;
   }
 
-  bool isConnect(Box* a, Box* b) {
+  bool isConnect(ConfBox3d* a, ConfBox3d* b) {
     if (Find(a) == Find(b)) {
       return true;
     }
     return false;
   }
 
-  void Union(Box*a, Box* b) {
+  void Union(ConfBox3d*a, ConfBox3d* b) {
     Set* roota = Find(a)->pSet;
     Set* rootb = Find(b)->pSet;
     if (roota == rootb) {

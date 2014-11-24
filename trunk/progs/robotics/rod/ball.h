@@ -42,7 +42,7 @@ double eyeVector[3];
 int transparency = 80;
 float view_rotate_angles[3] = {0, 0, 0};
 
-vector<Box*> path;
+vector<ConfBox3d*> path;
 bool noPath = true;      // True means there is "No path".
 
 // GLUI controls ========================================

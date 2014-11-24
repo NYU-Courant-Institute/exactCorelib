@@ -57,7 +57,7 @@ void rod(double length, double x, double y, double z, float pitch, float yaw, do
   glEnable(GL_LIGHTING);
 }
 
-void drawEdges(Box* b, int transparency) {
+void drawEdges(ConfBox3d* b, int transparency) {
   glEnable(GL_BLEND);
   glLineWidth(3.0);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -77,7 +77,7 @@ void drawEdges(Box* b, int transparency) {
   glLineWidth(1.0);
 }
 
-void drawSpheres(Box* b, int transparency) {
+void drawSpheres(ConfBox3d* b, int transparency) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   for (list<Sphere*>::iterator iter = b->spheres.begin(); iter != b->spheres.end(); ++iter) {
@@ -86,26 +86,27 @@ void drawSpheres(Box* b, int transparency) {
   }
 }
 
-void drawQuad(Box* b, double epsilon, int val) {
+void drawQuad(ConfBox3d* b, double epsilon, int val) {
   switch (b->status) {
-  case Box::FREE:
-  glLineWidth(1);
+  case FREE:
+    /* val = 1; */
+    glLineWidth(1);
     glColor3f(0.25, 1, 0.25);
     break;
-  case Box::STUCK:
+  case STUCK:
     /* val = 1; */
-  glLineWidth(1);
+    glLineWidth(1);
     glColor3f(1, 0.25, 0.25);
     break;
-  case Box::MIXED:
+  case MIXED:
     /* val = 1; */
-  glLineWidth(1);
+    glLineWidth(1);
     glColor3f(1, 1, 0.25);
     if (b->width < epsilon) {
       glColor3f(0.5, 0.5, 0.5);
     }
     break;
-  case Box::UNKNOWN:
+  case UNKNOWN:
     std::cout << "UNKNOWN in drawQuad" << std::endl;
     break;
   default:
@@ -121,7 +122,7 @@ void drawQuad(Box* b, double epsilon, int val) {
   }
 }
 
-void drawPath(vector<Box*>& path, double alpha[3], double beta[3]) {
+void drawPath(vector<ConfBox3d*>& path, double alpha[3], double beta[3]) {
   glColor3f(0.0, 0.0, 0.0);
   glLineWidth(5.0);
   glBegin(GL_LINE_STRIP);

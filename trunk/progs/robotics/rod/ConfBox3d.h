@@ -1,77 +1,23 @@
 #pragma once
 
 #include <vector>
+#include <list>
+#include <assert.h>
 #include "./Wall.h"
 #include "./Edge.h"
 #include "./Corner.h"
 #include "./Box3d.h"
+#include <iostream>
 
 class ConfBox3d;
+class Set;
+
+enum Status { FREE, STUCK, MIXED, UNKNOWN };
 
 class ConfBox3dPredicate {
  public:
   void classify(ConfBox3d* b);
-
-  // find the nearest feature, and check
-  Box::Status checkChildStatus(Box* b, double x, double y, double z) {
-    Wall* nearestWall;
-    double minDistW = std::numeric_limits<double>::max();
-    if (!b->Walls.empty()) {
-      list<Wall*>::iterator iterW = b->Walls.begin();
-      minDistW = (*iterW)->distance(x, y, z);
-      nearestWall = *iterW;
-      ++iterW;
-      for (; iterW != b->Walls.end(); ++iterW) {
-        double dist = (*iterW)->distance(x, y, z);
-        if (dist < minDistW) {
-          minDistW = dist;
-          nearestWall = *iterW;
-        }
-      }
-    }
-
-    double minDistE = std::numeric_limits<double>::max();
-    if (!b->Edges.empty()) {
-      list<Edge*>::iterator iterE = b->Edges.begin();
-      minDistE = (*iterE)->distance(x, y, z);
-      ++iterE;
-      for (; iterE != b->Edges.end(); ++iterE) {
-        double dist = (*iterE)->distance(x, y, z);
-        if (dist < minDistE) {
-          minDistE = dist;
-          // nearestEdge = *iterE;
-        }
-      }
-    }
-
-    double minDistC = std::numeric_limits<double>::max();  //minDistC may not exist, so init to a bigger number
-    if (!b->corners.empty()) {
-      list<Corner*>::iterator iterC = b->corners.begin();
-      minDistC = (*iterC)->distance(x, y, z);
-      ++iterC;
-      for (; iterC != b->corners.end(); ++iterC) {
-        Corner* c = *iterC;
-        double dist = c->distance(x, y, z);
-        if (dist < minDistC) {
-          minDistC = dist;
-        }
-      }
-    }
-
-    bool isFree = false;
-
-    // if the nearest feature is a wall...
-    // check the orientation of m(B) with respect to the wall
-    if (minDistW < minDistE && minDistW < minDistC) {
-      if (nearestWall->isRight(x, y, z)) {
-        isFree = true;
-      }
-    }
-    // else, the nearest feature is either an edge or corner, and the box must be free (since all obstacles are convex)
-    else isFree = true;
-
-    return isFree ? Box::FREE : Box::STUCK;
-  }
+  Status checkChildStatus(ConfBox3d* b, double x, double y, double z, int boxId);
 
 };
 
@@ -79,18 +25,20 @@ class ConfBox3d {
  private:
   Box3d* box;
  public:
+  double x;
+  double y;
+  double z;
+  double width;
   int depth;
   int priority;
-  bool isLeaf;
   static double r0;
   double rB;
-  static int confBoxIdCounter;
-  int confBoxId;
+  static int boxIdCounter;
+  int boxId;
   static ConfBox3dPredicate* predicate;
   vector<ConfBox3d*> children;
-  vector<ConfBox3d*> neighbor;
+  vector<ConfBox3d*> neighbors;
   ConfBox3d* parent;
-  enum Status { FREE, STUCK, MIXED, UNKNOWN };
   Status status;
   Set* pSet;
   list<Corner*> corners;
@@ -103,24 +51,29 @@ class ConfBox3d {
 
   double dist2Source;
   int heapId;
-  Box* prev;
+  ConfBox3d* prev;
   bool visited;
 
  ConfBox3d(double xx, double yy, double zz, double w):
-  depth(1), isLeaf(true),
+  depth(1), x(xx), y(yy), z(zz), width(w),
   parent(0), status(UNKNOWN),
   pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(false) {
     box = new Box3d(xx, yy, zz, w);
-    confBoxIdCounter++;
-    confBoxId = confBoxIdCounter;
+    boxIdCounter++;
+    boxId = boxIdCounter;
     rB = (w * sqrt(3))/2;
     priority = counter;
     boxes.push_back(this);
     predicate = new ConfBox3dPredicate();
+    cout << boxId << "\t" << xx << "\t" << yy << "\t" << zz << "\t" << width << endl;
  }
 
+  bool isLeaf() {
+    return children.empty();
+  }
+
   ConfBox3d* getBox(double xx, double yy, double zz) {
-    if (isLeaf) {
+    if (isLeaf()) {
       return box->containsPoint(xx, yy, zz) ? this : 0;
     } else {
       for (int i = 0; i < children.size(); i++) {
@@ -155,6 +108,9 @@ class ConfBox3d {
 
   Status getStatus() {
     predicate->classify(this);
+    /* if (status == STUCK) { */
+      /* cout << "STUCK:\t" << boxId << "\t" << x << "\t" << y << "\t" << z << "\t" << width << endl; */
+    /* } */
     return status;
   }
 
@@ -162,8 +118,8 @@ class ConfBox3d {
     return children;
   }
 
-  vector<ConfBox3d*> getNeighbor() {
-    return neighbor;
+  vector<ConfBox3d*> getNeighbors() {
+    return neighbors;
   }
 
   bool isNeighbor(ConfBox3d* other) {
@@ -171,27 +127,42 @@ class ConfBox3d {
   }
 
   bool split(double epsilon) {
-    vector<Box3d*>* box3dChildren = box->split(epsilon);
-    if (box3dChildren == 0) {
+    if (!children.empty() || !box->split(epsilon)) {
       return false;
     }
-    for (int i = 0; i < box3dChildren->size(); i++) {
-      Box3d* b = (*box3dChildren)[i];
+    vector<Box3d*> box3dChildren = box->children;
+    for (int i = 0; i < box3dChildren.size(); i++) {
+      Box3d* b = box3dChildren[i];
       children.push_back(new ConfBox3d(b->origin->x, b->origin->y, b->origin->z, b->width));
+      children[i]->parent = this;
+      children[i]->depth = this->depth + 1;
+      children[i]->Walls.insert(children[i]->Walls.begin(),
+                                Walls.begin(),
+                                Walls.end());
+      children[i]->Edges.insert(children[i]->Edges.begin(),
+                                Edges.begin(),
+                                Edges.end());
+      children[i]->corners.insert(children[i]->corners.begin(),
+                                  corners.begin(),
+                                  corners.end());
+      children[i]->spheres.insert(children[i]->spheres.begin(),
+                                  spheres.begin(),
+                                  spheres.end());
     }
     for (int i = 0; i < children.size(); i++) {
       for (int j = i + 1; j < children.size(); j++) {
         if (children[i]->isNeighbor(children[j])) {
-          children[i]->neighbor.push_back(children[j]);
-          children[j]->neighbor.push_back(children[i]);
+          children[i]->neighbors.push_back(children[j]);
+          children[j]->neighbors.push_back(children[i]);
         }
       }
     }
     for (int i = 0; i < children.size(); i++) {
-      for (int j = 0; j < neighbor.size(); j++) {
-        if (children[i]->isNeighbor(neighbor[j])) {
-          children[i]->neighbor.push_back(neighbor[j]);
-          neighbor[i]->neighbor.push_back(children[j]);
+      for (int j = 0; j < neighbors.size(); j++) {
+        bool isNeighbor = children[i]->isNeighbor(neighbors[j]);
+        if (isNeighbor) {
+          children[i]->neighbors.push_back(neighbors[j]);
+          neighbors[j]->neighbors.push_back(children[i]);
         }
       }
     }

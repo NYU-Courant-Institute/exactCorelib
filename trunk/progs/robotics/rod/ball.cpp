@@ -28,11 +28,10 @@ NOTE:   Surin was a Regional Finalist (one out of 100 nationwide)
 using namespace std;
 
 SoftSubdivisionSearch* initializeSSS(double alpha[3], double beta[3]) {
-  Box* root = new Box(boxWidth/2, boxWidth/2, boxWidth/2, boxWidth);
-  Box::r0 = R0;
+  ConfBox3d* root = new ConfBox3d(boxWidth/2, boxWidth/2, boxWidth/2, boxWidth);
+  ConfBox3d::r0 = R0;
 
   parseConfigFile(root);
-  // root->updateStatus();
 
   cout<<"inside : initializeSSS Qtype= " << QType << "\n";
   return new SoftSubdivisionSearch(root, epsilon, QType, seed++, alpha, beta);  // Note that seed keeps changing!
@@ -204,14 +203,14 @@ void logNonInteractiveRun(bool noPath) {
 }
 
 // Recursively get the leaf descendants of Box b
-void drawTree(Box* b) {
+void drawTree(ConfBox3d* b) {
   if (b) {
-    if (b->isLeaf) {
+    if (b->isLeaf()) {
       drawQuad(b, epsilon, radioDrawOption->get_int_val());
       return;
     }
     for (int i = 0; i < 8; ++i) {
-      drawTree(b->pChildren[i]);
+      drawTree(b->children[i]);
     }
   }
 }

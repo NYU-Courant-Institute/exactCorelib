@@ -26,7 +26,7 @@ void parseVertices(vector<Vector> &pts,
                    map<string, int> &ptsNames,
                    ifstream &ifs);
 
-void parseConfigFile(Box* b);
+void parseConfigFile(ConfBox3d* b);
 
 void parseVertices(vector<Vector> &pts,
                    map<string, int> &ptsNames,
@@ -42,7 +42,7 @@ void parseVertices(vector<Vector> &pts,
   }
 }
 
-void parseConfigFile(Box* b) {
+void parseConfigFile(ConfBox3d* b) {
   std::stringstream ss;
   ss << inputDir << "/" << fileName;  // create full file name
   std::string s = ss.str();

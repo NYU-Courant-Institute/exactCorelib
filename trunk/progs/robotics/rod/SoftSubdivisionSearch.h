@@ -11,10 +11,8 @@
 
 #pragma once
 #include <iostream>
-#include "./Box.h"
 #include "./UnionFind.h"
 #include "./PriorityQueue.h"
-#include "./Predicate.h"
 #include "./ConfBox3d.h"
 
 using namespace std;
@@ -26,41 +24,41 @@ class SoftSubdivisionSearch {
   int QType;
   int ct;
   BoxQueue* PQ;
-  vector<Box*> toReset;
+  vector<ConfBox3d*> toReset;
   double alpha[3];
   double beta[3];
-  Predicate* predicate;
+  ConfBox3dPredicate* predicate;
 
   BoxQueue* getPriorityQueue();
 
-  void insertNode(Box* b);
+  void insertNode(ConfBox3d* b);
 
-  bool expand(Box* b);
+  bool expand(ConfBox3d* b);
 
-  void unionAdjacent(Box* b);
+  void unionAdjacent(ConfBox3d* b);
 
-  Box* findEnclosingFreeBox(double coordinate[3]);
+  ConfBox3d* findEnclosingFreeBox(double coordinate[3]);
 
-  vector<Box*> getCanonicalPath(Box* boxA, Box* boxB);
+  vector<ConfBox3d*> getCanonicalPath(ConfBox3d* boxA, ConfBox3d* boxB);
 
   // find path using simple heuristic:
   // use distance to beta as key in PQ, see dijkstraQueue
-  void findPath(Box* boxA, Box* boxB);
+  void findPath(ConfBox3d* boxA, ConfBox3d* boxB);
 
  public:
-  Box* pRoot;
+  ConfBox3d* pRoot;
   int freeCount;
   int stuckCount;
   int mixCount;
   int mixSmallCount;
 
-  SoftSubdivisionSearch(Box* root, double e, int qType, unsigned int s, double alpha[3], double beta[3]);
+  SoftSubdivisionSearch(ConfBox3d* root, double e, int qType, unsigned int s, double alpha[3], double beta[3]);
 
   int getNumSubdivisions() {
     return ct;
   }
 
-  vector<Box*> softSubdivisionSearch();
+  vector<ConfBox3d*> softSubdivisionSearch();
 
   ~SoftSubdivisionSearch(void) { }
 };

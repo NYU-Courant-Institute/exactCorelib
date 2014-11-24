@@ -69,7 +69,7 @@ goalY = 50
 goalZ = 400
 
 epsilon = 5		# resolution parameter
-epsilon = 10		# resolution parameter
+epsilon = 80		# resolution parameter
 radius = 40		# robot radius
 radius = 30		# robot radius
 
@@ -86,7 +86,7 @@ windowPosY = 200
 windowPosX = 250	# initial Window position
 windowPosY = 150
 
-Qtype = 2		# type of priority queue
+Qtype = 1		# type of priority queue
 			#	(0 = random, 1 = BFS, 3 = astar)
 seed = 11		# seed for random
 step = 0		# number of steps to run
@@ -114,7 +114,7 @@ frameRate = 60
 #=================================================
 TARGETS = ball
 
-OBJ_FILES = Box.o Corner.o Edge.o SoftSubdivisionSearch.o Wall.o fileProcessor.o Timer.o
+OBJ_FILES = ConfBox3d.o Corner.o Edge.o SoftSubdivisionSearch.o Wall.o fileProcessor.o Timer.o
 
 all: $(TARGETS)
 
@@ -272,7 +272,7 @@ eg2:	ball
 # testing quadrilaterl input files
 eg3:	ball
 	@echo "Target 'eg3':  runs ball with default Makefile options for file input10.txt"
-	./ball $(interactive) 200 360 50 275 200 450 \
+	./ball $(interactive) 270 360 50 275 200 450 \
 		$(epsilon) $(radius) input10.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
@@ -307,7 +307,7 @@ eg3c:	ball
 eg4:	ball
 	@echo "Target 'eg4':  runs ball with default Makefile options for file input21.txt"
 	./ball $(interactive) 375 420 50 175 200 450 \
-		$(epsilon) $(radius) input21.txt \
+		10 30 input21.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(ztrans) 4 \

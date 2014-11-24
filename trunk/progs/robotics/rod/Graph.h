@@ -5,7 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <unordered_set>
-#include "./Box.h"
+#include "./ConfBox3d.h"
 
 using namespace std;
 
@@ -13,7 +13,7 @@ extern double beta[3];
 
 class distCmp {
  public:
-  bool operator()(Box* a, Box* b) {
+  bool operator()(ConfBox3d* a, ConfBox3d* b) {
     return a->dist2Source > b->dist2Source;
   }
 };
@@ -23,7 +23,7 @@ class distCmp {
 template <typename CmpFunctor>
 class distHeap {
  private:
-  static void siftDown(vector<Box*>& bv, unsigned long i) {
+  static void siftDown(vector<ConfBox3d*>& bv, unsigned long i) {
     CmpFunctor cmp;
     unsigned int l = 2 * i + 1;
     unsigned int r = 2 * i + 2;
@@ -35,7 +35,7 @@ class distHeap {
       smallest = r;
     }
     if (smallest != i) {
-      Box* tmp = bv[smallest];
+      ConfBox3d* tmp = bv[smallest];
       bv[smallest] = bv[i];
       bv[i] = tmp;
       bv[smallest]->heapId = smallest;
@@ -46,7 +46,7 @@ class distHeap {
   }
 
  public:
-  static void makeHeap(vector<Box*>& bv) {
+  static void makeHeap(vector<ConfBox3d*>& bv) {
     if (bv.size() <= 1) {
       return;
     }
@@ -58,14 +58,14 @@ class distHeap {
     }
   }
 
-  static void insert(vector<Box*>& bv, Box* b) {
+  static void insert(vector<ConfBox3d*>& bv, ConfBox3d* b) {
     bv.push_back(b);
     int bid = bv.size() - 1;
     b->heapId = bid;
     decreaseKey(bv, b, b->dist2Source);
   }
 
-  static void decreaseKey(vector<Box*>& bv, Box* b, double dist) {
+  static void decreaseKey(vector<ConfBox3d*>& bv, ConfBox3d* b, double dist) {
     CmpFunctor cmp;
     assert(b->heapId >= 0);
     unsigned long bid = static_cast<unsigned long>(b->heapId);
@@ -75,7 +75,7 @@ class distHeap {
 
     b->dist2Source = dist;
     while (bid > 0 && cmp(bv[pid], bv[bid])) {
-      Box* tmp = bv[bid];
+      ConfBox3d* tmp = bv[bid];
       bv[bid] = bv[pid];
       bv[pid] = tmp;
       bv[bid]->heapId = bid;
@@ -86,8 +86,8 @@ class distHeap {
     }
   }
 
-  static Box* extractMin(vector<Box*>& bv) {
-    Box* minB = bv[0];
+  static ConfBox3d* extractMin(vector<ConfBox3d*>& bv) {
+    ConfBox3d* minB = bv[0];
     bv[0] = bv.back();
     bv[0]->heapId = 0;
     minB->heapId = -1;
@@ -100,7 +100,7 @@ class distHeap {
 // won't work with std pq, as this comparison is not transitional!
 class PQCmp3 {
  public:
-  bool operator() (const Box* a, const Box* b) {
+  bool operator() (const ConfBox3d* a, const ConfBox3d* b) {
     // if depth diff bigger than 3, use depth as priority
     // if (abs(a->depth - b->depth) > 8)
     // {
@@ -120,7 +120,7 @@ class PQCmp3 {
 
 class Path {
  public:
-  static bool isNeighbor(Box* a, Box* b) {
+  static bool isNeighbor(ConfBox3d* a, ConfBox3d* b) {
     double dx = abs(a->x - b->x);
     double dy = abs(a->y - b->y);
     double dz = abs(a->z - b->z);
@@ -132,90 +132,66 @@ class Path {
       (abs(dx - (wa - wb)) < 0.001 && abs(dy - abs(wa - wb)) < 0.001 && abs(dz - abs(wa + wb)) < 0.001);
   }
 
-  static vector<Box*> bfsShortestPath(Box* a, Box* b) {
-    unordered_set<Box*> visited;
-    vector<Box*> fringe;
+  static vector<ConfBox3d*> bfsShortestPath(ConfBox3d* a, ConfBox3d* b) {
+    unordered_set<ConfBox3d*> visited;
+    vector<ConfBox3d*> fringe;
     fringe.push_back(a);
     visited.insert(a);
-    cout << a->boxId <<"\t" << a->x << "\t" << a->y << "\t" << a->z << "\t" << a->width << endl;
     int begin = 0;
     while (begin < fringe.size()) {
-      Box* c = fringe[begin];
+      ConfBox3d* c = fringe[begin];
       begin++;
-      /* for (int j = 0; j < Box::boxes.size(); j++) { */
-        /* Box* n = Box::boxes[j]; */
-        /* if (n->status == Box::FREE && n->isLeaf && visited.find(n) == visited.end() && isNeighbor(n, c)) { */
-          /* cout << n->boxId <<"\t" << n->x << "\t" << n->y << "\t" << n->z << "\t" << n->width << "\t" << "prev: " << c->boxId << endl; */
-          /* n->prev = c; */
-          /* fringe.push_back(n); */
-          /* visited.insert(n); */
-        /* } */
-      for (int j = 0; j < 6; ++j) {
-        BoxIter* iter = new BoxIter(c, j);
-        Box* n = iter->First();
-        while (n && n != iter->End()) {
-          if (c->boxId == 162) {
-            cout << "162: " << j << " " << n->boxId <<"\t" << n->x << "\t" << n->y << "\t" << n->z << "\t" << n->width << endl;
-          }
-          if (n->getStatus() == Box::FREE && visited.find(n) == visited.end()) {
-            n->prev = c;
-          cout << n->boxId <<"\t" << n->x << "\t" << n->y << "\t" << n->z << "\t" << n->width << "\t" << "prev: " << c->boxId << endl;
-            fringe.push_back(n);
-            visited.insert(n);
-          }
-          n = iter->Next();
+      for (int i = 0; i < c->neighbors.size(); i++) {
+        ConfBox3d* n = c->neighbors[i];
+        if (n->getStatus() == FREE && visited.find(n) == visited.end()) {
+          n->prev = c;
+          fringe.push_back(n);
+          visited.insert(n);
         }
       }
     }
 
-    vector<Box*> path;
-    cout << b->boxId <<"\t" << b->x << "\t" << b->y << "\t" << b->z << "\t" << b->width << endl;
+    vector<ConfBox3d*> path;
     path.push_back(b);
     while (path.back()->prev) {
       path.push_back(path.back()->prev);
     }
-    /* return path.size() == 1 ? fringe : path; */
     return path;
   }
 
-  static vector<Box*> dijkstraShortestPath(Box* a, Box* b) {
+  static vector<ConfBox3d*> dijkstraShortestPath(ConfBox3d* a, ConfBox3d* b) {
     a->dist2Source = 0;
-    vector<Box*> bv;
+    vector<ConfBox3d*> bv;
     distHeap<distCmp>::insert(bv, a);
     while (bv.size()) {
-      Box* current = distHeap<distCmp>::extractMin(bv);
+      ConfBox3d* current = distHeap<distCmp>::extractMin(bv);
       current->visited = true;
       if (current == b) {
         break;
       }
 
-      for (int i = 0; i < 6; ++i) {
-        BoxIter* iter = new BoxIter(current, i);
-        Box* neighbor = iter->First();
+      for (int i = 0; i < current->neighbors.size(); i++) {
+        ConfBox3d* neighbor = current->neighbors[i];
+        if (!neighbor->visited && neighbor->status == FREE) {
+          double dist2pre =
+            sqrt((current->x - neighbor->x) * (current->x - neighbor->x) +
+                 (current->y - neighbor->y) * (current->y - neighbor->y) +
+                 (current->z - neighbor->z) * (current->z - neighbor->z) );
+          double dist2src = dist2pre + current->dist2Source;
 
-        while (neighbor && neighbor != iter->End()) {
-          if (!neighbor->visited && neighbor->status == Box::FREE) {
-            double dist2pre =
-              sqrt((current->x - neighbor->x) * (current->x - neighbor->x) +
-                   (current->y - neighbor->y) * (current->y - neighbor->y) +
-                   (current->z - neighbor->z) * (current->z - neighbor->z) );
-            double dist2src = dist2pre + current->dist2Source;
-
-            if (neighbor->dist2Source == -1) {
-              neighbor->prev = current;
-              neighbor->dist2Source = dist2src;
-              distHeap<distCmp>::insert(bv, neighbor);
-            } else if (neighbor->dist2Source > dist2src) {
-              neighbor->prev = current;
-              distHeap<distCmp>::decreaseKey(bv, neighbor, dist2src);
-            }
+          if (neighbor->dist2Source == -1) {
+            neighbor->prev = current;
+            neighbor->dist2Source = dist2src;
+            distHeap<distCmp>::insert(bv, neighbor);
+          } else if (neighbor->dist2Source > dist2src) {
+            neighbor->prev = current;
+            distHeap<distCmp>::decreaseKey(bv, neighbor, dist2src);
           }
-          neighbor = iter->Next();
         }
       }
     }
 
-    vector<Box*> path;
+    vector<ConfBox3d*> path;
     path.push_back(b);
     while (path.back()->prev) {
       path.push_back(path.back()->prev);
