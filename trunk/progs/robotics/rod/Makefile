@@ -69,7 +69,7 @@ goalY = 50
 goalZ = 400
 
 epsilon = 5		# resolution parameter
-epsilon = 80		# resolution parameter
+epsilon = 10		# resolution parameter
 radius = 40		# robot radius
 radius = 30		# robot radius
 
@@ -314,6 +314,7 @@ eg4:	ball
                 74 200 1580 $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
                 $(transparency) $(frameRate) \
                 0.275 0.47 0.068 \
+                0 -1 0 0 1 0
 		&
 
 egPoints:	ball

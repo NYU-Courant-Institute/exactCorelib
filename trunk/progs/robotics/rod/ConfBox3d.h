@@ -7,6 +7,7 @@
 #include "./Edge.h"
 #include "./Corner.h"
 #include "./Box3d.h"
+#include "./Rot3dSide.h"
 #include <iostream>
 
 class ConfBox3d;
@@ -23,12 +24,17 @@ class ConfBox3dPredicate {
 
 class ConfBox3d {
  private:
-  Box3d* box;
+  Box3d* box = 0;
+  Rot3dSide* rot = 0;
  public:
   double x;
   double y;
   double z;
+  double rot_x;
+  double rot_y;
+  double rot_z;
   double width;
+  double rot_width;
   int depth;
   int priority;
   static double r0;
@@ -59,6 +65,22 @@ class ConfBox3d {
   parent(0), status(UNKNOWN),
   pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(false) {
     box = new Box3d(xx, yy, zz, w);
+    boxIdCounter++;
+    boxId = boxIdCounter;
+    rB = (w * sqrt(3))/2;
+    priority = counter;
+    boxes.push_back(this);
+    predicate = new ConfBox3dPredicate();
+    cout << boxId << "\t" << xx << "\t" << yy << "\t" << zz << "\t" << width << endl;
+ }
+
+ ConfBox3d(double xx, double yy, double zz, double w, double rot_xx, double rot_yy, double rot_zz, double rot_ww):
+  depth(1), x(xx), y(yy), z(zz), width(w),
+  rot_x(rot_xx), rot_y(rot_yy), rot_z(rot_zz), rot_width(rot_ww),
+  parent(0), status(UNKNOWN),
+  pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(false) {
+    box = new Box3d(xx, yy, zz, w);
+    rot = new Rot3dSide(rot_xx, rot_yy, rot_zz, rot_ww);
     boxIdCounter++;
     boxId = boxIdCounter;
     rB = (w * sqrt(3))/2;
@@ -108,9 +130,6 @@ class ConfBox3d {
 
   Status getStatus() {
     predicate->classify(this);
-    /* if (status == STUCK) { */
-      /* cout << "STUCK:\t" << boxId << "\t" << x << "\t" << y << "\t" << z << "\t" << width << endl; */
-    /* } */
     return status;
   }
 
@@ -122,8 +141,16 @@ class ConfBox3d {
     return neighbors;
   }
 
+  // When any of the boxes does not have restrictions on the rotational degrees of freedom, just compare their translation boxes;
+  // Otherwise, one of the components should be the same and the other adjacent
   bool isNeighbor(ConfBox3d* other) {
-    return box->isAdjacent(other->box);
+    if (!rot || !other->rot) {
+      return box->isAdjacent(other->box);
+    } else {
+      return false;
+        (rot->isIdentical(other->rot) && box->isAdjacent(other->box)) ||
+        (rot->isAdjacent(other->rot) && box->isIdentical(other->box));
+    }
   }
 
   bool split(double epsilon) {
