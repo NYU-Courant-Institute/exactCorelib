@@ -58,6 +58,12 @@ void run() {
   beta[0] = editBetaX->get_float_val();
   beta[1] = editBetaY->get_float_val();
   beta[2] = editBetaZ->get_float_val();
+  initialRot[0] = 0;
+  initialRot[1] = 1;
+  initialRot[2] = 0;
+  finalRot[0] = -1;
+  finalRot[1] = 0;
+  finalRot[2] = 0;
   QType = radioQType->get_int_val();
 
   outputStream<<"inside run:  Qtype = " << QType << "\n";
@@ -222,6 +228,7 @@ void renderScene(void) {
 
   glPolygonMode(GL_FRONT, GL_LINE);
 
+  float rot_mat[16];
   if (!noPath) {
     if (showAnim && !finishedAnim) {
       if (iPathSeg >= path.size() - 1) {
@@ -235,13 +242,27 @@ void renderScene(void) {
         float x = path[iPathSeg]->x + dx / segCount * inSegCount;
         float y = path[iPathSeg]->y + dy / segCount * inSegCount;
         float z = path[iPathSeg]->z + dz / segCount * inSegCount;
-        rod(R0 * 2, x, y, z, 1, 1, 1);
+        path[iPathSeg]->getRot(initialRot);
+        float nextRot[3] = {initialRot[0], initialRot[1], initialRot[2]};
+        if (path.size() == iPathSeg + 2) {
+          nextRot[0] = finalRot[0];
+          nextRot[1] = finalRot[1];
+          nextRot[2] = finalRot[2];
+        } else {
+          path[iPathSeg + 1]->getRot(nextRot);
+        }
+        float rot[3];
+        Rot3dSide::interpolateRot(initialRot, nextRot, inSegCount, segCount, rot);
+        Rot3dSide::rot2mat(rot[0], rot[1], rot[2], rot_mat);
+        rod(R0, x, y, z, rot_mat, 0, 1, 0);
       }
     }
     drawPath(path, alpha, beta);
   }
-  rod(R0 * 2, alpha[0], alpha[1], alpha[2], 0, 1, 1.0, 0.0, 0.498);  // start
-  rod(R0 * 2, beta[0], beta[1], beta[2], 1, 1, 0, 0, 1);  // goal
+  Rot3dSide::rot2mat(finalRot[0], finalRot[1], finalRot[2], rot_mat);
+  rod(R0, alpha[0], alpha[1], alpha[2], rot_mat, 1, 0, 0);  // start
+  Rot3dSide::rot2mat(initialRot[0], initialRot[1], initialRot[2], rot_mat);
+  rod(R0, beta[0], beta[1], beta[2], rot_mat, 0, 0, 1);  // goal
   drawEdges(sss->pRoot, transparency);
   drawSpheres(sss->pRoot, transparency);
 
@@ -334,6 +355,9 @@ int main(int argc, char* argv[]) {
     view_rotate_angles[1] = atof(argv[33]);
     view_rotate_angles[2] = atof(argv[34]);
   }
+  // if (argc > 40) {
+    // begin_rot
+  // }
 
   cout << "before interactive, Qtype= " << QType << endl;
 

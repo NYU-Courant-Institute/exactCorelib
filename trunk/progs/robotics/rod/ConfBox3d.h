@@ -94,9 +94,21 @@ class ConfBox3d {
     return children.empty();
   }
 
-  ConfBox3d* getBox(double xx, double yy, double zz) {
+  bool getRot(float rot[3]) {
+    if (!this->rot) {
+      return false;
+    }
+    rot[0] = this->rot->origin->x;
+    rot[1] = this->rot->origin->y;
+    rot[2] = this->rot->origin->z;
+    return true;
+  }
+
+  ConfBox3d* getBox(double xx, double yy, double zz, double rot_xx = 0, double rot_yy = 1, double rot_zz = 0) {
     if (isLeaf()) {
-      return box->containsPoint(xx, yy, zz) ? this : 0;
+      bool containsPoint = box->containsPoint(xx, yy, zz) &&
+        (!rot || rot->containsPoint(rot_xx, rot_yy, rot_zz));
+      return containsPoint ? this : 0;
     } else {
       for (int i = 0; i < children.size(); i++) {
         ConfBox3d* b = children[i]->getBox(xx, yy, zz);
@@ -154,45 +166,57 @@ class ConfBox3d {
   }
 
   bool split(double epsilon) {
-    if (!children.empty() || !box->split(epsilon)) {
+    if (!children.empty()) {
+      // Subdivided already
       return false;
     }
-    vector<Box3d*> box3dChildren = box->children;
-    for (int i = 0; i < box3dChildren.size(); i++) {
-      Box3d* b = box3dChildren[i];
-      children.push_back(new ConfBox3d(b->origin->x, b->origin->y, b->origin->z, b->width));
-      children[i]->parent = this;
-      children[i]->depth = this->depth + 1;
-      children[i]->Walls.insert(children[i]->Walls.begin(),
-                                Walls.begin(),
-                                Walls.end());
-      children[i]->Edges.insert(children[i]->Edges.begin(),
-                                Edges.begin(),
-                                Edges.end());
-      children[i]->corners.insert(children[i]->corners.begin(),
-                                  corners.begin(),
-                                  corners.end());
-      children[i]->spheres.insert(children[i]->spheres.begin(),
-                                  spheres.begin(),
-                                  spheres.end());
-    }
-    for (int i = 0; i < children.size(); i++) {
-      for (int j = i + 1; j < children.size(); j++) {
-        if (children[i]->isNeighbor(children[j])) {
-          children[i]->neighbors.push_back(children[j]);
-          children[j]->neighbors.push_back(children[i]);
+    if (box->split(epsilon)) {
+      // Can still subdivide the translational component
+      vector<Box3d*> box3dChildren = box->children;
+      for (int i = 0; i < box3dChildren.size(); i++) {
+        Box3d* b = box3dChildren[i];
+        children.push_back(new ConfBox3d(b->origin->x, b->origin->y, b->origin->z, b->width));
+        children[i]->parent = this;
+        children[i]->depth = this->depth + 1;
+        children[i]->Walls.insert(children[i]->Walls.begin(),
+                                  Walls.begin(),
+                                  Walls.end());
+        children[i]->Edges.insert(children[i]->Edges.begin(),
+                                  Edges.begin(),
+                                  Edges.end());
+        children[i]->corners.insert(children[i]->corners.begin(),
+                                    corners.begin(),
+                                    corners.end());
+        children[i]->spheres.insert(children[i]->spheres.begin(),
+                                    spheres.begin(),
+                                    spheres.end());
+      }
+      for (int i = 0; i < children.size(); i++) {
+        for (int j = i + 1; j < children.size(); j++) {
+          if (children[i]->isNeighbor(children[j])) {
+            children[i]->neighbors.push_back(children[j]);
+            children[j]->neighbors.push_back(children[i]);
+          }
         }
       }
-    }
-    for (int i = 0; i < children.size(); i++) {
-      for (int j = 0; j < neighbors.size(); j++) {
-        bool isNeighbor = children[i]->isNeighbor(neighbors[j]);
-        if (isNeighbor) {
-          children[i]->neighbors.push_back(neighbors[j]);
-          neighbors[j]->neighbors.push_back(children[i]);
+      for (int i = 0; i < children.size(); i++) {
+        for (int j = 0; j < neighbors.size(); j++) {
+          bool isNeighbor = children[i]->isNeighbor(neighbors[j]);
+          if (isNeighbor) {
+            children[i]->neighbors.push_back(neighbors[j]);
+            neighbors[j]->neighbors.push_back(children[i]);
+          }
         }
       }
+      return true;
+    } else if (!rot) {
+      // Need to subdivide into six sides
+      return true;
+    } else if (rot->split(epsilon)) {
+      // Can split the rotational component
+      return true;
     }
-    return true;
+    // Cannot subdivide, epsilon reached
+    return false;
   }
 };

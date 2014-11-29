@@ -42,16 +42,16 @@ void filledSphere(double radius, double x, double y, double z, double r, double 
   glPopMatrix();
 }
 
-void rod(double length, double x, double y, double z, float pitch, float yaw, double r = 1, double g = 1, double b = 1, double transparency = 1) {
-  glLineWidth(5.0);
+void rod(double length, double x, double y, double z, float rot_mat[16], double r = 1, double g = 1, double b = 1) {
   glDisable(GL_LIGHTING);
+  glLineWidth(5.0);
   glPushMatrix();
-  glRotatef(pitch, 1, 0, 0);
-  glRotatef(yaw, 0, 1, 0);
-  glBegin(GL_LINE_STRIP);
-  glVertex3f(x, y, z);
-  glColor4f(r, g, b, transparency);
-  glVertex3f(x, y + length, z);
+  glTranslatef(x, y, z);
+  glMultMatrixf(rot_mat);
+  glBegin(GL_LINES);
+  glColor3f(r, g, b);
+  glVertex3f(0, 0, 0);
+  glVertex3f(0, length, 0);
   glEnd();
   glPopMatrix();
   glEnable(GL_LIGHTING);
@@ -124,7 +124,7 @@ void drawQuad(ConfBox3d* b, double epsilon, int val) {
 
 void drawPath(vector<ConfBox3d*>& path, double alpha[3], double beta[3]) {
   glColor3f(0.0, 0.0, 0.0);
-  glLineWidth(5.0);
+  glLineWidth(3.0);
   glBegin(GL_LINE_STRIP);
   glVertex3f(beta[0], beta[1], beta[2]);
   for (unsigned int i = 0; i < path.size(); ++i) {
@@ -132,15 +132,6 @@ void drawPath(vector<ConfBox3d*>& path, double alpha[3], double beta[3]) {
   }
   glVertex3f(alpha[0], alpha[1], alpha[2]);
   glEnd();
-  /* glLineWidth(1.0); */
-  /* for (unsigned int i = 0; i < path.size(); i++) { */
-    /* glLineWidth(2); */
-    /* glColor3f(1, 0.25, 0.25); */
-    /* glPushMatrix(); */
-    /* glTranslated(path[i]->x, path[i]->y, path[i]->z); */
-    /* glutWireCube(path[i]->width); */
-    /* glPopMatrix(); */
-  /* } */
 }
 
 void setUpView(float xy_aspect, double scale) {

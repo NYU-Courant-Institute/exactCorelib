@@ -276,7 +276,7 @@ eg3:	ball
 		$(epsilon) $(radius) input10.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
-		$(xtrans) $(ytrans) $(ztrans) 2 \
+		$(xtrans) $(ytrans) $(ztrans) 1 \
                 $(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
                 $(transparency) $(frameRate) \
 		&
@@ -301,8 +301,6 @@ eg3c:	ball
                 $(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
                 $(transparency) $(frameRate) \
 		&
-#	./ball $(interactive) 375 420 50 175 200 450 \
-#		30 45 input21.txt
 
 eg4:	ball
 	@echo "Target 'eg4':  runs ball with default Makefile options for file input21.txt"
@@ -314,7 +312,7 @@ eg4:	ball
                 74 200 1580 $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
                 $(transparency) $(frameRate) \
                 0.275 0.47 0.068 \
-                0 -1 0 0 1 0
+                0 -1 0 0 1 0 \
 		&
 
 egPoints:	ball

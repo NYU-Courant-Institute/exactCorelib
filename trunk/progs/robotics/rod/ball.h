@@ -41,6 +41,8 @@ double up[3] = {0, 1, 0};
 double eyeVector[3];
 int transparency = 80;
 float view_rotate_angles[3] = {0, 0, 0};
+float initialRot[3] = {0, 1, 0};
+float finalRot[3] = {0, 0, 1};
 
 vector<ConfBox3d*> path;
 bool noPath = true;      // True means there is "No path".

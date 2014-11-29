@@ -25,29 +25,34 @@ class Rot3dSide {
     }
   }
 
-  static void rot2mat(double x, double y, double z, double mat[16]) {
+  static void rot2mat(double x, double y, double z, float mat[16]) {
     // 1. Normalize
-    double norm = sqrt(x * x + y * y + z * z);
+    float norm = sqrt(x * x + y * y + z * z);
     x /= norm;
     y /= norm;
     z /= norm;
 
     // 2. Cross Product with North Pole
-    double qx = z;
-    double qy = 0;
-    double qz = -x;
-    double qnorm = qx * qx + qy * qy + qz * qz;
+    float qx = z;
+    float qy = 0;
+    float qz = -x;
+    float qnorm = sqrt(qx * qx + qy * qy + qz * qz);
+    if (qx == 0 && qy == 0 && qz == 0) {
+      qx = 1;
+      qz = 0;
+      qnorm = 1;
+    }
     qx /= qnorm;
     qy /= qnorm;
     qz /= qnorm;
 
     // 3. Angle with North Pole
-    double theta = acos(y);
+    float theta = acos(y);
 
     // 4. Get Quaternion
-    double c = cos(theta / 2);
-    double s = sin(theta / 2);
-    double w = c;
+    float c = cos(theta / 2);
+    float s = sin(theta / 2);
+    float w = c;
     x = s * qx;
     y = s * qy;
     z = s * qz;
@@ -72,6 +77,44 @@ class Rot3dSide {
     mat[13] = 0;
     mat[14] = 0;
     mat[15] = 1;
+  }
+
+  static int sideId(float initRot[3]) {
+    for (int i = 0; i < 3; i++) {
+      if (abs(initRot[i]) == 1) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  static void interpolateRot(float initRot[3], float nextRot[3], int segId, int segCount, float intRot[3]) {
+    int initSideId = sideId(initRot);
+    int nextSideId = sideId(nextRot);
+    double initSideValue = initRot[initSideId];
+    double nextSideValue = nextRot[nextSideId];
+    double interpRatio = segId * 1.0 / segCount;
+    if (initSideId != nextSideId) {
+      double initDist2Edge = abs(nextSideValue - initRot[nextSideId]);
+      double nextDist2Edge = abs(initSideValue - nextRot[initSideId]);
+      double dist = initDist2Edge + nextDist2Edge;
+      if (interpRatio < initDist2Edge / dist) {
+        intRot[0] = initRot[0];
+        intRot[1] = initRot[1];
+        intRot[2] = initRot[2];
+        intRot[nextSideId] += nextSideValue * interpRatio * dist;
+      } else {
+        intRot[0] = nextRot[0];
+        intRot[1] = nextRot[1];
+        intRot[2] = nextRot[2];
+        intRot[initSideId] += initSideValue * (1 - interpRatio) * dist;
+      }
+    } else {
+      intRot[0] = initRot[0];
+      intRot[1] = initRot[1];
+      intRot[2] = initRot[2];
+      intRot[initSideId] += interpRatio * (nextRot[initSideId] - initRot[nextSideId]);
+    }
   }
 
   bool approxEqual(double x, double y) {
