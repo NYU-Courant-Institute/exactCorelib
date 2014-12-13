@@ -66,9 +66,9 @@ public:
 extern bool fpFilterFlag;
 
 // Chee: this is needed to avoid the isfinite() error below:
-extern bool isfinite (float x);
-extern bool isfinite (double x);
-extern bool isfinite (long double x);
+//extern bool isfinite (float x);
+//extern bool isfinite (double x);
+//extern bool isfinite (long double x);
 
 /// turn floating-point filter on/off
 inline bool setFpFilterFlag(bool f) {

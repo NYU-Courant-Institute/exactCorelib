@@ -2036,9 +2036,9 @@ class MulRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   typedef BinaryOpRepT<RootBd, Filter, Kernel> BinaryOpRep;
   typedef RootBd* id_rootbd_t;
   //using BinaryOpRep::check_exact;	// This line added Apr24'2013 (Chee)
+  using BinaryOpRep::check_exact;
   using BinaryOpRep::first; 
   using BinaryOpRep::second; 
-  using BinaryOpRep::check_exact;
   using ExprRep::filter;
   using ExprRep::rootBd;
   using ExprRep::sign;
@@ -2092,9 +2092,9 @@ class DivRepT : public BinaryOpRepT<RootBd, Filter, Kernel> {
   typedef BinaryOpRepT<RootBd, Filter, Kernel> BinaryOpRep;
   typedef RootBd* id_rootbd_t;
   using BinaryOpRep::check_exact;	// This line added Apr24'2013 (Chee)
+  //using BinaryOpRep::check_exact;	// 
   using BinaryOpRep::first; 
   using BinaryOpRep::second; 
-  //using BinaryOpRep::check_exact;	// Chee: April 2013
   using ExprRep::filter;
   using ExprRep::rootBd;
   using ExprRep::sign;
