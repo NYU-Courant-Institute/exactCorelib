@@ -18,33 +18,27 @@
 #		|  /		|
 #		a---------------b
 Points
-"a" 10 0 10
-"b" 100 0 10
-"c" 100 0 100
-"d" 10 0 100
-"aa"  20 0 20
-"bb"  80 0 20
-"cc"  80 0 80
-"dd"  20 0 80
-"X'" 0 0 0
-"Y'" 128 0 0
-"Z'" 0 0 128
-"P" 30 30 30
-"PP" P + 30 50 30
-"PPP" P + 40 60 40
+"a" 0 0 0
+"b" 128 0 0
+"c" 128 0 128
+"d" 0 0 128
+"aa"  30 0 30
+"bb"  50 0 30
+"cc"  50 0 50
+"dd"  30 0 50
+"aa'"  100 0 100
+"bb'"  120 0 100
+"cc'"  120 0 120
+"dd'"  100 0 120
 
 Poly "Hole"
-6 b c cc bb aa a + 0 70 0
-6 d c cc dd aa a + 0 70 0
+6 b c cc bb aa a + 0 30 0
+6 d c cc dd aa a + 0 30 0
 
-Wall "floor_and_ceiling"
-5 X' Y' Z' + 0 0 0
-# 5 X' Y' Z' + 0 128 0
+PutPoly Hole + 0 40 0
 
-# PutPoly Hole + 0 40 0
+Poly "Hole2"
+6 b c cc' bb' aa' a + 0 50 0
+6 d c cc' dd' aa' a + 0 50 0
 
-Poly "Point"
-# 7 P 10
-7 PP 10
-7 PPP 10
 End

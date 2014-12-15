@@ -110,6 +110,7 @@ void drawQuad(ConfBox3d* b, double epsilon, int val) {
     std::cout << "UNKNOWN in drawQuad" << std::endl;
     break;
   default:
+    std::cout << b->status << std::endl;
     std::cerr << "Wrong Box Type" << std::endl;
     exit(1);
   }

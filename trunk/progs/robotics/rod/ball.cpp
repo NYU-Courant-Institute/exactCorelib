@@ -211,12 +211,12 @@ void logNonInteractiveRun(bool noPath) {
 // Recursively get the leaf descendants of Box b
 void drawTree(ConfBox3d* b) {
   if (b) {
-    if (b->isLeaf()) {
+    if (b->isLeaf() || b->children.size() != 8) {
       drawQuad(b, epsilon, radioDrawOption->get_int_val());
-      return;
-    }
-    for (int i = 0; i < 8; ++i) {
-      drawTree(b->children[i]);
+    } else {
+      for (int i = 0; i < 8; ++i) {
+        drawTree(b->children[i]);
+      }
     }
   }
 }

@@ -14,6 +14,7 @@
 #include "./UnionFind.h"
 #include "./PriorityQueue.h"
 #include "./ConfBox3d.h"
+#include "./ConfBox3dPredicate.h"
 
 using namespace std;
 
@@ -25,6 +26,7 @@ class SoftSubdivisionSearch {
   int ct;
   BoxQueue* PQ;
   vector<ConfBox3d*> toReset;
+  // TODO: change this to use a ConfBox
   double alpha[3];
   double beta[3];
   ConfBox3dPredicate* predicate;

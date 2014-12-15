@@ -5,7 +5,8 @@ void printConfBoxes() {
   for (int i = 0; i < ConfBox3d::boxes.size(); i++) {
     ConfBox3d* b = ConfBox3d::boxes[i];
     cout << "===================" << endl;
-    cout << b->boxId << "\t" << b->x << "\t" << b->y << "\t" << b->z << "\t" << b->width << "\t" << enumNames[b->status] << endl;
+    cout << "Box " << b->boxId << ":" << endl;
+    cout << b->x << "\t" << b->y << "\t" << b->z << "\t" << b->width << "\t" << enumNames[b->status] << endl;
     for (int i = 0; i < b->neighbors.size(); i++) {
       cout << b->neighbors[i]->boxId << "\t";
     }
@@ -121,16 +122,21 @@ vector<ConfBox3d*> SoftSubdivisionSearch::softSubdivisionSearch() {
   // 1. Initialization
   ConfBox3d* boxA = findEnclosingFreeBox(alpha);
   ConfBox3d* boxB = findEnclosingFreeBox(beta);
-  if (boxA == NULL || boxB == NULL) {
+  // printConfBoxes();
+  if (boxA == NULL) {
+    cout << "STUCK: Initial configuration is not free" << endl;
+    return path;
+  } else if (boxB == NULL) {
+    cout << "STUCK: Final configuration is not free" << endl;
     return path;
   }
-  printConfBoxes();
-  cout << boxA->boxId << "\t" << boxB->boxId << endl;
+  // printConfBoxes();
+  // cout << boxA->boxId << "\t" << boxB->boxId << endl;
 
   // 2. Main
   while (!pSets->isConnect(boxA, boxB)) {
     if (PQ->empty()) {
-      printConfBoxes();
+      // printConfBoxes();
       path.clear();
       return path;
     }
@@ -146,6 +152,6 @@ vector<ConfBox3d*> SoftSubdivisionSearch::softSubdivisionSearch() {
   // 3. Compute Free Channel
   // path = getCanonicalPath(boxA, boxB);
   path = Path::bfsShortestPath(boxA, boxB);
-  printConfBoxes();
+  // printConfBoxes();
   return path;
 }

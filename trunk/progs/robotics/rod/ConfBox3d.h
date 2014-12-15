@@ -9,18 +9,18 @@
 #include "./Box3d.h"
 #include "./Rot3dSide.h"
 #include <iostream>
+#include "./ConfBox3dPredicate.h"
+#include "./Status.h"
 
 class ConfBox3d;
 class Set;
+class ConfBox3dPredicate;
+/* class ConfBox3dPredicate { */
+ /* public: */
+  /* void classify(ConfBox3d* b); */
+  /* Status checkChildStatus(ConfBox3d* b, double x, double y, double z); */
 
-enum Status { FREE, STUCK, MIXED, UNKNOWN };
-
-class ConfBox3dPredicate {
- public:
-  void classify(ConfBox3d* b);
-  Status checkChildStatus(ConfBox3d* b, double x, double y, double z, int boxId);
-
-};
+/* }; */
 
 class ConfBox3d {
  private:
@@ -36,7 +36,6 @@ class ConfBox3d {
   double width;
   double rot_width;
   int depth;
-  int priority;
   static double r0;
   double rB;
   static int boxIdCounter;
@@ -52,7 +51,6 @@ class ConfBox3d {
   list<Wall*> Walls;
   list<Sphere*> spheres;
 
-  static int counter;   // time of expansion (used in BFS strategy)
   static vector<ConfBox3d*> boxes;
 
   double dist2Source;
@@ -60,163 +58,32 @@ class ConfBox3d {
   ConfBox3d* prev;
   bool visited;
 
- ConfBox3d(double xx, double yy, double zz, double w):
-  depth(1), x(xx), y(yy), z(zz), width(w),
-  parent(0), status(UNKNOWN),
-  pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(false) {
-    box = new Box3d(xx, yy, zz, w);
-    boxIdCounter++;
-    boxId = boxIdCounter;
-    rB = (w * sqrt(3))/2;
-    priority = counter;
-    boxes.push_back(this);
-    predicate = new ConfBox3dPredicate();
-    cout << boxId << "\t" << xx << "\t" << yy << "\t" << zz << "\t" << width << endl;
- }
+  ConfBox3d(double xx, double yy, double zz, double w);
+  ConfBox3d(double xx, double yy, double zz, double w, double rot_xx, double rot_yy, double rot_zz, double rot_ww);
 
- ConfBox3d(double xx, double yy, double zz, double w, double rot_xx, double rot_yy, double rot_zz, double rot_ww):
-  depth(1), x(xx), y(yy), z(zz), width(w),
-  rot_x(rot_xx), rot_y(rot_yy), rot_z(rot_zz), rot_width(rot_ww),
-  parent(0), status(UNKNOWN),
-  pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(false) {
-    box = new Box3d(xx, yy, zz, w);
-    rot = new Rot3dSide(rot_xx, rot_yy, rot_zz, rot_ww);
-    boxIdCounter++;
-    boxId = boxIdCounter;
-    rB = (w * sqrt(3))/2;
-    priority = counter;
-    boxes.push_back(this);
-    predicate = new ConfBox3dPredicate();
-    cout << boxId << "\t" << xx << "\t" << yy << "\t" << zz << "\t" << width << endl;
- }
+  bool isLeaf();
 
-  bool isLeaf() {
-    return children.empty();
-  }
+  bool getRot(float rot[3]);
 
-  bool getRot(float rot[3]) {
-    if (!this->rot) {
-      return false;
-    }
-    rot[0] = this->rot->origin->x;
-    rot[1] = this->rot->origin->y;
-    rot[2] = this->rot->origin->z;
-    return true;
-  }
+  ConfBox3d* getBox(double xx, double yy, double zz, double rot_xx = 0, double rot_yy = 1, double rot_zz = 0);
 
-  ConfBox3d* getBox(double xx, double yy, double zz, double rot_xx = 0, double rot_yy = 1, double rot_zz = 0) {
-    if (isLeaf()) {
-      bool containsPoint = box->containsPoint(xx, yy, zz) &&
-        (!rot || rot->containsPoint(rot_xx, rot_yy, rot_zz));
-      return containsPoint ? this : 0;
-    } else {
-      for (int i = 0; i < children.size(); i++) {
-        ConfBox3d* b = children[i]->getBox(xx, yy, zz);
-        if (b != 0) {
-          return b;
-        }
-      }
-      return 0;
-    }
-  }
+  void addCorner(Corner* c);
 
-  void addCorner(Corner* c) {
-    corners.push_back(c);
-  }
+  void addEdge(Edge* e);
 
-  void addEdge(Edge* e) {
-    Edges.push_back(e);
-  }
+  void addWall(Wall* w);
 
-  void addWall(Wall* w) {
-    Walls.push_back(w);
-  }
+  void addSphere(Sphere* s);
 
-  void addSphere(Sphere* s) {
-    spheres.push_back(s);
-  }
+  bool isFree();
 
-  bool isFree() {
-    return status == FREE;
-  }
+  Status getStatus();
 
-  Status getStatus() {
-    predicate->classify(this);
-    return status;
-  }
+  vector<ConfBox3d*> getChildren();
 
-  vector<ConfBox3d*> getChildren() {
-    return children;
-  }
+  vector<ConfBox3d*> getNeighbors();
 
-  vector<ConfBox3d*> getNeighbors() {
-    return neighbors;
-  }
+  bool isNeighbor(ConfBox3d* other);
 
-  // When any of the boxes does not have restrictions on the rotational degrees of freedom, just compare their translation boxes;
-  // Otherwise, one of the components should be the same and the other adjacent
-  bool isNeighbor(ConfBox3d* other) {
-    if (!rot || !other->rot) {
-      return box->isAdjacent(other->box);
-    } else {
-      return false;
-        (rot->isIdentical(other->rot) && box->isAdjacent(other->box)) ||
-        (rot->isAdjacent(other->rot) && box->isIdentical(other->box));
-    }
-  }
-
-  bool split(double epsilon) {
-    if (!children.empty()) {
-      // Subdivided already
-      return false;
-    }
-    if (box->split(epsilon)) {
-      // Can still subdivide the translational component
-      vector<Box3d*> box3dChildren = box->children;
-      for (int i = 0; i < box3dChildren.size(); i++) {
-        Box3d* b = box3dChildren[i];
-        children.push_back(new ConfBox3d(b->origin->x, b->origin->y, b->origin->z, b->width));
-        children[i]->parent = this;
-        children[i]->depth = this->depth + 1;
-        children[i]->Walls.insert(children[i]->Walls.begin(),
-                                  Walls.begin(),
-                                  Walls.end());
-        children[i]->Edges.insert(children[i]->Edges.begin(),
-                                  Edges.begin(),
-                                  Edges.end());
-        children[i]->corners.insert(children[i]->corners.begin(),
-                                    corners.begin(),
-                                    corners.end());
-        children[i]->spheres.insert(children[i]->spheres.begin(),
-                                    spheres.begin(),
-                                    spheres.end());
-      }
-      for (int i = 0; i < children.size(); i++) {
-        for (int j = i + 1; j < children.size(); j++) {
-          if (children[i]->isNeighbor(children[j])) {
-            children[i]->neighbors.push_back(children[j]);
-            children[j]->neighbors.push_back(children[i]);
-          }
-        }
-      }
-      for (int i = 0; i < children.size(); i++) {
-        for (int j = 0; j < neighbors.size(); j++) {
-          bool isNeighbor = children[i]->isNeighbor(neighbors[j]);
-          if (isNeighbor) {
-            children[i]->neighbors.push_back(neighbors[j]);
-            neighbors[j]->neighbors.push_back(children[i]);
-          }
-        }
-      }
-      return true;
-    } else if (!rot) {
-      // Need to subdivide into six sides
-      return true;
-    } else if (rot->split(epsilon)) {
-      // Can split the rotational component
-      return true;
-    }
-    // Cannot subdivide, epsilon reached
-    return false;
-  }
+  bool split(double epsilon);
 };

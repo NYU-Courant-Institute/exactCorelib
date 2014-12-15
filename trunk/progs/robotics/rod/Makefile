@@ -114,7 +114,7 @@ frameRate = 60
 #=================================================
 TARGETS = ball
 
-OBJ_FILES = ConfBox3d.o Corner.o Edge.o SoftSubdivisionSearch.o Wall.o fileProcessor.o Timer.o
+OBJ_FILES = ConfBox3d.o Corner.o Edge.o SoftSubdivisionSearch.o Wall.o fileProcessor.o Timer.o ConfBox3dPredicate.o
 
 all: $(TARGETS)
 
@@ -303,9 +303,48 @@ eg3c:	ball
 		&
 
 eg4:	ball
-	@echo "Target 'eg4':  runs ball with default Makefile options for file input21.txt"
+	@echo "Target 'eg4':  runs ball with default Makefile options for file input4.txt"
 	./ball $(interactive) 375 420 50 175 200 450 \
-		10 30 input21.txt \
+		10 30 input4.txt \
+		$(boxWidth) $(windowPosX) $(windowPosY) \
+		$(Qtype) 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(ztrans) 4 \
+                74 200 1580 $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
+                $(transparency) $(frameRate) \
+                0.275 0.47 0.068 \
+                0 -1 0 0 1 0 \
+		&
+
+egnp:	ball
+	@echo "Target 'eg4':  runs ball with default Makefile options for file input13.txt"
+	./ball $(interactive) 375 420 50 175 180 450 \
+		240 30 input13.txt \
+		$(boxWidth) $(windowPosX) $(windowPosY) \
+		$(Qtype) 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(ztrans) 4 \
+                74 200 1580 $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
+                $(transparency) $(frameRate) \
+                0.275 0.47 0.068 \
+                0 -1 0 0 1 0 \
+		&
+
+eg20:	ball
+	@echo "Target 'eg4':  runs ball with default Makefile options for file input20.txt"
+	./ball $(interactive) 375 420 50 175 150 450 \
+		10 10 input20.txt \
+		$(boxWidth) $(windowPosX) $(windowPosY) \
+		$(Qtype) 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(ztrans) 4 \
+                74 200 1580 $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
+                $(transparency) $(frameRate) \
+                0.275 0.47 0.068 \
+                0 -1 0 0 1 0 \
+		&
+
+eg21:	ball
+	@echo "Target 'eg4':  runs ball with default Makefile options for file input21.txt"
+	./ball $(interactive) 375 420 50 175 150 450 \
+		10 10 input21.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(ztrans) 4 \

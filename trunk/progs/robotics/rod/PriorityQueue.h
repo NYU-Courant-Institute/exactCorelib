@@ -22,7 +22,7 @@ class PQCmp {
     }
     //if same depth, expand box created earlier first
     if (a->depth == b->depth) {
-      return a->priority > b->priority;
+      return a->boxId > b->boxId;
     }
     return false;
   }
