@@ -14,9 +14,8 @@ extended this to the case of a rod robot.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Refactoring:
-
-	We now began the process of modularizing program into the
+Refactoring of Code:
+	We begin the process of modularizing program into the
 	general SSS framework.
 
 	Modules
