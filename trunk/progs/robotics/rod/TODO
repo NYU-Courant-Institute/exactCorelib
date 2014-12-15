@@ -1,1 +1,2 @@
-Point starting indices
+Extract logic for ball and rob robots to the robot subdirectory
+Modularize modules

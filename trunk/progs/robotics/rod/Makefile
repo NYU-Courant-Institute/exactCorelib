@@ -4,14 +4,14 @@
 #
 # (A)	To compile run this demo, you can use this Makefile and just have to type:
 #
-# 	       > make 		-- compiles the main program into "ball"
+# 	       > make 		-- compiles the main program into "main"
 # 	       > make help	-- usage help
-# 	       > make test	-- compiles and runs "ball" non-interactively
+# 	       > make test	-- compiles and runs "main" non-interactively
 # 	       			   (this is Core Library's automatic self-test)
 #
 # (B)	But you probably want to try the various interactive demos of this program:
 #
-# 	       > make eg	-- compiles and runs "ball" interactively
+# 	       > make eg	-- compiles and runs "main" interactively
 #
 # 	The default search-mode is "random".  We encourage you to just
 # 	hit the "Run me" button to see different runs of the program.
@@ -19,14 +19,14 @@
 #
 #	This is equivalent to typing:
 #
-#	       > ball $(interactive) $(startX) $(startY) $(startZ)  $(goalX) $(goalY) $(goalZ) \
+#	       > main $(interactive) $(startX) $(startY) $(startZ)  $(goalX) $(goalY) $(goalZ) \
 #			$(epsilon) $(radius) $(fileName) \
 #			$(boxWidth) $(windowPosX) $(windowPosY) \
 #			$(Qtype) $(seed)  $(inputDir) \
 #			$(xtrans) $(ytrans) $(ztrans) $(scale) \
 #			&
 #
-#	where the arguments to ball correspond to the values $(var) of
+#	where the arguments to main correspond to the values $(var) of
 #	various Makefile variables.
 #
 # (C)	You can override any of these values at the command line.
@@ -112,7 +112,7 @@ frameRate = 60
 #=================================================
 # Define target files (put all your files here)
 #=================================================
-TARGETS = ball
+TARGETS = main
 
 OBJ_FILES = ConfBox3d.o Corner.o Edge.o SoftSubdivisionSearch.o Wall.o fileProcessor.o Timer.o ConfBox3dPredicate.o
 
@@ -120,10 +120,10 @@ all: $(TARGETS)
 
 # note: this target is the standard target that Core Library uses
 #       to test its subdirectories.   So the program must run in a
-#       non-interactive mode (i.e., the first argument to "ball" is "1").
+#       non-interactive mode (i.e., the first argument to "main" is "1").
 #
 test: $(TARGETS)
-	./ball 1 \
+	./main 1 \
 		$(startX) $(startY) $(startZ) $(goalX) $(goalY) $(goalZ) \
 
 	make $(epsilon)  $(radius)  input.txt  $(boxWidth) \
@@ -137,10 +137,10 @@ testall: $(TARGETS)
 	make egb interactive=1
 
 testa: $(TARGETS)
-	./ball 1
+	./main 1
 
 testb: $(TARGETS)
-	./ball 1 \
+	./main 1 \
 		$(startX) $(startY)  $(goalX) $(goalY) \
 		$(epsilon)  $(radius)  input2.txt  $(boxWidth) \
                 $(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
@@ -148,7 +148,7 @@ testb: $(TARGETS)
 		&
 
 help:
-	@echo "USAGE:  The main program is called ball.  Demos can be invoked thus:"
+	@echo "USAGE:  The main program is called main.  Demos can be invoked thus:"
 	@echo "         > make eg"
 	@echo "         > make egX"
 	@echo "     where X is replaced by 0,1,2,3,4,5,6,100,200,300, etc."
@@ -168,16 +168,16 @@ help:
 
 
 #=================================================
-# Examples of running ball program
+# Examples of running main program
 #=================================================
 #
 # this is default, but every option may be changed at command line:
 #
-eg:	ball
-	@echo "Target 'eg':  runs ball with the default options of Makefile"
+eg:	main
+	@echo "Target 'eg':  runs main with the default options of Makefile"
 	@echo "--  You can all of them in you 'make' command line, e.g.,"
 	@echo "--      > make eg radius=30 goalX=111 goalY=450 startY=200 startX=20"
-	./ball $(interactive) \
+	./main $(interactive) \
 	        $(startX) $(startY) $(startZ)  $(goalX) $(goalY) $(goalZ) \
 		$(epsilon) $(radius) $(fileName) \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
@@ -192,16 +192,16 @@ eg:	ball
 #	There are 3 combinatorially different paths.
 #	Randomized strategy will find all three of them (keep hitting "run").
 #
-ega:	ball
-	@echo "Target 'ega':  runs ball with default compiled options"
-	./ball $(interactive) \
+ega:	main
+	@echo "Target 'ega':  runs main with default compiled options"
+	./main $(interactive) \
 	    &
 
 # run with default Makefile options:
 #
-egb:	ball
-	@echo "Target 'egb':  runs ball with default Makefile options for file input2.txt"
-	./ball $(interactive) 200 360 50 275 200 450 \
+egb:	main
+	@echo "Target 'egb':  runs main with default Makefile options for file input2.txt"
+	./main $(interactive) 200 360 50 275 200 450 \
 		$(epsilon) $(radius) input2.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
@@ -213,9 +213,9 @@ egb:	ball
 # Using input2.txt: using the "random strategy", if you "hit run" enough times
 # 	the random strategy will eventually find all three distinct homotopy paths!!
 #
-egc:	ball
-	@echo "Target 'egc':  runs ball with default Makefile options for file input3.txt"
-	./ball $(interactive) 320 300 230 320 200 475 \
+egc:	main
+	@echo "Target 'egc':  runs main with default Makefile options for file input3.txt"
+	./main $(interactive) 320 300 230 320 200 475 \
 		$(epsilon) 20 input3.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
@@ -225,19 +225,19 @@ egc:	ball
 		&
 
 # Simple NO PATH example:
-eg0 nopath:	ball
+eg0 nopath:	main
 	@echo "Target 'eg0' 'nopath':  environment with a wall separating start from goal"
-	./ball  $(interactive) $(startX) $(startY) $(startZ)  $(goalX) $(goalY) $(goalZ) \
+	./main  $(interactive) $(startX) $(startY) $(startZ)  $(goalX) $(goalY) $(goalZ) \
 		$(epsilon) $(radius) wall.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
 		$(xtrans) $(ytrans) $(ztrans) $(scale) \
 		&
 
-eg0a nopatha:	ball
-	@echo "Target 'eg0a':  runs ball with astar strategy for file input0.txt"
+eg0a nopatha:	main
+	@echo "Target 'eg0a':  runs main with astar strategy for file input0.txt"
 	@echo "--  this example has no path..."
-	./ball $(interactive) 400 400  200 200 \
+	./main $(interactive) 400 400  200 200 \
 		10 20 input0.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
@@ -247,9 +247,9 @@ eg0a nopatha:	ball
 # EXAMPLES
 ###################################################
 #
-eg1:	ball
-	@echo "Target 'eg1':  runs ball with default Makefile options for file input2.txt"
-	./ball $(interactive) 200 360 50 275 200 450 \
+eg1:	main
+	@echo "Target 'eg1':  runs main with default Makefile options for file input2.txt"
+	./main $(interactive) 200 360 50 275 200 450 \
 		$(epsilon) $(radius) input2.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
@@ -258,9 +258,9 @@ eg1:	ball
                 $(transparency) $(frameRate) \
 		&
 
-eg2:	ball
-	@echo "Target 'eg2':  runs ball with default Makefile options for file input3.txt"
-	./ball $(interactive) 320 300 230 320 200 475 \
+eg2:	main
+	@echo "Target 'eg2':  runs main with default Makefile options for file input3.txt"
+	./main $(interactive) 320 300 230 320 200 475 \
 		$(epsilon) 20 input3.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
@@ -270,9 +270,9 @@ eg2:	ball
 		&
 
 # testing quadrilaterl input files
-eg3:	ball
-	@echo "Target 'eg3':  runs ball with default Makefile options for file input10.txt"
-	./ball $(interactive) 270 360 50 275 200 450 \
+eg3:	main
+	@echo "Target 'eg3':  runs main with default Makefile options for file input10.txt"
+	./main $(interactive) 270 360 50 275 200 450 \
 		$(epsilon) $(radius) input10.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
@@ -280,9 +280,9 @@ eg3:	ball
                 $(eyeX) $(eyeY) $(eyeZ) $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
                 $(transparency) $(frameRate) \
 		&
-eg3b:	ball
-	@echo "Target 'eg3b':  runs ball with default Makefile options for file input11.txt"
-	./ball $(interactive) 200 360 50 275 200 450 \
+eg3b:	main
+	@echo "Target 'eg3b':  runs main with default Makefile options for file input11.txt"
+	./main $(interactive) 200 360 50 275 200 450 \
 		$(epsilon) $(radius) input11.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
@@ -291,9 +291,9 @@ eg3b:	ball
                 $(transparency) $(frameRate) \
 		&
 
-eg3c:	ball
-	@echo "Target 'eg3c':  runs ball with default Makefile options for file input12.txt"
-	./ball $(interactive) 200 360 50 275 200 450 \
+eg3c:	main
+	@echo "Target 'eg3c':  runs main with default Makefile options for file input12.txt"
+	./main $(interactive) 200 360 50 275 200 450 \
 		$(epsilon) $(radius) input12.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
@@ -302,9 +302,9 @@ eg3c:	ball
                 $(transparency) $(frameRate) \
 		&
 
-eg4:	ball
-	@echo "Target 'eg4':  runs ball with default Makefile options for file input4.txt"
-	./ball $(interactive) 375 420 50 175 200 450 \
+eg4:	main
+	@echo "Target 'eg4':  runs main with default Makefile options for file input4.txt"
+	./main $(interactive) 375 420 50 175 200 450 \
 		10 30 input4.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
@@ -315,9 +315,9 @@ eg4:	ball
                 0 -1 0 0 1 0 \
 		&
 
-egnp:	ball
-	@echo "Target 'eg4':  runs ball with default Makefile options for file input13.txt"
-	./ball $(interactive) 375 420 50 175 180 450 \
+egnp:	main
+	@echo "Target 'eg4':  runs main with default Makefile options for file input13.txt"
+	./main $(interactive) 375 420 50 175 180 450 \
 		240 30 input13.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
@@ -328,9 +328,9 @@ egnp:	ball
                 0 -1 0 0 1 0 \
 		&
 
-eg20:	ball
-	@echo "Target 'eg4':  runs ball with default Makefile options for file input20.txt"
-	./ball $(interactive) 375 420 50 175 150 450 \
+eg20:	main
+	@echo "Target 'eg4':  runs main with default Makefile options for file input20.txt"
+	./main $(interactive) 375 420 50 175 150 450 \
 		10 10 input20.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
@@ -341,9 +341,9 @@ eg20:	ball
                 0 -1 0 0 1 0 \
 		&
 
-eg21:	ball
-	@echo "Target 'eg4':  runs ball with default Makefile options for file input21.txt"
-	./ball $(interactive) 375 420 50 175 150 450 \
+eg21:	main
+	@echo "Target 'eg4':  runs main with default Makefile options for file input21.txt"
+	./main $(interactive) 375 420 50 175 150 450 \
 		10 10 input21.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
@@ -354,9 +354,9 @@ eg21:	ball
                 0 -1 0 0 1 0 \
 		&
 
-egPoints:	ball
-	@echo "Target 'egPoints':  runs ball with default Makefile options for file points.txt"
-	./ball $(interactive) 200 360 50 275 200 450 \
+egPoints:	main
+	@echo "Target 'egPoints':  runs main with default Makefile options for file points.txt"
+	./main $(interactive) 200 360 50 275 200 450 \
 		$(epsilon) $(radius) points.txt \
 		$(boxWidth) $(windowPosX) $(windowPosY) \
 		$(Qtype) 1111 $(inputDir) \
@@ -369,7 +369,7 @@ egPoints:	ball
 moretest: $(TARGETS)
 # nothing to do
 
-ball: $(OBJ_FILES) ball.o
+main: $(OBJ_FILES) main.o
 
 #=================================================
 # Temp
@@ -377,7 +377,7 @@ ball: $(OBJ_FILES) ball.o
 m:
 	gvim Makefile
 vi:
-	gvim ball.cpp
+	gvim main.cpp
 
 #=================================================
 # Rules

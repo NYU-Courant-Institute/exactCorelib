@@ -1,5 +1,5 @@
 /* **************************************
-   File: ball.cpp
+   File: main.cpp
 
    Description:
    This is the entry point for the running the SSS algorithm
@@ -20,7 +20,7 @@ NOTE:   Surin was a Regional Finalist (one out of 100 nationwide)
 
    ************************************** */
 
-#include "./ball.h"
+#include "./main.h"
 #include <algorithm>
 #include <string>
 #include <vector>
