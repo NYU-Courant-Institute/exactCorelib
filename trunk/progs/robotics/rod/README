@@ -1,13 +1,69 @@
-README File for "ball" demo
+README File for "rod" demo
 
-This project (completed September 2013)
+This project is an extension of the "ball" robot project
+(completed September 2013)
 was originally undertaken by Surin Ahn for
 the 2013 Siemens Math, Science, Technology Competition.
-
 Surin Ahn was a Regional Finalist (one out of 100 students nationwide),
 from Mamoroneck Union Free School District, New York.
 
---Chee Yap (Apr 2014)
+With Ziyao, we first improved the graphical interface and also
+extended this to the case of a rod robot.
+
+--Chee Yap, Ziyao Wei (Apr 2014)
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Refactoring:
+
+	We now began the process of modularizing program into the
+	general SSS framework.
+
+	Modules
+
+	1. Main.cpp
+		The main entry into our program.
+		GUI interfaces are here
+	
+	2. robot/
+		ball.h
+		rod.h
+		
+ 	3. sss/
+		sss.cpp
+		SoftSubdivisionSearch.h  
+ 		UnionFind.h
+ 		Graph.h                 
+		
+	4. predicate/
+ 		ConfBox3dPredicate.cpp
+ 		ConfBox3dPredicate.h    
+ 		Predicate.h 
+		
+	5. subdivision/
+ 		ConfBox3d.cpp
+ 		ConfBox3d.h              
+ 		Vector.h
+ 		Box3d.h
+ 		Rot3dSide.h              
+ 		Status.h
+	6. geometry/
+ 		Obstacle.h               
+ 		Corner.h                 
+ 		Wall.h
+ 		Edge.h                  
+
+	7. strategy/
+ 		PriorityQueue.h         
+
+	8. path/
+		bfs.h
+	
+	9. utility/
+ 		Parser.h
+ 		Timer.h
+ 		RenderUtils.h            
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 TODO:
