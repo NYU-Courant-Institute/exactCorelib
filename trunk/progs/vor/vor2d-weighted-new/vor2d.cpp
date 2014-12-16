@@ -128,6 +128,7 @@ void parse(string input) {
   int num_objects;
   int vert;
   int x, y;
+  Object* o;
   vor_box* root = tree->root();
   ifstream ifs(input, std::ifstream::in);
 
@@ -147,23 +148,46 @@ void parse(string input) {
   ss.str(get_line(ifs));
   ss.seekg(0);
   ss >> num_objects;
-  double inv_weight;
   for (int i = 0; i < num_objects; i++) {
+    double inv_weight = 1.0;
+    double a, b, c;
+
+    cout << "Count: " << i << "\n";
+
     ss.str(get_line(ifs));
     ss.seekg(0);
 
     // Parse metric information.
+    // Parse multiplicative weight.
     if (ss.peek() == 'w') {
       ss.seekg(1);
       ss >> inv_weight;
+      o = new Object(1.0 / inv_weight);
       ss.str(get_line(ifs));
       ss.seekg(0);
+      cout << "Weight: " << 1.0/inv_weight << "\n";
+    } else if (ss.peek() == 'm') { // Parse isotropic metric parameters.
+      ss.seekg(1);
+      // For matrices of the form:
+      // [a b]
+      // [b c]
+      ss >> a >> b >> c;
+      o = new Object(a, b, c);
+      ss.str(get_line(ifs));
+      ss.seekg(0);
+      cout << "Metric information: " << a << " " << b << " " << c << "\n";
+      
+      // Verify that the matrix is positive definite
+      // by checking that its two principal minors have positive determinant.
+      if (a <= 0 || (a * c - b * b) <= 0) {
+	cout << "Error: metric tensor is not positive definite.\n";
+	exit(1);
+      }
     } else {
-      inv_weight = 1.0;
+      o = new Object(1.0 / inv_weight);
     }
-    Object* o = new Object(1.0 / inv_weight);
-    objects.push_back(o);
 
+    objects.push_back(o);
     vector<Corner*> verts;
     while (!ss.eof()) {
       ss >> vert;

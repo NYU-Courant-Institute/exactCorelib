@@ -5,9 +5,8 @@
 #include <limits>
 
 namespace vor2d {
-
-Object::Object(double weight) : weight_(weight) {}
-
+Object::Object(double weight) : weight_(weight), m_{0.0, 0.0, 0.0} {}
+Object::Object(double a, double b, double c) : weight_(0.0), m_{a, b, c} {}
 Object::~Object() {}
 
 void Object::add_feature(Feature* feature) {
@@ -27,6 +26,10 @@ double Object::distance(Point2d point) {
 
 double Object::weight() {
   return weight_;
+}
+
+double* Object::m() {
+  return m_;
 }
 
 } // namespace vor2d

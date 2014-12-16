@@ -343,7 +343,6 @@ void vor_box::gen_vertices() {
     if (objs[i] != objs[j]) {
       // TODO: Improve direction computation logic.
       int dir;
-
       if (j == 0) {
 	dir = 2;
       } else if (j == 1) {
