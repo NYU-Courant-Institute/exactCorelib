@@ -20,7 +20,6 @@ class Edge : public Feature {
  private:
   double aniso_distance(const Point2d& p);
   double iso_distance(const Point2d& p);
-  double Q_M(const Point2d& p);
   Corner* source_;
   Corner* dest_;
 };

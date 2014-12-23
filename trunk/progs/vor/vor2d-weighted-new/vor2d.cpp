@@ -151,9 +151,6 @@ void parse(string input) {
   for (int i = 0; i < num_objects; i++) {
     double inv_weight = 1.0;
     double a, b, c;
-
-    cout << "Count: " << i << "\n";
-
     ss.str(get_line(ifs));
     ss.seekg(0);
 
@@ -165,7 +162,7 @@ void parse(string input) {
       o = new Object(1.0 / inv_weight);
       ss.str(get_line(ifs));
       ss.seekg(0);
-      cout << "Weight: " << 1.0/inv_weight << "\n";
+      cout << "Weight: " << 1.0 / inv_weight << "\n";
     } else if (ss.peek() == 'm') { // Parse isotropic metric parameters.
       ss.seekg(1);
       // For matrices of the form:
@@ -175,13 +172,12 @@ void parse(string input) {
       o = new Object(a, b, c);
       ss.str(get_line(ifs));
       ss.seekg(0);
-      cout << "Metric information: " << a << " " << b << " " << c << "\n";
       
       // Verify that the matrix is positive definite
       // by checking that its two principal minors have positive determinant.
       if (a <= 0 || (a * c - b * b) <= 0) {
-	cout << "Error: metric tensor is not positive definite.\n";
-	exit(1);
+        cout << "Error: metric tensor is not positive definite.\n";
+        exit(1);
       }
     } else {
       o = new Object(1.0 / inv_weight);
@@ -194,24 +190,24 @@ void parse(string input) {
       const Point2d point(px[vert] / (WINDOW_WIDTH / 2) - 1, py[vert] / (WINDOW_WIDTH / 2) - 1);
       Corner* corner = new Corner(point, o);
       if (verts.empty() || !(*corner == *verts[0])) {
-	o->add_feature(corner);
-	root->add_corner(corner);
-	verts.push_back(corner);
-	if (verts.size() > 1) {
-	  Edge* edge = new Edge(verts[verts.size() - 2], verts[verts.size() - 1], o);
-	  o->add_feature(edge);
-	  root->add_edge(edge);
-	}
+        o->add_feature(corner);
+        root->add_corner(corner);
+        verts.push_back(corner);
+        if (verts.size() > 1) {
+          Edge* edge = new Edge(verts[verts.size() - 2], verts[verts.size() - 1], o);
+          o->add_feature(edge);
+          root->add_edge(edge);
+        }
       } else if (verts.size() > 2) {
-	// Close the polygon.
-	Edge* edge = new Edge(verts[verts.size() - 1], verts[0], o);
-	o->add_feature(edge);
-	root->add_edge(edge);
+        // Close the polygon.
+        Edge* edge = new Edge(verts[verts.size() - 1], verts[0], o);
+        o->add_feature(edge);
+        root->add_edge(edge);
       }
     }
     root->add_object(o);
   }
-
+  
   ifs.close();
 }
 

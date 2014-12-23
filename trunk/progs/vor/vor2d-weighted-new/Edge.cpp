@@ -31,8 +31,17 @@ double Edge::iso_distance(const Point2d& p) {
   return parent_->weight() * sqrt(sqr(p[0] - x0) + sqr(p[1] - y0));
 }
 
-double Edge::aniso_distance(const Point2d& p) {
-  return 0.0;
+double Edge::aniso_distance(const Point2d& r) {
+  const Point2d p = source_->position();
+  const Point2d q = dest_->position();
+  Point2d v = q - p;
+  Point2d w = r - p;
+  double ts = parent_->qm2(v, w) / parent_->qm(v);
+  ts = (ts < 0) ? 0 : ts;
+  ts = (ts > 1) ? 1 : ts;
+  Point2d v2(ts * v[0], ts * v[1]);
+  Point2d y = w + v2;
+  return sqrt(parent_->qm(y));
 }
 
 Corner* Edge::dest() const {
