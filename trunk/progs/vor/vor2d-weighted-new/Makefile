@@ -35,5 +35,8 @@ test_conics:
 valgrind:
 	valgrind ./vor2d test_input
 
+poly_an:
+	./vor2d poly_an_test_input &
+
 an:
 	./vor2d an_test_input &

@@ -64,17 +64,27 @@ bool operator!=( const Point & other ) const {
   return !(*this==other);
 }
 
+Vector<T,D> operator*(double r) const {
+  Vector<T, D> vec;
+  for (int i = 0; i < D; i++) {
+    vec[i] = r * v[i];
+  }
+  return vec;
+}
+
 Vector<T,D> operator+(const Point& other) const {
-  Vector<T,D> vec;
-  for (int i = 0; i < D; i++)
+  Vector<T, D> vec;
+  for (int i = 0; i < D; i++) {
     vec[i] = v[i] + other.v[i];
+  }
   return vec;
 }
 
 Vector<T,D> operator-(const Point& other) const {
-  Vector<T,D> vec;
-  for (int i = 0; i < D; i++)
+  Vector<T, D> vec;
+  for (int i = 0; i < D; i++) {
     vec[i] = v[i] - other.v[i];
+  }
   return vec;
 }
 
