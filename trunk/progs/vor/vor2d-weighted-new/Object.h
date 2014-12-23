@@ -28,6 +28,8 @@ class Object {
   virtual double distance(Point2d point);
 
   double weight();
+  double qm(const Point2d& p);
+  double qm2(const Point2d& p, const Point2d& q);
   double* m();
 
  private:

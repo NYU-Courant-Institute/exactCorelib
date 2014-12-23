@@ -2,7 +2,7 @@
 CORE_PATH=../../..
 include ../Make.options
 
-CXX = g++
+CXX = g++-4.8
 CXXFLAGS = -std=c++11 -g
 
 TARGET = vor2d
@@ -34,3 +34,6 @@ test_conics:
 
 valgrind:
 	valgrind ./vor2d test_input
+
+an:
+	./vor2d an_test_input &

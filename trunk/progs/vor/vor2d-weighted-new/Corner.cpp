@@ -22,9 +22,7 @@ double Corner::distance(const Point2d& point) {
     double e_norm = sqrt(p[0] * p[0] + p[1] * p[1]);
     return parent_->weight() * e_norm;
   } else {
-    double* m = parent_->m();
-    // sqrt(a x^2 + b x y + c y^2)
-    return sqrt(m[0] * p[0] * p[0] + 2 * m[1] * p[0] * p[1] + m[2] * p[1] * p[1]);
+    return sqrt(parent_->qm(p));
   }
 }
 

@@ -28,6 +28,16 @@ double Object::weight() {
   return weight_;
 }
 
+double Object::qm(const Point2d& p) {
+  // p^T M p = a p_x^2 + b p_x p_y + c p_y^2
+  return m_[0] * p[0] * p[0] + 2 * m_[1] * p[0] * p[1] + m_[2] * p[1] * p[1];
+}
+
+double Object::qm2(const Point2d& p, const Point2d& q) {
+  // p^T M q = q_x (a p_x + b p_y) + q_y (b p_x + c p_y)
+  return q[0] * (m_[0] * p[0] + m_[1] * p[1]) + q[1] * (m_[1] * p[0] + m_[2] * p[1]);
+}
+
 double* Object::m() {
   return m_;
 }

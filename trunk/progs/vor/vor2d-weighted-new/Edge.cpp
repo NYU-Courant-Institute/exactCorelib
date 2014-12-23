@@ -14,6 +14,10 @@ double Edge::lipschitz() const {
 }
 
 double Edge::distance(const Point2d& p) {
+  return parent_->anisotropic() ? aniso_distance(p) : iso_distance(p);
+}
+
+double Edge::iso_distance(const Point2d& p) {
   double x1 = source_->position()[0];
   double y1 = source_->position()[1];
   double x2 = dest_->position()[0];
@@ -25,6 +29,10 @@ double Edge::distance(const Point2d& p) {
   double x0 = u * x2 + (1 - u) * x1;
   double y0 = u * y2 + (1 - u) * y1;
   return parent_->weight() * sqrt(sqr(p[0] - x0) + sqr(p[1] - y0));
+}
+
+double Edge::aniso_distance(const Point2d& p) {
+  return 0.0;
 }
 
 Corner* Edge::dest() const {
