@@ -3,13 +3,13 @@
 #include <vector>
 #include <list>
 #include <assert.h>
-#include "./Wall.h"
-#include "./Edge.h"
-#include "./Corner.h"
+#include "../geometry/Wall.h"
+#include "../geometry/Edge.h"
+#include "../geometry/Corner.h"
 #include "./Box3d.h"
 #include "./Rot3dSide.h"
 #include <iostream>
-#include "./ConfBox3dPredicate.h"
+#include "../predicate/ConfBox3dPredicate.h"
 #include "./Status.h"
 
 class ConfBox3d;

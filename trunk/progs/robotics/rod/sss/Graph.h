@@ -5,7 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <unordered_set>
-#include "./ConfBox3d.h"
+#include "../subdivision/ConfBox3d.h"
 
 using namespace std;
 
@@ -115,87 +115,5 @@ class PQCmp3 {
        (b->y - beta[1]) * (b->y - beta[1]) +
        (b->z - beta[2]) * (b->z - beta[2]));
     return distDiff > 0;
-  }
-};
-
-class Path {
- public:
-  static bool isNeighbor(ConfBox3d* a, ConfBox3d* b) {
-    double dx = abs(a->x - b->x);
-    double dy = abs(a->y - b->y);
-    double dz = abs(a->z - b->z);
-    double wa = a->width / 2;
-    double wb = b->width / 2;
-    return
-      (abs(dx - (wa + wb)) < 0.001 && abs(dy - abs(wa - wb)) < 0.001 && abs(dz - abs(wa - wb)) < 0.001) ||
-      (abs(dx - (wa - wb)) < 0.001 && abs(dy - abs(wa + wb)) < 0.001 && abs(dz - abs(wa - wb)) < 0.001) ||
-      (abs(dx - (wa - wb)) < 0.001 && abs(dy - abs(wa - wb)) < 0.001 && abs(dz - abs(wa + wb)) < 0.001);
-  }
-
-  static vector<ConfBox3d*> bfsShortestPath(ConfBox3d* a, ConfBox3d* b) {
-    unordered_set<ConfBox3d*> visited;
-    vector<ConfBox3d*> fringe;
-    fringe.push_back(a);
-    visited.insert(a);
-    int begin = 0;
-    while (begin < fringe.size()) {
-      ConfBox3d* c = fringe[begin];
-      begin++;
-      for (int i = 0; i < c->neighbors.size(); i++) {
-        ConfBox3d* n = c->neighbors[i];
-        if (n->getStatus() == FREE && visited.find(n) == visited.end()) {
-          n->prev = c;
-          fringe.push_back(n);
-          visited.insert(n);
-        }
-      }
-    }
-
-    vector<ConfBox3d*> path;
-    path.push_back(b);
-    while (path.back()->prev) {
-      path.push_back(path.back()->prev);
-    }
-    return path;
-  }
-
-  static vector<ConfBox3d*> dijkstraShortestPath(ConfBox3d* a, ConfBox3d* b) {
-    a->dist2Source = 0;
-    vector<ConfBox3d*> bv;
-    distHeap<distCmp>::insert(bv, a);
-    while (bv.size()) {
-      ConfBox3d* current = distHeap<distCmp>::extractMin(bv);
-      current->visited = true;
-      if (current == b) {
-        break;
-      }
-
-      for (int i = 0; i < current->neighbors.size(); i++) {
-        ConfBox3d* neighbor = current->neighbors[i];
-        if (!neighbor->visited && neighbor->status == FREE) {
-          double dist2pre =
-            sqrt((current->x - neighbor->x) * (current->x - neighbor->x) +
-                 (current->y - neighbor->y) * (current->y - neighbor->y) +
-                 (current->z - neighbor->z) * (current->z - neighbor->z) );
-          double dist2src = dist2pre + current->dist2Source;
-
-          if (neighbor->dist2Source == -1) {
-            neighbor->prev = current;
-            neighbor->dist2Source = dist2src;
-            distHeap<distCmp>::insert(bv, neighbor);
-          } else if (neighbor->dist2Source > dist2src) {
-            neighbor->prev = current;
-            distHeap<distCmp>::decreaseKey(bv, neighbor, dist2src);
-          }
-        }
-      }
-    }
-
-    vector<ConfBox3d*> path;
-    path.push_back(b);
-    while (path.back()->prev) {
-      path.push_back(path.back()->prev);
-    }
-    return path;
   }
 };

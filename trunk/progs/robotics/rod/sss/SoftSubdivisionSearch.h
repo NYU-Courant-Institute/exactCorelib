@@ -12,9 +12,10 @@
 #pragma once
 #include <iostream>
 #include "./UnionFind.h"
-#include "./PriorityQueue.h"
-#include "./ConfBox3d.h"
-#include "./ConfBox3dPredicate.h"
+#include "../strategy/PriorityQueue.h"
+#include "../subdivision/ConfBox3d.h"
+#include "../predicate/ConfBox3dPredicate.h"
+#include "../path/Path.h"
 
 using namespace std;
 

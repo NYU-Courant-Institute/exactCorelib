@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include "./ConfBox3d.h"
+#include "../subdivision/ConfBox3d.h"
 
 class Set {
  public:

@@ -5,7 +5,7 @@
 //      We must be sure that each triangular face follows the CCW convention
 //              when seen from the "outside"
 
-#include "./Vector.h"
+#include "./geometry/Vector.h"
 #include <iostream>
 #include <map>
 #include <cstring>

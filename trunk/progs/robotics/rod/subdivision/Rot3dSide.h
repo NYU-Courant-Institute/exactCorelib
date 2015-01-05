@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "./Vector.h"
+#include "./geometry/Vector.h"
 #include <cmath>
 
 using namespace std;

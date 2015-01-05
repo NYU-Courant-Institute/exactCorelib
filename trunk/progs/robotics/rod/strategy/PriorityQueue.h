@@ -1,15 +1,15 @@
 #pragma once
-#include "./ConfBox3d.h"
+#include "../subdivision/ConfBox3d.h"
 #include <queue>
 #include <vector>
 #include <list>
 #include <time.h>
 #include <stdlib.h>
 #include <iterator>
-#include "Graph.h"
+#include "../sss/Graph.h"
 #include <math.h>
 #include <unordered_set>
-#include "UnionFind.h"
+#include "../sss/UnionFind.h"
 
 using namespace std;
 

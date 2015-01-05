@@ -55,7 +55,14 @@
 
 CORE_PATH=../../../
 include ../Make.options
-
+vpath %.cpp robot/
+vpath %.cpp sss/
+vpath %.cpp predicate/
+vpath %.cpp subdivision/
+vpath %.cpp geometry/
+vpath %.cpp strategy/
+vpath %.cpp path/
+vpath %.cpp utility/
 #=================================================
 # User variables (you can change them in the command line)
 #=================================================
@@ -114,7 +121,7 @@ frameRate = 60
 #=================================================
 TARGETS = main
 
-OBJ_FILES = ConfBox3d.o Corner.o Edge.o SoftSubdivisionSearch.o Wall.o fileProcessor.o Timer.o ConfBox3dPredicate.o
+OBJ_FILES = ConfBox3d.o Corner.o Edge.o SoftSubdivisionSearch.o Wall.o fileProcessor.o Timer.o Path.o ConfBox3dPredicate.o
 
 all: $(TARGETS)
 

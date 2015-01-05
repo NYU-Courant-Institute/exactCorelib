@@ -20,48 +20,48 @@ Refactoring of Code:
 
 	Modules
 
-	1. Main.cpp
+	1. main.cpp
 		The main entry into our program.
 		GUI interfaces are here
-	
+
 	2. robot/
 		ball.h
 		rod.h
-		
+
  	3. sss/
-		sss.cpp
-		SoftSubdivisionSearch.h  
+		SoftSubdivisionSearch.cpp
+		SoftSubdivisionSearch.h
  		UnionFind.h
- 		Graph.h                 
-		
+ 		Graph.h
+
 	4. predicate/
  		ConfBox3dPredicate.cpp
- 		ConfBox3dPredicate.h    
- 		Predicate.h 
-		
+ 		ConfBox3dPredicate.h
+
 	5. subdivision/
  		ConfBox3d.cpp
- 		ConfBox3d.h              
- 		Vector.h
+ 		ConfBox3d.h
  		Box3d.h
- 		Rot3dSide.h              
+ 		Rot3dSide.h
  		Status.h
+
 	6. geometry/
- 		Obstacle.h               
- 		Corner.h                 
+ 		Obstacle.h
+ 		Corner.h
  		Wall.h
- 		Edge.h                  
+ 		Edge.h
+ 		Vector.h
 
 	7. strategy/
- 		PriorityQueue.h         
+ 		PriorityQueue.h
 
 	8. path/
 		bfs.h
-	
+
 	9. utility/
  		Parser.h
  		Timer.h
- 		RenderUtils.h            
+ 		RenderUtils.h
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,6 +110,6 @@ TODO:
 	the obstacles should allow some transparency so we can see obscured ball motion.
 (8) Multiple views:  should be able to set up two simultaneous views
 	(e.g., top view and side view)
-    
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

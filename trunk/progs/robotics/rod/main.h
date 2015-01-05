@@ -1,14 +1,14 @@
-#include "SoftSubdivisionSearch.h"
-#include "PriorityQueue.h"
+#include "./sss/SoftSubdivisionSearch.h"
+#include "./strategy/PriorityQueue.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "Graph.h"
-#include "Timer.h"
+#include "./sss/Graph.h"
+#include "./utility/Timer.h"
 #include <set>
-#include "Parser.h"
-#include "RenderUtils.h"
+#include "./utility/Parser.h"
+#include "./utility/RenderUtils.h"
 
 // External Routines ========================================
 //

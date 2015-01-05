@@ -1,6 +1,6 @@
 #pragma once
-#include "./ConfBox3d.h"
-#include "./Status.h"
+#include "../subdivision/ConfBox3d.h"
+#include "../subdivision/Status.h"
 
 class ConfBox3d;
 
