@@ -163,8 +163,8 @@ p executable default:
 	    $(LDFLAGS) $(LIBS) -o $(pv)
 
 glui:  gluiExample.o
+	${CXX} $(LDFLAGS) $(LOCALLDFLAGS) $< $(CORE_LIB) -o $@
 
-	$(CC) 
 newdraw: newdraw$(ext)
 	$(CC) -g $(INC) newdraw$(ext) \
 	    $(LDFLAGS) $(LIBS) -o newdraw
@@ -290,7 +290,7 @@ distrib:
 clean:
 	-@rm -f *.o *~ 
 
-veryclean: clean
+vclean veryclean: clean
 	-@rm -f x* drawCurve
 
 
