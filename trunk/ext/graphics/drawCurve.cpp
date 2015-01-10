@@ -70,8 +70,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
-#include <GL/glut.h>
+// #include <GL/glut.h>
 // #include <gl/glut.h>
+#include <GLUT/glut.h>
 using namespace std;
 
 

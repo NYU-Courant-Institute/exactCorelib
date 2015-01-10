@@ -40,6 +40,7 @@ HOME=/home/exact/corelib/ext/graphics/
 pf = $(PLATFORM)
 
 CC = g++
+CC = g++-4.9
 
 # file extension
 ext= 
@@ -55,7 +56,7 @@ ext=.cpp
    endif
 
 #######################################################
-# Runtime libraries (various alternatives are kept around!)
+# Includes and Runtime libraries (alternatives are kept around!)
 #######################################################
 
 	SRCS = drawCurve.cpp
@@ -80,6 +81,10 @@ ext=.cpp
 CORE_LIB=-L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib -L$(CORE_PATH)/gmp/lib \
 	 -L$(MESA_LIB_PATH) -lGL -lGLU -lglut \
 	 -lcore++$(VAR) -lmpfr -lgmp
+CORE_LIB=-L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib -L$(CORE_PATH)/gmp/lib \
+	 -lcore++$(VAR) -lmpfr -lgmp \
+ 	-framework GLUT -framework OpenGL -framework Cocoa
+
 CORE_INC=-I. -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
 	 -I$(CORE_PATH)/gmp/include -I/usr/include/ \
 	 -I$(MESA_INC_PATH) 
@@ -87,6 +92,7 @@ CORE_INC=-I. -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
 
 	COMPILERFLAGS = -Wall 
 	LIBS = -L/opt/local/var/macports/software/mesa/7.4.3_0+hw_render/opt/local/lib -lglut -lGLU -lGL -lm -L/usr/X11R6/lib -lXi -lXmu
+	LIBS=  -framework GLUT -framework OpenGL -framework Cocoa
         else
 	COMPILERFLAGS = -Wall 
 	LIBS = -L/usr/X11R6/lib -L/usr/unsupported/installers/chenli/lib \
@@ -129,6 +135,7 @@ CORE_INC=-I. -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
 # program base is "p"
 #######################################################
 p=drawCurve
+p=gluiExample
 
 # program version is "v"
 v=1
@@ -154,6 +161,10 @@ fn=DRAW
 p executable default:
 	$(CC) $(COMPILERFLAGS) -g $(INC) $(pv)$(ext) \
 	    $(LDFLAGS) $(LIBS) -o $(pv)
+
+glui:  gluiExample.o
+
+	$(CC) 
 newdraw: newdraw$(ext)
 	$(CC) -g $(INC) newdraw$(ext) \
 	    $(LDFLAGS) $(LIBS) -o newdraw
@@ -178,7 +189,8 @@ draw.orig: draw.orig.cc
 	    $(LDFLAGS) $(LIBS) -o draw.orig
 help:
 	@echo "USAGE: Type the following"
-	@echo "  > make eg                 -- to see an example (also try eg0, eg1, eg2, eg3, eg4)"
+	@echo "  > make eg                 -- to see an example (or: eg0, eg1, eg2, eg3, eg4)"
+	@echo "  > make glui                 -- to see a glui example 
 	@echo "  > make params             -- to see default parameters of eg"
 	@echo "  > make eg ifile=XXX       -- to display file XXX in local directory ${DATA}"
 
@@ -195,7 +207,7 @@ opt params:
 eg test testcurve:
 	./drawCurve < ${DATA}/${ifile}
 
-eg0 test0 testcurve:
+eg0 test0 testcurve0:
 	./drawCurve < ${DATA}/test0
 
 eg1 test1:
