@@ -7,6 +7,7 @@
 #include "vor2d.h"
 
 #include <limits>
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -76,6 +77,7 @@ class vor_box {
   // Collections.
   vor_box** children_;
   vor_box** neighbors_;
+  map<int, Point2d*> nodes_map_;
   vector<Corner*> corners_;
   vector<Edge*> edges_;
   vector<Object*> objects_;

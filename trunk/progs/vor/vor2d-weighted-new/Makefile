@@ -10,6 +10,10 @@ SRCS = $(wildcard *.cpp)
 OBJS = ${SRCS:.cpp=.o}
 DEPS = $(SRCS:.cpp=.depends)
 
+# Core level.
+LEV = 1
+
+# Build commands.
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
@@ -24,6 +28,7 @@ $(TARGET): $(OBJS)
 clean:
 	rm -f *~ *.o $(TARGET)
 
+# Test commands.
 test:
 	./vor2d test_input &
 

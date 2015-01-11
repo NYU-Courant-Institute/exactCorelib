@@ -189,6 +189,7 @@ void vor_box::smooth_split_aux() {
     int non_sib_neighbor_ind = d + (((indicator_ & (1 << d)) == 0) ? 0 : 1) * dimension();
     vor_box* cur_neighbor = neighbors_[non_sib_neighbor_ind];
     if (cur_neighbor != nullptr && cur_neighbor->depth() < depth_) {
+      cout << "Smooth split aux.\n";
       cur_neighbor->smooth_split_aux();
     }
   }
@@ -233,20 +234,6 @@ double vor_box::clearance(const Point2d& point) const {
       min_sep = dist;
     }
   }
-
-  // // TODO(Huck): Consolidate these loops into a single loop iterating over all types of features.
-  // for (auto it = corners_.begin(); it != corners_.end(); ++it) {
-  //   double dist = (*it)->distance(point);
-  //   if (dist < min_sep) {
-  //     min_sep = dist;
-  //   }
-  // }
-  // for (auto it = edges_.begin(); it != edges_.end(); ++it) {
-  //   double dist = (*it)->distance(point);
-  //   if (dist < min_sep) {
-  //     min_sep = dist;
-  //   }
-  // }
 
   return min_sep;
 }
@@ -327,6 +314,8 @@ void vor_box::gen_vertices() {
   corners[2] = Point2d(x - hw, y - hw);
   corners[3] = Point2d(x - hw, y + hw);
 
+  assert(is_leaf());
+
   // Compute nearest objects for each corner.
   Object* objs[4];
   for (int i = 0; i < 4; i++) {
@@ -340,40 +329,53 @@ void vor_box::gen_vertices() {
 
   for (int i = 0; i < 4; i++) {
     int j = (i + 1) % 4;
-    if (objs[i] != objs[j]) {
-      // TODO: Improve direction computation logic.
-      int dir;
-      if (j == 0) {
-	dir = 2;
-      } else if (j == 1) {
-	dir = 1;
-      } else if (j == 2) {
-	dir = -2;
-      } else if (j == 3) {
-	dir = -1;
-      } else {
-	cout << "Warning: Failed to compute direction.\n";
-      }
 
-      Point2d* midpoint = get_midpoint(corners[i], corners[j]);
-      vor_box* neighbor = principal_neighbor(dir);
-      if (neighbor != nullptr && !neighbor->is_leaf()) {
-	// TODO: Use voronoi nodes from neighbor instead of recomputing them?
-	Object* mid_closest = nearest_obj(*midpoint);
-	if (objs[i] != mid_closest) {
-	  nodes_.push_back(get_midpoint(corners[i], *midpoint));
-	} else if (objs[j] != mid_closest) {
-	  nodes_.push_back(get_midpoint(corners[j], *midpoint));
-	} else {
-	  cout << "Warning: No node added.\n";
-	}
+    // Add a node iff adjacent corners have different labels.
+    // TODO: Add VP predicate so that we still ensure topological correctness.
+    if (objs[i] == objs[j]) {
+      continue;
+    }
+
+    // TODO: Improve direction computation logic.
+    int dir;
+    if (j == 0) {
+      dir = 2;
+    } else if (j == 1) {
+      dir = 1;
+    } else if (j == 2) {
+      dir = -2;
+    } else if (j == 3) {
+      dir = -1;
+    } else {
+      cout << "Warning: Failed to compute direction.\n";
+    }
+
+    Point2d* midpoint = get_midpoint(corners[i], corners[j]);
+    Object* mid_closest = nearest_obj(*midpoint);
+    vor_box* neighbor = principal_neighbor(dir);
+    if (neighbor != nullptr && !neighbor->is_leaf()) {
+      // TODO: Use Voronoi nodes from neighbor instead of recomputing them?
+      // TODO: Clean up.
+      Point2d* sub_midpoint;
+      if (objs[i] != mid_closest) {
+	sub_midpoint = get_midpoint(corners[i], *midpoint);
+	nodes_.push_back(sub_midpoint);
+	nodes_map_[dir] = sub_midpoint;
+      } else if (objs[j] != mid_closest) {
+	sub_midpoint = get_midpoint(corners[j], *midpoint);
+	nodes_.push_back(sub_midpoint);
+	nodes_map_[dir] = sub_midpoint;
       } else {
-	nodes_.push_back(midpoint);
+	cout << "Warning: No node added.\n";
       }
+    } else {
+      nodes_.push_back(midpoint);
+      nodes_map_[dir] = midpoint;
     }
   }
   
   // Generate Voronoi segments.
+  // TODO: Fix logic for nodes_.size() > 2.
   if (nodes_.size() == 2) {
     segments_.push_back(new vor_seg(*nodes_[0], *nodes_[1]));
   } else {

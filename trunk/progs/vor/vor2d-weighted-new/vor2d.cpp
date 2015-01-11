@@ -246,7 +246,16 @@ void run() {
   while (!construct.empty()) {
     vor_box* box = construct.front();
     construct.pop();
-    box->gen_vertices();
+
+    // Check that boxes are leaves.
+    // Due to smooth splitting they may not be.
+    if (box->is_leaf()) {
+      box->gen_vertices();
+    } else {
+      for (int i = 0; i < box->num_children(); i++) {
+	construct.push(box->children()[i]);
+      }
+    }
   }
 
   // Display.
