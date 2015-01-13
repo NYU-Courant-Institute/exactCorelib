@@ -135,19 +135,19 @@ void vor_box::split() {
 
     // TODO: Consolidate these loops.
     for (auto it = corners_.begin(); it != corners_.end(); ++it) {
-      if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
+      if ((*it)->distance(mid_point) < child_clearance + 20 * lip * children_[i]->radius()) {
 	children_[i]->add_corner(*it);
       }
     }
 
     for (auto it = edges_.begin(); it != edges_.end(); ++it) {
-      if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
+      if ((*it)->distance(mid_point) < child_clearance + 20 * lip * children_[i]->radius()) {
 	children_[i]->add_edge(*it);
       }
     }
 
     for (auto it = objects_.begin(); it != objects_.end(); ++it) {
-      if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
+      if ((*it)->distance(mid_point) < child_clearance + 20 * lip * children_[i]->radius()) {
 	children_[i]->add_object(*it);
       }
     }
@@ -189,7 +189,6 @@ void vor_box::smooth_split_aux() {
     int non_sib_neighbor_ind = d + (((indicator_ & (1 << d)) == 0) ? 0 : 1) * dimension();
     vor_box* cur_neighbor = neighbors_[non_sib_neighbor_ind];
     if (cur_neighbor != nullptr && cur_neighbor->depth() < depth_) {
-      cout << "Smooth split aux.\n";
       cur_neighbor->smooth_split_aux();
     }
   }
@@ -290,7 +289,7 @@ Object* vor_box::nearest_obj(const Point2d& point) const {
       min_dist = cur_dist;
       nearest = obj;
     } else if (cur_dist == min_dist) {
-      cout << "Warning: possible degeneracy.\n";
+      cout << "Warning: possible degeneracy: " << center_[0] << " " << center_[1] << "\n";
     }
   }
 

@@ -11,7 +11,7 @@ class Feature {
  public:
   // Compute the distance to a point.
   virtual double distance(const Point2d& point) = 0;
-  virtual double lipschitz() const = 0;
+  double lipschitz() const;
   void set_parent(Object* parent);
   Object* parent();
 

@@ -29,7 +29,7 @@ double Object::weight() {
 }
 
 double Object::qm(const Point2d& p) {
-  // p^T M p = a p_x^2 + b p_x p_y + c p_y^2
+  // p^T M p = a p_x^2 + 2 b p_x p_y + c p_y^2
   return m_[0] * p[0] * p[0] + 2 * m_[1] * p[0] * p[1] + m_[2] * p[1] * p[1];
 }
 

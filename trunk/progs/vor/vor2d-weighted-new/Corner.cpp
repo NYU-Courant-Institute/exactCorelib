@@ -12,10 +12,6 @@ Corner::Corner(const Point2d& position, Object* parent) :
 
 Corner::~Corner() {}
 
-double Corner::lipschitz() const {
-  return parent_->weight();
-}
-
 double Corner::distance(const Point2d& point) {
   Point2d p = point - position_;
   if (!parent_->anisotropic()) {

@@ -9,10 +9,6 @@ Edge::Edge(Corner* source, Corner* dest, Object* parent) : source_(source), dest
   dest->set_prev_edge(this);
 }
 
-double Edge::lipschitz() const {
-  return parent_->weight();
-}
-
 double Edge::distance(const Point2d& p) {
   return parent_->anisotropic() ? aniso_distance(p) : iso_distance(p);
 }
@@ -39,7 +35,7 @@ double Edge::aniso_distance(const Point2d& r) {
   double ts = parent_->qm2(v, w) / parent_->qm(v);
   ts = (ts < 0) ? 0 : ts;
   ts = (ts > 1) ? 1 : ts;
-  Point2d v2(ts * v[0], ts * v[1]);
+  Point2d v2(-ts * v[0], -ts * v[1]);
   Point2d y = w + v2;
   return sqrt(parent_->qm(y));
 }

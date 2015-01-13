@@ -40,6 +40,13 @@ void Mouse(int button, int state, int x, int y);
 void parse(string input);
 void run();
 
+// Global parameters.
+const int window_width = 1024;
+const double abs_eps = 1.0d / (1 << 10);
+// TODO: Make geom_eps an optional input parameter.
+const double geom_eps = 1.0d / (1 << 10);
+// const double geom_eps = 2.0;
+
 // Global variables.
 vor_qt* tree;
 queue<vor_box*> subdiv;
@@ -51,7 +58,7 @@ void initialize(string input_file_name) {
   const string title_prefix = "2D subdivision-based Voronoi diagram - ";
 
   // Initialize global variables.
-  tree = new vor_qt(2 /* dimension */, 4.0 /* width */);
+  tree = new vor_qt(2 /* dimension */, 2.0 /* width */);
 
   // Set up antialiasing.
   glEnable(GL_LINE_SMOOTH);
@@ -60,7 +67,7 @@ void initialize(string input_file_name) {
   glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
   // Set up window.
-  glutInitWindowSize(WINDOW_WIDTH, WINDOW_WIDTH);
+  glutInitWindowSize(window_width, window_width);
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
   glutCreateWindow((title_prefix + input_file_name).c_str());
   glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -132,6 +139,11 @@ void parse(string input) {
   vor_box* root = tree->root();
   ifstream ifs(input, std::ifstream::in);
 
+  if (!ifs) {
+    cout << "File " << input << " not found.\n";
+    exit(1);
+  }
+
   // 1. Parse points.
   stringstream ss(get_line(ifs));
   ss.seekg(0);
@@ -187,7 +199,7 @@ void parse(string input) {
     vector<Corner*> verts;
     while (!ss.eof()) {
       ss >> vert;
-      const Point2d point(px[vert] / (WINDOW_WIDTH / 2) - 1, py[vert] / (WINDOW_WIDTH / 2) - 1);
+      const Point2d point(2 * px[vert] / window_width - 1, 2 * py[vert] / window_width - 1);
       Corner* corner = new Corner(point, o);
       if (verts.empty() || !(*corner == *verts[0])) {
         o->add_feature(corner);
@@ -229,8 +241,8 @@ void run() {
     double num_obj = box->num_objects();
 
     if (num_obj > 1) {
-      if (box->width() > ABS_EPS 
-	  && (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION || box->clearance() < 2 * radius || radius > GEOM_EPS)) {
+      if (box->width() > abs_eps
+	  && (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION || box->clearance() < 2 * radius || radius > geom_eps)) {
 	box->smooth_split();
 	vor_box** children = box->children();
 	for (int i = 0; i < box->num_children(); i++) {
@@ -247,7 +259,7 @@ void run() {
     vor_box* box = construct.front();
     construct.pop();
 
-    // Check that boxes are leaves.
+    // Check that boxes used for construction are leaves.
     // Due to smooth splitting they may not be.
     if (box->is_leaf()) {
       box->gen_vertices();

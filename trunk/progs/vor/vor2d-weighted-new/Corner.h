@@ -11,7 +11,6 @@ class Corner : public Feature {
   Corner(const Point2d& position, Object* parent);
   ~Corner();
   double distance(const Point2d& point) override;
-  double lipschitz() const override;
   bool is_isolated();
   bool is_dangling();
   void set_prev_edge(Edge* edge);

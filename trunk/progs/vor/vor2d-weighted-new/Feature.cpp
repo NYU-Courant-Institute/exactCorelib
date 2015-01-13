@@ -12,4 +12,8 @@ Object* Feature::parent() {
   return parent_;
 }
 
+double Feature::lipschitz() const {
+  return parent_->weight();
+}
+
 } // namespace vor2d

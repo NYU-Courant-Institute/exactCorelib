@@ -13,7 +13,6 @@ class Edge : public Feature {
  public:
   Edge(Corner* source, Corner* dest, Object* parent);
   double distance(const Point2d& p) override;
-  double lipschitz() const override;
   Corner* source() const;
   Corner* dest() const;
   
