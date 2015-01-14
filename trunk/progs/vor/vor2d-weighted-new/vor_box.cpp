@@ -135,19 +135,19 @@ void vor_box::split() {
 
     // TODO: Consolidate these loops.
     for (auto it = corners_.begin(); it != corners_.end(); ++it) {
-      if ((*it)->distance(mid_point) < child_clearance + 20 * lip * children_[i]->radius()) {
+      if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
 	children_[i]->add_corner(*it);
       }
     }
 
     for (auto it = edges_.begin(); it != edges_.end(); ++it) {
-      if ((*it)->distance(mid_point) < child_clearance + 20 * lip * children_[i]->radius()) {
+      if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
 	children_[i]->add_edge(*it);
       }
     }
 
     for (auto it = objects_.begin(); it != objects_.end(); ++it) {
-      if ((*it)->distance(mid_point) < child_clearance + 20 * lip * children_[i]->radius()) {
+      if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
 	children_[i]->add_object(*it);
       }
     }

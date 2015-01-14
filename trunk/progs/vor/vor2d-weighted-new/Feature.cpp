@@ -2,6 +2,8 @@
 #include "Object.h"
 #include "Point.h"
 
+#include <math.h>
+
 namespace vor2d {
 
 void Feature::set_parent(Object* parent) {
@@ -13,7 +15,10 @@ Object* Feature::parent() {
 }
 
 double Feature::lipschitz() const {
-  return parent_->weight();
+  double* m = parent_->m();
+  double tmp = (m[0] - m[2]);
+  double discr =  (tmp * tmp) + (4.0 * m[1] * m[1]);
+  return sqrt(m[0] + m[2] + sqrt(discr));
 }
 
 } // namespace vor2d

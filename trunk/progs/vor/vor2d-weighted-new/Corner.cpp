@@ -14,12 +14,7 @@ Corner::~Corner() {}
 
 double Corner::distance(const Point2d& point) {
   Point2d p = point - position_;
-  if (!parent_->anisotropic()) {
-    double e_norm = sqrt(p[0] * p[0] + p[1] * p[1]);
-    return parent_->weight() * e_norm;
-  } else {
-    return sqrt(parent_->qm(p));
-  }
+  return sqrt(parent_->qm(p));
 }
 
 bool Corner::is_isolated() {

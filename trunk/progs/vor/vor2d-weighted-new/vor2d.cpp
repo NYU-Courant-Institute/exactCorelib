@@ -171,10 +171,15 @@ void parse(string input) {
     if (ss.peek() == 'w') {
       ss.seekg(1);
       ss >> inv_weight;
+      
+      // Verify that the weight is positive.
+      if (inv_weight <= 0.0) {
+	cout << "Error: multiplicative weight must be positive.";
+	exit(1);
+      }
       o = new Object(1.0 / inv_weight);
       ss.str(get_line(ifs));
       ss.seekg(0);
-      cout << "Weight: " << 1.0 / inv_weight << "\n";
     } else if (ss.peek() == 'm') { // Parse isotropic metric parameters.
       ss.seekg(1);
       // For matrices of the form:
