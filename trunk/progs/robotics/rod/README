@@ -7,8 +7,11 @@ the 2013 Siemens Math, Science, Technology Competition.
 Surin Ahn was a Regional Finalist (one out of 100 students nationwide),
 from Mamoroneck Union Free School District, New York.
 
-With Ziyao, we first improved the graphical interface and also
-extended this to the case of a rod robot.
+With Ziyao, we first improved the graphical interface for visualizing 3D,
+and also extended the robot to a 5DOF robot, namely a rod robot.
+We also began to factor the code into the general framework
+of Soft-Subdivision Search (SSS) so that we can reuse the components
+in our related applications.
 
 --Chee Yap, Ziyao Wei (Apr 2014)
 
