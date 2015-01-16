@@ -3,20 +3,25 @@
 
    Description:
    This is the entry point for the running the SSS algorithm
-   for a ball robot amidst a collection of polyhedrons (obstacles).
+   for a rod robot amidst a collection of polyhedrons (obstacles).
+   The framework will ultimately support a variety of robots.
 
+   NOTES:
+   0. This file originated in the (3d) ball program done by
+   	Surin Ahn (June 2013) for the 
+	2013 Siemens Science & Math Competition under th
+	supervision of Professor Yap.  Surin was a
+    	Regional Finalist (one out of 100 nationwide) from New York.
+        In 2014, she went to Princeton in Computer Science. 
+   1. See examples of running this program in the Makefile.
+   2. Format of input environment: see README FILE
+   3. Use WASD keys to rotate the scene
+   4. In Fall of 2014, we started to reorgnized all the programs
+   	to be consistent with our general SSS framework.
 
-   NOTE: see several examples of running this program in the Makefile.
+Author:
+	Ziyao Wei and Chee Yap (Fall 2014)
 
-   Format of input environment: see README FILE
-
-   **Use WASD keys to rotate the scene**
-
-   Author: Surin Ahn (June 2013)
-   -- supervised by Professor Yap
-
-NOTE:   Surin was a Regional Finalist (one out of 100 nationwide)
-        from New York in the 2013 Siemens Science & Math Competition
 
    ************************************** */
 
