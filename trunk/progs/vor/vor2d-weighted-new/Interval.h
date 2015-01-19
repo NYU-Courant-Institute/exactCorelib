@@ -1,6 +1,7 @@
 #pragma once
 
 #include <assert.h>
+#include <iostream>
 #include <math.h>
 
 using namespace std;
@@ -55,9 +56,18 @@ class Interval {
     return i;
   }
 
+  friend ostream& operator<<(ostream& os, const Interval& i) {
+    return os << "[" << i.a_ << ", " << i.b_ << "]";
+  }
+
+  // TODO: Find a better way to handle this situation.
   static Interval sqrt_i(const Interval& i) {
-    assert(i.a_ >= 0.0);
-    Interval i2(sqrt(i.a_), sqrt(i.b_));
+    assert(i.b_ >= 0.0);
+
+    if (i.a_ <= 0.0) {
+      cout << "Warning: LHS of sqrt_i() interval less than 0.\n";
+    }
+    Interval i2(i.a_ >= 0 ? sqrt(i.a_) : 0.0, sqrt(i.b_));
     return i2;
   }
  
@@ -73,7 +83,11 @@ inline Interval operator*(double c, const Interval& i) {
 }
 
 inline Interval operator/(double c, const Interval& i) {
-  assert(i.a_ >= 0 || i.b_ <= 0);
+  if (i.a_ <= 0 && i.b_ >= 0) {
+    cout << i << "\n";
+  }
+
+  assert(i.a_ > 0 || i.b_ < 0);
   Interval i2(c / i.b_, c / i.a_);
   return i2;
 }
