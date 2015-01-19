@@ -133,22 +133,28 @@ void vor_box::split() {
     Point2d mid_point(center[0], center[1]);
     double child_clearance = clearance(mid_point);
 
-    // TODO: Consolidate these loops.
-    for (auto it = corners_.begin(); it != corners_.end(); ++it) {
+    for (auto it = features_.begin(); it != features_.end(); ++it) {
       if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
-	children_[i]->add_corner(*it);
+	children_[i]->add_feature(*it);
       }
     }
 
-    for (auto it = edges_.begin(); it != edges_.end(); ++it) {
-      if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
-	children_[i]->add_edge(*it);
-      }
-    }
+    // for (auto it = corners_.begin(); it != corners_.end(); ++it) {
+    //   if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
+    // 	children_[i]->add_corner(*it);
+    //   }
+    // }
 
+    // for (auto it = edges_.begin(); it != edges_.end(); ++it) {
+    //   if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
+    // 	children_[i]->add_edge(*it);
+    //   }
+    // }
+
+    // TODO: Consolidate this into the "features" loop, and make active objects into a set.
     for (auto it = objects_.begin(); it != objects_.end(); ++it) {
       if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
-	children_[i]->add_object(*it);
+    	children_[i]->add_object(*it);
       }
     }
   }
@@ -195,24 +201,36 @@ void vor_box::smooth_split_aux() {
   split();
 }
 
-void vor_box::add_corner(Corner* corner) {
-  corners_.push_back(corner);
-}
+// void vor_box::add_corner(Corner* corner) {
+//   corners_.push_back(corner);
+// }
 
-void vor_box::add_edge(Edge* edge) {
-  edges_.push_back(edge);
+// void vor_box::add_edge(Edge* edge) {
+//   edges_.push_back(edge);
+// }
+
+void vor_box::add_feature(Feature* feature) {
+  features_.push_back(feature);
 }
 
 void vor_box::add_object(Object* object) {
   objects_.push_back(object);
 }
 
-vector<Corner*>* vor_box::get_corners() {
-  return &corners_;
+// vector<Corner*>* vor_box::get_corners() {
+//   return &corners_;
+// }
+
+// vector<Edge*>* vor_box::get_edges() {
+//   return &edges_;
+// }
+
+vector<Feature*>* vor_box::get_features() {
+  return &features_;
 }
 
-vector<Edge*>* vor_box::get_edges() {
-  return &edges_;
+vector<Object*>* vor_box::get_objects() {
+  return &objects_;
 }
 
 const vector<vor_seg*>* vor_box::get_segments() const {
@@ -244,27 +262,34 @@ double vor_box::clearance() const {
 
 double vor_box::max_lipschitz() const {
   double lip = 0.0;
-  
-  // TODO(Huck): Consolidate these loops into a single loop iterating over all types of features.
-  for (auto it = corners_.begin(); it != corners_.end(); ++it) {
-    double l = (*it)->lipschitz();
-    if (l > lip) {
-      lip = l;
-    }
-  }
 
-  for (auto it = edges_.begin(); it != edges_.end(); ++it) {
+  for (auto it = features_.begin(); it != features_.end(); ++it) {
     double l = (*it)->lipschitz();
     if (l > lip) {
       lip = l;
     }
-  }
+  }  
+
+  // // TODO(Huck): Consolidate these loops into a single loop iterating over all types of features.
+  // for (auto it = corners_.begin(); it != corners_.end(); ++it) {
+  //   double l = (*it)->lipschitz();
+  //   if (l > lip) {
+  //     lip = l;
+  //   }
+  // }
+
+  // for (auto it = edges_.begin(); it != edges_.end(); ++it) {
+  //   double l = (*it)->lipschitz();
+  //   if (l > lip) {
+  //     lip = l;
+  //   }
+  // }
 
   return lip;
 }
 
 int vor_box::num_features() const {
-  return corners_.size() + edges_.size();
+  return features_.size();
 }
 
 int vor_box::num_objects() const {
@@ -277,6 +302,51 @@ void vor_box::set_active(bool is_active) {
 
 bool vor_box::is_active() const {
   return is_active_;
+}
+
+bool vor_box::cpv() const {
+  if (objects_.size() < 2) {
+    return true;
+  }
+
+  // The box decomposed into intervals.
+  Interval b_x(center_[0] - radius_, center_[0] + radius_);
+  Interval b_y(center_[1] - radius_, center_[1] + radius_);
+
+  for (int i = 0; i < features_.size(); i++) {
+    for (int j = i + 1; j < features_.size(); j++) {
+      Feature* f1 = features_[i];
+      Feature* f2 = features_[j];
+
+      // Only compute predicate for features that are part of
+      // different objects.
+      if (f1->parent() == f2->parent()) {
+	continue;
+      }
+
+      // Compute 0 \notin F(B)
+      Interval f1_sep = f1->box_distance(b_x, b_y);
+      Interval f2_sep = f2->box_distance(b_x, b_y);
+      Interval F_sep = f1_sep - f2_sep;
+      if (0 <= F_sep.a_ || F_sep.b_ <= 0) {
+	continue;
+      }
+
+      // Compute 0 \notin (F_x(B))^2 + (F_y(B))^2
+      tuple<Interval, Interval> f1_grad = f1->box_grad(b_x, b_y);
+      tuple<Interval, Interval> f2_grad = f2->box_grad(b_x, b_y);
+      Interval F_grad_x = std::get<0>(f1_grad) - std::get<0>(f2_grad);
+      Interval F_grad_y = std::get<1>(f1_grad) - std::get<1>(f2_grad);
+      Interval F_grad_ip = F_grad_x * F_grad_x + F_grad_y * F_grad_y;
+      if (0 <= F_grad_ip.a_ || F_grad_ip.b_ <= 0) {
+	continue;
+      }
+
+      return false;
+    }
+  }
+
+  return true;
 }
 
 Object* vor_box::nearest_obj(const Point2d& point) const {

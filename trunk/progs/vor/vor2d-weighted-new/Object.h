@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Interval.h"
 #include "Point.h"
 #include <vector>
 #include <limits>
@@ -19,11 +20,14 @@ class Object {
   void add_feature(Feature* feature);
 
   // Compute the distance between an object and this point.
-  virtual double distance(Point2d point);
+  double distance(Point2d point);
+  // double Interval box_distance(const Interval& int_x, const Interval& int_y);
+  // tuple<Interval, Interval> box_grad(const Interval& int_x, const Interval& int_y);
 
-  // TODO: Combine qm and qm2 into a single function?
   double qm(const Point2d& p);
   double qm2(const Point2d& p, const Point2d& q);
+  Interval qm_b(const Interval& int_x, const Interval& int_y);
+  Interval qm2_b(const Point2d& p, const Interval& int_x, const Interval& int_y);
   double* m();
 
  private:

@@ -16,9 +16,9 @@ Object* Feature::parent() {
 
 double Feature::lipschitz() const {
   double* m = parent_->m();
-  double tmp = (m[0] - m[2]);
-  double discr =  (tmp * tmp) + (4.0 * m[1] * m[1]);
-  return sqrt(m[0] + m[2] + sqrt(discr));
+  // The following is an upper bound on the Lipschitz constant.
+  // TODO: Compute expression for exact Lipschitz constant.
+  return sqrt(m[0] + 2 * fabs(m[1]) + m[2]);
 }
 
 } // namespace vor2d

@@ -2,6 +2,7 @@
 
 #include "Corner.h"
 #include "Edge.h"
+#include "Interval.h"
 #include "Object.h"
 #include "Point.h"
 #include "vor2d.h"
@@ -9,6 +10,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <typeinfo>
 #include <vector>
 
 using std::shared_ptr;
@@ -42,12 +44,14 @@ class vor_box {
   shared_ptr<vector<vor_box*>> enumerate_halfspace_leaf_descendants(int dir);
   
   // Voronoi specific methods.
-  void add_corner(Corner* corner);
-  void add_edge(Edge* edge);
+  // void add_corner(Corner* corner);
+  // void add_edge(Edge* edge);
   void add_object(Object* object);
-  vector<Corner*>* get_corners();
-  vector<Edge*>* get_edges();
+  // vector<Corner*>* get_corners();
+  // vector<Edge*>* get_edges();
   vector<Object*>* get_objects();
+  void add_feature(Feature* feature);
+  vector<Feature*>* get_features();
   const vector<vor_seg*>* get_segments() const;
   int num_features() const;
   double max_lipschitz() const;
@@ -56,6 +60,7 @@ class vor_box {
   int num_objects() const;
   void set_active(bool is_active);
   bool is_active() const;
+  bool cpv() const;
   void gen_vertices();
 
  protected:
@@ -78,11 +83,14 @@ class vor_box {
   vor_box** children_;
   vor_box** neighbors_;
   map<int, Point2d*> nodes_map_;
-  vector<Corner*> corners_;
-  vector<Edge*> edges_;
-  vector<Object*> objects_;
   vector<Point2d*> nodes_;
   vector<vor_seg*> segments_;
+
+  // Active sites.
+  // vector<Corner*> corners_;
+  // vector<Edge*> edges_;
+  vector<Feature*> features_;
+  vector<Object*> objects_;
 
   friend class vor_qt;
 };

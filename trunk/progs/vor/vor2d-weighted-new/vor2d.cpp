@@ -44,8 +44,8 @@ void run();
 const int window_width = 1024;
 const double abs_eps = 1.0d / (1 << 10);
 // TODO: Make geom_eps an optional input parameter.
-const double geom_eps = 1.0d / (1 << 10);
-// const double geom_eps = 2.0;
+// const double geom_eps = 1.0d / (1 << 10);
+const double geom_eps = 2.0;
 
 // Global variables.
 vor_qt* tree;
@@ -83,17 +83,21 @@ void cleanup() {
 void display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   draw_box_rec(*tree->root(), show_grid);
-  
-  // Draw all corners.
-  vector<Corner*>* corners = tree->root()->get_corners();
-  for (auto it = corners->begin(); it < corners->end(); ++it) {
-    draw_corner(**it);
-  }
 
-  // Draw all edges.
-  vector<Edge*>* edges = tree->root()->get_edges();
-  for (auto it = edges->begin(); it < edges->end(); ++it) {
-    draw_edge(**it);
+  // Draw all features.
+  Corner* c;
+  Edge* e;
+  vector<Feature*>* features = tree->root()->get_features();
+  for (auto it = features->begin(); it < features->end(); ++it) {
+    // This is a StackOverflow hack to handle C++'s lack of "instanceof".
+    // TODO: Use typeid or some other functionality?
+    c = dynamic_cast<Corner*>(*it);
+    if (c != nullptr) {
+      draw_corner(*c);
+    } else {
+      e = dynamic_cast<Edge*>(*it);
+      draw_edge(*e);
+    }
   }
   
   glutSwapBuffers();
@@ -208,18 +212,21 @@ void parse(string input) {
       Corner* corner = new Corner(point, o);
       if (verts.empty() || !(*corner == *verts[0])) {
         o->add_feature(corner);
-        root->add_corner(corner);
+	root->add_feature(corner);
+        // root->add_corner(corner);
         verts.push_back(corner);
         if (verts.size() > 1) {
           Edge* edge = new Edge(verts[verts.size() - 2], verts[verts.size() - 1], o);
           o->add_feature(edge);
-          root->add_edge(edge);
+	  root->add_feature(edge);
+          // root->add_edge(edge);
         }
       } else if (verts.size() > 2) {
         // Close the polygon.
         Edge* edge = new Edge(verts[verts.size() - 1], verts[0], o);
         o->add_feature(edge);
-        root->add_edge(edge);
+	root->add_feature(edge);
+        // root->add_edge(edge);
       }
     }
     root->add_object(o);
@@ -247,7 +254,7 @@ void run() {
 
     if (num_obj > 1) {
       if (box->width() > abs_eps
-	  && (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION || box->clearance() < 2 * radius || radius > geom_eps)) {
+	  && (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION || box->clearance() < 2 * radius || radius > geom_eps || !box->cpv())) {
 	box->smooth_split();
 	vor_box** children = box->children();
 	for (int i = 0; i < box->num_children(); i++) {
