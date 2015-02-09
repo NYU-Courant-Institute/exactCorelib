@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <iostream>
+#include <limits>
 #include <math.h>
 
 using namespace std;
@@ -60,20 +61,30 @@ class Interval {
     return os << "[" << i.a_ << ", " << i.b_ << "]";
   }
 
-  // TODO: Find a better way to handle this situation.
-  static Interval sqrt_i(const Interval& i) {
-    assert(i.b_ >= 0.0);
+  Interval sq() const {
+    double asq = a_ * a_;
+    double bsq = b_ * b_;
+    Interval i2(a_ < 0 && b_ > 0 ? 0.0 : fmin(asq, bsq), fmax(asq, bsq));
+    return i2;
+  }
 
-    if (i.a_ <= 0.0) {
-      cout << "Warning: LHS of sqrt_i() interval less than 0.\n";
+  Interval sqrt_i() const {
+    assert(b_ >= 0.0);
+
+    // TODO: Find a better way to handle this situation.
+    if (a_ <= 0.0) {
+      cout << "Warning: sqrt_i() input interval is " << *this << "\n";
     }
-    Interval i2(i.a_ >= 0 ? sqrt(i.a_) : 0.0, sqrt(i.b_));
+    Interval i2(a_ >= 0 ? sqrt(a_) : 0.0, sqrt(b_));
     return i2;
   }
  
-  double a_;
-  double b_;
+  // Public variables representing interval [a_, b_].
+  double a_; // Left endpoint.
+  double b_; // Right endpoint.
 };
+
+const Interval TOP(numeric_limits<double>::min(), numeric_limits<double>::max());
 
 inline Interval operator*(double c, const Interval& i) {
   double e1 = c * i.a_;
@@ -84,7 +95,8 @@ inline Interval operator*(double c, const Interval& i) {
 
 inline Interval operator/(double c, const Interval& i) {
   if (i.a_ <= 0 && i.b_ >= 0) {
-    cout << i << "\n";
+    cout << "Warning: denominator interval is " << i << "\n";
+    return TOP;
   }
 
   assert(i.a_ > 0 || i.b_ < 0);

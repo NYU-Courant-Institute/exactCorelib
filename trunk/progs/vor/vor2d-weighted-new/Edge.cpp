@@ -56,7 +56,7 @@ Interval Edge::box_distance(const Interval& int_x, const Interval& int_y) {
   Interval qmw = parent_->qm_b(w_x, w_y);
   Interval vmw = parent_->qm2_b(v, w_x, w_y);
   double qmv = parent_->qm(v);
-  return Interval::sqrt_i(qmw - (vmw * vmw / qmv));
+  return (qmw - (vmw * vmw / qmv)).sqrt_i();
 }
 
 tuple<Interval, Interval> Edge::box_grad(const Interval& int_x, const Interval& int_y) {
@@ -72,7 +72,7 @@ tuple<Interval, Interval> Edge::box_grad(const Interval& int_x, const Interval& 
   Interval qmw = parent_->qm_b(w_x, w_y);
   Interval vmw = parent_->qm2_b(v, w_x, w_y);
   double qmv = parent_->qm(v);
-  Interval r = Interval::sqrt_i(qmw - (vmw * vmw / qmv));
+  Interval r = (qmw - (vmw * vmw / qmv)).sqrt_i();
   Interval ts = vmw / qmv;
   Interval u_x = w_x - ts * v_x;
   Interval u_y = w_y - ts * v_y;

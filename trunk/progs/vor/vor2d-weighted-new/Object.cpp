@@ -41,7 +41,8 @@ double Object::qm2(const Point2d& p, const Point2d& q) {
 }
 
 Interval Object::qm_b(const Interval& int_x, const Interval& int_y) {
-  return m_[0] * int_x * int_x + 2 * m_[1] * int_x * int_y + m_[2] * int_y * int_y;
+  //   return m_[0] * int_x * int_x + 2 * m_[1] * int_x * int_y + m_[2] * int_y * int_y;
+  return m_[0] * int_x.sq() + 2 * m_[1] * int_x * int_y + m_[2] * int_y.sq();
 }
 
 Interval Object::qm2_b(const Point2d& p, const Interval& int_x, const Interval& int_y) {

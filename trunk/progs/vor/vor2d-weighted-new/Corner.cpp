@@ -22,7 +22,7 @@ Interval Corner::box_distance(const Interval& int_x, const Interval& int_y) {
   Interval p_y(position_[1], position_[1]);
   Interval w_x = int_x - p_x;
   Interval w_y = int_y - p_y;
-  return Interval::sqrt_i(parent_->qm_b(w_x, w_y));
+  return parent_->qm_b(w_x, w_y).sqrt_i();
 }
 
 tuple<Interval, Interval> Corner::box_grad(const Interval& int_x, const Interval& int_y) {
@@ -30,7 +30,7 @@ tuple<Interval, Interval> Corner::box_grad(const Interval& int_x, const Interval
   Interval p_y(position_[1], position_[1]);
   Interval w_x = int_x - p_x;
   Interval w_y = int_y - p_y;
-  Interval i = (1.0 / Interval::sqrt_i(parent_->qm_b(w_x, w_y)));
+  Interval i = 1.0 / parent_->qm_b(w_x, w_y).sqrt_i();
   double* m = parent_->m();
   Interval r_x = m[0] * w_x + m[1] * w_y;
   Interval r_y = m[1] * w_x + m[2] * w_y;

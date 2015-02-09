@@ -213,20 +213,17 @@ void parse(string input) {
       if (verts.empty() || !(*corner == *verts[0])) {
         o->add_feature(corner);
 	root->add_feature(corner);
-        // root->add_corner(corner);
         verts.push_back(corner);
         if (verts.size() > 1) {
           Edge* edge = new Edge(verts[verts.size() - 2], verts[verts.size() - 1], o);
           o->add_feature(edge);
 	  root->add_feature(edge);
-          // root->add_edge(edge);
         }
       } else if (verts.size() > 2) {
         // Close the polygon.
         Edge* edge = new Edge(verts[verts.size() - 1], verts[0], o);
         o->add_feature(edge);
 	root->add_feature(edge);
-        // root->add_edge(edge);
       }
     }
     root->add_object(o);
@@ -254,7 +251,10 @@ void run() {
 
     if (num_obj > 1) {
       if (box->width() > abs_eps
-	  && (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION || box->clearance() < 2 * radius || radius > geom_eps || !box->cpv())) {
+	  && (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION 
+	      // || box->clearance() < radius 
+	      || radius > geom_eps // TODO: Make sure this isn't off by a multiplicative factor of 2.
+	      || !box->cpv() )) {
 	box->smooth_split();
 	vor_box** children = box->children();
 	for (int i = 0; i < box->num_children(); i++) {

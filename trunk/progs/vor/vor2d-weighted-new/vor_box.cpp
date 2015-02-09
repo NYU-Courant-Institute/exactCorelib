@@ -139,18 +139,6 @@ void vor_box::split() {
       }
     }
 
-    // for (auto it = corners_.begin(); it != corners_.end(); ++it) {
-    //   if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
-    // 	children_[i]->add_corner(*it);
-    //   }
-    // }
-
-    // for (auto it = edges_.begin(); it != edges_.end(); ++it) {
-    //   if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
-    // 	children_[i]->add_edge(*it);
-    //   }
-    // }
-
     // TODO: Consolidate this into the "features" loop, and make active objects into a set.
     for (auto it = objects_.begin(); it != objects_.end(); ++it) {
       if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
@@ -268,22 +256,7 @@ double vor_box::max_lipschitz() const {
     if (l > lip) {
       lip = l;
     }
-  }  
-
-  // // TODO(Huck): Consolidate these loops into a single loop iterating over all types of features.
-  // for (auto it = corners_.begin(); it != corners_.end(); ++it) {
-  //   double l = (*it)->lipschitz();
-  //   if (l > lip) {
-  //     lip = l;
-  //   }
-  // }
-
-  // for (auto it = edges_.begin(); it != edges_.end(); ++it) {
-  //   double l = (*it)->lipschitz();
-  //   if (l > lip) {
-  //     lip = l;
-  //   }
-  // }
+  }
 
   return lip;
 }
@@ -423,7 +396,6 @@ void vor_box::gen_vertices() {
     Object* mid_closest = nearest_obj(*midpoint);
     vor_box* neighbor = principal_neighbor(dir);
     if (neighbor != nullptr && !neighbor->is_leaf()) {
-      // TODO: Use Voronoi nodes from neighbor instead of recomputing them?
       // TODO: Clean up.
       Point2d* sub_midpoint;
       if (objs[i] != mid_closest) {
