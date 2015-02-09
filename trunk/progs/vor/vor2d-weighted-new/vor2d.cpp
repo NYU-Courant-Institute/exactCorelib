@@ -44,8 +44,8 @@ void run();
 const int window_width = 1024;
 const double abs_eps = 1.0d / (1 << 10);
 // TODO: Make geom_eps an optional input parameter.
-// const double geom_eps = 1.0d / (1 << 10);
-const double geom_eps = 2.0;
+const double geom_eps = 1.0d / (1 << 10);
+// const double geom_eps = 2.0;
 
 // Global variables.
 vor_qt* tree;
@@ -252,7 +252,6 @@ void run() {
     if (num_obj > 1) {
       if (box->width() > abs_eps
 	  && (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION 
-	      // || box->clearance() < radius 
 	      || radius > geom_eps // TODO: Make sure this isn't off by a multiplicative factor of 2.
 	      || !box->cpv() )) {
 	box->smooth_split();
