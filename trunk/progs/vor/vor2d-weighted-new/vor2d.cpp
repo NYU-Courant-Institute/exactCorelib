@@ -44,8 +44,8 @@ void run();
 const int window_width = 1024;
 const double abs_eps = 1.0d / (1 << 10);
 // TODO: Make geom_eps an optional input parameter.
-const double geom_eps = 1.0d / (1 << 10);
-// const double geom_eps = 2.0;
+// const double geom_eps = 1.0d / (1 << 10);
+const double geom_eps = 2.0;
 
 // Global variables.
 vor_qt* tree;

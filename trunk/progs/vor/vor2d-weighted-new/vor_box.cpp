@@ -298,16 +298,16 @@ bool vor_box::cpv() const {
       }
 
       // Compute 0 \notin F(B)
-      Interval f1_sep = f1->box_distance(b_x, b_y);
-      Interval f2_sep = f2->box_distance(b_x, b_y);
+      Interval f1_sep = f1->box_dist_sq(b_x, b_y);
+      Interval f2_sep = f2->box_dist_sq(b_x, b_y);
       Interval F_sep = f1_sep - f2_sep;
       if (0 <= F_sep.a_ || F_sep.b_ <= 0) {
 	continue;
       }
 
       // Compute 0 \notin (F_x(B))^2 + (F_y(B))^2
-      tuple<Interval, Interval> f1_grad = f1->box_grad(b_x, b_y);
-      tuple<Interval, Interval> f2_grad = f2->box_grad(b_x, b_y);
+      tuple<Interval, Interval> f1_grad = f1->box_dist_sq_grad(b_x, b_y);
+      tuple<Interval, Interval> f2_grad = f2->box_dist_sq_grad(b_x, b_y);
       Interval F_grad_x = std::get<0>(f1_grad) - std::get<0>(f2_grad);
       Interval F_grad_y = std::get<1>(f1_grad) - std::get<1>(f2_grad);
       Interval F_grad_ip = F_grad_x * F_grad_x + F_grad_y * F_grad_y;

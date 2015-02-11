@@ -11,8 +11,8 @@ class Corner : public Feature {
   Corner(const Point2d& position, Object* parent);
   ~Corner();
   double distance(const Point2d& point) override;
-  Interval box_distance(const Interval& int_x, const Interval& int_y) override;
-  tuple<Interval, Interval> box_grad(const Interval& int_x, const Interval& int_y) override;
+  Interval box_dist_sq(const Interval& int_x, const Interval& int_y) override;
+  tuple<Interval, Interval> box_dist_sq_grad(const Interval& int_x, const Interval& int_y) override;
   bool is_isolated();
   bool is_dangling();
   void set_prev_edge(Edge* edge);
