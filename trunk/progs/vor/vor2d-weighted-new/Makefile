@@ -17,7 +17,7 @@ LEV = 1
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJS) $(LDFLAGS) -L/usr/lib -lglui $(CORE_LIB) -o $(TARGET)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJS) $(LDFLAGS) -L/usr/lib -lglui -lboost_program_options $(CORE_LIB) -o $(TARGET)
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(CORE_INC) $(CORE_LIB) -DCORE_LEVEL=$(LEV) -c $< -o $@

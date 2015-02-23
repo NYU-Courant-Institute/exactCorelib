@@ -13,6 +13,7 @@
 #include <queue>
 #include <vector>
 #include <boost/algorithm/string.hpp>
+#include <boost/program_options.hpp>
 
 #ifdef __CYGWIN32__
 #include "glui.h"
@@ -27,6 +28,7 @@
 #include <GL/glui.h>
 #endif
 
+namespace po = boost::program_options;
 using namespace std;
 
 using vor2d::vor_box;
@@ -36,6 +38,7 @@ using vor2d::Edge;
 using vor2d::Feature;
 using vor2d::Object;
 
+// Stubs.
 void Mouse(int button, int state, int x, int y);
 void parse(string input);
 void run();
@@ -44,8 +47,7 @@ void run();
 const int window_width = 1024;
 const double abs_eps = 1.0d / (1 << 10);
 // TODO: Make geom_eps an optional input parameter.
-// const double geom_eps = 1.0d / (1 << 10);
-const double geom_eps = 2.0;
+double geom_eps;
 
 // Global variables.
 vor_qt* tree;
@@ -53,6 +55,25 @@ queue<vor_box*> subdiv;
 queue<vor_box*> construct;
 vector<Object*> objects;
 bool show_grid = true;
+
+// Set input options.
+// See http://www.boost.org/doc/libs/1_41_0/doc/html/program_options.
+void init_options(int argc, char* argv[]) {
+  po::options_description desc("Voronoi diagram options");
+
+  desc.add_options()
+    ("help", "Print this help message.")
+    ("geps", po::value<double>(&geom_eps)->default_value(1.0), "Geometric epsilon.");
+
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+  po::notify(vm);
+
+  if (vm.count("help")) {
+    cout << desc << "\n";
+    exit(1);
+  }
+}
 
 void initialize(string input_file_name) {
   const string title_prefix = "2D subdivision-based Voronoi diagram - ";
@@ -109,6 +130,7 @@ int main(int argc, char* argv[]) {
     exit(1);
   }
   
+  init_options(argc, argv);
   glutInit(&argc, argv);
   initialize(argv[1]);
   parse(argv[1]);
@@ -252,6 +274,7 @@ void run() {
     if (num_obj > 1) {
       if (box->width() > abs_eps
 	  && (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION 
+	      || radius > box->clearance()
 	      || radius > geom_eps // TODO: Make sure this isn't off by a multiplicative factor of 2.
 	      || !box->cpv() )) {
 	box->smooth_split();

@@ -189,14 +189,6 @@ void vor_box::smooth_split_aux() {
   split();
 }
 
-// void vor_box::add_corner(Corner* corner) {
-//   corners_.push_back(corner);
-// }
-
-// void vor_box::add_edge(Edge* edge) {
-//   edges_.push_back(edge);
-// }
-
 void vor_box::add_feature(Feature* feature) {
   features_.push_back(feature);
 }
@@ -204,14 +196,6 @@ void vor_box::add_feature(Feature* feature) {
 void vor_box::add_object(Object* object) {
   objects_.push_back(object);
 }
-
-// vector<Corner*>* vor_box::get_corners() {
-//   return &corners_;
-// }
-
-// vector<Edge*>* vor_box::get_edges() {
-//   return &edges_;
-// }
 
 vector<Feature*>* vor_box::get_features() {
   return &features_;
@@ -297,13 +281,16 @@ bool vor_box::cpv() const {
 	continue;
       }
 
-      // Compute 0 \notin F(B)
-      Interval f1_sep = f1->box_dist_sq(b_x, b_y);
-      Interval f2_sep = f2->box_dist_sq(b_x, b_y);
-      Interval F_sep = f1_sep - f2_sep;
-      if (0 <= F_sep.a_ || F_sep.b_ <= 0) {
-	continue;
-      }
+      // // Compute 0 \notin F(B)
+      // Interval f1_sep = f1->box_dist_sq(b_x, b_y);
+      // Interval f2_sep = f2->box_dist_sq(b_x, b_y);
+      // Interval F_sep = f1_sep - f2_sep;
+      // if (depth() > 5) {
+      // 	cout << F_sep.a_ << " "  << F_sep.b_ << "\n";
+      // }
+      // if (0 <= F_sep.a_ || F_sep.b_ <= 0) {
+      // 	continue;
+      // }
 
       // Compute 0 \notin (F_x(B))^2 + (F_y(B))^2
       tuple<Interval, Interval> f1_grad = f1->box_dist_sq_grad(b_x, b_y);
