@@ -46,7 +46,6 @@ void run();
 // Global parameters.
 const int window_width = 1024;
 const double abs_eps = 1.0d / (1 << 10);
-// TODO: Make geom_eps an optional input parameter.
 double geom_eps;
 
 // Global variables.
@@ -55,22 +54,35 @@ queue<vor_box*> subdiv;
 queue<vor_box*> construct;
 vector<Object*> objects;
 bool show_grid = true;
+string input_file_name;
 
 // Set input options.
 // See http://www.boost.org/doc/libs/1_41_0/doc/html/program_options.
 void init_options(int argc, char* argv[]) {
-  po::options_description desc("Voronoi diagram options");
+  const string input_file_arg = "input_file_name";
 
+  // Set non-positional options.
+  po::options_description desc("Voronoi diagram options");
   desc.add_options()
     ("help", "Print this help message.")
-    ("geps", po::value<double>(&geom_eps)->default_value(1.0), "Geometric epsilon.");
+    ("geps", po::value<double>(&geom_eps)->default_value(1.0), "Geometric epsilon.")
+    ("input_file_name", po::value<string>(&input_file_name), "Input file name.");
+
+  // Set positional options.
+  po::positional_options_description p_desc;
+  p_desc.add("input_file_name", -1);
 
   po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
+  po::store(po::command_line_parser(argc, argv).options(desc).positional(p_desc).run(), vm);
   po::notify(vm);
 
   if (vm.count("help")) {
     cout << desc << "\n";
+    exit(1);
+  }
+
+  if (!vm.count("input_file_name")) {
+    cout << "Please specify an input file.\n";
     exit(1);
   }
 }
@@ -125,15 +137,10 @@ void display() {
 }
 
 int main(int argc, char* argv[]) {
-  if (argc < 2) {
-    cout << "No input file.\n";
-    exit(1);
-  }
-  
   init_options(argc, argv);
   glutInit(&argc, argv);
-  initialize(argv[1]);
-  parse(argv[1]);
+  initialize(input_file_name);
+  parse(input_file_name);
   glutDisplayFunc(display);
   run();
   glutMainLoop();
