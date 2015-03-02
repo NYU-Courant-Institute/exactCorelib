@@ -4,6 +4,8 @@
 
 #include <math.h>
 
+#define SQ(x) ((x) * (x))
+
 namespace vor2d {
 
 void Feature::set_parent(Object* parent) {
@@ -16,9 +18,7 @@ Object* Feature::parent() {
 
 double Feature::lipschitz() const {
   double* m = parent_->m();
-  // The following is an upper bound on the Lipschitz constant.
-  // TODO: Compute expression for exact Lipschitz constant.
-  return sqrt(m[0] + 2 * fabs(m[1]) + m[2]);
+  return (1.0 / sqrt(2)) * sqrt(m[0] + m[2] + sqrt(SQ(m[0] - m[2]) + 4 * SQ(m[1])));
 }
 
 } // namespace vor2d

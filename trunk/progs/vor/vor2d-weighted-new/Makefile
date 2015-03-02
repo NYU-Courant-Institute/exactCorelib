@@ -37,6 +37,14 @@ test_conics:
 	./vor2d conics/parabola &
 	./vor2d conics/hyperbola &
 
+rand_w_10:
+	python gen_points.py 10 -w
+	./vor2d output_w_10 &
+
+rand_w_10_geps:
+	python gen_points.py 10 -w
+	./vor2d output_w_10 --geps=0.001 &
+
 valgrind:
 	valgrind ./vor2d test_input
 
