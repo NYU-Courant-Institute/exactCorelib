@@ -73,5 +73,8 @@ July 27, 2013: the paper describing SSS in a general setting won the
 	Best Paper Award at "Robotics Challenge and Vision Workshop" at
 	the Robotics Science and Systems Conference in Berlin, Germany.
 	This award is sponsored by  Computing Community Consortium (CCC).
+March, 2015: taught robot motion planning class at NYU,
+	students ported this to Visual Studio and Linux.
+	Also implemented a Voronoi Heuristic.
 ============================================================
 
