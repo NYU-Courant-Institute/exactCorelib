@@ -22,7 +22,6 @@ Directories:
 ============================================================
 
 OVERVIEW:
-
 	This is the simplest example of our technique of using soft predicates
 	for resolution-exact algorithms for motion planning.
 
@@ -53,10 +52,11 @@ OVERVIEW:
 
 	There are many possible strategies for expansion.  Here we implement:
 
+		(0) Random
 		(1) Breadth First Search
-		(2) Random
+		(2) Greedy Best First
+		------------------ TO DO:
 		(3) Dijkstra and A-Star
-		(4) Greedy Best First
 		(5) Voronoi diagram based searches
 		(6) Hybrids (any combination of the above)
 	
