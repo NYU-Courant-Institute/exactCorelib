@@ -130,6 +130,7 @@ public:
 };
 
 //won't work with std pq, as this comparison is not transitional!
+// THIS IS JUST GREEDY BEST FIRST comparison..
 class PQCmp3
 {
 public:

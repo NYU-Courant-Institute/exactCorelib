@@ -130,6 +130,8 @@ void genEmptyTree();
 void drawPath(vector<Box*>&);
 extern int fileProcessor(string inputfile);
 
+// THIS IS JUST FOR THE GreedyBestFirst Heuristic!
+//    -- should be completely general!
 //find path using simple heuristic:
 //use distance to beta as key in PQ, see dijkstraQueue
 bool findPath(Box* a, Box* b, QuadTree* QT, int& ct)
@@ -395,12 +397,11 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 	noPath = false;	// Confusing use of "noPath"
 	int ct = 0;
 
-	if (QType == 0 || QType == 1)
+	if (QType == 0 || QType == 1) // 0=random, 1=BFS
 	{
 		boxA = QT->getBox(alpha[0], alpha[1]);
 		while (boxA && !boxA->isFree())
 		{
-			
 			if (!QT->expand(boxA))
 			{
 				noPath = true; // Confusing use of "noPath"
@@ -422,10 +423,8 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 			++ct;
 			boxB = QT->getBox(boxB, beta[0], beta[1]);
 		}
-		
-		while(!noPath && !QT->isConnect(boxA, boxB))
-		{
-			
+		// similar to findPath (for QType 2) -- so it is a duplicated logic
+		while(!noPath && !QT->isConnect(boxA, boxB)) {
 			if (!QT->expand()) // should ct be passed to expand?
 			{
 				noPath = true;
@@ -436,6 +435,7 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 	else if(QType == 2)
 	{
 		boxA = QT->getBox(alpha[0], alpha[1]);
+		// split until the box containing A is free (or, NOPATH)
 		while (boxA && !boxA->isFree())
 		{
 			if (!QT->expand(boxA))
@@ -447,6 +447,7 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 		}
 
 		boxB = QT->getBox(beta[0], beta[1]);
+		// split until the box containing B is free (or, NOPATH)
 		while (!noPath && boxB && !boxB->isFree())
 		{
 			if (!QT->expand(boxB))
@@ -457,6 +458,7 @@ cout<<"inside run:  Qtype= " << QType << "\n";
 			boxB = QT->getBox(boxB, beta[0], beta[1]);
 		}
 
+		// findPath will split until exists path from boxA to boxB (or, NOPATH)
 		noPath = !findPath(boxA, boxB, QT, ct);
 	}	
 

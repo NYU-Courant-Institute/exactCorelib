@@ -54,6 +54,7 @@ public:
 	}
 };
 
+// Sequential Queue for BFS:
 class seqQueue : public BoxQueue
 {
 private:
@@ -82,6 +83,7 @@ public:
 	}
 };
 
+// Random Queue for Random Heuristc:
 class randQueue : public BoxQueue
 {
 private:
