@@ -4,6 +4,12 @@
 # In order to flexibly create large and interesting
 # polyhedral environments, we want a flexible input language.
 #
+# There are 2 levels in our syntax: there is a Basic Syntax,
+# and an Extended Syntax.  We wrote a python program
+# (input_interpreter.py) to translate the Extended Syntax
+# into the Basic Syntax.  Our planner reads the Basic Syntax
+# file.
+#
 # -- Chee Yap & Ziyao Wei (2013-2014)
 #
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
