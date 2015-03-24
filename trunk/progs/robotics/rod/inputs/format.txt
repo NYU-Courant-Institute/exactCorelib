@@ -1,9 +1,15 @@
 # FORMAT for input of polyhedral environment:
 #
+# This is to support our subdivision planner for a rod robot.
+# In order to flexibly create large and interesting
+# polyhedral environments, we want a flexible input language.
+#
+# -- Chee Yap & Ziyao Wei (2013-2014)
+#
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
 # GEOMETRY:
 # 	We assume all faces are triangular.
-# 	It does not seem easy to generalize to convex polygonal faces
+# 	It is not easy to generalize to convex polygonal faces
 # 	since any face with more than 3 vertices are unlikely to be
 # 	coplanar except for very special numbers.  However, there
 # 	is a useful case where we can ensure coplanarity: that is
@@ -46,9 +52,10 @@
 #    # Constant Section
 #    #######################
 #    Constants		# Each constant must be given a name
-#    Pi      3.14159
-#    height  100
-#    width   30
+#    			# The name is ALL CAPS by convention.
+#    PI      3.14159
+#    HEIGHT  100
+#    WIDTH   30
 #    #######################
 #    # Point Section
 #    #######################
@@ -111,7 +118,6 @@
 #
 #	   2 origin 5 	   # triangle which uses "origin" (without quotes)
 #	   			   #    and the vertex 2 and 5
-#	   			   # NOTE: v1, v3 are integers
 #	   origin 3 corner	   # triangle (origin, vertex 3, corner)
 #
 # (2) Vector Addition and Subtraction
@@ -166,8 +172,8 @@
 # 				   #   are given in counter clockwise order.
 # 				   # WARNING: if the polygon is convex, then
 # 				   #    the resulting triangles will not be
-# 				   #    overlapping.  But designer beware in
-# 				   #    case of non-convex polygons.
+# 				   #    overlapping.  It is considered an error
+# 				   #    if we get a non-convex polygon.
 # 				   # E.g., if you want a square face with a
 # 				   #   square hole, you can use two such non-convex
 # 				   #   polygons to define the face (and choose
@@ -192,5 +198,4 @@
 # 	PutBox x y z : a b c	# a box with (x,y,z) and (a,b,c)
 # 				# as diagonally opposite corners 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
-# -- Chee Yap & Ziyao Wei (2013-2014)
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
