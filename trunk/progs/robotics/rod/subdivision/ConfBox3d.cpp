@@ -105,8 +105,7 @@ bool ConfBox3d::isNeighbor(ConfBox3d* other) {
   if (!rot || !other->rot) {
     return box->isAdjacent(other->box);
   } else {
-    return false;
-    (rot->isIdentical(other->rot) && box->isAdjacent(other->box)) ||
+    return (rot->isIdentical(other->rot) && box->isAdjacent(other->box)) ||
       (rot->isAdjacent(other->rot) && box->isIdentical(other->box));
   }
 }

@@ -90,7 +90,7 @@ void parseConfigFile(ConfBox3d* b) {
 
       if (objType == 0) {
         //The following loop is removed:
-        for (int j=0; j< 3; ++j){
+        for (int j=0; j< 3; ++j) {
           unsigned long pt;
           ifs >> pt;
           pt--;   // to get indexing from 0

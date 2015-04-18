@@ -74,7 +74,7 @@ void ConfBox3dPredicate::classify(ConfBox3d* b) {
     if (distCorner <= innerDomain) {
       b->status = STUCK;
       return;
-    } else if (distCorner <= outerDomain ) {
+    } else if (distCorner <= outerDomain) {
       b->status = MIXED;
       ++it;
     } else {

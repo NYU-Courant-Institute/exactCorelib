@@ -25,7 +25,4 @@ class Wall : public Obstacle {
   double distance(double x, double y , double z);
 
   bool isRight(double x, double y, double z);
-
- private:
-  double dot(double m1[3], double m2[3]);
 };
