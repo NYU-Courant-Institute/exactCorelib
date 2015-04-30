@@ -47,6 +47,7 @@ void run();
 const int window_width = 1024;
 const double abs_eps = 1.0d / (1 << 10);
 double geom_eps;
+bool interactive_mode = false;
 
 // Global variables.
 vor_qt* tree;
@@ -82,13 +83,12 @@ void init_options(int argc, char* argv[]) {
   }
 
   if (!vm.count("input_file_name")) {
-    cout << "Please specify an input file.\n";
-    exit(1);
+    interactive_mode = true;
   }
 }
 
 void initialize(string input_file_name) {
-  const string title_prefix = "2D subdivision-based Voronoi diagram - ";
+  const string title_prefix = "2D subdivision-based Voronoi diagram";
 
   // Initialize global variables.
   tree = new vor_qt(2 /* dimension */, 2.0 /* width */);
@@ -102,7 +102,7 @@ void initialize(string input_file_name) {
   // Set up window.
   glutInitWindowSize(window_width, window_width);
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-  glutCreateWindow((title_prefix + input_file_name).c_str());
+  glutCreateWindow((title_prefix + (input_file_name.length() > 0 ? (" - " + input_file_name) : "")).c_str());
   glClearColor(1.0, 1.0, 1.0, 1.0);
 
   // Other.
@@ -140,7 +140,11 @@ int main(int argc, char* argv[]) {
   init_options(argc, argv);
   glutInit(&argc, argv);
   initialize(input_file_name);
-  parse(input_file_name);
+
+  if (input_file_name.length() > 0) {
+    parse(input_file_name);
+  }
+
   glutDisplayFunc(display);
   run();
   glutMainLoop();
