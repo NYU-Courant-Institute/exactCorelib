@@ -4,6 +4,8 @@
 #include "assert.h"
 #include <set>
 
+#define DEBUG 1
+
 namespace vor2d {
 
 using std::set;
@@ -280,17 +282,23 @@ bool vor_box::cpv() const {
       if (f1->parent() == f2->parent()) {
 	continue;
       }
+      
+#if DEBUG
+      cout << "Depth: " << depth_ << ", Box center: " << center_[0] << " " << center_[1] << "\n";
+#endif
 
-      // // Compute 0 \notin F(B)
-      // Interval f1_sep = f1->box_dist_sq(b_x, b_y);
-      // Interval f2_sep = f2->box_dist_sq(b_x, b_y);
-      // Interval F_sep = f1_sep - f2_sep;
-      // if (depth() > 5) {
-      // 	cout << F_sep.a_ << " "  << F_sep.b_ << "\n";
-      // }
-      // if (0 <= F_sep.a_ || F_sep.b_ <= 0) {
-      // 	continue;
-      // }
+//       // Compute 0 \notin F(B)
+//       Interval f1_sep = f1->box_dist_sq(b_x, b_y);
+//       Interval f2_sep = f2->box_dist_sq(b_x, b_y);
+//       Interval F_sep = f1_sep - f2_sep;
+
+// #if DEBUG
+//       cout << "Exclusion: " << F_sep.a_ << " "  << F_sep.b_ << "\n";
+// #endif
+
+//       if (0 <= F_sep.a_ || F_sep.b_ <= 0) {
+//       	continue;
+//       }
 
       // Compute 0 \notin (F_x(B))^2 + (F_y(B))^2
       tuple<Interval, Interval> f1_grad = f1->box_dist_sq_grad(b_x, b_y);
@@ -298,7 +306,13 @@ bool vor_box::cpv() const {
       Interval F_grad_x = std::get<0>(f1_grad) - std::get<0>(f2_grad);
       Interval F_grad_y = std::get<1>(f1_grad) - std::get<1>(f2_grad);
       Interval F_grad_ip = F_grad_x * F_grad_x + F_grad_y * F_grad_y;
-      if (0 <= F_grad_ip.a_ || F_grad_ip.b_ <= 0) {
+
+#if DEBUG
+      cout << "Gradient: " << F_grad_ip.a_ << " "  << F_grad_ip.b_ << "\n";
+      cout << F_grad_x << " " << F_grad_y << "\n";
+#endif
+
+      if (0 < F_grad_ip.a_ || F_grad_ip.b_ < 0) {
 	continue;
       }
 
@@ -328,6 +342,30 @@ Object* vor_box::nearest_obj(const Point2d& point) const {
 
 Point2d* get_midpoint(const Point2d& p, const Point2d& q) {
   return new Point2d((p[0] + q[0]) / 2.0, (p[1] + q[1]) / 2.0);
+}
+
+int vor_box::num_corner_obj() const {
+  double x = center_[0];
+  double y = center_[1];
+  double hw = width_ / 2.0;
+  set<Object*> objects;
+
+  Point2d corners[4];
+  corners[0] = Point2d(x + hw, y + hw);
+  corners[1] = Point2d(x + hw, y - hw);
+  corners[2] = Point2d(x - hw, y - hw);
+  corners[3] = Point2d(x - hw, y + hw);
+
+  assert(is_leaf());
+
+  // Compute nearest objects for each corner.
+  Object* objs[4];
+  for (int i = 0; i < 4; i++) {
+    objs[i] = nearest_obj(corners[i]);
+    objects.insert(objs[i]);
+  }
+
+  return objects.size();
 }
 
 // TODO: Factor construction logic out into a separate file?
@@ -360,7 +398,6 @@ void vor_box::gen_vertices() {
     int j = (i + 1) % 4;
 
     // Add a node iff adjacent corners have different labels.
-    // TODO: Add VP predicate so that we still ensure topological correctness.
     if (objs[i] == objs[j]) {
       continue;
     }

@@ -239,7 +239,13 @@ void parse(string input) {
 
     objects.push_back(o);
     vector<Corner*> verts;
+    int poly_verts = 0;
     while (!ss.eof()) {
+      if (++poly_verts > num_points) {
+	cout << "Parse error.\n";
+	exit(1);
+      }
+
       ss >> vert;
       const Point2d point(2 * px[vert] / window_width - 1, 2 * py[vert] / window_width - 1);
       Corner* corner = new Corner(point, o);
@@ -287,7 +293,8 @@ void run() {
 	  && (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION 
 	      || radius > box->clearance()
 	      || radius > geom_eps // TODO: Make sure this isn't off by a multiplicative factor of 2.
-	      || !box->cpv() )) {
+	      || !box->cpv()
+	    )) {
 	box->smooth_split();
 	vor_box** children = box->children();
 	for (int i = 0; i < box->num_children(); i++) {

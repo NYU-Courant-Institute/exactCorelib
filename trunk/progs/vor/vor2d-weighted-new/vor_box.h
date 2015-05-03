@@ -61,6 +61,7 @@ class vor_box {
   void set_active(bool is_active);
   bool is_active() const;
   bool cpv() const;
+  int num_corner_obj() const;
   void gen_vertices();
 
  protected:

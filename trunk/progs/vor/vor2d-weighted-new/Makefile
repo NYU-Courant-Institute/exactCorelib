@@ -53,3 +53,6 @@ poly_an:
 
 an:
 	./vor2d an_test_input &
+
+box_test:
+	./vor2d c_ellipse3
