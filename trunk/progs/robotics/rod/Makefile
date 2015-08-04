@@ -373,6 +373,18 @@ egPoints:	main
                 -0.135 0.333 -0.075 \
 		&
 
+egEmpty:	main
+	@echo "Target 'egEmpty':  runs main with default Makefile options for file empty.txt"
+	./main $(interactive) 200 360 50 275 200 450 \
+		$(epsilon) $(radius) empty.txt \
+		$(boxWidth) $(windowPosX) $(windowPosY) \
+		$(Qtype) 1111 $(inputDir) \
+		$(xtrans) $(ytrans) $(ztrans) 1 \
+                74 200 1580 $(atX) $(atY) $(atZ) $(upX) $(upY) $(upZ) \
+                $(transparency) $(frameRate) \
+                -0.135 0.333 -0.075 \
+		&
+
 moretest: $(TARGETS)
 # nothing to do
 
