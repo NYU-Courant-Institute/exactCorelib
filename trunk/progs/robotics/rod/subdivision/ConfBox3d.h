@@ -86,4 +86,6 @@ class ConfBox3d {
   bool isNeighbor(ConfBox3d* other);
 
   bool split(double epsilon);
+
+  static ConfBox3d* makePointBox(double xx, double yy, double zz, double rot_xx = 0, double rot_yy = 1, double rot_zz = 0);
 };

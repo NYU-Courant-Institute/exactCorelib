@@ -226,7 +226,7 @@ def compressPointsFaces(points, faces, spheres):
 
 (points, faces, spheres) = compressPointsFaces(points, faces, spheres)
 faces = ['0 ' + ' '.join([str(j) for j in i]) + "\n" for i in faces]
-output.write(str(max(points)) + "\n")
+output.write(str(max(points) if points else 0) + "\n")
 output.write("\n".join([' '.join([str(j) for j in points[i]]) for i in points]) + "\n")
 output.write(str(len(faces) + len(spheres)) + "\n")
 output.write(''.join(faces))

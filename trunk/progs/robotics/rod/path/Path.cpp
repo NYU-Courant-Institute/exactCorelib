@@ -78,3 +78,11 @@ vector<ConfBox3d*> Path::dijkstraShortestPath(ConfBox3d* a, ConfBox3d* b) {
   }
   return path;
 }
+
+void Path::printPath(vector<ConfBox3d*> path) {
+  std::cout << "Path:" << std::endl;
+  std::cout << "Length: " << path.size() << std::endl;
+  for (int i = 0; i < path.size(); i++) {
+    std::cout << path[i]->x << "\t" << path[i]->y << "\t" << path[i]->z << "\t" << path[i]->rot_x << "\t" << path[i]->rot_y << "\t" << path[i]->rot_z << std::endl;
+  }
+}

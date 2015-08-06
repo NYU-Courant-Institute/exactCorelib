@@ -152,6 +152,9 @@ vector<ConfBox3d*> SoftSubdivisionSearch::softSubdivisionSearch() {
   // 3. Compute Free Channel
   // path = getCanonicalPath(boxA, boxB);
   path = Path::bfsShortestPath(boxA, boxB);
+  path.insert(path.begin(), ConfBox3d::makePointBox(beta[0], beta[1], beta[2]));
+  path.push_back(ConfBox3d::makePointBox(alpha[0], alpha[1], alpha[2]));
+  Path::printPath(path);
   // printConfBoxes();
   return path;
 }

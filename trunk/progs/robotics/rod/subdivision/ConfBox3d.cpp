@@ -177,3 +177,7 @@ bool ConfBox3d::split(double epsilon) {
   }
   return true;
 }
+
+ConfBox3d* ConfBox3d::makePointBox(double xx, double yy, double zz, double rot_xx, double rot_yy, double rot_zz) {
+  return new ConfBox3d(xx, yy, zz, 0, rot_xx, rot_yy, rot_zz, 0);
+}
