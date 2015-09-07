@@ -1,0 +1,26 @@
+README 
+#       2-Link Robot Planner, Qt version
+#
+#       Author:  John Paul Ryan
+#       Date: August 2015
+#
+#       $Id:$
+# ################################################################################
+
+
+In the Summer of 2015, John Ryan and Bryant Curto
+received a NYU Computer Science Department undergraduate
+research grant to work on this robotics project under the supervision
+of Professor Yap.  They converted the disc Demo of Cong Wang,
+and the 2-links Demos (both the crossing and non-crossing version)
+of Zhongdi Luo into a Qt Project.  The previous versions were based
+on GLUT/GLUI which was deprecated in MacOS, and OpenGL 2.0.
+This new version is in OpenGL 4.0.  This resulted in much faster animation.
+
+
+Usage: 
+	1. Fire up Qt Creator (it should have OpenGL 4.0 or later)
+	2. Open the file 2-link.pro in this directory
+	3. Compile and run!
+
+
