@@ -346,7 +346,7 @@ bool vor_box::cjc(double scale) const {
   // and higher degree intersections.
   assert(num_objects() == 3);
 
-  if (num_features > 3) {
+  if (num_features() > 3) {
     cout << "Warning: multi-feature objects. Not ensuring that the Jacobian condition is met.\n";
   }
   
@@ -356,7 +356,7 @@ bool vor_box::cjc(double scale) const {
 
   Feature* S = features_[0];
   Feature* T = features_[1];
-  Feature* T = features_[2];
+  Feature* U = features_[2];
   tuple<Interval, Interval> S_grad = S->box_dist_sq_grad(b_x, b_y);
   tuple<Interval, Interval> T_grad = T->box_dist_sq_grad(b_x, b_y);
   tuple<Interval, Interval> U_grad = U->box_dist_sq_grad(b_x, b_y);
