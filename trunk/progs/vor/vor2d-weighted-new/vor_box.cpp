@@ -348,6 +348,7 @@ bool vor_box::cmk(double scale) const {
 // sites respectively.
 bool vor_box::cjc(double scale) const {
   // TODO: Improve this to work with multi-feature sites and degenerate intersections.
+  assert(num_features() >= 3);
   if (num_features() > 3) {
     cout << "Warning: multi-feature objects. Not ensuring that the Jacobian condition is met.\n";
     return true;
@@ -374,6 +375,11 @@ bool vor_box::cjc(double scale) const {
 
   // Check whether 0 is contained in the determinant of the Jacobian.
   Interval F_jcdet = (fst_grad_x * ftu_grad_y) - (fst_grad_y * ftu_grad_x);
+
+#if DEBUG
+  cout << "CJC Depth: " << depth_ << ", Box center: " << center_[0] << " " << center_[1] << "\n";
+  cout << "F_jcdet: " << F_jcdet << "\n";
+#endif
   
   return 0 < F_jcdet.a_ || F_jcdet.b_ < 0;
 }

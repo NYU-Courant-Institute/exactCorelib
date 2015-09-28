@@ -307,6 +307,7 @@ void run() {
     subdiv.pop();
     double radius = box->radius();
     double num_obj = box->num_objects();
+    // cout << num_obj << "\n";
 
     if (num_obj > 1) {
       if (box->width() > abs_eps
@@ -314,6 +315,7 @@ void run() {
 	      || radius > box->clearance()
 	      || radius > geom_eps // TODO: Make sure this isn't off by a multiplicative factor of 2.
 	      || !box->cpv()
+	      || (num_obj > 2 && !box->cjc(1.0))
 	    )) {
 	box->smooth_split();
 	vor_box** children = box->children();
@@ -344,4 +346,7 @@ void run() {
 
   // Display.
   display();
+
+  // Print statistics.
+  cout << "Total splits: " << tree->splits() << "\n";
 }
