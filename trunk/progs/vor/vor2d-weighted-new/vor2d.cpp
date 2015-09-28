@@ -45,7 +45,7 @@ void run();
 
 // Global parameters.
 const int window_width = 1024;
-const double abs_eps = 1.0d / (1 << 10);
+const double abs_eps = 1.0d / (1 << 15);
 double geom_eps;
 bool interactive_mode = false;
 
@@ -55,6 +55,7 @@ queue<vor_box*> subdiv;
 queue<vor_box*> construct;
 vector<Object*> objects;
 bool show_grid = true;
+bool save_image;
 string input_file_name;
 
 // Set input options.
@@ -67,6 +68,7 @@ void init_options(int argc, char* argv[]) {
   desc.add_options()
     ("help", "Print this help message.")
     ("geps", po::value<double>(&geom_eps)->default_value(1.0), "Geometric epsilon.")
+    ("save", po::value<bool>(&save_image)->default_value(false), "Save an image of the construction. NOT YET FUNCTIONAL.")
     ("input_file_name", po::value<string>(&input_file_name), "Input file name.");
 
   // Set positional options.
@@ -134,6 +136,11 @@ void display() {
   }
   
   glutSwapBuffers();
+
+  // if (save_image) {
+  //   string image_name = (show_grid ? input_file_name : input_file_name + "_with_grid") + ".jpg";
+    
+  // }
 }
 
 int main(int argc, char* argv[]) {

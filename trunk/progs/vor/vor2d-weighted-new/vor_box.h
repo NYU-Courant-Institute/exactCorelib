@@ -60,9 +60,13 @@ class vor_box {
   int num_objects() const;
   void set_active(bool is_active);
   bool is_active() const;
-  bool cpv() const;
   int num_corner_obj() const;
   void gen_vertices();
+
+  // Box predicates.
+  bool cpv() const;
+  bool cmk(double scale) const;
+  bool cjc(double scale) const;
 
  protected:
   vor_box** neighbors() const;

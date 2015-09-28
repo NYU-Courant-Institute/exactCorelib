@@ -4,7 +4,7 @@
 #include "assert.h"
 #include <set>
 
-#define DEBUG 1
+#define DEBUG 0
 
 namespace vor2d {
 
@@ -310,6 +310,8 @@ bool vor_box::cpv() const {
 #if DEBUG
       cout << "Gradient: " << F_grad_ip.a_ << " "  << F_grad_ip.b_ << "\n";
       cout << F_grad_x << " " << F_grad_y << "\n";
+      cout << std::get<0>(f1_grad) << " " << std::get<1>(f1_grad) << "\n";
+      cout << std::get<0>(f2_grad) << " " << std::get<1>(f2_grad) << "\n";
 #endif
 
       if (0 < F_grad_ip.a_ || F_grad_ip.b_ < 0) {
@@ -321,6 +323,56 @@ bool vor_box::cpv() const {
   }
 
   return true;
+}
+
+/* Huck 9/28/2015: The following two predicates only work (for the time being) in the case where all objects are simple features.
+ * A Voronoi vertex arises if two of three bisectors meet, and so we check for this case.
+ */
+
+// TODO.
+bool vor_box::cmk(double scale) const {
+  assert(num_objects() == 3);
+  
+  return false;
+}
+
+
+// Currently this computes the Jacobian condition with respect to
+// the system of equations F = (f_{ST}, f_{TU}) where the bisectors
+// are induced by the first and second, and second and third active
+// sites respectively.
+bool vor_box::cjc(double scale) const {
+  // TODO: Improve this to work with multi-feature sites,
+  // and higher degree intersections.
+  assert(num_objects() == 3);
+
+  if (num_features > 3) {
+    cout << "Warning: multi-feature objects. Not ensuring that the Jacobian condition is met.\n";
+  }
+  
+  // TODO: Remove duplicated PV predicate code.
+  Interval b_x(center_[0] - radius_, center_[0] + radius_);
+  Interval b_y(center_[1] - radius_, center_[1] + radius_);
+
+  Feature* S = features_[0];
+  Feature* T = features_[1];
+  Feature* T = features_[2];
+  tuple<Interval, Interval> S_grad = S->box_dist_sq_grad(b_x, b_y);
+  tuple<Interval, Interval> T_grad = T->box_dist_sq_grad(b_x, b_y);
+  tuple<Interval, Interval> U_grad = U->box_dist_sq_grad(b_x, b_y);
+  
+  // Use the first two sites to compute the gradient of f_{ST}.
+  Interval fst_grad_x = std::get<0>(S_grad) - std::get<0>(T_grad);
+  Interval fst_grad_y = std::get<1>(S_grad) - std::get<1>(T_grad);
+
+  // Use the second and third sites to compute the gradient of f_{TU}.
+  Interval ftu_grad_x = std::get<0>(T_grad) - std::get<0>(U_grad);
+  Interval ftu_grad_y = std::get<1>(T_grad) - std::get<1>(U_grad);
+
+  // Check whether 0 is contained in the determinant of the Jacobian.
+  Interval F_jcdet = (fst_grad_x * ftu_grad_y) - (fst_grad_y * ftu_grad_x);
+  
+  return 0 < F_jcdet.a_ || F_jcdet.b_ < 0;
 }
 
 Object* vor_box::nearest_obj(const Point2d& point) const {
