@@ -28,6 +28,12 @@
 #include <GL/glui.h>
 #endif
 
+// Idea from http://forum.openframeworks.cc/t/scroll-wheel-event/593/3.
+#ifndef GLUT_WHEEL_UP
+#define GLUT_WHEEL_UP 3
+#define GLUT_WHEEL_DOWN 4
+#endif
+
 namespace po = boost::program_options;
 using namespace std;
 
@@ -46,6 +52,7 @@ void run();
 // Global parameters.
 const int window_width = 1024;
 const double abs_eps = 1.0d / (1 << 15);
+// int scene_width = window_width;
 double geom_eps;
 bool interactive_mode = false;
 
@@ -237,7 +244,7 @@ void parse(string input) {
       // Verify that the matrix is positive definite
       // by checking that its two principal minors have positive determinant.
       if (a <= 0 || (a * c - b * b) <= 0) {
-        cout << "Error: metric tensor is not positive definite.\n";
+        cout << "Error: metric matrix is not positive definite.\n";
         exit(1);
       }
     } else {
@@ -279,9 +286,15 @@ void parse(string input) {
 }
 
 void Mouse(int button, int state, int x, int y) {
-  if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
-    show_grid = !show_grid;
-    display();
+  if (state == GLUT_UP) {
+    if (button == GLUT_LEFT_BUTTON) {
+      show_grid = !show_grid;
+      display();
+    } else if (button == GLUT_WHEEL_UP) {
+      
+    } else if (button == GLUT_WHEEL_DOWN) {
+      
+    }
   }
 }
 

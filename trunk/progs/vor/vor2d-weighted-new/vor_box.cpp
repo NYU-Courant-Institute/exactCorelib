@@ -331,7 +331,12 @@ bool vor_box::cpv() const {
 
 // TODO.
 bool vor_box::cmk(double scale) const {
-  assert(num_objects() == 3);
+  // TODO: Improve this to work with multi-feature sites and degenerate intersections.
+  if (num_features() > 3) {
+    cout << "Warning: multi-feature objects. Not ensuring that the MK test is met.\n";
+    return true;
+  }
+
   
   return false;
 }
@@ -342,18 +347,16 @@ bool vor_box::cmk(double scale) const {
 // are induced by the first and second, and second and third active
 // sites respectively.
 bool vor_box::cjc(double scale) const {
-  // TODO: Improve this to work with multi-feature sites,
-  // and higher degree intersections.
-  assert(num_objects() == 3);
-
+  // TODO: Improve this to work with multi-feature sites and degenerate intersections.
   if (num_features() > 3) {
     cout << "Warning: multi-feature objects. Not ensuring that the Jacobian condition is met.\n";
+    return true;
   }
   
-  // TODO: Remove duplicated PV predicate code.
-  Interval b_x(center_[0] - radius_, center_[0] + radius_);
-  Interval b_y(center_[1] - radius_, center_[1] + radius_);
-
+  // TODO: Consolidate gradient computation with PV code.
+  double sr = scale * radius_;
+  Interval b_x(center_[0] - sr, center_[0] + sr);
+  Interval b_y(center_[1] - sr, center_[1] + sr);
   Feature* S = features_[0];
   Feature* T = features_[1];
   Feature* U = features_[2];

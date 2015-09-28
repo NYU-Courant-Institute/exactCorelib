@@ -30,7 +30,7 @@ clean:
 
 # Test commands.
 test:
-	./vor2d test_input &
+	./vor2d ./tests/test_input &
 
 test_conics:
 	./vor2d conics/ellipse &
