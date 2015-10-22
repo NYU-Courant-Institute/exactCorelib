@@ -46,20 +46,15 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 public slots:
-    // slots for xyz-rotation slider
     void setXRotation(int angle);
     void setYRotation(int angle);
     void setZRotation(int angle);
 
 signals:
-    // signaling rotation from mouse movement
-    void xRotationChanged(int angle);
-    void yRotationChanged(int angle);
-    void zRotationChanged(int angle);
+    void zDistanceChanged(int val);
 
 private:
     void renderScene();
-    void animReplay();
 
     /*********************************
      * Functions used to paint scene *
@@ -77,7 +72,7 @@ private:
     void rod(double length, double x, double y, double z, float rot_mat[16], double r, double g, double b);
 
     int xRot, yRot, zRot;
-    double distanceX, distanceY, distanceZ;
+    double distanceX, distanceY;
 
     QPoint lastPos;
 };

@@ -33,11 +33,13 @@ private slots:
     void on_exit_clicked();
     void on_anim_clicked();
     void on_boundary_clicked();
+    void on_transparency_valueChanged();
     void on_pushButton_clicked();
     void on_inc_valueChanged(int arg1);
     void on_left_clicked();
     void on_right_clicked();
     void on_horizontalSlider_valueChanged(int value);
+    void on_zoomSlider_valueChanged();
 
 protected:
     void keyPressEvent(QKeyEvent *event);

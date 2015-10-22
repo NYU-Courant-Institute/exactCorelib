@@ -36,6 +36,7 @@ extern int animationSpeed;
 extern double boxWidth;
 extern SoftSubdivisionSearch* sss;
 extern int transparency;
+extern double distanceZ;
 extern double eye[3];
 extern double at[3];
 extern double up[3];
@@ -122,13 +123,15 @@ void Display::wheelEvent(QWheelEvent *event)
 
     if (event->orientation() == Qt::Vertical) {
         if (delta < 0) {
-            distanceZ *= 1.1;
+            distanceZ *= 1.01;
         } else if (delta > 0) {
-            distanceZ *= 0.9;
+            distanceZ *= 0.99;
         }
 
         update();
     }
+
+    emit zDistanceChanged(distanceZ);
 
     event->accept();
 }
@@ -348,15 +351,12 @@ void Display::renderScene()
 
     //glPolygonMode(GL_FRONT, GL_LINE);
 
-    if (showAnim) {
-        animReplay();
-    }
-
     float rot_mat[16];
     if (!noPath) {
         if (showAnim && !finishedAnim) {
             if (iPathSeg >= path.size() - 1) {
                 finishedAnim = true;
+                showAnim = false;
             } else {
                 float dx = path[iPathSeg + 1]->x - path[iPathSeg]->x;
                 float dy = path[iPathSeg + 1]->y - path[iPathSeg]->y;
@@ -379,6 +379,14 @@ void Display::renderScene()
                 Rot3dSide::interpolateRot(initialRot, nextRot, inSegCount, segCount, rot);
                 Rot3dSide::rot2mat(rot[0], rot[1], rot[2], rot_mat);
                 rod(R, x, y, z, rot_mat, 0, 1, 0);
+
+                usleep((99-animationSpeed)*500);
+                inSegCount++;
+                if (inSegCount > segCount) {
+                    iPathSeg++;
+                    inSegCount = 1;
+                }
+                update();
             }
         }
         drawPath(path, alpha, beta);
@@ -388,13 +396,10 @@ void Display::renderScene()
     Rot3dSide::rot2mat(initialRot[0], initialRot[1], initialRot[2], rot_mat);
     rod(R, beta[0], beta[1], beta[2], rot_mat, 0, 0, 1);  // goal
 
+
+    // Draw Obstacles
     drawEdges(sss->pRoot, transparency);
     drawSpheres(sss->pRoot, transparency);
-}
-
-void Display::animReplay() {
-    iPathSeg = 0;
-    finishedAnim = false;
 }
 
 //===========================================================//

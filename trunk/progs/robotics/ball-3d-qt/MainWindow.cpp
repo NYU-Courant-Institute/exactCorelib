@@ -12,14 +12,16 @@ extern double R;
 extern double L;
 extern int seed;
 extern int QType;
+extern bool showAnim;
+extern unsigned int iPathSeg;
 extern bool finishedAnim;
+extern int transparency;
+extern double distanceZ;
 extern bool showBox;
 extern int renderSteps;
 extern bool step;
 
-
 void run();
-
 int incr = 1;
 int animationSpeed = 99;
 
@@ -39,13 +41,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->R->setValue(R);
     ui->L->setValue(L);
     ui->eps->setValue(epsilon);
-    ui->random->setValue(seed);
+    ui->seed->setValue(seed);
+    ui->transparency->setValue(transparency);
+    ui->zoomSlider->setValue(distanceZ);
     ui->greedy->setChecked(true);
     ui->boundary->setChecked(false);
     ui->steplabel->hide();
     ui->inc->setEnabled(false);
     ui->left->setEnabled(false);
     ui->right->setEnabled(false);
+
+    // Display widget
+    connect(ui->openGLWidget, SIGNAL(zDistanceChanged(int)), ui->zoomSlider, SLOT(setValue(int)));
 }
 
 MainWindow::~MainWindow()
@@ -111,11 +118,13 @@ void MainWindow::on_run_clicked() {
     R=ui->R->value();
     L=ui->L->value();
     epsilon=ui->eps->value();
-    seed=ui->random->value();
-
+    seed=ui->seed->value();
+    transparency=ui->transparency->value();
     showBox=ui->boundary->isChecked();
 
     run();
+
+    this->update();
 }
 
 
@@ -151,13 +160,21 @@ void MainWindow::on_exit_clicked()
 
 void MainWindow::on_anim_clicked()
 {
-    finishedAnim = true;
+    showAnim = true;
+    iPathSeg = 0;
+    finishedAnim = false;
     this->update();
 }
 
 void MainWindow::on_boundary_clicked()
 {
     showBox=ui->boundary->isChecked();
+    this->update();
+}
+
+void MainWindow::on_transparency_valueChanged()
+{
+    transparency=ui->transparency->value();
     this->update();
 }
 
@@ -199,13 +216,19 @@ void MainWindow::on_left_clicked()
 void MainWindow::on_right_clicked()
 {
 
-    renderSteps+=incr;
+    renderSteps += incr;
     ui->steplabel->setText("Step: "+QString::number(renderSteps));
 }
 
 void MainWindow::on_horizontalSlider_valueChanged(int value)
 {
-    animationSpeed=value;
+    animationSpeed = value;
+}
+
+void MainWindow::on_zoomSlider_valueChanged()
+{
+    distanceZ = ui->zoomSlider->value();
+    this->update();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)

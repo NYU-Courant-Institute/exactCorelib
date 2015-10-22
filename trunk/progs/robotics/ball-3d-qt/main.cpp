@@ -47,7 +47,6 @@ SoftSubdivisionSearch* initializeSSS(double alpha[3], double beta[3], char* dir)
 
 void run() {
     mw_out << "Run " << runCounter++ << ":\n";
-    mw_out << "inside run:  Qtype = " << QType << "\n";
 
 
     initialRot[0] = 0;
@@ -74,21 +73,21 @@ void run() {
     // stop timer
     t.stop();
     // print the elapsed time in millisec
-    cout << ">>>>>>>>>>>>>>>>>>>>>>>>\n";
-    cout << ">>\n";
-    cout << ">>\tTime used: " << t.getElapsedTimeInMilliSec() << " ms\n";
-    cout << ">>\n";
+    //cout << ">>>>>>>>>>>>>>>>>>>>>>>>\n";
+    //mw_out << ">>\n";
+    mw_out << ">>\tTime used: " << t.getElapsedTimeInMilliSec() << " ms\n";
+    //mw_out << ">>\n";
 
     if (!noPath) {
-        cout << ">>\tPath found !" << endl;
+        mw_out << ">>\tPath found !\n";
     } else {
-        cout << ">>\tNo Path !" << endl;
+        mw_out << ">>\tNo Path !\n";
     }
     cout << ">>\n";
     cout << ">>>>>>>>>>>>>>>>>>>>>>>>\n";
-    cout << "Expanded " << ct << " times" << endl;
-    cout << "total Free boxes: " << sss->freeCount << endl;
-    cout << "total Stuck boxes: " << sss->stuckCount << endl;
+    mw_out << ">>\tExpanded " << ct << " times" << "\n";
+    mw_out << ">>\ttotal Free boxes: " << sss->freeCount << "\n";
+    mw_out << ">>\ttotal Stuck boxes: " << sss->stuckCount << "\n";
     cout << "total Mixed boxes < epsilon: " << sss->mixSmallCount << endl;
     cout << "total Mixed boxes > epsilon: " << sss->mixCount - ct - sss->mixSmallCount << endl;
     cout << endl;
@@ -177,7 +176,7 @@ int main(int argc, char* argv[]) {
     window = new MainWindow();    
     run();
     window->show();
-    finishedAnim = false;
+    showAnim = false;
 
     return app.exec();
 }

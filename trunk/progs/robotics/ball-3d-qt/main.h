@@ -32,12 +32,13 @@ int windowPosX = 250;               // X Position of Window
 int windowPosY = 150;               // Y Position of Window
 int QType = 1;                      // The Priority Queue can be sequential (1) or random (0)
 int interactive = 0;                // Run interactively? Yes (0) or No (1)
-int seed = 1111;                    // seed for random number generator (Could also be used for BFS, etc)
+int seed = 999;                     // seed for random number generator (Could also be used for BFS, etc)
 double eye[3] = {0, 256, 1280};
 double at[3] = {0, 256, 0};
 double up[3] = {0, 1, 0};
 double eyeVector[3];
 int transparency = 80;
+double distanceZ = 900;
 float view_rotate_angles[3] = {0, 0, 0};
 
 // Global Variables ========================================
@@ -74,8 +75,8 @@ unsigned int inSegCount = 0;
 
 bool noPath = true;         // True means there is "No path".
 bool showBox = false;  		// don't draw box boundary
-bool showAnim = true;
+bool showAnim = false;
 bool finishedAnim = false;
 
-int frameRate = 65;
+int frameRate = 50;
 float segCount = 0;
