@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
         strcat(running_dir, ptr);
         ptr = strtok(NULL, "/");
     }
-    strcat(running_dir, "/ball-3d/");
+    strcat(running_dir, "/ball-3d-qt/");
 
 
     if (argc > 1) interactive = atoi(argv[1]);  // Interactive (0) or no (>0)
