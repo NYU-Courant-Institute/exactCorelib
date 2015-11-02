@@ -2,7 +2,7 @@
 CORE_PATH=../../..
 include ../Make.options
 
-CXX = g++-4.8
+CXX = g++-5
 CXXFLAGS = -std=c++11 -g
 
 TARGET = vor2d
@@ -17,7 +17,7 @@ LEV = 1
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJS) $(LDFLAGS) -L/usr/lib -lglui -lboost_program_options $(CORE_LIB) -o $(TARGET)
+	$(CXX) $(CXXFLAGS) $(OBJS) $(LDFLAGS) -lpng -lboost_program_options -L/usr/lib $(CORE_LIB) -lglui -o $(TARGET)
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(CORE_INC) $(CORE_LIB) -DCORE_LEVEL=$(LEV) -c $< -o $@

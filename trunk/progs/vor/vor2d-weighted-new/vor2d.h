@@ -13,3 +13,9 @@
 #ifdef __linux__
 #include <GL/glui.h>
 #endif
+
+// Stubs.
+void Mouse(int button, int state, int x, int y);
+void parse(string input);
+void run();
+void save_png();

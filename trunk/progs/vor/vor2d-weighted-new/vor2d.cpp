@@ -7,11 +7,13 @@
 #include "Object.h"
 #include "Point.h"
 
+#include <stdio.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <queue>
 #include <vector>
+#include <png.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
 
@@ -44,17 +46,17 @@ using vor2d::Edge;
 using vor2d::Feature;
 using vor2d::Object;
 
-// Stubs.
-void Mouse(int button, int state, int x, int y);
-void parse(string input);
-void run();
-
 // Global parameters.
 const int window_width = 1024;
 const double abs_eps = 1.0d / (1 << 15);
-// int scene_width = window_width;
 double geom_eps;
 bool interactive_mode = false;
+
+int scene_width = window_width;
+const double scale_factor = 1.5;
+double scale = 1.0;
+int sx = 0;
+int sy = 0;
 
 // Global variables.
 vor_qt* tree;
@@ -75,7 +77,7 @@ void init_options(int argc, char* argv[]) {
   desc.add_options()
     ("help", "Print this help message.")
     ("geps", po::value<double>(&geom_eps)->default_value(1.0), "Geometric epsilon.")
-    ("save", po::value<bool>(&save_image)->default_value(false), "Save an image of the construction. NOT YET FUNCTIONAL.")
+    ("save", po::value<bool>(&save_image)->default_value(false), "Save an image of the construction.")
     ("input_file_name", po::value<string>(&input_file_name), "Input file name.");
 
   // Set positional options.
@@ -110,7 +112,7 @@ void initialize(string input_file_name) {
 
   // Set up window.
   glutInitWindowSize(window_width, window_width);
-  glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+  glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
   glutCreateWindow((title_prefix + (input_file_name.length() > 0 ? (" - " + input_file_name) : "")).c_str());
   glClearColor(1.0, 1.0, 1.0, 1.0);
 
@@ -131,7 +133,7 @@ void display() {
   Edge* e;
   vector<Feature*>* features = tree->root()->get_features();
   for (auto it = features->begin(); it < features->end(); ++it) {
-    // This is a StackOverflow hack to handle C++'s lack of "instanceof".
+    // This is hack found on StackOverflow to handle C++'s lack of "instanceof".
     // TODO: Use typeid or some other functionality?
     c = dynamic_cast<Corner*>(*it);
     if (c != nullptr) {
@@ -141,13 +143,66 @@ void display() {
       draw_edge(*e);
     }
   }
+
+  // Save image if applicable.
+  if (save_image) {
+    save_png();
+  }
   
   glutSwapBuffers();
+}
 
-  // if (save_image) {
-  //   string image_name = (show_grid ? input_file_name : input_file_name + "_with_grid") + ".jpg";
-    
-  // }
+// Based on http://www.labbookpages.co.uk/software/imgProc/libPNG.html
+// and http://zarb.org/~gc/html/libpng.html.
+// 4 used as a constant denotes the number of components in "RGBA".
+void save_png() {
+  png_structp png_ptr = NULL;
+  png_infop info_ptr = NULL;
+  png_bytep* row_ptrs = (png_bytep*) malloc(sizeof(png_bytep*) * window_width);
+  png_bytep row_ptr = NULL;
+  string filename = input_file_name + (show_grid ? "-grid" : "") + ".png";
+  FILE* file = fopen(filename.c_str(), "wb");
+  GLubyte* data = (GLubyte*) malloc(sizeof(GLubyte) * 4 * window_width * window_width);
+
+  png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  info_ptr = png_create_info_struct(png_ptr);
+
+  for (int i = 0; i < window_width; i++) {
+    row_ptrs[i] = (png_bytep) malloc(sizeof(png_bytep) * 4 * window_width);
+  }
+  if (!file || !info_ptr || !row_ptrs) {
+    cout << "Warning: Unable to write file.\n";
+    return;
+  }
+  png_init_io(png_ptr, file);
+  glReadPixels(0, 0, window_width, window_width, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+  // Write header.
+  png_set_IHDR(png_ptr, info_ptr, window_width, window_width,
+	       8, PNG_COLOR_TYPE_RGBA, PNG_INTERLACE_NONE,
+	       PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+  png_write_info(png_ptr, info_ptr);
+  
+  // Write image.
+  for (int x = 0; x < window_width; x++) {
+    row_ptr = row_ptrs[window_width - (x + 1)];
+    for (int y = 0; y < window_width * 4; y++) {
+      row_ptr[y] = data[window_width * 4 * x + y];
+    }
+  }
+  png_write_rows(png_ptr, row_ptrs, window_width);
+  png_write_end(png_ptr, NULL);
+
+  // Cleanup.
+  if (info_ptr != NULL) png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
+  if (png_ptr != NULL) png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
+
+  for (int i = 0; i < window_width; i++) {
+    free(row_ptrs[i]);
+  }
+  free(row_ptrs);
+  free(data);
+  fclose(file);
 }
 
 int main(int argc, char* argv[]) {
@@ -231,7 +286,7 @@ void parse(string input) {
       o = new Object(1.0 / inv_weight);
       ss.str(get_line(ifs));
       ss.seekg(0);
-    } else if (ss.peek() == 'm') { // Parse isotropic metric parameters.
+    } else if (ss.peek() == 'm') { // Parse anisotropic metric parameters.
       ss.seekg(1);
       // For matrices of the form:
       // [a b]
@@ -242,7 +297,7 @@ void parse(string input) {
       ss.seekg(0);
       
       // Verify that the matrix is positive definite
-      // by checking that its two principal minors have positive determinant.
+      // by checking that its two principal minors are positive.
       if (a <= 0 || (a * c - b * b) <= 0) {
         cout << "Error: metric matrix is not positive definite.\n";
         exit(1);
@@ -287,17 +342,19 @@ void parse(string input) {
 
 void Mouse(int button, int state, int x, int y) {
   if (state == GLUT_UP) {
+    cout << x << " " << y << " " << button << "\n";
     if (button == GLUT_LEFT_BUTTON) {
       show_grid = !show_grid;
-      display();
     } else if (button == GLUT_WHEEL_UP) {
-      
+      scale *= scale_factor;
     } else if (button == GLUT_WHEEL_DOWN) {
-      
+      scale = (scale > scale_factor) ? (scale / scale_factor) : 1.0;
     }
+    display(); // Rerenders based on any click.
   }
 }
 
+// TODO: Improve this to handle the non-degenerate case.
 #define MAX_OBJECTS_FOR_CONSTRUCTION 3
 void run() {
   // Subdivision phase.
@@ -307,7 +364,6 @@ void run() {
     subdiv.pop();
     double radius = box->radius();
     double num_obj = box->num_objects();
-    // cout << num_obj << "\n";
 
     if (num_obj > 1) {
       if (box->width() > abs_eps
@@ -348,5 +404,5 @@ void run() {
   display();
 
   // Print statistics.
-  cout << "Total splits: " << tree->splits() << "\n";
+  cout << "\nTotal splits: " << tree->splits() << "\n";
 }
