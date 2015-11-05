@@ -17,6 +17,9 @@ class Interval {
     assert(a_ <= b_);
   }
 
+  // Singleton constructor.
+  Interval(double s) : a_(s), b_(s) { }
+
   Interval operator+(const Interval& i2) const {
     Interval i(a_ + i2.a_, b_ + i2.b_);
     return i;
@@ -66,6 +69,17 @@ class Interval {
     double bsq = b_ * b_;
     Interval i2(a_ < 0 && b_ > 0 ? 0.0 : fmin(asq, bsq), fmax(asq, bsq));
     return i2;
+  }
+
+  Interval* intersect(const Interval& i) const {
+    double left = fmax(a_, i.a_);
+    double right = fmin(b_, i.b_);
+
+    if (left > right) {
+      return NULL;
+    } else {
+      return new Interval(left, right);
+    }
   }
 
   Interval sqrt_i() const {

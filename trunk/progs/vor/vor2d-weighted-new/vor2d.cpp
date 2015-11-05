@@ -62,6 +62,8 @@ int sy = 0;
 vor_qt* tree;
 queue<vor_box*> subdiv;
 queue<vor_box*> construct;
+vector<vor_box*> vor_edge_boxes;
+vector<vor_box*> vor_vert_boxes;
 vector<Object*> objects;
 bool show_grid = true;
 bool save_image;
@@ -354,8 +356,19 @@ void Mouse(int button, int state, int x, int y) {
   }
 }
 
-// TODO: Improve this to handle the non-degenerate case.
+void enqueue_children(vor_box* box) {
+  box->smooth_split();
+  vor_box** children = box->children();
+  for (int i = 0; i < box->num_children(); i++) {
+    subdiv.push(children[i]);
+  }
+}
+
+// TODO: Improve this to handle degenerate input.
 #define MAX_OBJECTS_FOR_CONSTRUCTION 3
+#define MK_SCALE 1.0
+#define JC_SCALE 3.0
+#define INT_SCALE 3.0
 void run() {
   // Subdivision phase.
   subdiv.push(tree->root());
@@ -365,22 +378,38 @@ void run() {
     double radius = box->radius();
     double num_obj = box->num_objects();
 
-    if (num_obj > 1) {
-      if (box->width() > abs_eps
-	  && (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION 
-	      || radius > box->clearance()
-	      || radius > geom_eps // TODO: Make sure this isn't off by a multiplicative factor of 2.
-	      || !box->cpv()
-	      || (num_obj > 2 && !box->cjc(1.0))
-	    )) {
-	box->smooth_split();
-	vor_box** children = box->children();
-	for (int i = 0; i < box->num_children(); i++) {
-	  subdiv.push(children[i]);
-	}
-      } else {
-	construct.push(box);
-      }
+    if (num_obj == 1) {
+      continue;
+    }
+    
+    if (box->width() > abs_eps
+	&& (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION 
+	    || radius > box->clearance()
+	    || radius > geom_eps // TODO: Make sure this isn't off by a multiplicative factor of 2.
+	    || !box->cpv()
+	  )) {
+      enqueue_children(box);
+    } else if (num_obj == 2) {
+      construct.push(box); // TODO: Don't use "construct" queue.
+      vor_edge_boxes.push_back(box);
+    } else { // num_obj == 3
+      // // TODO: Avoid iterating through all vertex boxes.
+      // bool int_vert_boxes = false;
+      // for (auto it = vor_vert_boxes.begin(); it != vor_vert_boxes.end(); ++it) {
+      // 	if (box->scaled_intersect(**it, INT_SCALE)) {
+      // 	  int_vert_boxes = true;
+      // 	  break;
+      // 	}
+      // }
+      
+      // if (!(box->cmk(MK_SCALE) && box->cjc(JC_SCALE)) || int_vert_boxes) {
+      // 	enqueue_children(box);
+      // 	continue;
+      // } else {
+      // 	vor_vert_boxes.push_back(box);
+      // }
+
+      construct.push(box);
     }
   }
 

@@ -18,8 +18,8 @@ def output_file(n):
     # Write points.
     f.write("\n" + sn + "\n")
     for i in range(n):
-        if len(argv) > 2:
-            f.write("w " + str(random.uniform(0.3, 0.7)) + "\n")
+        if len(argv) > 2 and argv[2] == "-w":
+            f.write("w " + str(random.uniform(.1666667, 6)) + "\n")
         f.write(str(i) + "\n")
 
     f.close()

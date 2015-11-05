@@ -115,6 +115,30 @@ const int vor_box::dimension() const {
   return tree_->dimension();
 }
 
+bool vor_box::scaled_intersect(const vor_box& other, double scale) const {
+  assert(scale > 0);
+  
+  Interval x1 = Interval(center()[0] - scale * width(), center()[0] + scale * width());
+  Interval y1 = Interval(center()[1] - scale * width(), center()[1] + scale * width());
+  Interval x2 = Interval(other.center()[0] - scale * other.width(),
+			 other.center()[0] + scale * other.width());
+  Interval y2 = Interval(other.center()[1] - scale * other.width(),
+			 other.center()[1] + scale * other.width());
+  Interval* x_inter = x1.intersect(x2);
+  Interval* y_inter = y1.intersect(y2);
+  bool intersect = x_inter != NULL && y_inter != NULL;
+
+  if (x_inter != NULL) {
+    delete x_inter;
+  }
+
+  if (y_inter != NULL) {
+    delete y_inter;
+  }
+  
+  return intersect;
+}
+
 void vor_box::split() {
   num_children_ = 1 << dimension();
   double* center;
@@ -287,19 +311,6 @@ bool vor_box::cpv() const {
       cout << "Depth: " << depth_ << ", Box center: " << center_[0] << " " << center_[1] << "\n";
 #endif
 
-//       // Compute 0 \notin F(B)
-//       Interval f1_sep = f1->box_dist_sq(b_x, b_y);
-//       Interval f2_sep = f2->box_dist_sq(b_x, b_y);
-//       Interval F_sep = f1_sep - f2_sep;
-
-// #if DEBUG
-//       cout << "Exclusion: " << F_sep.a_ << " "  << F_sep.b_ << "\n";
-// #endif
-
-//       if (0 <= F_sep.a_ || F_sep.b_ <= 0) {
-//       	continue;
-//       }
-
       // Compute 0 \notin (F_x(B))^2 + (F_y(B))^2
       tuple<Interval, Interval> f1_grad = f1->box_dist_sq_grad(b_x, b_y);
       tuple<Interval, Interval> f2_grad = f2->box_dist_sq_grad(b_x, b_y);
@@ -325,22 +336,55 @@ bool vor_box::cpv() const {
   return true;
 }
 
-/* Huck 9/28/2015: The following two predicates only work (for the time being) in the case where all objects are simple features.
- * A Voronoi vertex arises if two of three bisectors meet, and so we check for this case.
+/* Huck 9/28/2015: The following two predicates only work (for the time being)
+ * in the case where all objects are simple features.
+ * A Voronoi vertex arises when two bisectors meet, and so we check for this case.
  */
 
-// TODO.
+// TODO: Finish this method. Currently disabled in vor2d.cpp.
 bool vor_box::cmk(double scale) const {
   // TODO: Improve this to work with multi-feature sites and degenerate intersections.
+  assert(num_features() >= 3);
   if (num_features() > 3) {
     cout << "Warning: multi-feature objects. Not ensuring that the MK test is met.\n";
     return true;
   }
 
+  // TODO: Reduce redundant code.
+  // Intervals for box edges.
+  double bot_y = center()[1] - width();
+  double top_y = center()[1] + width();
+  double lft_x = center()[0] - width();
+  double rgt_x = center()[0] + width();
+  Interval span_x(center()[0] - width(), center()[0] + width);
+  Interval span_y(center()[1] - width(), center()[1] + width);
+
+  // Intervals for box center.
+  Interval m_x(center()[0]);
+  Interval m_y(center()[1]);
+
+  // Features.
+  Feature* S = features_[0];
+  Feature* T = features_[1];
+  Feature* U = features_[2];
+
+  // Compute the gradients at midpoints.
+  tuple<Interval, Interval> S_grad = S->box_dist_sq_grad(m_x, m_y);
+  tuple<Interval, Interval> T_grad = T->box_dist_sq_grad(m_x, m_y);
+  tuple<Interval, Interval> U_grad = U->box_dist_sq_grad(m_x, m_y);
+
+  // Compute the gradient of f_{ST} at m_B.
+  Interval fst_grad_x = std::get<0>(S_grad) - std::get<0>(T_grad);
+  Interval fst_grad_y = std::get<1>(S_grad) - std::get<1>(T_grad);
+
+  // Compute the gradient of f_{TU} at m_B.
+  Interval ftu_grad_x = std::get<0>(T_grad) - std::get<0>(U_grad);
+  Interval ftu_grad_y = std::get<1>(T_grad) - std::get<1>(U_grad);
+
+  
   
   return false;
 }
-
 
 // Currently this computes the Jacobian condition with respect to
 // the system of equations F = (f_{ST}, f_{TU}) where the bisectors
