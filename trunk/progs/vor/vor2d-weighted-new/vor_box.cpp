@@ -117,13 +117,13 @@ const int vor_box::dimension() const {
 
 bool vor_box::scaled_intersect(const vor_box& other, double scale) const {
   assert(scale > 0);
-  
-  Interval x1 = Interval(center()[0] - scale * width(), center()[0] + scale * width());
-  Interval y1 = Interval(center()[1] - scale * width(), center()[1] + scale * width());
-  Interval x2 = Interval(other.center()[0] - scale * other.width(),
-			 other.center()[0] + scale * other.width());
-  Interval y2 = Interval(other.center()[1] - scale * other.width(),
-			 other.center()[1] + scale * other.width());
+
+  double sw = scale * width() / 2;
+  double osw = scale * other.width() / 2;
+  Interval x1 = Interval(center()[0] - sw, center()[0] + sw);
+  Interval y1 = Interval(center()[1] - sw, center()[1] + sw);
+  Interval x2 = Interval(other.center()[0] - osw, other.center()[0] + osw);
+  Interval y2 = Interval(other.center()[1] - osw, other.center()[1] + osw);
   Interval* x_inter = x1.intersect(x2);
   Interval* y_inter = y1.intersect(y2);
   bool intersect = x_inter != NULL && y_inter != NULL;
@@ -348,7 +348,6 @@ bool vor_box::cpv() const {
  * A Voronoi vertex arises when two bisectors meet, and so we check for this case.
  */
 
-// TODO: Finish this method. Currently disabled in vor2d.cpp.
 bool vor_box::cmk(double scale) const {
   // TODO: Improve this to work with multi-feature sites and degenerate intersections.
   assert(num_features() >= 3);
@@ -357,25 +356,14 @@ bool vor_box::cmk(double scale) const {
     return true;
   }
 
-  // TODO: Reduce redundant code.
-  // Intervals for box edges.
-
-  double sw = scale * width_ / 2;
-  double bot_y = center()[1] - sw;
-  double top_y = center()[1] + sw;
-  double lft_x = center()[0] - sw;
-  double rgt_x = center()[0] + sw;
-  Interval span_x(center()[0] - sw, center()[0] + sw);
-  Interval span_y(center()[1] - sw, center()[1] + sw);
-
-  // Intervals for box center.
-  Interval m_x(center()[0]);
-  Interval m_y(center()[1]);
-
   // Features.
   Feature* S = features_[0];
   Feature* T = features_[1];
   Feature* U = features_[2];
+
+  // Intervals for box center.
+  Interval m_x(center()[0]);
+  Interval m_y(center()[1]);
 
   // Compute the gradients at midpoints.
   tuple<Interval, Interval> S_grad = S->box_dist_sq_grad(m_x, m_y);
@@ -397,9 +385,40 @@ bool vor_box::cmk(double scale) const {
   cout << "detJmb: " << detJmb << "\n";
 #endif
 
-  
+  // Parallel linear system.
+  if (detJmb.contains(0)) {
+    return false;
+  }
 
-  return true;
+  // Intervals for box edges.
+  double sw = scale * width_ / 2;
+  Interval bot_y(center()[1] - sw);
+  Interval top_y(center()[1] + sw);
+  Interval lft_x(center()[0] - sw);
+  Interval rgt_x(center()[0] + sw);
+  Interval span_x(center()[0] - sw, center()[0] + sw);
+  Interval span_y(center()[1] - sw, center()[1] + sw);
+
+  // Check f_{ST} on the left and right edges, and
+  // check f_{TU} on the top and bottom edges.
+  Interval fst_dist_left = S->box_dist_sq(lft_x, span_y) - T->box_dist_sq(lft_x, span_y);
+  Interval fst_dist_right = S->box_dist_sq(rgt_x, span_y) - T->box_dist_sq(rgt_x, span_y);
+  Interval fst_dist_top = S->box_dist_sq(top_y, span_x) - T->box_dist_sq(top_y, span_x);
+  Interval fst_dist_bot = S->box_dist_sq(bot_y, span_x) - T->box_dist_sq(bot_y, span_x);
+  
+  Interval ftu_dist_left = T->box_dist_sq(lft_x, span_y) - U->box_dist_sq(lft_x, span_y);
+  Interval ftu_dist_right = T->box_dist_sq(rgt_x, span_y) - U->box_dist_sq(rgt_x, span_y);
+  Interval ftu_dist_top = T->box_dist_sq(top_y, span_x) - U->box_dist_sq(top_y, span_x);
+  Interval ftu_dist_bot = T->box_dist_sq(bot_y, span_x) - U->box_dist_sq(bot_y, span_x);
+  
+  // Check the modified system appropriately on each edge.
+  // We omit multiplying by 1/detJmb which does not affect whether the intervals contain 0.
+  Interval g_left = ftu_grad_y * fst_dist_left - fst_grad_y * ftu_dist_left;
+  Interval g_right = ftu_grad_y * fst_dist_right - fst_grad_y * ftu_dist_right;
+  Interval g_top = -ftu_grad_x * fst_dist_top + fst_grad_x * ftu_dist_top;
+  Interval g_bottom = -ftu_grad_x * fst_dist_top + fst_grad_x * ftu_dist_top;
+
+  return 0 > g_left && 0 < g_right && 0 > g_bottom && 0 < g_top;
 }
 
 // Currently this computes the Jacobian condition with respect to

@@ -92,6 +92,14 @@ class Interval {
     Interval i2(a_ >= 0 ? sqrt(a_) : 0.0, sqrt(b_));
     return i2;
   }
+
+  bool singleton() {
+    return a_ == b_;
+  }
+
+  bool contains(double num) {
+    return a_ <= num && num <= b_;
+  }
  
   // Public variables representing interval [a_, b_].
   double a_; // Left endpoint.
@@ -100,11 +108,20 @@ class Interval {
 
 const Interval TOP(numeric_limits<double>::min(), numeric_limits<double>::max());
 
+inline bool operator<(double c, const Interval& i) { return c < i.a_; }
+inline bool operator>(double c, const Interval& i) { return c > i.b_; }
+inline bool operator<=(double c, const Interval& i) { return c <= i.a_; }
+inline bool operator>=(double c, const Interval& i) { return c >= i.b_; }
+
 inline Interval operator*(double c, const Interval& i) {
   double e1 = c * i.a_;
   double e2 = c * i.b_;
   Interval i2(fmin(e1, e2), fmax(e1, e2));
   return i2;
+}
+
+inline Interval operator-(const Interval& i) {
+  return -1 * i;
 }
 
 inline Interval operator/(double c, const Interval& i) {

@@ -384,7 +384,7 @@ void run() {
     }
 
     if (box->width() < abs_eps) {
-      // TODO: Fix this. 
+      // TODO: Replace this with better handling.
       continue;
     }
     
@@ -406,7 +406,6 @@ void run() {
       	}
       }
 
-      cout << box->center()[0] << " " << box->center()[1] << " num_obj: " << num_obj << "\n";
       if (int_vert_boxes ||  !(box->cmk(MK_SCALE) && box->cjc(JC_SCALE))) {
       	enqueue_children(box);
       	continue;
@@ -414,8 +413,6 @@ void run() {
 	construct.push(box);
       	vor_vert_boxes.push_back(box);
       }
-
-      // construct.push(box);
     }
   }
 
