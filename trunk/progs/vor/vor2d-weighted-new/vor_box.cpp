@@ -164,7 +164,7 @@ void vor_box::split() {
 	children_[i]->add_feature(*it);
       }
     }
-
+    
     // TODO: Consolidate this into the "features" loop, and make active objects into a set.
     for (auto it = objects_.begin(); it != objects_.end(); ++it) {
       if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
@@ -172,6 +172,13 @@ void vor_box::split() {
       }
     }
   }
+
+#if DEBUG
+  for (int i = 0; i < num_children(); i++) {
+    assert(children_[i]->num_features() > 0);
+    assert(children_[i]->num_objects() > 0);
+  }
+#endif
 
   // Initialize neighbors of new children.
   // Each box has 2 * d principal neighbor pointers, one in each semi-axis direction.
@@ -352,12 +359,14 @@ bool vor_box::cmk(double scale) const {
 
   // TODO: Reduce redundant code.
   // Intervals for box edges.
-  double bot_y = center()[1] - width();
-  double top_y = center()[1] + width();
-  double lft_x = center()[0] - width();
-  double rgt_x = center()[0] + width();
-  Interval span_x(center()[0] - width(), center()[0] + width);
-  Interval span_y(center()[1] - width(), center()[1] + width);
+
+  double sw = scale * width_ / 2;
+  double bot_y = center()[1] - sw;
+  double top_y = center()[1] + sw;
+  double lft_x = center()[0] - sw;
+  double rgt_x = center()[0] + sw;
+  Interval span_x(center()[0] - sw, center()[0] + sw);
+  Interval span_y(center()[1] - sw, center()[1] + sw);
 
   // Intervals for box center.
   Interval m_x(center()[0]);
@@ -381,9 +390,16 @@ bool vor_box::cmk(double scale) const {
   Interval ftu_grad_x = std::get<0>(T_grad) - std::get<0>(U_grad);
   Interval ftu_grad_y = std::get<1>(T_grad) - std::get<1>(U_grad);
 
+  Interval detJmb = (fst_grad_x * ftu_grad_y) - (ftu_grad_x * fst_grad_y);
+
+#if DEBUG
+  cout << "CMK: " << center()[0] << ", " << center()[1] << "\n";
+  cout << "detJmb: " << detJmb << "\n";
+#endif
+
   
-  
-  return false;
+
+  return true;
 }
 
 // Currently this computes the Jacobian condition with respect to
@@ -399,9 +415,9 @@ bool vor_box::cjc(double scale) const {
   }
   
   // TODO: Consolidate gradient computation with PV code.
-  double sr = scale * radius_;
-  Interval b_x(center_[0] - sr, center_[0] + sr);
-  Interval b_y(center_[1] - sr, center_[1] + sr);
+  double sw = scale * width_ / 2;
+  Interval b_x(center_[0] - sw, center_[0] + sw);
+  Interval b_y(center_[1] - sw, center_[1] + sw);
   Feature* S = features_[0];
   Feature* T = features_[1];
   Feature* U = features_[2];

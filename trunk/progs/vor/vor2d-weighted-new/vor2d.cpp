@@ -197,7 +197,7 @@ void save_png() {
 
   // Cleanup.
   if (info_ptr != NULL) png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
-  if (png_ptr != NULL) png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
+  if (png_ptr != NULL) png_destroy_write_struct(&png_ptr, (png_infopp) NULL);
 
   for (int i = 0; i < window_width; i++) {
     free(row_ptrs[i]);
@@ -344,7 +344,7 @@ void parse(string input) {
 
 void Mouse(int button, int state, int x, int y) {
   if (state == GLUT_UP) {
-    cout << x << " " << y << " " << button << "\n";
+    // cout << x << " " << y << " " << button << "\n";
     if (button == GLUT_LEFT_BUTTON) {
       show_grid = !show_grid;
     } else if (button == GLUT_WHEEL_UP) {
@@ -378,38 +378,44 @@ void run() {
     double radius = box->radius();
     double num_obj = box->num_objects();
 
+    assert(num_obj > 0);
     if (num_obj == 1) {
       continue;
     }
+
+    if (box->width() < abs_eps) {
+      // TODO: Fix this. 
+      continue;
+    }
     
-    if (box->width() > abs_eps
-	&& (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION 
-	    || radius > box->clearance()
-	    || radius > geom_eps // TODO: Make sure this isn't off by a multiplicative factor of 2.
-	    || !box->cpv()
-	  )) {
+    if (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION 
+	|| radius > box->clearance()
+	|| radius > geom_eps // TODO: Make sure this isn't off by a multiplicative factor of 2.
+	|| !box->cpv()) {
       enqueue_children(box);
     } else if (num_obj == 2) {
       construct.push(box); // TODO: Don't use "construct" queue.
       vor_edge_boxes.push_back(box);
     } else { // num_obj == 3
-      // // TODO: Avoid iterating through all vertex boxes.
-      // bool int_vert_boxes = false;
-      // for (auto it = vor_vert_boxes.begin(); it != vor_vert_boxes.end(); ++it) {
-      // 	if (box->scaled_intersect(**it, INT_SCALE)) {
-      // 	  int_vert_boxes = true;
-      // 	  break;
-      // 	}
-      // }
-      
-      // if (!(box->cmk(MK_SCALE) && box->cjc(JC_SCALE)) || int_vert_boxes) {
-      // 	enqueue_children(box);
-      // 	continue;
-      // } else {
-      // 	vor_vert_boxes.push_back(box);
-      // }
+      // TODO: Avoid iterating through all vertex boxes.
+      bool int_vert_boxes = false;
+      for (auto it = vor_vert_boxes.begin(); it != vor_vert_boxes.end(); ++it) {
+      	if (box->scaled_intersect(**it, INT_SCALE)) {
+      	  int_vert_boxes = true;
+      	  break;
+      	}
+      }
 
-      construct.push(box);
+      cout << box->center()[0] << " " << box->center()[1] << " num_obj: " << num_obj << "\n";
+      if (int_vert_boxes ||  !(box->cmk(MK_SCALE) && box->cjc(JC_SCALE))) {
+      	enqueue_children(box);
+      	continue;
+      } else {
+	construct.push(box);
+      	vor_vert_boxes.push_back(box);
+      }
+
+      // construct.push(box);
     }
   }
 
