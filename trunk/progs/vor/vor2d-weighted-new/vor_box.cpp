@@ -421,10 +421,10 @@ bool vor_box::cmk(double scale) const {
   
   // Check the modified system appropriately on each edge.
   // We omit multiplying by 1/detJmb which does not affect whether the intervals contain 0.
-  Interval g_left = ftu_grad_y * fst_dist_left - fst_grad_y * ftu_dist_left;
-  Interval g_right = ftu_grad_y * fst_dist_right - fst_grad_y * ftu_dist_right;
-  Interval g_top = -ftu_grad_x * fst_dist_top + fst_grad_x * ftu_dist_top;
-  Interval g_bottom = -ftu_grad_x * fst_dist_bot + fst_grad_x * ftu_dist_bot;
+  Interval g_left = (ftu_grad_y * fst_dist_left - fst_grad_y * ftu_dist_left) / detJmb;
+  Interval g_right = (ftu_grad_y * fst_dist_right - fst_grad_y * ftu_dist_right) / detJmb;
+  Interval g_top = (-ftu_grad_x * fst_dist_top + fst_grad_x * ftu_dist_top) / detJmb;
+  Interval g_bottom = (-ftu_grad_x * fst_dist_bot + fst_grad_x * ftu_dist_bot) / detJmb;
 
 #if DEBUG
   cout << "g_left" << g_left << "\n";
