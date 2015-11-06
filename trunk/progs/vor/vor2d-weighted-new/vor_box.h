@@ -61,6 +61,8 @@ class vor_box {
   int num_objects() const;
   void set_active(bool is_active);
   bool is_active() const;
+  void set_degen(bool is_degen);
+  bool is_degen() const;
   int num_corner_obj() const;
   void gen_vertices();
 
@@ -77,6 +79,7 @@ class vor_box {
 
   // Fields.
   bool is_active_;
+  bool is_degen_;
   const int depth_;
   const int indicator_;
   double width_;

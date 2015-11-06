@@ -28,9 +28,11 @@ void draw_box(const vor_box& box, bool show_grid) {
   double cy = box.center()[1];
   double hw = box.width() / 2;
 
-  if (box.is_active()) {
-    glColor3f(1.0, 0, 0); // Red
-    glBegin(GL_POLYGON);
+  // Draw mesh boundaries.
+  if (show_grid) {
+    glColor3f(0.7, 0.7, 0.7); // Gray
+    glLineWidth(1.0);
+    glBegin(GL_LINE_LOOP);
     glVertex2d(cx - hw, cy - hw);
     glVertex2d(cx - hw, cy + hw);
     glVertex2d(cx + hw, cy + hw);
@@ -38,11 +40,9 @@ void draw_box(const vor_box& box, bool show_grid) {
     glEnd();
   }
 
-  // Draw mesh boundaries.
-  if (show_grid) {
-    glColor3f(0.7, 0.7, 0.7); // Gray
-    glLineWidth(1.0);
-    glBegin(GL_LINE_LOOP);
+  if (box.is_degen()) {
+    glColor3f(0, 0, 1.0); // Blue
+    glBegin(GL_POLYGON);
     glVertex2d(cx - hw, cy - hw);
     glVertex2d(cx - hw, cy + hw);
     glVertex2d(cx + hw, cy + hw);

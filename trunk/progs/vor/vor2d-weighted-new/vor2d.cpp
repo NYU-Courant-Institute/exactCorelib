@@ -48,7 +48,7 @@ using vor2d::Object;
 
 // Global parameters.
 const int window_width = 1024;
-const double abs_eps = 1.0d / (1 << 15);
+const double abs_eps = 1.0d / (1 << 7);
 double geom_eps;
 bool interactive_mode = false;
 
@@ -67,6 +67,7 @@ vector<vor_box*> vor_vert_boxes;
 vector<Object*> objects;
 bool show_grid = true;
 bool save_image;
+bool display_image;
 string input_file_name;
 
 // Set input options.
@@ -80,6 +81,7 @@ void init_options(int argc, char* argv[]) {
     ("help", "Print this help message.")
     ("geps", po::value<double>(&geom_eps)->default_value(1.0), "Geometric epsilon.")
     ("save", po::value<bool>(&save_image)->default_value(false), "Save an image of the construction.")
+    ("display", po::value<bool>(&display_image)->default_value(true), "Display the consturcted Voronoi diagram.")
     ("input_file_name", po::value<string>(&input_file_name), "Input file name.");
 
   // Set positional options.
@@ -106,20 +108,23 @@ void initialize(string input_file_name) {
   // Initialize global variables.
   tree = new vor_qt(2 /* dimension */, 2.0 /* width */);
 
-  // Set up antialiasing.
-  glEnable(GL_LINE_SMOOTH);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+  // Initialize graphics.
+  if (display_image) {
+    // Set up antialiasing.
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
-  // Set up window.
-  glutInitWindowSize(window_width, window_width);
-  glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-  glutCreateWindow((title_prefix + (input_file_name.length() > 0 ? (" - " + input_file_name) : "")).c_str());
-  glClearColor(1.0, 1.0, 1.0, 1.0);
-
-  // Other.
-  GLUI_Master.set_glutMouseFunc(Mouse);
+    // Set up window.
+    glutInitWindowSize(window_width, window_width);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+    glutCreateWindow((title_prefix + (input_file_name.length() > 0 ? (" - " + input_file_name) : "")).c_str());
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    
+    // Other.
+    GLUI_Master.set_glutMouseFunc(Mouse);
+  }
 }
 
 void cleanup() {
@@ -127,15 +132,19 @@ void cleanup() {
 }
 
 void display() {
+  if(!display_image) {
+    return;
+  }
+  
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   draw_box_rec(*tree->root(), show_grid);
-
+  
   // Draw all features.
   Corner* c;
   Edge* e;
   vector<Feature*>* features = tree->root()->get_features();
   for (auto it = features->begin(); it < features->end(); ++it) {
-    // This is hack found on StackOverflow to handle C++'s lack of "instanceof".
+    // This is a hack found on StackOverflow to handle C++'s lack of "instanceof".
     // TODO: Use typeid or some other functionality?
     c = dynamic_cast<Corner*>(*it);
     if (c != nullptr) {
@@ -209,6 +218,7 @@ void save_png() {
 
 int main(int argc, char* argv[]) {
   init_options(argc, argv);
+
   glutInit(&argc, argv);
   initialize(input_file_name);
 
@@ -384,7 +394,8 @@ void run() {
     }
 
     if (box->width() < abs_eps) {
-      // TODO: Replace this with better handling.
+      cout << "Warning: absolute epsilon reached.\n";
+      box->set_degen(true);
       continue;
     }
     
@@ -406,7 +417,7 @@ void run() {
       	}
       }
 
-      if (int_vert_boxes ||  !(box->cmk(MK_SCALE) && box->cjc(JC_SCALE))) {
+      if (int_vert_boxes || !(box->cjc(JC_SCALE) && box->cmk(MK_SCALE))) {
       	enqueue_children(box);
       	continue;
       } else {

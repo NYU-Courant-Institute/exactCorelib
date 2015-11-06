@@ -4,7 +4,7 @@
 #include "assert.h"
 #include <set>
 
-#define DEBUG 0
+#define DEBUG 1
 
 namespace vor2d {
 
@@ -12,7 +12,7 @@ using std::set;
 
 vor_box::vor_box(int depth, int indicator, double center[], vor_qt* tree)
   : depth_(depth), indicator_(indicator), center_(center), tree_(tree),
-    children_(nullptr), num_children_(0), is_active_(false) {
+    children_(nullptr), num_children_(0), is_active_(false), is_degen_(false) {
   width_ = pow(2, -depth_) * tree_->width();
   radius_ = width_ / sqrt(2);
   neighbors_ = new vor_box*[2 * dimension()];
@@ -294,6 +294,14 @@ bool vor_box::is_active() const {
   return is_active_;
 }
 
+void vor_box::set_degen(bool is_degen) {
+  is_degen_ = is_degen;
+}
+
+bool vor_box::is_degen() const {
+  return is_degen_;
+}
+
 bool vor_box::cpv() const {
   if (objects_.size() < 2) {
     return true;
@@ -416,8 +424,15 @@ bool vor_box::cmk(double scale) const {
   Interval g_left = ftu_grad_y * fst_dist_left - fst_grad_y * ftu_dist_left;
   Interval g_right = ftu_grad_y * fst_dist_right - fst_grad_y * ftu_dist_right;
   Interval g_top = -ftu_grad_x * fst_dist_top + fst_grad_x * ftu_dist_top;
-  Interval g_bottom = -ftu_grad_x * fst_dist_top + fst_grad_x * ftu_dist_top;
+  Interval g_bottom = -ftu_grad_x * fst_dist_bot + fst_grad_x * ftu_dist_bot;
 
+#if DEBUG
+  cout << "g_left" << g_left << "\n";
+  cout << "g_right" << g_right << "\n";
+  cout << "g_top" << g_top << "\n";
+  cout << "g_bottom" << g_bottom << "\n";
+#endif
+  
   return 0 > g_left && 0 < g_right && 0 > g_bottom && 0 < g_top;
 }
 
