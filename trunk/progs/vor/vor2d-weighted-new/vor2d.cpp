@@ -48,7 +48,7 @@ using vor2d::Object;
 
 // Global parameters.
 const int window_width = 1024;
-const double abs_eps = 1.0d / (1 << 7);
+const double abs_eps = 1.0d / (1 << 5);
 double geom_eps;
 bool interactive_mode = false;
 
@@ -376,7 +376,7 @@ void enqueue_children(vor_box* box) {
 
 // TODO: Improve this to handle degenerate input.
 #define MAX_OBJECTS_FOR_CONSTRUCTION 3
-#define MK_SCALE 1.0
+#define MK_SCALE 2.0
 #define JC_SCALE 3.0
 #define INT_SCALE 3.0
 void run() {
@@ -417,7 +417,7 @@ void run() {
       	}
       }
 
-      if (false /*int_vert_boxes || !(box->cjc(JC_SCALE) && box->cmk(MK_SCALE))*/) {
+      if (/* int_vert_boxes */ !(box->cjc(JC_SCALE) && box->cmk(MK_SCALE))) {
       	enqueue_children(box);
       	continue;
       } else {
