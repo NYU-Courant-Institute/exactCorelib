@@ -83,7 +83,6 @@ class vor_box {
   const int depth_;
   const int indicator_;
   double width_;
-  double radius_;
   double* center_;
   int num_children_;
   vor_qt* tree_;

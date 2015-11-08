@@ -42,7 +42,8 @@ class Interval {
   }
 
   Interval operator/(const Interval& i2) const {
-    // TODO: Consolidate with "operator*"? 
+    // TODO: Consolidate with "operator*"?
+    assert(!i2.contains(0.0));
     double ac = a_ / i2.a_;
     double ad = a_ / i2.b_;
     double bc = b_ / i2.a_;
@@ -54,6 +55,7 @@ class Interval {
   }
 
   Interval operator/(const double c) const {
+    assert(c != 0.0);
     double ac = a_ / c;
     double bc = b_ / c;
     Interval i(fmin(ac, bc), fmax(ac, bc));
@@ -93,11 +95,11 @@ class Interval {
     return i2;
   }
 
-  bool singleton() {
+  bool singleton() const {
     return a_ == b_;
   }
 
-  bool contains(double num) {
+  bool contains(double num) const {
     return a_ <= num && num <= b_;
   }
  

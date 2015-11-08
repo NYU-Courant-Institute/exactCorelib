@@ -417,7 +417,7 @@ void run() {
       	}
       }
 
-      if (/* int_vert_boxes */ !(box->cjc(JC_SCALE) && box->cmk(MK_SCALE))) {
+      if (/*int_vert_boxes || !(box->cjc(JC_SCALE) && */ !(box->cmk(MK_SCALE))) {
       	enqueue_children(box);
       	continue;
       } else {

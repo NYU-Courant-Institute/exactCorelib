@@ -14,7 +14,6 @@ vor_box::vor_box(int depth, int indicator, double center[], vor_qt* tree)
   : depth_(depth), indicator_(indicator), center_(center), tree_(tree),
     children_(nullptr), num_children_(0), is_active_(false), is_degen_(false) {
   width_ = pow(2, -depth_) * tree_->width();
-  radius_ = width_ / sqrt(2);
   neighbors_ = new vor_box*[2 * dimension()];
 }
 
@@ -44,7 +43,7 @@ double vor_box::width() const {
 }
 
 double vor_box::radius() const {
-  return radius_;
+  return width_ / sqrt(2);
 }
 
 double* vor_box::center() const {
@@ -308,8 +307,9 @@ bool vor_box::cpv() const {
   }
 
   // The box decomposed into intervals.
-  Interval b_x(center_[0] - radius_, center_[0] + radius_);
-  Interval b_y(center_[1] - radius_, center_[1] + radius_);
+  double rad = radius();
+  Interval b_x(center_[0] - rad, center_[0] + rad);
+  Interval b_y(center_[1] - rad, center_[1] + rad);
 
   for (int i = 0; i < features_.size(); i++) {
     for (int j = i + 1; j < features_.size(); j++) {
@@ -334,10 +334,10 @@ bool vor_box::cpv() const {
       Interval F_grad_ip = F_grad_x * F_grad_x + F_grad_y * F_grad_y;
 
 #if DEBUG
-      cout << "Gradient: " << F_grad_ip.a_ << " "  << F_grad_ip.b_ << "\n";
-      cout << F_grad_x << " " << F_grad_y << "\n";
-      cout << std::get<0>(f1_grad) << " " << std::get<1>(f1_grad) << "\n";
-      cout << std::get<0>(f2_grad) << " " << std::get<1>(f2_grad) << "\n";
+      // cout << "Gradient: " << F_grad_ip.a_ << " "  << F_grad_ip.b_ << "\n";
+      // cout << F_grad_x << " " << F_grad_y << "\n";
+      // cout << std::get<0>(f1_grad) << " " << std::get<1>(f1_grad) << "\n";
+      // cout << std::get<0>(f2_grad) << " " << std::get<1>(f2_grad) << "\n";
 #endif
 
       if (0 < F_grad_ip.a_ || F_grad_ip.b_ < 0) {
@@ -351,8 +351,7 @@ bool vor_box::cpv() const {
   return true;
 }
 
-/* Huck 9/28/2015: The following two predicates only work (for the time being)
- * in the case where all objects are simple features.
+/* 
  * A Voronoi vertex arises when two bisectors meet, and so we check for this case.
  */
 
@@ -420,16 +419,20 @@ bool vor_box::cmk(double scale) const {
   Interval ftu_dist_bot   = T->box_dist_sq(bot_y, span_x) - U->box_dist_sq(bot_y, span_x);
 
   // Check the modified system appropriately on each edge.
-  Interval g_left   = ( ftu_grad_y * fst_dist_left  - fst_grad_y * ftu_dist_left ) / detJmb;
-  Interval g_right  = ( ftu_grad_y * fst_dist_right - fst_grad_y * ftu_dist_right) / detJmb;
-  Interval g_top    = (-ftu_grad_x * fst_dist_top   + fst_grad_x * ftu_dist_top  ) / detJmb;
-  Interval g_bottom = (-ftu_grad_x * fst_dist_bot   + fst_grad_x * ftu_dist_bot  ) / detJmb;
+  Interval mo(-1, -1);
+  Interval g_left   = ( ftu_grad_y * fst_dist_left      - fst_grad_y * ftu_dist_left ) /* / detJmb */;
+  Interval g_right  = ( ftu_grad_y * fst_dist_right     - fst_grad_y * ftu_dist_right) /* / detJmb */;
+  Interval g_top    = (mo * ftu_grad_x * fst_dist_top   + fst_grad_x * ftu_dist_top  ) /* / detJmb */;
+  Interval g_bottom = (mo * ftu_grad_x * fst_dist_bot   + fst_grad_x * ftu_dist_bot  ) /* / detJmb */;
 
 #if DEBUG
   cout << "g_left"   << g_left   << "\n";
   cout << "g_right"  << g_right  << "\n";
   cout << "g_top"    << g_top    << "\n";
   cout << "g_bottom" << g_bottom << "\n";
+
+  cout << -ftu_grad_x << " " << -ftu_grad_x * fst_dist_top << " " << fst_grad_x * ftu_dist_top << " "
+       << fst_grad_x  << " " << -ftu_grad_x * fst_dist_bot << " " << fst_grad_x * ftu_dist_bot << "\n";
 #endif
 
   return 0 > g_left && 0 < g_right && 0 > g_bottom && 0 < g_top;
