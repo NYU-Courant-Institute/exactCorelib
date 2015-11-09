@@ -48,7 +48,7 @@ using vor2d::Object;
 
 // Global parameters.
 const int window_width = 1024;
-const double abs_eps = 1.0d / (1 << 5);
+double abs_eps;
 double geom_eps;
 bool interactive_mode = false;
 
@@ -79,6 +79,7 @@ void init_options(int argc, char* argv[]) {
   po::options_description desc("Voronoi diagram options");
   desc.add_options()
     ("help", "Print this help message.")
+    ("aeps", po::value<double>(&abs_eps)->default_value(1.0d / (1 << 3)), "Absolute epsilon.")
     ("geps", po::value<double>(&geom_eps)->default_value(1.0), "Geometric epsilon.")
     ("save", po::value<bool>(&save_image)->default_value(false), "Save an image of the construction.")
     ("display", po::value<bool>(&display_image)->default_value(true), "Display the consturcted Voronoi diagram.")
@@ -122,7 +123,7 @@ void initialize(string input_file_name) {
     glutCreateWindow((title_prefix + (input_file_name.length() > 0 ? (" - " + input_file_name) : "")).c_str());
     glClearColor(1.0, 1.0, 1.0, 1.0);
     
-    // Other.
+    // Set up input-output.
     GLUI_Master.set_glutMouseFunc(Mouse);
   }
 }

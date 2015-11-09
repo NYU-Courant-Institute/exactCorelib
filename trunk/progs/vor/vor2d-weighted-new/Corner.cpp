@@ -32,9 +32,9 @@ tuple<Interval, Interval> Corner::box_dist_sq_grad(const Interval& int_x, const 
   Interval w_x = int_x - p_x;
   Interval w_y = int_y - p_y;
   // Interval i = 1.0 / parent_->qm_b(w_x, w_y).sqrt_i();
-  Interval r_x = m[0] * w_x + m[1] * w_y;
-  Interval r_y = m[1] * w_x + m[2] * w_y;
-  return make_tuple(2 * r_x, 2 * r_y);
+  Interval r_x = 2 * (m[0] * w_x + m[1] * w_y);
+  Interval r_y = 2 * (m[1] * w_x + m[2] * w_y);
+  return make_tuple(r_x, r_y);
 }
 
 bool Corner::is_isolated() {

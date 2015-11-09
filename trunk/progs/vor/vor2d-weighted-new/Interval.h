@@ -109,9 +109,9 @@ class Interval {
 };
 
 const Interval TOP(numeric_limits<double>::min(), numeric_limits<double>::max());
-
-inline bool operator<(double c, const Interval& i) { return c < i.a_; }
-inline bool operator>(double c, const Interval& i) { return c > i.b_; }
+ 
+inline bool operator< (double c, const Interval& i) { return c < i.a_;  }
+inline bool operator> (double c, const Interval& i) { return c > i.b_;  }
 inline bool operator<=(double c, const Interval& i) { return c <= i.a_; }
 inline bool operator>=(double c, const Interval& i) { return c >= i.b_; }
 
