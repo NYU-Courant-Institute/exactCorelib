@@ -220,13 +220,14 @@ void save_png() {
 int main(int argc, char* argv[]) {
   init_options(argc, argv);
 
+  if (input_file_name.length() == 0) {
+    cout << "No input file specified.\n";
+    exit(1);
+  }
+  
   glutInit(&argc, argv);
   initialize(input_file_name);
-
-  if (input_file_name.length() > 0) {
-    parse(input_file_name);
-  }
-
+  parse(input_file_name);
   glutDisplayFunc(display);
   run();
   glutMainLoop();
@@ -418,7 +419,7 @@ void run() {
       	}
       }
 
-      if (/*int_vert_boxes || !(box->cjc(JC_SCALE) && */ !(box->cmk(MK_SCALE))) {
+      if (false/*int_vert_boxes || !(box->cjc(JC_SCALE) &&  !(box->cmk(MK_SCALE))*/) {
       	enqueue_children(box);
       	continue;
       } else {

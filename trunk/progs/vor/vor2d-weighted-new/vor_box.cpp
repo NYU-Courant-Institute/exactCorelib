@@ -390,6 +390,8 @@ bool vor_box::cmk(double scale) const {
 #if DEBUG
   cout << "CMK: " << center()[0] << ", " << center()[1] << "\n";
   cout << "detJmb: " << detJmb << "\n";
+  cout << fst_grad_x << " " << fst_grad_y << " "
+       << ftu_grad_x << " " << ftu_grad_y << "\n";
 #endif
 
   // Parallel linear system.
@@ -406,32 +408,31 @@ bool vor_box::cmk(double scale) const {
   Interval span_x(center()[0] - sw, center()[0] + sw);
   Interval span_y(center()[1] - sw, center()[1] + sw);
 
-  // Check f_{ST} on the left and right edges, and
-  // check f_{TU} on the top and bottom edges.
+  // Check f_{ST} on the left and right edges, and check f_{TU} on the top and bottom edges.
   Interval fst_dist_left  = S->box_dist_sq(lft_x, span_y) - T->box_dist_sq(lft_x, span_y);
   Interval fst_dist_right = S->box_dist_sq(rgt_x, span_y) - T->box_dist_sq(rgt_x, span_y);
   Interval fst_dist_top   = S->box_dist_sq(span_x, top_y) - T->box_dist_sq(span_x, top_y);
   Interval fst_dist_bot   = S->box_dist_sq(span_x, bot_y) - T->box_dist_sq(span_x, bot_y);
-  
+
   Interval ftu_dist_left  = T->box_dist_sq(lft_x, span_y) - U->box_dist_sq(lft_x, span_y);
   Interval ftu_dist_right = T->box_dist_sq(rgt_x, span_y) - U->box_dist_sq(rgt_x, span_y);
   Interval ftu_dist_top   = T->box_dist_sq(span_x, top_y) - U->box_dist_sq(span_x, top_y);
   Interval ftu_dist_bot   = T->box_dist_sq(span_x, bot_y) - U->box_dist_sq(span_x, bot_y);
 
   // Check the modified system on appropriate edges.
-  Interval g_left   = ( ftu_grad_y * fst_dist_left  - fst_grad_y * ftu_dist_left ) /* / detJmb */;
-  Interval g_right  = ( ftu_grad_y * fst_dist_right - fst_grad_y * ftu_dist_right) /* / detJmb */;
-  Interval g_top    = (-ftu_grad_x * fst_dist_top   + fst_grad_x * ftu_dist_top  ) /* / detJmb */;
-  Interval g_bottom = (-ftu_grad_x * fst_dist_bot   + fst_grad_x * ftu_dist_bot  ) /* / detJmb */;
+  Interval g_left   = ( ftu_grad_y * fst_dist_left  - fst_grad_y * ftu_dist_left ) / detJmb;
+  Interval g_right  = ( ftu_grad_y * fst_dist_right - fst_grad_y * ftu_dist_right) / detJmb;
+  Interval g_top    = (-ftu_grad_x * fst_dist_top   + fst_grad_x * ftu_dist_top  ) / detJmb;
+  Interval g_bottom = (-ftu_grad_x * fst_dist_bot   + fst_grad_x * ftu_dist_bot  ) / detJmb;
 
 #if DEBUG
-  cout << "g_left"   << g_left   << "\n";
-  cout << "g_right"  << g_right  << "\n";
-  cout << "g_top"    << g_top    << "\n";
-  cout << "g_bottom" << g_bottom << "\n";
-
-  cout << -ftu_grad_x << " " << -ftu_grad_x * fst_dist_top << " " << fst_grad_x * ftu_dist_top << " "
-       << fst_grad_x  << " " << -ftu_grad_x * fst_dist_bot << " " << fst_grad_x * ftu_dist_bot << "\n";
+  cout << "g_left:   " << g_left   << "\n";
+  cout << "g_right:  " << g_right  << "\n";
+  cout << "g_top:    " << g_top    << "\n";
+  cout << "g_bottom: " << g_bottom << "\n";
+  
+  cout << -ftu_grad_x * fst_dist_top << " + " << fst_grad_x * ftu_dist_top << ", "
+       << -ftu_grad_x * fst_dist_bot << " + " << fst_grad_x * ftu_dist_bot << "\n";
 #endif
 
   return 0 > g_left && 0 < g_right && 0 > g_bottom && 0 < g_top;
