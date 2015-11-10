@@ -310,7 +310,7 @@ bool vor_box::cpv() const {
   double rad = radius();
   Interval b_x(center_[0] - rad, center_[0] + rad);
   Interval b_y(center_[1] - rad, center_[1] + rad);
-
+  
   for (int i = 0; i < features_.size(); i++) {
     for (int j = i + 1; j < features_.size(); j++) {
       Feature* f1 = features_[i];
@@ -327,10 +327,27 @@ bool vor_box::cpv() const {
 #endif
 
       // Compute 0 \notin (F_x(B))^2 + (F_y(B))^2
-      tuple<Interval, Interval> f1_grad = f1->box_dist_sq_grad(b_x, b_y);
-      tuple<Interval, Interval> f2_grad = f2->box_dist_sq_grad(b_x, b_y);
-      Interval F_grad_x = std::get<0>(f1_grad) - std::get<0>(f2_grad);
-      Interval F_grad_y = std::get<1>(f1_grad) - std::get<1>(f2_grad);
+      Corner* c1 = dynamic_cast<Corner*>(f1);
+      Corner* c2 = dynamic_cast<Corner*>(f2);
+
+      cout << *c1 << " " << *c2 << "\n";
+      if (features_.size() > 2) { cout << *dynamic_cast<Corner*>(features_[2]) << "\n"; }
+      // if (c1 == nullptr || c2 == nullptr) { 
+	tuple<Interval, Interval> f1_grad = f1->box_dist_sq_grad(b_x, b_y);
+      	tuple<Interval, Interval> f2_grad = f2->box_dist_sq_grad(b_x, b_y);      
+      	Interval F_grad_x(std::get<0>(f1_grad) - std::get<0>(f2_grad));
+      	Interval F_grad_y(std::get<1>(f1_grad) - std::get<1>(f2_grad));
+      // } else {
+      // tuple<Interval, Interval> grad = Corner::pair_dist_sq_grad(*c1, *c2, b_x, b_y);
+      // Interval F_grad_x(std::get<0>(grad));
+      // Interval F_grad_y(std::get<1>(grad));
+      // }
+
+      // cout << F_grad_x << "\n";
+      // cout << F_grad_y << "\n";
+      // cout << F_grad_x * F_grad_x << "\n";
+      // cout << F_grad_y * F_grad_y << "\n";
+      
       Interval F_grad_ip = F_grad_x * F_grad_x + F_grad_y * F_grad_y;
 
 #if DEBUG
@@ -340,7 +357,7 @@ bool vor_box::cpv() const {
       // cout << std::get<0>(f2_grad) << " " << std::get<1>(f2_grad) << "\n";
 #endif
 
-      if (0 < F_grad_ip.a_ || F_grad_ip.b_ < 0) {
+      if (!F_grad_ip.contains(0.0)) {
 	continue;
       }
 

@@ -18,8 +18,8 @@ double Corner::distance(const Point2d& point) {
 }
 
 Interval Corner::box_dist_sq(const Interval& int_x, const Interval& int_y) {
-  Interval p_x(position_[0], position_[0]);
-  Interval p_y(position_[1], position_[1]);
+  Interval p_x(position_[0]);
+  Interval p_y(position_[1]);
   Interval w_x = int_x - p_x;
   Interval w_y = int_y - p_y;
   return parent_->qm_b(w_x, w_y);
@@ -27,14 +27,32 @@ Interval Corner::box_dist_sq(const Interval& int_x, const Interval& int_y) {
 
 tuple<Interval, Interval> Corner::box_dist_sq_grad(const Interval& int_x, const Interval& int_y) {
   double* m = parent_->m();
-  Interval p_x(position_[0], position_[0]);
-  Interval p_y(position_[1], position_[1]);
+  Interval p_x(position_[0]);
+  Interval p_y(position_[1]);
   Interval w_x = int_x - p_x;
   Interval w_y = int_y - p_y;
-  // Interval i = 1.0 / parent_->qm_b(w_x, w_y).sqrt_i();
   Interval r_x = 2 * (m[0] * w_x + m[1] * w_y);
   Interval r_y = 2 * (m[1] * w_x + m[2] * w_y);
   return make_tuple(r_x, r_y);
+}
+
+Interval Corner::pair_box_dist_sq(const Corner& u, const Corner& v, const Interval& int_x, const Interval& int_y) {
+  Interval u_x(u.position()[0]);
+  Interval u_y(u.position()[1]);
+  Interval v_x(u.position()[0]);
+  Interval v_y(u.position()[1]);
+
+  return (u_x.sq() - v_x.sq()) + (u_y.sq() - v_y.sq())
+    - 2 * ((u_x - v_x) * int_x + (u_y - v_y) * int_y);
+}
+
+tuple<Interval, Interval> Corner::pair_dist_sq_grad(const Corner& u, const Corner& v, const Interval& int_x, const Interval& int_y) {
+  Interval u_x(u.position()[0]);
+  Interval u_y(u.position()[1]);
+  Interval v_x(v.position()[0]);
+  Interval v_y(v.position()[1]);
+
+  return make_tuple(Interval(-2 * (u_x - v_x)), Interval(-2 * (u_y - v_y)));
 }
 
 bool Corner::is_isolated() {

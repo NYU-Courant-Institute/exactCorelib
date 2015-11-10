@@ -79,7 +79,7 @@ void init_options(int argc, char* argv[]) {
   po::options_description desc("Voronoi diagram options");
   desc.add_options()
     ("help", "Print this help message.")
-    ("aeps", po::value<double>(&abs_eps)->default_value(1.0d / (1 << 3)), "Absolute epsilon.")
+    ("aeps", po::value<double>(&abs_eps)->default_value(1.0d / (1 << 30)), "Absolute epsilon.")
     ("geps", po::value<double>(&geom_eps)->default_value(1.0), "Geometric epsilon.")
     ("save", po::value<bool>(&save_image)->default_value(false), "Save an image of the construction.")
     ("display", po::value<bool>(&display_image)->default_value(true), "Display the consturcted Voronoi diagram.")
