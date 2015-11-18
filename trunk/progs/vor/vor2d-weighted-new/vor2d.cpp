@@ -380,7 +380,7 @@ void enqueue_children(vor_box* box) {
 #define MAX_OBJECTS_FOR_CONSTRUCTION 3
 #define MK_SCALE 2.0
 #define JC_SCALE 3.0
-#define INT_SCALE 3.0
+#define INT_SCALE 1.0
 void run() {
   // Subdivision phase.
   subdiv.push(tree->root());
@@ -419,7 +419,7 @@ void run() {
       	}
       }
 
-      if (false/*int_vert_boxes || !(box->cjc(JC_SCALE) &&  !(box->cmk(MK_SCALE))*/) {
+      if (false /* int_vert_boxes || !(box->cjc(JC_SCALE) &&  !(box->cmk(MK_SCALE)) */) {
       	enqueue_children(box);
       	continue;
       } else {

@@ -4,7 +4,7 @@
 #include "assert.h"
 #include <set>
 
-#define DEBUG 1
+#define DEBUG 0
 
 namespace vor2d {
 
@@ -330,17 +330,16 @@ bool vor_box::cpv() const {
       Corner* c1 = dynamic_cast<Corner*>(f1);
       Corner* c2 = dynamic_cast<Corner*>(f2);
 
-      cout << *c1 << " " << *c2 << "\n";
-      if (features_.size() > 2) { cout << *dynamic_cast<Corner*>(features_[2]) << "\n"; }
+      // if (features_.size() > 2) { cout << *dynamic_cast<Corner*>(features_[2]) << "\n"; }
       // if (c1 == nullptr || c2 == nullptr) { 
-	tuple<Interval, Interval> f1_grad = f1->box_dist_sq_grad(b_x, b_y);
-      	tuple<Interval, Interval> f2_grad = f2->box_dist_sq_grad(b_x, b_y);      
-      	Interval F_grad_x(std::get<0>(f1_grad) - std::get<0>(f2_grad));
-      	Interval F_grad_y(std::get<1>(f1_grad) - std::get<1>(f2_grad));
+	// tuple<Interval, Interval> f1_grad = f1->box_dist_sq_grad(b_x, b_y);
+      	// tuple<Interval, Interval> f2_grad = f2->box_dist_sq_grad(b_x, b_y);      
+      	// Interval F_grad_x(std::get<0>(f1_grad) - std::get<0>(f2_grad));
+      	// Interval F_grad_y(std::get<1>(f1_grad) - std::get<1>(f2_grad));
       // } else {
-      // tuple<Interval, Interval> grad = Corner::pair_dist_sq_grad(*c1, *c2, b_x, b_y);
-      // Interval F_grad_x(std::get<0>(grad));
-      // Interval F_grad_y(std::get<1>(grad));
+      tuple<Interval, Interval> grad = Corner::pair_dist_sq_grad(*c1, *c2, b_x, b_y);
+      Interval F_grad_x(std::get<0>(grad));
+      Interval F_grad_y(std::get<1>(grad));
       // }
 
       // cout << F_grad_x << "\n";
