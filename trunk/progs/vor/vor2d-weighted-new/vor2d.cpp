@@ -6,6 +6,7 @@
 #include "Graphics.h"
 #include "Object.h"
 #include "Point.h"
+// #include "CORE.h"
 
 #include <stdio.h>
 #include <fstream>
@@ -419,7 +420,7 @@ void run() {
       	}
       }
 
-      if (false /* int_vert_boxes || !(box->cjc(JC_SCALE) &&  !(box->cmk(MK_SCALE)) */) {
+      if (int_vert_boxes || !(box->cjc(JC_SCALE) && !(box->cmk(MK_SCALE)))) {
       	enqueue_children(box);
       	continue;
       } else {
