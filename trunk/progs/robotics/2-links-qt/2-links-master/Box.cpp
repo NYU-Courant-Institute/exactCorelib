@@ -779,6 +779,9 @@ bool Box::split(double epsilon, vector<Box*>& chldn) {
 Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 //assert(walls.size());
 
+    int i = 1, f1 = 0, f2 = -1;
+    bool dupWall = false;
+
     Wall* nearestWall;
     list<Wall*>::iterator iterW = walls.begin();
 //	cout<<"checkChildStatus 711"<<endl;
@@ -795,50 +798,155 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
         if (dist < mindistW) {
             mindistW = dist;
             nearestWall = *iterW;
+            f1 = i;
         }
+        ++i;
     }
-//	cout<<"checkChildStatus 722"<<endl;
+
+    Wall* nearestWall2;
+    i = 0;
+    iterW = walls.begin();
+    for (; iterW != walls.end(); ++iterW) {
+        Wall* w = *iterW;
+        double dist = w->distance(x, y);
+        //fprintf(stderr, "walls (%lf %lf) (%lf %lf) %lf %d %d\n", w->src->x, w->src->y, w->dst->x, w->dst->y, dist, f1, i);
+        if (fabs(mindistW-dist) < 1e-10 && i != f1) {
+            nearestWall2 = *iterW;
+            f2 = i;
+            dupWall = true;
+        }
+        ++i;
+    }
+    //fprintf(stderr, "f1 %d f2 %d\n", f1, f2);
+
+    int c1 = 0, c2 = -1;
+    bool dupCorner = false;
+
     double mindistC = mindistW + 1; //mindistC may not exist, so init to a bigger number
     Corner* nearestCorner = NULL;
+    Corner* nearestCorner2 = NULL;
     if (corners.size()) {
         list<Corner*>::iterator iterC = corners.begin();
         mindistC = (*iterC)->distance(x, y);
         nearestCorner = *iterC;
         ++iterC;
+        i = 1;
         for (; iterC != corners.end(); ++iterC) {
             Corner* c = *iterC;
             double dist = c->distance(x, y);
             if (dist < mindistC) {
                 mindistC = dist;
                 nearestCorner = *iterC;
+                c1 = i;
             }
+            ++i;
         }
+
+        i = 0;
+        iterC = corners.begin();
+        for (; iterC != corners.end(); ++iterC) {
+            Corner* c = *iterC;
+            double dist = c->distance(x, y);
+            //fprintf(stderr, "corners (%lf %lf) %lf %d %d\n", c->x, c->y, dist, c1, i);
+            if (fabs(mindistC-dist) < 1e-10 && i != c1) {
+                nearestCorner2 = *iterC;
+                c2 = i;
+                dupCorner = true;
+            }
+            ++i;
+        }
+        //fprintf(stderr, "c1 %d c2 %d\n", c1, c2);
     }
+
+    if (dupWall) {
+        //fprintf(stderr, "find dup wall\n");
+
+        //if (nearestWall->src->x == nearestWall2->src->x && nearestWall->src->y == nearestWall2->src->y) {
+        //    nearestWall2->src->x = nearestWall->src->y;
+        //    nearestWall2->src->y = nearestWall->src->x;
+        //}
+
+        //fprintf(stderr, "near wall 1 (%lf %lf) (%lf %lf) %d\n", nearestWall->src->x, nearestWall->src->y, nearestWall->dst->x, nearestWall->dst->y, nearestWall->isRight(x, y));
+        //fprintf(stderr, "near wall 2 (%lf %lf) (%lf %lf) %d\n", nearestWall2->src->x, nearestWall2->src->y, nearestWall2->dst->x, nearestWall2->dst->y, nearestWall2->isRight(x, y));
+    }
+    if (dupCorner) {
+        //fprintf(stderr, "find dup corner\n");
+
+        //fprintf(stderr, "near corner 1 (%lf %lf) %d\n", nearestCorner->x, nearestCorner->y, nearestCorner->isConvex());
+        //fprintf(stderr, "near corner 2 (%lf %lf) %d\n", nearestCorner2->x, nearestCorner2->y, nearestCorner2->isConvex());
+    }
+
 
     Status tempStatus = UNKNOWN;
 //	cout<<"checkChildStatus 741"<<endl;
 //nearest feature is a wall
     if (mindistW < mindistC) {
 //		std::cout << "checkChildStatus 686" << endl;
-//		std::cout << "checkChildStatus nearestWall " << nearestWall->src->x
-//				<< " " << nearestWall->src->y << " " << nearestWall->dst->x
-//				<< " " << nearestWall->dst->y << endl;
-        if (nearestWall->isRight(x, y) && mindistW > r0 + rB / 2) {
-//			std::cout << "checkChildStatus 688" << endl;
-            tempStatus = FREE;
-            return tempStatus;
-        } else if (!nearestWall->isRight(x, y) && mindistW > rB / 2) {
-            tempStatus = STUCK;
-            return tempStatus;
-        }
-        if (!nearestWall->isRight(x + width / 2, y + width / 2)
-                && !nearestWall->isRight(x - width / 2, y + width / 2)
-                && !nearestWall->isRight(x + width / 2, y - width / 2)
-                && !nearestWall->isRight(x - width / 2, y - width / 2)) {
-            tempStatus = STUCK;
-            return tempStatus;
-        }
+        //fprintf(stderr, "near wall 1 (%lf %lf) (%lf %lf)\n", nearestWall->src->x, nearestWall->src->y, nearestWall->dst->x, nearestWall->dst->y);
 
+        if (!dupWall) {
+            if (nearestWall->isRight(x, y) && mindistW > r0 + rB / 2) {
+                tempStatus = FREE;
+
+                //fprintf(stderr, "\t\t\t\t wall FREE\n");
+
+                return tempStatus;
+            } else if (!nearestWall->isRight(x, y) && mindistW > rB / 2) {
+                tempStatus = STUCK;
+
+                //fprintf(stderr, "\t\t\t\t wall STUCK 1\n");
+
+                return tempStatus;
+            } else if (!nearestWall->isRight(x + width / 2, y + width / 2)
+                    && !nearestWall->isRight(x - width / 2, y + width / 2)
+                    && !nearestWall->isRight(x + width / 2, y - width / 2)
+                    && !nearestWall->isRight(x - width / 2, y - width / 2)) {
+                tempStatus = STUCK;
+
+                //fprintf(stderr, "\t\t\t\t wall STUCK 2\n");
+
+                return tempStatus;
+            }
+        } else {
+
+            int status1 = UNKNOWN, status2 = UNKNOWN;
+
+            if (nearestWall->isRight(x, y) && mindistW > r0 + rB / 2) {
+                status1 = FREE;
+            } else if (!nearestWall->isRight(x, y) && mindistW > rB / 2) {
+                status1 = STUCK;
+            } else if (!nearestWall->isRight(x + width / 2, y + width / 2)
+                    && !nearestWall->isRight(x - width / 2, y + width / 2)
+                    && !nearestWall->isRight(x + width / 2, y - width / 2)
+                    && !nearestWall->isRight(x - width / 2, y - width / 2)) {
+                status1 = STUCK;
+            }
+
+            if (nearestWall2->isRight(x, y) && mindistW > r0 + rB / 2) {
+                status2 = FREE;
+            } else if (!nearestWall2->isRight(x, y) && mindistW > rB / 2) {
+                status2 = STUCK;
+            } else if (!nearestWall2->isRight(x + width / 2, y + width / 2)
+                    && !nearestWall2->isRight(x - width / 2, y + width / 2)
+                    && !nearestWall2->isRight(x + width / 2, y - width / 2)
+                    && !nearestWall2->isRight(x - width / 2, y - width / 2)) {
+                status2 = STUCK;
+            }
+
+            if ((status1 == FREE || status2 == FREE) && (status1 != UNKNOWN && status2 != UNKNOWN)) {
+                tempStatus = FREE;
+
+                //fprintf(stderr, "\t\t\t\t wall FREE dup\n");
+
+                return tempStatus;
+            } else if (status1 == STUCK && status2 == STUCK){
+                tempStatus = STUCK;
+
+                //fprintf(stderr, "\t\t\t\t wall STUCK dup\n");
+
+                return tempStatus;
+            }
+        }
     }
 //otherwise check the corner's convexity
 //if convex, out; if concave, in
@@ -849,11 +957,36 @@ Box::Status Box::checkChildStatus(double x, double y, int width, bool small) {
 //		if (nearestCorner->isConvex() && mindistC > r0+ rB) {
 //			tempStatus = FREE;
 //		}
+        if (!dupCorner) {
+            if (nearestCorner->isConvex() && mindistC > r0 + rB / 2) {
+                tempStatus = FREE;
+                //fprintf(stderr, "\t\t\t\t corner FREE\n");
+            } else if (!nearestCorner->isConvex() && mindistC > rB / 2) {
+                tempStatus = STUCK;
+                //fprintf(stderr, "\t\t\t\t corner STUCK\n");
+            }
+        } else {
+            int status1 = UNKNOWN, status2 = UNKNOWN;
 
-        if (nearestCorner->isConvex() && mindistC > r0 + rB / 2) {
-            tempStatus = FREE;
-        } else if (!nearestCorner->isConvex() && mindistC > rB / 2) {
-            tempStatus = STUCK;
+            if (nearestCorner->isConvex() && mindistC > r0 + rB / 2) {
+                status1 = FREE;
+            } else if (!nearestCorner->isConvex() && mindistC > rB / 2) {
+                status1 = STUCK;
+            }
+
+            if (nearestCorner2->isConvex() && mindistC > r0 + rB / 2) {
+                status2 = FREE;
+            } else if (!nearestCorner2->isConvex() && mindistC > rB / 2) {
+                status2 = STUCK;
+            }
+
+            if ((status1 == FREE || status2 == FREE) && (status1 != UNKNOWN && status2 != UNKNOWN)) {
+                tempStatus = FREE;
+                //fprintf(stderr, "\t\t\t\t corner FREE dup\n");
+            } else if (status1 == STUCK && status2 == STUCK){
+                tempStatus = STUCK;
+                //fprintf(stderr, "\t\t\t\t corner STUCK dup\n");
+            }
         }
 
 //		else if(!nearestCorner->isConvex() && mindistC > rB){
