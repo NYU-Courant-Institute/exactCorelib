@@ -17,4 +17,5 @@
 #include "geom2d/line2d.cpp"
 #include "geom2d/segment2d.cpp"
 #include "geom2d/circle2d.cpp"
+#include "geom2d/triangle2d.cpp"
 
