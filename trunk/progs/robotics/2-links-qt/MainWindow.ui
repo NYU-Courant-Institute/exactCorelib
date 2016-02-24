@@ -342,9 +342,9 @@
    <widget class="QWidget" name="horizontalLayoutWidget_9">
     <property name="geometry">
      <rect>
-      <x>980</x>
+      <x>1000</x>
       <y>30</y>
-      <width>131</width>
+      <width>111</width>
       <height>31</height>
      </rect>
     </property>
@@ -643,20 +643,26 @@
      <rect>
       <x>740</x>
       <y>0</y>
-      <width>231</width>
+      <width>371</width>
       <height>31</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_16">
      <item>
       <widget class="QLabel" name="label_20">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Example Name &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="egFile"/>
+      <widget class="QComboBox" name="comboBox"/>
      </item>
     </layout>
    </widget>

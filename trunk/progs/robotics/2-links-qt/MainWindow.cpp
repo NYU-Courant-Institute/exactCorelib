@@ -2,6 +2,8 @@
 #include "ui_MainWindow.h"
 using namespace std;
 
+extern char egNameList[200][200];
+extern int numEg;
 extern string egName;
 extern string fileName;
 
@@ -43,7 +45,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->egFile->setText(QString::fromStdString(egName));
+    for(int i=0;i<numEg;++i){
+        ui->comboBox->addItem(egNameList[i]);
+    }
+
+    //ui->egFile->setText(QString::fromStdString(egName));
     ui->inputFile->setText(QString::fromStdString(fileName.substr(0,fileName.length()-4)));
 
     ui->aX->setValue(alpha[0]);
@@ -144,7 +150,8 @@ void MainWindow::on_run_clicked()
 {
     char egPre[200], egCur[200];
     sprintf(egPre, "%s", egName.c_str());
-    sprintf(egCur, "%s", ui->egFile->text().toStdString().c_str());
+    //sprintf(egCur, "%s", ui->egFile->text().toStdString().c_str());
+    sprintf(egCur, "%s", ui->comboBox->currentText().toStdString().c_str());
     if (strcmp(egPre, egCur) == 0) {
         alpha[0]=ui->aX->value();
         alpha[1]=ui->aY->value();
@@ -164,7 +171,8 @@ void MainWindow::on_run_clicked()
 
         hideBoxBoundary=ui->boundary->isChecked();
     } else {
-        egName=ui->egFile->text().toStdString();
+        //egName=ui->egFile->text().toStdString();
+        egName = ui->comboBox->currentText().toStdString();
         parseExampleFile();
 
         ui->inputFile->setText(QString::fromStdString(fileName.substr(0,fileName.length()-4)));

@@ -121,7 +121,10 @@ using namespace std;
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////
-string egName("SoCG_2links_eg1");
+string egName("SoCG_2links_eg1.eg");
+char egNameList[200][200];
+int numEg = 0;
+
 
 double alpha[4] = { 60, 350, 330, 140 };		// start configuration
 double beta[4] = { 300, 60, 90, 30 };		// goal configuration
@@ -213,7 +216,8 @@ int firstPolygonClockwise = 0;
 // External Routines ========================================
 //////////////////////////////////////////////////////////////////////////////////
 void renderScene(void);
-void parseExampleFile() ;
+void parseExampleList();
+void parseExampleFile();
 void parseConfigFile(Box*);
 //void idle();
 void replaySplitting();
@@ -524,6 +528,7 @@ int main(int argc, char* argv[]) {
     //testing
 
 
+    parseExampleList();
     window = new MainWindow();
 
     parseExampleFile();
@@ -730,9 +735,12 @@ void run() {
     mw_out << ">>\n";
     mw_out << ">>      ----->>  Time used: " << t.getElapsedTimeInMilliSec()
             << " ms\n" ;
+    mw_out << ">>      ----->>  Expansion steps: ";
+    mw_out << (int) expansions.size()-1;
+    mw_out << "\n";
     mw_out << ">>\n";
-// mw_out << ">>      ----->>  Qtype: " << QType << "\n";
-    mw_out << ">>      ----->>  Qtype: ";
+// mw_out << ">>      ----->>  Search Strategy: " << QType << "\n";
+    mw_out << ">>      ----->>  Search Strategy: ";
     switch (QType) {
     case 0:
         mw_out << "Random Strategy\n";
@@ -786,9 +794,6 @@ void run() {
     ssout;
     ssout << ssoutLastTime.str();
     freeCount = stuckCount = mixCount = mixSmallCount = 0;
-    mw_out<<"This took ";
-    mw_out<<(int) expansions.size()-1;
-    mw_out<<" steps.\n";
     mw_out << "############## END of RUN #########\n";
 
 ////	renderReady = false;
@@ -844,7 +849,31 @@ int skip_backslash_new_line(std::istream & in) {
     return c;
 } //skip_backslash_new_line
 
+
 char egPath[200], tmp[200];
+void parseExampleList(){
+    sprintf(egPath, "ls -R > tmpList");
+    system(egPath);
+
+    sprintf(egPath, "tmpList");
+    FILE *fptr = fopen(egPath, "r");
+    if(fptr == NULL) return ;
+    while(fgets(tmp, 200, fptr) != NULL){
+        char *sptr = strtok(tmp, " \n");
+        while(sptr != NULL){
+            int len = strlen(sptr);
+            if(len > 3 && sptr[len-1] == 'g' && sptr[len-2] == 'e' && sptr[len-3] == '.'){
+                strcpy(egNameList[numEg], sptr);
+                ++numEg;
+            }
+            sptr = strtok(NULL, " \n");
+        }
+    }
+
+    sprintf(egPath, "rm -rf tmpList");
+    system(egPath);
+}
+
 void parseExampleFile() {
 
     sprintf(egPath, "%s/%s", inputDir.c_str(), egName.c_str());

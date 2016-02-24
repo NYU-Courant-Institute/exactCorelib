@@ -309,47 +309,48 @@ void Display::paintGL() {
 double theta1;
 double theta2;
 void Display::drawRobot(Box* b){
-    double degToRad=3.1415/180;
-//    genLine( 4, b->x, b->y,
-//            b->x + L1*cos( b->xi[0]*degToRad) , b->y + L1*sin(b->xi[0]*degToRad)  ,
-//            1,0,0,true  );
 
-//    genLine( 4, b->x, b->y,
-//            b->x + L2*cos(b->xi[2]*degToRad) ,  b->y+ L2*sin(b->xi[2]*degToRad)  ,
-//            0,0,0,true  );
-//    genFilledCircle(r0,b->x,b->y,1,1,1);
+    //genLine( 4, b->x, b->y,
+    //        b->x + L1*cos((b->xi[0]/180.0f)*PI), b->y + L1*sin((b->xi[0]/180.0f)*PI)  ,
+    //        1,0,0,true);
+    //genLine( 4, b->x, b->y,
+    //        b->x + L2*cos((b->xi[2]/180.0f)*PI),  b->y+ L2*sin((b->xi[2]/180.0f)*PI)  ,
+    //        0,0,0,true  );
+    //genFilledCircle(r0,b->x,b->y,1,1,1);
 
-    theta1=0.5* (b->xi[0]+b->xi[1]);
-    if(b->xi[0]>b->xi[1]){
-        if(theta1>180){
-            theta1-=180;
+    theta1 = 0.5*(b->xi[Box::LOWER1] + b->xi[Box::UPPER1]);
+    if(b->xi[Box::LOWER1] > b->xi[Box::UPPER1]){
+        if(theta1 >= 180){
+            theta1 -= 180;
         }
         else{
-            theta1+=180;
-        }
-    }
-    theta2=0.5* (b->xi[2]+b->xi[3]);
-    if(b->xi[2]>b->xi[3]){
-        if(theta2>180){
-            theta2-=180;
-        }
-        else{
-            theta2+=180;
+            theta1 += 180;
         }
     }
 
+    theta2 = 0.5*(b->xi[Box::LOWER2] + b->xi[Box::UPPER2]);
+    if(b->xi[Box::LOWER2] > b->xi[Box::UPPER2]){
+        if(theta2 >= 180){
+            theta2 -= 180;
+        }
+        else{
+            theta2 += 180;
+        }
+    }
 
+    //if(b->xi[Box::LOWER1] > b->xi[Box::UPPER1])
+        fprintf(stderr, "t1  %lf %lf   %lf   %lf %lf\n", b->xi[Box::LOWER1], b->xi[Box::UPPER1], theta1, cos(theta1/180.0f*PI), sin(theta1/180.0f*PI));
+    //if(b->xi[Box::LOWER2] > b->xi[Box::UPPER2])
+    //    fprintf(stderr, "t2  %lf %lf %lf\n", b->xi[Box::LOWER2], b->xi[Box::UPPER2], theta2);
 
     genLine( 4, b->x, b->y,
-            b->x + L1*cos(theta1*degToRad) , b->y + L1*sin(theta1*degToRad)  ,
-            1,0,0,true  );
-
+            b->x + L1*cos(theta1/180.0f*PI) , b->y + L1*sin(theta1/180.0f*PI)  ,
+            1,0,0,true);
     genLine( 4, b->x, b->y,
-            b->x + L2*cos(theta2*degToRad) ,  b->y+ L2*sin(theta2*degToRad)  ,
-            0,0,0,true  );
+            b->x + L2*cos(theta2/180.0f*PI) , b->y + L2*sin(theta2/180.0f*PI)  ,
+            0,0,0,true);
+
     genFilledCircle(r0,b->x,b->y,1,1,1);
-
-
 }
 
 
@@ -608,32 +609,65 @@ void Display::genQuad(Box* b, double epsilon)
 
     // Get color based on Box's Status
     double red, green, blue;
+
     switch(b->status)
     {
         case Box::FREE:
-            red = 0.25;
-            green = 1.0;
-            blue = 0.25;
+            // color is dark green, representing completed free angular ranges for both links
+            // Note: the angular range of link i is the full circle iff LOWERi=0 and UPPERi=360 (i=1 or 2).
+            if (b->xi[Box::LOWER1] != 0 || b->xi[Box::UPPER1] != 360 || b->xi[Box::LOWER2] != 0 || b->xi[Box::UPPER2] != 360) {
+                red = 0x66 / 255.0;
+                green = 0xCC / 255.0;
+                blue = 0x99 / 255.0;
+            }
+            // light green
+            else {
+                red = 0x33 / 255.0;
+                green = 0x99 / 255.0;
+                blue = 0x33 / 255.0;
+            }
             break;
-        case Box::STUCK:
-            red = 1;
-            green = 0.25;
-            blue = 0.25;
+        case Box::STUCK:  //color is red
+            red = 0xCC/255.0;
+            green = 0x33/255.0;
+            blue = 0x66/255.0;
             break;
-        case Box::MIXED:
-            if (b->height < epsilon || b->width < epsilon){
-                red = 0.5;
-                green = 0.5;
-                blue = 0.5;
-            } else {
-                red = 1;
-                green = 1;
-                blue = 0.25;
+        case Box::MIXED: //color is yellow (if box is epsilon-large)
+            red = 0xFF / 255.0;
+            green = 0xFF / 255.0;
+            blue = 0x66 / 255.0;
+            if (b->height < 2 * epsilon || b->width < 2 * epsilon) { // color is gray (if box is epsilon-small)
+                red = 0x99 / 255.0;
+                green = 0x99 / 255.0;
+                blue = 0x99 / 255.0;
             }
             break;
         case Box::UNKNOWN:
             (*window) << "UNKNOWN box status in genQuad\n";
     }
+
+    /*
+    switch(b->status)
+    {
+        case Box::FREE:
+            red = 0x00 / 255.0;
+            green = 0xFF / 255.0;
+            blue = 0x00 / 255.0;
+            break;
+        case Box::STUCK:
+            red = 0xFF/255.0;
+            green = 0x00/255.0;
+            blue = 0x00/255.0;
+            break;
+        case Box::MIXED:
+            red = 0xFF / 255.0;
+            green = 0xFF / 255.0;
+            blue = 0.0 / 255.0;
+            break;
+        case Box::UNKNOWN:
+            (*window) << "UNKNOWN box status in genQuad\n";
+    }
+    */
 
     // 1st Corner: lower left
     quads.push_back(b->x - b->width / 2);

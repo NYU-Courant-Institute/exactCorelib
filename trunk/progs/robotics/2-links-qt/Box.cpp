@@ -526,8 +526,8 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
     l2ForbidenZone = calcZone(l2AngleRanges);
 //	std::cout << "l2ForbidenZone.size= " << l2ForbidenZone.size() << endl;
     l1SafeZone = calcOppoZone(l1ForbidenZone);
-//	std::cout << "l1SafeZone[0]= " << l1SafeZone[0].lowerBound << " "
-//			<< l1SafeZone[0].upperBound << endl;
+    //std::cout << "              l1SafeZone[0]= " << l1SafeZone[0].lowerBound << " "
+    //        << l1SafeZone[0].upperBound << endl;
     l2SafeZone = calcOppoZone(l2ForbidenZone);
 //	std::cout << "l1SafeZone[0]= " << l1SafeZone[0].lowerBound << " "
 //				<< l1SafeZone[0].upperBound << endl;

@@ -199,6 +199,7 @@ public:
     // xi[1] : upper bound angle of link-1
     // xi[2] : lower bound angle of link-2
     // xi[3] : upper bound angle of link-2
+    enum {LOWER1, UPPER1, LOWER2, UPPER2};
     double xi[4];
 
     static int counter;	// time of expansion (used in BFS strategy)
