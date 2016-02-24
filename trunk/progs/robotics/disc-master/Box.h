@@ -225,13 +225,13 @@ public:
 	{
 		//assert(walls.size());
 
-        bool dup = false;
+        bool dupW = false;
         int f = -1;
 
+        double mindistW = 1e30;
         Wall* nearestWall = NULL;
         Wall* nearestWall2 = NULL;
-		list<Wall*>::iterator iterW = walls.begin();
-        double mindistW = 1e30;
+        list<Wall*>::iterator iterW = walls.begin();
         for (int i=0; iterW != walls.end(); ++iterW)
 		{
 			Wall* w = *iterW;
@@ -252,20 +252,21 @@ public:
             if (fabs(dist-mindistW) < 1e-10 && i != f)
             {
                 nearestWall2 = *iterW;
-                dup = true;
+                dupW = true;
             }
             ++i;
         }
 
-		double mindistC = mindistW +1; //mindistC may not exist, so init to a bigger number
+        bool dupC = false;
+        f = -1;
+
+        double mindistC = 1e30; //mindistC may not exist, so init to a bigger number
 		Corner* nearestCorner = NULL;
+        Corner* nearestCorner2 = NULL;
 		if (corners.size())
 		{			
 			list<Corner*>::iterator iterC = corners.begin();
-			mindistC = (*iterC)->distance(x, y);
-			nearestCorner = *iterC;
-			++iterC;
-			for (; iterC != corners.end(); ++iterC)
+            for (int i=0; iterC != corners.end(); ++iterC)
 			{
 				Corner* c = *iterC;
 				double dist = c->distance(x, y);
@@ -273,27 +274,42 @@ public:
 				{
 					mindistC = dist;
 					nearestCorner = *iterC;
+                    f = i;
 				}
+                ++i;
 			}
+
+            corners.begin();
+            for (int i=0; iterC != corners.end(); ++iterC)
+            {
+                Corner* c = *iterC;
+                double dist = c->distance(x, y);
+                if (fabs(dist-mindistC) < 1e-10 && i != f)
+                {
+                    nearestCorner2 = *iterC;
+                    dupC = true;
+                }
+                ++i;
+            }
 		}
 
 		//nearest feature is a wall
 		if (mindistW < mindistC)
 		{
-            if (dup)
-            {
-                if (nearestWall->isRight(x, y) || nearestWall2->isRight(x, y))
-                {
-                    return FREE;
-                }
-            }
-            else
-            {
+            //if (dupW)
+            //{
+            //    if (nearestWall->isRight(x, y) || nearestWall2->isRight(x, y))
+            //    {
+            //        return FREE;
+            //    }
+            //}
+            //else
+            //{
                 if (nearestWall->isRight(x, y))
                 {
                     return FREE;
                 }
-            }
+            //}
 		}		
 		//otherwise check the corner's convexity
 		//if convex, out; if concave, in
@@ -301,10 +317,19 @@ public:
 		//only need to take care of the corner
 		else
 		{
-			if (nearestCorner->isConvex())
-			{
-                return FREE;
-			}
+            //if (dupC)
+            //{
+            //    if (nearestCorner->isConvex() || nearestCorner2->isConvex())
+            //    {
+            //        return FREE;
+            //    }
+            //}
+            //else{
+                if (nearestCorner->isConvex())
+                {
+                    return FREE;
+                }
+            //}
 		}
 
         *controlWin<<"Box at "<<this->x<<" "<<this->y<<" is stuck\n";
