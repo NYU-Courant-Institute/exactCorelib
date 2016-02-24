@@ -109,12 +109,14 @@ public:
 				status = STUCK;
 				return;
 			}
-			else if( c->distance(this->x, this->y) <= outerDomain ) {
-				status = MIXED;
-				++it;
+
+			// Chee & Tom: Feb 2016 Put this mixed decision afterwards
+			// if this is greater than the outer domain or not in zone, erase it 
+			if( c->distance(this->x, this->y) > outerDomain || !c->intersectZone(this) ) {
+				it = corners.erase(it);
 			}
 			else {
-				it = corners.erase(it);
+				++it;
 			}
 		}
 
@@ -127,42 +129,45 @@ public:
 				status = STUCK;
 				return;				
 			} 
-			else if (distWall <= outerDomain)
-			{
-				status = MIXED;
-				++it;
-			}
-			else
+			
+			if (distWall > outerDomain || !w->intersectZone(this) )
 			{
 				it = walls.erase(it);
 			}
+			else {
+				++it;
+			}
 		}
 
+		// Chee & Tom: Feb 2016 
+		// empty set
+		// 1 or 2 feature
+		// 		if (rB < sep(m_B, f))
+		// 			check status because it is far enough
 		if (corners.size() == 0 && walls.size() == 0)
 		{
 			if (!pParent)
 			{
-				status = FREE;
+				status = MIXED;
 			} 
 			else
 			{
 				status = pParent->checkChildStatus(this->x, this->y);
 			}			
 		}
-		
 	}
 
 
-	//find the nearest feature, and check
+	// find the nearest feature, and check
 	Status checkChildStatus(double x, double y)
 	{
 		//assert(walls.size());
 
-		Wall* nearestWall;
+		// warning maybe remove DOUBLE_MAX
+		double mindistW = DOUBLE_MAX;
+		Wall* nearestWall = NULL;
+
 		list<Wall*>::iterator iterW = walls.begin();
-		double mindistW = (*iterW)->distance(x, y);
-		nearestWall = *iterW;
-		++iterW;
 		for (; iterW != walls.end(); ++iterW)
 		{
 			Wall* w = *iterW;

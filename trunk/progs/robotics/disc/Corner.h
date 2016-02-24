@@ -20,4 +20,5 @@ public:
 	}
 
 	bool isConvex();
+	bool intersectZone();
 };
