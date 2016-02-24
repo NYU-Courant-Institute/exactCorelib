@@ -1,5 +1,5 @@
-# 2-links Motion Planning example 1
-# zigzagrotation input
+# 2-links Motion Planning example for SoCG
+# input2 input
 
 interactive = 0		# 0=interactive, >0 is non-interactive
 
@@ -18,7 +18,7 @@ len1 = 65		# link1 length
 len2 = 85		# link2 length
 
 inputDir = inputs	# where to find input files
-fileName = input2a.txt	# input environment file
+fileName = input2.txt	# input environment file
 
 boxWidth = 512		# initial configuration box size
 boxHeight = 512

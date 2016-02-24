@@ -1,4 +1,4 @@
-# 2-links Motion Planning example 3
+# 2-links Motion Planning example for SoCG
 # bugtrap input
 
 interactive = 0		# 0=interactive, >0 is non-interactive
