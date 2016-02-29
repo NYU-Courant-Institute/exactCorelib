@@ -14,7 +14,7 @@ goalTheta2 = 200		# in degrees
 
 epsilon = 4		# resolution parameter
 
-len1 = 55		# link1 lengtha
+len1 = 30		# link1 lengtha
 len2 = 80		# link2 length
 
 inputDir = inputs	# where to find input files

@@ -1,6 +1,5 @@
 # 2-links Motion Planning example for SoCG
 # 2 chambers input
-# There is a path
 
 interactive = 0		# 0=interactive, >0 is non-interactive
 

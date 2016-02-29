@@ -281,7 +281,6 @@ void Display::paintGL() {
         if(inc==0) lim=lines.size();
         pSize=PATH.size();
         if(inc<pSize){
-
             drawRobot(PATH.at(pSize-inc-1));
             drawLines();
             drawCircles();
@@ -298,10 +297,7 @@ void Display::paintGL() {
             runAnim=false;
             genScene();
             update();
-
-
         }
-
     }
 }
 
