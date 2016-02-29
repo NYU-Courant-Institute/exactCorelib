@@ -1,24 +1,24 @@
 # 2-links Motion Planning example for SoCG
-# zigzagrotation input
+# bugtrap input
 
 interactive = 0		# 0=interactive, >0 is non-interactive
 
-startX = 216		# start configuration
-startY = 297
-startTheta1 = 115	# in degrees
-startTheta2 = 155	# in degrees
-goalX = 210		# goal configuration
-goalY = 220
-goalTheta1 = 260		# in degrees
-goalTheta2 = 200		# in degrees
+startX = 200		# start configuration
+startY = 320
+startTheta1 = 30	# in degrees
+startTheta2 = 60	# in degrees
+goalX = 30		# goal configuration
+goalY = 30
+goalTheta1 = 90		# in degrees
+goalTheta2 = 120		# in degrees
 
-epsilon = 4		# resolution parameter
+epsilon = 2		# resolution parameter
 
-len1 = 55		# link1 lengtha
-len2 = 80		# link2 length
+len1 = 45		# link1 lengtha
+len2 = 79		# link2 length
 
 inputDir = inputs	# where to find input files
-fileName = zigzagrotation.txt	# input environment file
+fileName = bugtrap.txt	# input environment file
 
 boxWidth = 512		# initial configuration box size
 boxHeight = 512
@@ -26,9 +26,9 @@ boxHeight = 512
 windowPosX = 320	# initial Window position
 windowPosY = 20	
 
-Qtype = 2		# type of priority queue
+Qtype = 0		# type of priority queue
 			#  (0=random, 1=BFS, 2=Greedy Best First, 3=Dist+size, 4=Vor?) 
-seed = 2		# seed for random
+seed = 11		# seed for random
 step = 0		# number of steps to run
 			#	(step=0 means run to completion)
 xtrans = 0		# x-translation of input file

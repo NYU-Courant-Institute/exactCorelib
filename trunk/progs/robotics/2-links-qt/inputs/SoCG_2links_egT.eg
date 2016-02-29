@@ -1,24 +1,24 @@
 # 2-links Motion Planning example for SoCG
-# zigzagrotation input
+# T-room input
 
 interactive = 0		# 0=interactive, >0 is non-interactive
 
-startX = 216		# start configuration
-startY = 297
-startTheta1 = 115	# in degrees
-startTheta2 = 155	# in degrees
-goalX = 210		# goal configuration
-goalY = 220
-goalTheta1 = 260		# in degrees
-goalTheta2 = 200		# in degrees
+startX = 125		# start configuration
+startY = 115
+startTheta1 = 355	# in degrees
+startTheta2 = 5	# in degrees
+goalX = 230		# goal configuration
+goalY = 470
+goalTheta1 = 275		# in degrees
+goalTheta2 = 265		# in degrees
 
 epsilon = 4		# resolution parameter
 
-len1 = 55		# link1 lengtha
-len2 = 80		# link2 length
+len1 = 35		# link1 length
+len2 = 30		# link2 length
 
 inputDir = inputs	# where to find input files
-fileName = zigzagrotation.txt	# input environment file
+fileName = T-room.txt	# input environment file
 
 boxWidth = 512		# initial configuration box size
 boxHeight = 512
@@ -32,8 +32,8 @@ seed = 2		# seed for random
 step = 0		# number of steps to run
 			#	(step=0 means run to completion)
 xtrans = 0		# x-translation of input file
-ytrans = 0		# y-translation of input file
-scale = 1		# scaling of input file
+ytrans = -95		# y-translation of input file
+scale = 0.08		# scaling of input file
 
 verbose = 0		# if true, display statistics
 # title = 2-links Motion Planning		# Title of control panel
