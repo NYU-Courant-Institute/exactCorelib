@@ -4,6 +4,10 @@
 #include <iostream>
 #include "Polygon.h"
 #include "QuadTree.h"
+
+
+
+
 //
 //#define OVERRIDE_NEW_DELETE
 //#include "MemProCpp\MemPro.cpp"
