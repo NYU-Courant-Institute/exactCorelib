@@ -1,0 +1,17 @@
+TODO:
+
+(1) More efficient
+
+(2) Allow command line spec of the strategy (e.g. Astar is
+	very fast for some difficult examples, and we do not want random!)
+
+
+(3) Something is not right with prm_bug.
+
+	Our angular subdivision is terminated by an arbitrary 0.014 constant.
+	Theory says it should be epsilon/r0.
+	But this does not work either.
+
+	Cong thinks splitAngle() is to blame...
+	
+
