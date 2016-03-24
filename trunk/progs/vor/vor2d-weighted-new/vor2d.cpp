@@ -167,7 +167,7 @@ void display() {
 
 // Based on http://www.labbookpages.co.uk/software/imgProc/libPNG.html
 // and http://zarb.org/~gc/html/libpng.html.
-// 4 used as a constant denotes the number of components in "RGBA".
+#define RGBA_COMPS 4
 void save_png() {
   png_structp png_ptr = NULL;
   png_infop info_ptr = NULL;
@@ -175,13 +175,13 @@ void save_png() {
   png_bytep row_ptr = NULL;
   string filename = input_file_name + (show_grid ? "-grid" : "") + ".png";
   FILE* file = fopen(filename.c_str(), "wb");
-  GLubyte* data = (GLubyte*) malloc(sizeof(GLubyte) * 4 * window_width * window_width);
+  GLubyte* data = (GLubyte*) malloc(sizeof(GLubyte) * RGBA_COMPS * window_width * window_width);
 
   png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
   info_ptr = png_create_info_struct(png_ptr);
 
   for (int i = 0; i < window_width; i++) {
-    row_ptrs[i] = (png_bytep) malloc(sizeof(png_bytep) * 4 * window_width);
+    row_ptrs[i] = (png_bytep) malloc(sizeof(png_bytep) * RGBA_COMPS * window_width);
   }
   if (!file || !info_ptr || !row_ptrs) {
     cout << "Warning: Unable to write file.\n";
@@ -199,8 +199,8 @@ void save_png() {
   // Write image.
   for (int x = 0; x < window_width; x++) {
     row_ptr = row_ptrs[window_width - (x + 1)];
-    for (int y = 0; y < window_width * 4; y++) {
-      row_ptr[y] = data[window_width * 4 * x + y];
+    for (int y = 0; y < window_width * RGBA_COMPS; y++) {
+      row_ptr[y] = data[window_width * RGBA_COMPS * x + y];
     }
   }
   png_write_rows(png_ptr, row_ptrs, window_width);
@@ -408,9 +408,9 @@ void run() {
 	|| !box->cpv()) {
       enqueue_children(box);
     } else if (num_obj == 2) {
-      construct.push(box); // TODO: Don't use "construct" queue.
+      construct.push(box);   // TODO: Don't use "construct" queue.
       vor_edge_boxes.push_back(box);
-    } else { // num_obj == 3
+    } else {                 // num_obj == 3
       // TODO: Avoid iterating through all vertex boxes.
       bool int_vert_boxes = false;
       for (auto it = vor_vert_boxes.begin(); it != vor_vert_boxes.end(); ++it) {
@@ -420,7 +420,7 @@ void run() {
       	}
       }
 
-      if (int_vert_boxes || !(box->cjc(JC_SCALE) && !(box->cmk(MK_SCALE)))) {
+      if (int_vert_boxes || !box->cjc(JC_SCALE) || !box->cmk(MK_SCALE)) {
       	enqueue_children(box);
       	continue;
       } else {
@@ -435,8 +435,8 @@ void run() {
     vor_box* box = construct.front();
     construct.pop();
 
-    // Check that boxes used for construction are leaves.
-    // Due to smooth splitting they may not be.
+    // Ensure that boxes used for construction are leaves.
+    // Due to smooth splitting nodes in the construction queue may not be.
     if (box->is_leaf()) {
       box->gen_vertices();
     } else {

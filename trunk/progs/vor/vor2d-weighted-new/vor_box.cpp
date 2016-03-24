@@ -332,10 +332,10 @@ bool vor_box::cpv() const {
 
       // if (features_.size() > 2) { cout << *dynamic_cast<Corner*>(features_[2]) << "\n"; }
       // if (c1 == nullptr || c2 == nullptr) { 
-	tuple<Interval, Interval> f1_grad = f1->box_dist_sq_grad(b_x, b_y);
-      	tuple<Interval, Interval> f2_grad = f2->box_dist_sq_grad(b_x, b_y);      
-      	Interval F_grad_x(std::get<0>(f1_grad) - std::get<0>(f2_grad));
-      	Interval F_grad_y(std::get<1>(f1_grad) - std::get<1>(f2_grad));
+      tuple<Interval, Interval> f1_grad = f1->box_dist_sq_grad(b_x, b_y);
+      tuple<Interval, Interval> f2_grad = f2->box_dist_sq_grad(b_x, b_y);      
+      Interval F_grad_x(std::get<0>(f1_grad) - std::get<0>(f2_grad));
+      Interval F_grad_y(std::get<1>(f1_grad) - std::get<1>(f2_grad));
       // } else {
       // tuple<Interval, Interval> grad = Corner::pair_dist_sq_grad(*c1, *c2, b_x, b_y);
       // Interval F_grad_x(std::get<0>(grad));
@@ -536,6 +536,23 @@ int vor_box::num_corner_obj() const {
   return objects.size();
 }
 
+int vor_box::get_dir(int index) {
+  // TODO: Improve direction computation logic.
+  switch(index) {
+  case 0:
+    return 2;
+  case 1:
+    return 1;
+  case 2:
+    return -2;
+  case 3:
+    return -1;
+  default:
+    cout << "Warning: Failed to compute direction.\n";
+    return -1;
+  }
+}
+
 // TODO: Factor construction logic out into a separate file?
 void vor_box::gen_vertices() {
   double x = center_[0];
@@ -570,20 +587,7 @@ void vor_box::gen_vertices() {
       continue;
     }
 
-    // TODO: Improve direction computation logic.
-    int dir;
-    if (j == 0) {
-      dir = 2;
-    } else if (j == 1) {
-      dir = 1;
-    } else if (j == 2) {
-      dir = -2;
-    } else if (j == 3) {
-      dir = -1;
-    } else {
-      cout << "Warning: Failed to compute direction.\n";
-    }
-
+    int dir = get_dir(j);
     Point2d* midpoint = get_midpoint(corners[i], corners[j]);
     Object* mid_closest = nearest_obj(*midpoint);
     vor_box* neighbor = principal_neighbor(dir);
@@ -608,7 +612,7 @@ void vor_box::gen_vertices() {
   }
   
   // Generate Voronoi segments.
-  // TODO: Fix logic for nodes_.size() > 2.
+  // TODO: Fix logic for nodes_.size() > 2. Update: Why is it wrong?
   if (nodes_.size() == 2) {
     segments_.push_back(new vor_seg(*nodes_[0], *nodes_[1]));
   } else {

@@ -41,6 +41,7 @@ class vor_box {
   bool scaled_intersect(const vor_box& other, double scale) const;
   int depth() const;
   int num_children() const;
+  static int get_dir(int index);
   shared_ptr<vector<vor_box*>> leaf_neighbors_dir(int dir);
   shared_ptr<vector<vor_box*>> enumerate_halfspace_leaf_descendants(int dir);
   
