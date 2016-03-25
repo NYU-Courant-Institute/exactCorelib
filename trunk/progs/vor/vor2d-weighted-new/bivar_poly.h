@@ -1,6 +1,7 @@
 #ifndef bivar_poly_h
 #define bivar_poly_h
 
+#include "poly_types.h"
 #include <assert.h>
 #include <iostream>
 #include <math.h>
@@ -9,7 +10,7 @@ using namespace std;
 
 class BiPoly {
 public:
-  BiPoly() {
+  BiPoly(string expr) {
 
   }
   
@@ -33,7 +34,7 @@ public:
   }
 
 private:
-  c[]; // coefficients
+  bipoly poly;
   int degree;
 }
 

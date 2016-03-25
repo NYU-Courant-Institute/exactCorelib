@@ -1,6 +1,6 @@
 %{
 #include <iostream>
-#include <vector>
+#include <map>
 #include "poly_types.h"
 
 using namespace std;
@@ -28,19 +28,19 @@ int yyerror(const char *p) { std::cerr << "error: " << p << std::endl; };
 
 %%
 
-poly :  mono           { cout << "test"; }
-     | poly PLUS mono { cout << "test"; }
+poly :  mono           { cout << $1.coeff << " x^" << $1.xpow << " y^" << $1.ypow << "\n"; }
+     | poly PLUS mono  { cout << "\n"; }
 ;
 
-mono : NUM mono_inside    { $$ = {$1, $2.xpow, $2.ypow}; }
-       	| mono_inside     { $$ = {1.0, $1.xpow, $1.ypow}; }
-       	| NUM             { $$ = {$1, 0, 0}; }
+mono : NUM mono_inside    { $$ = {$1, $2.xpow, $2.ypow }; }
+       	| 	mono_inside     { $$ = {1.0, $1.xpow, $1.ypow}; }
+       	| 	NUM             { $$ = {$1, 0, 0}; }
 ;
 
 mono_inside : x_pow            { $$ = {$1, 0}; }
-	|     y_pow            { $$ = {0, $1}; }
-	|     x_pow y_pow      { $$ = {$1, $2}; }
-        |     y_pow x_pow      { $$ = {$2, $1}; }
+	|     	y_pow            { $$ = {0, $1}; }
+	|     	x_pow y_pow      { $$ = {$1, $2}; }
+        |     	y_pow x_pow      { $$ = {$2, $1}; }
 ;
 
 x_pow : X POW NUM     { $$ = (int) $3; }
