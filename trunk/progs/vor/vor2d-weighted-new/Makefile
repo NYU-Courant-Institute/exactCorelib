@@ -26,7 +26,12 @@ $(TARGET): $(OBJS)
 	$(CXX) -M $(CXXFLAGS) $< > $@
 
 clean:
-	rm -f *~ *.o $(TARGET)
+	rm -f *~ *.o $(TARGET) lex.yy.c poly.tab.c
+
+parser:
+	bison -d poly.y
+	flex poly.l
+	g++ -std=c++11 -o poly_parser lex.yy.c poly.tab.c 
 
 # Test commands.
 test:

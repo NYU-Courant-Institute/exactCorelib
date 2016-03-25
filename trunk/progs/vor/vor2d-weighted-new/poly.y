@@ -1,7 +1,7 @@
 %{
 #include <iostream>
 #include <vector>
-#include <tuple>
+#include "poly_types.h"
 
 using namespace std;
 
@@ -10,17 +10,17 @@ int yyerror(const char *p) { std::cerr << "error: " << p << std::endl; };
 %}
 
 %union {
-    double coeff;
+    double num;
     int pow;
-    tuple<int, int>         mon_inside; // x^b * y^c
-    tuple<double, int, int> mon;        // (a, b, c) <-> a * x^b * y^c
+    mon_inside_ mon_inside;
+    mon_ mon;
 };
 
 %start poly
 
 %token PLUS POW
 %token X Y
-%token <coeff> NUM
+%token <num> NUM
 
 %type <pow>	   x_pow y_pow
 %type <mon>	   mono
@@ -28,19 +28,19 @@ int yyerror(const char *p) { std::cerr << "error: " << p << std::endl; };
 
 %%
 
-poly : mono       { }
-     | poly PLUS mono
+poly :  mono           { cout << "test"; }
+     | poly PLUS mono { cout << "test"; }
 ;
 
-mono : NUM mono_inside         { $$ = make_tuple($1,  get<0>($2), get<1>($2)); }
-	| mono_inside          { $$ = make_tuple(1.0, get<0>($1), get<1>($1)); }
-	| NUM                  { $$ = make_tuple($1, 0, 0); }
+mono : NUM mono_inside    { $$ = {$1, $2.xpow, $2.ypow}; }
+       	| mono_inside     { $$ = {1.0, $1.xpow, $1.ypow}; }
+       	| NUM             { $$ = {$1, 0, 0}; }
 ;
 
-mono_inside : x_pow          { $$ = make_tuple($1, 0); }
-	|     y_pow          { $$ = make_tuple(0, $1); }
-	|     x_pow y_pow    { $$ = make_tuple($1, $2); }
-	|     y_pow x_pow    { $$ = make_tuple($2, $1); }
+mono_inside : x_pow            { $$ = {$1, 0}; }
+	|     y_pow            { $$ = {0, $1}; }
+	|     x_pow y_pow      { $$ = {$1, $2}; }
+        |     y_pow x_pow      { $$ = {$2, $1}; }
 ;
 
 x_pow : X POW NUM     { $$ = (int) $3; }
@@ -50,3 +50,10 @@ y_pow : Y POW NUM     { $$ = (int) $3; }
 ;
 
 %%
+
+int main()
+{
+    yyparse();
+    return 0;
+}
+
