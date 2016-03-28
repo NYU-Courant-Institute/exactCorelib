@@ -60,6 +60,7 @@ public:
     return acc;
   }
 
+  // Naive interval evaluation.
   Interval eval(Interval x, Interval y) {
     Interval acc(0.0, 0.0);
     for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
