@@ -3,7 +3,31 @@
 
 namespace vor2d {
 
-Edge::Edge(Corner* source, Corner* dest, Object* parent) : source_(source), dest_(dest) {
+BiPoly* Edge::make_dfun(Object* parent, const Point2d& p, const Point2d& q) {
+  double a = parent->m()[0];
+  double b = parent->m()[1];
+  double c = parent->m()[2];
+
+  Point2d& v = p - q;
+
+  BiPoly* w_x = new BiPoly();
+  w_x->add_mono(1.0, 1, 0);
+  w_x->add_mono(-p[0], 0, 0);
+  
+  BiPoly* w_y = new BiPoly();
+  w_x->add_mono(1.0, 0, 1);
+  w_x->add_mono(-p[1], 0, 0);
+
+  BiPoly* qmw = (a * w_x * w_x) + (2 * b * w_x * w_y) + (c * w_y * w_y);
+  BiPoly* vmw = v_x * (a * w_x + b * w_y) + v_y * (b * w_x + c * w_y);
+
+  return qmw - (1.0 / parent->qm(v)) * vmw * vmw;
+}
+
+Edge::Edge(Corner* source, Corner* dest, Object* parent)
+  : Feature(make_defun(parent, source->position(), dest->position())),
+    source_(source),
+    dest_(dest) {
   parent_ = parent;
   source->set_next_edge(this);
   dest->set_prev_edge(this);

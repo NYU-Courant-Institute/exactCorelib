@@ -19,6 +19,18 @@ public:
   // BiPoly(string expr) {}
 
   BiPoly() : degree(0) {}
+  BiPoly(BiPoly* p2) : degree(0) { // Copy constructor.
+    const cmap* poly2 = p2->get_poly();
+    for (auto xit = poly2->begin(); xit != poly2->end(); ++xit) {
+      int xpow = xit->first;
+      map<int, double>* xmap = xit->second;
+      for (auto yit = xmap->begin(); yit != xmap->end(); ++yit) {
+	int ypow = yit->first;
+	double c = yit->second;
+	add_monomial(c, xpow, ypow);
+      }
+    }
+  }
   ~BiPoly() {
     for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
       delete xit->second;
@@ -135,8 +147,6 @@ public:
     }
     cout << "\n";
   }
-
-  // Operators
   
   BiPoly* operator*(const BiPoly& p2) {
     BiPoly* prod = new BiPoly();
@@ -161,6 +171,11 @@ public:
     }
 
     return prod;
+  }
+
+  BiPoly* poly_pow(int p) {
+    assert(p > 0);
+    return p > 0 ? new BiPoly(this) : (*this) * (*poly_pow(p - 1));
   }
 
   const cmap* get_poly() const {

@@ -13,7 +13,7 @@ class Corner : public Feature {
   double distance(const Point2d& point) override;
   Interval box_dist_sq(const Interval& int_x, const Interval& int_y) override;
   tuple<Interval, Interval> box_dist_sq_grad(const Interval& int_x, const Interval& int_y) override;
-
+  
   // TODO: Generalize.
   // TEST CODE ONLY.
   static Interval pair_box_dist_sq(
@@ -33,6 +33,8 @@ class Corner : public Feature {
   }
 
  private:
+  static BiPoly* make_dfun(double a, double b, double c);
+  
   const Point2d position_;
   Edge* prev_edge;
   Edge* next_edge;

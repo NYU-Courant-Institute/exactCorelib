@@ -4,7 +4,20 @@
 
 namespace vor2d {
 
+BiPoly* Corner::make_dfun(double a, double b, double c, const Point2d& p) {
+  BiPoly* w_x = new BiPoly();
+  w_x->add_mono(1.0, 1, 0);
+  w_x->add_mono(-p[0], 0, 0);
+  
+  BiPoly* w_y = new BiPoly();
+  w_x->add_mono(1.0, 0, 1);
+  w_x->add_mono(-p[1], 0, 0);
+
+  return (a * w_x * w_x) + (2 * b * w_x * w_y) + (c * w_y * w_y);
+}
+
 Corner::Corner(const Point2d& position, Object* parent) :
+  Feature(make_dfun(parent->m()[0], parent->m()[1], parent->m()[2], position)),
   position_(position[0], position[1]),
   prev_edge(nullptr), next_edge(nullptr) {
   parent_ = parent;

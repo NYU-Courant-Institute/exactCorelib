@@ -5,7 +5,7 @@
 #include "assert.h"
 #include <set>
 
-#define DEBUG 1
+#define DEBUG 0
 
 namespace vor2d {
 
@@ -301,6 +301,37 @@ void vor_box::set_degen(bool is_degen) {
 bool vor_box::is_degen() const {
   return is_degen_;
 }
+
+/***********************************************************
+ *** Box predicates ****************************************
+************************************************************/
+
+// New versions.
+
+bool vor_box::cpv() const {  
+  double wb2 = width_ / 2;
+  Interval b_x(center_[0] - wb2, center_[0] + wb2);
+  Interval b_y(center_[1] - wb2, center_[1] + wb2);
+  
+  for (int i = 0; i < features_.size(); i++) {
+    for (int j = i + 1; j < features_.size(); j++) {
+      Feature* f1 = features_[i];
+      Feature* f2 = features_[j];
+
+      // Only compute predicate for features that are part of
+      // different objects.
+      if (f1->parent() == f2->parent()) {
+	continue;
+      }
+
+      // ...
+      
+      
+    }
+  }
+}
+
+/***********************************************************/
 
 bool vor_box::cpv() const {
   if (objects_.size() < 2) {
