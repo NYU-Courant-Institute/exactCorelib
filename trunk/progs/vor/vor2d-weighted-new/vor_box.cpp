@@ -1,5 +1,6 @@
 #include "vor_box.h"
 #include "vor_qt.h"
+#include "bipoly.h"
 
 #include "assert.h"
 #include <set>

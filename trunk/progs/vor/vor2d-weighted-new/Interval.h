@@ -26,6 +26,11 @@ class Interval {
     return i;
   }
 
+  void operator+=(const Interval& i2) {
+    a_ += i2.a_;
+    b_ += i2.b_;
+  }
+
   Interval operator-(const Interval& i2) const {
     Interval i(a_ - i2.b_, b_ - i2.a_);
     return i;
@@ -61,6 +66,15 @@ class Interval {
     double bc = b_ / c;
     Interval i(fmin(ac, bc), fmax(ac, bc));
     return i;
+  }
+
+  Interval pow(int p) const {
+    // TODO: Use repeated squaring.
+    if (p == 0) {
+      Interval one(1.0, 1.0);
+      return one;
+    }
+    (*this) * pow(p - 1);
   }
 
   friend ostream& operator<<(ostream& os, const Interval& i) {
@@ -109,6 +123,7 @@ class Interval {
   double b_; // Right endpoint.
 };
 
+const Interval ZERO(0.0, 0.0);
 const Interval TOP(numeric_limits<double>::min(), numeric_limits<double>::max());
  
 inline bool operator< (double c, const Interval& i) { return c < i.a_;  }
