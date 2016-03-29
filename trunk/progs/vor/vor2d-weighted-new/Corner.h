@@ -33,7 +33,7 @@ class Corner : public Feature {
   }
 
  private:
-  static BiPoly* make_dfun(double a, double b, double c);
+  static BiPoly make_dfun(Object* parent, const Point2d& p);
   
   const Point2d position_;
   Edge* prev_edge;

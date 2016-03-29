@@ -8,9 +8,9 @@
 
 namespace vor2d {
 
-Feature::Feature(BiPoly* dfun_sq) {
+Feature::Feature(BiPoly dfun_sq) {
   dfun_sq_ = dfun_sq;
-  dfun_sq_grad_ = dfun_sq->gradient();
+  dfun_sq_grad_ = dfun_sq.gradient();
 }
 
 void Feature::set_parent(Object* parent) {
@@ -27,11 +27,11 @@ double Feature::lipschitz() const {
 }
 
 BiPoly* Feature::dfun_sq() {
-  return dfun_sq_;
+  return &dfun_sq_;
 }
 
-pair<BiPoly*, BiPoly*> Feature::dfun_sq_grad() {
-  return dfun_sq_grad_;
+pair<BiPoly, BiPoly>* Feature::dfun_sq_grad() {
+  return &dfun_sq_grad_;
 }
 
 } // namespace vor2d

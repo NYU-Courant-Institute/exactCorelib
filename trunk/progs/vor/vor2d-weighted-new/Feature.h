@@ -3,7 +3,7 @@
 #include "Interval.h"
 #include "Object.h"
 #include "Point.h"
-#include "bipoly.h"
+#include "BiPoly.h"
 
 #include <tuple>
 
@@ -14,11 +14,11 @@ class Object;
 class Feature {
  public:
   // Compute the distance to a point.
-  Feature(BiPoly* dfun);
+  Feature(BiPoly dfun);
   virtual double distance(const Point2d& point) = 0;
   virtual Interval box_dist_sq(const Interval& int_x, const Interval& int_y) = 0; // TODO: Remove.
   BiPoly* dfun_sq();
-  pair<BiPoly*, BiPoly*> dfun_sq_grad();
+  pair<BiPoly, BiPoly>* dfun_sq_grad();
   virtual tuple<Interval, Interval> box_dist_sq_grad(const Interval& int_x, const Interval& int_y) = 0; // TODO: Remove.
   double lipschitz() const;
   void set_parent(Object* parent);
@@ -26,8 +26,8 @@ class Feature {
 
  protected:
   Object* parent_;
-  BiPoly* dfun_sq_;
-  pair<BiPoly*, BiPoly*> dfun_sq_grad_;
+  BiPoly dfun_sq_;
+  pair<BiPoly, BiPoly> dfun_sq_grad_;
 };
 
 } // namespace vor2d

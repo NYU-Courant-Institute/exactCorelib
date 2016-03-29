@@ -110,6 +110,10 @@ class Interval {
     return i2;
   }
 
+  double mag() const {
+    return fmax(fabs(a_), fabs(b_));
+  }
+
   bool singleton() const {
     return a_ == b_;
   }

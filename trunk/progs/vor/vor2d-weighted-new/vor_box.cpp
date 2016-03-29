@@ -1,6 +1,6 @@
 #include "vor_box.h"
 #include "vor_qt.h"
-#include "bipoly.h"
+#include "BiPoly.h"
 
 #include "assert.h"
 #include <set>
@@ -309,9 +309,9 @@ bool vor_box::is_degen() const {
 // New versions.
 
 bool vor_box::cpv() const {  
-  double wb2 = width_ / 2;
-  Interval b_x(center_[0] - wb2, center_[0] + wb2);
-  Interval b_y(center_[1] - wb2, center_[1] + wb2);
+  double wb2 = width_ / 2.0;
+  Interval bx(center_[0] - wb2, center_[0] + wb2);
+  Interval by(center_[1] - wb2, center_[1] + wb2);
   
   for (int i = 0; i < features_.size(); i++) {
     for (int j = i + 1; j < features_.size(); j++) {
@@ -324,161 +324,18 @@ bool vor_box::cpv() const {
 	continue;
       }
 
-      // ...
-      
-      
-    }
-  }
-}
+      BiPoly grad_x = f1->dfun_sq_grad()->first - f2->dfun_sq_grad()->first;
+      BiPoly grad_y = f1->dfun_sq_grad()->second - f2->dfun_sq_grad()->second;
+      Interval gx_i = grad_x.eval(bx, by);
+      Interval gy_i = grad_y.eval(bx, by);
 
-/***********************************************************/
-
-bool vor_box::cpv() const {
-  if (objects_.size() < 2) {
-    return true;
-  }
-
-  // The box decomposed into intervals.
-  double rad = radius();
-  Interval b_x(center_[0] - rad, center_[0] + rad);
-  Interval b_y(center_[1] - rad, center_[1] + rad);
-  
-  for (int i = 0; i < features_.size(); i++) {
-    for (int j = i + 1; j < features_.size(); j++) {
-      Feature* f1 = features_[i];
-      Feature* f2 = features_[j];
-
-      // Only compute predicate for features that are part of
-      // different objects.
-      if (f1->parent() == f2->parent()) {
-	continue;
-      }
-      
-#if DEBUG
-      cout << "Depth: " << depth_ << ", Box center: " << center_[0] << " " << center_[1] << "\n";
-#endif
-
-      // Compute 0 \notin (F_x(B))^2 + (F_y(B))^2
-      // Corner* c1 = dynamic_cast<Corner*>(f1);
-      // Corner* c2 = dynamic_cast<Corner*>(f2);
-
-      // if (features_.size() > 2) { cout << *dynamic_cast<Corner*>(features_[2]) << "\n"; }
-      // if (c1 == nullptr || c2 == nullptr) { 
-      tuple<Interval, Interval> f1_grad = f1->box_dist_sq_grad(b_x, b_y);
-      tuple<Interval, Interval> f2_grad = f2->box_dist_sq_grad(b_x, b_y);      
-      Interval F_grad_x(std::get<0>(f1_grad) - std::get<0>(f2_grad));
-      Interval F_grad_y(std::get<1>(f1_grad) - std::get<1>(f2_grad));
-      // } else {
-      // tuple<Interval, Interval> grad = Corner::pair_dist_sq_grad(*c1, *c2, b_x, b_y);
-      // Interval F_grad_x(std::get<0>(grad));
-      // Interval F_grad_y(std::get<1>(grad));
-      // }
-      
-      Interval F_grad_ip = F_grad_x * F_grad_x + F_grad_y * F_grad_y;
-
-#if DEBUG
-      cout << "Gradient: " << F_grad_ip.a_ << " "  << F_grad_ip.b_ << "\n";
-      cout << F_grad_x << " " << F_grad_y << "\n";
-      cout << std::get<0>(f1_grad) << " " << std::get<1>(f1_grad) << "\n";
-      cout << std::get<0>(f2_grad) << " " << std::get<1>(f2_grad) << "\n";
-#endif
-
-      if (!F_grad_ip.contains(0.0)) {
-	continue;
-      }
-
-      return false;
+      if ((gx_i * gx_i + gy_i * gy_i).contains(0)) {
+	return false;
+      }				   
     }
   }
 
   return true;
-}
-
-/* 
- * A Voronoi vertex arises when two bisectors meet, and so we check for this case.
- */
-
-bool vor_box::cmk(double scale) const {
-  // TODO: Improve this to work with multi-feature sites and degenerate intersections.
-  assert(num_features() >= 3);
-  if (num_features() > 3) {
-    cout << "Warning: multi-feature objects. Not ensuring that the MK test is met.\n";
-    return true;
-  }
-
-  // Features.
-  Feature* S = features_[0];
-  Feature* T = features_[1];
-  Feature* U = features_[2];
-
-  // Intervals for box center.
-  Interval m_x(center()[0]);
-  Interval m_y(center()[1]);
-
-  // Compute the gradients at midpoints.
-  tuple<Interval, Interval> S_grad = S->box_dist_sq_grad(m_x, m_y);
-  tuple<Interval, Interval> T_grad = T->box_dist_sq_grad(m_x, m_y);
-  tuple<Interval, Interval> U_grad = U->box_dist_sq_grad(m_x, m_y);
-
-  // Compute the gradient of f_{ST} at m_B.
-  Interval fst_grad_x = std::get<0>(S_grad) - std::get<0>(T_grad);
-  Interval fst_grad_y = std::get<1>(S_grad) - std::get<1>(T_grad);
-
-  // Compute the gradient of f_{TU} at m_B.
-  Interval ftu_grad_x = std::get<0>(T_grad) - std::get<0>(U_grad);
-  Interval ftu_grad_y = std::get<1>(T_grad) - std::get<1>(U_grad);
-
-  Interval detJmb = (fst_grad_x * ftu_grad_y) - (ftu_grad_x * fst_grad_y);
-
-#if DEBUG
-  cout << "CMK: " << center()[0] << ", " << center()[1] << "\n";
-  cout << "detJmb: " << detJmb << "\n";
-  cout << fst_grad_x << " " << fst_grad_y << " "
-       << ftu_grad_x << " " << ftu_grad_y << "\n";
-#endif
-
-  // Parallel linear system.
-  if (detJmb.contains(0)) {
-    return false;
-  }
-
-  // Intervals for box edges.
-  double sw = scale * width_ / 2;
-  Interval bot_y(center()[1] - sw);
-  Interval top_y(center()[1] + sw);
-  Interval lft_x(center()[0] - sw);
-  Interval rgt_x(center()[0] + sw);
-  Interval span_x(center()[0] - sw, center()[0] + sw);
-  Interval span_y(center()[1] - sw, center()[1] + sw);
-
-  // Check f_{ST} on the left and right edges, and check f_{TU} on the top and bottom edges.
-  Interval fst_dist_left  = S->box_dist_sq(lft_x, span_y) - T->box_dist_sq(lft_x, span_y);
-  Interval fst_dist_right = S->box_dist_sq(rgt_x, span_y) - T->box_dist_sq(rgt_x, span_y);
-  Interval fst_dist_top   = S->box_dist_sq(span_x, top_y) - T->box_dist_sq(span_x, top_y);
-  Interval fst_dist_bot   = S->box_dist_sq(span_x, bot_y) - T->box_dist_sq(span_x, bot_y);
-
-  Interval ftu_dist_left  = T->box_dist_sq(lft_x, span_y) - U->box_dist_sq(lft_x, span_y);
-  Interval ftu_dist_right = T->box_dist_sq(rgt_x, span_y) - U->box_dist_sq(rgt_x, span_y);
-  Interval ftu_dist_top   = T->box_dist_sq(span_x, top_y) - U->box_dist_sq(span_x, top_y);
-  Interval ftu_dist_bot   = T->box_dist_sq(span_x, bot_y) - U->box_dist_sq(span_x, bot_y);
-
-  // Check the modified system on appropriate edges.
-  Interval g_left   = ( ftu_grad_y * fst_dist_left  - fst_grad_y * ftu_dist_left ) / detJmb;
-  Interval g_right  = ( ftu_grad_y * fst_dist_right - fst_grad_y * ftu_dist_right) / detJmb;
-  Interval g_top    = (-ftu_grad_x * fst_dist_top   + fst_grad_x * ftu_dist_top  ) / detJmb;
-  Interval g_bottom = (-ftu_grad_x * fst_dist_bot   + fst_grad_x * ftu_dist_bot  ) / detJmb;
-
-#if DEBUG
-  cout << "g_left:   " << g_left   << "\n";
-  cout << "g_right:  " << g_right  << "\n";
-  cout << "g_top:    " << g_top    << "\n";
-  cout << "g_bottom: " << g_bottom << "\n";
-  
-  cout << -ftu_grad_x * fst_dist_top << " + " << fst_grad_x * ftu_dist_top << ", "
-       << -ftu_grad_x * fst_dist_bot << " + " << fst_grad_x * ftu_dist_bot << "\n";
-#endif
-
-  return 0 > g_left && 0 < g_right && 0 > g_bottom && 0 < g_top;
 }
 
 // Currently this computes the Jacobian condition with respect to
@@ -492,36 +349,113 @@ bool vor_box::cjc(double scale) const {
     cout << "Warning: multi-feature objects. Not ensuring that the Jacobian condition is met.\n";
     return true;
   }
-  
-  // TODO: Consolidate gradient computation with PV code.
+
   double sw = scale * width_ / 2;
-  Interval b_x(center_[0] - sw, center_[0] + sw);
-  Interval b_y(center_[1] - sw, center_[1] + sw);
+  Interval bx(center_[0] - sw, center_[0] + sw);
+  Interval by(center_[1] - sw, center_[1] + sw);
   Feature* S = features_[0];
   Feature* T = features_[1];
   Feature* U = features_[2];
-  tuple<Interval, Interval> S_grad = S->box_dist_sq_grad(b_x, b_y);
-  tuple<Interval, Interval> T_grad = T->box_dist_sq_grad(b_x, b_y);
-  tuple<Interval, Interval> U_grad = U->box_dist_sq_grad(b_x, b_y);
-  
-  // Use the first two sites to compute the gradient of f_{ST}.
-  Interval fst_grad_x = std::get<0>(S_grad) - std::get<0>(T_grad);
-  Interval fst_grad_y = std::get<1>(S_grad) - std::get<1>(T_grad);
 
-  // Use the second and third sites to compute the gradient of f_{TU}.
-  Interval ftu_grad_x = std::get<0>(T_grad) - std::get<0>(U_grad);
-  Interval ftu_grad_y = std::get<1>(T_grad) - std::get<1>(U_grad);
+  BiPoly gradST_x = S->dfun_sq_grad()->first  - T->dfun_sq_grad()->first;
+  BiPoly gradST_y = S->dfun_sq_grad()->second - T->dfun_sq_grad()->second;
+  BiPoly gradTU_x = T->dfun_sq_grad()->first  - U->dfun_sq_grad()->first;
+  BiPoly gradTU_y = T->dfun_sq_grad()->second - U->dfun_sq_grad()->second;
+  BiPoly det_poly = (gradST_x * gradTU_y) - (gradST_y * gradTU_x);
 
-  // Check whether 0 is contained in the determinant of the Jacobian.
-  Interval F_jcdet = (fst_grad_x * ftu_grad_y) - (fst_grad_y * ftu_grad_x);
-
-#if DEBUG
-  cout << "CJC Depth: " << depth_ << ", Box center: " << center_[0] << " " << center_[1] << "\n";
-  cout << "F_jcdet: " << F_jcdet << "\n";
-#endif
-
-  return !F_jcdet.contains(0);
+  return !det_poly.eval(bx, by).contains(0);
 }
+
+bool vor_box::cmk(double scale) const {
+  // Note: These computations should all be vectorized.
+  // TODO: Improve this to work with multi-feature sites and degenerate intersections.
+  assert(num_features() >= 3);
+  if (num_features() > 3) {
+    cout << "Warning: multi-feature objects. Not ensuring that the MK test is met.\n";
+    return true;
+  }
+
+  // Box variables.
+  double mx = center()[0];
+  double my = center()[1];
+  double sw = scale * width_ / 2;
+  
+  // Features.
+  Feature* S = features_[0];
+  Feature* T = features_[1];
+  Feature* U = features_[2];
+
+  // Original system and derivatives (F and F').
+  BiPoly f1 = *(S->dfun_sq()) - *(T->dfun_sq());
+  BiPoly f2 = *(T->dfun_sq()) - *(U->dfun_sq());
+  BiPoly f11 = S->dfun_sq_grad()->first  - T->dfun_sq_grad()->first;
+  BiPoly f12 = S->dfun_sq_grad()->second - T->dfun_sq_grad()->second;
+  BiPoly f21 = T->dfun_sq_grad()->first  - U->dfun_sq_grad()->first;
+  BiPoly f22 = T->dfun_sq_grad()->second - U->dfun_sq_grad()->second;
+
+  // Determinant computation.
+  double z11 = f11.eval(mx, my);
+  double z12 = f12.eval(mx, my);
+  double z21 = f21.eval(mx, my);
+  double z22 = f22.eval(mx, my);
+  double izdet = 1.0 / ((z11 * z22) - (z12 * z21));
+
+  // Inverse determinant.
+  double y11 = izdet * z22;
+  double y12 = izdet * (-z12);
+  double y21 = izdet * (-z21);
+  double y22 = izdet * z11;
+
+  // Modified system and derivatives (G and G').
+  BiPoly g1  = y11 * f1  + y12 * f2;
+  BiPoly g2  = y21 * f1  + y22 * f2;
+  BiPoly g11 = y11 * f11 + y12 * f21;
+  BiPoly g12 = y11 * f12 + y12 * f22;
+  BiPoly g21 = y21 * f11 + y22 * f21;
+  BiPoly g22 = y21 * f12 + y22 * f22;
+
+  // Evaluations.
+  double g1p = g1.eval(mx + sw, my);
+  double g2p = g2.eval(mx, my + sw);
+  double g1m = g1.eval(mx - sw, my);
+  double g2m = g2.eval(mx, my - sw);
+
+  // Intervals for box edges.
+  Interval lft_x(mx - sw);
+  Interval rgt_x(mx + sw);
+  Interval bot_y(my - sw);
+  Interval top_y(my + sw);
+  Interval span_x(mx - sw, mx + sw);
+  Interval span_y(my - sw, my + sw);
+  
+  // Conditions 2.11.
+  if (!(g1p * g1m <= 0)) {
+    return false;
+  }
+  if (!(g2p * g2m <= 0)) {
+    return false;
+  }
+
+  // Conditions 2.12.  
+  if (!((sw * g12.eval(rgt_x, span_y)).mag() <= fabs(g1p))) {
+    return false;
+  }
+  if (!((sw * g21.eval(span_x, top_y)).mag() <= fabs(g2p))) {
+    return false;
+  }
+  
+  // Conditions 2.13.
+  if (!((sw * g12.eval(lft_x, span_y)).mag() <= fabs(g1m))) {
+    return false;
+  }
+  if (!((sw * g21.eval(span_x, bot_y)).mag() <= fabs(g2m))) {
+    return false;
+  }
+
+  return true;
+}
+
+/***********************************************************/
 
 Object* vor_box::nearest_obj(const Point2d& point) const {
   double min_dist = std::numeric_limits<double>::max();

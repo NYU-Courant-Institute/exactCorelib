@@ -1,5 +1,5 @@
-#ifndef bipoly_h
-#define bipoly_h
+#ifndef BI_POLY_H
+#define BI_POLY_H
 
 #include "Interval.h"
 #include <map>
@@ -19,8 +19,8 @@ public:
   // BiPoly(string expr) {}
 
   BiPoly() : degree(0) {}
-  BiPoly(BiPoly* p2) : degree(0) { // Copy constructor.
-    const cmap* poly2 = p2->get_poly();
+  BiPoly(const BiPoly& p2) : degree(0) { // Copy constructor.
+    const cmap* poly2 = p2.get_poly();
     for (auto xit = poly2->begin(); xit != poly2->end(); ++xit) {
       int xpow = xit->first;
       map<int, double>* xmap = xit->second;
@@ -58,7 +58,7 @@ public:
     }
   }
 
-  double eval(int x, int y) {
+  double eval(double x, double y) {
     double acc = 0.0;
     for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
       int xpow = xit->first;
@@ -87,8 +87,8 @@ public:
     return acc;
   }
 
-  BiPoly* partial_x() {
-    BiPoly* px = new BiPoly();
+  BiPoly partial_x() {
+    BiPoly px;
     for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
       int xpow = xit->first;
       map<int, double>* xmap = xit->second;      
@@ -100,14 +100,14 @@ public:
 	int ypow = yit->first;
 	double c = yit->second;
 
-	px->add_monomial(c * xpow, xpow - 1, ypow);
+	px.add_monomial(c * xpow, xpow - 1, ypow);
       }
     }
     return px;    
   }
 
-  BiPoly* partial_y() {
-    BiPoly* py = new BiPoly();
+  BiPoly partial_y() {
+    BiPoly py;
     for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
       int xpow = xit->first;
       map<int, double>* xmap = xit->second;
@@ -115,14 +115,14 @@ public:
 	int ypow = yit->first;
 	double c = yit->second;
 	if (ypow > 0) {
-	  py->add_monomial(c * ypow, xpow, ypow - 1);
+	  py.add_monomial(c * ypow, xpow, ypow - 1);
 	}
       }
     }
     return py;    
   }
 
-  pair<BiPoly*, BiPoly*> gradient() {
+  pair<BiPoly, BiPoly> gradient() {
     return {partial_x(), partial_y()};
   }
   
@@ -148,8 +148,8 @@ public:
     cout << "\n";
   }
   
-  BiPoly* operator*(const BiPoly& p2) {
-    BiPoly* prod = new BiPoly();
+  BiPoly operator*(const BiPoly& p2) {
+    BiPoly prod;
 
     // This polynomial.
     for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
@@ -164,18 +164,13 @@ public:
 	  for (auto yit2 = xmap2->begin(); yit2 != xmap2->end(); ++yit2) {
 	    int ypow2 = yit2->first;
 	    double c2 = yit2->second;
-	    prod->add_monomial(c * c2, xpow + xpow2, ypow + ypow2);
+	    prod.add_monomial(c * c2, xpow + xpow2, ypow + ypow2);
 	  }
 	}
       }
     }
 
     return prod;
-  }
-
-  BiPoly* poly_pow(int p) {
-    assert(p > 0);
-    return p > 0 ? new BiPoly(this) : (*this) * (*poly_pow(p - 1));
   }
 
   const cmap* get_poly() const {
@@ -187,8 +182,8 @@ private:
   int degree;
 };
 
-inline BiPoly* operator*(double s, const BiPoly& p2) {
-  BiPoly* prod = new BiPoly();
+inline BiPoly operator*(double s, const BiPoly& p2) {
+  BiPoly prod;
   const cmap* poly = p2.get_poly();
   for (auto xit = poly->begin(); xit != poly->end(); ++xit) {
     int xpow = xit->first;
@@ -196,15 +191,15 @@ inline BiPoly* operator*(double s, const BiPoly& p2) {
     for (auto yit = xmap->begin(); yit != xmap->end(); ++yit) {
       int ypow = yit->first;
       double c = yit->second;
-      prod->add_monomial(s * c, xpow, ypow);
+      prod.add_monomial(s * c, xpow, ypow);
     }
   }
 
   return prod;
 }
 
-BiPoly* operator+(const BiPoly& p1, const BiPoly& p2) {
-  BiPoly* sum = new BiPoly();
+inline BiPoly operator+(const BiPoly& p1, const BiPoly& p2) {
+  BiPoly sum;
 
   // First polynomial.
   for (auto xit = p1.get_poly()->begin(); xit != p1.get_poly()->end(); ++xit) {
@@ -213,7 +208,7 @@ BiPoly* operator+(const BiPoly& p1, const BiPoly& p2) {
     for (auto yit = xmap->begin(); yit != xmap->end(); ++yit) {
       int ypow = yit->first;
       double c = yit->second;
-      sum->add_monomial(c, xpow, ypow);
+      sum.add_monomial(c, xpow, ypow);
     }
   }
 
@@ -224,15 +219,15 @@ BiPoly* operator+(const BiPoly& p1, const BiPoly& p2) {
     for (auto yit = xmap->begin(); yit != xmap->end(); ++yit) {
       int ypow = yit->first;
       double c = yit->second;
-      sum->add_monomial(c, xpow, ypow);
+      sum.add_monomial(c, xpow, ypow);
     }
   }
 
   return sum;
 }
 
-inline BiPoly* operator-(const BiPoly& p1, const BiPoly& p2) {
-  return p1 + (*(-1.0 * p2));
+inline BiPoly operator-(const BiPoly& p1, const BiPoly& p2) {
+  return p1 + (-1.0 * p2);
 }
 
-#endif // bipoly_h
+#endif // BI_POLY_H

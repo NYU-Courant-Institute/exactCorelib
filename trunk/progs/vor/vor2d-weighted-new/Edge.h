@@ -20,7 +20,7 @@ class Edge : public Feature {
   Corner* dest() const;
   
  private:
-  static BiPoly* make_dfun(Object* parent, const Point2d& p, const Point2d& q);
+  static BiPoly make_dfun(Object* parent, const Point2d& p, const Point2d& q);
   
   Corner* source_;
   Corner* dest_;
