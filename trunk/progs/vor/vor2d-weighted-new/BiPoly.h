@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <iostream>
 #include <math.h>
+#include <string>
 
 using namespace std;
 
@@ -18,8 +19,8 @@ public:
   // TODO
   // BiPoly(string expr) {}
 
-  BiPoly() : degree(0) {}
-  BiPoly(const BiPoly& p2) : degree(0) { // Copy constructor.
+  BiPoly() : degree_(0) {}
+  BiPoly(const BiPoly& p2) : degree_(0) { // Copy constructor.
     const cmap* poly2 = p2.get_poly();
     for (auto xit = poly2->begin(); xit != poly2->end(); ++xit) {
       int xpow = xit->first;
@@ -40,6 +41,10 @@ public:
   void add_monomial(double c, int x, int y) {
     assert(x >= 0 && y >= 0);
 
+    if (c == 0) {
+      return;
+    }
+
     map<int, double>* x_entry;
     
     if (poly.find(x) == poly.end()) {
@@ -53,8 +58,8 @@ public:
 
     (*x_entry)[y] += c;
 
-    if (x + y > degree) {
-      degree = x + y;
+    if (x + y > degree_) {
+      degree_ = x + y;
     }
   }
 
@@ -126,7 +131,51 @@ public:
     return {partial_x(), partial_y()};
   }
   
-  void print() {
+  // void print() {
+  //   for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
+  //     int xpow = xit->first;
+  //     map<int, double>* xmap = xit->second;
+  //     for (auto yit = xmap->begin(); yit != xmap->end(); ++yit) {
+  // 	int ypow = yit->first;
+  // 	double c = yit->second;
+  // 	if (xit != poly.begin() || yit != xmap->begin()) {
+  // 	  cout << " + ";
+  // 	}
+  // 	cout << c;
+  // 	if (xpow > 0) {
+  // 	  cout << " x^" << xpow;
+  // 	}
+  // 	if (ypow > 0) {
+  // 	  cout << " y^" << ypow;
+  // 	}
+  //     }
+  //   }
+  //   cout << "\n";
+  // }
+
+  friend ostream& operator<<(ostream& os, const BiPoly& p) {
+    for (auto xit = p.get_poly()->begin(); xit != p.get_poly()->end(); ++xit) {
+      int xpow = xit->first;
+      map<int, double>* xmap = xit->second;
+      for (auto yit = xmap->begin(); yit != xmap->end(); ++yit) {
+	int ypow = yit->first;
+	double c = yit->second;
+	if (xit != p.get_poly()->begin() || yit != xmap->begin()) {
+	  os << " + ";
+	}
+	os << c;
+	if (xpow > 0) {
+	  os << " x^" << xpow;
+	}
+	if (ypow > 0) {
+	  os << " y^" << ypow;
+	}
+      }
+    }
+  }
+
+  string to_string() {
+    string s = "";
     for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
       int xpow = xit->first;
       map<int, double>* xmap = xit->second;
@@ -134,18 +183,17 @@ public:
 	int ypow = yit->first;
 	double c = yit->second;
 	if (xit != poly.begin() || yit != xmap->begin()) {
-	  cout << " + ";
+	  s += " + ";
 	}
-	cout << c;
 	if (xpow > 0) {
-	  cout << " x^" << xpow;
+	  s += " x^" + xpow;
 	}
 	if (ypow > 0) {
-	  cout << " y^" << ypow;
+	  s += " y^" + ypow;
 	}
       }
     }
-    cout << "\n";
+    return s;
   }
 
   bool has_term(double c, int x, int y) const {
@@ -222,9 +270,13 @@ public:
     return &poly;
   }
 
+  int degree() const {
+    return degree_;
+  }
+  
 private:
   cmap poly;
-  int degree;
+  int degree_;
 };
 
 inline BiPoly operator*(double s, const BiPoly& p2) {

@@ -24,9 +24,31 @@ void test_mul() {
   assert(r == pq);
 }
 
+void test_xdir() {
+  BiPoly p;
+  p.add_monomial(1, 2, 0);
+
+  BiPoly px;
+  px.add_monomial(2, 1, 0);
+
+  assert(p.partial_x() == px);
+}
+
+void test_ydir() {
+  BiPoly p;
+  p.add_monomial(1, 0, 2);
+
+  BiPoly py;
+  py.add_monomial(2, 0, 1);
+
+  assert(p.partial_y() == py);
+}
+
 int main(int argc, char** argv) {
   test_creation();
   test_mul();
+  test_xdir();
+  test_ydir();
   cout << "All tests passed.\n";
   return 0;
 }
