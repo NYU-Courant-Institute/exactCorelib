@@ -147,6 +147,51 @@ public:
     }
     cout << "\n";
   }
+
+  bool has_term(double c, int x, int y) const {
+    auto xit = poly.find(x);
+    if (xit == poly.end()) {
+      return false;
+    }
+
+    auto yit = xit->second->find(y);
+    if (yit == xit->second->end()) {
+      return false;
+    }
+
+    return yit->second == c;
+  }
+
+  bool operator==(const BiPoly& p2) const {
+    map<int, double>* xmap;
+    const cmap* poly2 = p2.get_poly();
+    for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
+      int xpow = xit->first;
+      xmap = xit->second;
+      for (auto yit = xmap->begin(); yit != xmap->end(); ++yit) {
+	int ypow = yit->first;
+	double c = yit->second;
+	if (!p2.has_term(c, xpow, ypow)) {
+	  return false;
+	}
+      }
+    }
+
+    // Inefficient!
+    for (auto xit = poly2->begin(); xit != poly2->end(); ++xit) {
+      int xpow = xit->first;
+      xmap = xit->second;
+      for (auto yit = xmap->begin(); yit != xmap->end(); ++yit) {
+	int ypow = yit->first;
+	double c = yit->second;
+	if (!has_term(c, xpow, ypow)) {
+	  return false;
+	}
+      }
+    }
+
+    return true;
+  }
   
   BiPoly operator*(const BiPoly& p2) {
     BiPoly prod;
