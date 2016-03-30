@@ -7,6 +7,7 @@
 #include <iostream>
 #include <math.h>
 #include <string>
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
@@ -185,11 +186,12 @@ public:
 	if (xit != poly.begin() || yit != xmap->begin()) {
 	  s += " + ";
 	}
+	s += boost::lexical_cast<std::string>(c);
 	if (xpow > 0) {
-	  s += " x^" + xpow;
+	  s += " x^" + boost::lexical_cast<std::string>(xpow);
 	}
 	if (ypow > 0) {
-	  s += " y^" + ypow;
+	  s += " y^" + boost::lexical_cast<std::string>(ypow);
 	}
       }
     }

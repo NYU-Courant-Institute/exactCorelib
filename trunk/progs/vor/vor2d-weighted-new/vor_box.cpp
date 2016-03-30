@@ -324,7 +324,12 @@ bool vor_box::cpv() const {
 	continue;
       }
 
-      BiPoly grad_x = f1->dfun_sq_grad()->first - f2->dfun_sq_grad()->first;
+      cout << f1->dfun_sq_grad()->first;
+      cout << f2->dfun_sq_grad()->first;
+      cout << f1->dfun_sq_grad()->second;
+      cout << f2->dfun_sq_grad()->second;
+      
+      BiPoly grad_x = f1->dfun_sq_grad()->first  - f2->dfun_sq_grad()->first;
       BiPoly grad_y = f1->dfun_sq_grad()->second - f2->dfun_sq_grad()->second;
       Interval gx_i = grad_x.eval(bx, by);
       Interval gy_i = grad_y.eval(bx, by);

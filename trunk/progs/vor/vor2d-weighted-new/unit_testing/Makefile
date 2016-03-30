@@ -10,3 +10,6 @@ itest:
 
 bptest:
 	./bipoly-test
+
+clean:
+	rm -f *~ *-test *.o
