@@ -20,7 +20,9 @@ public:
   // TODO
   // BiPoly(string expr) {}
 
-  BiPoly() : degree_(0) {}
+  BiPoly() : degree_(0) {
+    add_monomial(0.0, 0, 0);
+  }
   BiPoly(const BiPoly& p2) : degree_(0) { // Copy constructor.
     const cmap* poly2 = p2.get_poly();
     for (auto xit = poly2->begin(); xit != poly2->end(); ++xit) {
@@ -34,9 +36,10 @@ public:
     }
   }
   ~BiPoly() {
-    for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
-      delete xit->second;
-    }
+    // cout << "TESTTEST";
+    // for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
+    //   delete xit->second;
+    // }
   }
 
   void add_monomial(double c, int x, int y) {

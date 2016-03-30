@@ -323,11 +323,6 @@ bool vor_box::cpv() const {
       if (f1->parent() == f2->parent()) {
 	continue;
       }
-
-      cout << f1->dfun_sq_grad()->first;
-      cout << f2->dfun_sq_grad()->first;
-      cout << f1->dfun_sq_grad()->second;
-      cout << f2->dfun_sq_grad()->second;
       
       BiPoly grad_x = f1->dfun_sq_grad()->first  - f2->dfun_sq_grad()->first;
       BiPoly grad_y = f1->dfun_sq_grad()->second - f2->dfun_sq_grad()->second;

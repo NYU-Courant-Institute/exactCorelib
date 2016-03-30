@@ -15,9 +15,9 @@ BiPoly Corner::make_dfun(Object* parent, const Point2d& p) {
   w_x.add_monomial(-p[0], 0, 0);
   
   BiPoly w_y;
-  w_x.add_monomial(1.0, 0, 1);
-  w_x.add_monomial(-p[1], 0, 0);
-
+  w_y.add_monomial(1.0, 0, 1);
+  w_y.add_monomial(-p[1], 0, 0);
+  
   return (a * w_x * w_x) + (2 * b * w_x * w_y) + (c * w_y * w_y);
 }
 
