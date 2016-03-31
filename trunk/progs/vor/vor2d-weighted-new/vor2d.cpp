@@ -80,7 +80,7 @@ void init_options(int argc, char* argv[]) {
   po::options_description desc("Voronoi diagram options");
   desc.add_options()
     ("help", "Print this help message.")
-    ("aeps", po::value<double>(&abs_eps)->default_value(1.0d / (1 << 30)), "Absolute epsilon.")
+    ("aeps", po::value<double>(&abs_eps)->default_value(1.0d / (1 << 6)), "Absolute epsilon.")
     ("geps", po::value<double>(&geom_eps)->default_value(1.0), "Geometric epsilon.")
     ("save", po::value<bool>(&save_image)->default_value(false), "Save an image of the construction.")
     ("display", po::value<bool>(&display_image)->default_value(true), "Display the consturcted Voronoi diagram.")
@@ -382,6 +382,23 @@ void enqueue_children(vor_box* box) {
 #define MK_SCALE 2.0
 #define JC_SCALE 3.0
 #define INT_SCALE 1.0
+
+void blame(vor_box* box) {
+  if (box->num_objects() > MAX_OBJECTS_FOR_CONSTRUCTION) {
+    cout << box->num_objects() << " objects still active.\n";
+    return;
+  }
+  if (!box->cpv()) {
+    cout << "PV failed.\n";
+  }
+  if (!box->cjc(JC_SCALE)) {
+    cout << "JC failed.\n";
+  }
+  if (!box->cmk(MK_SCALE)) {
+    cout << "MK failed.\n";
+  }
+}
+
 void run() {
   // Subdivision phase.
   subdiv.push(tree->root());
@@ -398,6 +415,7 @@ void run() {
 
     if (box->width() < abs_eps) {
       cout << "Warning: absolute epsilon reached.\n";
+      blame(box);
       box->set_degen(true);
       continue;
     }
