@@ -217,7 +217,12 @@ void Display::paintGL() {
         inc=0;
     }
 
+    Box* tempA = new Box(alpha[0],alpha[1],1,1);
+    genRobot(tempA, alpha[0], alpha[1], alpha[2], clr_start[0], clr_start[1], clr_start[2]);
+    Box* tempB = new Box(beta[0],beta[1],1,1);
+    genRobot(tempB, beta[0], beta[1], beta[2], clr_goal[0], clr_goal[1], clr_goal[2]);
     if(showAnim){
+        usleep((99-animationSpeed)*5000);
         if (pauseAnim) {
             genRobot(PATH.at(inc), clr_robot[0], clr_robot[1], clr_robot[2]);
             genScene();
@@ -228,13 +233,11 @@ void Display::paintGL() {
                 genRobot(PATH.at(inc++), clr_robot[0], clr_robot[1], clr_robot[2]);
                 genScene();
                 update();
-                usleep((99-animationSpeed)*5000);
             } else if(inc==PATH.size()){   //draw robot in final box
                     genRobot(boxB, clr_robot[0], clr_robot[1], clr_robot[2]);
                     genScene();
                     update();
                     drawCircles();
-                    usleep((99-animationSpeed)*5000);
                     inc++;
             } else if(inc==PATH.size()+1){     //draw robot at end position
                 update();
@@ -242,11 +245,8 @@ void Display::paintGL() {
                 inc=0;
             }
         }
+        //usleep((99-animationSpeed)*5000);
     }
-    Box* tempA = new Box(alpha[0],alpha[1],1,1);
-    genRobot(tempA, alpha[0], alpha[1], alpha[2], clr_start[0], clr_start[1], clr_start[2]);
-    Box* tempB = new Box(beta[0],beta[1],1,1);
-    genRobot(tempB, beta[0], beta[1], beta[2], clr_goal[0], clr_goal[1], clr_goal[2]);
 
 
     /*******************
@@ -341,7 +341,7 @@ void Display::putQuads(){
     Box* tmp;
     int i;
     if(step){
-        for(i=0;  i<Box::pAllLeaf->size()&&i<expansions.at(renderSteps);i++){
+        for(i=0;i<Box::pAllLeaf->size()&&i<expansions.at(renderSteps);i++){
             tmp=Box::pAllLeaf->at(i);
 
             genQuad(tmp,epsilon);
@@ -592,7 +592,7 @@ void Display::genQuad(Box* b, double epsilon)
         case Box::FREE:
             // color is dark green, representing completed free angular ranges for both links
             // Note: the angular range of link i is the full circle iff LOWERi=0 and UPPERi=360 (i=1 or 2).
-            if (b->xi[Box::LOWER1] != 0 || b->xi[Box::UPPER1] != 360) {
+            if (b->xi[Box::LOWER] != 0 || b->xi[Box::UPPER] != 360) {
                 red = clr_totalFREE[0];
                 green = clr_totalFREE[1];
                 blue = clr_totalFREE[2];
@@ -650,7 +650,6 @@ void Display::genQuad(Box* b, double epsilon)
 
     // Add vertices of the quads' outlines
     for (int j = 3; j>=0 ; j--) {
-
         quadOutlines.push_back(quads[(quads.size()-5) - j*5]);
         quadOutlines.push_back(quads[(quads.size()-4) - j*5]);
         setVertexColor(quadOutlines, 0.0, 0.0, 0.0);

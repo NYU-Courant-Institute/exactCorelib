@@ -40,7 +40,8 @@ HEADERS  += MainWindow.h \
     Wall.h \
     Display.h \
     shader.h \
-    ShaderException.h
+    ShaderException.h \
+    robot.h
 
 FORMS    += MainWindow.ui
 

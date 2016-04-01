@@ -30,9 +30,11 @@ extern int numberForDisplay;
 
 extern int renderSteps;
 extern bool step;
+
+
+extern double mouseX, mouseY;
+
 int incr(1);
-
-
 
 int animationSpeed(50);
 
@@ -60,8 +62,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->bY->setValue(beta[1]);
     ui->bT1->setValue(beta[2]);
 
-    ui->l1->setValue(triRobo[0]);
-    ui->l2->setValue(triRobo[1]);
+    ui->l1->setValue(triRobo[0]*180);
+    ui->l2->setValue(triRobo[1]*180);
     ui->l3->setValue(R0);
 
 
@@ -146,6 +148,38 @@ MainWindow& MainWindow::operator<< (double d) {
     return *this;
 }
 
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    int x = event->x()-90;
+    int y = event->y()-30;
+    if(x<0||y<0||x>512||y>512) return;
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    int x = event->x()-90;
+    int y = event->y()-30;
+    if(x<0||y<0||x>512||y>512) return;
+
+    mouseX = x;
+    mouseY = 512-y;
+    fprintf(stderr, "mouse (%.lf, %.lf) box %d\n", mouseX, mouseY, Box::pAllLeaf->size());
+    double area = 512*512;
+
+    Box* record;
+    for(int i=Box::pAllLeaf->size()-1;i>=0;--i){
+        Box* tmp = Box::pAllLeaf->at(i);
+        if(mouseX >= tmp->x-tmp->width/2 && mouseX < tmp->x+tmp->width/2 &&
+           mouseY >= tmp->y-tmp->height/2 && mouseY < tmp->y+tmp->height/2 &&
+           area > tmp->width*tmp->height){
+            area = tmp->width*tmp->height;
+            record = tmp;
+        }
+    }
+    fprintf(stderr, "box (%.lf, %.lf) width %.lf height %.lf classify condition: %d\n", record->x, record->y, record->width, record->height, record->classify_condition);
+    //record->checkChildStatus(record->x, record->y);
+}
+
 void MainWindow::on_run_clicked()
 {
     char egPre[200], egCur[200];
@@ -161,8 +195,8 @@ void MainWindow::on_run_clicked()
         beta[1]=ui->bY->value();
         beta[2]=ui->bT1->value();
 
-        triRobo[0]=ui->l1->value();
-        triRobo[1]=ui->l2->value();
+        triRobo[0]=ui->l1->value()/180.0f;
+        triRobo[1]=ui->l2->value()/180.0f;
         R0=ui->l3->value();
 
         epsilon=ui->eps->value();
@@ -184,8 +218,8 @@ void MainWindow::on_run_clicked()
         ui->bY->setValue(beta[1]);
         ui->bT1->setValue(beta[2]);
 
-        ui->l1->setValue(triRobo[0]);
-        ui->l2->setValue(triRobo[1]);
+        ui->l1->setValue(triRobo[0]*180);
+        ui->l2->setValue(triRobo[1]*180);
         ui->l3->setValue(R0);
 
         switch (QType) {

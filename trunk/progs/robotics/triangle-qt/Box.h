@@ -13,27 +13,19 @@
 #include <float.h>
 #include "line2d.h"
 
+
 class Set;
 class Box;
 
 const double PI = 3.1415926;
-const double deg2rad = 1/180.0f;
-const double rad2deg = 180.0f;
-
-/* ********
- * Notes:
- *  -- angle is in radians (i.e., 1 = 180degrees, 2 = 360 degrees)
- *
- * ********/
+const double deg2rad = 1.0f/180.0f;
 
 using namespace std;
 
-class BoxNode {
+class BoxNode
+{
 public:
-    BoxNode() {
-        x = y = clearance = 0;
-        nearest_feature = NULL;
-    }
+    BoxNode(){ x=y=clearance=0; nearest_feature=NULL; }
     //list<Corner*> corners;
     //list<Wall*> walls;
     Feature* nearest_feature;
@@ -41,63 +33,67 @@ public:
     double x, y;
 };
 
-class Box {
+class Box
+{
 private:
-    static bool isOverLimit(const Box* base, const Box* nextBox) {
-        if ((nextBox->x > base->x - base->width / 2
-                && nextBox->x < base->x + base->width / 2)
-                || (nextBox->y > base->y - base->height / 2
-                        && nextBox->y < base->y + base->height / 2)) {
+    static bool isOverLimit(const Box* base, const Box* nextBox)
+    {
+        if ((nextBox->x > base->x - base->width / 2 && nextBox->x < base->x + base->width / 2)
+            || (nextBox->y > base->y - base->height / 2 && nextBox->y < base->y + base->height / 2))
+        {
             return false;
         }
         return true;
     }
 
-    static bool isOneContainAnotherX(const Box* b1, const Box* b2) {
+    static bool isOneContainAnotherX(const Box* b1, const Box* b2)
+    {
         double xmin1 = b1->x - b1->width / 2;
         double xmax1 = b1->x + b1->width / 2;
         double xmin2 = b2->x - b2->width / 2;
         double xmax2 = b2->x + b2->width / 2;
 
         if ((xmin1 <= xmin2 && xmax2 <= xmax1)
-                || (xmin2 <= xmin1 && xmax1 <= xmax2)) {
+            || (xmin2 <= xmin1 && xmax1 <= xmax2))
+        {
             return true;
         }
         return false;
     }
 
-    static bool isOneContainAnotherY(const Box* b1, const Box* b2) {
+    static bool isOneContainAnotherY(const Box* b1, const Box* b2)
+    {
         double ymin1 = b1->y - b1->height / 2;
         double ymax1 = b1->y + b1->height / 2;
         double ymin2 = b2->y - b2->height / 2;
         double ymax2 = b2->y + b2->height / 2;
 
         if ((ymin1 <= ymin2 && ymax2 <= ymax1)
-                || (ymin2 <= ymin1 && ymax1 <= ymax2)) {
+            || (ymin2 <= ymin1 && ymax1 <= ymax2))
+        {
             return true;
         }
         return false;
     }
 
-    static bool isOneContainAnotherA(const Box* b1, const Box* b2) {
-        if (isBothInArc1(b1, b2) || isBothInArc1(b2, b1)) {
+    static bool isOneContainAnotherA(const Box* b1, const Box* b2)
+    {
+        if (isBothInArc1(b1, b2) || isBothInArc1(b2, b1))
+        {
             return true;
         }
         return false;
     }
 
-    static bool isOneAdjacentAnotherA(const Box* b1, const Box* b2) {
-        if (isBothInArc1(b1, b2) || isBothInArc1(b2, b1)) {
-            return true;
-        }
-        return false;
-    }
-
-    static bool isEq(double x, double y) {
+    static bool isEq(double x, double y)
+    {
         double e = 10 * std::numeric_limits<double>::epsilon();
-        if (abs(double(x - y)) < e) {
+        if ( abs( double(x-y) ) < e)
+        {
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
@@ -168,13 +164,14 @@ private:
         return false;
     }
 
-    void updateStatusBig();
     void updateStatusSmall();
 
-    static int oppositeDir[6];	// = {2, 3, 0, 1, 6, 5};
+    void updateStatusBig();
+
+    static int oppositeDir[6];// = {2, 3, 0, 1, 6, 5};
 
 public:
-    //friend class BoxIter;
+    friend class BoxIter;
     friend class QuadTree;
     int depth;
     double x, y;
@@ -186,22 +183,21 @@ public:
     double rB;
     double cl_m; //clearance of the mid point of the box
 
-
     static vector<Box*>* pAllLeaf;
 
     vector<Box*> Nhbrs[6];
     bool isBig;
     int tChildID;
     int rChildID;
-    enum {LOWER1, UPPER1};
+    enum{ LOWER, UPPER };
     double xi[2];
+
 
     static int counter;	// time of expansion (used in BFS strategy)
 
     Box* pParent; //parent in quadtree
-    enum Status {
-        FREE, STUCK, MIXED, UNKNOWN
-    };
+    int classify_condition;
+    enum Status { FREE, STUCK, MIXED, UNKNOWN };
     Status status;
     Set* pSet;
     list<Corner*> corners;
@@ -214,30 +210,25 @@ public:
     int heapId;
     Box* prev;
     bool visited;
-    bool shouldSplit2D;
-    int safeRanges;
 
-    Box(double xx, double yy, double w, double h) :
-            depth(1), x(xx), y(yy), width(w), height(h), isLeaf(true), isBig(
-                    true), tChildID(-1), rChildID(-1), pParent(0), status(
-                    UNKNOWN), pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(
-                    false), shouldSplit2D(false), safeRanges(0) {
-
-
-
-
-        rB = sqrt(width * width + height * height) / 2;
+    Box(double xx, double yy, double w, double h):
+            depth(1), x(xx), y(yy), width(w), height(h), isLeaf(true),
+        isBig(true), tChildID(-1), rChildID(-1),
+        pParent(0), classify_condition(-1), status(UNKNOWN),
+        pSet(0), dist2Source(-1),
+        heapId(-1), prev(0), visited(false)
+    {
+        rB = sqrt(width*width + height*height)/2;
         priority = Box::counter;
 
-        xi[0] = 0;
-        xi[1] = 2;
-
-        cl_m = 0;
+         xi[0] = 0;
+         xi[1] = 2;
     }
 
     static int isNhbr(Box* b1, Box* b2);
 
-    void updateStatus() {
+    void updateStatus()
+    {
         if (this->isBig)
         {
             updateStatusBig();
@@ -246,73 +237,80 @@ public:
         {
             updateStatusSmall();
         }
+
     }
 
 
     //find the nearest feature, and check
     Status checkChildStatus(double x, double y);
 
-    void distribute_features2box(Box * child) {
-        typedef list<Wall*>::iterator WIT;
+    void distribute_features2box(Box * child)
+    {
+        typedef list<Wall*>::iterator   WIT;
         typedef list<Corner*>::iterator CIT;
 
         //center x,y
-        double x = child->x;
-        double y = child->y;
+        double x=child->x;
+        double y=child->y;
 
-        //clearance+radius of the box
-        double cl2r = 2 * child->rB + child->cl_m; //clearance + 2 * rB
+        //clearance+2*radius of the box
+        double cl2r=child->rB*2+child->cl_m; //clearance + 2*rB
 
         //
         //compute the separation to walls
-        for (WIT iterW = vorWalls.begin(); iterW != vorWalls.end(); ++iterW) {
+        for (WIT iterW=vorWalls.begin(); iterW != vorWalls.end(); ++iterW)
+        {
             Wall* w = *iterW;
             double dist = w->distance(x, y); //w->distance_star(x, y); //w->distance(x, y);
 
             if (dist < cl2r) //within the distance range
             {
                 {
-                    bool zone = w->inZone_star(child); //true; //w->inZone(child); //w->inZone_star(child);
-                    if (zone)
+                    bool zone=w->inZone_star(child); //true; //w->inZone(child); //w->inZone_star(child);
+                    if(zone)
                         child->vorWalls.push_back(w);
                 }
-            } //end if
-        } //end for
+            }//end if
+        }//end for
 
         //compute the separation to corners
-        for (CIT iterC = vorCorners.begin(); iterC != vorCorners.end();
-                ++iterC) {
+        for (CIT iterC=vorCorners.begin(); iterC != vorCorners.end(); ++iterC)
+        {
             Corner* c = *iterC;
             double dist = c->distance(x, y);
             //OK, close enough
-            if (dist < cl2r) {
+            if (dist < cl2r)
+            {
                 {
                     //check with the Zone of the previous wall
-                    bool zone = c->inZone_star(child); //true; //c->inZone(child); //c->inZone_star(child);
-                    if (zone)
+                    bool zone=c->inZone_star(child); //true; //c->inZone(child); //c->inZone_star(child);
+                    if(zone)
                         child->vorCorners.push_back(c);
                 }
-            } //end if
-        } //end for
+            }//end if
+        }//end for
 
+        //        return;
 
+        //
         //check the closest features of the box corner
         //
         //the closest feature of the box corner should be inside the features
         //of this box
         //
         {
+
             BoxNode mid;
-            mid.x = x;
-            mid.y = y;
+            mid.x=x;
+            mid.y=y;
             determine_clearance(mid);
-            if (mid.nearest_feature == NULL) return;
+            if(mid.nearest_feature==NULL) return;
 
             list<Feature*> features;
-            features.insert(features.end(), child->vorCorners.begin(), child->vorCorners.end());
-            features.insert(features.end(), child->vorWalls.begin(), child->vorWalls.end());
-            if (std::find(features.begin(), features.end(), mid.nearest_feature)
-                    == features.end()) {
+            features.insert(features.end(),child->vorCorners.begin(), child->vorCorners.end());
+            features.insert(features.end(),child->vorWalls.begin(), child->vorWalls.end());
+            if( std::find(features.begin(), features.end(), mid.nearest_feature)==features.end() )
+            {
                 //some closest feature is lost....
                 //this means the box is not in the zone of the closest feature....
                 child->vorCorners.clear();
@@ -322,23 +320,24 @@ public:
         }
     }
 
-    void determine_clearance(BoxNode& node) {
-        double x = node.x;
-        double y = node.y;
+
+    void determine_clearance(BoxNode& node)
+    {
+        double x=node.x;
+        double y=node.y;
 
         //compute the closest wall
-        Wall* nearestWall = NULL;
-        double mindistW = FLT_MAX;
-        for (list<Wall*>::iterator iterW = vorWalls.begin(); iterW != vorWalls.end(); ++iterW) {
+        Wall* nearestWall=NULL;
+        double mindistW=FLT_MAX;
+        for (list<Wall*>::iterator iterW = vorWalls.begin(); iterW != vorWalls.end(); ++iterW)
+        {
             Wall* w = *iterW;
+
             double dist = w->distance(x, y);
-// Chee: this code is wrong!
-// 	instead of distance_sign(x,y), we compute the parameter u.
-// 	Then we compute r = radius(B)/ Length(w)
-// 	Then w is a nearest wall to m(B) iff u lies in the interval [-r, 1+r].
-//
-            if (fabs(dist - mindistW) < 1e-10) {
-                if (w->distance_sign(x, y) == 0 && w->isRight(x, y)) //in zone
+
+            if( fabs(dist-mindistW)<1e-10 )
+            {
+                if( w->distance_sign(x,y)==0 && w->isRight(x,y) ) //in zone
                     nearestWall = *iterW;
             }
             else if (dist < mindistW) //shorter distance
@@ -353,16 +352,18 @@ public:
         //
         double mindistC = FLT_MAX; //mindistC may not exist, so init to a bigger number
         Corner* nearestCorner = NULL;
-        for (list<Corner*>::iterator iterC = vorCorners.begin(); iterC != vorCorners.end(); ++iterC) {
+        for (list<Corner*>::iterator iterC = vorCorners.begin(); iterC != vorCorners.end(); ++iterC)
+        {
             Corner* c = *iterC;
             double dist = c->distance(x, y);
 
-            if (fabs(dist - mindistC) < 1e-10) //if(dist == mindistC)
+            if( fabs(dist-mindistC)<1e-5 ) //if(dist == mindistC)
             {
-                if (c->inZone_star(x, y)) //in the zone
+                if( c->inZone_star(x,y) ) //in the zone
                 {
                     nearestCorner = *iterC;
                 }
+
             }
             else if (dist < mindistC)  //shorter distance
             {
@@ -375,72 +376,74 @@ public:
         // determine the feature and shortest
         //
 
-        bool in_zone_w = false;
-        bool in_zone_c = false;
+        bool in_zone_w=false;
+        bool in_zone_c=false;
 
-        if (nearestWall != NULL)
-            in_zone_w = nearestWall->inZone_star(x, y);
-        if (nearestCorner != NULL)
-            in_zone_c = nearestCorner->inZone_star(x, y);
+        if(nearestWall!=NULL) in_zone_w=nearestWall->inZone_star(x,y);
+        if(nearestCorner!=NULL) in_zone_c=nearestCorner->inZone_star(x,y);
 
-        if (fabs(mindistW - mindistC) < 1e-5)
+        if( fabs(mindistW-mindistC)<1e-5 )
         {
-            if (in_zone_w)
-            {
-                node.clearance = mindistW;
-                node.nearest_feature = nearestWall;
+            if(in_zone_w){
+                node.clearance=mindistW;
+                node.nearest_feature=nearestWall;
             }
 
-            if (in_zone_c)
-            {
-                node.clearance = mindistC;
-                node.nearest_feature = nearestCorner;
+            if(in_zone_c){
+                node.clearance=mindistC;
+                node.nearest_feature=nearestCorner;
             }
         }
         else if (mindistW < mindistC)
         {
-            node.clearance = mindistW;
-            if (nearestWall != NULL)
-            {
-                node.nearest_feature = nearestWall;
+            node.clearance=mindistW;
+            if(nearestWall!=NULL){
+                node.nearest_feature=nearestWall;
             }
         }
         else //mindistW > mindistC
         {
-            node.clearance = mindistC;
-            if (nearestCorner != NULL)
-            {
-                node.nearest_feature = nearestCorner;
+            node.clearance=mindistC;
+            if(nearestCorner!=NULL){
+                node.nearest_feature=nearestCorner;
             }
         }
+        //
+        //-----------------------------------
+        //
     }
 
-    void addCorner(Corner* c) {
+    void addCorner(Corner* c)
+    {
         corners.push_back(c);
     }
 
-    void addWall(Wall* w) {
+    void addWall(Wall* w)
+    {
         walls.push_back(w);
     }
 
-    bool isFree() {
-        if (status == FREE) {
+    bool isFree()
+    {
+        if (status == FREE)
+        {
             return true;
         }
         return false;
     }
 
-    bool in(double qx, double qy) {
-        if (qx < x - width / 2 || qx > x + width / 2)
-            return false;
-        if (qy < y - height / 2 || qy > y + height / 2)
-            return false;
+    bool in(double qx, double qy)
+    {
+        if( qx<x-width/2 || qx>x+width/2 ) return false;
+        if( qy<y-height/2 || qy>y+height/2) return false;
         return true;
     }
 
-    bool contains(double x, double y) {
+    bool contains(double x, double y)
+    {
         if (this->x + width / 2 >= x && this->x - width / 2 <= x
-                && this->y + height / 2 >= y && this->y - height / 2 <= y) {
+            && this->y + height / 2 >= y && this->y - height / 2 <= y)
+        {
             return true;
         }
 
@@ -473,19 +476,25 @@ public:
         return false;
     }
 
-    Status getStatus() {
+    Status getStatus()
+    {
         updateStatus();
         return status;
     }
 
-    bool split2D(double epsilon, vector<Box*>& chldn);
-    bool split3D(double epsilon, vector<Box*>& chldn);
-    bool splitAngle(double epsilon, vector<Box*>& chldn);
+    bool split2D( double epsilon, vector<Box*>& chldn);
+
+    bool split3D( double epsilon, vector<Box*>& chldn );
+
+    bool splitAngle( double epsilon, vector<Box*>& chldn );
+
+     //split(eps)
+     //	returns false if we fail to split for some reason
     bool split(double epsilon, vector<Box*>& chldn);
+
     void recursiveSplitAngle(double epsilon, vector<Box*>& chldn, const int n, int m);
 
     void getRoundTriVerts(double& v01x, double& v01y, double& v02x, double& v02y, double& v11x, double& v11y,
         double& v12x, double& v12y, double& v21x, double& v21y, double& v22x, double& v22y);
 
-};
-//class Box
+};//class Box

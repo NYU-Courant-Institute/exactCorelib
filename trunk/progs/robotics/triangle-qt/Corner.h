@@ -15,8 +15,7 @@ public:
 
     Corner(double xx, double yy):x(xx), y(yy)
     {
-        preWall = NULL;
-        nextWall = NULL;
+
     }
 
     double distance(double x2, double y2)

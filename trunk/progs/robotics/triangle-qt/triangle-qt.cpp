@@ -108,7 +108,7 @@ using namespace std;
 //  double triRobo[2] = {0.95, 1.05};
 //
 // (d) Right-Angle Isosceles Robot
-double triRobo[2] = {0.5, 1.0};
+double triRobo[2] = {0.5, 1};
 //
 // (e) Off-Center Robot
 // double triRobo[2] = {0.3, 0.6};
@@ -148,6 +148,7 @@ int numEg = 0;
 Box* boxA;				// start box (containing alpha)
 Box* boxB;				// goal box (containing beta)
 vector<Box*> PATH;
+double mouseX, mouseY;
 
 int timePerFrame = 10;
 
@@ -243,92 +244,100 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
     dijkstraQueue<Cmp> dijQ;
     dijQ.push(a);
     toReset.push_back(a);
-
-    while (!dijQ.empty()) {
-
+    while(!dijQ.empty())
+    {
         Box* current = dijQ.extract();
         current->visited = true;
 
         // if current is MIXED, try expand it and push the children that is
         // ACTUALLY neighbors of the source set (set containing alpha) into the dijQ again
-        if (current->status == Box::MIXED) {
+        if (current->status == Box::MIXED)
+        {
             vector<Box*> cldrn;
-            if (QT->expand(current, cldrn)) {
+            if (QT->expand(current, cldrn))
+            {
                 ++ct;
-                for (int i = 0; i < (int) cldrn.size(); ++i) {
-
+                for (int i = 0; i < (int)cldrn.size(); ++i)
+                {
                     // go through neighbors of each child to see if it's in source set
                     // if yes, this child go into the dijQ
                     bool isNeighborOfSourceSet = false;
-                    for (int j = 0; j < 6 && !isNeighborOfSourceSet; ++j) {
-                        for (vector<Box*>::iterator iter = cldrn[i]->Nhbrs[j].begin(); iter < cldrn[i]->Nhbrs[j].end(); ++iter) {
+                    for (int j = 0; j < 6 && !isNeighborOfSourceSet; ++j)
+                    {
+                        for (vector<Box*>::iterator iter = cldrn[i]->Nhbrs[j].begin(); iter < cldrn[i]->Nhbrs[j].end(); ++iter)
+                        {
                             Box* n = *iter;
-                            if (n->dist2Source == 0) {
+                            if (n->dist2Source == 0)
+                            {
                                 isNeighborOfSourceSet = true;
                                 break;
                             }
                         }
+
                     }
 
-                    if (isNeighborOfSourceSet) {
-                        switch (cldrn[i]->getStatus()) {
-                        // Tom? 3/18: Why do we have to insert free boxes???
-                        //if it's FREE, also insert to source set
-                        case Box::FREE:
-                            cldrn[i]->dist2Source = 0;
-                            dijQ.push(cldrn[i]);
-                            toReset.push_back(cldrn[i]);
-                            break;
-                        case Box::MIXED:
-                            dijQ.push(cldrn[i]);
-                            toReset.push_back(cldrn[i]);
-                            break;
-                        case Box::STUCK:
-                            //cerr << "inside FindPath: STUCK case not treated" << endl;
-                            break;
-                        case Box::UNKNOWN:
-                            //cerr << "inside FindPath: UNKNOWN case not treated" << endl;
-                            break;
+                    if (isNeighborOfSourceSet)
+                    {
+                        switch (cldrn[i]->getStatus())
+                        {
+                            //if it's FREE, also insert to source set
+                            case Box::FREE:
+                                cldrn[i]->dist2Source = 0;
+                                dijQ.push(cldrn[i]);
+                                toReset.push_back(cldrn[i]);
+                                break;
+                            case Box::MIXED:
+                                dijQ.push(cldrn[i]);
+                                toReset.push_back(cldrn[i]);
+                                break;
+                            case Box::STUCK:
+                                //cerr << "inside FindPath: STUCK case not treated" << endl;
+                                break;
+                            case Box::UNKNOWN:
+                                //cerr << "inside FindPath: UNKNOWN case not treated" << endl;
+                                break;
                         }
                     }
                 }
             }
-            if (current->shouldSplit2D && current->height / 2 >= epsilon && current->width / 2 >= epsilon) {
-                dijQ.push(current);
-                toReset.push_back(current);
-            }
-
             continue;
         }
 
-        if (current->status == Box::FREE
-                && current->contains(beta[0], beta[1], beta[2])) {
+        //found path!
+        if (current == b)
+        {
             isPath = true;
             break;
         }
 
-        if (current->status == Box::FREE) {
-            // if current is not MIXED, then must be FREE
-            // go through it's neighbors and add FREE and MIXED ones to dijQ
-            // also add FREE ones to source set
-            for (int i = 0; i < 6; ++i) {
-                for (vector<Box*>::iterator iter = current->Nhbrs[i].begin();
-                        iter < current->Nhbrs[i].end(); ++iter) {
-                    Box* neighbor = *iter;
-                    if (!neighbor->visited && neighbor->dist2Source == -1 && (neighbor->status == Box::FREE || neighbor->status == Box::MIXED)) {
-                        if (neighbor->status == Box::FREE) {
-                            neighbor->dist2Source = 0;
-                        }
-                        dijQ.push(neighbor);
-                        toReset.push_back(neighbor);
+        // if current is not MIXED, then must be FREE
+        // go through it's neighbors and add FREE and MIXED ones to dijQ
+        // also add FREE ones to source set
+          if (current->status == Box::FREE){ // bug fix by Zhongdi (Aug 19, 2013)
+                         // -- added if(status==FREE) test
+        for (int i = 0; i < 6; ++i)
+        {
+            for (vector<Box*>::iterator iter = current->Nhbrs[i].begin(); iter < current->Nhbrs[i].end(); ++iter)
+            {
+                Box* neighbor = *iter;
+                if (!neighbor->visited && neighbor->dist2Source == -1 && (neighbor->status == Box::FREE || neighbor->status == Box::MIXED))
+                {
+                    if (neighbor->status == Box::FREE)
+                    {
+                        neighbor->dist2Source = 0;
                     }
+                    dijQ.push(neighbor);
+                    toReset.push_back(neighbor);
                 }
             }
-        }
-
+        }//for
+           }//if (bug fix)
     }
 
-    for (int i = 0; i < (int) toReset.size(); ++i) {
+    //these two fields are also used in dijkstraShortestPath
+    // need to reset
+    for (int i = 0; i < (int)toReset.size(); ++i)
+    {
         toReset[i]->visited = false;
         toReset[i]->dist2Source = -1;
     }
@@ -491,11 +500,11 @@ void run() {
         beta[2] = beta[2]*deg2rad;
     }
 
-    //if (verboseOption) {
-    mw_out << "   radius = " << R0 << ", eps = " << epsilon<<"\n" ;
-    mw_out << "   alpha = (" << alpha[0] << ", " << alpha[1] << ", " << alpha[2] << ")\n" ;
-    mw_out << "    beta = (" <<  beta[0] << ", " <<  beta[1] << ", " <<  beta[2] << ")\n" ;
-    //}
+    if (verboseOption) {
+        mw_out << "   radius = " << R0 << ", eps = " << epsilon<<"\n" ;
+        mw_out << "   alpha = (" << alpha[0] << ", " << alpha[1] << ", " << alpha[2] << ")\n" ;
+        mw_out << "    beta = (" <<  beta[0] << ", " <<  beta[1] << ", " <<  beta[2] << ")\n" ;
+    }
 
     genEmptyTree();
 
@@ -510,14 +519,12 @@ void run() {
         if (!boxA) {
             noPath = true;
             mw_out << "Start Configuration is not free\n";
-            ssout << "Start Configuration is not free\n";
         }
 
         boxB = QT->getBox(beta[0], beta[1], beta[2], ct);
         if (!boxB) {
             noPath = true;
             mw_out << "Goal Configuration is not free\n";
-            ssout << "Goal Configuration is not free\n";
         }
 
         // In the following loop, "noPath" should really mean "hasPath"
@@ -535,14 +542,12 @@ void run() {
         if (!boxA) {
             noPath = true;
             mw_out << "Start Configuration is not free\n";
-            ssout << "Start Configuration is not free\n";
         }
 
         boxB = QT->getBox(beta[0], beta[1], beta[2], ct);
         if (!boxB) {
             noPath = true;
             mw_out << "Goal Configuration is not free\n";
-            ssout << "Goal Configuration is not free\n";
         }
 
         if (!noPath) {
@@ -753,11 +758,11 @@ void parseExampleFile() {
 
         if (strcmp(sptr, "TriTheta1") == 0) {
             sptr = strtok(NULL, "=: \t");
-            triRobo[0] = atof(sptr);
+            triRobo[0] = atof(sptr)/180.0f;
         }
         if (strcmp(sptr, "TriTheta2") == 0) {
             sptr = strtok(NULL, "=: \t");
-            triRobo[1] = atof(sptr);
+            triRobo[1] = atof(sptr)/180.0f;
         }
         if (strcmp(sptr, "R") == 0) {
             sptr = strtok(NULL, "=: \t");

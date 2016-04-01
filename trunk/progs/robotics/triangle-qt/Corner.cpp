@@ -1,7 +1,6 @@
 #include "Corner.h"
 #include "Wall.h"
 #include "Box.h"
-#include <iostream>
 
 bool Corner::isConvex()
 {
@@ -114,9 +113,7 @@ bool Corner::inZone(double x2, double y2)
 
 bool Corner::inZone_star(double x2, double y2)
 {
-    if(isConvex()==false) {
-        return false;
-    }
+    if(isConvex()==false) return false;
     return inZone(x2,y2);
 }
 

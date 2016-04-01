@@ -14,7 +14,6 @@
 #include "Box.h"
 #include <float.h>
 
-
 Wall::Wall(Corner* s, Corner* d):src(s), dst(d)
 {
     src->nextWall = this;
@@ -43,7 +42,6 @@ bool Wall::isRight(double x, double y)
     double x2 = dst->x;
     double y1 = src->y;
     double y2 = dst->y;
-
     return (x2-x1)*(y-y1) - (y2-y1)*(x-x1) < 0;
 }
 

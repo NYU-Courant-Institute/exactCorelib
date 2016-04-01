@@ -14,13 +14,7 @@
  * ***************************************************/
 
 #pragma once
-#include <stddef.h>
 #include <stdlib.h>
-
-//#ifndef NULL
-//#define NULL   ((void *) void)
-//#endif
-
 //#ifndef CORE_LEVEL
 //	#define CORE_LEVEL 1
 //#endif
@@ -39,7 +33,7 @@ class Feature
 {
 public:
 
-    static int LEVEL; // Core Accuracy Level
+    static int LEVEL;
 
 //    static int corelevel()
 //    {

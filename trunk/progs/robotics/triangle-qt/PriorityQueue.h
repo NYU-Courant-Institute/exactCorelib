@@ -48,7 +48,7 @@ public:
 
     virtual bool empty() = 0;
 
-    virtual ~BoxQueue(void)
+    ~BoxQueue(void)
     {
     }
 };
@@ -143,10 +143,6 @@ private:
     distHeap<Cmp> dist_heap;
 
 public:
-
-    int size(){
-        return this->size();
-    }
 
     void push(Box* b)
     {

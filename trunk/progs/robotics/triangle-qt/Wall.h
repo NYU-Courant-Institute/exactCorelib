@@ -38,4 +38,5 @@ public:
     virtual bool inZone_star(Box * b);
 
     bool isRight(double x, double y);
+
 };

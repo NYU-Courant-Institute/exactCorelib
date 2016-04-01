@@ -12,8 +12,8 @@ goalTheta = 0
 
 epsilon = 3		# resolution parameter
 
-TriTheta1 = 0.5	# triangle robot
-TriTheta2 = 1.0
+TriTheta1 = 90	# triangle robot
+TriTheta2 = 180
 R = 18		# Disc Size
 
 inputDir = inputs	# where to find input files
@@ -43,7 +43,7 @@ clr_partialFREE 0 1 0
 clr_MIXED 1 1 0
 clr_STUCK 1 0 0
 clr_EPS 0.5 0.5 0.5
-clr_UNKNOWN 1 1 1
+clr_UNKNOWN 0.5 0.5 0.5
 # start, goal
 clr_start 1 0 1
 clr_goal 0.5 0 0.5

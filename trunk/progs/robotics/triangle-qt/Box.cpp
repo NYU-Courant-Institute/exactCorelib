@@ -32,21 +32,11 @@ extern int numberForDisplay;
 
 vector<int> expansions;
 
-class Point {
-public:
-    double x;
-    double y;
-    Point(double xx, double yy) :
-            x(xx), y(yy) {
-    }
-    ;
-};
-
 int Box::oppositeDir[6] = {2, 3, 0, 1, 5, 4};
 
-void Box::getRoundTriVerts(double& v01x, double& v01y, double& v02x,
-        double& v02y, double& v11x, double& v11y, double& v12x, double& v12y,
-        double& v21x, double& v21y, double& v22x, double& v22y) {
+void Box::getRoundTriVerts(double& v01x, double& v01y, double& v02x, double& v02y, double& v11x, double& v11y,
+                      double& v12x, double& v12y, double& v21x, double& v21y, double& v22x, double& v22y)
+{
     double r = r0;
     double theta1 = triRobo[0];
     double theta2 = triRobo[1];
@@ -69,13 +59,16 @@ void Box::getRoundTriVerts(double& v01x, double& v01y, double& v02x,
     v22y = r * sin((xi2 + theta2) * PI);
 }
 
-bool Box::split2D(double epsilon, vector<Box*>& chldn) {
+bool Box::split2D( double epsilon, vector<Box*>& chldn )
+{
     //todo do sth to return false
-    if (this->height < epsilon || this->width < epsilon) {
+    if (this->height < epsilon || this->width < epsilon)
+    {
         return 0;
     }
 
-    if (!this->isLeaf || this->status == FREE || this->status == STUCK) {
+    if (!this->isLeaf || this->status == FREE || this->status == STUCK)
+    {
         return 0;
     }
 
@@ -85,8 +78,8 @@ bool Box::split2D(double epsilon, vector<Box*>& chldn) {
     children[1] = new Box(x + width / 4, y + height / 4, width / 2, height / 2);
     children[0] = new Box(x + width / 4, y - height / 4, width / 2, height / 2);
     children[3] = new Box(x - width / 4, y - height / 4, width / 2, height / 2);
-
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i)
+    {
         children[i]->depth = this->depth + 1;
         children[i]->isBig = this->isBig;
         children[i]->pParent = this;
@@ -95,8 +88,7 @@ bool Box::split2D(double epsilon, vector<Box*>& chldn) {
         children[i]->xi[0] = this->xi[0];
         children[i]->xi[1] = this->xi[1];
 
-        // record max depth
-        //maxDep = maxDep > children[i]->depth ? maxDep : children[i]->depth;
+        maxDep = maxDep > children[i]->depth ? maxDep : children[i]->depth;
     }
 
     children[0]->Nhbrs[1].push_back(children[1]);
@@ -108,24 +100,31 @@ bool Box::split2D(double epsilon, vector<Box*>& chldn) {
     children[3]->Nhbrs[0].push_back(children[0]);
     children[3]->Nhbrs[1].push_back(children[2]);
 
-    for (int i = 0; i < 6; ++i) {
-        for (vector<Box*>::iterator iter = this->Nhbrs[i].begin();
-                iter != this->Nhbrs[i].end(); ++iter) {
+    for (int i = 0; i < 6; ++i)
+    {
+        for (vector<Box*>::iterator iter = this->Nhbrs[i].begin(); iter != this->Nhbrs[i].end(); ++iter)
+        {
             Box* b = *iter;
             int foundDst = 0;
-            for (int j = 0; j < 4; ++j) {
+            for (int j = 0; j < 4; ++j)
+            {
                 int idx = isNhbr(children[j], b);
-                if (idx != -1) {
+                if (idx != -1)
+                {
                     children[j]->Nhbrs[idx].push_back(b);
-                    if (foundDst == 0) {
-                        for (vector<Box*>::iterator it =
-                                b->Nhbrs[oppositeDir[idx]].begin();
-                                it != b->Nhbrs[oppositeDir[idx]].end(); ++it) {
-                            if (*it == this) {
+                    if (foundDst == 0)
+                    {
+                        for (vector<Box*>::iterator it = b->Nhbrs[oppositeDir[idx]].begin();
+                            it != b->Nhbrs[oppositeDir[idx]].end(); ++it)
+                        {
+                            if (*it == this)
+                            {
                                 *it = children[j];
                             }
                         }
-                    } else {
+                    }
+                    else
+                    {
                         b->Nhbrs[oppositeDir[idx]].push_back(children[j]);
                     }
                     ++foundDst;
@@ -135,46 +134,48 @@ bool Box::split2D(double epsilon, vector<Box*>& chldn) {
         }
     }
 
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i)
+    {
         //add all of parent's walls and corners to each child,
         //will be filtered later in updatestatus()
-
-        //TODO try to improve this part. Should filter the features before add them to its children.
         children[i]->walls.insert(children[i]->walls.begin(),
-                this->walls.begin(), this->walls.end());
-        children[i]->corners.insert(children[i]->corners.begin(),
-                this->corners.begin(), this->corners.end());
+            this->walls.begin(), this->walls.end());
+        children[i]->corners.insert(
+            children[i]->corners.begin(),
+            this->corners.begin(), this->corners.end());
 
         BoxNode node;
-        node.x = children[i]->x;
-        node.y = children[i]->y;
-        // get the clearance for voronoi
+        node.x=children[i]->x;
+        node.y=children[i]->y;
         determine_clearance(node);
-        children[i]->cl_m = node.clearance;
+        children[i]->cl_m=node.clearance;
 
-        //distribute the feature for voronoi
+        //distribute the feature
         distribute_features2box(children[i]);
     }
 
     this->isLeaf = false;
 
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i)
+    {
         pAllLeaf->push_back(children[i]);
         chldn.push_back(children[i]);
     }
-    expansions.push_back(pAllLeaf->size());
-
     //list<Box*>::iterator it = find(pAllLeaf->begin(), pAllLeaf->end(), this);
     //pAllLeaf->erase(it);
 
     return true;
 }
 
-bool Box::split3D(double epsilon, vector<Box*>& chldn) {
+bool Box::split3D( double epsilon, vector<Box*>& chldn )
+{
     vector<Box*> bv;
-    if (this->splitAngle(epsilon, bv)) {
-        for (int i = 0; i < 2; ++i) {
-            if (!bv[i]->split2D(epsilon, chldn)) {
+    if (this->splitAngle(epsilon, bv))
+    {
+        for (int i = 0; i < 2; ++i)
+        {
+            if (!bv[i]->split2D(epsilon, chldn))
+            {
                 return false;
             }
         }
@@ -183,20 +184,12 @@ bool Box::split3D(double epsilon, vector<Box*>& chldn) {
     return 0;
 }
 
-
-
-
-
-
-
 bool Box::splitAngle( double epsilon, vector<Box*>& chldn )
 {
     //todo do sth to return false
     if ( this->xi[1] > this->xi[0] )
     {
         //todo, 0.028 is somehow random
-        // Tom? 3/22: what's this magic number? 0.014
-        //            it should be epsilon/r0
         if ( (this->xi[1] - this->xi[0]) * PI < 0.014)
         {
             return 0;
@@ -294,32 +287,18 @@ bool Box::splitAngle( double epsilon, vector<Box*>& chldn )
         pAllLeaf->push_back(children[i]);
         chldn.push_back(children[i]);
     }
-    expansions.push_back(pAllLeaf->size());
     //list<Box*>::iterator it = find(pAllLeaf->begin(), pAllLeaf->end(), this);
     //pAllLeaf->erase(it);
 
     return true;
 }
 
-
-/* split(eps, children)
- *    returns a list of children after splitting
- *
- *     There are 3 possibilities:
- *      (1) If the box is "big" (isBig) then we do a 2D split into 4 children
- *            (we only split the translational box, and the rotational box is S^1)
- *            Here "isBig" means ...
- *      (2) Else, if this is the first time the box is "small" (!isBig),
- *             we will split the
- */
 bool Box::split( double epsilon, vector<Box*>& chldn )
 {
     if (!this->isBig) // not isBig:
     {
         return split3D(epsilon, chldn);
     }
-    // Tom? 3/25: what's this division?
-    //            why we use 20?
     else if( rB / 2 < r0 * 2 / THETA_MIN / 20 ) // one-shot intermediate split before
                 // doing split3D( ).  After this, isBig is false.
             // This intermediate step speeds up the code...
@@ -345,12 +324,6 @@ bool Box::split( double epsilon, vector<Box*>& chldn )
     }
 }
 
-/* recursiveSplitAngle( eps, children, n, m)
- *
- * will call itself recursively as long as m < n.   Note that n does not change.
- * Initally, m=1.
- *
- * ****/
 void Box::recursiveSplitAngle( double epsilon, vector<Box*>& chldn, const int n, int m )
 {
     if (m >= n)
@@ -370,27 +343,33 @@ Box::Status Box::checkChildStatus( double x, double y )
 {
     //assert(walls.size());
 
-    double mindistW = FLT_MAX;
-    Wall* nearestWall = NULL;
-    if (walls.size() > 0)
+    Wall* nearestWall;
+    list<Wall*>::iterator iterW = walls.begin();   // Careful!  This logic assumes that
+                           //  if there is any features then there is at least one wall feature!
+                           //  So you cannot use zone filters to get rid of walls, nor allow point obstacles.
+    double mindistW = (*iterW)->distance(x, y);
+    nearestWall = *iterW;
+    ++iterW;
+    for (; iterW != walls.end(); ++iterW)
     {
-        for (list<Wall*>::iterator iterW = walls.begin(); iterW != walls.end(); ++iterW)
+        Wall* w = *iterW;
+        double dist = w->distance(x, y);
+        if (dist < mindistW)
         {
-            Wall* w = *iterW;
-            double dist = w->distance(x, y);
-            if (dist < mindistW)
-            {
-                mindistW = dist;
-                nearestWall = *iterW;
-            }
+            mindistW = dist;
+            nearestWall = *iterW;
         }
     }
 
-    double mindistC = FLT_MAX; //mindistC may not exist, so init to a bigger number
+    double mindistC = mindistW +1; //mindistC may not exist, so init to a bigger number
     Corner* nearestCorner = NULL;
-    if (corners.size() > 0)
+    if (corners.size())
     {
-        for (list<Corner*>::iterator iterC = corners.begin(); iterC != corners.end(); ++iterC)
+        list<Corner*>::iterator iterC = corners.begin();
+        mindistC = (*iterC)->distance(x, y);
+        nearestCorner = *iterC;
+        ++iterC;
+        for (; iterC != corners.end(); ++iterC)
         {
             Corner* c = *iterC;
             double dist = c->distance(x, y);
@@ -401,41 +380,24 @@ Box::Status Box::checkChildStatus( double x, double y )
             }
         }
     }
-
-    bool isFree = false;
-
     //nearest feature is a wall
-    if (mindistW < mindistC)
-    {
-        if (nearestWall->isRight(x, y))
-        {
-            isFree = true;
+    if (mindistW < mindistC){
+        if (nearestWall->isRight(x, y)){
+            return FREE;
         }
     }
     //otherwise check the corner's convexity
     //if convex, out; if concave, in
     //note that if a wall and a corner are the same dist,
     //only need to take care of the corner
-    else
-    {
-        if (nearestCorner->isConvex())
-        {
-            isFree = true;
+    else{
+        if (nearestCorner->isConvex()){
+            return FREE;
         }
-    }
-
-    if (isFree)
-    {
-        return FREE;
     }
     return STUCK;
 }
 
-//    -1: not adjacent
-//    0: b2 is on the right of b1
-//    1: b2 is above b1
-//    2: b2 is on the left of b1
-//    3  b2 is under b1
 int Box::isNhbr( Box* b1, Box* b2 )
 {
     double xmin1 = b1->x - b1->width / 2;
@@ -490,17 +452,14 @@ void Box::updateStatusBig()
     for (list<Corner*>::iterator it = corners.begin(); it != corners.end(); )
     {
         Corner* c = *it;
-        double distCorner = c->distance(this->x, this->y);
-        if( distCorner <= outerDomain ) {
-            status = MIXED;
+        if( c->distance(this->x, this->y) <= outerDomain ) {
             ++it;
         }
         else {
             it = corners.erase(it);
         }
-        // what's this ???
-        //if (corners.size())
-        //    status = MIXED;
+       if (corners.size())
+          status = MIXED;
     }
 
     for (list<Wall*>::iterator it = walls.begin(); it != walls.end(); )
@@ -514,7 +473,7 @@ void Box::updateStatusBig()
 //		}
 //		else
 
-       if ( distWall <= outerDomain )
+       if (distWall <= outerDomain)
         {
             status = MIXED;
             ++it;
@@ -530,10 +489,12 @@ void Box::updateStatusBig()
         if (!pParent)
         {
             status = FREE;
+            classify_condition = 1;
         }
         else
         {
             status = pParent->checkChildStatus(this->x, this->y);
+            classify_condition = 2;
         }
     }
 }
@@ -554,7 +515,7 @@ void Box::updateStatusSmall()
     Line2d L3(v22x, v22y, v01x, v01y);
     // unused:
     // bool expandSuccess = L1.expand(rB, L2, L3) && L2.expand(rB, L1, L3) && L3.expand(rB, L1, L2) && !L1.isNegative(L2, L3);
-    // assert(expandSuccess);
+    //assert(expandSuccess);
 
 
     Line2d L1a(v01x, v01y, v12x, v12y);
@@ -583,6 +544,7 @@ void Box::updateStatusSmall()
         if (shrinkSuccess && !L1a.isRight(cx, cy) && !L2a.isRight(cx, cy) && !L3a.isRight(cx, cy))
         {
             status = STUCK;
+            classify_condition = 3;
             return;
         }
 
@@ -633,6 +595,7 @@ void Box::updateStatusSmall()
                     )
                 {
                     status = STUCK;
+                    classify_condition = 4;
                     return;
                 }
                 // or line seg (src,dst) intersects any edge of triangle
@@ -641,6 +604,7 @@ void Box::updateStatusSmall()
                     || Line2d::lineSegIntsct(x12s, y12s, x23s, y23s, srcx, srcy, dstx, dsty) )
                 {
                     status = STUCK;
+                    classify_condition = 5;
                     return;
                 }
             }
@@ -681,10 +645,12 @@ void Box::updateStatusSmall()
         if (!pParent)
         {
             status = FREE;
+            classify_condition = 6;
         }
         else
         {
             status = pParent->checkChildStatus(this->x, this->y);
+            classify_condition = 7;
         }
     }
 }
