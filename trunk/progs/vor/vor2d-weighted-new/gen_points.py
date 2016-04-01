@@ -2,6 +2,7 @@ import random
 from sys import argv
 
 WIDTH = 1024
+M_WEIGHT = 6.0
 
 def rcoor():
     return random.randint(0, WIDTH - 1)
@@ -19,7 +20,7 @@ def output_file(n):
     f.write("\n" + sn + "\n")
     for i in range(n):
         if len(argv) > 2 and argv[2] == "-w":
-            f.write("w " + str(random.uniform(.1666667, 6)) + "\n")
+            f.write("w " + str(random.uniform(1.0 / M_WEIGHT, M_WEIGHT)) + "\n")
         f.write(str(i) + "\n")
 
     f.close()

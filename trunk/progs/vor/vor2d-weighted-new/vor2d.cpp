@@ -357,7 +357,6 @@ void parse(string input) {
 
 void Mouse(int button, int state, int x, int y) {
   if (state == GLUT_UP) {
-    // cout << x << " " << y << " " << button << "\n";
     if (button == GLUT_LEFT_BUTTON) {
       show_grid = !show_grid;
     } else if (button == GLUT_WHEEL_UP) {
@@ -369,24 +368,29 @@ void Mouse(int button, int state, int x, int y) {
   }
 }
 
-void enqueue_children(vor_box* box) {
-  box->smooth_split();
-  vor_box** children = box->children();
-  for (int i = 0; i < box->num_children(); i++) {
-    subdiv.push(children[i]);
-  }
-}
-
 // TODO: Improve this to handle degenerate input.
 #define MAX_OBJECTS_FOR_CONSTRUCTION 3
 #define MK_SCALE 2.0
 #define JC_SCALE 3.0
 #define INT_SCALE 1.0
 
+bool inter_root(vor_box* box, double scale) {
+  // TODO: Avoid iterating through all vertex boxes.
+  for (auto it = vor_vert_boxes.begin(); it != vor_vert_boxes.end(); ++it) {
+    if (box->scaled_intersect(**it, scale)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void blame(vor_box* box) {
   if (box->num_objects() > MAX_OBJECTS_FOR_CONSTRUCTION) {
     cout << box->num_objects() << " objects still active.\n";
     return;
+  }
+  if (inter_root(box, INT_SCALE)) {
+    cout << "Intersects other root boxes.\n";
   }
   if (!box->cpv()) {
     cout << "PV failed.\n";
@@ -394,8 +398,23 @@ void blame(vor_box* box) {
   if (!box->cjc(JC_SCALE)) {
     cout << "JC failed.\n";
   }
-  if (!box->cmk(MK_SCALE)) {
-    cout << "MK failed.\n";
+  // if (!box->cmk(MK_SCALE)) {
+  //   cout << "MK failed.\n";
+  // }
+}
+
+void enqueue_children(vor_box* box) {
+  if (box->width() < 2 * abs_eps) {
+      cout << "Warning: absolute epsilon reached.\n";
+      blame(box);
+      box->set_degen(true);
+      return;
+  }
+  
+  box->smooth_split();
+  vor_box** children = box->children();
+  for (int i = 0; i < box->num_children(); i++) {
+    subdiv.push(children[i]);
   }
 }
 
@@ -412,13 +431,6 @@ void run() {
     if (num_obj == 1) {
       continue;
     }
-
-    if (box->width() < abs_eps) {
-      cout << "Warning: absolute epsilon reached.\n";
-      blame(box);
-      box->set_degen(true);
-      continue;
-    }
     
     if (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION 
 	|| radius > box->clearance()
@@ -429,16 +441,7 @@ void run() {
       construct.push(box);   // TODO: Don't use "construct" queue.
       vor_edge_boxes.push_back(box);
     } else {                 // num_obj == 3
-      // TODO: Avoid iterating through all vertex boxes.
-      bool int_vert_boxes = false;
-      for (auto it = vor_vert_boxes.begin(); it != vor_vert_boxes.end(); ++it) {
-      	if (box->scaled_intersect(**it, INT_SCALE)) {
-      	  int_vert_boxes = true;
-      	  break;
-      	}
-      }
-
-      if (int_vert_boxes || !box->cjc(JC_SCALE) || !box->cmk(MK_SCALE)) {
+      if (/* inter_root(box, INT_SCALE) || */ !box->cjc(JC_SCALE) || !box->cmk(MK_SCALE)) {
       	enqueue_children(box);
       	continue;
       } else {

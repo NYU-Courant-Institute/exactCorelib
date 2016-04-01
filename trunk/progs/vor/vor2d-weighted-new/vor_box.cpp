@@ -5,7 +5,7 @@
 #include "assert.h"
 #include <set>
 
-#define DEBUG 0
+#define DEBUG 1
 
 namespace vor2d {
 
@@ -308,7 +308,11 @@ bool vor_box::is_degen() const {
 
 // New versions.
 
-bool vor_box::cpv() const {  
+bool vor_box::cpv() const {
+  if (num_features() < 2) {
+    return true;
+  }
+  
   double wb2 = width_ / 2.0;
   Interval bx(center_[0] - wb2, center_[0] + wb2);
   Interval by(center_[1] - wb2, center_[1] + wb2);
@@ -344,7 +348,11 @@ bool vor_box::cpv() const {
 // sites respectively.
 bool vor_box::cjc(double scale) const {
   // TODO: Improve this to work with multi-feature sites and degenerate intersections.
-  assert(num_features() <= 3);
+  // assert(num_features() >= 3);
+  if (num_features() <= 2) {
+    return true;
+  }
+  
   if (num_features() > 3) {
     cout << "Warning: multi-feature objects. Not ensuring that the Jacobian condition is met.\n";
     return true;
@@ -369,7 +377,11 @@ bool vor_box::cjc(double scale) const {
 bool vor_box::cmk(double scale) const {
   // Note: These computations should all be vectorized.
   // TODO: Improve this to work with multi-feature sites and degenerate intersections.
-  assert(num_features() <= 3);
+  // assert(num_features() >= 3);
+  if (num_features() <= 2) {
+    return true;
+  }
+  
   if (num_features() > 3) {
     cout << "Warning: multi-feature objects. Not ensuring that the MK test is met.\n";
     return true;
@@ -416,9 +428,13 @@ bool vor_box::cmk(double scale) const {
 
   // Evaluations.
   double g1p = g1.eval(mx + sw, my);
-  double g2p = g2.eval(mx, my + sw);
   double g1m = g1.eval(mx - sw, my);
+  double g2p = g2.eval(mx, my + sw);
   double g2m = g2.eval(mx, my - sw);
+
+#if DEBUG
+  cout << "g1p: " << g1p << " g1m: " << g1m << " g2p: " << g2p << " g2m: " << g2m << "\n";
+#endif
 
   // Intervals for box edges.
   Interval lft_x(mx - sw);
@@ -430,27 +446,49 @@ bool vor_box::cmk(double scale) const {
   
   // Conditions 2.11.
   if (!(g1p * g1m <= 0)) {
+#if DEBUG
+    cout << "Condition 1\n";
+#endif
     return false;
   }
   if (!(g2p * g2m <= 0)) {
+#if DEBUG
+    cout << "Condition 2\n";
+#endif
     return false;
   }
 
   // Conditions 2.12.  
   if (!((sw * g12.eval(rgt_x, span_y)).mag() <= fabs(g1p))) {
+#if DEBUG
+    cout << "Condition 3\n";
+#endif
     return false;
   }
   if (!((sw * g21.eval(span_x, top_y)).mag() <= fabs(g2p))) {
+#if DEBUG
+    cout << "Condition 4\n";
+#endif
     return false;
   }
   
   // Conditions 2.13.
   if (!((sw * g12.eval(lft_x, span_y)).mag() <= fabs(g1m))) {
+#if DEBUG
+    cout << "Condition 5\n";
+#endif
     return false;
   }
   if (!((sw * g21.eval(span_x, bot_y)).mag() <= fabs(g2m))) {
+#if DEBUG
+    cout << "Condition 6\n";
+#endif
     return false;
   }
+
+#if DEBUG
+  cout << "MK succeeds.\n";
+#endif
 
   return true;
 }
