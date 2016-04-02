@@ -322,36 +322,50 @@ void parse(string input) {
     }
 
     objects.push_back(o);
-    vector<Corner*> verts;
+    vector<Point2d> points;
     int poly_verts = 0;
     while (!ss.eof()) {
       if (++poly_verts > num_points) {
 	cout << "Parse error.\n";
 	exit(1);
       }
-
       ss >> vert;
-      const Point2d point(2 * px[vert] / window_width - 1, 2 * py[vert] / window_width - 1);
-      Corner* corner = new Corner(point, o);
-      if (verts.empty() || !(*corner == *verts[0])) {
-        o->add_feature(corner);
-	root->add_feature(corner);
-        verts.push_back(corner);
-        if (verts.size() > 1) {
-          Edge* edge = new Edge(verts[verts.size() - 2], verts[verts.size() - 1], o);
-          o->add_feature(edge);
-	  root->add_feature(edge);
-        }
-      } else if (verts.size() > 2) {
-        // Close the polygon.
-        Edge* edge = new Edge(verts[verts.size() - 1], verts[0], o);
-        o->add_feature(edge);
-	root->add_feature(edge);
-      }
+      Point2d point(2 * px[vert] / window_width - 1, 2 * py[vert] / window_width - 1);
+      points.push_back(point);
+    }
+
+    if (points.size() == 1) {
+      Corner* corner = new Corner(points[0], o);
+      o->add_feature(corner);
+      root->add_feature(corner);
+    } else if (points.size() == 2) {
+      Edge* edge = new Edge(points[0], points[1], o);
+      o->add_feature(edge);
+      root->add_feature(edge);
+    } else {
+      cout << "Error: Polygonal objects not currently supported.\n";
+      exit(1);
     }
     root->add_object(o);
   }
-  
+    
+    //   Corner* corner = new Corner(point, o);
+    //   if (verts.empty() || !(*corner == *verts[0])) {
+    //     o->add_feature(corner);
+    // 	root->add_feature(corner);
+    //     verts.push_back(corner);
+    //     if (verts.size() > 1) {
+    //       Edge* edge = new Edge(verts[verts.size() - 2], verts[verts.size() - 1], o);
+    //       o->add_feature(edge);
+    // 	  root->add_feature(edge);
+    //     }
+    //   } else if (verts.size() > 2) {
+    //     // Close the polygon.
+    //     Edge* edge = new Edge(verts[verts.size() - 1], verts[0], o);
+    //     o->add_feature(edge);
+    // 	root->add_feature(edge);
+    //   }
+    // }  
   ifs.close();
 }
 
@@ -370,9 +384,9 @@ void Mouse(int button, int state, int x, int y) {
 
 // TODO: Improve this to handle degenerate input.
 #define MAX_OBJECTS_FOR_CONSTRUCTION 3
-#define MK_SCALE 2.0
+#define MK_SCALE 1.0
 #define JC_SCALE 3.0
-#define INT_SCALE 1.0
+#define INT_SCALE 3.0
 
 bool inter_root(vor_box* box, double scale) {
   // TODO: Avoid iterating through all vertex boxes.
@@ -398,9 +412,9 @@ void blame(vor_box* box) {
   if (!box->cjc(JC_SCALE)) {
     cout << "JC failed.\n";
   }
-  // if (!box->cmk(MK_SCALE)) {
-  //   cout << "MK failed.\n";
-  // }
+  if (!box->cmk(MK_SCALE)) {
+    cout << "MK failed.\n";
+  }
 }
 
 void enqueue_children(vor_box* box) {
@@ -441,7 +455,7 @@ void run() {
       construct.push(box);   // TODO: Don't use "construct" queue.
       vor_edge_boxes.push_back(box);
     } else {                 // num_obj == 3
-      if (/* inter_root(box, INT_SCALE) || */ !box->cjc(JC_SCALE) || !box->cmk(MK_SCALE)) {
+      if (!box->cjc(JC_SCALE) || !box->cmk(MK_SCALE) /* || inter_root(box, INT_SCALE) */) {
       	enqueue_children(box);
       	continue;
       } else {

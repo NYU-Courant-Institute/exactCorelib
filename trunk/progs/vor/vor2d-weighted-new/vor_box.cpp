@@ -354,6 +354,11 @@ bool vor_box::cjc(double scale) const {
   }
   
   if (num_features() > 3) {
+    cout << "Warning: more than three features. Not ensuring that the Jacobian condition is met.\n";
+    return true;
+  }
+
+  if (num_objects() < num_features()) {
     cout << "Warning: multi-feature objects. Not ensuring that the Jacobian condition is met.\n";
     return true;
   }
@@ -383,6 +388,11 @@ bool vor_box::cmk(double scale) const {
   }
   
   if (num_features() > 3) {
+    cout << "Warning: more than three features. Not ensuring that the MK test is met.\n";
+    return true;
+  }
+
+  if (num_objects() < num_features()) {
     cout << "Warning: multi-feature objects. Not ensuring that the MK test is met.\n";
     return true;
   }
@@ -488,6 +498,7 @@ bool vor_box::cmk(double scale) const {
 
 #if DEBUG
   cout << "MK succeeds.\n";
+  cout << mx << " " << my << "\n";
 #endif
 
   return true;

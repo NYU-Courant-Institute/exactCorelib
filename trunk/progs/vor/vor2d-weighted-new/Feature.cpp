@@ -13,6 +13,8 @@ Feature::Feature(BiPoly dfun_sq) {
   dfun_sq_grad_ = dfun_sq.gradient();
 }
 
+Feature::~Feature() {}
+
 void Feature::set_parent(Object* parent) {
   parent_ = parent;
 }
@@ -32,6 +34,10 @@ BiPoly* Feature::dfun_sq() {
 
 pair<BiPoly, BiPoly>* Feature::dfun_sq_grad() {
   return &dfun_sq_grad_;
+}
+
+double Feature::distance(const Point2d& point) {
+  return sqrt(dfun_sq_.eval(point[0], point[1]));
 }
 
 } // namespace vor2d

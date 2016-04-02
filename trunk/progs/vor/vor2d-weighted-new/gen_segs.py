@@ -8,12 +8,16 @@ Reference: Section 1.5 in "Computational Geometry in C" by Joesph O'Rourke
 import random
 import numpy as np
 from sys import argv
+from math import sqrt
 
 WIDTH = 1024
 M_WEIGHT = 6.0 # The max. weight (resp. min. reciprocal weight) of a feature.
-
 segs = []
+use_weights = False
+use_matrix  = False
+distance_ub = float("inf")
 
+# All coordinates are integral so this is exact.
 def area(p, q, r):
     return np.linalg.det(np.array([[p[0], q[0], r[0]],
                                    [p[1], q[1], r[1]],
@@ -28,36 +32,65 @@ def left(p, q, r):
 def rcoor():
     return random.randint(0, WIDTH - 1)
 
-def intersects(r, s):
+def intersects_or_collinear(p, q, r, s):
+    if (collinear(r, s, p) or \
+        collinear(r, s, q) or \
+        collinear(p, q, r) or \
+        collinear(p, q, s)):
+        return True
+    else:
+        return (left(r, s, p) ^ left(r, s, q)) and \
+            (left(p, q, r) ^ left(p, q, s))
+
+def intersects_any(r, s):
     for seg in segs:
-        p, q = seg
-        if collinear(r, s, p) or \
-           collinear(r, s, q) or \
-           collinear(p, q, r) or \
-           collinear(p, q, s):
-            return false
-        else:
-            return (left(r, s, p) ^ left(r, s, q)) and \
-                (left(p, q, r) ^ left(p, q, s)
+        if intersects_or_collinear(seg[0], seg[1], r, s):
+            return True
+    return False
 
 def output_file(n):
+    global segs
+    
     # Generate random points.
-    f = open("output_" + ("w_" if len(argv) > 2 else "") + sn, 'w')
+    w_str = "w_" if use_weights else ""
+    m_str = "m_" if use_matrix else ""
+    d_str = "d_" + str(distance_ub) + "_" if distance_ub < float("inf") else ""
+    
+    f = open("output_segs_" + w_str + m_str + d_str + str(n), 'w')
     f.write(str(2 * n) + "\n")
-    while len(l) < n:
+    while len(segs) < n:
         x1, y1 = rcoor(), rcoor()
         x2, y2 = rcoor(), rcoor()
-        if ((x1 != x2) || (y1 != y2)) and not intersects((x1, y1), (x2, y2)):
+        if ((x1 != x2) or (y1 != y2)) and \
+           not intersects_any((x1, y1), (x2, y2)) and \
+           sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) <= distance_ub:
             f.write(str(x1) + " " + str(y1) + "\n")
             f.write(str(x2) + " " + str(y2) + "\n")
+            segs += [((x1, y1), (x2, y2))]
 
     # Write segments.
     f.write("\n" + str(n) + "\n")
-    for i in range(0, n, 2):
-        if len(argv) > 2 and argv[2] == "-w":
+    for i in range(0, 2 * n, 2):
+        if use_weights:
             f.write("w " + str(random.uniform(1.0 / M_WEIGHT, M_WEIGHT)) + "\n")
         f.write(str(i) + " " + str(i + 1) + "\n")
 
     f.close()
 
-outputfile(int(argv[1]))
+def parse_args(argv):
+    global use_weights, use_matrix, distance_ub
+    i = 2                # Omitting 'python' and file name.
+    while i < len(argv):
+        arg = argv[i]
+        if arg == '-w':
+            use_weights = True
+        if arg == '-m':  # TODO
+            use_weights = False
+            use_matrix  = True
+        if arg == '-d':
+            distance_ub = int(argv[i + 1])
+            i += 1
+        i += 1
+
+parse_args(argv)
+output_file(int(argv[1]))
