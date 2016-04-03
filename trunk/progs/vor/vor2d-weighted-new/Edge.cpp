@@ -39,19 +39,19 @@ Edge::Edge(const Point2d& p, const Point2d& q, Object* parent) :
   Edge(new Corner(p, parent), new Corner(q, parent), parent) {
 }
 
-// double Edge::distance(const Point2d& r) {
-//   // Anisotropic distance computation.
-//   const Point2d p = source_->position();
-//   const Point2d q = dest_->position();
-//   Point2d v = q - p;
-//   Point2d w = r - p;
-//   double ts = parent_->qm2(v, w) / parent_->qm(v);
-//   ts = (ts < 0) ? 0 : ts;
-//   ts = (ts > 1) ? 1 : ts;
-//   Point2d v2(-ts * v[0], -ts * v[1]);
-//   Point2d y = w + v2;
-//   return sqrt(parent_->qm(y));
-// }
+double Edge::distance(const Point2d& r) {
+  // Anisotropic distance computation.
+  const Point2d p = source_->position();
+  const Point2d q = dest_->position();
+  Point2d v = q - p;
+  Point2d w = r - p;
+  double ts = parent_->qm2(v, w) / parent_->qm(v);
+  ts = (ts < 0) ? 0 : ts;
+  ts = (ts > 1) ? 1 : ts;
+  Point2d v2(-ts * v[0], -ts * v[1]);
+  Point2d y = w + v2;
+  return sqrt(parent_->qm(y));
+}
 
 // // TODO: Variables p, q, v, and qmv don't depend on the input. Cache them.
 // double Edge::distance(const Point2d& r) {

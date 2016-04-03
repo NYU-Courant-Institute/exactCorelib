@@ -23,6 +23,7 @@ Object* Feature::parent() {
   return parent_;
 }
 
+// See derivation of Lipschitz constant in paper.
 double Feature::lipschitz() const {
   double* m = parent_->m();
   return (1.0 / sqrt(2)) * sqrt(m[0] + m[2] + sqrt(SQ(m[0] - m[2]) + 4 * SQ(m[1])));
@@ -36,8 +37,8 @@ pair<BiPoly, BiPoly>* Feature::dfun_sq_grad() {
   return &dfun_sq_grad_;
 }
 
-double Feature::distance(const Point2d& point) {
-  return sqrt(dfun_sq_.eval(point[0], point[1]));
-}
+// double Feature::distance(const Point2d& point) {
+//   return sqrt(dfun_sq_.eval(point[0], point[1]));
+// }
 
 } // namespace vor2d

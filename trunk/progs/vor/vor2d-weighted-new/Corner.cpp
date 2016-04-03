@@ -30,10 +30,10 @@ Corner::Corner(const Point2d& position, Object* parent) :
 
 Corner::~Corner() {}
 
-// double Corner::distance(const Point2d& point) {
-//   Point2d p = point - position_;
-//   return sqrt(parent_->qm(p));
-// }
+double Corner::distance(const Point2d& point) {
+  Point2d p = point - position_;
+  return sqrt(parent_->qm(p));
+}
 
 // Interval Corner::box_dist_sq(const Interval& int_x, const Interval& int_y) {
 //   Interval p_x(position_[0]);
