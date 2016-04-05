@@ -17,7 +17,6 @@ class Interval {
     assert(a_ <= b_);
   }
 
-  // Singleton constructors.
   Interval(double s) : a_(s), b_(s) { }
   Interval(const Interval& i2) : a_(i2.a_), b_(i2.b_) { }
   
@@ -68,8 +67,12 @@ class Interval {
     return i;
   }
 
-  Interval convex_union(const Interval& i1, const Interval& i2) {
-    Interval i(fmin(i1.a_, i2.a_), fmax(i1.b_, i2.b_));
+  bool operator==(const Interval& i2) {
+    return (a_ == i2.a_) && (b_ == i2.b_);
+  }
+
+  Interval convex_union(const Interval& i2) {
+    Interval i(fmin(a_, i2.a_), fmax(b_, i2.b_));
     return i;
   }
 
@@ -126,7 +129,7 @@ class Interval {
   bool contains(double num) const {
     return a_ <= num && num <= b_;
   }
- 
+  
   // Public variables representing interval [a_, b_].
   double a_; // Left endpoint.
   double b_; // Right endpoint.
@@ -134,7 +137,7 @@ class Interval {
 
 const Interval ZERO(0.0, 0.0);
 const Interval TOP(numeric_limits<double>::min(), numeric_limits<double>::max());
- 
+
 inline bool operator< (double c, const Interval& i) { return c < i.a_;  }
 inline bool operator> (double c, const Interval& i) { return c > i.b_;  }
 inline bool operator<=(double c, const Interval& i) { return c <= i.a_; }
