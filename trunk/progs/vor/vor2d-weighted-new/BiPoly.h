@@ -36,7 +36,6 @@ public:
     }
   }
   ~BiPoly() {
-    // cout << "TESTTEST";
     // for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
     //   delete xit->second;
     // }
@@ -112,6 +111,7 @@ public:
 	px.add_monomial(c * xpow, xpow - 1, ypow);
       }
     }
+
     return px;    
   }
 
@@ -128,7 +128,8 @@ public:
 	}
       }
     }
-    return py;    
+
+    return py;
   }
 
   pair<BiPoly, BiPoly> gradient() {
@@ -187,7 +188,12 @@ public:
 	int ypow = yit->first;
 	double c = yit->second;
 	if (xit != poly.begin() || yit != xmap->begin()) {
-	  s += " + ";
+	  if (c >= 0) {
+	    s += " + ";
+	  } else {
+	    s += " - ";
+	    c *= -1;
+	  }
 	}
 	s += boost::lexical_cast<std::string>(c);
 	if (xpow > 0) {

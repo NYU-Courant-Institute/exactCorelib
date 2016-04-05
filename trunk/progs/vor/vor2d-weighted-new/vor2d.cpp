@@ -80,8 +80,8 @@ void init_options(int argc, char* argv[]) {
   po::options_description desc("Voronoi diagram options");
   desc.add_options()
     ("help", "Print this help message.")
-    ("aeps", po::value<double>(&abs_eps)->default_value(1.0d / (1 << 6)), "Absolute epsilon.")
     ("geps", po::value<double>(&geom_eps)->default_value(1.0), "Geometric epsilon.")
+    ("aeps", po::value<double>(&abs_eps)->default_value(1.0d / (1 << 6)), "Absolute epsilon.")
     ("save", po::value<bool>(&save_image)->default_value(false), "Save an image of the construction.")
     ("display", po::value<bool>(&display_image)->default_value(true), "Display the consturcted Voronoi diagram.")
     ("input_file_name", po::value<string>(&input_file_name), "Input file name.");
@@ -109,7 +109,8 @@ void initialize(string input_file_name) {
 
   // Initialize global variables.
   tree = new vor_qt(2 /* dimension */, 2.0 /* width */);
-
+  abs_eps = min(abs_eps, geom_eps);
+  
   // Initialize graphics.
   if (display_image) {
     // Set up antialiasing.
@@ -250,6 +251,29 @@ string get_line(ifstream& ifs) {
   return s;
 }
 
+void print_features(vor_box* box) {
+  for (auto it = box->get_features()->begin(); it < box->get_features()->end(); ++it) {
+    // This is a hack found on StackOverflow to handle C++'s lack of "instanceof".
+    // TODO: Use typeid or some other functionality?
+    Corner* c = dynamic_cast<Corner*>(*it);
+    if (c != nullptr) {
+      cout << "Point: " << c->position()[0] << " " << c->position()[1] << "\n";
+      cout << c->dfun_sq()->to_string() << "\n";
+      cout << c->dfun_sq_grad()->first.to_string() << "\n";
+      cout << c->dfun_sq_grad()->second.to_string() << "\n";
+    } else {
+      Edge* e = dynamic_cast<Edge*>(*it);
+      cout << "Edge: "
+	   << e->source()->position()[0] << " " << e->source()->position()[1] << ", "
+	   << e->dest()->position()[0]   << " " << e->dest()->position()[1] << "\n";
+      cout << e->dfun_sq()->to_string() << "\n";
+      cout << e->dfun_sq_grad()->first.to_string() << "\n";
+      cout << e->dfun_sq_grad()->second.to_string() << "\n";
+    }
+    cout << "\n";
+  }
+}
+
 void parse(string input) {
   int num_points;
   int point_count;
@@ -367,6 +391,8 @@ void parse(string input) {
     //   }
     // }  
   ifs.close();
+
+  print_features(root);
 }
 
 void Mouse(int button, int state, int x, int y) {
@@ -382,11 +408,10 @@ void Mouse(int button, int state, int x, int y) {
   }
 }
 
-// TODO: Improve this to handle degenerate input.
-#define MAX_OBJECTS_FOR_CONSTRUCTION 3
-#define MK_SCALE 1.0
-#define JC_SCALE 3.0
-#define INT_SCALE 3.0
+#define MAX_OBJECTS_FOR_CONSTRUCTION 3 // TODO: Handle degenerate input. I.e., = infinity.
+#define MK_SCALE 2.0
+#define JC_SCALE 6.0
+#define INT_SCALE 6.0
 
 bool inter_root(vor_box* box, double scale) {
   // TODO: Avoid iterating through all vertex boxes.
@@ -398,19 +423,37 @@ bool inter_root(vor_box* box, double scale) {
   return false;
 }
 
+bool contained_in_any(vor_box* box, double scale) {
+  // TODO: Avoid iterating through all vertex boxes.
+  for (auto it = vor_vert_boxes.begin(); it != vor_vert_boxes.end(); ++it) {
+    if (box->contained_in(**it, scale)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void blame(vor_box* box) {
   if (box->num_objects() > MAX_OBJECTS_FOR_CONSTRUCTION) {
     cout << box->num_objects() << " objects still active.\n";
     return;
   }
+  if (box->radius() > box->clearance()) {
+    cout << "Box clearance insufficent.\n";
+    return;
+  }
   if (inter_root(box, INT_SCALE)) {
     cout << "Intersects other root boxes.\n";
+    cout << vor_vert_boxes.size() << "\n";
+    return;
   }
   if (!box->cpv()) {
     cout << "PV failed.\n";
+    return;
   }
   if (!box->cjc(JC_SCALE)) {
     cout << "JC failed.\n";
+    return;
   }
   if (!box->cmk(MK_SCALE)) {
     cout << "MK failed.\n";
@@ -418,7 +461,7 @@ void blame(vor_box* box) {
 }
 
 void enqueue_children(vor_box* box) {
-  if (box->width() < 2 * abs_eps) {
+  if (box->radius() < abs_eps) {
       cout << "Warning: absolute epsilon reached.\n";
       blame(box);
       box->set_degen(true);
@@ -433,7 +476,9 @@ void enqueue_children(vor_box* box) {
 }
 
 void run() {
-  // Subdivision phase.
+  assert(abs_eps <= geom_eps);
+
+// Subdivision phase.
   subdiv.push(tree->root());
   while (!subdiv.empty()) {
     vor_box* box = subdiv.front();
@@ -442,26 +487,22 @@ void run() {
     double num_obj = box->num_objects();
 
     assert(num_obj > 0);
+
     if (num_obj == 1) {
       continue;
-    }
-    
-    if (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION 
-	|| radius > box->clearance()
-	|| radius > geom_eps // TODO: Make sure this isn't off by a multiplicative factor of 2.
-	|| !box->cpv()) {
+    } else if (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION 
+	       || radius > box->clearance()
+	       || radius > geom_eps // TODO: Make sure this isn't off by a multiplicative factor of 2.
+	       || !box->cpv()) {
       enqueue_children(box);
-    } else if (num_obj == 2) {
+    } else if (num_obj == 2 || contained_in_any(box, INT_SCALE)) {
       construct.push(box);   // TODO: Don't use "construct" queue.
       vor_edge_boxes.push_back(box);
-    } else {                 // num_obj == 3
-      if (!box->cjc(JC_SCALE) || !box->cmk(MK_SCALE) /* || inter_root(box, INT_SCALE) */) {
-      	enqueue_children(box);
-      	continue;
-      } else {
-	construct.push(box);
-      	vor_vert_boxes.push_back(box);
-      }
+    } else if (!box->cjc(JC_SCALE) || !box->cmk(MK_SCALE) || inter_root(box, INT_SCALE)) { // num_obj == 3
+      enqueue_children(box);
+    } else {
+      construct.push(box);
+      vor_vert_boxes.push_back(box);
     }
   }
 

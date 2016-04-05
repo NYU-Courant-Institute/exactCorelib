@@ -10,7 +10,7 @@ def output_file(n):
     sn = str(n)
 
     # Generate random points.
-    f = open("output_circ_"  + sn, 'w')
+    f = open("test_circ_"  + sn, 'w')
     f.write(sn + "\n")
     for i in range(n):
         f.write(str(SCALING * math.cos(2 * pi * i/n) + WIDTH / 2) 

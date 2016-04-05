@@ -15,7 +15,7 @@ BiPoly Corner::make_dfun(Object* parent, const Point2d& p) {
   w_x.add_monomial(-p[0], 0, 0);
   
   BiPoly w_y;
-  w_y.add_monomial(1.0, 0, 1);
+  w_y.add_monomial(1.0, 0, 1); 
   w_y.add_monomial(-p[1], 0, 0);
   
   return (a * w_x * w_x) + (2 * b * w_x * w_y) + (c * w_y * w_y);
@@ -30,10 +30,10 @@ Corner::Corner(const Point2d& position, Object* parent) :
 
 Corner::~Corner() {}
 
-double Corner::distance(const Point2d& point) {
-  Point2d p = point - position_;
-  return sqrt(parent_->qm(p));
-}
+// double Corner::distance(const Point2d& point) {
+//   Point2d p = point - position_;
+//   return sqrt(parent_->qm(p));
+// }
 
 // Interval Corner::box_dist_sq(const Interval& int_x, const Interval& int_y) {
 //   Interval p_x(position_[0]);

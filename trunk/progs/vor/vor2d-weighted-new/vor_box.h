@@ -66,6 +66,7 @@ class vor_box {
   bool is_degen() const;
   int num_corner_obj() const;
   void gen_vertices();
+  bool contained_in(const vor_box& other, double scale) const;
 
   // Box predicates.
   bool cpv() const;

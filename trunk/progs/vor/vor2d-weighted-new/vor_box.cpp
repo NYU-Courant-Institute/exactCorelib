@@ -313,9 +313,9 @@ bool vor_box::cpv() const {
     return true;
   }
   
-  double wb2 = width_ / 2.0;
-  Interval bx(center_[0] - wb2, center_[0] + wb2);
-  Interval by(center_[1] - wb2, center_[1] + wb2);
+  double hw = width_ / 2.0;
+  Interval bx(center_[0] - hw, center_[0] + hw);
+  Interval by(center_[1] - hw, center_[1] + hw);
   
   for (int i = 0; i < features_.size(); i++) {
     for (int j = i + 1; j < features_.size(); j++) {
@@ -333,11 +333,23 @@ bool vor_box::cpv() const {
       Interval gx_i = grad_x.eval(bx, by);
       Interval gy_i = grad_y.eval(bx, by);
 
+#if DEBUG
+      cout << "PV: " << grad_x.to_string() << ", " << grad_y.to_string() << "\n";
+      cout << "PV: " << gx_i << " " << gy_i << " " << (gx_i * gx_i + gy_i * gy_i) << "\n";
+#endif
+      
       if ((gx_i * gx_i + gy_i * gy_i).contains(0)) {
+#if DEBUG
+	cout << "PV fails.\n";
+#endif
 	return false;
-      }				   
+      }			   
     }
   }
+
+#if DEBUG
+  cout << "PV succeeds.\n";
+#endif
 
   return true;
 }
@@ -636,6 +648,21 @@ void vor_box::gen_vertices() {
       segments_.push_back(new vor_seg(*node, center));
     }
   }
+}
+
+bool vor_box::contained_in(const vor_box& other, double scale) const {
+  double mx = center()[0];
+  double my = center()[1];
+  double hw = width() / 2.0;
+
+  double ox = other.center()[0];
+  double oy = other.center()[1];
+  double ow = scale * other.width() / 2.0;
+
+  return (mx - hw >= ox - ow) &&
+    (mx + hw <= ox + ow) &&
+    (my - hw >= oy - ow) &&
+    (my + hw <= oy + ow);
 }
 
 } // namespace vor2d

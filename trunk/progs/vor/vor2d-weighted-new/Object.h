@@ -20,7 +20,7 @@ class Object {
   void add_feature(Feature* feature);
 
   // Compute the distance between an object and this point.
-  double distance(Point2d point);
+  double distance(const Point2d& point) const;
   // double Interval box_distance(const Interval& int_x, const Interval& int_y);
   // tuple<Interval, Interval> box_grad(const Interval& int_x, const Interval& int_y);
 

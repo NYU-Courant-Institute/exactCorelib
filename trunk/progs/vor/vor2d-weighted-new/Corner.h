@@ -10,7 +10,7 @@ class Corner : public Feature {
  public:
   Corner(const Point2d& position, Object* parent);
   ~Corner();
-  double distance(const Point2d& point) override;
+  // double distance(const Point2d& point) override;
   // Interval box_dist_sq(const Interval& int_x, const Interval& int_y) override;
   // tuple<Interval, Interval> box_dist_sq_grad(const Interval& int_x, const Interval& int_y) override;
   
@@ -26,7 +26,7 @@ class Corner : public Feature {
   }
 
  private:
-  static BiPoly make_dfun(Object* parent, const Point2d& p);
+  BiPoly make_dfun(Object* parent, const Point2d& p);
   
   const Point2d position_;
   Edge* prev_edge;

@@ -18,7 +18,7 @@ void Object::add_feature(Feature* feature) {
   features_.push_back(feature);
 }
 
-double Object::distance(Point2d point) {
+double Object::distance(const Point2d& point) const {
   double min_sep = std::numeric_limits<double>::max();
   for (Feature* feature : features_) {
     double feature_sep = feature->distance(point);

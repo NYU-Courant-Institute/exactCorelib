@@ -16,7 +16,8 @@ class Feature {
   // Compute the distance to a point.
   Feature(BiPoly dfun);
   virtual ~Feature();
-  virtual double distance(const Point2d& point) = 0;
+  // virtual double distance(const Point2d& point) = 0;
+  virtual double distance(const Point2d& point);
   // virtual Interval box_dist_sq(const Interval& int_x, const Interval& int_y) = 0; // TODO: Remove.
   BiPoly* dfun_sq();
   pair<BiPoly, BiPoly>* dfun_sq_grad();

@@ -1,8 +1,8 @@
 """
-Code for generating random non-colinear, non-intersecting line segments
+Code for generating random non-collinear, non-intersecting line segments
  in a box.
 
-Reference: Section 1.5 in "Computational Geometry in C" by Joesph O'Rourke
+Reference: Section 1.5 in "Computational Geometry in C" by Joesph O'Rourke.
 """
 
 import random
@@ -56,7 +56,7 @@ def output_file(n):
     m_str = "m_" if use_matrix else ""
     d_str = "d_" + str(distance_ub) + "_" if distance_ub < float("inf") else ""
     
-    f = open("output_segs_" + w_str + m_str + d_str + str(n), 'w')
+    f = open("test_segs_" + w_str + m_str + d_str + str(n), 'w')
     f.write(str(2 * n) + "\n")
     while len(segs) < n:
         x1, y1 = rcoor(), rcoor()

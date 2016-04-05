@@ -16,13 +16,15 @@ class Edge : public Feature {
   double distance(const Point2d& p) override;
   // Interval box_dist_sq(const Interval& int_x, const Interval& int_y) override;
   // tuple<Interval, Interval> box_dist_sq_grad(const Interval& int_x, const Interval& int_y) override;
-  
   Corner* source() const;
   Corner* dest() const;
   
  private:
-  static BiPoly make_dfun(Object* parent, const Point2d& p, const Point2d& q);
-  
+  BiPoly make_dfun(Object* parent, const Point2d& p, const Point2d& q);
+  double qmv;
+  BiPoly qmw;
+  BiPoly vmw;
+  BiPoly tstar;
   Corner* source_;
   Corner* dest_;
 };

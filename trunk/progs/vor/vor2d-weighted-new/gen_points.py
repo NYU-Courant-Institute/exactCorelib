@@ -11,7 +11,7 @@ def output_file(n):
     sn = str(n)
 
     # Generate random points.
-    f = open("output_" + ("w_" if len(argv) > 2 else "") + sn, 'w')
+    f = open("test_" + ("w_" if len(argv) > 2 else "") + sn, 'w')
     f.write(sn + "\n")
     for i in range(n):
         f.write(str(rcoor()) + " " + str(rcoor()) + "\n")

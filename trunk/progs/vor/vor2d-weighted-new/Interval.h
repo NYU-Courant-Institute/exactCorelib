@@ -68,6 +68,11 @@ class Interval {
     return i;
   }
 
+  Interval convex_union(const Interval& i1, const Interval& i2) {
+    Interval i(fmin(i1.a_, i2.a_), fmax(i1.b_, i2.b_));
+    return i;
+  }
+
   Interval pow(int p) const {
     // TODO: Use repeated squaring.
     if (p == 0) {

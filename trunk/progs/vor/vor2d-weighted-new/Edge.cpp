@@ -1,5 +1,6 @@
 #include "Corner.h"
 #include "Edge.h"
+#include <math.h>
 
 namespace vor2d {
 
@@ -20,10 +21,13 @@ BiPoly Edge::make_dfun(Object* parent, const Point2d& p, const Point2d& q) {
   w_y.add_monomial(1.0, 0, 1);
   w_y.add_monomial(-p[1], 0, 0);
 
-  BiPoly qmw = (a * w_x * w_x) + (2 * b * w_x * w_y) + (c * w_y * w_y);
-  BiPoly vmw = v_x * (a * w_x + b * w_y) + v_y * (b * w_x + c * w_y);
+  // State changing assignments.
+  qmw = (a * w_x * w_x) + (2 * b * w_x * w_y) + (c * w_y * w_y);
+  vmw = v_x * (a * w_x + b * w_y) + v_y * (b * w_x + c * w_y);
+  qmv = parent->qm(v);
+  tstar = (1.0 / qmv) * vmw;
 
-  return qmw - (1.0 / parent->qm(v)) * vmw * vmw;
+  return qmw - (tstar * vmw);
 }
 
 Edge::Edge(Corner* source, Corner* dest, Object* parent)
@@ -39,19 +43,30 @@ Edge::Edge(const Point2d& p, const Point2d& q, Object* parent) :
   Edge(new Corner(p, parent), new Corner(q, parent), parent) {
 }
 
-double Edge::distance(const Point2d& r) {
-  // Anisotropic distance computation.
-  const Point2d p = source_->position();
-  const Point2d q = dest_->position();
-  Point2d v = q - p;
-  Point2d w = r - p;
-  double ts = parent_->qm2(v, w) / parent_->qm(v);
-  ts = (ts < 0) ? 0 : ts;
-  ts = (ts > 1) ? 1 : ts;
-  Point2d v2(-ts * v[0], -ts * v[1]);
-  Point2d y = w + v2;
-  return sqrt(parent_->qm(y));
+double Edge::distance(const Point2d& p) {
+  double tp = tstar.eval(p[0], p[1]);
+  if (tp <= 0) {
+    return source_->distance(p);
+  } else if (tp >= 1) {
+    return dest_->distance(p);
+  } else { // p in (0, 1)
+    return sqrt(dfun_sq_.eval(p[0], p[1]));
+  }
 }
+
+// double Edge::distance(const Point2d& r) {
+//   // Anisotropic distance computation.
+//   const Point2d p = source_->position();
+//   const Point2d q = dest_->position();
+//   Point2d v = q - p;
+//   Point2d w = r - p;
+//   double ts = parent_->qm2(v, w) / parent_->qm(v);
+//   ts = (ts < 0) ? 0 : ts;
+//   ts = (ts > 1) ? 1 : ts;
+//   Point2d v2(-ts * v[0], -ts * v[1]);
+//   Point2d y = w + v2;
+//   return sqrt(parent_->qm(y));
+// }
 
 // // TODO: Variables p, q, v, and qmv don't depend on the input. Cache them.
 // double Edge::distance(const Point2d& r) {
