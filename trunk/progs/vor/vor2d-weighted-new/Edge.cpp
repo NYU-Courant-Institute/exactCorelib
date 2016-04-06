@@ -57,17 +57,40 @@ double Edge::distance(const Point2d& p) {
 #define EQ_OR_UN(u, i) (u == TOP ? i : u.convex_union(i))
 Interval Edge::box_dist_sq(const Interval& int_x, const Interval& int_y) {
   Interval tp = tstar.eval(int_x, int_y);
-  Interval u = TOP;
+  Interval u(TOP);
+
   if (tp.contains(0)) {
     u = EQ_OR_UN(u, source_->dfun_sq()->eval(int_x, int_y));
   }
   if (tp.contains(1)) {
     u = EQ_OR_UN(u, dest_->dfun_sq()->eval(int_x, int_y));
   }
-  if (!(0 < tp) && !(1 > tp)) {
+  if (!(0 > tp || 1 < tp)) {
     u = EQ_OR_UN(u, dfun_sq()->eval(int_x, int_y));
   }
+
   return u;
+}
+
+pair<Interval, Interval> Edge::box_dist_sq_grad(const Interval& int_x, const Interval& int_y) {
+  Interval tp = tstar.eval(int_x, int_y);
+  Interval ux(TOP);
+  Interval uy(TOP);
+  
+  if (tp.contains(0)) {
+    ux = EQ_OR_UN(ux, source_->dfun_sq_grad().first.eval(int_x, int_y));
+    uy = EQ_OR_UN(uy, source_->dfun_sq_grad().second.eval(int_x, int_y));
+  }
+  if (tp.contains(1)) {
+    ux = EQ_OR_UN(ux, dest_->dfun_sq_grad().first.eval(int_x, int_y));
+    uy = EQ_OR_UN(uy, dest_->dfun_sq_grad().second.eval(int_x, int_y));
+  }
+  if (!(0 > tp || 1 < tp)) {
+    ux = EQ_OR_UN(ux, dfun_sq_grad().first.eval(int_x, int_y));
+    uy = EQ_OR_UN(uy, dfun_sq_grad().second.eval(int_x, int_y));
+  }
+
+  return pair<Interval, Interval>{ux, uy};
 }
 
 // double Edge::distance(const Point2d& r) {

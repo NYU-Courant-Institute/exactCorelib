@@ -57,7 +57,7 @@ class vor_box {
   const vector<vor_seg*>* get_segments() const;
   int num_features() const;
   double max_lipschitz() const;
-  double clearance() const;
+  double midpoint_clearance() const;
   double clearance(const Point2d&) const;
   int num_objects() const;
   void set_active(bool is_active);
@@ -88,6 +88,7 @@ class vor_box {
   double* center_;
   int num_children_;
   vor_qt* tree_;
+  // double max_lipschitz_;
 
   // Collections.
   vor_box** children_;

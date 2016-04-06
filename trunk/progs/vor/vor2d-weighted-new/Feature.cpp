@@ -24,6 +24,7 @@ Object* Feature::parent() {
 }
 
 // See derivation of Lipschitz constant in paper.
+// TODO: Make this an Object method, not a Feature method.
 double Feature::lipschitz() const {
   double* m = parent_->m();
   return (1.0 / sqrt(2)) * sqrt(m[0] + m[2] + sqrt(SQ(m[0] - m[2]) + 4 * SQ(m[1])));
@@ -33,8 +34,8 @@ BiPoly* Feature::dfun_sq() {
   return &dfun_sq_;
 }
 
-pair<BiPoly, BiPoly>* Feature::dfun_sq_grad() {
-  return &dfun_sq_grad_;
+pair<BiPoly, BiPoly> Feature::dfun_sq_grad() {
+  return dfun_sq_grad_;
 }
 
 double Feature::distance(const Point2d& point) {

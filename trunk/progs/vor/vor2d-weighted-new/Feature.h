@@ -20,7 +20,7 @@ class Feature {
   virtual double distance(const Point2d& point);
   // virtual Interval box_dist_sq(const Interval& int_x, const Interval& int_y) = 0; // TODO: Remove.
   BiPoly* dfun_sq();
-  pair<BiPoly, BiPoly>* dfun_sq_grad();
+  pair<BiPoly, BiPoly> dfun_sq_grad();
   // virtual tuple<Interval, Interval> box_dist_sq_grad(const Interval& int_x, const Interval& int_y) = 0; // TODO: Remove.
   double lipschitz() const;
   void set_parent(Object* parent);

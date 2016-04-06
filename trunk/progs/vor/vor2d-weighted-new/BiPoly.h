@@ -44,9 +44,9 @@ public:
   void add_monomial(double c, int x, int y) {
     assert(x >= 0 && y >= 0);
 
-    if (c == 0) {
-      return;
-    }
+    // if (c == 0) {
+    //   return;
+    // }
 
     map<int, double>* x_entry;
     
@@ -116,7 +116,7 @@ public:
   }
 
   BiPoly partial_y() {
-    BiPoly py;
+    BiPoly py;    
     for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
       int xpow = xit->first;
       map<int, double>* xmap = xit->second;
@@ -187,8 +187,13 @@ public:
       for (auto yit = xmap->begin(); yit != xmap->end(); ++yit) {
 	int ypow = yit->first;
 	double c = yit->second;
+
+	if (c == 0 && (xpow != 0 || ypow != 0)) {
+	  continue;
+	}
+	
 	if (xit != poly.begin() || yit != xmap->begin()) {
-	  if (c >= 0) {
+	  if (c > 0) {
 	    s += " + ";
 	  } else {
 	    s += " - ";
@@ -204,6 +209,7 @@ public:
 	}
       }
     }
+
     return s;
   }
 

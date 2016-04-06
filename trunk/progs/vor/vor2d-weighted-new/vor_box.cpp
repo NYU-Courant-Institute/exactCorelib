@@ -2,10 +2,10 @@
 #include "vor_qt.h"
 #include "BiPoly.h"
 
-#include "assert.h"
+#include <assert.h>
 #include <set>
 
-#define DEBUG 1
+#define DEBUG 0
 
 namespace vor2d {
 
@@ -260,7 +260,7 @@ double vor_box::clearance(const Point2d& point) const {
   return min_sep;
 }
 
-double vor_box::clearance() const {
+double vor_box::midpoint_clearance() const {
   Point2d mid_point(center_[0], center_[1]);
   return clearance(mid_point);
 }
@@ -328,17 +328,17 @@ bool vor_box::cpv() const {
 	continue;
       }
       
-      BiPoly grad_x = f1->dfun_sq_grad()->first  - f2->dfun_sq_grad()->first;
-      BiPoly grad_y = f1->dfun_sq_grad()->second - f2->dfun_sq_grad()->second;
+      BiPoly grad_x = f1->dfun_sq_grad().first  - f2->dfun_sq_grad().first;
+      BiPoly grad_y = f1->dfun_sq_grad().second - f2->dfun_sq_grad().second;
       Interval gx_i = grad_x.eval(bx, by);
       Interval gy_i = grad_y.eval(bx, by);
 
 #if DEBUG
-      cout << "PV: " << grad_x.to_string() << ", " << grad_y.to_string() << "\n";
-      cout << "PV: " << gx_i << " " << gy_i << " " << (gx_i * gx_i + gy_i * gy_i) << "\n";
+      // cout << "PV: " << grad_x.to_string() << ", " << grad_y.to_string() << "\n";
+      // cout << "PV: " << gx_i << " " << gy_i << " " << (gx_i * gx_i + gy_i * gy_i) << "\n";
 #endif
       
-      if ((gx_i * gx_i + gy_i * gy_i).contains(0)) {
+      if (((gx_i * gx_i) + (gy_i * gy_i)).contains(0)) {
 #if DEBUG
 	cout << "PV fails.\n";
 #endif
@@ -348,7 +348,7 @@ bool vor_box::cpv() const {
   }
 
 #if DEBUG
-  cout << "PV succeeds.\n";
+  // cout << "PV succeeds.\n";
 #endif
 
   return true;
@@ -382,10 +382,10 @@ bool vor_box::cjc(double scale) const {
   Feature* T = features_[1];
   Feature* U = features_[2];
 
-  BiPoly gradST_x = S->dfun_sq_grad()->first  - T->dfun_sq_grad()->first;
-  BiPoly gradST_y = S->dfun_sq_grad()->second - T->dfun_sq_grad()->second;
-  BiPoly gradTU_x = T->dfun_sq_grad()->first  - U->dfun_sq_grad()->first;
-  BiPoly gradTU_y = T->dfun_sq_grad()->second - U->dfun_sq_grad()->second;
+  BiPoly gradST_x = S->dfun_sq_grad().first  - T->dfun_sq_grad().first;
+  BiPoly gradST_y = S->dfun_sq_grad().second - T->dfun_sq_grad().second;
+  BiPoly gradTU_x = T->dfun_sq_grad().first  - U->dfun_sq_grad().first;
+  BiPoly gradTU_y = T->dfun_sq_grad().second - U->dfun_sq_grad().second;
   BiPoly det_poly = (gradST_x * gradTU_y) - (gradST_y * gradTU_x);
 
   return !det_poly.eval(bx, by).contains(0);
@@ -422,17 +422,22 @@ bool vor_box::cmk(double scale) const {
   // Original system and derivatives (F and F').
   BiPoly f1 = *(S->dfun_sq()) - *(T->dfun_sq());
   BiPoly f2 = *(T->dfun_sq()) - *(U->dfun_sq());
-  BiPoly f11 = S->dfun_sq_grad()->first  - T->dfun_sq_grad()->first;
-  BiPoly f12 = S->dfun_sq_grad()->second - T->dfun_sq_grad()->second;
-  BiPoly f21 = T->dfun_sq_grad()->first  - U->dfun_sq_grad()->first;
-  BiPoly f22 = T->dfun_sq_grad()->second - U->dfun_sq_grad()->second;
-
+  BiPoly f11 = S->dfun_sq_grad().first  - T->dfun_sq_grad().first;
+  BiPoly f12 = S->dfun_sq_grad().second - T->dfun_sq_grad().second;
+  BiPoly f21 = T->dfun_sq_grad().first  - U->dfun_sq_grad().first;
+  BiPoly f22 = T->dfun_sq_grad().second - U->dfun_sq_grad().second;
+  
   // Determinant computation.
   double z11 = f11.eval(mx, my);
   double z12 = f12.eval(mx, my);
   double z21 = f21.eval(mx, my);
   double z22 = f22.eval(mx, my);
-  double izdet = 1.0 / ((z11 * z22) - (z12 * z21));
+  double zdet = ((z11 * z22) - (z12 * z21));
+
+  if (zdet == 0.0) {
+    return false;
+  }
+  double izdet = 1.0 / zdet;
 
   // Inverse determinant.
   double y11 = izdet * z22;
@@ -448,15 +453,42 @@ bool vor_box::cmk(double scale) const {
   BiPoly g21 = y21 * f11 + y22 * f21;
   BiPoly g22 = y21 * f12 + y22 * f22;
 
+#if DEBUG
+  cout << "MK applied to box: " << mx << " " << my << " " << sw << "\n";
+  
+  cout << "MK original system F:\n";
+  cout << f1.to_string() << "\n";
+  cout << f2.to_string() << "\n";
+  cout << f11.to_string() << ", "
+       << f12.to_string() << "\n";
+  cout << f21.to_string() << ", "
+       << f22.to_string() << "\n";
+  
+  cout << "MK modified system G:\n";
+  cout << g1.to_string() << "\n";
+  cout << g2.to_string() << "\n";
+  cout << g11.to_string() << ", "
+       << g12.to_string() << "\n";
+  cout << g21.to_string() << ", "
+       << g22.to_string() << "\n";
+
+  cout << "MK modified system evaluated on box midpoint:\n";
+  cout << g11.eval(mx, my) << ", "
+       << g12.eval(mx, my) << "\n";
+  cout << g21.eval(mx, my) << ", "
+       << g22.eval(mx, my) << "\n";
+
+  /*
+  assert(g1.gradient().first == g11 && g1.gradient().second == g12);
+  assert(g2.gradient().first == g21 && g2.gradient().second == g22);
+  */
+#endif
+
   // Evaluations.
   double g1p = g1.eval(mx + sw, my);
   double g1m = g1.eval(mx - sw, my);
   double g2p = g2.eval(mx, my + sw);
   double g2m = g2.eval(mx, my - sw);
-
-#if DEBUG
-  cout << "g1p: " << g1p << " g1m: " << g1m << " g2p: " << g2p << " g2m: " << g2m << "\n";
-#endif
 
   // Intervals for box edges.
   Interval lft_x(mx - sw);
@@ -465,6 +497,12 @@ bool vor_box::cmk(double scale) const {
   Interval top_y(my + sw);
   Interval span_x(mx - sw, mx + sw);
   Interval span_y(my - sw, my + sw);
+
+#if DEBUG
+  cout << "g1p: " << g1p << " g1m: " << g1m << " g2p: " << g2p << " g2m: " << g2m << "\n";
+  cout << "g12+: "  << sw * g12.eval(rgt_x, span_y) << " g21+: " << sw * g21.eval(span_x, top_y)
+       << " g12-: " << sw * g12.eval(lft_x, span_y) << " g21-: " << sw * g21.eval(span_x, bot_y) << "\n";
+#endif
   
   // Conditions 2.11.
   if (!(g1p * g1m <= 0)) {
@@ -483,13 +521,13 @@ bool vor_box::cmk(double scale) const {
   // Conditions 2.12.  
   if (!((sw * g12.eval(rgt_x, span_y)).mag() <= fabs(g1p))) {
 #if DEBUG
-    cout << "Condition 3\n";
+    cout << "Condition 3: " << sw * g12.eval(rgt_x, span_y) << "\n";
 #endif
     return false;
   }
   if (!((sw * g21.eval(span_x, top_y)).mag() <= fabs(g2p))) {
 #if DEBUG
-    cout << "Condition 4\n";
+    cout << "Condition 4: " << sw * g21.eval(span_x, top_y) << "\n";
 #endif
     return false;
   }
@@ -497,13 +535,13 @@ bool vor_box::cmk(double scale) const {
   // Conditions 2.13.
   if (!((sw * g12.eval(lft_x, span_y)).mag() <= fabs(g1m))) {
 #if DEBUG
-    cout << "Condition 5\n";
+    cout << "Condition 5: " << sw * g12.eval(lft_x, span_y) << "\n";
 #endif
     return false;
   }
   if (!((sw * g21.eval(span_x, bot_y)).mag() <= fabs(g2m))) {
 #if DEBUG
-    cout << "Condition 6\n";
+    cout << "Condition 6: " << sw * g21.eval(span_x, bot_y) << "\n";
 #endif
     return false;
   }

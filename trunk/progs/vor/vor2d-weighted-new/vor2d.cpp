@@ -259,16 +259,16 @@ void print_features(vor_box* box) {
     if (c != nullptr) {
       cout << "Point: " << c->position()[0] << " " << c->position()[1] << "\n";
       cout << c->dfun_sq()->to_string() << "\n";
-      cout << c->dfun_sq_grad()->first.to_string() << "\n";
-      cout << c->dfun_sq_grad()->second.to_string() << "\n";
+      cout << c->dfun_sq_grad().first.to_string() << "\n";
+      cout << c->dfun_sq_grad().second.to_string() << "\n";
     } else {
       Edge* e = dynamic_cast<Edge*>(*it);
       cout << "Edge: "
 	   << e->source()->position()[0] << " " << e->source()->position()[1] << ", "
 	   << e->dest()->position()[0]   << " " << e->dest()->position()[1] << "\n";
       cout << e->dfun_sq()->to_string() << "\n";
-      cout << e->dfun_sq_grad()->first.to_string() << "\n";
-      cout << e->dfun_sq_grad()->second.to_string() << "\n";
+      cout << e->dfun_sq_grad().first.to_string() << "\n";
+      cout << e->dfun_sq_grad().second.to_string() << "\n";
     }
     cout << "\n";
   }
@@ -306,7 +306,7 @@ void parse(string input) {
   ss.seekg(0);
   ss >> num_objects;
   for (int i = 0; i < num_objects; i++) {
-    double inv_weight = 1.0;
+    double weight = 1.0;
     double a, b, c;
     ss.str(get_line(ifs));
     ss.seekg(0);
@@ -315,14 +315,14 @@ void parse(string input) {
     // Parse multiplicative weight.
     if (ss.peek() == 'w') {
       ss.seekg(1);
-      ss >> inv_weight;
+      ss >> weight;
       
       // Verify that the weight is positive.
-      if (inv_weight <= 0.0) {
+      if (weight <= 0.0) {
 	cout << "Error: multiplicative weight must be positive.";
 	exit(1);
       }
-      o = new Object(1.0 / inv_weight);
+      o = new Object(weight);
       ss.str(get_line(ifs));
       ss.seekg(0);
     } else if (ss.peek() == 'm') { // Parse anisotropic metric parameters.
@@ -342,7 +342,7 @@ void parse(string input) {
         exit(1);
       }
     } else {
-      o = new Object(1.0 / inv_weight);
+      o = new Object(1.0);
     }
 
     objects.push_back(o);
@@ -438,7 +438,7 @@ void blame(vor_box* box) {
     cout << box->num_objects() << " objects still active.\n";
     return;
   }
-  if (box->radius() > box->clearance()) {
+  if (box->radius() > box->midpoint_clearance()) {
     cout << "Box clearance insufficent.\n";
     return;
   }
@@ -485,18 +485,19 @@ void run() {
     subdiv.pop();
     double radius = box->radius();
     double num_obj = box->num_objects();
+    double lip = box->max_lipschitz();
 
     assert(num_obj > 0);
 
     if (num_obj == 1) {
       continue;
     } else if (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION 
-	       || radius > box->clearance()
+	       || lip * radius > box->midpoint_clearance() // TODO(*): Check this.
 	       || radius > geom_eps // TODO: Make sure this isn't off by a multiplicative factor of 2.
 	       || !box->cpv()) {
       enqueue_children(box);
     } else if (num_obj == 2 || contained_in_any(box, INT_SCALE)) {
-      construct.push(box);   // TODO: Don't use "construct" queue.
+      construct.push(box);          // TODO: Don't use "construct" queue.
       vor_edge_boxes.push_back(box);
     } else if (!box->cjc(JC_SCALE) || !box->cmk(MK_SCALE) || inter_root(box, INT_SCALE)) { // num_obj == 3
       enqueue_children(box);
@@ -526,5 +527,7 @@ void run() {
   display();
 
   // Print statistics.
-  cout << "\nTotal splits: " << tree->splits() << "\n";
+  cout << "\n";
+  cout << "Total splits: " << tree->splits() << "\n";
+  cout << "Vertices confirmed: " << vor_vert_boxes.size() << "\n";
 }

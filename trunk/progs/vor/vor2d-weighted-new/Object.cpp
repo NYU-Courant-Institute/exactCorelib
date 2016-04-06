@@ -6,12 +6,7 @@
 
 namespace vor2d {
 Object::Object(double a, double b, double c) : m_{a, b, c} {}
-Object::Object(double weight) {
-  double w_sq = weight * weight;
-  m_[0] = w_sq;
-  m_[1] = 0.0;
-  m_[2] = w_sq;
-}
+Object::Object(double wt) : Object(wt * wt, 0.0, wt * wt) {}
 Object::~Object() {}
 
 void Object::add_feature(Feature* feature) {

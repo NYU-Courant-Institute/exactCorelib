@@ -82,7 +82,7 @@ class Interval {
       Interval one(1.0, 1.0);
       return one;
     }
-    (*this) * pow(p - 1);
+    return (*this) * pow(p - 1);
   }
 
   friend ostream& operator<<(ostream& os, const Interval& i) {
