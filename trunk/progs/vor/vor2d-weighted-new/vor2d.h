@@ -14,6 +14,8 @@
 #include <GL/glui.h>
 #endif
 
+using std::string;
+
 // Stubs.
 void Mouse(int button, int state, int x, int y);
 void parse(string input);

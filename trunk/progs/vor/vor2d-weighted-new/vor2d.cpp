@@ -54,12 +54,13 @@ double geom_eps;
 bool interactive_mode = false;
 
 int scene_width = window_width;
-const double scale_factor = 1.5;
+const double scale_factor = 2.0;
 double scale = 1.0;
 int sx = 0;
 int sy = 0;
 
 // Global variables.
+Graphics g(Point2d{0.0, 0.0}, 1.0);
 vor_qt* tree;
 queue<vor_box*> subdiv;
 queue<vor_box*> construct;
@@ -141,7 +142,7 @@ void display() {
   }
   
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  draw_box_rec(*tree->root(), show_grid);
+  g.draw_box_rec(*tree->root(), show_grid);
   
   // Draw all features.
   Corner* c;
@@ -152,15 +153,15 @@ void display() {
     // TODO: Use typeid or some other functionality?
     c = dynamic_cast<Corner*>(*it);
     if (c != nullptr) {
-      draw_corner(*c);
+      g.draw_corner(*c);
     } else {
       e = dynamic_cast<Edge*>(*it);
-      draw_edge(*e);
+      g.draw_edge(*e);
     }
   }
 
   // Save image if applicable.
-  if (save_image) {
+  if (scale == 1.0 && save_image) {
     save_png();
   }
   
@@ -402,8 +403,12 @@ void Mouse(int button, int state, int x, int y) {
       show_grid = !show_grid;
     } else if (button == GLUT_WHEEL_UP) {
       scale *= scale_factor;
+//      cout << "x: " << x << " y: " << y << "\n";
+      Point2d ctr(2.0 * x / window_width - 1, -(2.0 * y / window_width - 1));
+      g.update(ctr, scale);
     } else if (button == GLUT_WHEEL_DOWN) {
       scale = (scale > scale_factor) ? (scale / scale_factor) : 1.0;
+      g.update(scale);
     }
     display(); // Rerenders based on any click.
   }
