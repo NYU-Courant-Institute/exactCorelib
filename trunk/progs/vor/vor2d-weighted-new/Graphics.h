@@ -14,6 +14,8 @@ using vor2d::Edge;
 using vor2d::Feature;
 using vor2d::Object;
 
+// TODO: Convert magic numbers into global parameters.
+
 void draw_vor_seg(const vor_seg& seg) {
   glColor3f(1.0, 0.0, 0.0); // Red.
   glLineWidth(3.0);

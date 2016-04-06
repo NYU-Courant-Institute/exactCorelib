@@ -65,6 +65,7 @@ queue<vor_box*> subdiv;
 queue<vor_box*> construct;
 vector<vor_box*> vor_edge_boxes;
 vector<vor_box*> vor_vert_boxes;
+vector<vor_box*> degen_boxes;
 vector<Object*> objects;
 bool show_grid = true;
 bool save_image;
@@ -147,7 +148,7 @@ void display() {
   Edge* e;
   vector<Feature*>* features = tree->root()->get_features();
   for (auto it = features->begin(); it < features->end(); ++it) {
-    // This is a hack found on StackOverflow to handle C++'s lack of "instanceof".
+    // This dynamic casting is a hack from StackOverflow for handling C++'s lack of "instanceof".
     // TODO: Use typeid or some other functionality?
     c = dynamic_cast<Corner*>(*it);
     if (c != nullptr) {
@@ -465,6 +466,7 @@ void enqueue_children(vor_box* box) {
       cout << "Warning: absolute epsilon reached.\n";
       blame(box);
       box->set_degen(true);
+      degen_boxes.push_back(box);
       return;
   }
   
@@ -478,7 +480,7 @@ void enqueue_children(vor_box* box) {
 void run() {
   assert(abs_eps <= geom_eps);
 
-// Subdivision phase.
+  // Subdivision phase.
   subdiv.push(tree->root());
   while (!subdiv.empty()) {
     vor_box* box = subdiv.front();
@@ -491,15 +493,17 @@ void run() {
 
     if (num_obj == 1) {
       continue;
-    } else if (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION 
-	       || lip * radius > box->midpoint_clearance() // TODO(*): Check this.
-	       || radius > geom_eps // TODO: Make sure this isn't off by a multiplicative factor of 2.
-	       || !box->cpv()) {
+    } else if (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION ||
+	       lip * radius > box->midpoint_clearance() || // TODO(*): Check this.
+	       radius > geom_eps ||          // TODO: Make sure this isn't off by a multiplicative factor of 2.
+	       !box->cpv()) {
       enqueue_children(box);
     } else if (num_obj == 2 || contained_in_any(box, INT_SCALE)) {
-      construct.push(box);          // TODO: Don't use "construct" queue.
+      construct.push(box);                   // TODO: Don't use "construct" queue.
       vor_edge_boxes.push_back(box);
-    } else if (!box->cjc(JC_SCALE) || !box->cmk(MK_SCALE) || inter_root(box, INT_SCALE)) { // num_obj == 3
+    } else if (!box->cjc(JC_SCALE) ||
+	       !box->cmk(MK_SCALE) ||
+	       inter_root(box, INT_SCALE)) { // num_obj == 3
       enqueue_children(box);
     } else {
       construct.push(box);
@@ -530,4 +534,5 @@ void run() {
   cout << "\n";
   cout << "Total splits: " << tree->splits() << "\n";
   cout << "Vertices confirmed: " << vor_vert_boxes.size() << "\n";
+  cout << "Number of degenerate boxes: " << degen_boxes.size() << "\n";
 }
