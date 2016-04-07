@@ -12,14 +12,20 @@ void Graphics::update(double scale) {
 }
 
 void Graphics::update(const Point2d& ctr, double scale) {
-  ctr_ = Point2d{mx(ctr[0]), my(ctr[1])};
-  cout << "Before: " << ctr_ << "\n";
+  ctr_ = Point2d{mxi(ctr[0]), myi(ctr[1])};
   ctr_[0] = fmax(ctr_[0], -1.0 + 1 / scale);
   ctr_[0] = fmin(ctr_[0], 1.0 - 1 / scale);
   ctr_[1] = fmax(ctr_[1], -1.0 + 1 / scale);
   ctr_[1] = fmin(ctr_[1], 1.0 - 1 / scale);
-  cout << "After: " << ctr_ << "\n";
   scale_ = fmax(1.0, scale);
+}
+
+double Graphics::mxi(double x) {
+  return x / scale_ + ctr_[0];
+}
+
+double Graphics::myi(double y) {
+  return y / scale_ + ctr_[1];
 }
 
 double Graphics::mx(double x) {

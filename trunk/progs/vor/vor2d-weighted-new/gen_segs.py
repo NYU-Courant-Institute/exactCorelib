@@ -5,16 +5,14 @@ Code for generating random non-collinear, non-intersecting line segments
 Reference: Section 1.5 in "Computational Geometry in C" by Joesph O'Rourke.
 """
 
-import random
 import numpy as np
 from sys import argv
 from math import sqrt
+from gen_infra import iur, rcoor, ransio
 
-WIDTH = 1024
-M_WEIGHT = 6.0 # The max. weight (resp. min. reciprocal weight) of a feature.
-segs = []
 use_weights = False
 use_matrix  = False
+segs = []
 distance_ub = float("inf")
 
 # All coordinates are integral so this is exact.
@@ -72,7 +70,11 @@ def output_file(n):
     f.write("\n" + str(n) + "\n")
     for i in range(0, 2 * n, 2):
         if use_weights:
-            f.write("w " + str(random.uniform(1.0 / M_WEIGHT, M_WEIGHT)) + "\n")
+            f.write("w " + str(iur(M_WEIGHT)) + "\n")
+        elif use_matrix:
+            m = raniso()
+            a, b, c = m[0][0], m[0][1], m[1][1]
+            f.write("m " + str(a) + " " + str(b) + " " + str(c) + "\n")
         f.write(str(i) + " " + str(i + 1) + "\n")
 
     f.close()

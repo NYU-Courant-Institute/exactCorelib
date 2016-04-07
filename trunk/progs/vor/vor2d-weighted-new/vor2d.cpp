@@ -54,7 +54,7 @@ double geom_eps;
 bool interactive_mode = false;
 
 int scene_width = window_width;
-const double scale_factor = 2.0;
+const double scale_factor = 1.25;
 double scale = 1.0;
 int sx = 0;
 int sy = 0;
@@ -403,7 +403,6 @@ void Mouse(int button, int state, int x, int y) {
       show_grid = !show_grid;
     } else if (button == GLUT_WHEEL_UP) {
       scale *= scale_factor;
-//      cout << "x: " << x << " y: " << y << "\n";
       Point2d ctr(2.0 * x / window_width - 1, -(2.0 * y / window_width - 1));
       g.update(ctr, scale);
     } else if (button == GLUT_WHEEL_DOWN) {

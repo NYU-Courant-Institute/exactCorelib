@@ -27,6 +27,8 @@ public:
   void draw_corner(const Corner& corner);
   void update(const Point2d& ctr, double scale);
   void update(double scale);
+  double mxi(double x);
+  double myi(double y);
   double mx(double x);
   double my(double y);
 
