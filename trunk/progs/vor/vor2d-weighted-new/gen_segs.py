@@ -8,7 +8,7 @@ Reference: Section 1.5 in "Computational Geometry in C" by Joesph O'Rourke.
 import numpy as np
 from sys import argv
 from math import sqrt
-from gen_infra import iur, rcoor, ransio
+from gen_infra import iur, rcoor, raniso
 
 use_weights = False
 use_matrix  = False

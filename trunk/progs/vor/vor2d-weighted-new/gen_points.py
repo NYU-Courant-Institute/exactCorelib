@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from gen_infra import iur, rcoor, ransio
+from gen_infra import iur, rcoor, raniso
 
 use_weights = False
 use_matrix  = False
@@ -40,6 +40,7 @@ def parse_args(argv):
         if arg == '-m':  # TODO
             use_weights = False
             use_matrix  = True
+        i += 1
             
 parse_args(argv)
 output_file(int(argv[1]))
