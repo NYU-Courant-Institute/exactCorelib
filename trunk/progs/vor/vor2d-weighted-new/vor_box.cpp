@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <set>
 
-#define DEBUG 0
+#define DEBUG 1
 
 namespace vor2d {
 
@@ -446,6 +446,10 @@ bool vor_box::cmk(double scale) const {
   Feature* U = features_[2];
 
   if (S->dfun_sq(bx, by) != NULL && T->dfun_sq(bx, by) != NULL & U->dfun_sq(bx, by) != NULL) {
+#if DEBUG
+    cout << "MK branch 1\n";
+#endif
+    
     // Original system and derivatives (F and F').
     BiPoly f1 = *(S->dfun_sq(bx, by)) - *(T->dfun_sq(bx, by));
     BiPoly f2 = *(T->dfun_sq(bx, by)) - *(U->dfun_sq(bx, by));
@@ -626,7 +630,7 @@ bool vor_box::cmk(double scale) const {
                    + y12 * (T->box_dist_sq_grad(rgt_x, span_y).second - U->box_dist_sq_grad(rgt_x, span_y).second);
   if (!((sw * g12_rgt).mag() <= fabs(g1p))) {
 #if DEBUG
-    cout << "Condition 3: " << sw * g12.eval(rgt_x, span_y) << "\n";
+    cout << "Condition 3: " << sw * g12_rgt << "\n";
 #endif
     return false;
   }
@@ -635,7 +639,7 @@ bool vor_box::cmk(double scale) const {
                    + y22 * (T->box_dist_sq_grad(span_x, top_y).first - U->box_dist_sq_grad(span_x, top_y).first);
   if (!((sw * g21_top).mag() <= fabs(g2p))) {
 #if DEBUG
-    cout << "Condition 4: " << sw * g21.eval(span_x, top_y) << "\n";
+    cout << "Condition 4: " << sw * g21_top << "\n";
 #endif
     return false;
   }
@@ -645,7 +649,7 @@ bool vor_box::cmk(double scale) const {
                    + y12 * (T->box_dist_sq_grad(lft_x, span_y).second - U->box_dist_sq_grad(lft_x, span_y).second);
   if (!((sw * g12_lft).mag() <= fabs(g1m))) {
 #if DEBUG
-    cout << "Condition 5: " << sw * g12.eval(lft_x, span_y) << "\n";
+    cout << "Condition 5: " << sw * g12_lft << "\n";
 #endif
     return false;
   }
@@ -654,7 +658,7 @@ bool vor_box::cmk(double scale) const {
 		   + y22 * (T->box_dist_sq_grad(span_x, bot_y).first - U->box_dist_sq_grad(span_x, bot_y).first);
   if (!((sw * g21_bot).mag() <= fabs(g2m))) {
 #if DEBUG
-    cout << "Condition 6: " << sw * g21.eval(span_x, bot_y) << "\n";
+    cout << "Condition 6: " << sw * g21_bot << "\n";
 #endif
     return false;
   }

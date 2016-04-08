@@ -2,6 +2,8 @@
 #include "Edge.h"
 #include <math.h>
 
+#define DEBUG 0
+
 namespace vor2d {
 
 BiPoly Edge::make_dsegfun(Object* parent, const Point2d& p, const Point2d& q) {
@@ -9,7 +11,7 @@ BiPoly Edge::make_dsegfun(Object* parent, const Point2d& p, const Point2d& q) {
   double b = parent->m()[1];
   double c = parent->m()[2];
 
-  Point2d v = p - q;
+  Point2d v = q - p;
   double v_x = v[0];
   double v_y = v[1];
 
@@ -26,6 +28,16 @@ BiPoly Edge::make_dsegfun(Object* parent, const Point2d& p, const Point2d& q) {
   vmw = v_x * (a * w_x + b * w_y) + v_y * (b * w_x + c * w_y);
   qmv = parent->qm(v);
   tstar = (1.0 / qmv) * vmw;
+
+#if DEBUG
+  cout << "p: " << p << " q: " << q << "\n";
+  cout << "v: " << v << "\n";
+  cout << "a: " << a << " b: " << b << " c: " << c << "\n";
+  cout << "qmw: " << qmw.to_string() << "\n";
+  cout << "vmw: " << vmw.to_string() << "\n";
+  cout << "qmv: " << qmv << "\n";
+  cout << "tstar: " << tstar.to_string() << "\n";
+#endif
 
   return qmw - (tstar * vmw);
 }
@@ -72,6 +84,11 @@ pair<BiPoly, BiPoly> Edge::dfun_sq_grad(const Interval& int_x, const Interval& i
 
 double Edge::dist_sq(double x, double y) {
   double tp = tstar.eval(x, y);
+
+#if DEBUG
+  cout << "x: " << x << " y: " << y << " tp: " << tp << "\n";
+#endif
+  
   if (tp <= 0) {
     return source_->dist_sq(x, y);
   } else if (tp >= 1) {
