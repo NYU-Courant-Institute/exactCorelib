@@ -43,6 +43,18 @@ Edge::Edge(const Point2d& p, const Point2d& q, Object* parent) :
   Edge(new Corner(p, parent), new Corner(q, parent), parent) {
 }
 
+BiPoly* Edge::dfun_sq(const Interval& int_x, const Interval& int_y) {
+  Interval ts_int = tstar.eval(int_x, int_y);
+  if (0.0 >= ts_int) {
+    return source_->dfun_sq();
+  } else if (1.0 <= ts_int) {
+    return dest_->dfun_sq();
+  } else if (0.0 < ts_int && 1.0 > ts_int) {
+    return &dfun_seg_sq_;
+  }
+  return NULL;
+}
+
 double Edge::distance(const Point2d& p) {
   double tp = tstar.eval(p[0], p[1]);
   if (tp <= 0) {

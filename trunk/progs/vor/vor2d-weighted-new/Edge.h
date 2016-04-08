@@ -13,6 +13,7 @@ class Edge : public Feature {
  public:
   Edge(Corner* source, Corner* dest, Object* parent);
   Edge(const Point2d& p, const Point2d& q, Object* parent);
+  BiPoly* dfun_sq(const Interval& int_x, const Interval& int_y);
   double distance(const Point2d& p) override;
   Interval box_dist_sq(const Interval& int_x, const Interval& int_y) override;
   pair<Interval, Interval> box_dist_sq_grad(const Interval& int_x, const Interval& int_y) override;
