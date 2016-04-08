@@ -56,7 +56,7 @@ def output_file(n):
     f.close()
 
 def parse_args(argv):
-    global use_weights, use_matrix, distance_ub
+    global use_weights, use_matrix, distance_ub, weight
     i = 2                # Omitting 'python' and file name.
     while i < len(argv):
         arg = argv[i]

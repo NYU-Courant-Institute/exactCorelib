@@ -80,8 +80,8 @@ def output_file(np, ns):
     f.close()
 
 def parse_args(argv):
-    global use_weights_pts, use_matrix_pts
-    global use_weights_sgs, use_matrix_sgs, distance_ub
+    global use_weights_pts, use_matrix_pts, use_weights_sgs, use_matrix_sgs
+    global distance_ub, weight
     i = 3                # Omitting 'python' and feature counts.
     while i < len(argv):
         arg = argv[i]
