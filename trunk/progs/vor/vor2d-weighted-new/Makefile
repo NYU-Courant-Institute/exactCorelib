@@ -37,10 +37,15 @@ parser:
 test:
 	./vor2d ./tests/test_input &
 
-test_conics:
+conics:
 	./vor2d conics/ellipse &
 	./vor2d conics/parabola &
 	./vor2d conics/hyperbola &
+
+conics_highres:
+	./vor2d conics/ellipse --geps=0.001 &
+	./vor2d conics/parabola --geps=0.001 &
+	./vor2d conics/hyperbola --geps=0.001 &
 
 rand_w_10:
 	python gen_points.py 10 -w

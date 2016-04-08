@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <set>
 
-#define DEBUG 1
+#define DEBUG 0
 
 namespace vor2d {
 

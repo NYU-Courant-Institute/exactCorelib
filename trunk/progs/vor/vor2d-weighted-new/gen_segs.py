@@ -8,37 +8,12 @@ Reference: Section 1.5 in "Computational Geometry in C" by Joesph O'Rourke.
 import numpy as np
 from sys import argv
 from math import sqrt
-from gen_infra import iur, rcoor, raniso
+from gen_infra import *
 
 use_weights = False
 use_matrix  = False
 segs = []
 distance_ub = float("inf")
-
-# All coordinates are integral so this is exact.
-def area(p, q, r):
-    return np.linalg.det(np.array([[p[0], q[0], r[0]],
-                                   [p[1], q[1], r[1]],
-                                   [1, 1, 1]]))
-
-def collinear(p, q, r):
-    return area(p, q, r) == 0
-
-def left(p, q, r):
-    return area(p, q, r) > 0
-
-def rcoor():
-    return random.randint(0, WIDTH - 1)
-
-def intersects_or_collinear(p, q, r, s):
-    if (collinear(r, s, p) or \
-        collinear(r, s, q) or \
-        collinear(p, q, r) or \
-        collinear(p, q, s)):
-        return True
-    else:
-        return (left(r, s, p) ^ left(r, s, q)) and \
-            (left(p, q, r) ^ left(p, q, s))
 
 def intersects_any(r, s):
     for seg in segs:
@@ -59,13 +34,12 @@ def output_file(n):
     while len(segs) < n:
         x1, y1 = rcoor(), rcoor()
         x2, y2 = rcoor(), rcoor()
-        if ((x1 != x2) or (y1 != y2)) and \
-           not intersects_any((x1, y1), (x2, y2)) and \
-           sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) <= distance_ub:
+        if not intersects_any((x1, y1), (x2, y2)) and \
+           dist((x1, y1), (x2, y2)) <= distance_ub:
             f.write(str(x1) + " " + str(y1) + "\n")
             f.write(str(x2) + " " + str(y2) + "\n")
             segs += [((x1, y1), (x2, y2))]
-
+    
     # Write segments.
     f.write("\n" + str(n) + "\n")
     for i in range(0, 2 * n, 2):

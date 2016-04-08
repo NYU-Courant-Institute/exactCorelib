@@ -4,6 +4,7 @@ from gen_infra import iur, rcoor, raniso
 
 use_weights = False
 use_matrix  = False
+pts = []
 
 def output_file(n):
     sn = str(n)
@@ -15,7 +16,10 @@ def output_file(n):
     f = open("test_" + w_str + m_str + str(n), 'w')
     f.write(sn + "\n")
     for i in range(n):
-        f.write(str(rcoor()) + " " + str(rcoor()) + "\n")
+        pt = (rcoor(), rcoor())
+        if not pt in pts:
+            pts += [pt]
+            f.write(str(pt[0]) + " " + str(pt[1]) + "\n")
 
     # Write points.
     f.write("\n" + sn + "\n")
