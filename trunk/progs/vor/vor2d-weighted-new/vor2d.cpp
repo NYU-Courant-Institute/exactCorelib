@@ -260,17 +260,17 @@ void print_features(vor_box* box) {
     Corner* c = dynamic_cast<Corner*>(*it);
     if (c != nullptr) {
       cout << "Point: " << c->position()[0] << " " << c->position()[1] << "\n";
-      cout << c->dfun_sq()->to_string() << "\n";
-      cout << c->dfun_sq_grad().first.to_string() << "\n";
-      cout << c->dfun_sq_grad().second.to_string() << "\n";
+      // cout << c->dfun_sq()->to_string() << "\n";
+      // cout << c->dfun_sq_grad().first.to_string() << "\n";
+      // cout << c->dfun_sq_grad().second.to_string() << "\n";
     } else {
       Edge* e = dynamic_cast<Edge*>(*it);
       cout << "Edge: "
 	   << e->source()->position()[0] << " " << e->source()->position()[1] << ", "
 	   << e->dest()->position()[0]   << " " << e->dest()->position()[1] << "\n";
-      cout << e->dfun_sq()->to_string() << "\n";
-      cout << e->dfun_sq_grad().first.to_string() << "\n";
-      cout << e->dfun_sq_grad().second.to_string() << "\n";
+      // cout << e->dfun_sq()->to_string() << "\n";
+      // cout << e->dfun_sq_grad().first.to_string() << "\n";
+      // cout << e->dfun_sq_grad().second.to_string() << "\n";
     }
     cout << "\n";
   }

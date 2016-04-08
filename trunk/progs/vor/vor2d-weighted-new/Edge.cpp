@@ -4,7 +4,7 @@
 
 namespace vor2d {
 
-BiPoly Edge::make_dfun(Object* parent, const Point2d& p, const Point2d& q) {
+BiPoly Edge::make_dsegfun(Object* parent, const Point2d& p, const Point2d& q) {
   double a = parent->m()[0];
   double b = parent->m()[1];
   double c = parent->m()[2];
@@ -30,13 +30,13 @@ BiPoly Edge::make_dfun(Object* parent, const Point2d& p, const Point2d& q) {
   return qmw - (tstar * vmw);
 }
 
-Edge::Edge(Corner* source, Corner* dest, Object* parent)
-  : Feature(make_dfun(parent, source->position(), dest->position())),
-    source_(source),
-    dest_(dest) {
+Edge::Edge(Corner* source, Corner* dest, Object* parent) :
+  source_(source), dest_(dest) {
   parent_ = parent;
-  source->set_next_edge(this);
-  dest->set_prev_edge(this);
+  dfun_seg_sq_ = make_dsegfun(parent, source->position(), dest->position());
+  dfun_seg_sq_grad_ = dfun_seg_sq_.gradient();
+  // source->set_next_edge(this);
+  // dest->set_prev_edge(this);
 }
 
 Edge::Edge(const Point2d& p, const Point2d& q, Object* parent) :
@@ -50,7 +50,7 @@ double Edge::distance(const Point2d& p) {
   } else if (tp >= 1) {
     return dest_->distance(p);
   } else { // p in (0, 1)
-    return sqrt(dfun_sq_.eval(p[0], p[1]));
+    return sqrt(dfun_seg_sq_.eval(p[0], p[1]));
   }
 }
 
@@ -59,14 +59,14 @@ Interval Edge::box_dist_sq(const Interval& int_x, const Interval& int_y) {
   Interval tp = tstar.eval(int_x, int_y);
   Interval u(TOP);
 
-  if (tp.contains(0)) {
+  if (0 >= tp) {
     u = EQ_OR_UN(u, source_->dfun_sq()->eval(int_x, int_y));
   }
-  if (tp.contains(1)) {
+  if (1 <= tp) {
     u = EQ_OR_UN(u, dest_->dfun_sq()->eval(int_x, int_y));
   }
   if (!(0 > tp || 1 < tp)) {
-    u = EQ_OR_UN(u, dfun_sq()->eval(int_x, int_y));
+    u = EQ_OR_UN(u, dfun_seg_sq_.eval(int_x, int_y));
   }
 
   return u;
@@ -77,17 +77,17 @@ pair<Interval, Interval> Edge::box_dist_sq_grad(const Interval& int_x, const Int
   Interval ux(TOP);
   Interval uy(TOP);
   
-  if (tp.contains(0)) {
+  if (0 >= tp) {
     ux = EQ_OR_UN(ux, source_->dfun_sq_grad().first.eval(int_x, int_y));
     uy = EQ_OR_UN(uy, source_->dfun_sq_grad().second.eval(int_x, int_y));
   }
-  if (tp.contains(1)) {
+  if (1 <= tp) {
     ux = EQ_OR_UN(ux, dest_->dfun_sq_grad().first.eval(int_x, int_y));
     uy = EQ_OR_UN(uy, dest_->dfun_sq_grad().second.eval(int_x, int_y));
   }
   if (!(0 > tp || 1 < tp)) {
-    ux = EQ_OR_UN(ux, dfun_sq_grad().first.eval(int_x, int_y));
-    uy = EQ_OR_UN(uy, dfun_sq_grad().second.eval(int_x, int_y));
+    ux = EQ_OR_UN(ux, dfun_seg_sq_grad_.first.eval(int_x, int_y));
+    uy = EQ_OR_UN(uy, dfun_seg_sq_grad_.second.eval(int_x, int_y));
   }
 
   return pair<Interval, Interval>{ux, uy};

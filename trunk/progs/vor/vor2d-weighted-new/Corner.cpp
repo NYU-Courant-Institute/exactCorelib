@@ -5,6 +5,15 @@
 
 namespace vor2d {
 
+// TODO: Make this return a non-pointer.
+BiPoly* Corner::dfun_sq() {
+  return &dfun_sq_;
+}
+
+pair<BiPoly, BiPoly> Corner::dfun_sq_grad() {
+  return dfun_sq_grad_;
+}
+
 BiPoly Corner::make_dfun(Object* parent, const Point2d& p) {
   double a = parent->m()[0];
   double b = parent->m()[1];
@@ -22,18 +31,28 @@ BiPoly Corner::make_dfun(Object* parent, const Point2d& p) {
 }
 
 Corner::Corner(const Point2d& position, Object* parent) :
-  Feature(make_dfun(parent, position)),
-  position_(position[0], position[1]),
-  prev_edge(nullptr), next_edge(nullptr) {
+  position_(position[0], position[1]) {
+  dfun_sq_ = make_dfun(parent, position);
+  dfun_sq_grad_ = dfun_sq_.gradient();
   parent_ = parent;
 }
 
 Corner::~Corner() {}
 
-// double Corner::distance(const Point2d& point) {
-//   Point2d p = point - position_;
-//   return sqrt(parent_->qm(p));
-// }
+double Corner::distance(const Point2d& point) {
+  return sqrt(dfun_sq_.eval(point[0], point[1]));
+}
+
+Interval Corner::box_dist_sq(const Interval& int_x, const Interval& int_y) {
+  return dfun_sq_.eval(int_x, int_y);
+}
+
+pair<Interval, Interval> Corner::box_dist_sq_grad(
+  const Interval& int_x, const Interval& int_y) {
+  return pair<Interval, Interval>{
+    dfun_sq_grad_.first.eval(int_x, int_y),
+      dfun_sq_grad_.second.eval(int_x, int_y)};
+}
 
 // Interval Corner::box_dist_sq(const Interval& int_x, const Interval& int_y) {
 //   Interval p_x(position_[0]);
@@ -54,21 +73,21 @@ Corner::~Corner() {}
 //   return make_tuple(r_x, r_y);
 // }
 
-bool Corner::is_isolated() {
-  return prev_edge == nullptr && next_edge == nullptr;
-}
+// bool Corner::is_isolated() {
+//   return prev_edge == nullptr && next_edge == nullptr;
+// }
 
-bool Corner::is_dangling() {
-  return prev_edge == nullptr || next_edge == nullptr;    
-}
+// bool Corner::is_dangling() {
+//   return prev_edge == nullptr || next_edge == nullptr;    
+// }
 
-void Corner::set_prev_edge(Edge* edge) {
-  prev_edge = edge;
-}
+// void Corner::set_prev_edge(Edge* edge) {
+//   prev_edge = edge;
+// }
 
-void Corner::set_next_edge(Edge* edge) {
-  next_edge = edge;
-}
+// void Corner::set_next_edge(Edge* edge) {
+//   next_edge = edge;
+// }
 
 const Point2d Corner::position() const {
   return position_;
