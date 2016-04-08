@@ -10,6 +10,7 @@ from sys import argv
 from math import sqrt
 from gen_infra import *
 
+weight = M_WEIGHT
 use_weights = False
 use_matrix  = False
 segs = []
@@ -28,8 +29,9 @@ def output_file(n):
     w_str = "w_" if use_weights else ""
     m_str = "m_" if use_matrix else ""
     d_str = "d_" + str(distance_ub) + "_" if distance_ub < float("inf") else ""
-    
-    f = open("test_segs_" + w_str + m_str + d_str + str(n), 'w')
+    l_str = "l_" + str(weight) + "_" if (use_weights or use_matrix) else ""
+
+    f = open("test_segs_" + w_str + m_str + d_str + l_str + str(n), 'w')
     f.write(str(2 * n) + "\n")
     while len(segs) < n:
         x1, y1 = rcoor(), rcoor()
@@ -46,7 +48,7 @@ def output_file(n):
         if use_weights:
             f.write("w " + str(iur(M_WEIGHT)) + "\n")
         elif use_matrix:
-            m = raniso()
+            m = raniso(weight)
             a, b, c = m[0][0], m[0][1], m[1][1]
             f.write("m " + str(a) + " " + str(b) + " " + str(c) + "\n")
         f.write(str(i) + " " + str(i + 1) + "\n")
@@ -65,6 +67,9 @@ def parse_args(argv):
             use_matrix  = True
         if arg == '-d':
             distance_ub = int(argv[i + 1])
+            i += 1
+        if arg == '-l':
+            weight = int(argv[i + 1])
             i += 1
         i += 1
 

@@ -7,6 +7,7 @@ import numpy as np
 from sys import argv
 from gen_infra import *
 
+weight = M_WEIGHT
 use_weights_pts = False
 use_matrix_pts  = False
 use_weights_sgs = False
@@ -36,8 +37,10 @@ def output_file(np, ns):
     ws_str = "ws_" if use_weights_sgs else ""
     ms_str = "ms_" if use_matrix_sgs else ""
     d_str  = "d_" + str(distance_ub) + "_" if distance_ub < float("inf") else ""
+    l_str  = "l_" + str(weight) + "_" if (use_weights_pts or use_matrix_pts or use_weights_sgs or use_matrix_sgs) else ""
     
-    f = open("test_mixed_" + wp_str + mp_str + ws_str + ms_str + d_str + str(np) + "_pts_" + str(ns) + "_sgs", 'w')
+    f = open(
+        "test_mixed_" + wp_str + mp_str + ws_str + ms_str + d_str + l_str + str(np) + "_pts_" + str(ns) + "_sgs", 'w')
     f.write(str(2 * ns + np) + "\n")
     while len(segs) < ns:
         x1, y1 = rcoor(), rcoor()
@@ -60,7 +63,7 @@ def output_file(np, ns):
         if use_weights_sgs:
             f.write("w " + str(iur(M_WEIGHT)) + "\n")
         elif use_matrix_sgs:
-            m = raniso()
+            m = raniso(weight)
             a, b, c = m[0][0], m[0][1], m[1][1]
             f.write("m " + str(a) + " " + str(b) + " " + str(c) + "\n")
         f.write(str(i) + " " + str(i + 1) + "\n")
@@ -69,7 +72,7 @@ def output_file(np, ns):
         if use_weights_pts:
             f.write("w " + str(iur(M_WEIGHT)) + "\n")
         elif use_matrix_pts:
-            m = raniso()
+            m = raniso(weight)
             a, b, c = m[0][0], m[0][1], m[1][1]
             f.write("m " + str(a) + " " + str(b) + " " + str(c) + "\n")
         f.write(str(i) + "\n")
@@ -94,6 +97,9 @@ def parse_args(argv):
             use_matrix_sgs  = True
         if arg == '-d':
             distance_ub = int(argv[i + 1])
+            i += 1
+        if arg == '-l':
+            weight = int(argv[i + 1])
             i += 1
         i += 1
 

@@ -5,7 +5,7 @@ from math import sin
 from math import cos
 from math import sqrt
 
-M_WEIGHT = 6.0
+M_WEIGHT = 6
 WIDTH = 1024
 
 def iur(bnd):
@@ -17,9 +17,9 @@ def iur(bnd):
 def rcoor():
     return random.randint(0, WIDTH - 1)
 
-def raniso():
+def raniso(weight):
     # Generate a random diagonal matrix.
-    m = np.array([[iur(M_WEIGHT), 0.0], [0.0, iur(M_WEIGHT)]])
+    m = np.array([[iur(weight), 0.0], [0.0, iur(weight)]])
     
     # Generate a random rotation matrix.
     theta = random.uniform(0, 2 * pi)
