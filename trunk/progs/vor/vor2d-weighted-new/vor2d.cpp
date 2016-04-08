@@ -68,7 +68,7 @@ vector<vor_box*> vor_edge_boxes;
 vector<vor_box*> vor_vert_boxes;
 vector<vor_box*> degen_boxes;
 vector<Object*> objects;
-bool show_grid = true;
+bool show_grid;
 bool save_image;
 bool display_image;
 string input_file_name;
@@ -86,6 +86,7 @@ void init_options(int argc, char* argv[]) {
     ("aeps", po::value<double>(&abs_eps)->default_value(1.0d / (1 << 6)), "Absolute epsilon.")
     ("save", po::value<bool>(&save_image)->default_value(false), "Save an image of the construction.")
     ("display", po::value<bool>(&display_image)->default_value(true), "Display the consturcted Voronoi diagram.")
+    ("grid", po::value<bool>(&show_grid)->default_value(true), "Display the quadtree grid.")
     ("input_file_name", po::value<string>(&input_file_name), "Input file name.");
 
   // Set positional options.

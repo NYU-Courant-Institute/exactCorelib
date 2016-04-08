@@ -8,6 +8,7 @@ use_matrix  = False
 pts = []
 
 def output_file(n):
+    global pts
     sn = str(n)
 
     # Generate random points.
