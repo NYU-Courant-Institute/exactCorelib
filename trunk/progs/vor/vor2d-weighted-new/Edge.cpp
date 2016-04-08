@@ -55,14 +55,42 @@ BiPoly* Edge::dfun_sq(const Interval& int_x, const Interval& int_y) {
   return NULL;
 }
 
-double Edge::distance(const Point2d& p) {
-  double tp = tstar.eval(p[0], p[1]);
+pair<BiPoly, BiPoly> Edge::dfun_sq_grad(const Interval& int_x, const Interval& int_y) {
+  Interval ts_int = tstar.eval(int_x, int_y);
+  if (0.0 >= ts_int) {
+    return source_->dfun_sq_grad();
+  } else if (1.0 <= ts_int) {
+    return dest_->dfun_sq_grad();
+  } else if (0.0 < ts_int && 1.0 > ts_int) {
+    return dfun_seg_sq_grad_;
+  }
+
+  // TODO: Fix. Right now this method shouldn't be called without first
+  // validating with dfun_sq().
+  assert(0);
+}
+
+double Edge::dist_sq(double x, double y) {
+  double tp = tstar.eval(x, y);
   if (tp <= 0) {
-    return source_->distance(p);
+    return source_->dist_sq(x, y);
   } else if (tp >= 1) {
-    return dest_->distance(p);
+    return dest_->dist_sq(x, y);
   } else { // p in (0, 1)
-    return sqrt(dfun_seg_sq_.eval(p[0], p[1]));
+    return dfun_seg_sq_.eval(x, y);
+  }
+}
+
+pair<double, double> Edge::dist_sq_grad(double x, double y) {
+  double tp = tstar.eval(x, y);
+  if (tp <= 0) {
+    return source_->dist_sq_grad(x, y);
+  } else if (tp >= 1) {
+    return dest_->dist_sq_grad(x, y);
+  } else { // p in (0, 1)
+    return pair<double, double>{
+      dfun_seg_sq_grad_.first.eval(x, y),
+      dfun_seg_sq_grad_.second.eval(x, y)};
   }
 }
 

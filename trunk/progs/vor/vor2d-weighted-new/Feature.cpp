@@ -33,8 +33,8 @@ double Feature::lipschitz() const {
 //   return dfun_sq_grad_;
 // }
 
-// double Feature::distance(const Point2d& point) {
-//   return sqrt(dfun_sq_.eval(point[0], point[1]));
-// }
+double Feature::distance(const Point2d& point) {
+  return sqrt(dist_sq(point[0], point[1]));
+}
 
 } // namespace vor2d

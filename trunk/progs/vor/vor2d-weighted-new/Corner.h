@@ -12,7 +12,11 @@ class Corner : public Feature {
   ~Corner();
   BiPoly* dfun_sq();
   pair<BiPoly, BiPoly> dfun_sq_grad();
-  double distance(const Point2d& p) override;
+
+  BiPoly* dfun_sq(const Interval& int_x, const Interval& int_y) override;
+  pair<BiPoly, BiPoly> dfun_sq_grad(const Interval& int_x, const Interval& int_y) override;
+  double dist_sq(double x, double int_y) override;
+  pair<double, double> dist_sq_grad(double x, double int_y) override;
   Interval box_dist_sq(const Interval& int_x, const Interval& int_y) override;
   pair<Interval, Interval> box_dist_sq_grad(const Interval& int_x, const Interval& int_y) override;
   

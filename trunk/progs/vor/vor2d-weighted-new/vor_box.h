@@ -80,6 +80,8 @@ class vor_box {
   Object* nearest_obj(const Point2d&) const;
 
   // Fields.
+  bool pv_; // TODO: Use this.
+  bool jc_; // TODO: Use this.
   bool is_active_;
   bool is_degen_;
   const int depth_;

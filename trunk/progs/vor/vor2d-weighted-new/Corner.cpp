@@ -5,15 +5,6 @@
 
 namespace vor2d {
 
-// TODO: Make this return a non-pointer.
-BiPoly* Corner::dfun_sq() {
-  return &dfun_sq_;
-}
-
-pair<BiPoly, BiPoly> Corner::dfun_sq_grad() {
-  return dfun_sq_grad_;
-}
-
 BiPoly Corner::make_dfun(Object* parent, const Point2d& p) {
   double a = parent->m()[0];
   double b = parent->m()[1];
@@ -39,8 +30,31 @@ Corner::Corner(const Point2d& position, Object* parent) :
 
 Corner::~Corner() {}
 
-double Corner::distance(const Point2d& point) {
-  return sqrt(dfun_sq_.eval(point[0], point[1]));
+// TODO: Make this return a non-pointer.
+BiPoly* Corner::dfun_sq() {
+  return &dfun_sq_;
+}
+
+pair<BiPoly, BiPoly> Corner::dfun_sq_grad() {
+  return dfun_sq_grad_;
+}
+
+BiPoly* Corner::dfun_sq(const Interval& int_x, const Interval& int_y) {
+  return dfun_sq();
+}
+
+pair<BiPoly, BiPoly> Corner::dfun_sq_grad(const Interval& int_x, const Interval& int_y) {
+  return dfun_sq_grad();
+}
+
+double Corner::dist_sq(double x, double y) {
+  return dfun_sq_.eval(x, y);
+}
+
+pair<double, double> Corner::dist_sq_grad(double x, double y) {
+  return pair<double, double>{
+    dfun_sq_grad_.first.eval(x, y),
+      dfun_sq_grad_.second.eval(x, y)};
 }
 
 Interval Corner::box_dist_sq(const Interval& int_x, const Interval& int_y) {
