@@ -227,17 +227,16 @@ public:
 
     static int isNhbr(Box* b1, Box* b2);
 
-    void updateStatus()
-    {
-        if (this->isBig)
-        {
+    void updateStatus() {
+
+        if(x == 152 && (y == 216 || y ==200)) fprintf(stderr, "%.lf %.lf update status %d\n", x, y, status);
+
+        if (this->isBig) {
             updateStatusBig();
         }
-        else
-        {
+        else {
             updateStatusSmall();
         }
-
     }
 
 
@@ -261,9 +260,9 @@ public:
         for (WIT iterW=vorWalls.begin(); iterW != vorWalls.end(); ++iterW)
         {
             Wall* w = *iterW;
-            double dist = w->distance(x, y); //w->distance_star(x, y); //w->distance(x, y);
+            pt2line rst = w->distance2(x, y); //w->distance_star(x, y); //w->distance(x, y);
 
-            if (dist < cl2r) //within the distance range
+            if (rst.dist < cl2r) //within the distance range
             {
                 {
                     bool zone=w->inZone_star(child); //true; //w->inZone(child); //w->inZone_star(child);
@@ -333,16 +332,16 @@ public:
         {
             Wall* w = *iterW;
 
-            double dist = w->distance(x, y);
+            pt2line rst = w->distance2(x, y);
 
-            if( fabs(dist-mindistW)<1e-10 )
+            if( fabs(rst.dist-mindistW) < 1e-10 )
             {
                 if( w->distance_sign(x,y)==0 && w->isRight(x,y) ) //in zone
                     nearestWall = *iterW;
             }
-            else if (dist < mindistW) //shorter distance
+            else if (rst.dist < mindistW) //shorter distance
             {
-                mindistW = dist;
+                mindistW = rst.dist;
                 nearestWall = *iterW;
             }
         }
@@ -413,45 +412,35 @@ public:
         //
     }
 
-    void addCorner(Corner* c)
-    {
+    void addCorner(Corner* c) {
         corners.push_back(c);
     }
 
-    void addWall(Wall* w)
-    {
+    void addWall(Wall* w) {
         walls.push_back(w);
     }
 
-    bool isFree()
-    {
+    bool isFree() {
         if (status == FREE)
-        {
             return true;
-        }
         return false;
     }
 
-    bool in(double qx, double qy)
-    {
-        if( qx<x-width/2 || qx>x+width/2 ) return false;
+    bool in(double qx, double qy) {
+        if( qx<x-width/2 || qx>x+width/2 )  return false;
         if( qy<y-height/2 || qy>y+height/2) return false;
         return true;
     }
 
-    bool contains(double x, double y)
-    {
-        if (this->x + width / 2 >= x && this->x - width / 2 <= x
-            && this->y + height / 2 >= y && this->y - height / 2 <= y)
-        {
+    bool contains(double x, double y) {
+        if (this->x + width / 2 >= x  && this->x - width / 2 <= x
+         && this->y + height / 2 >= y && this->y - height / 2 <= y) {
             return true;
         }
-
         return false;
     }
 
-    bool contains(double x, double y, double a)
-    {
+    bool contains(double x, double y, double a) {
         if (this->x + width / 2 >= x && this->x - width / 2 <= x
             && this->y + height / 2 >= y && this->y - height / 2 <= y)
         {
@@ -476,16 +465,13 @@ public:
         return false;
     }
 
-    Status getStatus()
-    {
-        updateStatus();
+    Status getStatus() {
+        //updateStatus();
         return status;
     }
 
     bool split2D( double epsilon, vector<Box*>& chldn);
-
     bool split3D( double epsilon, vector<Box*>& chldn );
-
     bool splitAngle( double epsilon, vector<Box*>& chldn );
 
      //split(eps)

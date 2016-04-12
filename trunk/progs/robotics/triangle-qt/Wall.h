@@ -16,6 +16,11 @@
 class Corner;
 class Box;
 
+class pt2line {
+public:
+    double u, dist;
+};
+
 class Wall : public Feature
 {
 public:
@@ -26,6 +31,7 @@ public:
 
     //distance functions
     virtual double distance(double x, double y);
+    pt2line distance2(double x, double y);
     double distance_star(double x, double y);
     short distance_sign(double x, double y);
 

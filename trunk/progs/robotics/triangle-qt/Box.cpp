@@ -293,17 +293,15 @@ bool Box::splitAngle( double epsilon, vector<Box*>& chldn )
     return true;
 }
 
-bool Box::split( double epsilon, vector<Box*>& chldn )
-{
-    if (!this->isBig) // not isBig:
-    {
+bool Box::split( double epsilon, vector<Box*>& chldn ) {
+    if (!this->isBig) { // not isBig:
         return split3D(epsilon, chldn);
     }
-    else if( rB / 2 < r0 * 2 / THETA_MIN / 20 ) // one-shot intermediate split before
+    else if( rB / 2 < r0 * 2 / THETA_MIN / 20 ) {// one-shot intermediate split before
                 // doing split3D( ).  After this, isBig is false.
             // This intermediate step speeds up the code...
             // THETA_MIN is roughly the minimum angle of the triangle robot
-    {
+
         //int n = ceil( 2 / THETA_MIN );
         //int m = 1;
         //for (int i = 0; i < n; ++i)
@@ -318,71 +316,76 @@ bool Box::split( double epsilon, vector<Box*>& chldn )
         recursiveSplitAngle(epsilon, chldn, n, m);
         return true;
     }
-    else // do translational degree
-    {
+    else { // do translational degree
         return split2D(epsilon, chldn);
     }
 }
 
 void Box::recursiveSplitAngle( double epsilon, vector<Box*>& chldn, const int n, int m )
 {
-    if (m >= n)
-    {
+    if (m >= n) {
         chldn.push_back(this);
         return;
     }
     vector<Box*> bv;
     splitAngle(epsilon, bv);
-    for (int i = 0; i < (int)bv.size(); ++i)
-    {
+    for (int i = 0; i < (int)bv.size(); ++i) {
         bv[i]->recursiveSplitAngle(epsilon, chldn, n, 2*m);
     }
 }
 
-Box::Status Box::checkChildStatus( double x, double y )
-{
-    //assert(walls.size());
+Box::Status Box::checkChildStatus( double x, double y ) {
 
-    Wall* nearestWall;
-    list<Wall*>::iterator iterW = walls.begin();   // Careful!  This logic assumes that
-                           //  if there is any features then there is at least one wall feature!
-                           //  So you cannot use zone filters to get rid of walls, nor allow point obstacles.
-    double mindistW = (*iterW)->distance(x, y);
-    nearestWall = *iterW;
-    ++iterW;
-    for (; iterW != walls.end(); ++iterW)
-    {
-        Wall* w = *iterW;
-        double dist = w->distance(x, y);
-        if (dist < mindistW)
-        {
-            mindistW = dist;
-            nearestWall = *iterW;
+    // 4/5 Tom:
+    // this flag is true if
+    // the closest feature is a wall
+    // and it is on the corner(u = 0 | 1)
+    // and it is a convex corner.
+    bool flag;
+    Wall* nearestWall = NULL;
+    double mindistW = FLT_MAX;
+    if (walls.size() > 0) {
+        for (list<Wall*>::iterator iterW = walls.begin(); iterW != walls.end(); ++iterW) {
+            Wall* w = *iterW;
+            pt2line rst = w->distance2(x, y);
+
+            //if (x == 8 && (y == 88 || y == 72)){
+            //    fprintf(stderr, "dist %lf wall %.lf %.lf %d src %.lf %.lf %d dst %.lf %.lf %d\n",
+            //            rst.dist, x, y, w->isRight(x, y), w->src->x, w->src->y, w->src->isConvex(), w->dst->x, w->dst->y, w->dst->isConvex());
+            //}
+
+            if (mindistW > rst.dist) {
+                mindistW = rst.dist;
+                nearestWall = *iterW;
+
+                flag = false;
+                if (rst.u == 0) flag = w->src->isConvex();
+                if (rst.u == 1) flag = w->dst->isConvex();
+            }
         }
     }
 
-    double mindistC = mindistW +1; //mindistC may not exist, so init to a bigger number
     Corner* nearestCorner = NULL;
-    if (corners.size())
-    {
-        list<Corner*>::iterator iterC = corners.begin();
-        mindistC = (*iterC)->distance(x, y);
-        nearestCorner = *iterC;
-        ++iterC;
-        for (; iterC != corners.end(); ++iterC)
-        {
+    double mindistC = FLT_MAX;
+    if (corners.size() > 0) {
+        for (list<Corner*>::iterator iterC = corners.begin(); iterC != corners.end(); ++iterC) {
             Corner* c = *iterC;
             double dist = c->distance(x, y);
-            if (dist < mindistC)
-            {
+
+            //if (x == 8 && (y == 88 || y == 72)){
+            //    fprintf(stderr, "dist %lf corner %.lf %.lf %d\n", dist, x, y, c->isConvex());
+            //}
+
+            if (mindistC > dist) {
                 mindistC = dist;
                 nearestCorner = *iterC;
             }
         }
     }
+
     //nearest feature is a wall
     if (mindistW < mindistC){
-        if (nearestWall->isRight(x, y)){
+        if (nearestWall->isRight(x, y) || flag){
             return FREE;
         }
     }
@@ -391,15 +394,14 @@ Box::Status Box::checkChildStatus( double x, double y )
     //note that if a wall and a corner are the same dist,
     //only need to take care of the corner
     else{
-        if (nearestCorner->isConvex()){
+        if (nearestCorner->isConvex()) {
             return FREE;
         }
     }
     return STUCK;
 }
 
-int Box::isNhbr( Box* b1, Box* b2 )
-{
+int Box::isNhbr( Box* b1, Box* b2 ) {
     double xmin1 = b1->x - b1->width / 2;
     double xmax1 = b1->x + b1->width / 2;
     double ymin1 = b1->y - b1->height / 2;
@@ -409,42 +411,32 @@ int Box::isNhbr( Box* b1, Box* b2 )
     double ymin2 = b2->y - b2->height / 2;
     double ymax2 = b2->y + b2->height / 2;
 
-    if (isEq(xmin1, xmax2) && isOneContainAnotherY(b1, b2) && isOneContainAnotherA(b1, b2))
-    {
+    if (isEq(xmin1, xmax2) && isOneContainAnotherY(b1, b2) && isOneContainAnotherA(b1, b2)) {
         return 2;
     }
-    if (isEq(xmax1, xmin2) && isOneContainAnotherY(b1, b2) && isOneContainAnotherA(b1, b2))
-    {
+    if (isEq(xmax1, xmin2) && isOneContainAnotherY(b1, b2) && isOneContainAnotherA(b1, b2)) {
         return 0;
     }
-    if (isEq(ymin1, ymax2) && isOneContainAnotherX(b1, b2) && isOneContainAnotherA(b1, b2))
-    {
+    if (isEq(ymin1, ymax2) && isOneContainAnotherX(b1, b2) && isOneContainAnotherA(b1, b2)) {
         return 3;
     }
-    if (isEq(ymax1, ymin2) && isOneContainAnotherX(b1, b2) && isOneContainAnotherA(b1, b2))
-    {
+    if (isEq(ymax1, ymin2) && isOneContainAnotherX(b1, b2) && isOneContainAnotherA(b1, b2)) {
         return 1;
     }
     //down
-    if (isEq(b1->xi[0], b2->xi[1]) && isOneContainAnotherX(b1, b2) && isOneContainAnotherY(b1, b2))
-    {
+    if (isEq(b1->xi[0], b2->xi[1]) && isOneContainAnotherX(b1, b2) && isOneContainAnotherY(b1, b2)) {
         return 5;
     }
     //up
-    if (isEq(b1->xi[1], b2->xi[0]) && isOneContainAnotherX(b1, b2) && isOneContainAnotherY(b1, b2))
-    {
+    if (isEq(b1->xi[1], b2->xi[0]) && isOneContainAnotherX(b1, b2) && isOneContainAnotherY(b1, b2)) {
         return 4;
     }
 
     return -1;
 }
 
-void Box::updateStatusBig()
-{
-    if (status != UNKNOWN)
-    {
-        return;
-    }
+void Box::updateStatusBig() {
+    if (status != UNKNOWN) return;
 
     double outerDomain = r0 + rB;
     // innerDomain unused:
@@ -458,14 +450,13 @@ void Box::updateStatusBig()
         else {
             it = corners.erase(it);
         }
-       if (corners.size())
-          status = MIXED;
+        //if (corners.size()) status = MIXED;
     }
 
     for (list<Wall*>::iterator it = walls.begin(); it != walls.end(); )
     {
         Wall* w = *it;
-        double distWall = w->distance(this->x, this->y);
+        pt2line rst = w->distance2(this->x, this->y);
 //		if (distWall < innerDomain)
 //		{
 //			status = STUCK;
@@ -473,38 +464,30 @@ void Box::updateStatusBig()
 //		}
 //		else
 
-       if (distWall <= outerDomain)
-        {
+        if (rst.dist <= outerDomain) {
             status = MIXED;
             ++it;
         }
-        else
-        {
+        else {
             it = walls.erase(it);
         }
     }
 
-    if (corners.size() == 0 && walls.size() == 0)
-    {
-        if (!pParent)
-        {
+    if (corners.size() == 0 && walls.size() == 0) {
+        if (!pParent) {
             status = FREE;
             classify_condition = 1;
         }
-        else
-        {
-            status = pParent->checkChildStatus(this->x, this->y);
+        else {
+            //if(status != Box::FREE || status != Box::STUCK)
+                status = pParent->checkChildStatus(this->x, this->y);
             classify_condition = 2;
         }
     }
 }
 
-void Box::updateStatusSmall()
-{
-    if (status != UNKNOWN)
-    {
-        return;
-    }
+void Box::updateStatusSmall() {
+    if (status != UNKNOWN) return;
 
     double v01x, v01y, v02x, v02y, v11x, v11y, v12x, v12y, v21x, v21y, v22x, v22y;
 
@@ -535,14 +518,12 @@ void Box::updateStatusSmall()
     double X31x, X31y;
     L3.intersection(L1, X31x, X31y);
 
-    for (list<Corner*>::iterator it = corners.begin(); it != corners.end(); )
-    {
+    for (list<Corner*>::iterator it = corners.begin(); it != corners.end(); ) {
         Corner* c = *it;
         double cx = c->x - this->x;
         double cy = c->y - this->y;
 
-        if (shrinkSuccess && !L1a.isRight(cx, cy) && !L2a.isRight(cx, cy) && !L3a.isRight(cx, cy))
-        {
+        if (shrinkSuccess && !L1a.isRight(cx, cy) && !L2a.isRight(cx, cy) && !L3a.isRight(cx, cy)) {
             status = STUCK;
             classify_condition = 3;
             return;
@@ -552,31 +533,26 @@ void Box::updateStatusSmall()
             && !Line2d::isRight(X31x, X31y, X12x, X12y, cx, cy)
             && !Line2d::isRight(X12x, X12y, X23x, X23y, cx, cy)
             && !Line2d::isRight(X23x, X23y, X31x, X31y, cx, cy)
-            ) )
-        {
+            ) ) {
             it = corners.erase(it);
         }
-        else
-        {
+        else {
             status = MIXED;
             ++it;
         }
     }
 
-    for (list<Wall*>::iterator it = walls.begin(); it != walls.end(); )
-    {
+    for (list<Wall*>::iterator it = walls.begin(); it != walls.end(); ) {
         Wall* w = *it;
-        double distWall = w->distance(this->x, this->y);
-        if (distWall < r0 + rB)
-        {
+        pt2line rst = w->distance2(this->x, this->y);
+        if (rst.dist < r0 + rB) {
             double srcx = w->src->x - this->x;
             double srcy = w->src->y - this->y;
             double dstx = w->dst->x - this->x;
             double dsty = w->dst->y - this->y;
 
             //quick stuck detection
-            if (shrinkSuccess) //inner triangle (before shrink rB) is not negative
-            {
+            if (shrinkSuccess) { //inner triangle (before shrink rB) is not negative
                 double x23s, y23s;
                 L2a.intersection(L3a, x23s, y23s);
                 double x13s, y13s;
@@ -592,8 +568,7 @@ void Box::updateStatusSmall()
                     (!L1a.isRight(dstx, dsty)
                     && !L2a.isRight(dstx, dsty)
                     && !L3a.isRight(dstx, dsty))
-                    )
-                {
+                    ) {
                     status = STUCK;
                     classify_condition = 4;
                     return;
@@ -601,8 +576,7 @@ void Box::updateStatusSmall()
                 // or line seg (src,dst) intersects any edge of triangle
                 else if ( Line2d::lineSegIntsct(x23s, y23s, x13s, y13s, srcx, srcy, dstx, dsty)
                     || Line2d::lineSegIntsct(x13s, y13s, x12s, y12s, srcx, srcy, dstx, dsty)
-                    || Line2d::lineSegIntsct(x12s, y12s, x23s, y23s, srcx, srcy, dstx, dsty) )
-                {
+                    || Line2d::lineSegIntsct(x12s, y12s, x23s, y23s, srcx, srcy, dstx, dsty) ) {
                     status = STUCK;
                     classify_condition = 5;
                     return;
@@ -613,43 +587,37 @@ void Box::updateStatusSmall()
             if ( (!Line2d::isRight(X31x, X31y, X12x, X12y, srcx, srcy)
                 && !Line2d::isRight(X12x, X12y, X23x, X23y, srcx, srcy)
                 && !Line2d::isRight(X23x, X23y, X31x, X31y, srcx, srcy)) ||
-                (!Line2d::isRight(X31x, X31y, X12x, X12y, dstx, dsty)
+                 (!Line2d::isRight(X31x, X31y, X12x, X12y, dstx, dsty)
                 && !Line2d::isRight(X12x, X12y, X23x, X23y, dstx, dsty)
                 && !Line2d::isRight(X23x, X23y, X31x, X31y, dstx, dsty))
-                )
-            {
+                ) {
                 status = MIXED;
                 ++it;
             }
             // or line seg (src,dst) intersects any edge of triangle
             else if ( Line2d::lineSegIntsct(X31x, X31y, X12x, X12y, srcx, srcy, dstx, dsty)
                 || Line2d::lineSegIntsct(X12x, X12y, X23x, X23y, srcx, srcy, dstx, dsty)
-                || Line2d::lineSegIntsct(X23x, X23y, X31x, X31y, srcx, srcy, dstx, dsty) )
-            {
+                || Line2d::lineSegIntsct(X23x, X23y, X31x, X31y, srcx, srcy, dstx, dsty) ) {
                 status = MIXED;
                 ++it;
             }
-            else
-            {
+            else {
                 it = walls.erase(it);
             }
         }
-        else
-        {
+        else {
             it = walls.erase(it);
         }
     }
 
-    if (corners.size() == 0 && walls.size() == 0)
-    {
-        if (!pParent)
-        {
+    if (corners.size() == 0 && walls.size() == 0) {
+        if (!pParent) {
             status = FREE;
             classify_condition = 6;
         }
-        else
-        {
-            status = pParent->checkChildStatus(this->x, this->y);
+        else {
+            //if(status != Box::FREE || status != Box::STUCK)
+                status = pParent->checkChildStatus(this->x, this->y);
             classify_condition = 7;
         }
     }
