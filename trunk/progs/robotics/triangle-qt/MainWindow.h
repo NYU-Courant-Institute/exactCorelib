@@ -48,6 +48,7 @@ private slots:
     void on_replay_clicked();
 
     void on_boundary_clicked();
+    void on_hidebox_clicked();
 
 
     void on_pushButton_clicked();

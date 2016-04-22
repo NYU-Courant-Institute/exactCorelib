@@ -1,45 +1,43 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+
 using namespace std;
 
 extern char egNameList[200][200];
 extern int numEg;
 extern string egName;
 extern string fileName;
-
-
 extern double alpha[3];		// start configuration
 extern double beta[3];		// goal configuration
 extern double epsilon;	    // resolution parameter
-
 extern std::vector<int> expansions;
-
-
 extern double triRobo[2];
 extern double R0;
 extern int seed;
 extern int QType;
-
 extern bool showAnim;
 extern bool pauseAnim;
 extern bool replayAnim;
-
+extern bool finishedAnim;
 extern bool hideBoxBoundary;
+extern bool hideBox;
 extern int numberForDisplay;
-
-
 extern int renderSteps;
 extern bool step;
-
-
+extern unsigned int iPathSeg;
 extern double mouseX, mouseY;
+extern double boxWidth;
+extern double boxHeight;
 
-int incr(1);
-
-int animationSpeed(50);
+extern FILE *fptr;
 
 extern void run();
 extern void parseExampleFile();
+
+
+int incr(1);
+int animationSpeed(50);
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -47,8 +45,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    for(int i=0;i<numEg;++i){
+    for(int i=0;i<numEg;++i) {
         ui->comboBox->addItem(egNameList[i]);
+    }
+    for(int i=0;i<numEg;++i) {
+        if (strcmp(egNameList[i], egName.c_str()) == 0) {
+            ui->comboBox->setCurrentIndex(i);
+        }
     }
 
     //ui->egFile->setText(QString::fromStdString(egName));
@@ -88,7 +91,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->eps->setValue(epsilon);
     ui->random->setValue(seed);
 
-    ui->boundary->setChecked(false);
+    ui->boundary->setChecked(true);
+    ui->hidebox->setChecked(true);
+
     ui->steplabel->hide();
     ui->inc->setEnabled(false);
     ui->left->setEnabled(false);
@@ -155,29 +160,80 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     if(x<0||y<0||x>512||y>512) return;
 }
 
-void MainWindow::mousePressEvent(QMouseEvent *event)
-{
+void MainWindow::mousePressEvent(QMouseEvent *event) {
+    char tmp_buff[200];
+    string box_info;
+
     int x = event->x()-90;
     int y = event->y()-30;
     if(x<0||y<0||x>512||y>512) return;
 
     mouseX = x;
     mouseY = 512-y;
-    fprintf(stderr, "mouse (%.lf, %.lf) box %d\n", mouseX, mouseY, Box::pAllLeaf->size());
-    double area = 512*512;
+    sprintf(tmp_buff, "mouse (%.lf, %.lf)\n", mouseX, mouseY);
+    box_info.append(tmp_buff);
 
     Box* record;
+    bool flag = false, flag_free = false, flag_stuck = false;
+    double area = boxWidth*boxHeight;
     for(int i=Box::pAllLeaf->size()-1;i>=0;--i){
         Box* tmp = Box::pAllLeaf->at(i);
         if(mouseX >= tmp->x-tmp->width/2 && mouseX < tmp->x+tmp->width/2 &&
-           mouseY >= tmp->y-tmp->height/2 && mouseY < tmp->y+tmp->height/2 &&
-           area > tmp->width*tmp->height){
-            area = tmp->width*tmp->height;
-            record = tmp;
+           mouseY >= tmp->y-tmp->height/2 && mouseY < tmp->y+tmp->height/2){
+
+            if(!flag) {
+                record = tmp;
+                flag = true;
+            }
+
+            if(tmp->status == Box::FREE){
+                flag_free = true;
+                if(area > tmp->width*tmp->height){
+                    area = tmp->width*tmp->height;
+                    record = tmp;
+                }
+            }
+            if(tmp->status == Box::STUCK){
+                flag_stuck = true;
+            }
         }
     }
-    fprintf(stderr, "box (%.lf, %.lf) width %.lf height %.lf classify condition: %d\n", record->x, record->y, record->width, record->height, record->classify_condition);
-    //record->checkChildStatus(record->x, record->y);
+    sprintf(tmp_buff, "box (%.lf, %.lf) width %.lf height %.lf\n", record->x, record->y, record->width, record->height);
+    box_info.append(tmp_buff);
+
+    if(flag_free && flag_stuck) {
+        sprintf(tmp_buff, "box status: FREE & STUCK\n");
+    } else if(flag_free && !flag_stuck) {
+        sprintf(tmp_buff, "box status: FREE\n");
+    } else if(!flag_free && flag_stuck) {
+        sprintf(tmp_buff, "box status: STUCK\n");
+    } else if(record->status == Box::MIXED) {
+        sprintf(tmp_buff, "box status: MIXED\n");
+    } else {
+        sprintf(tmp_buff, "box status: UNKNOWN\n");
+    }
+    box_info.append(tmp_buff);
+
+    if(record->classify_condition == 1) {
+        sprintf(tmp_buff, "1st phase: no parent\n");
+    } else if(record->classify_condition == 2) {
+        sprintf(tmp_buff, "1st phase: check parents' feature set\n");
+    } else if(record->classify_condition == 3) {
+        sprintf(tmp_buff, "2nd phase: corner is in triangle\n");
+    } else if(record->classify_condition == 4) {
+        sprintf(tmp_buff, "2nd phase: wall's end point is in triangle\n");
+    } else if(record->classify_condition == 5) {
+        sprintf(tmp_buff, "2nd phase: wall intersects triangle\n");
+    } else if(record->classify_condition == 6) {
+        sprintf(tmp_buff, "2nd phase: no parent\n");
+    } else if(record->classify_condition == 7) {
+        sprintf(tmp_buff, "2nd phase: check parents' feature set\n");
+    } else {
+        sprintf(tmp_buff, "not decided\n");
+    }
+    box_info.append(tmp_buff);
+
+    ui->textBrowser->setText(QString::fromStdString(box_info));
 }
 
 void MainWindow::on_run_clicked()
@@ -200,7 +256,15 @@ void MainWindow::on_run_clicked()
         R0=ui->l3->value();
 
         epsilon=ui->eps->value();
-        seed=ui->random->value();
+
+
+        // 4/13/2016
+        // only initialize the seed when it is changed
+        int new_seed = ui->random->value();
+        if (seed != new_seed) {
+            seed = new_seed;
+            srand(seed);
+        }
 
         hideBoxBoundary=ui->boundary->isChecked();
     } else {
@@ -241,13 +305,19 @@ void MainWindow::on_run_clicked()
         }
 
         ui->eps->setValue(epsilon);
-        ui->random->setValue(seed);
+        int old_seed = ui->random->value();
+        if (seed != old_seed) {
+            seed = old_seed;
+            ui->random->setValue(seed);
+            srand(seed);
+        }
     }
 
+    showAnim = true;
     run();
 
-    ui->openGLWidget->genScene();
     ui->openGLWidget->update();
+    ui->openGLWidget_2->update();
 }
 
 
@@ -278,6 +348,7 @@ void MainWindow::on_vor_clicked()
 
 void MainWindow::on_exit_clicked()
 {
+    fprintf(fptr, "end\n");
     this->close();
 }
 
@@ -302,6 +373,12 @@ void MainWindow::on_replay_clicked()
 void MainWindow::on_boundary_clicked()
 {
     hideBoxBoundary=ui->boundary->isChecked();
+    this->update();
+}
+
+void MainWindow::on_hidebox_clicked()
+{
+    hideBox=ui->hidebox->isChecked();
     this->update();
 }
 
@@ -340,7 +417,6 @@ void MainWindow::on_left_clicked()
 
     ui->steplabel->setText("Step: "+QString::number(renderSteps));
 
-    ui->openGLWidget->genScene();
     ui->openGLWidget->update();
 }
 
@@ -351,7 +427,6 @@ void MainWindow::on_right_clicked()
     if(renderSteps>expansions.size()-1) renderSteps=expansions.size()-1;
     ui->steplabel->setText("Step: "+QString::number(renderSteps));
 
-    ui->openGLWidget->genScene();
     ui->openGLWidget->update();
 }
 

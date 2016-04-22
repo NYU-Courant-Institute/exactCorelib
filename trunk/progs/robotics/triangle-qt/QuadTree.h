@@ -15,7 +15,9 @@
  ************************************** */
 
 #pragma once
+
 #include <iostream>
+
 #include "Box.h"
 #include "UnionFind.h"
 #include "PriorityQueue.h"
@@ -27,6 +29,8 @@ extern int freeCount;
 extern int stuckCount;
 extern int mixCount;
 extern int mixSmallCount;
+
+extern FILE *fptr;
 
 class QuadTree
 {
@@ -63,10 +67,9 @@ public:
     Box* pRoot;
     double epsilon;
     int QType;
-    int seed;
 
-    QuadTree (Box* root, double e, int qType, int s):
-        pRoot(root), epsilon(e), QType(qType), seed(s)
+    QuadTree (Box* root, double e, int qType):
+        pRoot(root), epsilon(e), QType(qType)
     {
         switch (QType)
         {
@@ -74,7 +77,7 @@ public:
             PQ = new seqQueue();
             break;
         case 0:
-            PQ = new randQueue(s);
+            PQ = new randQueue();
             break;
         case 2:
             PQ = new dijkstraQueue<DistCmp>();
@@ -94,44 +97,37 @@ public:
     }
 
     //bfs search for alpha/beta
-    Box* getBox (double x, double y, double a, int& ct)
-    {
+    Box* getBox (double x, double y, double a, int& ct) {
         std::queue<Box*> q;
 
-        for (int i = 0; i < (int)allLeaf.size(); ++i)
-        {
-            if ( allLeaf[i]->contains(x, y, a) )
-            {
+        for (int i = 0; i < (int)allLeaf.size(); ++i) {
+            if ( allLeaf[i]->contains(x, y, a) ) {
                 q.push(allLeaf[i]);
             }
         }
 
-        while (q.size())
-        {
+        while (q.size()) {
             Box* b = q.front();
             q.pop();
-            if (!b->isLeaf)
-            {
+
+            if (!b->isLeaf) {
                 continue;
             }
-            if (!b->contains(x, y, a))
-            {
+            if (!b->contains(x, y, a)) {
                 return 0;
             }
 
             vector<Box*> cldrn;
-            if (!expand(b, cldrn))
-            {
+            if (!expand(b, cldrn)) {
                 return 0;
             }
             ++ct;
 
-            for (int i = 0; i < (int)cldrn.size(); ++i)
-            {
-                if ( cldrn[i]->contains(x, y, a) )
-                {
-                    if (cldrn[i]->isFree())
-                    {
+            for (int i = 0; i < (int)cldrn.size(); ++i) {
+                fprintf(fptr, "x %.lf y %.lf a %.lf box (%.lf, %.lf) %.lf %.lf xi %lf %lf\n", x, y, a, cldrn[i]->x, cldrn[i]->y, cldrn[i]->width, cldrn[i]->height, cldrn[i]->xi[0], cldrn[i]->xi[1]);
+                fprintf(fptr, "contain %d free %d\n", cldrn[i]->contains(x, y, a), cldrn[i]->isFree());
+                if ( cldrn[i]->contains(x, y, a) ) {
+                    if (cldrn[i]->isFree()) {
                         return cldrn[i];
                     }
                     q.push(cldrn[i]);

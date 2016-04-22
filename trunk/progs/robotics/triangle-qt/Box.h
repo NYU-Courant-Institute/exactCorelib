@@ -1,16 +1,22 @@
 #pragma once
 
+// standard library
 #include <time.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
 #include <cmath>
-#include "Wall.h"
-#include "Corner.h"
 #include <vector>
 #include <list>
 #include <limits>
 #include <algorithm>
 #include <float.h>
+#include <iostream>
+
+// custom library
+#include "Polygon.h"
+#include "Wall.h"
+#include "Corner.h"
 #include "line2d.h"
 
 
@@ -228,9 +234,6 @@ public:
     static int isNhbr(Box* b1, Box* b2);
 
     void updateStatus() {
-
-        if(x == 152 && (y == 216 || y ==200)) fprintf(stderr, "%.lf %.lf update status %d\n", x, y, status);
-
         if (this->isBig) {
             updateStatusBig();
         }
@@ -421,9 +424,7 @@ public:
     }
 
     bool isFree() {
-        if (status == FREE)
-            return true;
-        return false;
+        return (status == FREE);
     }
 
     bool in(double qx, double qy) {
@@ -466,7 +467,7 @@ public:
     }
 
     Status getStatus() {
-        //updateStatus();
+        updateStatus();
         return status;
     }
 

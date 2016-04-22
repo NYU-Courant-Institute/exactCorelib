@@ -10,11 +10,11 @@ goalX = 30		# goal configuration
 goalY = 30
 goalTheta = 90
 
-epsilon = 8		# resolution parameter
+epsilon = 4		# resolution parameter
 
-TriTheta1 = 90	# triangle robot
-TriTheta2 = 180
-R = 14		# Disc Size
+TriTheta1 = 150	# triangle robot
+TriTheta2 = 190
+R = 40		# Disc Size
 
 inputDir = inputs	# where to find input files
 fileName = bugtrap.txt	# input environment file

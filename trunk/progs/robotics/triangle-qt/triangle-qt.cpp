@@ -67,6 +67,7 @@
 #include "Timer.h"
 #include "stdlib.h"
 #include "Polygon.h"
+#include "Vertex.h"
 
 #include "MainWindow.h"
 #include "QApplication"
@@ -108,22 +109,22 @@ using namespace std;
 //  double triRobo[2] = {0.95, 1.05};
 //
 // (d) Right-Angle Isosceles Robot
-double triRobo[2] = {0.5, 1};
+double triRobo[2] = {0.8333333333, 1.0555555555};
 //
 // (e) Off-Center Robot
 // double triRobo[2] = {0.3, 0.6};
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////
-string egName("triangle_eg1.eg");    // Input example name
-string fileName("input2e.txt"); 		// Input file name
+string egName("triangle_egbug.eg");    // Input example name
+string fileName("bugtrap.txt"); 		// Input file name
 string inputDir("inputs");              // Path for input files
 
-double alpha[3] = { 150, 260, 90 };		// start configuration
-double beta[3] = { 40, 40, -60 };         // goal configuration
-double epsilon = 10;			// resolution parameter
+double alpha[3] = { 200, 350, 0 };		// start configuration
+double beta[3] = { 30, 30, 90 };         // goal configuration
+double epsilon = 4;			// resolution parameter
 
-double R0 = 25;
+double R0 = 40;
 double boxWidth = 512;			// Initial box width
 double boxHeight = 512;			// Initial box height
 int windowPosX = 320;			// X Position of Window
@@ -137,7 +138,8 @@ double deltaY = 0;			// y-translation of input environment
 double scale = 1;			// scaling of input environment
 bool noPath = true;			// True means there is "No path.
 
-bool hideBoxBoundary = false;  		// don't draw box boundary
+bool hideBoxBoundary = true;  		// don't draw box boundary
+bool hideBox = true;  		// don't draw box
 bool verboseOption = false;         // don't print various statistics
 int drawPathOption = 0;
 int twoStrategyOption = 0;          //  Two-Strategy Option    0: original 1: smarter
@@ -190,24 +192,28 @@ int currentPathStep = 0;
 extern int renderSteps;
 extern bool step;
 
-bool showAnim(false);
+bool showAnim(true);
 bool pauseAnim(false);
 bool replayAnim(false);
 
-// color coding variable ========================================
-double clr_totalFREE[3] = {0,1,0};     // green
-double clr_partialFREE[3] = {0,0.5,0}; // dark green
-double clr_MIXED[3] = {1,1,0}; // yellow
-double clr_STUCK[3] = {1,0,0}; // red
-double clr_EPS[3] = {0.5,0.5,0.5}; // grey
-double clr_UNKNOWN[3] = {1,1,1}; // white
-double clr_start[3] = {1,0,1};    // purple
-double clr_goal[3] = {0.5,0,0.5}; // dark purple
-double clr_path[3] = {0.5,0,0}; // dark red
-double clr_robot[3] = {0.75,0.75,0.75}; // light grey
-double clr_obstacle[3] = {0,0,1}; // blue
-double clr_boundary[3] = {1,1,1}; // black
 
+// color coding variable ========================================
+Color clr_totalFREE(0, 1, 0, 0.5);     // green
+Color clr_partialFREE(0.25, 1, 0.25, 0.5); // dark green
+Color clr_MIXED(1, 1, 0, 0.5); // yellow
+Color clr_STUCK(1, 0, 0, 0.5); // red
+Color clr_EPS(0.5, 0.5, 0.5, 0.5); // grey
+Color clr_UNKNOWN(1, 1, 0, 0.5); // white
+
+Color clr_start(1,0,1,0.5);    // purple
+Color clr_goal(0.25,0,0.25,0.5); // dark purple
+Color clr_robot(0.5,0,0.5,0.5); // purple
+
+Color clr_path(0.5,0,0,1); // dark red
+Color clr_obstacle(0,0,1,1); // blue
+Color clr_boundary(1,1,1,1); // black
+
+FILE *fptr;
 
 // External Routines ========================================
 //////////////////////////////////////////////////////////////////////////////////
@@ -411,17 +417,16 @@ int main(int argc, char* argv[]) {
         cout << "Non Interactive Run of Triangle Robot" ;
     }
 
-    QSurfaceFormat format;
-    format.setMajorVersion(3);
-    format.setMinorVersion(3);
-    format.setProfile(QSurfaceFormat::CoreProfile);
-    QSurfaceFormat::setDefaultFormat(format);
     QApplication app(argc, argv);
+    fptr = fopen("debug.txt", "w");
+    if(fptr == NULL) return 0;
+    fprintf(fptr, "start\n");
 
     parseExampleList();
     window = new MainWindow();
 
     parseExampleFile();
+    srand(seed);
     run();
 
     window->show();
@@ -469,7 +474,7 @@ void genEmptyTree() {
     if (QT) {
         delete (QT);
     }
-    QT = new QuadTree(root, epsilon, QType, seed++); // Note that seed keeps changing!
+    QT = new QuadTree(root, epsilon, QType);
 
     if (verboseOption)  mw_out << "done genEmptyTree \n";
 }
@@ -516,6 +521,7 @@ void run() {
 
     if (QType == 0 || QType == 1) {
         boxA = QT->getBox(alpha[0], alpha[1], alpha[2], ct);
+        fprintf(fptr, "boxA (%.lf, %.lf) width %.lf height %.lf status: %d classify condition: %d\n", boxA->x, boxA->y, boxA->width, boxA->height, boxA->status, boxA->classify_condition);
         if (!boxA) {
             noPath = true;
             mw_out << "Start Configuration is not free\n";
@@ -539,6 +545,7 @@ void run() {
     }
     else if (QType == 2 || QType == 3 || QType == 4) {
         boxA = QT->getBox(alpha[0], alpha[1], alpha[2], ct);
+        fprintf(fptr, "boxA (%.lf, %.lf) width %.lf height %.lf status: %d classify condition: %d\n", boxA->x, boxA->y, boxA->width, boxA->height, boxA->status, boxA->classify_condition);
         if (!boxA) {
             noPath = true;
             mw_out << "Start Configuration is not free\n";
@@ -833,89 +840,89 @@ void parseExampleFile() {
             verboseOption = atoi(sptr);
         }
 
-        if (strcmp(sptr, "clr_totalFREE") == 0) {
-            for(int i=0;i<3;++i){
-                sptr = strtok(NULL, "=: \t");
-                clr_totalFREE[i] = atof(sptr);
-            }
-        }
+//        if (strcmp(sptr, "clr_totalFREE") == 0) {
+//            for(int i=0;i<3;++i){
+//                sptr = strtok(NULL, "=: \t");
+//                clr_totalFREE[i] = atof(sptr);
+//            }
+//        }
 
-        if (strcmp(sptr, "clr_partialFREE") == 0) {
-            for(int i=0;i<3;++i){
-                sptr = strtok(NULL, "=: \t");
-                clr_partialFREE[i] = atof(sptr);
-            }
-        }
+//        if (strcmp(sptr, "clr_partialFREE") == 0) {
+//            for(int i=0;i<3;++i){
+//                sptr = strtok(NULL, "=: \t");
+//                clr_partialFREE[i] = atof(sptr);
+//            }
+//        }
 
-        if (strcmp(sptr, "clr_MIXED") == 0) {
-            for(int i=0;i<3;++i){
-                sptr = strtok(NULL, "=: \t");
-                clr_MIXED[i] = atof(sptr);
-            }
-        }
+//        if (strcmp(sptr, "clr_MIXED") == 0) {
+//            for(int i=0;i<3;++i){
+//                sptr = strtok(NULL, "=: \t");
+//                clr_MIXED[i] = atof(sptr);
+//            }
+//        }
 
-        if (strcmp(sptr, "clr_STUCK") == 0) {
-            for(int i=0;i<3;++i){
-                sptr = strtok(NULL, "=: \t");
-                clr_STUCK[i] = atof(sptr);
-            }
-        }
+//        if (strcmp(sptr, "clr_STUCK") == 0) {
+//            for(int i=0;i<3;++i){
+//                sptr = strtok(NULL, "=: \t");
+//                clr_STUCK[i] = atof(sptr);
+//            }
+//        }
 
-        if (strcmp(sptr, "clr_EPS") == 0) {
-            for(int i=0;i<3;++i){
-                sptr = strtok(NULL, "=: \t");
-                clr_EPS[i] = atof(sptr);
-            }
-        }
+//        if (strcmp(sptr, "clr_EPS") == 0) {
+//            for(int i=0;i<3;++i){
+//                sptr = strtok(NULL, "=: \t");
+//                clr_EPS[i] = atof(sptr);
+//            }
+//        }
 
-        if (strcmp(sptr, "clr_UNKNOWN") == 0) {
-            for(int i=0;i<3;++i){
-                sptr = strtok(NULL, "=: \t");
-                clr_UNKNOWN[i] = atof(sptr);
-            }
-        }
+//        if (strcmp(sptr, "clr_UNKNOWN") == 0) {
+//            for(int i=0;i<3;++i){
+//                sptr = strtok(NULL, "=: \t");
+//                clr_UNKNOWN[i] = atof(sptr);
+//            }
+//        }
 
-        if (strcmp(sptr, "clr_start") == 0) {
-            for(int i=0;i<3;++i){
-                sptr = strtok(NULL, "=: \t");
-                clr_start[i] = atof(sptr);
-            }
-        }
+//        if (strcmp(sptr, "clr_start") == 0) {
+//            for(int i=0;i<3;++i){
+//                sptr = strtok(NULL, "=: \t");
+//                clr_start[i] = atof(sptr);
+//            }
+//        }
 
-        if (strcmp(sptr, "clr_goal") == 0) {
-            for(int i=0;i<3;++i){
-                sptr = strtok(NULL, "=: \t");
-                clr_goal[i] = atof(sptr);
-            }
-        }
+//        if (strcmp(sptr, "clr_goal") == 0) {
+//            for(int i=0;i<3;++i){
+//                sptr = strtok(NULL, "=: \t");
+//                clr_goal[i] = atof(sptr);
+//            }
+//        }
 
-        if (strcmp(sptr, "clr_path") == 0) {
-            for(int i=0;i<3;++i){
-                sptr = strtok(NULL, "=: \t");
-                clr_path[i] = atof(sptr);
-            }
-        }
+//        if (strcmp(sptr, "clr_path") == 0) {
+//            for(int i=0;i<3;++i){
+//                sptr = strtok(NULL, "=: \t");
+//                clr_path[i] = atof(sptr);
+//            }
+//        }
 
-        if (strcmp(sptr, "clr_robot") == 0) {
-            for(int i=0;i<3;++i){
-                sptr = strtok(NULL, "=: \t");
-                clr_robot[i] = atof(sptr);
-            }
-        }
+//        if (strcmp(sptr, "clr_robot") == 0) {
+//            for(int i=0;i<3;++i){
+//                sptr = strtok(NULL, "=: \t");
+//                clr_robot[i] = atof(sptr);
+//            }
+//        }
 
-        if (strcmp(sptr, "clr_obstacle") == 0) {
-            for(int i=0;i<3;++i){
-                sptr = strtok(NULL, "=: \t");
-                clr_obstacle[i] = atof(sptr);
-            }
-        }
+//        if (strcmp(sptr, "clr_obstacle") == 0) {
+//            for(int i=0;i<3;++i){
+//                sptr = strtok(NULL, "=: \t");
+//                clr_obstacle[i] = atof(sptr);
+//            }
+//        }
 
-        if (strcmp(sptr, "clr_boundary") == 0) {
-            for(int i=0;i<3;++i){
-                sptr = strtok(NULL, "=: \t");
-                clr_boundary[i] = atof(sptr);
-            }
-        }
+//        if (strcmp(sptr, "clr_boundary") == 0) {
+//            for(int i=0;i<3;++i){
+//                sptr = strtok(NULL, "=: \t");
+//                clr_boundary[i] = atof(sptr);
+//            }
+//        }
     }
 }
 

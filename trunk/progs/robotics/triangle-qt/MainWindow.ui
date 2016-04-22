@@ -363,7 +363,7 @@
      <item>
       <widget class="QRadioButton" name="randomButton">
        <property name="text">
-        <string>Random Heuristic</string>
+        <string>Random</string>
        </property>
       </widget>
      </item>
@@ -496,20 +496,20 @@
    <widget class="QCheckBox" name="boundary">
     <property name="geometry">
      <rect>
-      <x>330</x>
+      <x>320</x>
       <y>600</y>
-      <width>81</width>
+      <width>141</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>Hide Box</string>
+     <string>Hide Box Boundary</string>
     </property>
    </widget>
    <widget class="QPushButton" name="show">
     <property name="geometry">
      <rect>
-      <x>400</x>
+      <x>450</x>
       <y>560</y>
       <width>61</width>
       <height>32</height>
@@ -601,7 +601,7 @@
    <widget class="QWidget" name="verticalLayoutWidget_6">
     <property name="geometry">
      <rect>
-      <x>420</x>
+      <x>470</x>
       <y>600</y>
       <width>160</width>
       <height>51</height>
@@ -658,7 +658,7 @@
    <widget class="QPushButton" name="pause">
     <property name="geometry">
      <rect>
-      <x>460</x>
+      <x>510</x>
       <y>560</y>
       <width>61</width>
       <height>32</height>
@@ -671,7 +671,7 @@
    <widget class="QPushButton" name="replay">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>570</x>
       <y>560</y>
       <width>71</width>
       <height>32</height>
@@ -679,6 +679,45 @@
     </property>
     <property name="text">
      <string>Replay</string>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="textBrowser">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>340</y>
+      <width>301</width>
+      <height>91</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="DisplayRobot" name="openGLWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>80</y>
+      <width>100</width>
+      <height>100</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>512</width>
+      <height>512</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="hidebox">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>620</y>
+      <width>121</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Hide Box</string>
     </property>
    </widget>
   </widget>
@@ -699,6 +738,11 @@
    <class>Display</class>
    <extends>QOpenGLWidget</extends>
    <header>Display.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DisplayRobot</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">DisplayRobot.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

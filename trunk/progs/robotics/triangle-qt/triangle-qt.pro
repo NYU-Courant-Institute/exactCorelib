@@ -4,7 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += \
+core gui \
+opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -23,8 +25,7 @@ SOURCES +=\
     Wall.cpp \
     fileProcessor.cpp \
     Display.cpp \
-    shader.cpp \
-    ShaderException.cpp
+    DisplayRobot.cpp
 
 HEADERS  += MainWindow.h \
     Box.h \
@@ -39,12 +40,10 @@ HEADERS  += MainWindow.h \
     Feature.h \
     Wall.h \
     Display.h \
-    shader.h \
-    ShaderException.h \
-    robot.h
+    Color.h \
+    Pose.h \
+    Vertex.h \
+    DisplayRobot.h
 
-FORMS    += MainWindow.ui
-
-DISTFILES += \
-    simple.frag \
-    simple.vert
+FORMS    += \
+MainWindow.ui

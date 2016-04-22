@@ -100,18 +100,17 @@ public:
         return !isRight(x1, y1, x2, y2, x, y);
     }
 
-
     static bool lineSegIntsct(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
     {
-        //Line2d L1(x1, y1, x2, y2);
-        //Line2d L2(x3, y3, x4, y4);
-        //double x, y;
-        //L1.intersection(L2, x, y);
-        //if ( (x1 < x && x < x2) || (x2 < x && x < x1) )
-        //{
-        //	return true;
-        //}
-        //return false;
+//        Line2d L1(x1, y1, x2, y2);
+//        Line2d L2(x3, y3, x4, y4);
+//        double x, y;
+//        L1.intersection(L2, x, y);
+//        if ( (x1 < x && x < x2) || (x2 < x && x < x1) )
+//        {
+//            return true;
+//        }
+//        return false;
         return ( CCW(x3, y3, x4, y4, x1, y1) != CCW(x3, y3, x4, y4, x2, y2) )
             && ( CCW(x1, y1, x2, y2, x3, y3) != CCW(x1, y1, x2, y2, x4, y4) );
     }
