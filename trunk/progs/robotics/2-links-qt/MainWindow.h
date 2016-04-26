@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMouseEvent>
 
 namespace Ui {
 class MainWindow;
@@ -25,6 +26,9 @@ public:
     virtual MainWindow& operator<<(double);
 
 private slots:
+    void mouseMoveEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+
     void on_run_clicked();
 
     void on_randomButton_clicked();

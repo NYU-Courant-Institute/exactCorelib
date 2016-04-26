@@ -320,6 +320,7 @@ void ControlWindow::on_pushButton_run_clicked()
                         break;
                 }
 
+                ui->horizontalSlider->setValue(animationSpeed);
                 ui->radioButton_infsteps->setChecked(true);
                 ui->spinBox_steps->setValue(defaultVariableStepsValue);
             }

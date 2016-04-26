@@ -121,14 +121,14 @@ using namespace std;
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////
-string egName("SoCG_2links_eg1.eg");
+string egName("SoCG2016_2links_demo1.eg");
 char egNameList[200][200];
 int numEg = 0;
 
 
-double alpha[4] = { 60, 350, 330, 140 };		// start configuration
-double beta[4] = { 300, 60, 90, 30 };		// goal configuration
-double epsilon = 5;			// resolution parameter
+double alpha[4] = { 216, 297, 115, 155 };		// start configuration
+double beta[4] = { 210, 220, 260, 200 };		// goal configuration
+double epsilon = 4;			// resolution parameter
 Box* boxA;				// start box (containing alpha)
 Box* boxB;				// goal box (containing beta)
 double boxWidth = 512;			// Initial box width
@@ -136,17 +136,17 @@ double boxHeight = 512;			// Initial box height
 
 // Added by Zhongdi 05/08/2013 begin
 // length of 2 links
-double L1 = 65;
-double L2 = 85;
+double L1 = 30;
+double L2 = 80;
 double R0 = 0;				// will be set to max(L1,L2)
 // Added by Zhongdi 05/08/2013 end
 
 int windowPosX = 320;			// X Position of Window
 int windowPosY = 20;			// Y Position of Window
-string fileName("input2a.txt"); 		// Input file name
+string fileName("zigzagrotation.txt"); 		// Input file name
 //string fileName("input150.txt"); 		// Input file name
 string inputDir("inputs"); 		// Path for input files
-int QType = 0;				// The Priority Queue can be
+int QType = 2;				// The Priority Queue can be
 //    sequential (0) or random (1)
 int interactive = 0;			// Run interactively?
 //    Yes (0) or No (1)

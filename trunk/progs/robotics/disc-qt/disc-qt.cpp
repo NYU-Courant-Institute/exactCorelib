@@ -97,7 +97,7 @@
     double R0 = 30;                 // Robot radius
     int windowPosX = 400;			// X Position of Window
     int windowPosY = 200;			// Y Position of Window
-    string egName("SoCG_disc_eg1.eg");
+    string egName("SoCG2016_disc_demo1.eg");
     char egNameList[200][200];
     int numEg = 0;
     string fileName("input2.txt"); 	// Input file name

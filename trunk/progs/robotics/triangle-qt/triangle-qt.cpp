@@ -109,22 +109,22 @@ using namespace std;
 //  double triRobo[2] = {0.95, 1.05};
 //
 // (d) Right-Angle Isosceles Robot
-double triRobo[2] = {170.0f/180.0f, 190.0f/180.0f};
+double triRobo[2] = {150.0f/180.0f, 190.0f/180.0f};
 //
 // (e) Off-Center Robot
 // double triRobo[2] = {0.3, 0.6};
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////
-string egName("triangle_egbug.eg");    // Input example name
+string egName("SoCG2016_tri_demo1.eg");    // Input example name
 string fileName("bugtrap.txt"); 		// Input file name
 string inputDir("inputs");              // Path for input files
 
 double alpha[3] = { 250, 350, 0 };		// start configuration
 double beta[3] = { 30, 30, 90 };         // goal configuration
-double epsilon = 4;			// resolution parameter
+double epsilon = 2;			// resolution parameter
 
-double R0 = 30;
+double R0 = 37;
 double boxWidth = 512;			// Initial box width
 double boxHeight = 512;			// Initial box height
 int windowPosX = 320;			// X Position of Window
@@ -190,9 +190,9 @@ extern bool step;
 bool showAnim(true);
 bool pauseAnim(false);
 bool replayAnim(false);
-int animationSpeed(50);
+int animationSpeed(90);
 int animationSpeedScale(5000);
-int animationSpeedScaleBox(500);
+int animationSpeedScaleBox(100);
 
 
 // color coding variable ========================================
@@ -576,13 +576,13 @@ void run() {
     else
         mw_out << ">>      ----->>  No Path !\n";
 
-    mw_out << ">>\n";
-    mw_out << ">>      ----->>  Time used: " << t.getElapsedTimeInMilliSec()
-            << " ms\n" ;
-    mw_out << ">>      ----->>  Expansion steps: ";
-    mw_out << (int) expansions.size()-1;
-    mw_out << "\n";
-    mw_out << ">>\n";
+    //mw_out << ">>\n";
+    //mw_out << ">>      ----->>  Time used: " << t.getElapsedTimeInMilliSec()
+    //        << " ms\n" ;
+    //mw_out << ">>      ----->>  Expansion steps: ";
+    //mw_out << (int) expansions.size()-1;
+    //mw_out << "\n";
+    //mw_out << ">>\n";
     mw_out << ">>      ----->>  Search Strategy: ";
     switch (QType) {
     case 0:
@@ -620,9 +620,9 @@ void run() {
         ssout << "    ---->>   PATH FOUND !";
     else
         ssout << "    ---->>  NO PATH !" ;
-    ssout << "    ---->>   TIME USED: " << t.getElapsedTimeInMilliSec() << " ms";
-    ssout << "    ---->>   TOTAL STEPS: " << totalSteps ;
-    ssout << "    ---->>   Strategy No (" << QType << ")" ;
+    //ssout << "    ---->>   TIME USED: " << t.getElapsedTimeInMilliSec() << " ms";
+    //ssout << "    ---->>   TOTAL STEPS: " << totalSteps ;
+    //ssout << "    ---->>   Strategy No (" << QType << ")" ;
     if (verboseOption) {
         ssout << "    Expanded " << ct << " times" ;
         ssout << "    total Free boxes: " << freeCount ;

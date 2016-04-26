@@ -38,9 +38,9 @@ int incr(1);
 
 
 
-int animationSpeed(50);
+int animationSpeed(75);
 int animationSpeedScale(5000);
-int animationSpeedScaleBox(500);
+int animationSpeedScaleBox(2500);
 
 extern void run();
 extern void parseExampleFile();
@@ -241,6 +241,24 @@ void MainWindow::on_run_clicked()
 
     ui->openGLWidget->genScene();
     ui->openGLWidget->update();
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    int x = event->x()-90;
+    int y = event->y()-30;
+    if(x<0||y<0||x>512||y>512) return;
+}
+
+double mouseX, mouseY;
+void MainWindow::mousePressEvent(QMouseEvent *event) {
+    int x = event->x()-90;
+    int y = event->y()-30;
+    if(x<0||y<0||x>512||y>512) return;
+
+    mouseX = x;
+    mouseY = 512-y;
+    fprintf(stderr, "mouse (%.lf, %.lf)\n", mouseX, mouseY);
 }
 
 
