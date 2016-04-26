@@ -109,7 +109,7 @@ using namespace std;
 //  double triRobo[2] = {0.95, 1.05};
 //
 // (d) Right-Angle Isosceles Robot
-double triRobo[2] = {0.8333333333, 1.0555555555};
+double triRobo[2] = {170.0f/180.0f, 190.0f/180.0f};
 //
 // (e) Off-Center Robot
 // double triRobo[2] = {0.3, 0.6};
@@ -120,11 +120,11 @@ string egName("triangle_egbug.eg");    // Input example name
 string fileName("bugtrap.txt"); 		// Input file name
 string inputDir("inputs");              // Path for input files
 
-double alpha[3] = { 200, 350, 0 };		// start configuration
+double alpha[3] = { 250, 350, 0 };		// start configuration
 double beta[3] = { 30, 30, 90 };         // goal configuration
 double epsilon = 4;			// resolution parameter
 
-double R0 = 40;
+double R0 = 30;
 double boxWidth = 512;			// Initial box width
 double boxHeight = 512;			// Initial box height
 int windowPosX = 320;			// X Position of Window
@@ -161,10 +161,6 @@ int stuckCount = 0;
 int mixCount = 0;
 int mixSmallCount = 0;
 
-//controls triangle drawing along path
-const int TRIS_TO_SKIP = 20;
-const double DIST_TO_SKIP = 2;
-
 int renderCount = 0;
 
 stringstream ssout;
@@ -189,12 +185,14 @@ int currentStep = 0;
 int stepIncrease = 0;
 int currentPathStep = 0;
 
-extern int renderSteps;
 extern bool step;
 
 bool showAnim(true);
 bool pauseAnim(false);
 bool replayAnim(false);
+int animationSpeed(50);
+int animationSpeedScale(5000);
+int animationSpeedScaleBox(500);
 
 
 // color coding variable ========================================
@@ -202,7 +200,7 @@ Color clr_totalFREE(0, 1, 0, 0.5);     // green
 Color clr_partialFREE(0.25, 1, 0.25, 0.5); // dark green
 Color clr_MIXED(1, 1, 0, 0.5); // yellow
 Color clr_STUCK(1, 0, 0, 0.5); // red
-Color clr_EPS(0.5, 0.5, 0.5, 0.5); // grey
+Color clr_EPS(0.5, 0.5, 0.5, 1); // grey
 Color clr_UNKNOWN(1, 1, 0, 0.5); // white
 
 Color clr_start(1,0,1,0.5);    // purple
@@ -351,13 +349,6 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
     return isPath;
 }
 
-bool sortByXi0(const Box* b1, const Box* b2) {
-    return b1->xi[0] < b2->xi[0];
-}
-bool sortByXi2(const Box* b1, const Box* b2) {
-    return b1->xi[2] < b2->xi[2];
-}
-
 int main(int argc, char* argv[]) {
 
     bool foundFiles = false;
@@ -366,7 +357,7 @@ int main(int argc, char* argv[]) {
     // Test if the build directory is triangle-qt. If so,
     // the path to the current working directory will
     // include /triangle-qt
-    int indexOfDesiredDir = workingDir.rfind("/triangle-qt/");
+    unsigned long indexOfDesiredDir = workingDir.rfind("/triangle-qt/");
     if (indexOfDesiredDir != std::string::npos) {
         workingDir = workingDir.substr(0, indexOfDesiredDir + 5);
 
@@ -545,13 +536,14 @@ void run() {
     }
     else if (QType == 2 || QType == 3 || QType == 4) {
         boxA = QT->getBox(alpha[0], alpha[1], alpha[2], ct);
-        fprintf(fptr, "boxA (%.lf, %.lf) width %.lf height %.lf status: %d classify condition: %d\n", boxA->x, boxA->y, boxA->width, boxA->height, boxA->status, boxA->classify_condition);
+        if(boxA) fprintf(fptr, "boxA (%.lf, %.lf) width %.lf height %.lf xi %lf %lf status: %d classify condition: %d\n", boxA->x, boxA->y, boxA->width, boxA->height, boxA->xi[0], boxA->xi[1], boxA->status, boxA->classify_condition);
         if (!boxA) {
             noPath = true;
             mw_out << "Start Configuration is not free\n";
         }
 
         boxB = QT->getBox(beta[0], beta[1], beta[2], ct);
+        if(boxB) fprintf(fptr, "boxB (%.lf, %.lf) width %.lf height %.lf xi %lf %lf status: %d classify condition: %d\n", boxB->x, boxB->y, boxB->width, boxB->height, boxB->xi[0], boxB->xi[1], boxB->status, boxB->classify_condition);
         if (!boxB) {
             noPath = true;
             mw_out << "Goal Configuration is not free\n";
@@ -639,7 +631,6 @@ void run() {
         ssout << "    total Mixed boxes bigger than epsilon: "
                 << mixCount - mixSmallCount ;
     }
-    ssout;
     ssout << ssoutLastTime.str();
     freeCount = stuckCount = mixCount = mixSmallCount = 0;
     mw_out << "############## END of RUN #########\n";
@@ -833,6 +824,19 @@ void parseExampleFile() {
         if (strcmp(sptr, "scale") == 0) {
             sptr = strtok(NULL, "=: \t");
             scale = atof(sptr);
+        }
+
+        if (strcmp(sptr, "animationSpeed") == 0) {
+            sptr = strtok(NULL, "=: \t");
+            animationSpeed = atoi(sptr);
+        }        
+        if (strcmp(sptr, "animationSpeedScale") == 0) {
+            sptr = strtok(NULL, "=: \t");
+            animationSpeedScale = atoi(sptr);
+        }
+        if (strcmp(sptr, "animationSpeedScaleBox") == 0) {
+            sptr = strtok(NULL, "=: \t");
+            animationSpeedScaleBox = atoi(sptr);
         }
 
         if (strcmp(sptr, "verbose") == 0) {

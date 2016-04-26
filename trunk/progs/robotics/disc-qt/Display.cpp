@@ -62,9 +62,13 @@ static std::vector<double>  pathLineVertices;
 
 vector<Box*> PATH;
 int inc(0);
-bool runAnim(false);
+bool runAnim(true);
+bool replayAnim(false);
+bool pauseAnim(false);
 
 extern int animationSpeed;
+extern int animationSpeedScale;
+extern int animationSpeedScaleBox;
 extern bool coloredBoxes;
 
 /*
@@ -113,7 +117,7 @@ void Display::initializeGL() {
     initializeOpenGLFunctions();
 
     // Set background color
-    glClearColor(0.3, 0.3, 0.3, 1.0);
+    glClearColor(0.5, 0.5, 0.5, 0.5);
     
     program = new shader(":/simple.vert", ":/simple.frag");
     try {
@@ -175,59 +179,59 @@ void Display::paintGL() {
         
         // Filled Circles at Start (alpha) and End (beta)
         //double r0 = (R0 <= 4) ? R0 : 4;
-        //genFilledCircle(r0, alpha[0], alpha[1], 0.2, 0.2, 1.0);     //blue start center
-        //genFilledCircle(r0, beta[0], beta[1], 0.8, 0.8, 0.1);       //yellow goal center
+        genFilledCircle(R0, alpha[0], alpha[1], 1, 0, 1);     //blue start center
+        genFilledCircle(R0, beta[0], beta[1], 0.25, 0, 0.25);       //yellow goal center
         
         // Circle Outlines Representing Radius
-        genHollowCircle(R0, alpha[0], alpha[1], 0.0, 0.0, 1.0);     // start
-        genHollowCircle(R0, beta[0], beta[1], 0.8, 0.7, 0.4);       // goal
+        //genHollowCircle(R0, alpha[0], alpha[1], 0.0, 0.0, 1.0);     // start
+        //genHollowCircle(R0, beta[0], beta[1], 0.8, 0.7, 0.4);       // goal
         
         // Lines Representing Obsticals
         genWalls(QT->pRoot);
         
         // Line From Start (alpha) to End (beta)
-        genLine(1.6, alpha[0], alpha[1], beta[0], beta[1],
-                (noPath ? 0.0 : 1.0), 0.0, 0.0, false);
+        //genLine(1.6, alpha[0], alpha[1], beta[0], beta[1],
+        //        (noPath ? 0.0 : 1.0), 0.0, 0.0, false);
         
         
 
         regenShapes = false;
     }
-    double r0 = (R0 <= 4) ? R0 : 4;
-    genFilledCircle(r0, alpha[0], alpha[1], 0.2, 0.2, 1.0);     //blue start center
-    genFilledCircle(r0, beta[0], beta[1], 0.8, 0.8, 0.1);       //yellow goal center
+    //double r0 = (R0 <= 4) ? R0 : 4;
+    //genFilledCircle(r0, alpha[0], alpha[1], 0.2, 0.2, 1.0);     //blue start center
+    //genFilledCircle(r0, beta[0], beta[1], 0.8, 0.8, 0.1);       //yellow goal center
 
 
 
-    if(runAnim){     //Animation of robot in transit
-        if(inc<PATH.size()){            //each regen, draw robot at next step in path
-            drawRobot(PATH.at(PATH.size()-1-inc++));
+    if(runAnim && !noPath){     //Animation of robot in transit
+        if(pauseAnim) {
+            drawRobot(PATH.at(PATH.size()-1-inc));
             genScene();
-            update();
             drawCircles();
-            usleep((99-animationSpeed)*5000);
-        }else if(inc==PATH.size()){   //draw robot in final box
-                drawRobot(boxB);
+        } else {
+
+            if(!coloredBoxes) usleep((99-animationSpeed)*animationSpeedScale);
+            else              usleep((99-animationSpeed)*animationSpeedScaleBox);
+
+            if(inc<PATH.size()){            //each regen, draw robot at next step in path
+                drawRobot(PATH.at(PATH.size()-1-inc++));
                 genScene();
-                update();
                 drawCircles();
-                usleep((99-animationSpeed)*5000);
-                inc++;
-        }else if(inc==PATH.size()+1){     //draw robot at end position
-            Box* temp = new Box(beta[0],beta[1],1,1);
-            drawRobot(temp);
-            genScene();
-            update();
-            drawCircles();
-            runAnim=false;
-            inc=0;
+            }else if(inc==PATH.size()){   //draw robot in final box
+                    drawRobot(boxB);
+                    genScene();
+                    drawCircles();
+                    inc++;
+            }else if(inc==PATH.size()+1){     //draw robot at end position
+                Box* temp = new Box(beta[0],beta[1],1,1);
+                drawRobot(temp);
+                genScene();
+                drawCircles();
+                runAnim=false;
+                inc=0;
+            }
         }
-    }
-    else {
-        Box* tempA = new Box(alpha[0],alpha[1],1,1);
-        drawRobot(tempA);
-        Box* tempB = new Box(beta[0],beta[1],1,1);
-        drawRobot(tempB);
+        update();
     }
 
 
@@ -252,12 +256,10 @@ void Display::paintGL() {
     
     // Hollow & Filled Circles
     drawCircles();
-
-
 }
 
 void Display::drawRobot(Box* a){    //for use in the animation
-    genFilledCircle(R0,a->x,a->y,1,1,1);
+    genFilledCircle(R0,a->x,a->y,0.5,0,0.5);
 }
 
 /*
@@ -406,7 +408,7 @@ void Display::perpVertices(float thickness, vector<double>& storage, double a_x,
  */
 void Display::genPath(vector<Box*>& path, double* alpha, double* beta, double R0)
 {
-    double red = 0.5, green = 0.0, blue = 0.25;
+    double red = 0.5, green = 0.0, blue = 0.0;
     float thickness = R0 < 1.5/2 ? 2*R0 : 1.5;
     
     vector<double> vertexHolder;

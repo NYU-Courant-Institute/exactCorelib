@@ -54,17 +54,13 @@ private slots:
     void on_pushButton_clicked();
 
     void on_inc_valueChanged(int arg1);
-
     void on_left_clicked();
-
     void on_right_clicked();
 
-    void on_horizontalSlider_valueChanged(int value);
+    void on_animationSpeed_valueChanged(int value);
 
 private:
     Ui::MainWindow *ui;
-
-
 };
 
 #endif // MAINWINDOW_H

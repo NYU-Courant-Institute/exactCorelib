@@ -18,12 +18,14 @@
 #include "Wall.h"
 #include "Corner.h"
 #include "line2d.h"
+//#include "Triangle.h"
+#include "Pose.h"
 
 
 class Set;
 class Box;
 
-const double PI = 3.1415926;
+const double PI = 3.14159265;
 const double deg2rad = 1.0f/180.0f;
 
 using namespace std;
@@ -473,7 +475,7 @@ public:
 
     bool split2D( double epsilon, vector<Box*>& chldn);
     bool split3D( double epsilon, vector<Box*>& chldn );
-    bool splitAngle( double epsilon, vector<Box*>& chldn );
+    bool splitAngle( vector<Box*>& chldn );
 
      //split(eps)
      //	returns false if we fail to split for some reason
@@ -481,7 +483,9 @@ public:
 
     void recursiveSplitAngle(double epsilon, vector<Box*>& chldn, const int n, int m);
 
-    void getRoundTriVerts(double& v01x, double& v01y, double& v02x, double& v02y, double& v11x, double& v11y,
-        double& v12x, double& v12y, double& v21x, double& v21y, double& v22x, double& v22y);
+    void getRoundTriVerts(double& v01x, double& v01y, double& v02x, double& v02y,
+                          double& v11x, double& v11y, double& v12x, double& v12y,
+                          double& v21x, double& v21y, double& v22x, double& v22y);
+    //void getRoundTriVerts(Triangle &Trixi0, Triangle &Trixi1);
 
 };//class Box

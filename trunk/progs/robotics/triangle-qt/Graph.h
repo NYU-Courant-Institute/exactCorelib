@@ -232,13 +232,15 @@ public:
                 }
             }
         }
+
         vector<Box*> path;
         path.push_back(b);
-        while (path.back()->prev)
-        {
+        while (path.back()->prev) {
             path.push_back(path.back()->prev);
         }
+        path.push_back(a);
         reverse(path.begin(), path.end());
+
         return path;
     }
 

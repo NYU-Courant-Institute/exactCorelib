@@ -81,6 +81,8 @@ private slots:
 
 
     void on_anim_clicked();
+    void on_replay_clicked();
+    void on_pause_clicked();
 
     void on_horizontalSlider_valueChanged(int value);
 

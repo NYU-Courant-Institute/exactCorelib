@@ -14,7 +14,7 @@ extern double triRobo[2];
 extern int twoStrategyOption;
 extern QuadTree* QT;
 extern int sizeOfPhiB;
-extern int renderSteps;
+extern unsigned int renderSteps;
 extern bool step;
 extern int numberForDisplay;
 
@@ -37,29 +37,62 @@ void Box::getRoundTriVerts(double& v01x, double& v01y, double& v02x, double& v02
     double xi1 = this->xi[0];
     double xi2 = this->xi[1];
 
-    v01x = r * cos(xi1 * PI);
-    v01y = r * sin(xi1 * PI);
-    v02x = r * cos(xi2 * PI);
-    v02y = r * sin(xi2 * PI);
+    double temp1 = xi1;
+    //while (temp1 > 2) temp1 -= 2;
+    double temp2 = xi2;
+    //while (temp2 > 2) temp2 -= 2;
+    v01x = r * cos(temp1 * PI);
+    v01y = r * sin(temp1 * PI);
+    v02x = r * cos(temp2 * PI);
+    v02y = r * sin(temp2 * PI);
 
-    double temp1 = xi1 + theta1;
-    while (temp1 > 2) temp1 -= 2;
-    double temp2 = xi2 + theta1;
-    while (temp2 > 2) temp2 -= 2;
+    temp1 = xi1 + theta1;
+    //while (temp1 > 2) temp1 -= 2;
+    temp2 = xi2 + theta1;
+    //while (temp2 > 2) temp2 -= 2;
     v11x = r * cos(temp1 * PI);
     v11y = r * sin(temp1 * PI);
     v12x = r * cos(temp2 * PI);
     v12y = r * sin(temp2 * PI);
 
     temp1 = xi1 + theta2;
-    while (temp1 > 2) temp1 -= 2;
+    //while (temp1 > 2) temp1 -= 2;
     temp2 = xi2 + theta2;
-    while (temp2 > 2) temp2 -= 2;
+    //while (temp2 > 2) temp2 -= 2;
     v21x = r * cos(temp1 * PI);
     v21y = r * sin(temp1 * PI);
     v22x = r * cos(temp2 * PI);
     v22y = r * sin(temp2 * PI);
 }
+
+//void Box::getRoundTriVerts(Triangle &Trixi0, Triangle &Trixi1) {
+//    double r = r0;
+//    double theta1 = triRobo[0];
+//    double theta2 = triRobo[1];
+//    double xi1 = this->xi[0];
+//    double xi2 = this->xi[1];
+
+//    double temp1 = xi1;
+//    //while (temp1 > 2) temp1 -= 2;
+//    double temp2 = xi2;
+//    //while (temp2 > 2) temp2 -= 2;
+//    Trixi0.a = Pose(r * cos(temp1 * PI), r * sin(temp1 * PI));
+//    Trixi1.a = Pose(r * cos(temp2 * PI), r * sin(temp2 * PI));
+
+//    temp1 = xi1 + theta1;
+//    //while (temp1 > 2) temp1 -= 2;
+//    temp2 = xi2 + theta1;
+//    //while (temp2 > 2) temp2 -= 2;
+//    Trixi0.b = Pose(r * cos(temp1 * PI), r * sin(temp1 * PI));
+//    Trixi1.b = Pose(r * cos(temp2 * PI), r * sin(temp2 * PI));
+
+//    temp1 = xi1 + theta2;
+//    //while (temp1 > 2) temp1 -= 2;
+//    temp2 = xi2 + theta2;
+//    //while (temp2 > 2) temp2 -= 2;
+//    Trixi0.c = Pose(r * cos(temp1 * PI), r * sin(temp1 * PI));
+//    Trixi1.c = Pose(r * cos(temp2 * PI), r * sin(temp2 * PI));
+//}
 
 bool Box::split2D( double epsilon, vector<Box*>& chldn )
 {
@@ -169,7 +202,7 @@ bool Box::split2D( double epsilon, vector<Box*>& chldn )
 bool Box::split3D( double epsilon, vector<Box*>& chldn )
 {
     vector<Box*> bv;
-    if (this->splitAngle(epsilon, bv))
+    if (this->splitAngle(bv))
     {
         for (int i = 0; i < 2; ++i)
         {
@@ -183,7 +216,7 @@ bool Box::split3D( double epsilon, vector<Box*>& chldn )
     return 0;
 }
 
-bool Box::splitAngle( double epsilon, vector<Box*>& chldn )
+bool Box::splitAngle( vector<Box*>& chldn )
 {
     //todo do sth to return false
     if ( this->xi[1] > this->xi[0] )
@@ -326,7 +359,7 @@ void Box::recursiveSplitAngle( double epsilon, vector<Box*>& chldn, const int n,
         return;
     }
     vector<Box*> bv;
-    splitAngle(epsilon, bv);
+    splitAngle(bv);
     for (int i = 0; i < (int)bv.size(); ++i) {
         bv[i]->recursiveSplitAngle(epsilon, chldn, n, 2*m);
     }
@@ -335,7 +368,7 @@ void Box::recursiveSplitAngle( double epsilon, vector<Box*>& chldn, const int n,
 Box::Status Box::checkChildStatus( double x, double y ) {
 
 
-    if (x == 208 && y== 336) {
+    if (x == 234 && y== 238) {
         fprintf(fptr, "check child status x %.lf y %.lf\n", x, y);
     }
 
@@ -352,7 +385,7 @@ Box::Status Box::checkChildStatus( double x, double y ) {
             Wall* w = *iterW;
             pt2line rst = w->distance2(x, y);
 
-            if (x == 208 && y== 336) {
+            if (x == 234 && y== 238) {
                 fprintf(fptr, "dist %lf wall %.lf %.lf %.lf %d src %.lf %.lf %d dst %.lf %.lf %d\n",
                         rst.dist, x, y, this->rB, w->isRight(x, y), w->src->x, w->src->y, w->src->isConvex(), w->dst->x, w->dst->y, w->dst->isConvex());
             }
@@ -375,7 +408,7 @@ Box::Status Box::checkChildStatus( double x, double y ) {
             Corner* c = *iterC;
             double dist = c->distance(x, y);
 
-            if (x == 208 && y== 336) {
+            if (x == 234 && y== 238) {
                 fprintf(fptr, "dist %lf corner %.lf %.lf %d\n", dist, x, y, c->isConvex());
             }
 
@@ -386,7 +419,7 @@ Box::Status Box::checkChildStatus( double x, double y ) {
         }
     }
 
-    if (x == 208 && y== 336) {
+    if (x == 234 && y== 238) {
         fprintf(fptr, "dist %lf %lf end\n", mindistW, mindistC);
     }
     //nearest feature is a wall
@@ -462,7 +495,7 @@ void Box::updateStatusBig() {
         Wall* w = *it;
         pt2line rst = w->distance2(this->x, this->y);
 
-        if (x == 208 && y== 336) {
+        if (x == 234 && y== 238) {
             fprintf(fptr, "big x %.lf %.lf y %.lf %.lf\n", this->x, x, this->y, y);
             fprintf(fptr, "src %.lf %.lf dst %.lf %.lf  %d\n", w->src->x, w->src->y, w->dst->x, w->dst->y, (rst.dist <= outerDomain));
         }
@@ -491,14 +524,16 @@ void Box::updateStatusBig() {
 void Box::updateStatusSmall() {
     if (status != UNKNOWN) return;
 
+    //Triangle Trixi0, Trixi1;
     double v01x, v01y, v02x, v02y, v11x, v11y, v12x, v12y, v21x, v21y, v22x, v22y;
 
     getRoundTriVerts(v01x, v01y, v02x, v02y, v11x, v11y, v12x, v12y, v21x, v21y, v22x, v22y);
+    //getRoundTriVerts(Trixi0, Trixi1);
 
-    if (x == 208 && y== 336) {
+    if (x == 234 && y== 238) {
         fprintf(fptr, "small x %.lf y %.lf xi %lf %lf r0 %lf tri %lf %lf\n", x, y, this->xi[0], this->xi[1], this->r0, triRobo[0], triRobo[1]);
-        fprintf(fptr, "triangle vertex (%lf %lf %lf %lf) (%lf %lf %lf %lf) (%lf %lf %lf %lf)\n", v01x, v01y, v02x, v02y, v11x, v11y, v12x, v12y, v21x, v21y, v22x, v22y);
-        fprintf(fptr, "triangle (%lf %lf %lf %lf) (%lf %lf %lf %lf) (%lf %lf %lf %lf)\n", v01x+x, v01y+y, v02x+x, v02y+y, v11x+x, v11y+y, v12x+x, v12y+y, v21x+x, v21y+y, v22x+x, v22y+y);
+        fprintf(fptr, "triangle xi0 %lf %lf %lf %lf   %lf %lf %lf %lf\n", v01x+x, v11x+x, v21x+x, v01x+x, v01y+y, v11y+y, v21y+y, v01y+y);
+        fprintf(fptr, "triangle xi1 %lf %lf %lf %lf   %lf %lf %lf %lf\n", v02x+x, v12x+x, v22x+x, v02x+x, v02y+y, v12y+y, v22y+y, v02y+y);
     }
 
     Line2d L1(v02x, v02y, v11x, v11y);
@@ -512,17 +547,22 @@ void Box::updateStatusSmall() {
     Line2d L1a(v01x, v01y, v12x, v12y);
     Line2d L2a(v11x, v11y, v22x, v22y);
     Line2d L3a(v21x, v21y, v02x, v02y);
+    // the box may be too big to form a shrinked triangle
     bool shrinkSuccess = L1a.expand(-rB, L2a, L3a)
-                      && L2a.expand(-rB, L1a, L3a)
+                      && L2a.expand(-rB, L3a, L1a)
                       && L3a.expand(-rB, L1a, L2a)
-                      && !L1a.isNegative(L2a, L3a);
+                      && !L1a.isNegative(L2a, L3a); // check the validation of the shrinked triangle
 
-    if (x == 208 && y== 336) {
+    if (x == 234 && y== 238) {
         fprintf(fptr, "shrinkSuccess %d %d %d %d %d\n", shrinkSuccess, L1a.expand(-rB, L2a, L3a), L2a.expand(-rB, L1a, L3a), L3a.expand(-rB, L1a, L2a), !L1a.isNegative(L2a, L3a));
     }
 
-    double x23, y23;
-    L2a.intersection(L3a, x23, y23);
+
+    // the box may be too big to form an expanded triangle
+    bool expandSuccess = L1.expand(rB, L2, L3)
+                      && L2.expand(rB, L3, L1)
+                      && L3.expand(rB, L1, L2)
+                      && !L1.isNegative(L2, L3); // check the validation of the expanded triangle
 
 
     double X12x, X12y;
@@ -532,22 +572,28 @@ void Box::updateStatusSmall() {
     double X31x, X31y;
     L3.intersection(L1, X31x, X31y);
 
+    if (x == 234 && y== 238) {
+        fprintf(fptr, "big triangle %lf %lf %lf %lf   %lf %lf %lf %lf\n", X12x+x, X23x+x, X31x+x, X12x+x, X12y+y, X23y+y, X31y+y, X12y+y);
+    }
+
     for (list<Corner*>::iterator it = corners.begin(); it != corners.end(); ) {
         Corner* c = *it;
-        double cx = c->x - this->x;
-        double cy = c->y - this->y;
+        double cx = c->x - x;
+        double cy = c->y - y;
 
+        // corner c is inside the shrinked triangle
         if (shrinkSuccess && !L1a.isRight(cx, cy) && !L2a.isRight(cx, cy) && !L3a.isRight(cx, cy)) {
             status = STUCK;
             classify_condition = 3;
             return;
         }
 
-        if ( !(sqrt(cx*cx + cy*cy) < r0 + rB
+        // 4/22/2016 Tom ??????
+        if ( !((sqrt(cx*cx + cy*cy) < r0 + rB) // far away
+            && expandSuccess
             && !Line2d::isRight(X31x, X31y, X12x, X12y, cx, cy)
             && !Line2d::isRight(X12x, X12y, X23x, X23y, cx, cy)
-            && !Line2d::isRight(X23x, X23y, X31x, X31y, cx, cy)
-            ) ) {
+            && !Line2d::isRight(X23x, X23y, X31x, X31y, cx, cy)) ) {
             it = corners.erase(it);
         }
         else {
@@ -560,45 +606,40 @@ void Box::updateStatusSmall() {
         Wall* w = *it;
         pt2line rst = w->distance2(this->x, this->y);
 
-        if (x == 208 && y== 336) {
-            fprintf(fptr, "x %.lf %.lf y %.lf %.lf\n", this->x, x, this->y, y);
+        if (x == 234 && y== 238) {
+            fprintf(fptr, "x %.lf y %.lf\n", x, y);
             fprintf(fptr, "src %.lf %.lf dst %.lf %.lf  %d %d\n", w->src->x, w->src->y, w->dst->x, w->dst->y, (rst.dist < r0 + rB), shrinkSuccess);
         }
 
         if (rst.dist < r0 + rB) {
-            double srcx = w->src->x - this->x;
-            double srcy = w->src->y - this->y;
-            double dstx = w->dst->x - this->x;
-            double dsty = w->dst->y - this->y;
+            double srcx = w->src->x - x;
+            double srcy = w->src->y - y;
+            double dstx = w->dst->x - x;
+            double dsty = w->dst->y - y;
 
             //quick stuck detection
             if (shrinkSuccess) { //inner triangle (before shrink rB) is not negative
                 double x23s, y23s;
                 L2a.intersection(L3a, x23s, y23s);
-                double x13s, y13s;
-                L1a.intersection(L3a, x13s, y13s);
+                double x31s, y31s;
+                L3a.intersection(L1a, x31s, y31s);
                 double x12s, y12s;
                 L1a.intersection(L2a, x12s, y12s);
 
-                if (x == 208 && y== 336) {
-                    fprintf(fptr, "shrinkSuccess %d (%lf %lf) (%lf %lf) (%lf %lf)\n", shrinkSuccess, x23s, y23s, x13s, y13s, x12s, y12s);
+                if (x == 234 && y== 238) {
+                    fprintf(fptr, "shrinked triangle %d %lf %lf %lf %lf   %lf %lf %lf %lf\n", shrinkSuccess, x23s, x31s, x12s, x23s, y23s, y31s, y12s, y23s);
                 }
 
-                //if src or dst is in triangle
-                if ( (!L1a.isRight(srcx, srcy)
-                    && !L2a.isRight(srcx, srcy)
-                    && !L3a.isRight(srcx, srcy)) ||
-                    (!L1a.isRight(dstx, dsty)
-                    && !L2a.isRight(dstx, dsty)
-                    && !L3a.isRight(dstx, dsty))
-                    ) {
+                //if src or dst is in the shrinked triangle
+                if ( (!L1a.isRight(srcx, srcy) && !L2a.isRight(srcx, srcy) && !L3a.isRight(srcx, srcy)) ||
+                     (!L1a.isRight(dstx, dsty) && !L2a.isRight(dstx, dsty) && !L3a.isRight(dstx, dsty)) ) {
                     status = STUCK;
                     classify_condition = 4;
                     return;
                 }
-                // or line seg (src,dst) intersects any edge of triangle
-                else if ( Line2d::lineSegIntsct(x23s, y23s, x13s, y13s, srcx, srcy, dstx, dsty)
-                       || Line2d::lineSegIntsct(x13s, y13s, x12s, y12s, srcx, srcy, dstx, dsty)
+                // or wall seg (src,dst) intersects any edge of the shrinked triangle
+                else if ( Line2d::lineSegIntsct(x23s, y23s, x31s, y31s, srcx, srcy, dstx, dsty)
+                       || Line2d::lineSegIntsct(x31s, y31s, x12s, y12s, srcx, srcy, dstx, dsty)
                        || Line2d::lineSegIntsct(x12s, y12s, x23s, y23s, srcx, srcy, dstx, dsty) ) {
                     status = STUCK;
                     classify_condition = 5;
@@ -610,24 +651,28 @@ void Box::updateStatusSmall() {
                     !Line2d::isRight(X31x, X31y, X12x, X12y, dstx, dsty), !Line2d::isRight(X12x, X12y, X23x, X23y, dstx, dsty), !Line2d::isRight(X23x, X23y, X31x, X31y, dstx, dsty));
             fprintf(fptr, "lineSeg %d %d %d\n", Line2d::lineSegIntsct(X31x, X31y, X12x, X12y, srcx, srcy, dstx, dsty), Line2d::lineSegIntsct(X12x, X12y, X23x, X23y, srcx, srcy, dstx, dsty), Line2d::lineSegIntsct(X23x, X23y, X31x, X31y, srcx, srcy, dstx, dsty));
 
-            //if src or dst is in triangle
-            if ( (!Line2d::isRight(X31x, X31y, X12x, X12y, srcx, srcy) && !Line2d::isRight(X12x, X12y, X23x, X23y, srcx, srcy) && !Line2d::isRight(X23x, X23y, X31x, X31y, srcx, srcy)) ||
-                 (!Line2d::isRight(X31x, X31y, X12x, X12y, dstx, dsty) && !Line2d::isRight(X12x, X12y, X23x, X23y, dstx, dsty) && !Line2d::isRight(X23x, X23y, X31x, X31y, dstx, dsty))) {
-                status = MIXED;
-                ++it;
-            }
-            // or line seg (src,dst) intersects any edge of triangle
-            else if ( Line2d::lineSegIntsct(X31x, X31y, X12x, X12y, srcx, srcy, dstx, dsty)
-                   || Line2d::lineSegIntsct(X12x, X12y, X23x, X23y, srcx, srcy, dstx, dsty)
-                   || Line2d::lineSegIntsct(X23x, X23y, X31x, X31y, srcx, srcy, dstx, dsty) ) {
-                status = MIXED;
-                ++it;
-            }
-            else {
-                it = walls.erase(it);
+            if(expandSuccess) {
+                //if src or dst is in triangle
+                if ( (!Line2d::isRight(X31x, X31y, X12x, X12y, srcx, srcy) && !Line2d::isRight(X12x, X12y, X23x, X23y, srcx, srcy) && !Line2d::isRight(X23x, X23y, X31x, X31y, srcx, srcy)) ||
+                     (!Line2d::isRight(X31x, X31y, X12x, X12y, dstx, dsty) && !Line2d::isRight(X12x, X12y, X23x, X23y, dstx, dsty) && !Line2d::isRight(X23x, X23y, X31x, X31y, dstx, dsty))) {
+                    status = MIXED;
+                    ++it;
+                }
+                // or line seg (src,dst) intersects any edge of triangle
+                else if ( Line2d::lineSegIntsct(X31x, X31y, X12x, X12y, srcx, srcy, dstx, dsty)
+                       || Line2d::lineSegIntsct(X12x, X12y, X23x, X23y, srcx, srcy, dstx, dsty)
+                       || Line2d::lineSegIntsct(X23x, X23y, X31x, X31y, srcx, srcy, dstx, dsty) ) {
+                    status = MIXED;
+                    ++it;
+                }
+                else {
+                    fprintf(fptr, "no intersection erased\n");
+                    it = walls.erase(it);
+                }
             }
         }
         else {
+            fprintf(fptr, "too far erased\n");
             it = walls.erase(it);
         }
     }

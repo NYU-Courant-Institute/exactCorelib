@@ -28,6 +28,8 @@ extern bool showAnim;
 extern bool pauseAnim;
 extern bool replayAnim;
 extern int animationSpeed;
+extern int animationSpeedScale;
+extern int animationSpeedScaleBox;
 extern vector<Box*> PATH;
 extern std::vector<int> expansions;
 // color coding variable ========================================
@@ -48,9 +50,8 @@ extern Color clr_boundary;
 
 // Member Variables
 static int numQuads = 0;
-static bool regenShapes = true;
-int inc(0);
-int renderSteps(1);
+unsigned int inc(0);
+unsigned int renderSteps(1);
 bool step(false);
 // Stores Vertices of Shapes
 static std::vector<Vertex>  hollowCircles;
@@ -89,47 +90,44 @@ Display::~Display()
  * rendering.
  * Creates and initializes shader program
  */
-GLuint fbo;
-GLuint depthBuffer;			// Our handle to the depth render buffer
-GLuint img;					// Our handle to a texture
-void initBuffer() {
+//GLuint fbo;
+//GLuint depthBuffer;			// Our handle to the depth render buffer
+//GLuint img;					// Our handle to a texture
+//void initBuffer() {
 
-    // Setup our FBO
-    glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+//    // Setup our FBO
+//    glGenFramebuffers(1, &fbo);
+//    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    // Create the render buffer for depth
-    glGenRenderbuffers(1, &depthBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, boxWidth, boxHeight);
+//    // Create the render buffer for depth
+//    glGenRenderbuffers(1, &depthBuffer);
+//    glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+//    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, boxWidth, boxHeight);
 
-    // Now setup a texture to render to
-    glGenTextures(1, &img);
-    glBindTexture(GL_TEXTURE_2D, img);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,  boxWidth, boxHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//    // Now setup a texture to render to
+//    glGenTextures(1, &img);
+//    glBindTexture(GL_TEXTURE_2D, img);
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,  boxWidth, boxHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+//    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+//    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    // And attach it to the FBO so we can render to it
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, img, 0);
+//    // And attach it to the FBO so we can render to it
+//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, img, 0);
 
-    // Attach the depth render buffer to the FBO as it's depth attachment
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+//    // Attach the depth render buffer to the FBO as it's depth attachment
+//    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
 
-    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if(status != GL_FRAMEBUFFER_COMPLETE)
-        exit(1);
+//    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+//    if(status != GL_FRAMEBUFFER_COMPLETE)
+//        exit(1);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);	// Unbind the FBO for now
-}
+//    glBindFramebuffer(GL_FRAMEBUFFER, 0);	// Unbind the FBO for now
+//}
 void Display::initializeGL() {
     glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
     glClearDepth(1.0f);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glShadeModel(GL_SMOOTH);
     //initBuffer();
 }
 
@@ -166,10 +164,12 @@ void Display::resizeGL(int width, int height) {
 
 void Display::renderScene() {
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    putBoxes();
-    glDisable(GL_BLEND);
+    if (!hideBox) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        putBoxes();
+        glDisable(GL_BLEND);
+    }
 
     Pose start = Pose(alpha[0], alpha[1], alpha[2]);
     Pose goal = Pose(beta[0], beta[1], beta[2]);
@@ -181,27 +181,46 @@ void Display::renderScene() {
             replayAnim = false;
 
             showAnim = true;
-            inc=0;
+            pauseAnim = false;
+            inc = 0;
         }
 
         if(showAnim){
-            usleep((99-animationSpeed)*5000);
+            if(hideBox) usleep((99-animationSpeed)*animationSpeedScale);
+            else        usleep((99-animationSpeed)*animationSpeedScaleBox);
+
             if (pauseAnim) {
                 drawRobot(PATH.at(inc), clr_robot);
-                update();
             }
             else {
-                if(inc<PATH.size()){            //each regen, draw robot at next step in path
-                    drawRobot(PATH.at(inc++), clr_robot);
-                    update();
-                } else if(inc==PATH.size()){   //draw robot in final box
-                        drawRobot(goal, clr_goal);
-                        inc++;
-                } else if(inc==PATH.size()+1){     //draw robot at end position
+                if(inc < PATH.size()){            //each regen, draw robot at next step in path
+                    Box* cur = PATH.at(inc++);
+                    Box* nxt = NULL;
+                    if(inc < PATH.size()) nxt = PATH.at(inc);
+                    while(nxt != NULL){
+                        if(cur->x == nxt->x && cur->y == nxt->y) {
+                            double cur_angle = cur->xi[0]*180.0f;
+                            double nxt_angle = nxt->xi[0]*180.0f;
+                            if(fabs(nxt_angle-cur_angle) < 30.0f) {
+                                ++inc;
+                                if(inc >= PATH.size()) break;
+                                nxt = PATH.at(inc);
+                            } else {
+                                break;
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                    drawRobot(cur, clr_robot);
+                } else if(inc == PATH.size()){
+                    drawRobot(PATH.at(inc-1), clr_robot);
+
                     showAnim=false;
-                    inc=0;
+                    inc = 0;
                 }
             }
+            update();
         }
     }
 
@@ -216,7 +235,7 @@ void Display::renderScene() {
 //===========================================================//
 void Display::putBoxes(){
     if(step){
-        for(int i=0;i<Box::pAllLeaf->size()&&i<expansions.at(renderSteps);i++){
+        for(unsigned int i=0;i<Box::pAllLeaf->size()&&i<(unsigned int)expansions.at(renderSteps);i++){
             Box* tmp=Box::pAllLeaf->at(i);
             drawBoxes(tmp, epsilon);
             numQuads++;
@@ -226,7 +245,7 @@ void Display::putBoxes(){
     //Can we do this better?
     else{
         //for(int i=Box::pAllLeaf->size()-1;i>=0;--i){
-        for(int i=0;i<Box::pAllLeaf->size();i++){
+        for(unsigned int i=0;i<Box::pAllLeaf->size();i++){
             Box* tmp = Box::pAllLeaf->at(i);
             if(!tmp->isLeaf) continue;
             drawBoxes(tmp, epsilon);
@@ -238,7 +257,6 @@ void Display::putBoxes(){
  * DRAW Boxes(Quads)
  */
 void Display::drawBoxes(Box* b, double epsilon) {
-    if(hideBox) return ;
 
     Color clr_box = clr_MIXED;
 
@@ -263,7 +281,7 @@ void Display::drawBoxes(Box* b, double epsilon) {
             }
             break;
         case Box::UNKNOWN:
-            //* << "UNKNOWN box status in genQuad\n";
+            //* << "UNKNOWN box status\n";
         break;
     }
     // 1st Corner: lower left
@@ -343,7 +361,7 @@ void Display::drawRobot(Pose p, Color c){
     drawTriangle(Pose(R0*cos((p.theta)*PI)+p.x, R0*sin((p.theta)*PI)+p.y),
                  Pose(R0*cos((triRobo[0]+p.theta)*PI)+p.x, R0*sin((triRobo[0]+p.theta)*PI)+p.y),
                  Pose(R0*cos((triRobo[1]+p.theta)*PI)+p.x, R0*sin((triRobo[1]+p.theta)*PI)+p.y),
-                 c, false, true);
+                 c, true, true);
 }
 
 void Display::drawTriangle(Pose a, Pose b, Pose c, Color clr, bool draw_solid, bool draw_outline) {

@@ -19,24 +19,24 @@ extern bool showAnim;
 extern bool pauseAnim;
 extern bool replayAnim;
 extern bool finishedAnim;
+extern int animationSpeed;
 extern bool hideBoxBoundary;
 extern bool hideBox;
 extern int numberForDisplay;
-extern int renderSteps;
+extern unsigned int renderSteps;
 extern bool step;
-extern unsigned int iPathSeg;
 extern double mouseX, mouseY;
 extern double boxWidth;
 extern double boxHeight;
+extern unsigned int inc;
 
-extern FILE *fptr;
+extern FILE *fptr; // for debugging
 
 extern void run();
 extern void parseExampleFile();
 
 
 int incr(1);
-int animationSpeed(50);
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -88,9 +88,10 @@ MainWindow::MainWindow(QWidget *parent) :
             break;
     }
 
+    ui->animationSpeed->setValue(animationSpeed);
     ui->eps->setValue(epsilon);
     ui->random->setValue(seed);
-
+    srand(seed);
     ui->boundary->setChecked(true);
     ui->hidebox->setChecked(true);
 
@@ -198,7 +199,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
             }
         }
     }
-    sprintf(tmp_buff, "box (%.lf, %.lf) width %.lf height %.lf\n", record->x, record->y, record->width, record->height);
+    sprintf(tmp_buff, "box (%.lf, %.lf) width %.lf height %.lf\nangle bound %lf %lf\n", record->x, record->y, record->width, record->height, record->xi[0]*180.0f, record->xi[1]*180.0f);
     box_info.append(tmp_buff);
 
     if(flag_free && flag_stuck) {
@@ -243,6 +244,8 @@ void MainWindow::on_run_clicked()
     //sprintf(egCur, "%s", ui->egFile->text().toStdString().c_str());
     sprintf(egCur, "%s", ui->comboBox->currentText().toStdString().c_str());
     if (strcmp(egPre, egCur) == 0) {
+        fileName=ui->inputFile->text().toStdString()+".txt";
+
         alpha[0]=ui->aX->value();
         alpha[1]=ui->aY->value();
         alpha[2]=ui->aT1->value();
@@ -314,6 +317,8 @@ void MainWindow::on_run_clicked()
     }
 
     showAnim = true;
+    pauseAnim = false;
+    inc = 0;
     run();
 
     ui->openGLWidget->update();
@@ -321,70 +326,58 @@ void MainWindow::on_run_clicked()
 }
 
 
-void MainWindow::on_randomButton_clicked()
-{
+void MainWindow::on_randomButton_clicked() {
     QType=0;
 }
 
-void MainWindow::on_bfs_clicked()
-{
+void MainWindow::on_bfs_clicked() {
     QType=1;
 }
 
-void MainWindow::on_greedy_clicked()
-{
+void MainWindow::on_greedy_clicked() {
     QType=2;
 }
 
-void MainWindow::on_dist_clicked()
-{
+void MainWindow::on_dist_clicked() {
     QType=3;
 }
 
-void MainWindow::on_vor_clicked()
-{
+void MainWindow::on_vor_clicked() {
     QType=4;
 }
 
-void MainWindow::on_exit_clicked()
-{
-    fprintf(fptr, "end\n");
+void MainWindow::on_exit_clicked() {
+    fprintf(fptr, "end file\n");
     this->close();
 }
 
-void MainWindow::on_show_clicked()
-{
+void MainWindow::on_show_clicked() {
     showAnim = true;
     this->update();
 }
 
-void MainWindow::on_pause_clicked()
-{
+void MainWindow::on_pause_clicked() {
     pauseAnim = !pauseAnim;
     this->update();
 }
 
-void MainWindow::on_replay_clicked()
-{
+void MainWindow::on_replay_clicked() {
     replayAnim = true;
     this->update();
 }
 
-void MainWindow::on_boundary_clicked()
-{
+void MainWindow::on_boundary_clicked() {
     hideBoxBoundary=ui->boundary->isChecked();
     this->update();
 }
 
-void MainWindow::on_hidebox_clicked()
-{
+void MainWindow::on_hidebox_clicked() {
     hideBox=ui->hidebox->isChecked();
     this->update();
 }
 
-void MainWindow::on_pushButton_clicked()
-{
-    if(step){
+void MainWindow::on_pushButton_clicked() {
+    if (step) {
         step=false;
         ui->steplabel->hide();
         renderSteps=1;
@@ -394,7 +387,7 @@ void MainWindow::on_pushButton_clicked()
         ui->left->setEnabled(false);
         ui->right->setEnabled(false);
         this->update();
-    }else{
+    } else {
         step=true;
         incr=1;
         ui->steplabel->show();
@@ -405,13 +398,11 @@ void MainWindow::on_pushButton_clicked()
     }
 }
 
-void MainWindow::on_inc_valueChanged(int arg1)
-{
+void MainWindow::on_inc_valueChanged(int arg1) {
     incr=arg1;
 }
 
-void MainWindow::on_left_clicked()
-{
+void MainWindow::on_left_clicked() {
     if(renderSteps-incr<1) return;
     renderSteps-=incr;
 
@@ -420,9 +411,7 @@ void MainWindow::on_left_clicked()
     ui->openGLWidget->update();
 }
 
-void MainWindow::on_right_clicked()
-{
-
+void MainWindow::on_right_clicked() {
     renderSteps+=incr;
     if(renderSteps>expansions.size()-1) renderSteps=expansions.size()-1;
     ui->steplabel->setText("Step: "+QString::number(renderSteps));
@@ -430,7 +419,6 @@ void MainWindow::on_right_clicked()
     ui->openGLWidget->update();
 }
 
-void MainWindow::on_horizontalSlider_valueChanged(int value)
-{
-    animationSpeed=value;
+void MainWindow::on_animationSpeed_valueChanged(int value) {
+    animationSpeed = value;
 }

@@ -39,9 +39,12 @@ private slots:
 
     void on_exit_clicked();
 
-    void on_anim_clicked();
+    void on_showAnim_clicked();
+    void on_pauseAnim_clicked();
+    void on_replayAnim_clicked();
 
-    void on_boundary_clicked();
+    void on_hideBox_clicked();
+    void on_hideBoxBoundary_clicked();
 
 
     void on_pushButton_clicked();

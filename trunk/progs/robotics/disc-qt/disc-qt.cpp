@@ -113,7 +113,8 @@
 
     bool noPath = true;             // True means there is "No path"
 
-    bool hideBoxBoundary = false;   // Black outline around boxes
+    bool coloredBoxes(false); //True if the colored boxes are to be shown, false otherwise - John Ryan 08/24/2015
+    bool hideBoxBoundary = true;   // Black outline around boxes
 
     int freeCount = 0;              // Green boxes
     int stuckCount = 0;             // Red boxes
@@ -129,6 +130,9 @@
 
 // External Variables & Routines =================================
 //
+    extern int animationSpeed;
+    extern int animationSpeedScale;
+    extern int animationSpeedScaleBox;
     extern int fileProcessor(string inputfile);
 
 // Forward Declarations ==========================================
@@ -150,7 +154,6 @@ void showAgain(std::string str){
         controlWin->updateDisplay();
     }
     controlWin->show();
-
 }
 
 
@@ -419,7 +422,7 @@ void genEmptyTree()
 	if (QT) {
 		delete(QT);
 	}
-    QT = new QuadTree(root, epsilon, QType, seed);
+    QT = new QuadTree(root, epsilon, QType);
 
     cw_out << "inside genEmpty:  Qtype= " << QType << "\n";
 }
@@ -707,6 +710,19 @@ void parseExampleFile() {
         if (strcmp(sptr, "scale") == 0) {
             sptr = strtok(NULL, "=: \t");
             scale = atof(sptr);
+        }
+
+        if (strcmp(sptr, "animationSpeed") == 0) {
+            sptr = strtok(NULL, "=: \t");
+            animationSpeed = atoi(sptr);
+        }
+        if (strcmp(sptr, "animationSpeedScale") == 0) {
+            sptr = strtok(NULL, "=: \t");
+            animationSpeedScale = atoi(sptr);
+        }
+        if (strcmp(sptr, "animationSpeedScaleBox") == 0) {
+            sptr = strtok(NULL, "=: \t");
+            animationSpeedScaleBox = atoi(sptr);
         }
     }
 }

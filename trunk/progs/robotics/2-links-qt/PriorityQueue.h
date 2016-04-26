@@ -80,16 +80,12 @@ class randQueue : public BoxQueue
 {
 private:
     vector<Box*> L;
-    int Qseed;
     vector<bool> dirty;
     int dirtyCt;
 
 public:
-    randQueue(int s): Qseed(s), dirtyCt(0)
-    {
-        //srand( time(0) );
-        srand( Qseed );
-    }
+    randQueue(): dirtyCt(0)
+    {}
 
     void push(Box* b)
     {

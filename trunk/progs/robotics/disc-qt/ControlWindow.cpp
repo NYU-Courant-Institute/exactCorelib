@@ -29,8 +29,13 @@ extern double epsilon;
 extern double R0;
 extern int QType;
 extern int seed;
+
+extern bool coloredBoxes;
 extern bool hideBoxBoundary;
+extern int inc;
 extern bool runAnim;
+extern bool replayAnim;
+extern bool pauseAnim;
 
 extern void parseExampleFile();
 
@@ -39,9 +44,10 @@ static int defaultVariableStepsValue = 1;
 RenderType stepRenderType = INFINITY_STEPS;
 long varSteps = 0;
 
-int animationSpeed(99);
+int animationSpeed(50);
+int animationSpeedScale(5000);
+int animationSpeedScaleBox(500);
 
-bool coloredBoxes(true); //True if the colored boxes are to be shown, false otherwise - John Ryan 08/24/2015
 
 
 int increment=1;
@@ -77,11 +83,7 @@ ControlWindow::ControlWindow(QWidget* parent) :
     ui->doubleSpinBox_bx->setValue(beta[0]);
     ui->doubleSpinBox_by->setValue(beta[1]);
     ui->spinBox_s->setValue(seed);
-
-    ui->left->hide();
-    ui->right->hide();
-    ui->label->hide();
-    ui->spinBox->hide();
+    srand(seed);
 
     switch (QType) {
         case Random:
@@ -101,7 +103,12 @@ ControlWindow::ControlWindow(QWidget* parent) :
                 ::exit(QType);
             break;
     }
+
+    ui->horizontalSlider->setValue(animationSpeed);
     
+    ui->checkBox_bound->setChecked(hideBoxBoundary);
+    ui->checkBox->setChecked(!coloredBoxes);
+
     ui->radioButton_infsteps->setChecked(true);
     ui->spinBox_steps->setValue(defaultVariableStepsValue);
 }
@@ -234,13 +241,19 @@ void ControlWindow::on_pushButton_run_clicked()
             if (strcmp(egPre, egCur) == 0) {
                 // Update global variables
                 fileName = ui->lineEdit_id->text().toStdString();
+
                 R0 =       ui->doubleSpinBox_r->value();
                 epsilon =  ui->doubleSpinBox_e->value();
                 alpha[0] = ui->doubleSpinBox_ax->value();
                 alpha[1] = ui->doubleSpinBox_ay->value();
                 beta[0] =  ui->doubleSpinBox_bx->value();
                 beta[1] =  ui->doubleSpinBox_by->value();
-                seed =     ui->spinBox_s->value();
+
+                int new_seed = ui->spinBox_s->value();
+                if(new_seed != seed){
+                    seed = new_seed;
+                    srand(seed);
+                }
 
                 if (ui->radioButton_rand->isChecked())
                     QType = Random;
@@ -281,12 +294,12 @@ void ControlWindow::on_pushButton_run_clicked()
                 ui->doubleSpinBox_ay->setValue(alpha[1]);
                 ui->doubleSpinBox_bx->setValue(beta[0]);
                 ui->doubleSpinBox_by->setValue(beta[1]);
-                ui->spinBox_s->setValue(seed);
 
-                ui->left->hide();
-                ui->right->hide();
-                ui->label->hide();
-                ui->spinBox->hide();
+                int old_seed = ui->spinBox_s->value();
+                if(old_seed != seed){
+                    ui->spinBox_s->setValue(seed);
+                    srand(seed);
+                }
 
                 switch (QType) {
                     case Random:
@@ -314,6 +327,9 @@ void ControlWindow::on_pushButton_run_clicked()
             // Output some pace between runs
             *this << "\n\n\n";
             // RUN!!
+            runAnim = true;
+            pauseAnim = false;
+            inc = 0;
             run();
 
 
@@ -337,7 +353,7 @@ void ControlWindow::on_pushButton_run_clicked()
                      "\n\n\n"
                      "WARNING!\n"
                      "Input(s) Not Specified\n";
-            for (int i = 0; i < missingArgs.size(); i++)
+            for (unsigned int i = 0; i < missingArgs.size(); i++)
                 *this << "   > " << missingArgs[i] << "\n";
             *this << "\n\n\n"
                      "****************************************************"
@@ -390,10 +406,11 @@ void ControlWindow::on_radioButton_1step_clicked(bool checked)
 {
     ui->label_stepequals->setDisabled(checked);
     ui->spinBox_steps->setDisabled(checked);
-    ui->left->hide();
-    ui->right->hide();
-    ui->label->hide();
-    ui->spinBox->hide();
+
+    ui->spinBox_steps->setValue(varSteps = ui->spinBox_steps->value());
+    stepRenderType = RenderType::VARIABLE_STEPS;
+    ui->openGLWidget->genScene();
+    ui->openGLWidget->update();
 }
 
 /*
@@ -405,10 +422,6 @@ void ControlWindow::on_radioButton_1000steps_clicked(bool checked)
 {
     ui->label_stepequals->setDisabled(checked);
     ui->spinBox_steps->setDisabled(checked);
-    ui->left->hide();
-    ui->right->hide();
-    ui->label->hide();
-    ui->spinBox->hide();
 }
 
 /*
@@ -420,10 +433,6 @@ void ControlWindow::on_radioButton_infsteps_clicked(bool checked)
 {
     ui->label_stepequals->setDisabled(checked);
     ui->spinBox_steps->setDisabled(checked);
-    ui->left->hide();
-    ui->right->hide();
-    ui->label->hide();
-    ui->spinBox->hide();
 }
 
 /*
@@ -435,10 +444,6 @@ void ControlWindow::on_radioButton_varsteps_clicked(bool checked)
 {
     ui->label_stepequals->setDisabled(!checked);
     ui->spinBox_steps->setDisabled(!checked);
-    ui->left->show();
-    ui->right->show();
-    ui->label->show();
-    ui->spinBox->show();
 }
 
 /*
@@ -464,7 +469,6 @@ void ControlWindow::on_right_clicked()
 {
     ui->spinBox_steps->setValue(varSteps = ui->spinBox_steps->value()+increment);
     stepRenderType = RenderType::VARIABLE_STEPS;
-    //run();
     ui->openGLWidget->genScene();
     ui->openGLWidget->update();
 
@@ -474,15 +478,25 @@ void ControlWindow::on_left_clicked()
 {
     ui->spinBox_steps->setValue(varSteps = ui->spinBox_steps->value()-increment);
     stepRenderType = RenderType::VARIABLE_STEPS;
-    //run();
     ui->openGLWidget->genScene();
     ui->openGLWidget->update();
 }
 
 
-void ControlWindow::on_anim_clicked()
-{
-    runAnim=true;
+void ControlWindow::on_anim_clicked() {
+    runAnim = true;
+    ui->openGLWidget->genScene();
+    ui->openGLWidget->update();
+}
+void ControlWindow::on_replay_clicked() {
+    runAnim = true;
+    pauseAnim = false;
+    inc = 0;
+    ui->openGLWidget->genScene();
+    ui->openGLWidget->update();
+}
+void ControlWindow::on_pause_clicked() {
+    pauseAnim = !pauseAnim;
     ui->openGLWidget->genScene();
     ui->openGLWidget->update();
 }

@@ -86,13 +86,10 @@ public:
 class randQueue : public BoxQueue
 {
 private:
-	list<Box*> L;
-	int Qseed;
+    list<Box*> L;
 
 public:
-	randQueue(int s): Qseed(s) {
-		//srand( time(0) );
-		srand( Qseed ); 
+    randQueue() {
 	}
 
 	void push(Box* b)

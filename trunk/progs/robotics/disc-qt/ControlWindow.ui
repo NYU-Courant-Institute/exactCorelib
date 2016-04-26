@@ -18,9 +18,9 @@
     <property name="geometry">
      <rect>
       <x>620</x>
-      <y>290</y>
+      <y>300</y>
       <width>411</width>
-      <height>401</height>
+      <height>391</height>
      </rect>
     </property>
    </widget>
@@ -515,67 +515,12 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="horizontalLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>640</x>
-      <y>250</y>
-      <width>371</width>
-      <height>36</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QPushButton" name="left">
-       <property name="maximumSize">
-        <size>
-         <width>75</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>&lt;&lt;</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="right">
-       <property name="maximumSize">
-        <size>
-         <width>75</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>&gt;&gt;</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Step Increment Size:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSpinBox" name="spinBox">
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>1000</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
    <widget class="QWidget" name="horizontalLayoutWidget_2">
     <property name="geometry">
      <rect>
       <x>30</x>
       <y>620</y>
-      <width>531</width>
+      <width>581</width>
       <height>34</height>
      </rect>
     </property>
@@ -618,11 +563,25 @@
      <rect>
       <x>30</x>
       <y>660</y>
-      <width>531</width>
+      <width>581</width>
       <height>32</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QPushButton" name="replay">
+       <property name="text">
+        <string>replay</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pause">
+       <property name="text">
+        <string>pause</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QPushButton" name="pushButton_run">
        <property name="minimumSize">
@@ -658,6 +617,67 @@
      </item>
     </layout>
    </widget>
+   <widget class="QPushButton" name="left">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>260</y>
+      <width>80</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>prev</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="right">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>260</y>
+      <width>80</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>next</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="spinBox">
+    <property name="geometry">
+     <rect>
+      <x>860</x>
+      <y>260</y>
+      <width>83</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>-100000</number>
+    </property>
+    <property name="maximum">
+     <number>100000</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_boundaries_2">
+    <property name="geometry">
+     <rect>
+      <x>790</x>
+      <y>260</y>
+      <width>61</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Step Size</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+    <property name="buddy">
+     <cstring>checkBox_bound</cstring>
+    </property>
+   </widget>
    <zorder>line_6</zorder>
    <zorder>layoutWidget</zorder>
    <zorder>layoutWidget</zorder>
@@ -671,9 +691,12 @@
    <zorder>line_4</zorder>
    <zorder>line_5</zorder>
    <zorder>layoutWidget</zorder>
-   <zorder>horizontalLayoutWidget</zorder>
    <zorder>horizontalLayoutWidget_2</zorder>
    <zorder>horizontalLayoutWidget_3</zorder>
+   <zorder>left</zorder>
+   <zorder>right</zorder>
+   <zorder>spinBox</zorder>
+   <zorder>label_boundaries_2</zorder>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

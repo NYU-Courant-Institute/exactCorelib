@@ -3,7 +3,7 @@
 
 interactive = 0		# 0=interactive, >0 is non-interactive
 
-startX = 200		# start configuration
+startX = 250		# start configuration
 startY = 350
 startTheta = 0
 goalX = 30		# goal configuration
@@ -12,9 +12,9 @@ goalTheta = 90
 
 epsilon = 4		# resolution parameter
 
-TriTheta1 = 150	# triangle robot
+TriTheta1 = 170	# triangle robot
 TriTheta2 = 190
-R = 40		# Disc Size
+R = 30		# Disc Size
 
 inputDir = inputs	# where to find input files
 fileName = bugtrap.txt	# input environment file

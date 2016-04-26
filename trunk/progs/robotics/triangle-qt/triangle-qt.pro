@@ -44,6 +44,7 @@ HEADERS  += MainWindow.h \
     Pose.h \
     Vertex.h \
     DisplayRobot.h
+#    Triangle.h
 
 FORMS    += \
 MainWindow.ui

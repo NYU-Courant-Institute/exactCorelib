@@ -157,7 +157,8 @@ double deltaY = 0;			// y-translation of input environment
 double scale = 1;				// scaling of input environment
 bool noPath = true;			// True means there is "No path.
 
-bool hideBoxBoundary = false;  		// don't draw box boundary
+bool hideBox = true;
+bool hideBoxBoundary = true;  		// don't draw box boundary
 
 bool verboseOption = false;		// don't print various statistics
 
@@ -186,10 +187,6 @@ int stuckCount = 0;
 int mixCount = 0;
 int mixSmallCount = 0;
 
-//controls triangle drawing along path
-const int TRIS_TO_SKIP = 20;
-const double DIST_TO_SKIP = 2;
-
 int renderCount = 0;
 //int countAAA = 0;
 //int countBBB = 0;
@@ -199,10 +196,6 @@ stringstream ssout;
 stringstream ssoutLastTime;
 stringstream ssTemp;
 stringstream ssInfo;
-
-//volatile bool renderLock = false;
-//volatile bool timerLock = false;
-//bool blinkFlag = false;
 
 vector<Box*> boxClicked;
 
@@ -259,7 +252,12 @@ extern bool step;
 
 
 
-bool runAnim(false);
+bool runAnim(true);
+bool pauseAnim(false);
+bool replayAnim(false);
+extern int animationSpeed;
+extern int animationSpeedScale;
+extern int animationSpeedScaleBox;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //find path using simple heuristic:
 //use distance to beta as key in PQ, see dijkstraQueue
@@ -589,7 +587,7 @@ void genEmptyTree() {
     if (QT) {
         delete (QT);
     }
-    QT = new QuadTree(root, epsilon, QType, seed++); // Note that seed keeps changing!
+    QT = new QuadTree(root, epsilon, QType); // Note that seed keeps changing!
 
     if (verboseOption)
         mw_out << "done genEmptyTree \n";
@@ -790,8 +788,6 @@ void run() {
         ssout << "    total Mixed boxes bigger than epsilon: "
                 << mixCount - mixSmallCount ;
     }
-
-    ssout;
     ssout << ssoutLastTime.str();
     freeCount = stuckCount = mixCount = mixSmallCount = 0;
     mw_out << "############## END of RUN #########\n";
@@ -1005,6 +1001,20 @@ void parseExampleFile() {
         if (strcmp(sptr, "verbose") == 0) {
             sptr = strtok(NULL, "=: \t");
             verboseOption = atoi(sptr);
+        }
+
+
+        if (strcmp(sptr, "animationSpeed") == 0) {
+            sptr = strtok(NULL, "=: \t");
+            animationSpeed = atoi(sptr);
+        }
+        if (strcmp(sptr, "animationSpeedScale") == 0) {
+            sptr = strtok(NULL, "=: \t");
+            animationSpeedScale = atoi(sptr);
+        }
+        if (strcmp(sptr, "animationSpeedScaleBox") == 0) {
+            sptr = strtok(NULL, "=: \t");
+            animationSpeedScaleBox = atoi(sptr);
         }
     }
 }

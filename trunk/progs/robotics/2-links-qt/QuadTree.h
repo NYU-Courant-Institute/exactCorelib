@@ -66,16 +66,15 @@ public:
     Box* pRoot;
     double epsilon;
     int QType;
-    int seed;
 
-    QuadTree(Box* root, double e, int qType, int s) :
-            pRoot(root), epsilon(e), QType(qType), seed(s) {
+    QuadTree(Box* root, double e, int qType) :
+            pRoot(root), epsilon(e), QType(qType){
         switch (QType) {
         case 1:
             PQ = new seqQueue();
             break;
         case 0:
-            PQ = new randQueue(s);
+            PQ = new randQueue();
             break;
         case 2:
             PQ = new dijkstraQueue<DistCmp>();

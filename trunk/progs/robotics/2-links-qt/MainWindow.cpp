@@ -21,8 +21,13 @@ extern double L2;
 extern double R0;
 extern int seed;
 extern int QType;
-extern bool runAnim;
 
+extern int inc;
+extern bool runAnim;
+extern bool replayAnim;
+extern bool pauseAnim;
+
+extern bool hideBox;
 extern bool hideBoxBoundary;
 extern int numberForDisplay;
 
@@ -34,6 +39,8 @@ int incr(1);
 
 
 int animationSpeed(50);
+int animationSpeedScale(5000);
+int animationSpeedScaleBox(500);
 
 extern void run();
 extern void parseExampleFile();
@@ -49,7 +56,6 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->comboBox->addItem(egNameList[i]);
     }
 
-    //ui->egFile->setText(QString::fromStdString(egName));
     ui->inputFile->setText(QString::fromStdString(fileName.substr(0,fileName.length()-4)));
 
     ui->aX->setValue(alpha[0]);
@@ -85,8 +91,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->eps->setValue(epsilon);
     ui->random->setValue(seed);
+    srand(seed);
 
-    ui->boundary->setChecked(false);
+    ui->hideBox->setChecked(hideBox);
+    ui->hideBoxBoundary->setChecked(hideBoxBoundary);
+
     ui->steplabel->hide();
     ui->inc->setEnabled(false);
     ui->left->setEnabled(false);
@@ -153,6 +162,8 @@ void MainWindow::on_run_clicked()
     //sprintf(egCur, "%s", ui->egFile->text().toStdString().c_str());
     sprintf(egCur, "%s", ui->comboBox->currentText().toStdString().c_str());
     if (strcmp(egPre, egCur) == 0) {
+        fileName=ui->inputFile->text().toStdString()+".txt";
+
         alpha[0]=ui->aX->value();
         alpha[1]=ui->aY->value();
         alpha[2]=ui->aT1->value();
@@ -167,9 +178,15 @@ void MainWindow::on_run_clicked()
         L2=ui->l2->value();
 
         epsilon=ui->eps->value();
-        seed=ui->random->value();
 
-        hideBoxBoundary=ui->boundary->isChecked();
+        int new_seed = ui->random->value();
+        if(new_seed != seed){
+            seed = new_seed;
+            srand(seed);
+        }
+
+        hideBox=ui->hideBox->isChecked();
+        hideBoxBoundary=ui->hideBoxBoundary->isChecked();
     } else {
         //egName=ui->egFile->text().toStdString();
         egName = ui->comboBox->currentText().toStdString();
@@ -209,9 +226,17 @@ void MainWindow::on_run_clicked()
         }
 
         ui->eps->setValue(epsilon);
-        ui->random->setValue(seed);
+
+        int old_seed = ui->random->value();
+        if(old_seed != seed) {
+            ui->random->setValue(seed);
+            srand(seed);
+        }
     }
 
+    runAnim = true;
+    pauseAnim = false;
+    inc = 0;
     run();
 
     ui->openGLWidget->genScene();
@@ -249,16 +274,31 @@ void MainWindow::on_exit_clicked()
     this->close();
 }
 
-void MainWindow::on_anim_clicked()
-{
-    runAnim=true;
+void MainWindow::on_showAnim_clicked() {
+    runAnim = true;
     this->update();
 }
-
-void MainWindow::on_boundary_clicked()
-{
-    hideBoxBoundary=ui->boundary->isChecked();
+void MainWindow::on_pauseAnim_clicked() {
+    pauseAnim = !pauseAnim;
     this->update();
+}
+void MainWindow::on_replayAnim_clicked() {
+    runAnim = true;
+    pauseAnim = false;
+    inc = 0;
+    this->update();
+}
+void MainWindow::on_hideBox_clicked()
+{
+    hideBox=ui->hideBox->isChecked();
+    ui->openGLWidget->genScene();
+    ui->openGLWidget->update();
+}
+void MainWindow::on_hideBoxBoundary_clicked()
+{
+    hideBoxBoundary=ui->hideBoxBoundary->isChecked();
+    ui->openGLWidget->genScene();
+    ui->openGLWidget->update();
 }
 
 
@@ -313,7 +353,6 @@ void MainWindow::on_right_clicked()
     ui->openGLWidget->update();
 }
 
-void MainWindow::on_horizontalSlider_valueChanged(int value)
-{
+void MainWindow::on_horizontalSlider_valueChanged(int value) {
     animationSpeed=value;
 }
