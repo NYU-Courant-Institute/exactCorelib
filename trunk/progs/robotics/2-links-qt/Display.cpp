@@ -41,16 +41,10 @@ extern double boxHeight;
 extern Box* boxA;
 extern Box* boxB;
 extern bool noPath;
-
-extern bool hideBox;
 extern bool hideBoxBoundary;
 extern bool runAnim;
-extern bool pauseAnim;
-extern bool replayAnim;
 
 extern int animationSpeed;
-extern int animationSpeedScale;
-extern int animationSpeedScaleBox;
 
 
 extern vector<Box*> PATH;
@@ -133,7 +127,7 @@ void Display::initializeGL() {
    initializeOpenGLFunctions();
 
     // Set background color
-    glClearColor(0.5, 0.5, 0.5, 0.5);
+    glClearColor(0.3, 0.3, 0.3, 1.0);
 
     program = new shader("simple.vert", "simple.frag");
 
@@ -195,7 +189,8 @@ void Display::paintGL() {
 //            double duration;
 
 //            start = std::clock();
-        if(!hideBox) putQuads();
+
+            putQuads();
 
 
 //            duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
@@ -207,6 +202,8 @@ void Display::paintGL() {
 
         // If a Path Exists, Generate the Line Representing It
         if (!noPath) {
+
+          //vector<Box*> path = Graph::dijkstraShortestPath(boxA, boxB);
            genPath(PATH, alpha, beta, R0);
         }
 
@@ -215,32 +212,32 @@ void Display::paintGL() {
         double degToRad = 3.1415/180.0;
         genLine( 4, alpha[0], alpha[1],
                 alpha[0] + L1*cos(alpha[2]*degToRad) ,  alpha[1] + L1*sin(alpha[2]*degToRad)  ,
-                1,0,1,true  );
+                1,0,0,true  );
         genLine( 4, alpha[0], alpha[1],
                 alpha[0] + L2*cos(alpha[3]*degToRad) ,  alpha[1] + L2*sin(alpha[3]*degToRad)  ,
                 0,0,0,true  );
         genLine( 4, beta[0], beta[1],
                 beta[0] + L1*cos(beta[2]*degToRad) ,  beta[1] + L1*sin(beta[2]*degToRad)  ,
-                0.25,0,0.25,true  );
+                1,0,0,true  );
         genLine( 4, beta[0], beta[1],
                 beta[0] + L2*cos(beta[3]*degToRad) ,  beta[1] + L2*sin(beta[3]*degToRad)  ,
                 0,0,0,true  );
 
         // Filled Circles at Start (alpha) and End (beta)
 
-        //genFilledCircle(r0, alpha[0], alpha[1], 1,1,1);     //blue start center
-        //genFilledCircle(r0, beta[0], beta[1], 1,1,1);       //yellow goal center
+        genFilledCircle(r0, alpha[0], alpha[1], 1,1,1);     //blue start center
+        genFilledCircle(r0, beta[0], beta[1], 1,1,1);       //yellow goal center
 
         // Circle Outlines Representing Radius
-        //genHollowCircle(R0, alpha[0], alpha[1], 0.0, 0.0, 1.0);     // start
-        //genHollowCircle(R0, beta[0], beta[1], 0.8, 0.7, 0.4);       // goal
+        genHollowCircle(R0, alpha[0], alpha[1], 0.0, 0.0, 1.0);     // start
+        genHollowCircle(R0, beta[0], beta[1], 0.8, 0.7, 0.4);       // goal
 
         // Lines Representing Obsticals
         genWalls(QT->pRoot);
 
         // Line From Start (alpha) to End (beta)
-        //genLine(1.6, alpha[0], alpha[1], beta[0], beta[1],
-        //        (noPath ? 0.0 : 1.0), 0.5, 0.75, false);
+        genLine(1.6, alpha[0], alpha[1], beta[0], beta[1],
+                (noPath ? 0.0 : 1.0), 0.5, 0.75, false);
 
 
 
@@ -263,42 +260,44 @@ void Display::paintGL() {
     drawLines();
 
     // Path Line
-    if(!noPath) drawPath();
+    if(!runAnim){
+        drawPath();
+        drawCircles();
+    }
 
-    if(runAnim && !noPath){
+    if(runAnim&&!noPath){
 
 
 
         filledCircles.clear();
-        //genFilledCircle(r0, alpha[0], alpha[1], 1,1,1);     //blue start center
-        //genFilledCircle(r0, beta[0], beta[1], 1,1,1);       //yellow goal center
+        genFilledCircle(r0, alpha[0], alpha[1], 1,1,1);     //blue start center
+        genFilledCircle(r0, beta[0], beta[1], 1,1,1);       //yellow goal center
 
 
-        if(pauseAnim) {
+
+
+
+        regenShapes=false;
+        if(inc==0) lim=lines.size();
+        pSize=PATH.size();
+        if(inc<pSize){
             drawRobot(PATH.at(pSize-inc-1));
             drawLines();
-        }
-        else {
-
-            regenShapes=false;
-            //if(inc==0) lim=lines.size();
-            pSize=PATH.size();
-            if(inc<pSize){
-                drawRobot(PATH.at(pSize-inc-1));
-                drawLines();
-                //drawCircles();
-                inc++;
-
-                if(hideBox) usleep(  (99-animationSpeed) * animationSpeedScale);
-                else        usleep(  (99-animationSpeed) * animationSpeedScaleBox);
-            }
-            else{
-                inc=0;
-                runAnim=false;
+            drawCircles();
+            update();
+            inc++;
+            usleep(  (99-animationSpeed) * 500);
+            if(lines.size()>lim){
+                for(int z=0;z<850;z++) filledCircles.pop_back();
+                for(int y=0;y<40;y++) lines.pop_back();
             }
         }
-        genScene();
-        update();
+        else{
+            inc=0;
+            runAnim=false;
+            genScene();
+            update();
+        }
     }
 }
 
@@ -335,35 +334,51 @@ void Display::drawRobot(Box* b){
         }
     }
 
+    //if(b->xi[Box::LOWER1] > b->xi[Box::UPPER1])
+        fprintf(stderr, "t1  %lf %lf   %lf   %lf %lf\n", b->xi[Box::LOWER1], b->xi[Box::UPPER1], theta1, cos(theta1/180.0f*PI), sin(theta1/180.0f*PI));
+    //if(b->xi[Box::LOWER2] > b->xi[Box::UPPER2])
+    //    fprintf(stderr, "t2  %lf %lf %lf\n", b->xi[Box::LOWER2], b->xi[Box::UPPER2], theta2);
+
     genLine( 4, b->x, b->y,
             b->x + L1*cos(theta1/180.0f*PI) , b->y + L1*sin(theta1/180.0f*PI)  ,
-            0.5,0,0.5,true);
+            1,0,0,true);
     genLine( 4, b->x, b->y,
             b->x + L2*cos(theta2/180.0f*PI) , b->y + L2*sin(theta2/180.0f*PI)  ,
             0,0,0,true);
 
-    //genFilledCircle(r0,b->x,b->y,1,1,1);
+    genFilledCircle(r0,b->x,b->y,1,1,1);
 }
 
 
 void Display::putQuads(){
+
     Box* tmp;
-    if(step){
-        for(unsigned int i=0;  i<Box::pAllLeaf->size()&&i<expansions.at(renderSteps);i++){
+    int i;
+   if(step){
+        for(i=0;  i<Box::pAllLeaf->size()&&i<expansions.at(renderSteps);i++){
             tmp=Box::pAllLeaf->at(i);
+
             genQuad(tmp,epsilon);
             numQuads++;
         }
+
     }//NOTE: This draws ALL quads, including non leaves - this is overkill, and wastes time and space.
-    //Can we do this better?
-    else{
-        for(unsigned int i=0;i<Box::pAllLeaf->size();i++){
+   //Can we do this better?
+
+
+   else{
+        for(i=0;i<Box::pAllLeaf->size();i++){
             tmp = Box::pAllLeaf->at(i);
-            if(!tmp->isLeaf) continue;
+            if(!tmp->isLeaf){
+
+                continue;
+            }
             genQuad(tmp,epsilon);
             numQuads++;
+
         }
-    }
+
+   }
 }
 
 
@@ -378,7 +393,7 @@ void Display::putQuads(){
  * the viewport is the canvas.
  */
 void Display::resizeGL(int width, int height) {
-    glViewport(0, 0, width, height);
+    //glViewport(0, 0, width, height);
 }
 
 /*
@@ -516,7 +531,7 @@ void Display::perpVertices(float thickness, vector<double>& storage, double a_x,
  */
 void Display::genPath(vector<Box*>& path, double* alpha, double* beta, double R0)
 {
-    double red = 0.5, green = 0.0, blue = 0;
+    double red = 0.5, green = 0.0, blue = 0.25;
     float thickness = R0 < 1.5/2 ? 2*R0 : 1.5;
 
     vector<double> vertexHolder;
@@ -609,18 +624,18 @@ void Display::genQuad(Box* b, double epsilon)
             }
             break;
         case Box::STUCK:  //color is red
-            red = 0xFF/255.0;
-            green = 0/255.0;
-            blue = 0/255.0;
+            red = 0xCC/255.0;
+            green = 0x33/255.0;
+            blue = 0x66/255.0;
             break;
         case Box::MIXED: //color is yellow (if box is epsilon-large)
             red = 0xFF / 255.0;
             green = 0xFF / 255.0;
-            blue = 0 / 255.0;
+            blue = 0x66 / 255.0;
             if (b->height < 2 * epsilon || b->width < 2 * epsilon) { // color is gray (if box is epsilon-small)
-                red = 0.5;
-                green = 0.5;
-                blue = 0.5;
+                red = 0x99 / 255.0;
+                green = 0x99 / 255.0;
+                blue = 0x99 / 255.0;
             }
             break;
         case Box::UNKNOWN:
@@ -676,6 +691,7 @@ void Display::genQuad(Box* b, double epsilon)
 
     // Add vertices of the quads' outlines
     for (int j = 3; j>=0 ; j--) {
+
         quadOutlines.push_back(quads[(quads.size()-5) - j*5]);
         quadOutlines.push_back(quads[(quads.size()-4) - j*5]);
         setVertexColor(quadOutlines, 0.0, 0.0, 0.0);

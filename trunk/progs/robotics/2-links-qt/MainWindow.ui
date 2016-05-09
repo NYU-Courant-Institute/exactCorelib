@@ -305,11 +305,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QDoubleSpinBox" name="l1">
-         <property name="maximum">
-          <double>512.000000000000000</double>
-         </property>
-        </widget>
+        <widget class="QDoubleSpinBox" name="l1"/>
        </item>
       </layout>
      </item>
@@ -323,11 +319,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QDoubleSpinBox" name="l2">
-         <property name="maximum">
-          <double>512.000000000000000</double>
-         </property>
-        </widget>
+        <widget class="QDoubleSpinBox" name="l2"/>
        </item>
       </layout>
      </item>
@@ -512,7 +504,7 @@
      </size>
     </property>
    </widget>
-   <widget class="QCheckBox" name="hideBoxBoundary">
+   <widget class="QCheckBox" name="boundary">
     <property name="geometry">
      <rect>
       <x>460</x>
@@ -525,17 +517,17 @@
      <string>Hide Box Boundary</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="showAnim">
+   <widget class="QPushButton" name="anim">
     <property name="geometry">
      <rect>
-      <x>730</x>
+      <x>740</x>
       <y>340</y>
-      <width>61</width>
+      <width>181</width>
       <height>32</height>
      </rect>
     </property>
     <property name="text">
-     <string>Show</string>
+     <string>Show Animation</string>
     </property>
    </widget>
    <widget class="QWidget" name="verticalLayoutWidget_5">
@@ -673,45 +665,6 @@
       <widget class="QComboBox" name="comboBox"/>
      </item>
     </layout>
-   </widget>
-   <widget class="QCheckBox" name="hideBox">
-    <property name="geometry">
-     <rect>
-      <x>460</x>
-      <y>600</y>
-      <width>161</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Hide Box</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pauseAnim">
-    <property name="geometry">
-     <rect>
-      <x>790</x>
-      <y>340</y>
-      <width>61</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Pause</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="replayAnim">
-    <property name="geometry">
-     <rect>
-      <x>850</x>
-      <y>340</y>
-      <width>71</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Replay</string>
-    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

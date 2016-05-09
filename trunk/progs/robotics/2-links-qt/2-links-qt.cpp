@@ -121,14 +121,14 @@ using namespace std;
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////
-string egName("SoCG2016_2links_demo1.eg");
+string egName("SoCG_2links_eg1.eg");
 char egNameList[200][200];
 int numEg = 0;
 
 
-double alpha[4] = { 216, 297, 115, 155 };		// start configuration
-double beta[4] = { 210, 220, 260, 200 };		// goal configuration
-double epsilon = 4;			// resolution parameter
+double alpha[4] = { 60, 350, 330, 140 };		// start configuration
+double beta[4] = { 300, 60, 90, 30 };		// goal configuration
+double epsilon = 5;			// resolution parameter
 Box* boxA;				// start box (containing alpha)
 Box* boxB;				// goal box (containing beta)
 double boxWidth = 512;			// Initial box width
@@ -136,17 +136,17 @@ double boxHeight = 512;			// Initial box height
 
 // Added by Zhongdi 05/08/2013 begin
 // length of 2 links
-double L1 = 30;
-double L2 = 80;
+double L1 = 65;
+double L2 = 85;
 double R0 = 0;				// will be set to max(L1,L2)
 // Added by Zhongdi 05/08/2013 end
 
 int windowPosX = 320;			// X Position of Window
 int windowPosY = 20;			// Y Position of Window
-string fileName("zigzagrotation.txt"); 		// Input file name
+string fileName("input2a.txt"); 		// Input file name
 //string fileName("input150.txt"); 		// Input file name
 string inputDir("inputs"); 		// Path for input files
-int QType = 2;				// The Priority Queue can be
+int QType = 0;				// The Priority Queue can be
 //    sequential (0) or random (1)
 int interactive = 0;			// Run interactively?
 //    Yes (0) or No (1)
@@ -157,8 +157,7 @@ double deltaY = 0;			// y-translation of input environment
 double scale = 1;				// scaling of input environment
 bool noPath = true;			// True means there is "No path.
 
-bool hideBox = true;
-bool hideBoxBoundary = true;  		// don't draw box boundary
+bool hideBoxBoundary = false;  		// don't draw box boundary
 
 bool verboseOption = false;		// don't print various statistics
 
@@ -187,6 +186,10 @@ int stuckCount = 0;
 int mixCount = 0;
 int mixSmallCount = 0;
 
+//controls triangle drawing along path
+const int TRIS_TO_SKIP = 20;
+const double DIST_TO_SKIP = 2;
+
 int renderCount = 0;
 //int countAAA = 0;
 //int countBBB = 0;
@@ -196,6 +199,10 @@ stringstream ssout;
 stringstream ssoutLastTime;
 stringstream ssTemp;
 stringstream ssInfo;
+
+//volatile bool renderLock = false;
+//volatile bool timerLock = false;
+//bool blinkFlag = false;
 
 vector<Box*> boxClicked;
 
@@ -252,12 +259,7 @@ extern bool step;
 
 
 
-bool runAnim(true);
-bool pauseAnim(false);
-bool replayAnim(false);
-extern int animationSpeed;
-extern int animationSpeedScale;
-extern int animationSpeedScaleBox;
+bool runAnim(false);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //find path using simple heuristic:
 //use distance to beta as key in PQ, see dijkstraQueue
@@ -587,7 +589,7 @@ void genEmptyTree() {
     if (QT) {
         delete (QT);
     }
-    QT = new QuadTree(root, epsilon, QType); // Note that seed keeps changing!
+    QT = new QuadTree(root, epsilon, QType, seed++); // Note that seed keeps changing!
 
     if (verboseOption)
         mw_out << "done genEmptyTree \n";
@@ -788,6 +790,8 @@ void run() {
         ssout << "    total Mixed boxes bigger than epsilon: "
                 << mixCount - mixSmallCount ;
     }
+
+    ssout;
     ssout << ssoutLastTime.str();
     freeCount = stuckCount = mixCount = mixSmallCount = 0;
     mw_out << "############## END of RUN #########\n";
@@ -1001,20 +1005,6 @@ void parseExampleFile() {
         if (strcmp(sptr, "verbose") == 0) {
             sptr = strtok(NULL, "=: \t");
             verboseOption = atoi(sptr);
-        }
-
-
-        if (strcmp(sptr, "animationSpeed") == 0) {
-            sptr = strtok(NULL, "=: \t");
-            animationSpeed = atoi(sptr);
-        }
-        if (strcmp(sptr, "animationSpeedScale") == 0) {
-            sptr = strtok(NULL, "=: \t");
-            animationSpeedScale = atoi(sptr);
-        }
-        if (strcmp(sptr, "animationSpeedScaleBox") == 0) {
-            sptr = strtok(NULL, "=: \t");
-            animationSpeedScaleBox = atoi(sptr);
         }
     }
 }
