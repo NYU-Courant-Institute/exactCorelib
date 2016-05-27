@@ -392,9 +392,9 @@ void parse(string input) {
     //     o->add_feature(edge);
     // 	root->add_feature(edge);
     //   }
-    // }  
-  ifs.close();
+    // }
 
+  ifs.close();
   print_features(root);
 }
 
@@ -500,7 +500,7 @@ void run() {
       continue;
     } else if (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION ||
 	       lip * radius > box->midpoint_clearance() || // TODO(*): Check this.
-	       radius > geom_eps ||          // TODO: Make sure this isn't off by a multiplicative factor of 2.
+	       2 * radius > geom_eps ||          // TODO: Make sure this isn't off by a multiplicative factor of 2.
 	       !box->cpv()) {
       enqueue_children(box);
     } else if (num_obj == 2 || contained_in_any(box, INT_SCALE)) {

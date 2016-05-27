@@ -410,7 +410,6 @@ bool vor_box::cjc(double scale) const {
 }
 
 bool vor_box::cmk(double scale) const {
-  // Note: These computations should all be vectorized.
   // TODO: Improve this to work with multi-feature sites and degenerate intersections.
   // assert(num_features() >= 3);
   if (num_features() <= 2) {
