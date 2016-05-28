@@ -30,7 +30,7 @@ extern int stuckCount;
 extern int mixCount;
 extern int mixSmallCount;
 
-extern FILE *fptr;
+//extern FILE *fptr;
 
 class QuadTree
 {
@@ -102,6 +102,12 @@ public:
 
         for (int i = 0; i < (int)allLeaf.size(); ++i) {
             if ( allLeaf[i]->contains(x, y, a) ) {
+                if (allLeaf[i]->isFree()) {
+                    return allLeaf[i];
+                }
+                if (allLeaf[i]->status == Box::STUCK) {
+                    return 0;
+                }
                 q.push(allLeaf[i]);
             }
         }
@@ -114,21 +120,22 @@ public:
                 continue;
             }
             if (!b->contains(x, y, a)) {
-                return 0;
+                return 0; // STUCK
             }
 
             vector<Box*> cldrn;
             if (!expand(b, cldrn)) {
-                return 0;
+                return 0; // STUCK
             }
             ++ct;
 
             for (int i = 0; i < (int)cldrn.size(); ++i) {
-                fprintf(fptr, "x %.lf y %.lf a %.lf box (%.lf, %.lf) %.lf %.lf xi %lf %lf\n", x, y, a, cldrn[i]->x, cldrn[i]->y, cldrn[i]->width, cldrn[i]->height, cldrn[i]->xi[0], cldrn[i]->xi[1]);
-                fprintf(fptr, "contain %d free %d\n", cldrn[i]->contains(x, y, a), cldrn[i]->isFree());
                 if ( cldrn[i]->contains(x, y, a) ) {
                     if (cldrn[i]->isFree()) {
                         return cldrn[i];
+                    }
+                    if (cldrn[i]->status == Box::STUCK) {
+                        return 0;
                     }
                     q.push(cldrn[i]);
                 }

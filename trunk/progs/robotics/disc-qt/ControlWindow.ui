@@ -29,8 +29,8 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>600</width>
-      <height>600</height>
+      <width>512</width>
+      <height>512</height>
      </rect>
     </property>
    </widget>
@@ -260,14 +260,14 @@
       <height>91</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_qtype" rowstretch="0,0,0">
+    <layout class="QGridLayout" name="gridLayout_qtype" rowstretch="0,0,0,0">
      <property name="spacing">
       <number>-1</number>
      </property>
-     <item row="2" column="0" alignment="Qt::AlignLeft|Qt::AlignVCenter">
-      <widget class="QRadioButton" name="radioButton_astr">
+     <item row="0" column="0" alignment="Qt::AlignLeft|Qt::AlignVCenter">
+      <widget class="QRadioButton" name="radioButton_rand">
        <property name="text">
-        <string>GBF</string>
+        <string>Random</string>
        </property>
        <attribute name="buttonGroup">
         <string notr="true">buttonGroup_qtype</string>
@@ -284,14 +284,21 @@
        </attribute>
       </widget>
      </item>
-     <item row="0" column="0" alignment="Qt::AlignLeft|Qt::AlignVCenter">
-      <widget class="QRadioButton" name="radioButton_rand">
+     <item row="2" column="0" alignment="Qt::AlignLeft|Qt::AlignVCenter">
+      <widget class="QRadioButton" name="radioButton_astr">
        <property name="text">
-        <string>Random</string>
+        <string>GBF</string>
        </property>
        <attribute name="buttonGroup">
         <string notr="true">buttonGroup_qtype</string>
        </attribute>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QRadioButton" name="Vor">
+       <property name="text">
+        <string>Vor</string>
+       </property>
       </widget>
      </item>
     </layout>
@@ -710,7 +717,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_render"/>
   <buttongroup name="buttonGroup_qtype"/>
+  <buttongroup name="buttonGroup_render"/>
  </buttongroups>
 </ui>

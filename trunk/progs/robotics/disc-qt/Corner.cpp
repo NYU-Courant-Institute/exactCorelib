@@ -5,15 +5,13 @@
 #include "Wall.h"
 
 
-bool Corner::isConvex()
-{
+bool Corner::isConvex(){
 	Corner* c = this->nextWall->dst;
 	return !this->preWall->isRight(c->x, c->y);
 }
 
 
-bool Corner::intersectZone(Box *b)
-{
+bool Corner::intersectZone(Box *b){
     if(b->in(this->x,this->y)) return true;
     if(preWall == NULL) return true;
 
@@ -33,16 +31,14 @@ bool Corner::intersectZone(Box *b)
 
     for(int i=0;i<4;++i){
         if(preWall->projection(corner[i][0],corner[i][1]) > 1 &&
-           nextWall->projection(corner[i][0],corner[i][1]) < 0)
-        {
+           nextWall->projection(corner[i][0],corner[i][1]) < 0){
             return true;
         }
     }
 
     for(int i=0;i<3;++i){
         if(preWall->projection(corner[i][0],corner[i][1]) < 1 &&
-           nextWall->projection(corner[i+1][0],corner[i+1][1]) > 0)
-        {
+           nextWall->projection(corner[i+1][0],corner[i+1][1]) > 0){
             return true;
         }
     }

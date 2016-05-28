@@ -61,7 +61,6 @@ short Wall::distance_sign(double x, double y)
     return 0;  // Guess: this is when the point (x,y) projects onto the wall.
 }
 
-
 // point p(x, y) is projected to the wall
 // return a real value t such that
 //    when t equals 0, p projects onto the source
@@ -114,9 +113,8 @@ bool Wall::intersectZone(Box *b)
     short s3=distance_sign(corner3[0],corner3[1]);
     short s4=distance_sign(corner4[0],corner4[1]);
 
-    if(s1==0 || s2==0 || s3==0 || s4==0)
+    if(s1==0 || s2==0 || s3==0 || s4==0) // on the wall
         return true;
-
     if(s1!=s2 || s2!=s3 || s3!=s4 || s4!=s1)
         return true;
 

@@ -27,9 +27,12 @@ extern bool hideBox;
 extern bool showAnim;
 extern bool pauseAnim;
 extern bool replayAnim;
-extern int animationSpeed;
-extern int animationSpeedScale;
-extern int animationSpeedScaleBox;
+
+// usleep((99-animationSpeed)*animationSpeedScale);
+extern int animationSpeed;         // control the speed on the slider
+extern int animationSpeedScale;    // the scale is used when we are not rendering the boxes
+extern int animationSpeedScaleBox; // the scaleBox is for rendering the boxes simultaneously
+
 extern vector<Box*> PATH;
 extern std::vector<int> expansions;
 // color coding variable ========================================

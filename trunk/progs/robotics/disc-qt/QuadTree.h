@@ -15,8 +15,6 @@
 #include "UnionFind.h"
 #include "PriorityQueue.h"
 
-extern int debug_counter;
-
 extern int freeCount;
 extern int stuckCount;
 extern int mixCount;
@@ -121,9 +119,6 @@ public:
 		{
 			return false;
 		}
-	
-debug_counter++;
-fprintf(stderr, "debug %d\n", debug_counter);
 
 		for (int i = 0; i < 4; ++i)
 		{

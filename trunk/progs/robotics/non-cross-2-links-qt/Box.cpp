@@ -1782,125 +1782,178 @@ vector<AngleRange> calcZone(vector<AngleRange> &srcAngleRanges) {
     }
     std::sort(srcAngleRanges.begin(), srcAngleRanges.end(), sortAngleRanges);
 
-//	std::cout << "srcAngleRanges.size() = " << srcAngleRanges.size() << endl;
-    for (vector<AngleRange>::iterator it = srcAngleRanges.begin();
-            it != srcAngleRanges.end(); it++) {
-        AngleRange temp = *it;
+    double maxUpperBound = 0;
+    for (int i=0;i<(int)srcAngleRanges.size();++i) {
+        AngleRange temp = srcAngleRanges[i];
         if (temp.lowerBound > temp.upperBound) {
+            if(maxUpperBound < temp.upperBound) maxUpperBound = temp.upperBound;
             temp.upperBound += 360;
         }
-        AngleRange tempRange(temp.lowerBound, temp.upperBound);
-        newSrcAngleRanges.push_back(tempRange);
-//		std::cout << "hahahahaha src angle range =" << temp.lowerBound << " "
-//				<< temp.upperBound << endl;
+        newSrcAngleRanges.push_back(AngleRange(temp.lowerBound, temp.upperBound));
     }
 
-    double tempLowerBound = 540, tempUpperBound = 0;
-//	double lowerBound = 360;
-//	double totalAngle = 0;
-    for (vector<AngleRange>::iterator it = newSrcAngleRanges.begin();
-            it != newSrcAngleRanges.end(); it++) {
-        AngleRange temp = *it;
-        if (it == newSrcAngleRanges.begin()) {
-            if (temp.lowerBound <= tempLowerBound) {
-                tempLowerBound = temp.lowerBound;
-//				lowerBound = temp.lowerBound;
-            }
-            if (temp.upperBound >= tempUpperBound) {
 
-                tempUpperBound = temp.upperBound;
 
-            }
-
-            if (newSrcAngleRanges.size() == 1) {
-                AngleRange tempAngleRange(tempLowerBound, tempUpperBound);
-                dstAngleRanges.push_back(tempAngleRange);
-            }
-//			if(tempLowerBound < tempUpperBound){
-//				totalAngle += tempUpperBound - tempLowerBound;
-//			}else{
-//				totalAngle += tempUpperBound + 360 - tempLowerBound;
-//			}
-            continue;
-        }
-//		std::cout << "temp.lowerBound = " << temp.lowerBound << endl;
-//		std::cout << "temp.upperBound = " << temp.upperBound << endl;
-        if (temp.lowerBound <= tempUpperBound) {
-            if (temp.upperBound >= tempUpperBound) {
-                tempUpperBound = temp.upperBound;
-            }
-        } else {
-            AngleRange tempAngleRange(tempLowerBound, tempUpperBound);
-            dstAngleRanges.push_back(tempAngleRange);
-            tempLowerBound = temp.lowerBound;
-            tempUpperBound = temp.upperBound;
-        }
-
-        if (it == newSrcAngleRanges.end() - 1) {
-            AngleRange tempAngleRange(tempLowerBound, tempUpperBound);
-//			std::cout << "tempLowerBound = " << tempLowerBound << endl;
-//			std::cout << "tempUpperBound = " << tempUpperBound << endl;
-            dstAngleRanges.push_back(tempAngleRange);
+    for (int i=0;i<(int)newSrcAngleRanges.size();++i) {
+        if (newSrcAngleRanges[i].lowerBound < maxUpperBound) {
+            newSrcAngleRanges[i].lowerBound += 360;
+            newSrcAngleRanges[i].upperBound += 360;
         }
     }
+    std::sort(newSrcAngleRanges.begin(), newSrcAngleRanges.end(), sortAngleRanges);
 
-//	std::cout << "dstAngleRanges.size() = " << dstAngleRanges.size() << endl;
-    for (vector<AngleRange>::iterator it = dstAngleRanges.begin();
-            it != dstAngleRanges.end(); it++) {
-        //AngleRange temp = *it;
-//		std::cout << "hahahahaha dst angle range before=" << temp.lowerBound
-//				<< " " << temp.upperBound << endl;
-    }
-
-    if (dstAngleRanges[dstAngleRanges.size() - 1].upperBound
-            - dstAngleRanges[0].lowerBound >= 360) {
-
-        if (dstAngleRanges.size() >= 2) {
-
-            tempLowerBound =
-                    dstAngleRanges[dstAngleRanges.size() - 1].lowerBound;
-            tempUpperBound = dstAngleRanges[0].upperBound;
-            vector<AngleRange>::iterator it = dstAngleRanges.end() - 1;
-            dstAngleRanges.erase(it);
-//			if (dstAngleRanges.size() > 0) {
-            it = dstAngleRanges.begin();
-            dstAngleRanges.erase(it);
-//			}
-            AngleRange angleRange(tempLowerBound, tempUpperBound);
-            dstAngleRanges.push_back(angleRange);
-
-        } else {
-            vector<AngleRange>::iterator it = dstAngleRanges.begin();
-            dstAngleRanges.erase(it);
-            AngleRange angleRange(0, 360);
-            dstAngleRanges.push_back(angleRange);
+    AngleRange interval(newSrcAngleRanges[0].lowerBound, newSrcAngleRanges[0].upperBound);
+    for(int i=1;i<(int)newSrcAngleRanges.size();++i){
+        if(newSrcAngleRanges[i].lowerBound <= interval.upperBound){
+            if(interval.upperBound < newSrcAngleRanges[i].upperBound) interval.upperBound = newSrcAngleRanges[i].upperBound;
+        }
+        else{
+            dstAngleRanges.push_back(AngleRange(interval.lowerBound, interval.upperBound));
+            interval.lowerBound = newSrcAngleRanges[i].lowerBound;
+            interval.upperBound = newSrcAngleRanges[i].upperBound;
         }
     }
-//	std::cout << "dstAngleRanges.size() = " << dstAngleRanges.size() << endl;
-    for (vector<AngleRange>::iterator it = dstAngleRanges.begin();
-            it != dstAngleRanges.end(); it++) {
-        AngleRange temp = *it;
-        if (temp.lowerBound >= 360) {
-            temp.lowerBound -= 360;
+    // need to check last interval
+    if(interval.upperBound >= 360){
+        interval.upperBound -= 360;
+        if(interval.upperBound < newSrcAngleRanges[0].lowerBound){
+            dstAngleRanges.push_back(AngleRange(interval.lowerBound, interval.upperBound));
         }
-        if (temp.upperBound > 360) {
-            temp.upperBound -= 360;
+        else{
+            dstAngleRanges[0].lowerBound = interval.lowerBound;
         }
-        AngleRange tempRange(temp.lowerBound, temp.upperBound);
-        newDstAngleRanges.push_back(tempRange);
-//		std::cout << "hahahahaha dst angle range =" << temp.lowerBound << " "
-//				<< temp.upperBound << endl;
     }
-//	if (dstAngleRanges.size() == 1) {
-//		if (dstAngleRanges[0].upperBound - dstAngleRanges[0].lowerBound
-//				>= 360) {
-//			dstAngleRanges.erase(dstAngleRanges.begin());
-//			AngleRange angleRange(0, 360);
-//			dstAngleRanges.push_back(angleRange);
-//		}
-//
-//	}
+    else{
+        dstAngleRanges.push_back(AngleRange(interval.lowerBound, interval.upperBound));
+    }
+
+    for (int i=0;i<(int)dstAngleRanges.size();++i) {
+        AngleRange temp = dstAngleRanges[i];
+        if (temp.lowerBound >= 360) temp.lowerBound -= 360;
+        if (temp.upperBound > 360)  temp.upperBound -= 360;
+        newDstAngleRanges.push_back(AngleRange(temp.lowerBound, temp.upperBound));
+    }
     return newDstAngleRanges;
+
+////	std::cout << "srcAngleRanges.size() = " << srcAngleRanges.size() << endl;
+//    for (vector<AngleRange>::iterator it = srcAngleRanges.begin();
+//            it != srcAngleRanges.end(); it++) {
+//        AngleRange temp = *it;
+//        if (temp.lowerBound > temp.upperBound) {
+//            temp.upperBound += 360;
+//        }
+//        AngleRange tempRange(temp.lowerBound, temp.upperBound);
+//        newSrcAngleRanges.push_back(tempRange);
+////		std::cout << "hahahahaha src angle range =" << temp.lowerBound << " "
+////				<< temp.upperBound << endl;
+//    }
+
+//    double tempLowerBound = 540, tempUpperBound = 0;
+////	double lowerBound = 360;
+////	double totalAngle = 0;
+//    for (vector<AngleRange>::iterator it = newSrcAngleRanges.begin();
+//            it != newSrcAngleRanges.end(); it++) {
+//        AngleRange temp = *it;
+//        if (it == newSrcAngleRanges.begin()) {
+//            if (temp.lowerBound <= tempLowerBound) {
+//                tempLowerBound = temp.lowerBound;
+////				lowerBound = temp.lowerBound;
+//            }
+//            if (temp.upperBound >= tempUpperBound) {
+
+//                tempUpperBound = temp.upperBound;
+
+//            }
+
+//            if (newSrcAngleRanges.size() == 1) {
+//                AngleRange tempAngleRange(tempLowerBound, tempUpperBound);
+//                dstAngleRanges.push_back(tempAngleRange);
+//            }
+////			if(tempLowerBound < tempUpperBound){
+////				totalAngle += tempUpperBound - tempLowerBound;
+////			}else{
+////				totalAngle += tempUpperBound + 360 - tempLowerBound;
+////			}
+//            continue;
+//        }
+////		std::cout << "temp.lowerBound = " << temp.lowerBound << endl;
+////		std::cout << "temp.upperBound = " << temp.upperBound << endl;
+//        if (temp.lowerBound <= tempUpperBound) {
+//            if (temp.upperBound >= tempUpperBound) {
+//                tempUpperBound = temp.upperBound;
+//            }
+//        } else {
+//            AngleRange tempAngleRange(tempLowerBound, tempUpperBound);
+//            dstAngleRanges.push_back(tempAngleRange);
+//            tempLowerBound = temp.lowerBound;
+//            tempUpperBound = temp.upperBound;
+//        }
+
+//        if (it == newSrcAngleRanges.end() - 1) {
+//            AngleRange tempAngleRange(tempLowerBound, tempUpperBound);
+////			std::cout << "tempLowerBound = " << tempLowerBound << endl;
+////			std::cout << "tempUpperBound = " << tempUpperBound << endl;
+//            dstAngleRanges.push_back(tempAngleRange);
+//        }
+//    }
+
+////	std::cout << "dstAngleRanges.size() = " << dstAngleRanges.size() << endl;
+//    for (vector<AngleRange>::iterator it = dstAngleRanges.begin();
+//            it != dstAngleRanges.end(); it++) {
+//        //AngleRange temp = *it;
+////		std::cout << "hahahahaha dst angle range before=" << temp.lowerBound
+////				<< " " << temp.upperBound << endl;
+//    }
+
+//    if (dstAngleRanges[dstAngleRanges.size() - 1].upperBound
+//            - dstAngleRanges[0].lowerBound >= 360) {
+
+//        if (dstAngleRanges.size() >= 2) {
+
+//            tempLowerBound =
+//                    dstAngleRanges[dstAngleRanges.size() - 1].lowerBound;
+//            tempUpperBound = dstAngleRanges[0].upperBound;
+//            vector<AngleRange>::iterator it = dstAngleRanges.end() - 1;
+//            dstAngleRanges.erase(it);
+////			if (dstAngleRanges.size() > 0) {
+//            it = dstAngleRanges.begin();
+//            dstAngleRanges.erase(it);
+////			}
+//            AngleRange angleRange(tempLowerBound, tempUpperBound);
+//            dstAngleRanges.push_back(angleRange);
+
+//        } else {
+//            vector<AngleRange>::iterator it = dstAngleRanges.begin();
+//            dstAngleRanges.erase(it);
+//            AngleRange angleRange(0, 360);
+//            dstAngleRanges.push_back(angleRange);
+//        }
+//    }
+////	std::cout << "dstAngleRanges.size() = " << dstAngleRanges.size() << endl;
+//    for (vector<AngleRange>::iterator it = dstAngleRanges.begin();
+//            it != dstAngleRanges.end(); it++) {
+//        AngleRange temp = *it;
+//        if (temp.lowerBound >= 360) {
+//            temp.lowerBound -= 360;
+//        }
+//        if (temp.upperBound > 360) {
+//            temp.upperBound -= 360;
+//        }
+//        AngleRange tempRange(temp.lowerBound, temp.upperBound);
+//        newDstAngleRanges.push_back(tempRange);
+////		std::cout << "hahahahaha dst angle range =" << temp.lowerBound << " "
+////				<< temp.upperBound << endl;
+//    }
+////	if (dstAngleRanges.size() == 1) {
+////		if (dstAngleRanges[0].upperBound - dstAngleRanges[0].lowerBound
+////				>= 360) {
+////			dstAngleRanges.erase(dstAngleRanges.begin());
+////			AngleRange angleRange(0, 360);
+////			dstAngleRanges.push_back(angleRange);
+////		}
+////
+////	}
+//    return newDstAngleRanges;
 }
 
 // calculate the opposite of the existing zone, the lower and upperbound of the angle ranges will between 0 and 360

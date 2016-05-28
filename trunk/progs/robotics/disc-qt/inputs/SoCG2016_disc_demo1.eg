@@ -3,10 +3,10 @@
 
 interactive = 0		# 0=interactive, >0 is non-interactive
 
-startX = 10		# start configuration
-startY = 360
-goalX = 500		# goal configuration
-goalY = 20
+startX = 60		# start configuration
+startY = 320
+goalX = 400		# goal configuration
+goalY = 160
 
 epsilon = 5		# resolution parameter
 

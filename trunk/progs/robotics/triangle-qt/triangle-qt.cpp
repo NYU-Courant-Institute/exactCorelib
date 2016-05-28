@@ -211,7 +211,7 @@ Color clr_path(0.5,0,0,1); // dark red
 Color clr_obstacle(0,0,1,1); // blue
 Color clr_boundary(1,1,1,1); // black
 
-FILE *fptr;
+//FILE *fptr;
 
 // External Routines ========================================
 //////////////////////////////////////////////////////////////////////////////////
@@ -409,9 +409,8 @@ int main(int argc, char* argv[]) {
     }
 
     QApplication app(argc, argv);
-    fptr = fopen("debug.txt", "w");
-    if(fptr == NULL) return 0;
-    fprintf(fptr, "start\n");
+    //fptr = fopen("debug.txt", "w");
+    //if(fptr == NULL) return 0;
 
     parseExampleList();
     window = new MainWindow();
@@ -512,7 +511,6 @@ void run() {
 
     if (QType == 0 || QType == 1) {
         boxA = QT->getBox(alpha[0], alpha[1], alpha[2], ct);
-        fprintf(fptr, "boxA (%.lf, %.lf) width %.lf height %.lf status: %d classify condition: %d\n", boxA->x, boxA->y, boxA->width, boxA->height, boxA->status, boxA->classify_condition);
         if (!boxA) {
             noPath = true;
             mw_out << "Start Configuration is not free\n";
@@ -536,14 +534,12 @@ void run() {
     }
     else if (QType == 2 || QType == 3 || QType == 4) {
         boxA = QT->getBox(alpha[0], alpha[1], alpha[2], ct);
-        if(boxA) fprintf(fptr, "boxA (%.lf, %.lf) width %.lf height %.lf xi %lf %lf status: %d classify condition: %d\n", boxA->x, boxA->y, boxA->width, boxA->height, boxA->xi[0], boxA->xi[1], boxA->status, boxA->classify_condition);
         if (!boxA) {
             noPath = true;
             mw_out << "Start Configuration is not free\n";
         }
 
         boxB = QT->getBox(beta[0], beta[1], beta[2], ct);
-        if(boxB) fprintf(fptr, "boxB (%.lf, %.lf) width %.lf height %.lf xi %lf %lf status: %d classify condition: %d\n", boxB->x, boxB->y, boxB->width, boxB->height, boxB->xi[0], boxB->xi[1], boxB->status, boxB->classify_condition);
         if (!boxB) {
             noPath = true;
             mw_out << "Goal Configuration is not free\n";
@@ -576,13 +572,13 @@ void run() {
     else
         mw_out << ">>      ----->>  No Path !\n";
 
-    //mw_out << ">>\n";
-    //mw_out << ">>      ----->>  Time used: " << t.getElapsedTimeInMilliSec()
-    //        << " ms\n" ;
+    mw_out << ">>\n";
+    mw_out << ">>      ----->>  Time used: " << t.getElapsedTimeInMilliSec()
+            << " ms\n" ;
     //mw_out << ">>      ----->>  Expansion steps: ";
     //mw_out << (int) expansions.size()-1;
     //mw_out << "\n";
-    //mw_out << ">>\n";
+    mw_out << ">>\n";
     mw_out << ">>      ----->>  Search Strategy: ";
     switch (QType) {
     case 0:

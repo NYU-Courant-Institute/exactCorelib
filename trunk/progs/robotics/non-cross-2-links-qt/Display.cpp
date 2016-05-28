@@ -359,7 +359,7 @@ void Display::drawRobot(Box* b){
     }
     else {
         theta1 = b->xi[Box::LOWER1];
-        theta2 = b->xi[Box::LOWER2];
+        theta2 = b->xi[Box::UPPER2];
     }
 
     genLine( 4, b->x, b->y,

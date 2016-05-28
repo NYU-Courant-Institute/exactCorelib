@@ -18,7 +18,7 @@ extern unsigned int renderSteps;
 extern bool step;
 extern int numberForDisplay;
 
-extern FILE *fptr;
+//extern FILE *fptr;
 
 double Box::r0 = 0;
 double Box::THETA_MIN = 0;
@@ -204,6 +204,7 @@ bool Box::split3D( double epsilon, vector<Box*>& chldn )
     vector<Box*> bv;
     if (this->splitAngle(bv))
     {
+
         for (int i = 0; i < 2; ++i)
         {
             if (!bv[i]->split2D(epsilon, chldn))
@@ -312,9 +313,7 @@ bool Box::splitAngle( vector<Box*>& chldn )
     }
 
     this->isLeaf = false;
-
-    for (int i = 0; i < 2; ++i)
-    {
+    for (int i = 0; i < 2; ++i) {
         pAllLeaf->push_back(children[i]);
         chldn.push_back(children[i]);
     }
@@ -330,8 +329,8 @@ bool Box::split( double epsilon, vector<Box*>& chldn ) {
     }
     else if( rB / 2 < r0 * 2 / THETA_MIN / 20 ) {// one-shot intermediate split before
                 // doing split3D( ).  After this, isBig is false.
-            // This intermediate step speeds up the code...
-            // THETA_MIN is roughly the minimum angle of the triangle robot
+                // This intermediate step speeds up the code...
+                // THETA_MIN is roughly the minimum angle of the triangle robot
 
         //int n = ceil( 2 / THETA_MIN );
         //int m = 1;
@@ -367,11 +366,6 @@ void Box::recursiveSplitAngle( double epsilon, vector<Box*>& chldn, const int n,
 
 Box::Status Box::checkChildStatus( double x, double y ) {
 
-
-    if (x == 234 && y== 238) {
-        fprintf(fptr, "check child status x %.lf y %.lf\n", x, y);
-    }
-
     // 4/5 Tom:
     // this flag is true if
     // the closest feature is a wall
@@ -384,11 +378,6 @@ Box::Status Box::checkChildStatus( double x, double y ) {
         for (list<Wall*>::iterator iterW = walls.begin(); iterW != walls.end(); ++iterW) {
             Wall* w = *iterW;
             pt2line rst = w->distance2(x, y);
-
-            if (x == 234 && y== 238) {
-                fprintf(fptr, "dist %lf wall %.lf %.lf %.lf %d src %.lf %.lf %d dst %.lf %.lf %d\n",
-                        rst.dist, x, y, this->rB, w->isRight(x, y), w->src->x, w->src->y, w->src->isConvex(), w->dst->x, w->dst->y, w->dst->isConvex());
-            }
 
             if (mindistW > rst.dist) {
                 mindistW = rst.dist;
@@ -408,10 +397,6 @@ Box::Status Box::checkChildStatus( double x, double y ) {
             Corner* c = *iterC;
             double dist = c->distance(x, y);
 
-            if (x == 234 && y== 238) {
-                fprintf(fptr, "dist %lf corner %.lf %.lf %d\n", dist, x, y, c->isConvex());
-            }
-
             if (mindistC > dist) {
                 mindistC = dist;
                 nearestCorner = *iterC;
@@ -419,9 +404,6 @@ Box::Status Box::checkChildStatus( double x, double y ) {
         }
     }
 
-    if (x == 234 && y== 238) {
-        fprintf(fptr, "dist %lf %lf end\n", mindistW, mindistC);
-    }
     //nearest feature is a wall
     if (mindistW < mindistC){
         if (nearestWall->isRight(x, y) || flag){
@@ -495,11 +477,6 @@ void Box::updateStatusBig() {
         Wall* w = *it;
         pt2line rst = w->distance2(this->x, this->y);
 
-        if (x == 234 && y== 238) {
-            fprintf(fptr, "big x %.lf %.lf y %.lf %.lf\n", this->x, x, this->y, y);
-            fprintf(fptr, "src %.lf %.lf dst %.lf %.lf  %d\n", w->src->x, w->src->y, w->dst->x, w->dst->y, (rst.dist <= outerDomain));
-        }
-
         if (rst.dist <= outerDomain) {
             status = MIXED;
             ++it;
@@ -530,20 +507,13 @@ void Box::updateStatusSmall() {
     getRoundTriVerts(v01x, v01y, v02x, v02y, v11x, v11y, v12x, v12y, v21x, v21y, v22x, v22y);
     //getRoundTriVerts(Trixi0, Trixi1);
 
-    if (x == 234 && y== 238) {
-        fprintf(fptr, "small x %.lf y %.lf xi %lf %lf r0 %lf tri %lf %lf\n", x, y, this->xi[0], this->xi[1], this->r0, triRobo[0], triRobo[1]);
-        fprintf(fptr, "triangle xi0 %lf %lf %lf %lf   %lf %lf %lf %lf\n", v01x+x, v11x+x, v21x+x, v01x+x, v01y+y, v11y+y, v21y+y, v01y+y);
-        fprintf(fptr, "triangle xi1 %lf %lf %lf %lf   %lf %lf %lf %lf\n", v02x+x, v12x+x, v22x+x, v02x+x, v02y+y, v12y+y, v22y+y, v02y+y);
-    }
-
-    Line2d L1(v02x, v02y, v11x, v11y);
-    Line2d L2(v12x, v12y, v21x, v21y);
-    Line2d L3(v22x, v22y, v01x, v01y);
     // unused:
     // bool expandSuccess = L1.expand(rB, L2, L3) && L2.expand(rB, L1, L3) && L3.expand(rB, L1, L2) && !L1.isNegative(L2, L3);
     //assert(expandSuccess);
 
 
+
+    // This is creating the inner triangle
     Line2d L1a(v01x, v01y, v12x, v12y);
     Line2d L2a(v11x, v11y, v22x, v22y);
     Line2d L3a(v21x, v21y, v02x, v02y);
@@ -553,18 +523,28 @@ void Box::updateStatusSmall() {
                       && L3a.expand(-rB, L1a, L2a)
                       && !L1a.isNegative(L2a, L3a); // check the validation of the shrinked triangle
 
-    if (x == 234 && y== 238) {
-        fprintf(fptr, "shrinkSuccess %d %d %d %d %d\n", shrinkSuccess, L1a.expand(-rB, L2a, L3a), L2a.expand(-rB, L1a, L3a), L3a.expand(-rB, L1a, L2a), !L1a.isNegative(L2a, L3a));
-    }
 
 
-    // the box may be too big to form an expanded triangle
-    bool expandSuccess = L1.expand(rB, L2, L3)
-                      && L2.expand(rB, L3, L1)
-                      && L3.expand(rB, L1, L2)
-                      && !L1.isNegative(L2, L3); // check the validation of the expanded triangle
+    // April 2016: Chee&Tom:
+    // It is now clear that the logic below is causing unnecessary splitting of the rotational degree of freedom
+    //    We did this experiment: if the triangle has a small minimum angle, then you are forced to do more splits of rotational DOF
+    //       Triangle 120deg, 240deg (i.e., equilateral triangle)   -- time is 1.3seconds
+    //       Triangle 150deg, 210deg (i.e., triangle with 30degree)   -- time is 4.5seconds
+    //       Triangle 165deg, 195deg (i.e., triangle with 15degree)   -- time is 16.5seconds
+    //       Triangle 172deg, 188deg (i.e., triangle with 8degree)   -- time is 12.5seconds
+    //            (somehow, this breaks the trend, probably related to epsilon)
+    // UPSHOT: must rewrite the logic below:
 
+    Line2d L1(v02x, v02y, v11x, v11y);
+    Line2d L2(v12x, v12y, v21x, v21y);
+    Line2d L3(v22x, v22y, v01x, v01y);
 
+    L1.expand2(rB);
+    L2.expand2(rB);
+    L3.expand2(rB);
+    bool expandSuccess = !L1.isRight(0,0) && !L2.isRight(0,0) && !L3.isRight(0,0); // (0,0) is the center of the box
+
+    // fomr the big triangle (expanded lines)
     double X12x, X12y;
     L1.intersection(L2, X12x, X12y);
     double X23x, X23y;
@@ -572,44 +552,144 @@ void Box::updateStatusSmall() {
     double X31x, X31y;
     L3.intersection(L1, X31x, X31y);
 
-    if (x == 234 && y== 238) {
-        fprintf(fptr, "big triangle %lf %lf %lf %lf   %lf %lf %lf %lf\n", X12x+x, X23x+x, X31x+x, X12x+x, X12y+y, X23y+y, X31y+y, X12y+y);
-    }
 
     for (list<Corner*>::iterator it = corners.begin(); it != corners.end(); ) {
         Corner* c = *it;
         double cx = c->x - x;
         double cy = c->y - y;
 
-        // corner c is inside the shrinked triangle
-        if (shrinkSuccess && !L1a.isRight(cx, cy) && !L2a.isRight(cx, cy) && !L3a.isRight(cx, cy)) {
-            status = STUCK;
-            classify_condition = 3;
-            return;
-        }
+        if (sqrt(cx*cx + cy*cy) < r0 + rB) {
 
-        // 4/22/2016 Tom ??????
-        if ( !((sqrt(cx*cx + cy*cy) < r0 + rB) // far away
-            && expandSuccess
-            && !Line2d::isRight(X31x, X31y, X12x, X12y, cx, cy)
-            && !Line2d::isRight(X12x, X12y, X23x, X23y, cx, cy)
-            && !Line2d::isRight(X23x, X23y, X31x, X31y, cx, cy)) ) {
-            it = corners.erase(it);
+
+            // corner c is inside the shrinked triangle
+            if (shrinkSuccess &&
+                !L1a.isRight(cx, cy) && !L2a.isRight(cx, cy) && !L3a.isRight(cx, cy)) {
+                status = STUCK;
+                classify_condition = 3;
+                return ;
+            }
+
+            if (expandSuccess) {
+                // inside the circumcircle and inside the big triangle
+                if(!Line2d::isRight(X31x, X31y, X12x, X12y, cx, cy)
+                   && !Line2d::isRight(X12x, X12y, X23x, X23y, cx, cy)
+                   && !Line2d::isRight(X23x, X23y, X31x, X31y, cx, cy)){
+                    status = MIXED;
+                    ++it;
+                }
+                else {
+                    it = corners.erase(it);
+                }
+            }
+            else {
+                if (!L1.isRight(0,0)) {
+                    if (L2.isRight(0,0) && L3.isRight(0,0)) {
+                        if (L1.isRight(cx, cy)) {
+                            it = corners.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else if (L2.isRight(0,0) && !L3.isRight(0,0)) {
+                        if (L1.isRight(cx, cy) || L3.isRight(cx, cy)) {
+                            it = corners.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else if (!L2.isRight(0,0) && L3.isRight(0,0)) {
+                        if (L1.isRight(cx, cy) || L2.isRight(cx, cy)) {
+                            it = corners.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else { // !L2.isRight(0,0) && !L3.isRight(0,0) => expandSuccess
+                    }
+                }
+                else if (!L2.isRight(0,0)) {
+                    if (L1.isRight(0,0) && L3.isRight(0,0)) {
+                        if (L2.isRight(cx, cy)) {
+                            it = corners.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else if (L1.isRight(0,0) && !L3.isRight(0,0)) {
+                        if (L2.isRight(cx, cy) || L3.isRight(cx, cy)) {
+                            it = corners.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else if (!L1.isRight(0,0) && L3.isRight(0,0)) {
+                        if (L1.isRight(cx, cy) || L2.isRight(cx, cy)) {
+                            it = corners.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else { // !L1.isRight(0,0) && !L3.isRight(0,0) => expandSuccess
+                    }
+                }
+                else if (!L3.isRight(0,0)){
+                    if (L1.isRight(0,0) && L2.isRight(0,0)) {
+                        if (L3.isRight(cx, cy)) {
+                            it = corners.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else if (L1.isRight(0,0) && !L2.isRight(0,0)) {
+                        if (L2.isRight(cx, cy) || L3.isRight(cx, cy)) {
+                            it = corners.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else if (!L1.isRight(0,0) && L2.isRight(0,0)) {
+                        if (L1.isRight(cx, cy) || L3.isRight(cx, cy)) {
+                            it = corners.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else { // !L1.isRight(0,0) && !L2.isRight(0,0) => expandSuccess
+                    }
+                }
+            }
+
+            // expandSuccess
+            // && !Line2d::isRight(X31x, X31y, X12x, X12y, cx, cy)
+            // && !Line2d::isRight(X12x, X12y, X23x, X23y, cx, cy)
+            // && !Line2d::isRight(X23x, X23y, X31x, X31y, cx, cy)
         }
-        else {
-            status = MIXED;
-            ++it;
+        else { /* far away (outside the circumcircle) */
+            it = corners.erase(it);
         }
     }
 
     for (list<Wall*>::iterator it = walls.begin(); it != walls.end(); ) {
         Wall* w = *it;
-        pt2line rst = w->distance2(this->x, this->y);
-
-        if (x == 234 && y== 238) {
-            fprintf(fptr, "x %.lf y %.lf\n", x, y);
-            fprintf(fptr, "src %.lf %.lf dst %.lf %.lf  %d %d\n", w->src->x, w->src->y, w->dst->x, w->dst->y, (rst.dist < r0 + rB), shrinkSuccess);
-        }
+        pt2line rst = w->distance2(x, y);
 
         if (rst.dist < r0 + rB) {
             double srcx = w->src->x - x;
@@ -625,10 +705,6 @@ void Box::updateStatusSmall() {
                 L3a.intersection(L1a, x31s, y31s);
                 double x12s, y12s;
                 L1a.intersection(L2a, x12s, y12s);
-
-                if (x == 234 && y== 238) {
-                    fprintf(fptr, "shrinked triangle %d %lf %lf %lf %lf   %lf %lf %lf %lf\n", shrinkSuccess, x23s, x31s, x12s, x23s, y23s, y31s, y12s, y23s);
-                }
 
                 //if src or dst is in the shrinked triangle
                 if ( (!L1a.isRight(srcx, srcy) && !L2a.isRight(srcx, srcy) && !L3a.isRight(srcx, srcy)) ||
@@ -647,18 +723,14 @@ void Box::updateStatusSmall() {
                 }
             }
 
-            fprintf(fptr, "is right %d %d %d %d %d %d\n",  !Line2d::isRight(X31x, X31y, X12x, X12y, srcx, srcy), !Line2d::isRight(X12x, X12y, X23x, X23y, srcx, srcy), !Line2d::isRight(X23x, X23y, X31x, X31y, srcx, srcy),
-                    !Line2d::isRight(X31x, X31y, X12x, X12y, dstx, dsty), !Line2d::isRight(X12x, X12y, X23x, X23y, dstx, dsty), !Line2d::isRight(X23x, X23y, X31x, X31y, dstx, dsty));
-            fprintf(fptr, "lineSeg %d %d %d\n", Line2d::lineSegIntsct(X31x, X31y, X12x, X12y, srcx, srcy, dstx, dsty), Line2d::lineSegIntsct(X12x, X12y, X23x, X23y, srcx, srcy, dstx, dsty), Line2d::lineSegIntsct(X23x, X23y, X31x, X31y, srcx, srcy, dstx, dsty));
-
-            if(expandSuccess) {
-                //if src or dst is in triangle
+            if (expandSuccess) {
+                //if src or dst is in the big triangle
                 if ( (!Line2d::isRight(X31x, X31y, X12x, X12y, srcx, srcy) && !Line2d::isRight(X12x, X12y, X23x, X23y, srcx, srcy) && !Line2d::isRight(X23x, X23y, X31x, X31y, srcx, srcy)) ||
                      (!Line2d::isRight(X31x, X31y, X12x, X12y, dstx, dsty) && !Line2d::isRight(X12x, X12y, X23x, X23y, dstx, dsty) && !Line2d::isRight(X23x, X23y, X31x, X31y, dstx, dsty))) {
                     status = MIXED;
                     ++it;
                 }
-                // or line seg (src,dst) intersects any edge of triangle
+                // or line seg (src,dst) intersects any edge of the big triangle
                 else if ( Line2d::lineSegIntsct(X31x, X31y, X12x, X12y, srcx, srcy, dstx, dsty)
                        || Line2d::lineSegIntsct(X12x, X12y, X23x, X23y, srcx, srcy, dstx, dsty)
                        || Line2d::lineSegIntsct(X23x, X23y, X31x, X31y, srcx, srcy, dstx, dsty) ) {
@@ -666,13 +738,124 @@ void Box::updateStatusSmall() {
                     ++it;
                 }
                 else {
-                    fprintf(fptr, "no intersection erased\n");
                     it = walls.erase(it);
                 }
             }
-        }
+            else {
+                if (!L1.isRight(0,0)) {
+                    if (L2.isRight(0,0) && L3.isRight(0,0)) {
+                        if (L1.isRight(srcx, srcy) && L1.isRight(dstx, dsty)) {
+                            it = walls.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else if (L2.isRight(0,0) && !L3.isRight(0,0)) {
+                        if ((L1.isRight(srcx, srcy) && L1.isRight(dstx, dsty)) ||
+                            (L3.isRight(srcx, srcy) && L3.isRight(dstx, dsty)) ||
+                            (L1.isRight(srcx, srcy) && L3.isRight(dstx, dsty)) ||
+                            (L1.isRight(dstx, dsty) && L3.isRight(srcx, srcy))) {
+                            it = walls.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else if (!L2.isRight(0,0) && L3.isRight(0,0)) {
+                        if ((L1.isRight(srcx, srcy) && L1.isRight(dstx, dsty)) ||
+                            (L2.isRight(srcx, srcy) && L2.isRight(dstx, dsty)) ||
+                            (L1.isRight(srcx, srcy) && L2.isRight(dstx, dsty)) ||
+                            (L1.isRight(dstx, dsty) && L2.isRight(srcx, srcy))) {
+                            it = walls.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else { // !L2.isRight(0,0) && !L3.isRight(0,0) => expandSuccess
+                    }
+                }
+                else if (!L2.isRight(0,0)) {
+                    if (L1.isRight(0,0) && L3.isRight(0,0)) {
+                        if (L2.isRight(srcx, srcy) && L2.isRight(dstx, dsty)) {
+                            it = walls.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else if (L1.isRight(0,0) && !L3.isRight(0,0)) {
+                        if ((L2.isRight(srcx, srcy) && L2.isRight(dstx, dsty)) ||
+                            (L3.isRight(srcx, srcy) && L3.isRight(dstx, dsty)) ||
+                            (L2.isRight(srcx, srcy) && L3.isRight(dstx, dsty)) ||
+                            (L2.isRight(dstx, dsty) && L3.isRight(srcx, srcy))) {
+                            it = walls.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else if (!L1.isRight(0,0) && L3.isRight(0,0)) {
+                        if ((L1.isRight(srcx, srcy) && L1.isRight(dstx, dsty)) ||
+                            (L2.isRight(srcx, srcy) && L2.isRight(dstx, dsty)) ||
+                            (L1.isRight(srcx, srcy) && L2.isRight(dstx, dsty)) ||
+                            (L1.isRight(dstx, dsty) && L2.isRight(srcx, srcy))) {
+                            it = walls.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else { // !L1.isRight(0,0) && !L3.isRight(0,0) => expandSuccess
+                    }
+                }
+                else if (!L3.isRight(0,0)){
+                    if (L1.isRight(0,0) && L2.isRight(0,0)) {
+                        if (L3.isRight(srcx, srcy) && L3.isRight(dstx, dsty)) {
+                            it = walls.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else if (L1.isRight(0,0) && !L2.isRight(0,0)) {
+                        if ((L2.isRight(srcx, srcy) && L2.isRight(dstx, dsty)) ||
+                            (L3.isRight(srcx, srcy) && L3.isRight(dstx, dsty)) ||
+                            (L2.isRight(srcx, srcy) && L3.isRight(dstx, dsty)) ||
+                            (L2.isRight(dstx, dsty) && L3.isRight(srcx, srcy))) {
+                            it = walls.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else if (!L1.isRight(0,0) && L2.isRight(0,0)) {
+                        if ((L1.isRight(srcx, srcy) && L1.isRight(dstx, dsty)) ||
+                            (L3.isRight(srcx, srcy) && L3.isRight(dstx, dsty)) ||
+                            (L1.isRight(srcx, srcy) && L3.isRight(dstx, dsty)) ||
+                            (L1.isRight(dstx, dsty) && L3.isRight(srcx, srcy))) {
+                            it = walls.erase(it);
+                        }
+                        else {
+                            status = MIXED;
+                            ++it;
+                        }
+                    }
+                    else { // !L1.isRight(0,0) && !L2.isRight(0,0) => expandSuccess
+                    }
+                }
+            }
+        } /* far away (outside the circumcircle) */
         else {
-            fprintf(fptr, "too far erased\n");
             it = walls.erase(it);
         }
     }

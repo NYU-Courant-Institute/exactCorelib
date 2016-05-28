@@ -16,6 +16,7 @@
 
 // Qt
 #include <QMainWindow>
+#include <QMouseEvent>
 
 // Standard Library
 #include <string>
@@ -47,6 +48,7 @@ public:
     // Set Callback Functions
     void setExitCallback(void (*e)(int, const char*));
     void setRunCallback(void (*r)());
+    void mousePressEvent(QMouseEvent *event);
 
     // Print text
     virtual ControlWindow& operator<<(const std::string&);

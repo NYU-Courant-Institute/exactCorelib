@@ -30,7 +30,7 @@ extern double boxWidth;
 extern double boxHeight;
 extern unsigned int inc;
 
-extern FILE *fptr; // for debugging
+//extern FILE *fptr; // for debugging
 
 extern void run();
 extern void parseExampleFile();
@@ -347,7 +347,6 @@ void MainWindow::on_vor_clicked() {
 }
 
 void MainWindow::on_exit_clicked() {
-    fprintf(fptr, "end file\n");
     this->close();
 }
 

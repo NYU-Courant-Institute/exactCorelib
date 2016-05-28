@@ -180,7 +180,7 @@ void Display::paintGL() {
         // Filled Circles at Start (alpha) and End (beta)
         //double r0 = (R0 <= 4) ? R0 : 4;
         genFilledCircle(R0, alpha[0], alpha[1], 1, 0, 1);     //blue start center
-        genFilledCircle(R0, beta[0], beta[1], 0.25, 0, 0.25);       //yellow goal center
+        genFilledCircle(R0, beta[0], beta[1], 0.35, 0, 0.35);       //yellow goal center
         
         // Circle Outlines Representing Radius
         //genHollowCircle(R0, alpha[0], alpha[1], 0.0, 0.0, 1.0);     // start

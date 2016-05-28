@@ -70,6 +70,27 @@ public:
         return true;
     }
 
+    // we have two lines parallel to L1
+    // pick the one which is farrer from the center(x, y)
+    void expand2(double d) {
+        // ax+by+c1=0
+        double c1 = c+sqrt(c*c-(c*c-(a*a+b*b)*d*d));
+        // ax+by+c2=0
+        double c2 = c-sqrt(c*c-(c*c-(a*a+b*b)*d*d));
+
+        double d1 = fabs(c1);
+        double d2 = fabs(c2);
+
+        if(d1 > d2) c = c1;
+        else        c = c2;
+    }
+
+    bool oppositeSide(double x1, double y1, double x2, double y2) {
+        double v1 = a*x1+b*y1+c;
+        double v2 = a*x2+b*y2+c;
+        return (v1*v2 < 0);
+    }
+
     bool isNegative(Line2d& l2, Line2d& l3) {
         double x, y;
         l2.intersection(l3, x, y);

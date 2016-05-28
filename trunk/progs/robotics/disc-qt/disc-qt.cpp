@@ -83,7 +83,6 @@
 
 // GLOBAL VARIABLES ========================================
 //
-    int debug_counter = 0;
 
     QuadTree* QT = nullptr;
 
@@ -121,7 +120,7 @@
     int mixCount = 0;               // Yellow boxes
     int mixSmallCount = 0;          // Grey boxes
 
-
+    int d_mouseX, d_mouseY; // clicked mouse position
 
 
 // Qt/OpenGL Variables ===========================================
@@ -444,7 +443,7 @@ void run()
 	{
         // Expand box containing alpha until it is free.
         // If alpha is not, no path = true
-		boxA = QT->getBox(alpha[0], alpha[1]);
+        boxA = QT->getBox(alpha[0], alpha[1]);
 		while (boxA && !boxA->isFree())
 		{
 			
@@ -455,7 +454,7 @@ void run()
 			}
 			ct++;
 			boxA = QT->getBox(boxA, alpha[0], alpha[1]);
-		}
+        }
 
         // Expand box containing beta until it is free.
         // If beta is not, no path = true
@@ -470,7 +469,7 @@ void run()
 			}
 			ct++;
 			boxB = QT->getBox(boxB, beta[0], beta[1]);
-		}
+        }
 		
 		while(!noPath && !QT->isConnect(boxA, boxB))
 		{

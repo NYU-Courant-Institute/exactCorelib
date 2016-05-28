@@ -3,10 +3,10 @@
 
 interactive = 0		# 0=interactive, >0 is non-interactive
 
-startX = 125		# start configuration
-startY = 115
-startTheta1 = 355	# in degrees
-startTheta2 = 5	# in degrees
+startX = 230		# start configuration
+startY = 250
+startTheta1 = 265	# in degrees
+startTheta2 = 275	# in degrees
 goalX = 230		# goal configuration
 goalY = 470
 goalTheta1 = 275		# in degrees

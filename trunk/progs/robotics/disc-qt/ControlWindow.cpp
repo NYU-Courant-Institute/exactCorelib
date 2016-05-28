@@ -19,6 +19,8 @@
 
 
 // Global Variables in disc-qt.cpp
+extern QuadTree* QT;
+
 extern char egNameList[200][200];
 extern int numEg;
 extern string egName;
@@ -36,6 +38,8 @@ extern int inc;
 extern bool runAnim;
 extern bool replayAnim;
 extern bool pauseAnim;
+
+extern int d_mouseX, d_mouseY;
 
 extern void parseExampleFile();
 
@@ -60,8 +64,7 @@ int increment=1;
  * their initial values.
  */
 ControlWindow::ControlWindow(QWidget* parent) :
-    QMainWindow(parent), ui(new Ui::ControlWindow)
-{
+    QMainWindow(parent), ui(new Ui::ControlWindow){
     // Get rid of exit/shrink/maximize buttons on top left
     //setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
     
@@ -118,8 +121,7 @@ ControlWindow::ControlWindow(QWidget* parent) :
  *
  * Destroy 'ui'
  */
-ControlWindow::~ControlWindow()
-{
+ControlWindow::~ControlWindow(){
     delete ui;
 }
 
@@ -139,6 +141,91 @@ void ControlWindow::setExitCallback(void (*e)(int, const char*)) {
  */
 void ControlWindow::setRunCallback(void (*r)()) {
     run = r;
+}
+
+/*
+ * SET MOUSE CALLBACK FUNCTION
+ *
+ */
+double d_min_area;
+Box* d_record;
+void boxTraverse(Box* b) {
+    if (!b)  return;
+
+    if(b->isLeaf &&
+       d_min_area > b->width*b->height){
+        d_min_area = b->width*b->height;
+        d_record = b;
+    }
+    for (int i = 0; i < 4; ++i) {
+        Box* tmp = b->pChildren[i];
+        if(tmp != NULL &&
+           d_mouseX >= tmp->x-tmp->width/2  && d_mouseX < tmp->x+tmp->width/2 &&
+           d_mouseY >= tmp->y-tmp->height/2 && d_mouseY < tmp->y+tmp->height/2){
+            boxTraverse(b->pChildren[i]);
+        }
+    }
+}
+void ControlWindow::mousePressEvent(QMouseEvent *event) {
+    char tmp_buff[200];
+    string box_info;
+
+    int x = event->x()-10;
+    int y = event->y()-10;
+    if(x<0||y<0||x>512||y>512) return;
+
+    d_mouseX = x;
+    d_mouseY = 512-y;
+    sprintf(tmp_buff, "mouse click (%.lf, %.lf)\n", d_mouseX, d_mouseY);
+    box_info.append(tmp_buff);
+
+    d_min_area = 512*512+1;
+    d_record = NULL;
+    boxTraverse(QT->pRoot);
+    if(d_record != NULL){
+        sprintf(tmp_buff, "box center (%.lf, %.lf)\nwidth %.lf height %.lf\n", d_record->x, d_record->y, d_record->width, d_record->height);
+        box_info.append(tmp_buff);
+
+        if(d_record->status == Box::FREE){
+            sprintf(tmp_buff, "box status: FREE\n");
+        } else if(d_record->status == Box::STUCK){
+            sprintf(tmp_buff, "box status: STUCK\n");
+        } else if(d_record->status == Box::MIXED) {
+            sprintf(tmp_buff, "box status: MIXED\n");
+        } else {
+            sprintf(tmp_buff, "box status: UNKNOWN\n");
+        }
+        box_info.append(tmp_buff);
+
+        if(d_record->d_classify_condition == 0) {
+            sprintf(tmp_buff, "corner inner domain\n");
+        } else if(d_record->d_classify_condition == 1) {
+            sprintf(tmp_buff, "wall inner domain\n");
+        } else if(d_record->d_classify_condition == 2) {
+            sprintf(tmp_buff, "no feature check child status\n");
+        } else if(d_record->d_classify_condition == 3) {
+            sprintf(tmp_buff, "1/2 feature: no wall\n");
+        } else if(d_record->d_classify_condition == 4) {
+            sprintf(tmp_buff, "1/2 feature: no corner dup wall\n");
+        } else if(d_record->d_classify_condition == 5) {
+            sprintf(tmp_buff, "1/2 feature: no corner\n");
+        } else if(d_record->d_classify_condition == 6) {
+            sprintf(tmp_buff, "1/2 feature: closer wall dup wall\n");
+        } else if(d_record->d_classify_condition == 7) {
+            sprintf(tmp_buff, "1/2 feature: closer wall\n");
+        } else if(d_record->d_classify_condition == 8) {
+            sprintf(tmp_buff, "1/2 feature: closer corner\n");
+        } else {
+            sprintf(tmp_buff, "not decided\n");
+        }
+        box_info.append(tmp_buff);
+    }
+    else{
+        sprintf(tmp_buff, "error\n");
+        box_info.append(tmp_buff);
+    }
+
+    cout << box_info << endl;
 }
 
 

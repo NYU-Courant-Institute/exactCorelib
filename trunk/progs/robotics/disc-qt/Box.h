@@ -73,6 +73,7 @@ public:
 	Box* pParent; //parent in quadtree
 	enum Status { FREE, STUCK, MIXED, UNKNOWN };
 	Status status;
+    int d_classify_condition; // for debug
 	Set* pSet;
 	list<Corner*> corners;
 	list<Wall*> walls;
@@ -84,12 +85,10 @@ public:
 	bool visited;
 
 	Box(double xx, double yy, double w, double h):
-	    	depth(1), x(xx), y(yy), width(w), height(h), isLeaf(true), 
+        depth(1), x(xx), y(yy), width(w), height(h), isLeaf(true),
 		pParent(0), status(UNKNOWN),
-		pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(false)
-	{
-		for (int i = 0; i < 4; ++i)
-		{
+        pSet(0), dist2Source(-1), heapId(-1), prev(0), visited(false){
+        for(int i = 0; i < 4; ++i){
 			pChildren[i] = 0;
 		}
 		rB = sqrt(width*width + height*height)/2;
@@ -98,38 +97,35 @@ public:
     
     ~Box() {}
 	
-	void updateStatus()
-	{
-		if (status != UNKNOWN)
-		{
-			return;
-		}
+    void updateStatus() {
+        if (status != UNKNOWN) return;
+
 		
 		double outerDomain = r0 + rB;
 		double innerDomain = r0 > rB ? r0 - rB : 0;
         double mindistC = 1e30;
         Corner *nearestC = NULL;
-		for (list<Corner*>::iterator it = corners.begin(); it != corners.end(); )
-		{
-			Corner* c = *it;
+        for (list<Corner*>::iterator it = corners.begin(); it != corners.end();){
+            Corner* c = *it;
             double dist = c->distance(this->x, this->y);
-            if(mindistC > dist){
-                mindistC = dist;
-                nearestC = *it;
-            }
-            if (dist <= innerDomain)
-            {
-                status = STUCK;
-				return;
-			}
 
             // Chee & Tom: Feb 21 2016 Put this mixed decision afterwards
             // if this is greater than the outer domain or not intersect the zone, erase it
             if(dist > outerDomain || !c->intersectZone(this) ) {
                 it = corners.erase(it);
             }
-            else
-            {
+            else {
+
+                if(mindistC > dist){
+                    mindistC = dist;
+                    nearestC = *it;
+                }
+                if (dist < innerDomain){
+                    status = STUCK;
+                    d_classify_condition = 0;
+                    return;
+                }
+
                 status = MIXED;
                 ++it;
             }
@@ -137,86 +133,118 @@ public:
 
         double mindistW = 1e30;
         Wall *nearestW = NULL;
-		for (list<Wall*>::iterator it = walls.begin(); it != walls.end(); )
-		{
-			Wall* w = *it;
+        Wall *nearestW2 = NULL;
+		for (list<Wall*>::iterator it = walls.begin(); it != walls.end(); ){
+            Wall* w = *it;
             double dist = w->distance(this->x, this->y);
-            if(mindistW > dist){
-                mindistW = dist;
-                nearestW = *it;
-            }
-            if (dist < innerDomain)
-			{
-                status = STUCK;
-				return;				
-            }
 
             // Chee & Tom: Feb 21 2016 Put this mixed decision afterwards
             // if this is greater than the outer domain or not intersect the zone, erase it
-            if (dist > outerDomain || !w->intersectZone(this) )
-            {
+            if (dist > outerDomain || !w->intersectZone(this) ){
                 it = walls.erase(it);
             }
-            else
-            {
+            else{
+
+                if(mindistW > dist){
+                    mindistW = dist;
+                    nearestW = *it;
+                }
+                if (dist < innerDomain) {// equal sign ???????
+                    status = STUCK;
+                    d_classify_condition = 1;
+                    return;
+                }
+
                 status = MIXED;
                 ++it;
             }
 		}
+        bool dupW = false;
+        for (list<Wall*>::iterator it = walls.begin(); it != walls.end(); ++it){
+            Wall* w = *it;
+            if(fabs(w->src->x-nearestW->dst->x) < 1e-10 && fabs(w->src->y-nearestW->dst->y) < 1e-10 &&
+               fabs(w->dst->x-nearestW->src->x) < 1e-10 && fabs(w->dst->y-nearestW->src->y) < 1e-10){
+                dupW = true;
+                nearestW2 = w;
+            }
+        }
 
         // Chee & Tom: Feb 23 2016
         // empty set
         // 1 or 2 feature
         // 		if (rB < sep(m_B, f))
         // 			check status because it is far enough
-		if (corners.size() == 0 && walls.size() == 0)
-		{
-			if (!pParent)
-			{
+        if (corners.size() == 0 && walls.size() == 0){
+            if (!pParent){
                 status = MIXED;
 			} 
-			else
-			{
+            else{
 				status = pParent->checkChildStatus(this->x, this->y);
+                d_classify_condition = 2;
 			}			
-		}
-        else if (corners.size() > 0 && walls.size() == 0){
+        }
+        else if ((corners.size() <= 2 && corners.size() > 0) && walls.size() == 0){
             if (mindistC > rB && !(nearestC->isConvex())){
                 status = STUCK;
+                d_classify_condition = 3;
             }
-            else
-            {
+            else{
                 status = MIXED;
             }
         }
-        else if (corners.size() == 0 && walls.size() > 0){
-            if (mindistW > rB && !(nearestW->isRight(this->x, this->y))){
-                status = STUCK;
+        else if (corners.size() == 0 && (walls.size() <= 2 && walls.size() > 0)){
+            if(dupW){
+                if (mindistW > rB && !(nearestW->isRight(this->x, this->y)) && !(nearestW2->isRight(this->x, this->y))){
+                    status = STUCK;
+                    d_classify_condition = 4;
+                }
+                else{
+                    status = MIXED;
+                }
             }
-            else
-            {
-                status = MIXED;
-            }
-        }
-        else if(corners.size() > 0 && walls.size() > 0) {
-            if (mindistW < mindistC) {
+            else {
                 if (mindistW > rB && !(nearestW->isRight(this->x, this->y))){
                     status = STUCK;
+                    d_classify_condition = 5;
                 }
-                else
-                {
+                else{
                     status = MIXED;
+                }
+            }
+        }
+        else if((corners.size() <= 2 && corners.size() > 0) && (walls.size() <= 2 && walls.size() > 0)) {
+            if (mindistW < mindistC) {
+                if(dupW){
+                    if (mindistW > rB && !(nearestW->isRight(this->x, this->y)) && !(nearestW2->isRight(this->x, this->y))){
+                        status = STUCK;
+                        d_classify_condition = 6;
+                    }
+                    else{
+                        status = MIXED;
+                    }
+                }
+                else{
+                    if (mindistW > rB && !(nearestW->isRight(this->x, this->y))){
+                        status = STUCK;
+                        d_classify_condition = 7;
+                    }
+                    else{
+                        status = MIXED;
+                    }
                 }
             }
             else {
                 if (mindistC > rB && !(nearestC->isConvex())){
                     status = STUCK;
+                    d_classify_condition = 8;
                 }
-                else
-                {
+                else{
                     status = MIXED;
                 }
             }
+        }
+        else{
+             status = MIXED;
         }
 	}
 
@@ -297,20 +325,20 @@ public:
 		//nearest feature is a wall
 		if (mindistW < mindistC)
 		{
-            //if (dupW)
-            //{
-            //    if (nearestWall->isRight(x, y) || nearestWall2->isRight(x, y))
-            //    {
-            //        return FREE;
-            //    }
-            //}
-            //else
-            //{
+            if (dupW)
+            {
+                if (nearestWall->isRight(x, y) || nearestWall2->isRight(x, y))
+                {
+                    return FREE;
+                }
+            }
+            else
+            {
                 if (nearestWall->isRight(x, y))
                 {
                     return FREE;
                 }
-            //}
+            }
 		}		
 		//otherwise check the corner's convexity
 		//if convex, out; if concave, in
@@ -318,19 +346,19 @@ public:
 		//only need to take care of the corner
 		else
 		{
-            //if (dupC)
-            //{
-            //    if (nearestCorner->isConvex() || nearestCorner2->isConvex())
-            //    {
-            //        return FREE;
-            //    }
-            //}
-            //else{
+            if (dupC)
+            {
+                if (nearestCorner->isConvex() || nearestCorner2->isConvex())
+                {
+                    return FREE;
+                }
+            }
+            else{
                 if (nearestCorner->isConvex())
                 {
                     return FREE;
                 }
-            //}
+            }
 		}
 
         //*controlWin<<"Box at "<<this->x<<" "<<this->y<<" is stuck\n";
@@ -394,13 +422,11 @@ public:
 		children[1] = new Box(x + width / 4, y + height / 4, width / 2, height / 2);
 		children[2] = new Box(x + width / 4, y - height / 4, width / 2, height / 2);
 		children[3] = new Box(x - width / 4, y - height / 4, width / 2, height / 2);
-		for (int i = 0; i < 4; ++i)
-		{
+        for (int i = 0; i < 4; ++i){
 			children[i]->depth = this->depth + 1;
 		}
 
-		for (int i = 0; i < 4; ++i)
-		{
+        for (int i = 0; i < 4; ++i){
 			//find three other directions
 			int prev = (i + 3) % 4;
 			int next = (i + 1) % 4;
@@ -420,7 +446,7 @@ public:
 				continue;
 			}
 
-			// if neighbor are no smaller
+            // if neighbor are not smaller
 			if (neighbor->depth <= this->depth)
 			{
 			//after split child 'next' should also point to 
@@ -479,16 +505,13 @@ public:
             delete iter;
 		}
 
-		for (int i = 0; i < 4; ++i)
-		{
+        for (int i = 0; i < 4; ++i){
 			this->pChildren[i] = children[i];
 			this->pChildren[i]->pParent = this;
 			//add all of parent's walls and corners to each child,
 			//will be filtered later in updatestatus()
-			this->pChildren[i]->walls.insert(this->pChildren[i]->walls.begin(),				 this->walls.begin(), this->walls.end());
-			this->pChildren[i]->corners.insert(
-				this->pChildren[i]->corners.begin(),
-				this->corners.begin(), this->corners.end());
+            this->pChildren[i]->walls.insert(this->pChildren[i]->walls.begin(),	this->walls.begin(), this->walls.end());
+            this->pChildren[i]->corners.insert(this->pChildren[i]->corners.begin(), this->corners.begin(), this->corners.end());
 		}
 		this->isLeaf = false;
         

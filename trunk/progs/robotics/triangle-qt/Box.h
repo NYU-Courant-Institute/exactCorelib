@@ -469,7 +469,7 @@ public:
     }
 
     Status getStatus() {
-        updateStatus();
+        //updateStatus();
         return status;
     }
 
