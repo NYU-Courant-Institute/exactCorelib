@@ -359,40 +359,32 @@ void parse(string input) {
       ss >> vert;
       Point2d point(2 * px[vert] / window_width - 1, 2 * py[vert] / window_width - 1);
       points.push_back(point);
+      assert(points.size() >= 1);
     }
 
-    if (points.size() == 1) {
-      Corner* corner = new Corner(points[0], o);
+    for (int j = 0; j < points.size(); j++) {
+      // Add corner.
+      Corner* corner = new Corner(points[j], o);
       o->add_feature(corner);
       root->add_feature(corner);
-    } else if (points.size() == 2) {
-      Edge* edge = new Edge(points[0], points[1], o);
-      o->add_feature(edge);
-      root->add_feature(edge);
-    } else {
-      cout << "Error: Polygonal objects not currently supported.\n";
-      exit(1);
+
+      // Add edge.
+      if (j > 0) {
+	Edge* edge = new Edge(points[j - 1], points[j], o);
+	o->add_feature(edge);
+	root->add_feature(edge);
+      }
+
+      // Close polygon (if applicable).
+      if (j == points.size() - 1 && points.size() >= 3) {
+	Edge* edge = new Edge(points[j], points[0], o);
+	o->add_feature(edge);
+	root->add_feature(edge);
+      }
     }
+
     root->add_object(o);
   }
-    
-    //   Corner* corner = new Corner(point, o);
-    //   if (verts.empty() || !(*corner == *verts[0])) {
-    //     o->add_feature(corner);
-    // 	root->add_feature(corner);
-    //     verts.push_back(corner);
-    //     if (verts.size() > 1) {
-    //       Edge* edge = new Edge(verts[verts.size() - 2], verts[verts.size() - 1], o);
-    //       o->add_feature(edge);
-    // 	  root->add_feature(edge);
-    //     }
-    //   } else if (verts.size() > 2) {
-    //     // Close the polygon.
-    //     Edge* edge = new Edge(verts[verts.size() - 1], verts[0], o);
-    //     o->add_feature(edge);
-    // 	root->add_feature(edge);
-    //   }
-    // }
 
   ifs.close();
   print_features(root);
@@ -500,7 +492,7 @@ void run() {
       continue;
     } else if (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION ||
 	       lip * radius > box->midpoint_clearance() || // TODO(*): Check this.
-	       2 * radius > geom_eps ||          // TODO: Make sure this isn't off by a multiplicative factor of 2.
+	       2 * radius > geom_eps ||      // TODO: Make sure this isn't off by a multiplicative factor of 2.
 	       !box->cpv()) {
       enqueue_children(box);
     } else if (num_obj == 2 || contained_in_any(box, INT_SCALE)) {

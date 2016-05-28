@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Interval.h"
-#include "Object.h"
 #include "Point.h"
 #include "BiPoly.h"
 

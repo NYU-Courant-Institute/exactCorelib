@@ -68,42 +68,7 @@ pair<Interval, Interval> Corner::box_dist_sq_grad(
       dfun_sq_grad_.second.eval(int_x, int_y)};
 }
 
-// Interval Corner::box_dist_sq(const Interval& int_x, const Interval& int_y) {
-//   Interval p_x(position_[0]);
-//   Interval p_y(position_[1]);
-//   Interval w_x = int_x - p_x;
-//   Interval w_y = int_y - p_y;
-//   return parent_->qm_b(w_x, w_y);
-// }
-
-// tuple<Interval, Interval> Corner::box_dist_sq_grad(const Interval& int_x, const Interval& int_y) {
-//   double* m = parent_->m();
-//   Interval p_x(position_[0]);
-//   Interval p_y(position_[1]);
-//   Interval w_x = int_x - p_x;
-//   Interval w_y = int_y - p_y;
-//   Interval r_x = 2 * (m[0] * w_x + m[1] * w_y);
-//   Interval r_y = 2 * (m[1] * w_x + m[2] * w_y);
-//   return make_tuple(r_x, r_y);
-// }
-
-// bool Corner::is_isolated() {
-//   return prev_edge == nullptr && next_edge == nullptr;
-// }
-
-// bool Corner::is_dangling() {
-//   return prev_edge == nullptr || next_edge == nullptr;    
-// }
-
-// void Corner::set_prev_edge(Edge* edge) {
-//   prev_edge = edge;
-// }
-
-// void Corner::set_next_edge(Edge* edge) {
-//   next_edge = edge;
-// }
-
-const Point2d Corner::position() const {
+Point2d Corner::position() const {
   return position_;
 }
 

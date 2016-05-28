@@ -1,8 +1,4 @@
 #include "Object.h"
-#include "Point.h"
-#include "Feature.h"
-#include <vector>
-#include <limits>
 
 namespace vor2d {
 Object::Object(double a, double b, double c) : m_{a, b, c} {}
@@ -11,6 +7,15 @@ Object::~Object() {}
 
 void Object::add_feature(Feature* feature) {
   features_.push_back(feature);
+
+  // This dynamic casting is a hack from StackOverflow for handling C++'s lack of "instanceof".
+  // TODO: Use typeid or some other functionality?
+  Corner* c = dynamic_cast<Corner*>(feature);
+  if (c != nullptr) {
+    corners_.push_back(c);
+  } else {
+    edges_.push_back(dynamic_cast<Edge*>(feature));
+  }
 }
 
 double Object::distance(const Point2d& point) const {
@@ -36,7 +41,6 @@ double Object::qm2(const Point2d& p, const Point2d& q) {
 }
 
 Interval Object::qm_b(const Interval& int_x, const Interval& int_y) {
-  //   return m_[0] * int_x * int_x + 2 * m_[1] * int_x * int_y + m_[2] * int_y * int_y;
   return m_[0] * int_x.sq() + 2 * m_[1] * int_x * int_y + m_[2] * int_y.sq();
 }
 
@@ -46,6 +50,46 @@ Interval Object::qm2_b(const Point2d& p, const Interval& int_x, const Interval& 
 
 double* Object::m() {
   return m_;
+}
+
+/* Returns the sign of:
+ *
+ *     | p_x q_x r_x |
+ * det | p_y q_y r_y |
+ *     |  1   1   1  |
+ */
+int Object::in_on_out(Point2d p, Point2d q, Point2d r) const {
+  double det = p[0] * (q[1] - r[1]) - q[0] * (p[1] - r[1]) + r[0] * (p[1] - q[1]);
+  if (det < 0) {
+    return -1;
+  } else if (det > 0) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+bool Object::is_polygon() const {
+  return features_.size() > 3;
+}
+
+bool Object::contained_in(const Point2d& r) const {
+  if (!is_polygon()) {
+    return false;
+  }
+
+  for (auto it = edges_.begin(); it != edges_.end(); ++it) {
+    Edge* e = *it;
+    if (in_on_out(e->source()->position(), e->dest()->position(), r) > 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool Object::contained_in(const Interval& int_x, const Interval& int_y) const {
+  return true;
 }
 
 } // namespace vor2d

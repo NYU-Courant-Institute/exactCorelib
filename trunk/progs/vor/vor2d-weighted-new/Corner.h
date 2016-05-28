@@ -20,11 +20,7 @@ class Corner : public Feature {
   Interval box_dist_sq(const Interval& int_x, const Interval& int_y) override;
   pair<Interval, Interval> box_dist_sq_grad(const Interval& int_x, const Interval& int_y) override;
   
-  // bool is_isolated();
-  // bool is_dangling();
-  // void set_prev_edge(Edge* edge);
-  // void set_next_edge(Edge* edge);
-  const Point2d position() const;
+  Point2d position() const;
   bool operator==(const Corner& other);
 
   friend ostream& operator<<(ostream& os, const Corner& c) {
@@ -37,8 +33,6 @@ class Corner : public Feature {
   BiPoly dfun_sq_;
   pair<BiPoly, BiPoly> dfun_sq_grad_;
   const Point2d position_;
-  // Edge* prev_edge;
-  // Edge* next_edge;
 };
 
 } // namespace vor2d

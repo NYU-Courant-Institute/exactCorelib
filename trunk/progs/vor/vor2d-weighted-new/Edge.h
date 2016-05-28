@@ -1,13 +1,17 @@
 #pragma once
 
+#include "Corner.h"
+#include "Object.h"
 #include "Feature.h"
 #include "Point.h"
+#include "BiPoly.h"
 
 #include <float.h>
 #include <math.h>
 
 namespace vor2d {
 class Corner;
+class Object;
 
 class Edge : public Feature {
  public:
