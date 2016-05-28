@@ -1,0 +1,22 @@
+start 118 310
+	angle range lower 0.000000 59.232898
+	angle range lower 0.000000 128.543093
+	angle range lower 0.000003 2.862402
+	angle range lower 0.000003 2.862402
+	angle range lower 170.926211 332.503088
+	angle range lower 279.002177 297.568524
+		forbiden zone lower 0.000000 128.543093
+		forbiden zone lower 170.926211 332.503088
+			safe zone lower 128.543093 170.926211
+			safe zone lower 332.503088 0.000000
+l2
+	angle range lower 0.000000 53.130103
+	angle range lower 0.000000 126.869900
+	angle range lower 0.000003 0.000003
+	angle range lower 0.000003 0.000003
+	angle range lower 171.507434 331.921865
+		forbiden zone lower 0.000000 126.869900
+		forbiden zone lower 171.507434 331.921865
+			safe zone lower 126.869900 171.507434
+			safe zone lower 331.921865 0.000000
+end
