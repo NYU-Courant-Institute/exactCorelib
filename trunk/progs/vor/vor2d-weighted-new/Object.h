@@ -2,8 +2,8 @@
 
 #include "Corner.h"
 #include "Edge.h"
-#include "Point.h"
 #include "Feature.h"
+#include "Point.h"
 #include "Interval.h"
 #include "Point.h"
 #include <vector>
@@ -11,9 +11,7 @@
 
 namespace vor2d {
 
-class Corner;
-class Edge;
-class Feature;
+class vor_box;
 
 // A class to represent a collection of features.
 class Object {
@@ -36,8 +34,9 @@ class Object {
   Interval qm2_b(const Point2d& p, const Interval& int_x, const Interval& int_y);
   double* m();
   bool is_polygon() const;
-  bool contained_in(const Point2d& p) const;
-  bool contained_in(const Interval& int_x, const Interval& int_y) const;
+  bool contains(const Point2d& p) const;
+  bool contains(const vor_box& b) const;
+  vector<Feature*>* get_features();
 
  private:
   // Determines whether r is to the left, right or on the line going through p, q.

@@ -1,4 +1,5 @@
 #include "Object.h"
+#include "vor_box.h"
 
 namespace vor2d {
 Object::Object(double a, double b, double c) : m_{a, b, c} {}
@@ -73,23 +74,35 @@ bool Object::is_polygon() const {
   return features_.size() > 3;
 }
 
-bool Object::contained_in(const Point2d& r) const {
+bool Object::contains(const Point2d& r) const {
   if (!is_polygon()) {
     return false;
   }
 
-  for (auto it = edges_.begin(); it != edges_.end(); ++it) {
-    Edge* e = *it;
+  for (Edge* e : edges_) {
+    //cout << in_on_out(e->source()->position(), e->dest()->position(), r) << "\n";
     if (in_on_out(e->source()->position(), e->dest()->position(), r) > 0) {
       return false;
     }
   }
 
+  //cout << "true\n";
   return true;
 }
 
-bool Object::contained_in(const Interval& int_x, const Interval& int_y) const {
-  return true;
+bool Object::contains(const vor_box& b) const {
+  double hw = b.width() / 2;
+  double cx = b.center()[0];
+  double cy = b.center()[1];
+  return contains(Point2d{cx + hw, cy + hw}) &&
+    contains(Point2d{cx - hw, cy + hw}) &&
+    contains(Point2d{cx + hw, cy - hw}) &&
+    contains(Point2d{cx - hw, cy - hw});    
 }
+
+vector<Feature*>* Object::get_features() {
+  return &features_;
+}
+
 
 } // namespace vor2d

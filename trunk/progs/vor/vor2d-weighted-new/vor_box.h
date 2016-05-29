@@ -67,6 +67,7 @@ class vor_box {
   int num_corner_obj() const;
   void gen_vertices();
   bool contained_in(const vor_box& other, double scale) const;
+  bool contained_in_polygon() const;
 
   // Box predicates.
   bool cpv() const;

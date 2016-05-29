@@ -254,24 +254,27 @@ string get_line(ifstream& ifs) {
   return s;
 }
 
-void print_features(vor_box* box) {
-  for (auto it = box->get_features()->begin(); it < box->get_features()->end(); ++it) {
-    // This is a hack found on StackOverflow to handle C++'s lack of "instanceof".
-    // TODO: Use typeid or some other functionality?
-    Corner* c = dynamic_cast<Corner*>(*it);
-    if (c != nullptr) {
-      cout << "Point: " << c->position()[0] << " " << c->position()[1] << "\n";
-      // cout << c->dfun_sq()->to_string() << "\n";
-      // cout << c->dfun_sq_grad().first.to_string() << "\n";
-      // cout << c->dfun_sq_grad().second.to_string() << "\n";
-    } else {
-      Edge* e = dynamic_cast<Edge*>(*it);
-      cout << "Edge: "
-	   << e->source()->position()[0] << " " << e->source()->position()[1] << ", "
-	   << e->dest()->position()[0]   << " " << e->dest()->position()[1] << "\n";
-      // cout << e->dfun_sq()->to_string() << "\n";
-      // cout << e->dfun_sq_grad().first.to_string() << "\n";
-      // cout << e->dfun_sq_grad().second.to_string() << "\n";
+void print_objects(vor_box* box) {
+  for (Object* o : *box->get_objects()) {
+    for (Feature* f : *o->get_features()) {
+      // This is a hack found on StackOverflow to handle C++'s lack of "instanceof".
+      // TODO: Use typeid or some other functionality?
+      Corner* c = dynamic_cast<Corner*>(f);
+      if (c != nullptr) {
+	cout << "Point: " << c->position()[0] << " " << c->position()[1];
+	// cout << c->dfun_sq()->to_string() << "\n";
+	// cout << c->dfun_sq_grad().first.to_string() << "\n";
+	// cout << c->dfun_sq_grad().second.to_string() << "\n";
+      } else {
+	Edge* e = dynamic_cast<Edge*>(f);
+	cout << "Edge: "
+	     << e->source()->position()[0] << " " << e->source()->position()[1] << ", "
+	     << e->dest()->position()[0]   << " " << e->dest()->position()[1];
+	// cout << e->dfun_sq()->to_string() << "\n";
+	// cout << e->dfun_sq_grad().first.to_string() << "\n";
+	// cout << e->dfun_sq_grad().second.to_string() << "\n";
+      }
+      cout << "\n";
     }
     cout << "\n";
   }
@@ -387,7 +390,7 @@ void parse(string input) {
   }
 
   ifs.close();
-  print_features(root);
+  print_objects(root);
 }
 
 void Mouse(int button, int state, int x, int y) {
@@ -488,7 +491,7 @@ void run() {
 
     assert(num_obj > 0);
 
-    if (num_obj == 1) {
+    if (num_obj == 1 || box->contained_in_polygon()) {
       continue;
     } else if (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION ||
 	       lip * radius > box->midpoint_clearance() || // TODO(*): Check this.

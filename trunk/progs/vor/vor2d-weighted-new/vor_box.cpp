@@ -814,4 +814,12 @@ bool vor_box::contained_in(const vor_box& other, double scale) const {
     (my + hw <= oy + ow);
 }
 
+bool vor_box::contained_in_polygon() const {
+  for (Object* object : objects_) {
+    if (object->contains(*this)) {
+      return true;
+    }
+  }
+}
+
 } // namespace vor2d
