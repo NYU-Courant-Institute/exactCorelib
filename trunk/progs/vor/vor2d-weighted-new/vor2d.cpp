@@ -439,6 +439,10 @@ void blame(vor_box* box) {
     cout << box->num_objects() << " objects still active.\n";
     return;
   }
+  if (!box->few_active_features_per_object()) {
+    cout << "One object has many active features.\n";
+    return;
+  }
   if (box->radius() > box->midpoint_clearance()) {
     cout << "Box clearance insufficent.\n";
     return;
@@ -458,7 +462,18 @@ void blame(vor_box* box) {
   }
   if (!box->cmk(MK_SCALE)) {
     cout << "MK failed.\n";
+    return;
   }
+  // if (2 * box->radius() > geom_eps) {
+  //   cout << "Geometric epsilon reached.\n";
+  //   cout << box->radius() << " " << geom_eps << "\n";
+  //   assert(0);
+  //   return;
+  // }
+
+  // Programmer error!
+  cout << "Programmer error!\n";
+  assert(0);
 }
 
 void enqueue_children(vor_box* box) {
@@ -488,14 +503,13 @@ void run() {
     double radius = box->radius();
     double num_obj = box->num_objects();
     double lip = box->max_lipschitz();
-
     assert(num_obj > 0);
 
     if (num_obj == 1 || box->contained_in_polygon()) {
       continue;
     } else if (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION ||
 	       lip * radius > box->midpoint_clearance() || // TODO(*): Check this.
-	       2 * radius > geom_eps ||      // TODO: Make sure this isn't off by a multiplicative factor of 2.
+	       radius > 2 * geom_eps ||      // TODO: Make sure this isn't off by a multiplicative factor of 2.
 	       !box->few_active_features_per_object() ||
 	       !box->cpv()) {
       enqueue_children(box);

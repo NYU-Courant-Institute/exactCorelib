@@ -136,27 +136,27 @@ public:
     return {partial_x(), partial_y()};
   }
   
-  // void print() {
-  //   for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
-  //     int xpow = xit->first;
-  //     map<int, double>* xmap = xit->second;
-  //     for (auto yit = xmap->begin(); yit != xmap->end(); ++yit) {
-  // 	int ypow = yit->first;
-  // 	double c = yit->second;
-  // 	if (xit != poly.begin() || yit != xmap->begin()) {
-  // 	  cout << " + ";
-  // 	}
-  // 	cout << c;
-  // 	if (xpow > 0) {
-  // 	  cout << " x^" << xpow;
-  // 	}
-  // 	if (ypow > 0) {
-  // 	  cout << " y^" << ypow;
-  // 	}
-  //     }
-  //   }
-  //   cout << "\n";
-  // }
+  void print() {
+    for (auto xit = poly.begin(); xit != poly.end(); ++xit) {
+      int xpow = xit->first;
+      map<int, double>* xmap = xit->second;
+      for (auto yit = xmap->begin(); yit != xmap->end(); ++yit) {
+  	int ypow = yit->first;
+  	double c = yit->second;
+  	if (xit != poly.begin() || yit != xmap->begin()) {
+  	  cout << " + ";
+  	}
+  	cout << c;
+  	if (xpow > 0) {
+  	  cout << " x^" << xpow;
+  	}
+  	if (ypow > 0) {
+  	  cout << " y^" << ypow;
+  	}
+      }
+    }
+    cout << "\n";
+  }
 
   friend ostream& operator<<(ostream& os, const BiPoly& p) {
     for (auto xit = p.get_poly()->begin(); xit != p.get_poly()->end(); ++xit) {

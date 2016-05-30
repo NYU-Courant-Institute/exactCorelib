@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <set>
 
-#define DEBUG 0
+#define DEBUG 1
 
 namespace vor2d {
 
@@ -15,9 +15,10 @@ using std::set;
 vor_box::vor_box(int depth, int indicator, double center[], vor_qt* tree)
   : depth_(depth), indicator_(indicator), center_(center), tree_(tree),
     children_(nullptr), num_children_(0), is_active_(false), is_degen_(false),
-    bx(Interval{center[0] - width_ / 2, center[0] + width_ / 2}),
-    by(Interval{center[1] - width_ / 2, center[1] + width_ / 2}) {
+    bx(TOP), by(TOP) /* Fix! Real initialization is below; forced by C++. */ {
   width_ = pow(2, -depth_) * tree_->width();
+  bx = Interval(center[0] - width_ / 2.0, center[0] + width_ / 2.0);
+  by = Interval(center[1] - width_ / 2.0, center[1] + width_ / 2.0);  
   neighbors_ = new vor_box*[2 * dimension()];
 }
 
@@ -165,10 +166,10 @@ void vor_box::split() {
     Edge* e;
 
     for (auto it = features_.begin(); it != features_.end(); ++it) {
-      e = dynamic_cast<Edge*>(*it);
-      if (e != nullptr && !e->interior_active(bx, by)) {
-	continue;
-      }
+      // e = dynamic_cast<Edge*>(*it);
+      // if (e != nullptr && !e->interior_active(bx, by)) {
+      // 	continue;
+      // }
       
       if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
 	children_[i]->add_feature(*it);
@@ -354,7 +355,18 @@ bool vor_box::cjc(double scale) const {
       BiPoly bs2_y = bs2.gradient().second;
       BiPoly det_poly = (bs1_x * bs2_y) - (bs1_y * bs2_x);
 
+      if (!(i == 0 && j == 1)) {
+	return true;
+      }
       if (det_poly.eval(bx, by).contains(0)) {
+#if DEBUG
+	cout << "CJC:\n";
+	cout << bs1.to_string()   << "\n";
+	cout << bs1_x.to_string() << ", " << bs1_y.to_string() << "\n";
+	cout << bs2.to_string()   << "\n";
+	cout << bs2_x.to_string() << ", " << bs2_y.to_string() << "\n";
+	cout << det_poly.eval(bx, by) << "\n";
+#endif
 	return false;
       }
     }
@@ -384,9 +396,16 @@ bool vor_box::cmk(double scale) const {
     BiPoly f12 = f1.gradient().second;
     
     for (int j = i + 1; j < bisectors_.size(); j++) {
+      // // REMOVE REMOVE:
+      // if (!(i == 0 && j == 1)) {
+      // 	return true;
+      // }
+      
       BiPoly f2 = bisectors_[j];
       BiPoly f21 = f2.gradient().first;
       BiPoly f22 = f2.gradient().second;
+
+      // Evaluate Jacobian at midpoint.
       double z11 = f11.eval(mx, my);
       double z12 = f12.eval(mx, my);
       double z21 = f21.eval(mx, my);
@@ -436,11 +455,9 @@ bool vor_box::cmk(double scale) const {
 	   << g12.eval(mx, my) << "\n";
       cout << g21.eval(mx, my) << ", "
 	   << g22.eval(mx, my) << "\n";
-
-      /*
-	assert(g1.gradient().first == g11 && g1.gradient().second == g12);
-	assert(g2.gradient().first == g21 && g2.gradient().second == g22);
-      */
+      
+      assert(g1.gradient().first == g11 && g1.gradient().second == g12);
+      assert(g2.gradient().first == g21 && g2.gradient().second == g22);
 #endif
 
       // Evaluations.
@@ -676,11 +693,11 @@ vector<BiPoly>* vor_box::get_active_bisectors() {
 void vor_box::activate_bisectors() {
   for (int i = 0; i < objects_.size(); i++) {
     for (int j = i + (PSEUDO_VOR ? 0 : 1); j < objects_.size(); j++) {
-      for (Feature* f1 : *(objects_[i]->get_features())) {
-	for (Feature* f2 : *(objects_[j]->get_features())) {
-	  if (!PSEUDO_VOR ||
-	      (f1 != f2 && f1->is_edge() && f2->is_edge() &&
-	       std::find(bisectors_.begin(), bisectors_.end(), f1->dfun_sq() - f2->dfun_sq()) == bisectors_.end())) {
+      for (int k = 0; k < objects_[i]->get_features()->size(); k++) {
+	Feature* f1 = objects_[i]->get_features()->at(k);
+	for (int l = k + 1; l < objects_[j]->get_features()->size(); l++) {
+	  Feature* f2 = objects_[j]->get_features()->at(l);
+	  if (!PSEUDO_VOR || (f1->is_edge() && f2->is_edge())) {
 	    bisectors_.push_back(f1->dfun_sq() - f2->dfun_sq());
 	  }
 	}
