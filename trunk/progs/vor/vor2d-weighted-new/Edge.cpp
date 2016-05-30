@@ -55,171 +55,17 @@ Edge::Edge(const Point2d& p, const Point2d& q, Object* parent) :
   Edge(new Corner(p, parent), new Corner(q, parent), parent) {
 }
 
-BiPoly* Edge::dfun_sq(const Interval& int_x, const Interval& int_y) {
-  Interval ts_int = tstar.eval(int_x, int_y);
-  if (0.0 >= ts_int) {
-    return source_->dfun_sq();
-  } else if (1.0 <= ts_int) {
-    return dest_->dfun_sq();
-  } else if (0.0 < ts_int && 1.0 > ts_int) {
-    return &dfun_seg_sq_;
-  }
-  return NULL;
+BiPoly Edge::dfun_sq() {
+  return dfun_seg_sq_;
 }
 
-pair<BiPoly, BiPoly> Edge::dfun_sq_grad(const Interval& int_x, const Interval& int_y) {
-  Interval ts_int = tstar.eval(int_x, int_y);
-  if (0.0 >= ts_int) {
-    return source_->dfun_sq_grad();
-  } else if (1.0 <= ts_int) {
-    return dest_->dfun_sq_grad();
-  } else if (0.0 < ts_int && 1.0 > ts_int) {
-    return dfun_seg_sq_grad_;
-  }
-
-  // TODO: Fix. Right now this method shouldn't be called without first
-  // validating with dfun_sq().
-  assert(0);
+pair<BiPoly, BiPoly> Edge::dfun_sq_grad() {
+  return dfun_seg_sq_grad_;
 }
 
-double Edge::dist_sq(double x, double y) {
-  double tp = tstar.eval(x, y);
-
-#if DEBUG
-  cout << "x: " << x << " y: " << y << " tp: " << tp << "\n";
-#endif
-  
-  if (tp <= 0) {
-    return source_->dist_sq(x, y);
-  } else if (tp >= 1) {
-    return dest_->dist_sq(x, y);
-  } else { // p in (0, 1)
-    return dfun_seg_sq_.eval(x, y);
-  }
+BiPoly Edge::get_tstar() {
+  return tstar;
 }
-
-pair<double, double> Edge::dist_sq_grad(double x, double y) {
-  double tp = tstar.eval(x, y);
-  if (tp <= 0) {
-    return source_->dist_sq_grad(x, y);
-  } else if (tp >= 1) {
-    return dest_->dist_sq_grad(x, y);
-  } else { // p in (0, 1)
-    return pair<double, double>{
-      dfun_seg_sq_grad_.first.eval(x, y),
-      dfun_seg_sq_grad_.second.eval(x, y)};
-  }
-}
-
-#define EQ_OR_UN(u, i) (u == TOP ? i : u.convex_union(i))
-Interval Edge::box_dist_sq(const Interval& int_x, const Interval& int_y) {
-  Interval tp = tstar.eval(int_x, int_y);
-  Interval u(TOP);
-
-  if (0 >= tp) {
-    u = EQ_OR_UN(u, source_->dfun_sq()->eval(int_x, int_y));
-  }
-  if (1 <= tp) {
-    u = EQ_OR_UN(u, dest_->dfun_sq()->eval(int_x, int_y));
-  }
-  if (!(0 > tp || 1 < tp)) {
-    u = EQ_OR_UN(u, dfun_seg_sq_.eval(int_x, int_y));
-  }
-
-  return u;
-}
-
-pair<Interval, Interval> Edge::box_dist_sq_grad(const Interval& int_x, const Interval& int_y) {
-  Interval tp = tstar.eval(int_x, int_y);
-  Interval ux(TOP);
-  Interval uy(TOP);
-  
-  if (0 >= tp) {
-    ux = EQ_OR_UN(ux, source_->dfun_sq_grad().first.eval(int_x, int_y));
-    uy = EQ_OR_UN(uy, source_->dfun_sq_grad().second.eval(int_x, int_y));
-  }
-  if (1 <= tp) {
-    ux = EQ_OR_UN(ux, dest_->dfun_sq_grad().first.eval(int_x, int_y));
-    uy = EQ_OR_UN(uy, dest_->dfun_sq_grad().second.eval(int_x, int_y));
-  }
-  if (!(0 > tp || 1 < tp)) {
-    ux = EQ_OR_UN(ux, dfun_seg_sq_grad_.first.eval(int_x, int_y));
-    uy = EQ_OR_UN(uy, dfun_seg_sq_grad_.second.eval(int_x, int_y));
-  }
-
-  return pair<Interval, Interval>{ux, uy};
-}
-
-// double Edge::distance(const Point2d& r) {
-//   // Anisotropic distance computation.
-//   const Point2d p = source_->position();
-//   const Point2d q = dest_->position();
-//   Point2d v = q - p;
-//   Point2d w = r - p;
-//   double ts = parent_->qm2(v, w) / parent_->qm(v);
-//   ts = (ts < 0) ? 0 : ts;
-//   ts = (ts > 1) ? 1 : ts;
-//   Point2d v2(-ts * v[0], -ts * v[1]);
-//   Point2d y = w + v2;
-//   return sqrt(parent_->qm(y));
-// }
-
-// // TODO: Variables p, q, v, and qmv don't depend on the input. Cache them.
-// double Edge::distance(const Point2d& r) {
-//   // Anisotropic distance computation.
-//   const Point2d p = source_->position();
-//   const Point2d q = dest_->position();
-//   Point2d v = q - p;
-//   Point2d w = r - p;
-//   double qmv = parent_->qm(v);
-//   double qmw = parent_->qm(w);
-//   double vmw = parent_->qm2(v, w);
-//   double ts = vmw / qmv;
-  
-//   if (ts <= 0) {
-//     return sqrt(parent_->qm(w));
-//   }
-//   if (ts >= 1) {
-//     Point2d y = r - q;
-//     return sqrt(parent_->qm(y));
-//   }
-//   return sqrt(qmw - vmw * ts);
-// }
-
-// Interval Edge::box_dist_sq(const Interval& int_x, const Interval& int_y) {
-//   const Point2d p = source_->position();
-//   const Point2d q = dest_->position();
-//   Point2d v = p - q;
-//   Interval p_x(p[0], p[0]);
-//   Interval p_y(p[1], p[1]);
-//   Interval w_x = int_x - p_x;
-//   Interval w_y = int_y - p_y;
-//   Interval qmw = parent_->qm_b(w_x, w_y);
-//   Interval vmw = parent_->qm2_b(v, w_x, w_y);
-//   double qmv = parent_->qm(v);
-//   return qmw - (vmw.sq() / qmv);
-// }
-
-// tuple<Interval, Interval> Edge::box_dist_sq_grad(const Interval& int_x, const Interval& int_y) {
-//   double* m = parent_->m();
-//   const Point2d p = source_->position();
-//   const Point2d q = dest_->position();
-//   Point2d v = p - q;
-//   Interval p_x(p[0], p[0]);
-//   Interval p_y(p[1], p[1]);
-//   Interval w_x = int_x - p_x;
-//   Interval w_y = int_y - p_y;
-//   Interval v_x(v[0], v[0]);
-//   Interval v_y(v[1], v[1]);
-//   Interval vmw = parent_->qm2_b(v, w_x, w_y);
-//   double qmv = parent_->qm(v);
-//   Interval ts = vmw / qmv;
-//   Interval u_x = w_x - ts * v_x;
-//   Interval u_y = w_y - ts * v_y;
-//   Interval r_x = m[0] * u_x + m[1] * u_y;
-//   Interval r_y = m[1] * u_x + m[2] * u_y;
-//   return make_tuple(2 * r_x, 2 * r_y);
-// }
 
 Corner* Edge::dest() const {
   return dest_;

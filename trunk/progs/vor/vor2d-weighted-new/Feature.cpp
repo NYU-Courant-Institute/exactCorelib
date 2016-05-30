@@ -1,5 +1,7 @@
 #include "Feature.h"
 #include "Object.h"
+#include "Corner.h"
+#include "Edge.h"
 #include "Point.h"
 
 #include <math.h>
@@ -34,7 +36,17 @@ double Feature::lipschitz() const {
 // }
 
 double Feature::distance(const Point2d& point) {
-  return sqrt(dist_sq(point[0], point[1]));
+  return sqrt(dfun_sq().eval(point[0], point[1]));
+}
+
+bool Feature::is_corner() {
+  Corner* c = dynamic_cast<Corner*>(this);
+  return c != nullptr;
+}
+
+bool Feature::is_edge() {
+  Edge* e = dynamic_cast<Edge*>(this);
+  return e != nullptr;
 }
 
 } // namespace vor2d

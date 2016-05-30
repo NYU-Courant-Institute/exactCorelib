@@ -31,49 +31,41 @@ Corner::Corner(const Point2d& position, Object* parent) :
 Corner::~Corner() {}
 
 // TODO: Make this return a non-pointer.
-BiPoly* Corner::dfun_sq() {
-  return &dfun_sq_;
+BiPoly Corner::dfun_sq() {
+  return dfun_sq_;
 }
 
 pair<BiPoly, BiPoly> Corner::dfun_sq_grad() {
   return dfun_sq_grad_;
 }
 
-BiPoly* Corner::dfun_sq(const Interval& int_x, const Interval& int_y) {
-  return dfun_sq();
-}
+// double Corner::dist_sq(double x, double y) {
+//   return dfun_sq_.eval(x, y);
+// }
 
-pair<BiPoly, BiPoly> Corner::dfun_sq_grad(const Interval& int_x, const Interval& int_y) {
-  return dfun_sq_grad();
-}
+// pair<double, double> Corner::dist_sq_grad(double x, double y) {
+//   return pair<double, double>{
+//     dfun_sq_grad_.first.eval(x, y),
+//       dfun_sq_grad_.second.eval(x, y)};
+// }
 
-double Corner::dist_sq(double x, double y) {
-  return dfun_sq_.eval(x, y);
-}
+// Interval Corner::box_dist_sq(const Interval& int_x, const Interval& int_y) {
+//   return dfun_sq_.eval(int_x, int_y);
+// }
 
-pair<double, double> Corner::dist_sq_grad(double x, double y) {
-  return pair<double, double>{
-    dfun_sq_grad_.first.eval(x, y),
-      dfun_sq_grad_.second.eval(x, y)};
-}
-
-Interval Corner::box_dist_sq(const Interval& int_x, const Interval& int_y) {
-  return dfun_sq_.eval(int_x, int_y);
-}
-
-pair<Interval, Interval> Corner::box_dist_sq_grad(
-  const Interval& int_x, const Interval& int_y) {
-  return pair<Interval, Interval>{
-    dfun_sq_grad_.first.eval(int_x, int_y),
-      dfun_sq_grad_.second.eval(int_x, int_y)};
-}
+// pair<Interval, Interval> Corner::box_dist_sq_grad(
+//   const Interval& int_x, const Interval& int_y) {
+//   return pair<Interval, Interval>{
+//     dfun_sq_grad_.first.eval(int_x, int_y),
+//       dfun_sq_grad_.second.eval(int_x, int_y)};
+// }
 
 Point2d Corner::position() const {
   return position_;
 }
 
-bool Corner::operator==(const Corner& other) {
-  return position_ == other.position();
-}
+// bool Corner::operator==(const Corner& other) {
+//   return position_ == other.position();
+// }
 
 } // namespace vor2d

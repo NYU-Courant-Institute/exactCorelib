@@ -2,6 +2,7 @@
 #include "vor_qt.h"
 #include "BiPoly.h"
 
+#include <algorithm>
 #include <assert.h>
 #include <set>
 
@@ -13,7 +14,9 @@ using std::set;
 
 vor_box::vor_box(int depth, int indicator, double center[], vor_qt* tree)
   : depth_(depth), indicator_(indicator), center_(center), tree_(tree),
-    children_(nullptr), num_children_(0), is_active_(false), is_degen_(false) {
+    children_(nullptr), num_children_(0), is_active_(false), is_degen_(false),
+    bx(Interval{center[0] - width_ / 2, center[0] + width_ / 2}),
+    by(Interval{center[1] - width_ / 2, center[1] + width_ / 2}) {
   width_ = pow(2, -depth_) * tree_->width();
   neighbors_ = new vor_box*[2 * dimension()];
 }
@@ -158,14 +161,22 @@ void vor_box::split() {
     double lip = max_lipschitz(); // Maximum Lipschitz constant of relevant features.
     Point2d mid_point(center[0], center[1]);
     double child_clearance = clearance(mid_point);
+    Edge* e;
 
     for (auto it = features_.begin(); it != features_.end(); ++it) {
+      e = dynamic_cast<Edge*>(*it);
+      if (e != nullptr) {
+	Interval e_t_range = e->get_tstar().eval(bx, by);
+	if (!(e_t_range.contains(0) || e_t_range.contains(1))) {
+	  continue;
+	}
+      }
+      
       if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
 	children_[i]->add_feature(*it);
       }
     }
     
-    // TODO: Consolidate this into the "features" loop, and make active objects into a set.
     for (auto it = objects_.begin(); it != objects_.end(); ++it) {
       if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
     	children_[i]->add_object(*it);
@@ -309,360 +320,382 @@ bool vor_box::is_degen() const {
 // New versions.
 
 bool vor_box::cpv() const {
-  if (num_features() < 2) {
+  if (bisectors_.empty()) {
     return true;
   }
 
-  Interval gx_i(TOP), gy_i(TOP);
+  Interval gx(TOP), gy(TOP);
   double hw = width_ / 2.0;
-  Interval bx(center_[0] - hw, center_[0] + hw);
-  Interval by(center_[1] - hw, center_[1] + hw);
 
-  for (int i = 0; i < features_.size(); i++) {
-    for (int j = i + 1; j < features_.size(); j++) {
-      Feature* f1 = features_[i];
-      Feature* f2 = features_[j];
+  for (BiPoly bisector : bisectors_) {
+    gx = bisector.gradient().first.eval(bx, by);
+    gy = bisector.gradient().second.eval(bx, by);
 
-      // Only compute predicate for features that are part of
-      // different objects.
-      if (f1->parent() == f2->parent()) {
-	continue;
-      }
-
-      if (f1->dfun_sq(bx, by) != NULL && f2->dfun_sq(bx, by) != NULL) {
-	BiPoly grad_x = f1->dfun_sq_grad(bx, by).first  - f2->dfun_sq_grad(bx, by).first;
-	BiPoly grad_y = f1->dfun_sq_grad(bx, by).second - f2->dfun_sq_grad(bx, by).second;
-	gx_i = grad_x.eval(bx, by);
-	gy_i = grad_y.eval(bx, by);
-      } else {
-	pair<Interval, Interval> f1_grad_i = f1->box_dist_sq_grad(bx, by);
-	pair<Interval, Interval> f2_grad_i = f2->box_dist_sq_grad(bx, by);
-	gx_i = f1_grad_i.first - f2_grad_i.first;
-	gy_i = f1_grad_i.second - f2_grad_i.second;
-      }
-      
-#if DEBUG
-      // cout << "PV: " << grad_x.to_string() << ", " << grad_y.to_string() << "\n";
-      // cout << "PV: " << gx_i << " " << gy_i << " " << (gx_i * gx_i + gy_i * gy_i) << "\n";
-#endif
-
-      if (((gx_i * gx_i) + (gy_i * gy_i)).contains(0)) {
-#if DEBUG
-	cout << "PV fails.\n";
-#endif
-	return false;
-      }
+    if (((gx * gx) + (gy * gy)).contains(0)) {
+      return false;
     }
   }
 
-#if DEBUG
-  // cout << "PV succeeds.\n";
-#endif
-
   return true;
 }
+
+// bool vor_box::cpv() const {
+//   if (num_features() < 2) {
+//     return true;
+//   }
+
+//   Interval gx_i(TOP), gy_i(TOP);
+//   double hw = width_ / 2.0;
+//   Interval bx = int_x();
+//   Interval by = int_y();
+
+//   for (int i = 0; i < features_.size(); i++) {
+//     for (int j = i + 1; j < features_.size(); j++) {
+//       Feature* f1 = features_[i];
+//       Feature* f2 = features_[j];
+
+//       // Only compute predicate for features that are part of
+//       // different objects.
+//       if (f1->parent() == f2->parent()) {
+// 	continue;
+//       }
+
+//       if (f1->dfun_sq(bx, by) != NULL && f2->dfun_sq(bx, by) != NULL) {
+// 	BiPoly grad_x = f1->dfun_sq_grad(bx, by).first  - f2->dfun_sq_grad(bx, by).first;
+// 	BiPoly grad_y = f1->dfun_sq_grad(bx, by).second - f2->dfun_sq_grad(bx, by).second;
+// 	gx_i = grad_x.eval(bx, by);
+// 	gy_i = grad_y.eval(bx, by);
+//       } else {
+// 	pair<Interval, Interval> f1_grad_i = f1->box_dist_sq_grad(bx, by);
+// 	pair<Interval, Interval> f2_grad_i = f2->box_dist_sq_grad(bx, by);
+// 	gx_i = f1_grad_i.first - f2_grad_i.first;
+// 	gy_i = f1_grad_i.second - f2_grad_i.second;
+//       }
+      
+// #if DEBUG
+//       // cout << "PV: " << grad_x.to_string() << ", " << grad_y.to_string() << "\n";
+//       // cout << "PV: " << gx_i << " " << gy_i << " " << (gx_i * gx_i + gy_i * gy_i) << "\n";
+// #endif
+
+//       if (((gx_i * gx_i) + (gy_i * gy_i)).contains(0)) {
+// #if DEBUG
+// 	cout << "PV fails.\n";
+// #endif
+// 	return false;
+//       }
+//     }
+//   }
+
+// #if DEBUG
+//   // cout << "PV succeeds.\n";
+// #endif
+
+//   return true;
+// }
 
 // Currently this computes the Jacobian condition with respect to
 // the system of equations F = (f_{ST}, f_{TU}) where the bisectors
 // are induced by the first and second, and second and third active
 // sites respectively.
 bool vor_box::cjc(double scale) const {
-  // TODO: Improve this to work with multi-feature sites and degenerate intersections.
-  // assert(num_features() >= 3);
-  if (num_features() <= 2) {
-    return true;
-  }
+  return true;
+  // // TODO: Improve this to work with multi-feature sites and degenerate intersections.
+  // // assert(num_features() >= 3);
+  // if (num_features() <= 2) {
+  //   return true;
+  // }
   
-  if (num_features() > 3) {
-    cout << "Warning: more than three features. Not ensuring that the Jacobian condition is met.\n";
-    return true;
-  }
+  // if (num_features() > 3) {
+  //   cout << "Warning: more than three features. Not ensuring that the Jacobian condition is met.\n";
+  //   return true;
+  // }
 
-  if (num_objects() < num_features()) {
-    cout << "Warning: multi-feature objects. Not ensuring that the Jacobian condition is met.\n";
-    return true;
-  }
+  // if (num_objects() < num_features()) {
+  //   cout << "Warning: multi-feature objects. Not ensuring that the Jacobian condition is met.\n";
+  //   return true;
+  // }
 
-  double sw = scale * width_ / 2;
-  Interval bx(center_[0] - sw, center_[0] + sw);
-  Interval by(center_[1] - sw, center_[1] + sw);
-  Feature* S = features_[0];
-  Feature* T = features_[1];
-  Feature* U = features_[2];
+  // double sw = scale * width_ / 2;
+  // Interval bx(center_[0] - sw, center_[0] + sw);
+  // Interval by(center_[1] - sw, center_[1] + sw);
+  // Feature* S = features_[0];
+  // Feature* T = features_[1];
+  // Feature* U = features_[2];
 
-  if (S->dfun_sq(bx, by) != NULL && T->dfun_sq(bx, by) != NULL & U->dfun_sq(bx, by) != NULL) {
-    BiPoly gradST_x = S->dfun_sq_grad(bx, by).first  - T->dfun_sq_grad(bx, by).first;
-    BiPoly gradST_y = S->dfun_sq_grad(bx, by).second - T->dfun_sq_grad(bx, by).second;
-    BiPoly gradTU_x = T->dfun_sq_grad(bx, by).first  - U->dfun_sq_grad(bx, by).first;
-    BiPoly gradTU_y = T->dfun_sq_grad(bx, by).second - U->dfun_sq_grad(bx, by).second;
-    BiPoly det_poly = (gradST_x * gradTU_y) - (gradST_y * gradTU_x);
-    return !det_poly.eval(bx, by).contains(0);
-  }
+  // if (S->dfun_sq(bx, by) != NULL && T->dfun_sq(bx, by) != NULL & U->dfun_sq(bx, by) != NULL) {
+  //   BiPoly gradST_x = S->dfun_sq_grad(bx, by).first  - T->dfun_sq_grad(bx, by).first;
+  //   BiPoly gradST_y = S->dfun_sq_grad(bx, by).second - T->dfun_sq_grad(bx, by).second;
+  //   BiPoly gradTU_x = T->dfun_sq_grad(bx, by).first  - U->dfun_sq_grad(bx, by).first;
+  //   BiPoly gradTU_y = T->dfun_sq_grad(bx, by).second - U->dfun_sq_grad(bx, by).second;
+  //   BiPoly det_poly = (gradST_x * gradTU_y) - (gradST_y * gradTU_x);
+  //   return !det_poly.eval(bx, by).contains(0);
+  // }
 
-  pair<Interval, Interval> S_grad_i = S->box_dist_sq_grad(bx, by);
-  pair<Interval, Interval> T_grad_i = T->box_dist_sq_grad(bx, by);
-  pair<Interval, Interval> U_grad_i = U->box_dist_sq_grad(bx, by);
-  Interval ST_x = S_grad_i.first  - T_grad_i.first;
-  Interval ST_y = S_grad_i.second - T_grad_i.second;
-  Interval TU_x = T_grad_i.first  - U_grad_i.first;
-  Interval TU_y = T_grad_i.second - U_grad_i.second;
-  return !((ST_x * TU_y) - (ST_y * TU_x)).contains(0);
+  // pair<Interval, Interval> S_grad_i = S->box_dist_sq_grad(bx, by);
+  // pair<Interval, Interval> T_grad_i = T->box_dist_sq_grad(bx, by);
+  // pair<Interval, Interval> U_grad_i = U->box_dist_sq_grad(bx, by);
+  // Interval ST_x = S_grad_i.first  - T_grad_i.first;
+  // Interval ST_y = S_grad_i.second - T_grad_i.second;
+  // Interval TU_x = T_grad_i.first  - U_grad_i.first;
+  // Interval TU_y = T_grad_i.second - U_grad_i.second;
+  // return !((ST_x * TU_y) - (ST_y * TU_x)).contains(0);
 }
 
 bool vor_box::cmk(double scale) const {
-  // TODO: Improve this to work with multi-feature sites and degenerate intersections.
-  // assert(num_features() >= 3);
-  if (num_features() <= 2) {
-    return true;
-  }
-  
-  if (num_features() > 3) {
-    cout << "Warning: more than three features. Not ensuring that the MK test is met.\n";
-    return true;
-  }
-
-  if (num_objects() < num_features()) {
-    cout << "Warning: multi-feature objects. Not ensuring that the MK test is met.\n";
-    return true;
-  }
-
-  // Box variables.
-  double mx = center()[0];
-  double my = center()[1];
-  double sw = scale * width_ / 2;
-  Interval bx(center_[0] - sw, center_[0] + sw);
-  Interval by(center_[1] - sw, center_[1] + sw);
-  Interval lft_x(mx - sw);
-  Interval rgt_x(mx + sw);
-  Interval bot_y(my - sw);
-  Interval top_y(my + sw);
-  Interval span_x(mx - sw, mx + sw);
-  Interval span_y(my - sw, my + sw);
-
-  // Features.
-  Feature* S = features_[0];
-  Feature* T = features_[1];
-  Feature* U = features_[2];
-
-  if (S->dfun_sq(bx, by) != NULL && T->dfun_sq(bx, by) != NULL & U->dfun_sq(bx, by) != NULL) {
-#if DEBUG
-    cout << "MK branch 1\n";
-#endif
-    
-    // Original system and derivatives (F and F').
-    BiPoly f1 = *(S->dfun_sq(bx, by)) - *(T->dfun_sq(bx, by));
-    BiPoly f2 = *(T->dfun_sq(bx, by)) - *(U->dfun_sq(bx, by));
-    BiPoly f11 = S->dfun_sq_grad(bx, by).first  - T->dfun_sq_grad(bx, by).first;
-    BiPoly f12 = S->dfun_sq_grad(bx, by).second - T->dfun_sq_grad(bx, by).second;
-    BiPoly f21 = T->dfun_sq_grad(bx, by).first  - U->dfun_sq_grad(bx, by).first;
-    BiPoly f22 = T->dfun_sq_grad(bx, by).second - U->dfun_sq_grad(bx, by).second;
-
-    // Determinant computation.
-    double z11 = f11.eval(mx, my);
-    double z12 = f12.eval(mx, my);
-    double z21 = f21.eval(mx, my);
-    double z22 = f22.eval(mx, my);
-    double zdet = ((z11 * z22) - (z12 * z21));
-
-    if (zdet == 0.0) {
-      return false;
-    }
-    double izdet = 1.0 / zdet;
-
-    // Inverse determinant.
-    double y11 = izdet * z22;
-    double y12 = izdet * (-z12);
-    double y21 = izdet * (-z21);
-    double y22 = izdet * z11;
-
-    // Modified system and derivatives (G and G').
-    BiPoly g1  = y11 * f1  + y12 * f2;
-    BiPoly g2  = y21 * f1  + y22 * f2;
-    BiPoly g11 = y11 * f11 + y12 * f21;
-    BiPoly g12 = y11 * f12 + y12 * f22;
-    BiPoly g21 = y21 * f11 + y22 * f21;
-    BiPoly g22 = y21 * f12 + y22 * f22;
-
-#if DEBUG
-    cout << "MK applied to box: " << mx << " " << my << " " << sw << "\n";
-  
-    cout << "MK original system F:\n";
-    cout << f1.to_string() << "\n";
-    cout << f2.to_string() << "\n";
-    cout << f11.to_string() << ", "
-	 << f12.to_string() << "\n";
-    cout << f21.to_string() << ", "
-	 << f22.to_string() << "\n";
-  
-    cout << "MK modified system G:\n";
-    cout << g1.to_string() << "\n";
-    cout << g2.to_string() << "\n";
-    cout << g11.to_string() << ", "
-	 << g12.to_string() << "\n";
-    cout << g21.to_string() << ", "
-	 << g22.to_string() << "\n";
-
-    cout << "MK modified system evaluated on box midpoint:\n";
-    cout << g11.eval(mx, my) << ", "
-	 << g12.eval(mx, my) << "\n";
-    cout << g21.eval(mx, my) << ", "
-	 << g22.eval(mx, my) << "\n";
-
-    /*
-      assert(g1.gradient().first == g11 && g1.gradient().second == g12);
-      assert(g2.gradient().first == g21 && g2.gradient().second == g22);
-    */
-#endif
-
-    // Evaluations.
-    double g1p = g1.eval(mx + sw, my);
-    double g1m = g1.eval(mx - sw, my);
-    double g2p = g2.eval(mx, my + sw);
-    double g2m = g2.eval(mx, my - sw);
-
-#if DEBUG
-    cout << "g1p: " << g1p << " g1m: " << g1m << " g2p: " << g2p << " g2m: " << g2m << "\n";
-    cout << "g12+: "  << sw * g12.eval(rgt_x, span_y) << " g21+: " << sw * g21.eval(span_x, top_y)
-	 << " g12-: " << sw * g12.eval(lft_x, span_y) << " g21-: " << sw * g21.eval(span_x, bot_y) << "\n";
-#endif
-  
-    // Conditions 2.11.
-    if (!(g1p * g1m <= 0)) {
-#if DEBUG
-      cout << "Condition 1\n";
-#endif
-      return false;
-    }
-    if (!(g2p * g2m <= 0)) {
-#if DEBUG
-      cout << "Condition 2\n";
-#endif
-      return false;
-    }
-
-    // Conditions 2.12.  
-    if (!((sw * g12.eval(rgt_x, span_y)).mag() <= fabs(g1p))) {
-#if DEBUG
-      cout << "Condition 3: " << sw * g12.eval(rgt_x, span_y) << "\n";
-#endif
-      return false;
-    }
-    if (!((sw * g21.eval(span_x, top_y)).mag() <= fabs(g2p))) {
-#if DEBUG
-      cout << "Condition 4: " << sw * g21.eval(span_x, top_y) << "\n";
-#endif
-      return false;
-    }
-  
-    // Conditions 2.13.
-    if (!((sw * g12.eval(lft_x, span_y)).mag() <= fabs(g1m))) {
-#if DEBUG
-      cout << "Condition 5: " << sw * g12.eval(lft_x, span_y) << "\n";
-#endif
-      return false;
-    }
-    if (!((sw * g21.eval(span_x, bot_y)).mag() <= fabs(g2m))) {
-#if DEBUG
-      cout << "Condition 6: " << sw * g21.eval(span_x, bot_y) << "\n";
-#endif
-      return false;
-    }
-#if DEBUG
-    cout << "MK succeeds.\n";
-    cout << mx << " " << my << "\n";
-#endif
-
-    return true;
-  }
-
-  /************** ### **************/
-  // TODO: Remove redundancy.
-
-#if DEBUG
-  cout << "MK branch 2\n";
-#endif
-
-  // Determinant computation.
-  double z11 = S->dist_sq_grad(mx, my).first  - T->dist_sq_grad(mx, my).first;
-  double z12 = S->dist_sq_grad(mx, my).second - T->dist_sq_grad(mx, my).second;
-  double z21 = T->dist_sq_grad(mx, my).first  - U->dist_sq_grad(mx, my).first;
-  double z22 = T->dist_sq_grad(mx, my).second - U->dist_sq_grad(mx, my).second;
-  double zdet = ((z11 * z22) - (z12 * z21));
-
-  if (zdet == 0.0) {
-    return false;
-  }
-  double izdet = 1.0 / zdet;
-
-  // Inverse determinant.
-  double y11 = izdet * z22;
-  double y12 = izdet * (-z12);
-  double y21 = izdet * (-z21);
-  double y22 = izdet * z11;
-
-  // Evaluations.
-  double g1p = y11 * (S->dist_sq(mx + sw, my) - T->dist_sq(mx + sw, my))
-             + y12 * (T->dist_sq(mx + sw, my) - U->dist_sq(mx + sw, my));
-  double g1m = y11 * (S->dist_sq(mx - sw, my) - T->dist_sq(mx - sw, my))
-             + y12 * (T->dist_sq(mx - sw, my) - U->dist_sq(mx - sw, my));
-  double g2p = y21 * (S->dist_sq(mx, my + sw) - T->dist_sq(mx, my + sw))
-             + y22 * (T->dist_sq(mx, my + sw) - U->dist_sq(mx, my + sw));
-  double g2m = y21 * (S->dist_sq(mx, my - sw) - T->dist_sq(mx, my - sw))
-             + y22 * (T->dist_sq(mx, my - sw) - U->dist_sq(mx, my - sw));
-
-  // Conditions 2.11.
-  if (!(g1p * g1m <= 0)) {
-#if DEBUG
-    cout << "Condition 1\n";
-#endif
-    return false;
-  }
-  if (!(g2p * g2m <= 0)) {
-#if DEBUG
-    cout << "Condition 2\n";
-#endif
-    return false;
-  }
-
-  // Conditions 2.12.
-  Interval g12_rgt = y11 * (S->box_dist_sq_grad(rgt_x, span_y).second - T->box_dist_sq_grad(rgt_x, span_y).second)
-                   + y12 * (T->box_dist_sq_grad(rgt_x, span_y).second - U->box_dist_sq_grad(rgt_x, span_y).second);
-  if (!((sw * g12_rgt).mag() <= fabs(g1p))) {
-#if DEBUG
-    cout << "Condition 3: " << sw * g12_rgt << "\n";
-#endif
-    return false;
-  }
-
-  Interval g21_top = y21 * (S->box_dist_sq_grad(span_x, top_y).first - T->box_dist_sq_grad(span_x, top_y).first)
-                   + y22 * (T->box_dist_sq_grad(span_x, top_y).first - U->box_dist_sq_grad(span_x, top_y).first);
-  if (!((sw * g21_top).mag() <= fabs(g2p))) {
-#if DEBUG
-    cout << "Condition 4: " << sw * g21_top << "\n";
-#endif
-    return false;
-  }
-  
-  // Conditions 2.13.
-  Interval g12_lft = y11 * (S->box_dist_sq_grad(lft_x, span_y).second - T->box_dist_sq_grad(lft_x, span_y).second)
-                   + y12 * (T->box_dist_sq_grad(lft_x, span_y).second - U->box_dist_sq_grad(lft_x, span_y).second);
-  if (!((sw * g12_lft).mag() <= fabs(g1m))) {
-#if DEBUG
-    cout << "Condition 5: " << sw * g12_lft << "\n";
-#endif
-    return false;
-  }
-
-  Interval g21_bot = y21 * (S->box_dist_sq_grad(span_x, bot_y).first - T->box_dist_sq_grad(span_x, bot_y).first)
-		   + y22 * (T->box_dist_sq_grad(span_x, bot_y).first - U->box_dist_sq_grad(span_x, bot_y).first);
-  if (!((sw * g21_bot).mag() <= fabs(g2m))) {
-#if DEBUG
-    cout << "Condition 6: " << sw * g21_bot << "\n";
-#endif
-    return false;
-  }
-
   return true;
+//   // TODO: Improve this to work with multi-feature sites and degenerate intersections.
+//   // assert(num_features() >= 3);
+//   if (num_features() <= 2) {
+//     return true;
+//   }
+  
+//   if (num_features() > 3) {
+//     cout << "Warning: more than three features. Not ensuring that the MK test is met.\n";
+//     return true;
+//   }
+
+//   if (num_objects() < num_features()) {
+//     cout << "Warning: multi-feature objects. Not ensuring that the MK test is met.\n";
+//     return true;
+//   }
+
+//   // Box variables.
+//   double mx = center()[0];
+//   double my = center()[1];
+//   double sw = scale * width_ / 2;
+//   Interval bx(center_[0] - sw, center_[0] + sw);
+//   Interval by(center_[1] - sw, center_[1] + sw);
+//   Interval lft_x(mx - sw);
+//   Interval rgt_x(mx + sw);
+//   Interval bot_y(my - sw);
+//   Interval top_y(my + sw);
+//   Interval span_x(mx - sw, mx + sw);
+//   Interval span_y(my - sw, my + sw);
+
+//   // Features.
+//   Feature* S = features_[0];
+//   Feature* T = features_[1];
+//   Feature* U = features_[2];
+
+//   if (S->dfun_sq(bx, by) != NULL && T->dfun_sq(bx, by) != NULL & U->dfun_sq(bx, by) != NULL) {
+// #if DEBUG
+//     cout << "MK branch 1\n";
+// #endif
+    
+//     // Original system and derivatives (F and F').
+//     BiPoly f1 = *(S->dfun_sq(bx, by)) - *(T->dfun_sq(bx, by));
+//     BiPoly f2 = *(T->dfun_sq(bx, by)) - *(U->dfun_sq(bx, by));
+//     BiPoly f11 = S->dfun_sq_grad(bx, by).first  - T->dfun_sq_grad(bx, by).first;
+//     BiPoly f12 = S->dfun_sq_grad(bx, by).second - T->dfun_sq_grad(bx, by).second;
+//     BiPoly f21 = T->dfun_sq_grad(bx, by).first  - U->dfun_sq_grad(bx, by).first;
+//     BiPoly f22 = T->dfun_sq_grad(bx, by).second - U->dfun_sq_grad(bx, by).second;
+
+//     // Determinant computation.
+//     double z11 = f11.eval(mx, my);
+//     double z12 = f12.eval(mx, my);
+//     double z21 = f21.eval(mx, my);
+//     double z22 = f22.eval(mx, my);
+//     double zdet = ((z11 * z22) - (z12 * z21));
+
+//     if (zdet == 0.0) {
+//       return false;
+//     }
+//     double izdet = 1.0 / zdet;
+
+//     // Inverse determinant.
+//     double y11 = izdet * z22;
+//     double y12 = izdet * (-z12);
+//     double y21 = izdet * (-z21);
+//     double y22 = izdet * z11;
+
+//     // Modified system and derivatives (G and G').
+//     BiPoly g1  = y11 * f1  + y12 * f2;
+//     BiPoly g2  = y21 * f1  + y22 * f2;
+//     BiPoly g11 = y11 * f11 + y12 * f21;
+//     BiPoly g12 = y11 * f12 + y12 * f22;
+//     BiPoly g21 = y21 * f11 + y22 * f21;
+//     BiPoly g22 = y21 * f12 + y22 * f22;
+
+// #if DEBUG
+//     cout << "MK applied to box: " << mx << " " << my << " " << sw << "\n";
+  
+//     cout << "MK original system F:\n";
+//     cout << f1.to_string() << "\n";
+//     cout << f2.to_string() << "\n";
+//     cout << f11.to_string() << ", "
+// 	 << f12.to_string() << "\n";
+//     cout << f21.to_string() << ", "
+// 	 << f22.to_string() << "\n";
+  
+//     cout << "MK modified system G:\n";
+//     cout << g1.to_string() << "\n";
+//     cout << g2.to_string() << "\n";
+//     cout << g11.to_string() << ", "
+// 	 << g12.to_string() << "\n";
+//     cout << g21.to_string() << ", "
+// 	 << g22.to_string() << "\n";
+
+//     cout << "MK modified system evaluated on box midpoint:\n";
+//     cout << g11.eval(mx, my) << ", "
+// 	 << g12.eval(mx, my) << "\n";
+//     cout << g21.eval(mx, my) << ", "
+// 	 << g22.eval(mx, my) << "\n";
+
+//     /*
+//       assert(g1.gradient().first == g11 && g1.gradient().second == g12);
+//       assert(g2.gradient().first == g21 && g2.gradient().second == g22);
+//     */
+// #endif
+
+//     // Evaluations.
+//     double g1p = g1.eval(mx + sw, my);
+//     double g1m = g1.eval(mx - sw, my);
+//     double g2p = g2.eval(mx, my + sw);
+//     double g2m = g2.eval(mx, my - sw);
+
+// #if DEBUG
+//     cout << "g1p: " << g1p << " g1m: " << g1m << " g2p: " << g2p << " g2m: " << g2m << "\n";
+//     cout << "g12+: "  << sw * g12.eval(rgt_x, span_y) << " g21+: " << sw * g21.eval(span_x, top_y)
+// 	 << " g12-: " << sw * g12.eval(lft_x, span_y) << " g21-: " << sw * g21.eval(span_x, bot_y) << "\n";
+// #endif
+  
+//     // Conditions 2.11.
+//     if (!(g1p * g1m <= 0)) {
+// #if DEBUG
+//       cout << "Condition 1\n";
+// #endif
+//       return false;
+//     }
+//     if (!(g2p * g2m <= 0)) {
+// #if DEBUG
+//       cout << "Condition 2\n";
+// #endif
+//       return false;
+//     }
+
+//     // Conditions 2.12.  
+//     if (!((sw * g12.eval(rgt_x, span_y)).mag() <= fabs(g1p))) {
+// #if DEBUG
+//       cout << "Condition 3: " << sw * g12.eval(rgt_x, span_y) << "\n";
+// #endif
+//       return false;
+//     }
+//     if (!((sw * g21.eval(span_x, top_y)).mag() <= fabs(g2p))) {
+// #if DEBUG
+//       cout << "Condition 4: " << sw * g21.eval(span_x, top_y) << "\n";
+// #endif
+//       return false;
+//     }
+  
+//     // Conditions 2.13.
+//     if (!((sw * g12.eval(lft_x, span_y)).mag() <= fabs(g1m))) {
+// #if DEBUG
+//       cout << "Condition 5: " << sw * g12.eval(lft_x, span_y) << "\n";
+// #endif
+//       return false;
+//     }
+//     if (!((sw * g21.eval(span_x, bot_y)).mag() <= fabs(g2m))) {
+// #if DEBUG
+//       cout << "Condition 6: " << sw * g21.eval(span_x, bot_y) << "\n";
+// #endif
+//       return false;
+//     }
+// #if DEBUG
+//     cout << "MK succeeds.\n";
+//     cout << mx << " " << my << "\n";
+// #endif
+
+//     return true;
+//   }
+
+//   /************** ### **************/
+//   // TODO: Remove redundancy.
+
+// #if DEBUG
+//   cout << "MK branch 2\n";
+// #endif
+
+//   // Determinant computation.
+//   double z11 = S->dist_sq_grad(mx, my).first  - T->dist_sq_grad(mx, my).first;
+//   double z12 = S->dist_sq_grad(mx, my).second - T->dist_sq_grad(mx, my).second;
+//   double z21 = T->dist_sq_grad(mx, my).first  - U->dist_sq_grad(mx, my).first;
+//   double z22 = T->dist_sq_grad(mx, my).second - U->dist_sq_grad(mx, my).second;
+//   double zdet = ((z11 * z22) - (z12 * z21));
+
+//   if (zdet == 0.0) {
+//     return false;
+//   }
+//   double izdet = 1.0 / zdet;
+
+//   // Inverse determinant.
+//   double y11 = izdet * z22;
+//   double y12 = izdet * (-z12);
+//   double y21 = izdet * (-z21);
+//   double y22 = izdet * z11;
+
+//   // Evaluations.
+//   double g1p = y11 * (S->dist_sq(mx + sw, my) - T->dist_sq(mx + sw, my))
+//              + y12 * (T->dist_sq(mx + sw, my) - U->dist_sq(mx + sw, my));
+//   double g1m = y11 * (S->dist_sq(mx - sw, my) - T->dist_sq(mx - sw, my))
+//              + y12 * (T->dist_sq(mx - sw, my) - U->dist_sq(mx - sw, my));
+//   double g2p = y21 * (S->dist_sq(mx, my + sw) - T->dist_sq(mx, my + sw))
+//              + y22 * (T->dist_sq(mx, my + sw) - U->dist_sq(mx, my + sw));
+//   double g2m = y21 * (S->dist_sq(mx, my - sw) - T->dist_sq(mx, my - sw))
+//              + y22 * (T->dist_sq(mx, my - sw) - U->dist_sq(mx, my - sw));
+
+//   // Conditions 2.11.
+//   if (!(g1p * g1m <= 0)) {
+// #if DEBUG
+//     cout << "Condition 1\n";
+// #endif
+//     return false;
+//   }
+//   if (!(g2p * g2m <= 0)) {
+// #if DEBUG
+//     cout << "Condition 2\n";
+// #endif
+//     return false;
+//   }
+
+//   // Conditions 2.12.
+//   Interval g12_rgt = y11 * (S->box_dist_sq_grad(rgt_x, span_y).second - T->box_dist_sq_grad(rgt_x, span_y).second)
+//                    + y12 * (T->box_dist_sq_grad(rgt_x, span_y).second - U->box_dist_sq_grad(rgt_x, span_y).second);
+//   if (!((sw * g12_rgt).mag() <= fabs(g1p))) {
+// #if DEBUG
+//     cout << "Condition 3: " << sw * g12_rgt << "\n";
+// #endif
+//     return false;
+//   }
+
+//   Interval g21_top = y21 * (S->box_dist_sq_grad(span_x, top_y).first - T->box_dist_sq_grad(span_x, top_y).first)
+//                    + y22 * (T->box_dist_sq_grad(span_x, top_y).first - U->box_dist_sq_grad(span_x, top_y).first);
+//   if (!((sw * g21_top).mag() <= fabs(g2p))) {
+// #if DEBUG
+//     cout << "Condition 4: " << sw * g21_top << "\n";
+// #endif
+//     return false;
+//   }
+  
+//   // Conditions 2.13.
+//   Interval g12_lft = y11 * (S->box_dist_sq_grad(lft_x, span_y).second - T->box_dist_sq_grad(lft_x, span_y).second)
+//                    + y12 * (T->box_dist_sq_grad(lft_x, span_y).second - U->box_dist_sq_grad(lft_x, span_y).second);
+//   if (!((sw * g12_lft).mag() <= fabs(g1m))) {
+// #if DEBUG
+//     cout << "Condition 5: " << sw * g12_lft << "\n";
+// #endif
+//     return false;
+//   }
+
+//   Interval g21_bot = y21 * (S->box_dist_sq_grad(span_x, bot_y).first - T->box_dist_sq_grad(span_x, bot_y).first)
+// 		   + y22 * (T->box_dist_sq_grad(span_x, bot_y).first - U->box_dist_sq_grad(span_x, bot_y).first);
+//   if (!((sw * g21_bot).mag() <= fabs(g2m))) {
+// #if DEBUG
+//     cout << "Condition 6: " << sw * g21_bot << "\n";
+// #endif
+//     return false;
+//   }
+
+//   return true;
 }
 
 /***********************************************************/
@@ -820,6 +853,52 @@ bool vor_box::contained_in_polygon() const {
       return true;
     }
   }
+}
+
+vector<BiPoly>* vor_box::get_active_bisectors() {
+  assert(objects_.size() >= 2);
+  if (bisectors_.empty()) {
+    activate_bisectors();
+  }
+
+  return &bisectors_;
+}
+
+#define PSEUDO_VOR 1
+void vor_box::activate_bisectors() {
+  for (int i = 0; i < objects_.size(); i++) {
+    for (int j = i + (PSEUDO_VOR ? 0 : 1); j < objects_.size(); j++) {
+      for (Feature* f1 : *(objects_[i]->get_features())) {
+	for (Feature* f2 : *(objects_[j]->get_features())) {
+	  if (!PSEUDO_VOR ||
+	      (f1 != f2 && f1->is_edge() && f2->is_edge() &&
+	       std::find(bisectors_.begin(), bisectors_.end(), f1->dfun_sq() - f2->dfun_sq()) == bisectors_.end())) {
+	    bisectors_.push_back(f1->dfun_sq() - f2->dfun_sq());
+	  }
+	}
+      }
+    }
+  }
+}
+
+#define MAX_ACTIVE_FEATURES_PER_OBJECT 2
+bool vor_box::few_active_features_per_object() {
+  map<Object*, int> counts;
+
+  for(Feature* f : features_) {
+    if (counts.find(f->parent()) != counts.end()) {
+      counts[f->parent()] = 0;
+    }
+    counts[f->parent()] += 1;
+
+    if (counts[f->parent()] > MAX_ACTIVE_FEATURES_PER_OBJECT) {
+      return false;
+    }
+  }
+
+  // TODO: Activating bisectors here is a hack. Fix.
+  activate_bisectors();
+  return true;
 }
 
 } // namespace vor2d

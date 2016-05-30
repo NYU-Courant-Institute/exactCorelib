@@ -489,13 +489,14 @@ void run() {
     double num_obj = box->num_objects();
     double lip = box->max_lipschitz();
 
-    assert(num_obj > 0);
+    // assert(num_obj > 0);
 
     if (num_obj == 1 || box->contained_in_polygon()) {
       continue;
     } else if (num_obj > MAX_OBJECTS_FOR_CONSTRUCTION ||
 	       lip * radius > box->midpoint_clearance() || // TODO(*): Check this.
 	       2 * radius > geom_eps ||      // TODO: Make sure this isn't off by a multiplicative factor of 2.
+	       !box->few_active_features_per_object() ||
 	       !box->cpv()) {
       enqueue_children(box);
     } else if (num_obj == 2 || contained_in_any(box, INT_SCALE)) {

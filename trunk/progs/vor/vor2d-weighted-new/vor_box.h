@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BiPoly.h"
 #include "Corner.h"
 #include "Edge.h"
 #include "Interval.h"
@@ -11,12 +12,15 @@
 #include <map>
 #include <memory>
 #include <typeinfo>
+#include <utility>
 #include <vector>
 
 using std::shared_ptr;
 using std::vector;
 
 namespace vor2d {
+
+typedef map<pair<Object*, Object*>, vector<BiPoly>*> BisecObjMap;
 
 class vor_qt;
 
@@ -51,9 +55,10 @@ class vor_box {
   void add_object(Object* object);
   // vector<Corner*>* get_corners();
   // vector<Edge*>* get_edges();
-  vector<Object*>* get_objects();
   void add_feature(Feature* feature);
+  vector<Object*>* get_objects();
   vector<Feature*>* get_features();
+  vector<BiPoly>* get_active_bisectors();
   const vector<vor_seg*>* get_segments() const;
   int num_features() const;
   double max_lipschitz() const;
@@ -68,6 +73,8 @@ class vor_box {
   void gen_vertices();
   bool contained_in(const vor_box& other, double scale) const;
   bool contained_in_polygon() const;
+  bool few_active_features_per_object();
+  void activate_bisectors();
 
   // Box predicates.
   bool cpv() const;
@@ -91,6 +98,8 @@ class vor_box {
   double* center_;
   int num_children_;
   vor_qt* tree_;
+  Interval bx;
+  Interval by;
   // double max_lipschitz_;
 
   // Collections.
@@ -100,11 +109,15 @@ class vor_box {
   vector<Point2d*> nodes_;
   vector<vor_seg*> segments_;
 
-  // Active sites.
+  // Active things.
   // vector<Corner*> corners_;
   // vector<Edge*> edges_;
   vector<Feature*> features_;
   vector<Object*> objects_;
+  vector<BiPoly> bisectors_;
+  
+  // vector<BiPoly*> bisectors_;
+  // vector<BiPoly*> bisector_grads_;
 
   friend class vor_qt;
 };
