@@ -489,7 +489,7 @@ void run() {
     double num_obj = box->num_objects();
     double lip = box->max_lipschitz();
 
-    // assert(num_obj > 0);
+    assert(num_obj > 0);
 
     if (num_obj == 1 || box->contained_in_polygon()) {
       continue;

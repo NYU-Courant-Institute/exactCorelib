@@ -18,6 +18,8 @@ class Edge : public Feature {
   BiPoly dfun_sq() override;
   pair<BiPoly, BiPoly> dfun_sq_grad() override;
   BiPoly get_tstar();
+  bool interior_active(double x, double y);
+  bool interior_active(Interval ix, Interval iy);
 
   Corner* source() const;
   Corner* dest() const;

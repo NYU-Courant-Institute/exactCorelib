@@ -75,6 +75,8 @@ class vor_box {
   bool contained_in_polygon() const;
   bool few_active_features_per_object();
   void activate_bisectors();
+  Interval get_bx() const;
+  Interval get_by() const;
 
   // Box predicates.
   bool cpv() const;

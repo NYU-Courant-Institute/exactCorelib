@@ -22,6 +22,11 @@ void Object::add_feature(Feature* feature) {
 double Object::distance(const Point2d& point) const {
   double min_sep = std::numeric_limits<double>::max();
   for (Feature* feature : features_) {
+    Edge* e = dynamic_cast<Edge*>(feature);
+    if (e != nullptr && !e->interior_active(point[0], point[1])) {
+      continue;
+    }
+    
     double feature_sep = feature->distance(point);
     if (feature_sep < min_sep) {
       min_sep = feature_sep;

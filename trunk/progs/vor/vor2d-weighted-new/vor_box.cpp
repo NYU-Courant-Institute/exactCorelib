@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <set>
 
-#define DEBUG 0
+#define DEBUG 1
 
 namespace vor2d {
 
@@ -158,6 +158,7 @@ void vor_box::split() {
     children_[i] = new vor_box(depth_ + 1, i, center, tree_);
 
     // Compute active features for the new child.
+    // TODO: Check the use of child vs. parents boxes here.
     double lip = max_lipschitz(); // Maximum Lipschitz constant of relevant features.
     Point2d mid_point(center[0], center[1]);
     double child_clearance = clearance(mid_point);
@@ -165,11 +166,8 @@ void vor_box::split() {
 
     for (auto it = features_.begin(); it != features_.end(); ++it) {
       e = dynamic_cast<Edge*>(*it);
-      if (e != nullptr) {
-	Interval e_t_range = e->get_tstar().eval(bx, by);
-	if (!(e_t_range.contains(0) || e_t_range.contains(1))) {
-	  continue;
-	}
+      if (e != nullptr && !e->interior_active(bx, by)) {
+	continue;
       }
       
       if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
@@ -899,6 +897,14 @@ bool vor_box::few_active_features_per_object() {
   // TODO: Activating bisectors here is a hack. Fix.
   activate_bisectors();
   return true;
+}
+
+Interval vor_box::get_bx() const {
+  return bx;
+}
+
+Interval vor_box::get_by() const {
+  return by;
 }
 
 } // namespace vor2d

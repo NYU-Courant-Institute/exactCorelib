@@ -67,6 +67,16 @@ BiPoly Edge::get_tstar() {
   return tstar;
 }
 
+bool Edge::interior_active(double x, double y) {
+  double e_t = get_tstar().eval(x, y);
+  return 0 <= e_t && e_t <= 1;
+}
+
+bool Edge::interior_active(Interval ix, Interval iy) {
+  Interval e_t_range = get_tstar().eval(ix, iy);
+  return e_t_range.contains(0) || e_t_range.contains(1);
+}
+
 Corner* Edge::dest() const {
   return dest_;
 }
