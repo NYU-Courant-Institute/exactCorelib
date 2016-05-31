@@ -68,12 +68,12 @@ BiPoly Edge::get_tstar() {
 }
 
 bool Edge::interior_active(double x, double y) {
-  double e_t = get_tstar().eval(x, y);
+  double e_t = tstar.eval(x, y);
   return 0 <= e_t && e_t <= 1;
 }
 
 bool Edge::interior_active(Interval ix, Interval iy) {
-  Interval e_t_range = get_tstar().eval(ix, iy);
+  Interval e_t_range = tstar.eval(ix, iy);
   return e_t_range.contains(0) || e_t_range.contains(1);
 }
 
@@ -83,6 +83,15 @@ Corner* Edge::dest() const {
 
 Corner* Edge::source() const {
   return source_;
+}
+
+double Edge::distance(const Point2d& point) {
+  double x = point[0];
+  double y = point[1];
+  if (interior_active(x, y)) {
+    return sqrt(dfun_sq().eval(x, y));
+  }
+  return fmin(source_->distance(point), dest_->distance(point));
 }
 
 } // namespace vor2d

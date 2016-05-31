@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <set>
 
-#define DEBUG 1
+#define DEBUG 0
 
 namespace vor2d {
 
@@ -165,28 +165,50 @@ void vor_box::split() {
     double child_clearance = clearance(mid_point);
     Edge* e;
 
+    for (auto it = objects_.begin(); it != objects_.end(); ++it) {
+      if ((*it)->distance(mid_point) <= child_clearance + 2 * lip * children_[i]->radius()) {
+#if DEBUG
+	cout << *it << "\n";
+#endif
+    	children_[i]->add_object(*it);
+      }
+    }
+
     for (auto it = features_.begin(); it != features_.end(); ++it) {
-      // e = dynamic_cast<Edge*>(*it);
+      e = dynamic_cast<Edge*>(*it);
       // if (e != nullptr && !e->interior_active(bx, by)) {
       // 	continue;
       // }
       
-      if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
+      if ((*it)->distance(mid_point) <= child_clearance + 2 * lip * children_[i]->radius()) {
+#if DEBUG
+	cout << *it << " " << (*it)->parent() << " " << (dynamic_cast<Edge*>(*it) != nullptr) << "\n";
+#endif
 	children_[i]->add_feature(*it);
-      }
-    }
-    
-    for (auto it = objects_.begin(); it != objects_.end(); ++it) {
-      if ((*it)->distance(mid_point) < child_clearance + 2 * lip * children_[i]->radius()) {
-    	children_[i]->add_object(*it);
+
+#if DEBUG
+	cout << (*it)->distance(mid_point) << " "
+	     << (*it)->parent()->distance(mid_point) << "\n";
+
+	if (e) {
+	  cout << e->get_tstar().eval(bx, by) << " "
+	       << e->get_tstar().eval(center[0], center[1]) << "\n";
+	}
+
+	assert((*it)->distance(mid_point) >= (*it)->parent()->distance(mid_point));
+	assert(std::find(children_[i]->get_objects()->begin(),
+			 children_[i]->get_objects()->end(), (*it)->parent())
+	       != children_[i]->get_objects()->end());
+#endif	
       }
     }
   }
 
 #if DEBUG
   for (int i = 0; i < num_children(); i++) {
-    assert(children_[i]->num_features() > 0);
     assert(children_[i]->num_objects() > 0);
+    assert(children_[i]->num_features() > 0);
+    assert(children_[i]->num_features() >= children_[i]->num_objects());
   }
 #endif
 
@@ -689,29 +711,32 @@ vector<BiPoly>* vor_box::get_active_bisectors() {
   return &bisectors_;
 }
 
-#define PSEUDO_VOR 1
+#define PSEUDO_VOR 0
 void vor_box::activate_bisectors() {
-  for (int i = 0; i < objects_.size(); i++) {
-    for (int j = i + (PSEUDO_VOR ? 0 : 1); j < objects_.size(); j++) {
-      for (int k = 0; k < objects_[i]->get_features()->size(); k++) {
-	Feature* f1 = objects_[i]->get_features()->at(k);
-	for (int l = k + 1; l < objects_[j]->get_features()->size(); l++) {
-	  Feature* f2 = objects_[j]->get_features()->at(l);
-	  if (!PSEUDO_VOR || (f1->is_edge() && f2->is_edge())) {
-	    bisectors_.push_back(f1->dfun_sq() - f2->dfun_sq());
-	  }
-	}
+#if DEBUG
+  cout << "Bisectors in box " << center_[0] << " " << center_[1] << " " << width_ / 2.0 << ":\n";
+#endif
+  for (Feature* f1 : features_) {
+    for (Feature* f2 : features_) {
+      if (f1->parent() != f2->parent() || (PSEUDO_VOR && f1 != f2 && (f1->is_edge() && f2->is_edge()))) {
+	bisectors_.push_back(f1->dfun_sq() - f2->dfun_sq());
+#if DEBUG
+	cout << (f1->dfun_sq() - f2->dfun_sq()).to_string() << "\n";
+#endif
       }
     }
   }
 }
 
-#define MAX_ACTIVE_FEATURES_PER_OBJECT 2
+#define MAX_ACTIVE_FEATURES_PER_OBJECT 3
 bool vor_box::few_active_features_per_object() {
   map<Object*, int> counts;
 
   for(Feature* f : features_) {
-    if (counts.find(f->parent()) != counts.end()) {
+    assert(std::find(objects_.begin(), objects_.end(), f->parent())
+	   != objects_.end());
+    
+    if (counts.find(f->parent()) == counts.end()) {
       counts[f->parent()] = 0;
     }
     counts[f->parent()] += 1;
@@ -720,6 +745,13 @@ bool vor_box::few_active_features_per_object() {
       return false;
     }
   }
+
+#if DEBUG
+  for (auto it = counts.begin(); it != counts.end(); ++it) {
+    cout << it->second << ", ";
+  }
+  cout << "\n";
+#endif
 
   // TODO: Activating bisectors here is a hack. Fix.
   activate_bisectors();

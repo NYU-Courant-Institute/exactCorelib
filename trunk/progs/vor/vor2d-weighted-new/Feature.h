@@ -14,7 +14,7 @@ class Feature {
   virtual BiPoly dfun_sq() = 0;
   virtual pair<BiPoly, BiPoly> dfun_sq_grad() = 0;
 
-  double distance(const Point2d& point);
+  virtual double distance(const Point2d& point);
   double lipschitz() const;
   void set_parent(Object* parent);
   Object* parent();

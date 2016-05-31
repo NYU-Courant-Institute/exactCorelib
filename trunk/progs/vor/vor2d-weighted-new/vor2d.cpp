@@ -441,6 +441,9 @@ void blame(vor_box* box) {
   }
   if (!box->few_active_features_per_object()) {
     cout << "One object has many active features.\n";
+    for (Feature* f : *(box->get_features())) {
+      cout << f << " " << f->parent() << "\n";
+    }
     return;
   }
   if (box->radius() > box->midpoint_clearance()) {

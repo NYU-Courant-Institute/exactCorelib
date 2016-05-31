@@ -20,7 +20,8 @@ class Edge : public Feature {
   BiPoly get_tstar();
   bool interior_active(double x, double y);
   bool interior_active(Interval ix, Interval iy);
-
+  double distance(const Point2d& point) override;
+  
   Corner* source() const;
   Corner* dest() const;
   
