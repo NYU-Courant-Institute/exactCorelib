@@ -692,10 +692,13 @@
     </property>
    </widget>
    <widget class="DisplayRobot" name="openGLWidget_2">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>620</x>
-      <y>80</y>
+      <y>90</y>
       <width>100</width>
       <height>100</height>
      </rect>

@@ -125,14 +125,14 @@ FILE *fptr;
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////
-string egName("SoCG2016_2links_demo1.eg");
+string egName("2links_eg6shape.eg");
 char egNameList[200][200];
 int numEg = 0;
 
 
-double alpha[4] = { 216, 297, 115, 155 };		// start configuration
-double beta[4] = { 210, 220, 260, 200 };		// goal configuration
-double epsilon = 4;			// resolution parameter
+double alpha[4] = { 300, 450, 180, 345 };		// start configuration
+double beta[4] = { 120, 12, 0, 120 };		// goal configuration
+double epsilon = 2;			// resolution parameter
 Box* boxA;				// start box (containing alpha)
 Box* boxB;				// goal box (containing beta)
 double boxWidth = 512;			// Initial box width
@@ -140,25 +140,25 @@ double boxHeight = 512;			// Initial box height
 
 // Added by Zhongdi 05/08/2013 begin
 // length of 2 links
-double L1 = 85;
-double L2 = 80;
+double L1 = 215;
+double L2 = 212;
 double R0 = 0;				// will be set to max(L1,L2)
 // Added by Zhongdi 05/08/2013 end
 
 int windowPosX = 320;			// X Position of Window
 int windowPosY = 20;			// Y Position of Window
-string fileName("zigzagrotation.txt"); 		// Input file name
+string fileName("map_6shape.txt"); 		// Input file name
 //string fileName("input150.txt"); 		// Input file name
 string inputDir("inputs"); 		// Path for input files
-int QType = 1;				// The Priority Queue can be
+int QType = 2;				// The Priority Queue can be
 //    sequential (0) or random (1)
 int interactive = 0;			// Run interactively?
 //    Yes (0) or No (1)
 int seed = 11;				// seed for random number generator
 // (Could also be used for BFS, etc)
-double deltaX = 0;			// x-translation of input environment
+double deltaX = -220;			// x-translation of input environment
 double deltaY = 0;			// y-translation of input environment
-double scale = 1;				// scaling of input environment
+double scale = 0.065;				// scaling of input environment
 bool noPath = true;			// True means there is "No path.
 
 bool hideBox = true;

@@ -339,16 +339,14 @@ void Display::drawRobot(Box* b){
     }
     theta2 = b->xi[Box::LOWER2];
 
-    fprintf(fptr, "display: %lf %lf %lf\n", b->x, b->y, theta1);
+    //fprintf(fptr, "display: %lf %lf %lf %lf\n", b->x, b->y, b->xi[Box::LOWER1], b->xi[Box::UPPER1]);
 
     genLine( 4, b->x, b->y,
-            b->x + L1*cos(theta1/180.0f*PI) , b->y + L1*sin(theta1/180.0f*PI)  ,
+            b->x + L1*cos(theta1*PI/180.0f) , b->y + L1*sin(theta1*PI/180.0f)  ,
             0.5,0,0.5,true);
     genLine( 4, b->x, b->y,
-            b->x + L2*cos(theta2/180.0f*PI) , b->y + L2*sin(theta2/180.0f*PI)  ,
+            b->x + L2*cos(theta2*PI/180.0f) , b->y + L2*sin(theta2*PI/180.0f)  ,
             0,0,0,true);
-
-    //genFilledCircle(r0,b->x,b->y,1,1,1);
 }
 
 

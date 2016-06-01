@@ -423,29 +423,29 @@ bool Box::splitAngle(double epsilon, vector<Box*>& chldn) {
     l1SafeZone = calcOppoZone(l1ForbidenZone);
     l2SafeZone = calcOppoZone(l2ForbidenZone);
 
-    if(x == 118 && y == 310) {
-        fprintf(fptr, "start %.lf %.lf\n", x, y);
-        for(int i=0;i<(int)l1AngleRanges.size();++i){
-            fprintf(fptr, "\tangle range lower %lf %lf\n", l1AngleRanges[i].lowerBound, l1AngleRanges[i].upperBound);
-        }
-        for(int i=0;i<(int)l1ForbidenZone.size();++i){
-            fprintf(fptr, "\t\tforbiden zone lower %lf %lf\n", l1ForbidenZone[i].lowerBound, l1ForbidenZone[i].upperBound);
-        }
-        for(int i=0;i<(int)l1SafeZone.size();++i){
-            fprintf(fptr, "\t\t\tsafe zone lower %lf %lf\n", l1SafeZone[i].lowerBound, l1SafeZone[i].upperBound);
-        }
-        fprintf(fptr, "l2\n");
-        for(int i=0;i<(int)l2AngleRanges.size();++i){
-            fprintf(fptr, "\tangle range lower %lf %lf\n", l2AngleRanges[i].lowerBound, l2AngleRanges[i].upperBound);
-        }
-        for(int i=0;i<(int)l2ForbidenZone.size();++i){
-            fprintf(fptr, "\t\tforbiden zone lower %lf %lf\n", l2ForbidenZone[i].lowerBound, l2ForbidenZone[i].upperBound);
-        }
-        for(int i=0;i<(int)l2SafeZone.size();++i){
-            fprintf(fptr, "\t\t\tsafe zone lower %lf %lf\n", l2SafeZone[i].lowerBound, l2SafeZone[i].upperBound);
-        }
-        fprintf(fptr, "end\n");
-    }
+//    if(x == 337 && y == 331) {
+//        fprintf(fptr, "start %.lf %.lf\n", x, y);
+//        for(int i=0;i<(int)l1AngleRanges.size();++i){
+//            fprintf(fptr, "\tangle range lower %lf %lf\n", l1AngleRanges[i].lowerBound, l1AngleRanges[i].upperBound);
+//        }
+//        for(int i=0;i<(int)l1ForbidenZone.size();++i){
+//            fprintf(fptr, "\t\tforbiden zone lower %lf %lf\n", l1ForbidenZone[i].lowerBound, l1ForbidenZone[i].upperBound);
+//        }
+//        for(int i=0;i<(int)l1SafeZone.size();++i){
+//            fprintf(fptr, "\t\t\tsafe zone lower %lf %lf\n", l1SafeZone[i].lowerBound, l1SafeZone[i].upperBound);
+//        }
+//        fprintf(fptr, "l2\n");
+//        for(int i=0;i<(int)l2AngleRanges.size();++i){
+//            fprintf(fptr, "\tangle range lower %lf %lf\n", l2AngleRanges[i].lowerBound, l2AngleRanges[i].upperBound);
+//        }
+//        for(int i=0;i<(int)l2ForbidenZone.size();++i){
+//            fprintf(fptr, "\t\tforbiden zone lower %lf %lf\n", l2ForbidenZone[i].lowerBound, l2ForbidenZone[i].upperBound);
+//        }
+//        for(int i=0;i<(int)l2SafeZone.size();++i){
+//            fprintf(fptr, "\t\t\tsafe zone lower %lf %lf\n", l2SafeZone[i].lowerBound, l2SafeZone[i].upperBound);
+//        }
+//        fprintf(fptr, "end\n");
+//    }
 
     if (twoStrategyOption == 2) {
         if (l1SafeZone.size() <= l2SafeZone.size()) {
@@ -1221,25 +1221,13 @@ vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges) {
     }
     std::sort(srcAngleRanges.begin(), srcAngleRanges.end(), sortAngleRanges);
 
-    double maxUpperBound = 0;
     for (int i=0;i<(int)srcAngleRanges.size();++i) {
         AngleRange temp = srcAngleRanges[i];
         if (temp.lowerBound > temp.upperBound) {
-            if(maxUpperBound < temp.upperBound) maxUpperBound = temp.upperBound;
             temp.upperBound += 360;
         }
         newSrcAngleRanges.push_back(AngleRange(temp.lowerBound, temp.upperBound));
     }
-
-
-
-    for (int i=0;i<(int)newSrcAngleRanges.size();++i) {
-        if (newSrcAngleRanges[i].lowerBound < maxUpperBound) {
-            newSrcAngleRanges[i].lowerBound += 360;
-            newSrcAngleRanges[i].upperBound += 360;
-        }
-    }
-    std::sort(newSrcAngleRanges.begin(), newSrcAngleRanges.end(), sortAngleRanges);
 
     AngleRange interval(newSrcAngleRanges[0].lowerBound, newSrcAngleRanges[0].upperBound);
     for(int i=1;i<(int)newSrcAngleRanges.size();++i){
@@ -1254,24 +1242,52 @@ vector<AngleRange> calcZone(vector<AngleRange>& srcAngleRanges) {
     }
     // need to check last interval
     if(interval.upperBound >= 360){
-        interval.upperBound -= 360;
+        interval.upperBound -= 360.0f;
         if(interval.upperBound < newSrcAngleRanges[0].lowerBound){
             dstAngleRanges.push_back(AngleRange(interval.lowerBound, interval.upperBound));
+
+            for (int i=0;i<(int)dstAngleRanges.size();++i) {
+                AngleRange temp = dstAngleRanges[i];
+                if (temp.lowerBound >= 360) temp.lowerBound -= 360;
+                if (temp.upperBound > 360)  temp.upperBound -= 360;
+                newDstAngleRanges.push_back(AngleRange(temp.lowerBound, temp.upperBound));
+            }
         }
         else{
-            dstAngleRanges[0].lowerBound = interval.lowerBound;
+            int i=0;
+            while(i < (int)dstAngleRanges.size() && dstAngleRanges[i].lowerBound <= interval.upperBound){
+                if(interval.upperBound < dstAngleRanges[i].upperBound){
+                    interval.upperBound = dstAngleRanges[i].upperBound;
+                }
+                ++i;
+            }
+            if(interval.upperBound > interval.lowerBound){
+                newDstAngleRanges.push_back(AngleRange(0, 360));
+            }
+            else{
+                newDstAngleRanges.push_back(AngleRange(interval.lowerBound, interval.upperBound));
+
+                while(i < (int)dstAngleRanges.size()){
+                    AngleRange temp = dstAngleRanges[i];
+                    if (temp.lowerBound >= 360) temp.lowerBound -= 360;
+                    if (temp.upperBound > 360)  temp.upperBound -= 360;
+                    newDstAngleRanges.push_back(AngleRange(temp.lowerBound, temp.upperBound));
+                    ++i;
+                }
+            }
         }
     }
     else{
         dstAngleRanges.push_back(AngleRange(interval.lowerBound, interval.upperBound));
+
+        for (int i=0;i<(int)dstAngleRanges.size();++i) {
+            AngleRange temp = dstAngleRanges[i];
+            if (temp.lowerBound >= 360) temp.lowerBound -= 360;
+            if (temp.upperBound > 360)  temp.upperBound -= 360;
+            newDstAngleRanges.push_back(AngleRange(temp.lowerBound, temp.upperBound));
+        }
     }
 
-    for (int i=0;i<(int)dstAngleRanges.size();++i) {
-        AngleRange temp = dstAngleRanges[i];
-        if (temp.lowerBound >= 360) temp.lowerBound -= 360;
-        if (temp.upperBound > 360)  temp.upperBound -= 360;
-        newDstAngleRanges.push_back(AngleRange(temp.lowerBound, temp.upperBound));
-    }
     return newDstAngleRanges;
 
 

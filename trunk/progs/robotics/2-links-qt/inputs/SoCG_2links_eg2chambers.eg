@@ -12,10 +12,10 @@ goalY = 90
 goalTheta1 = 90		# in degrees
 goalTheta2 = 0		# in degrees
 
-epsilon = 4		# resolution parameter
+epsilon = 2		# resolution parameter
 
-len1 = 89		# link1 length
-len2 = 80		# link2 length
+len1 = 98		# link1 length
+len2 = 98		# link2 length
 
 inputDir = inputs	# where to find input files
 fileName = 2chambers.txt	# input environment file
