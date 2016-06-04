@@ -11,7 +11,7 @@ OBJS = ${SRCS:.cpp=.o}
 DEPS = $(SRCS:.cpp=.depends)
 
 # Core level.
-LEV = 1
+LEV = 3
 
 # Build commands.
 all: $(TARGET)

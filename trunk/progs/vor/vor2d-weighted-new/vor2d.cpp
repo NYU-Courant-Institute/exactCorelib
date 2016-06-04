@@ -446,7 +446,7 @@ void blame(vor_box* box) {
     }
     return;
   }
-  if (box->radius() > box->midpoint_clearance()) {
+  if (box->max_lipschitz() * box->radius() > box->midpoint_clearance()) {
     cout << "Box clearance insufficent.\n";
     return;
   }

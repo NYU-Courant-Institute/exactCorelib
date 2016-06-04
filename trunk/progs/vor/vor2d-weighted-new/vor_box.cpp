@@ -15,7 +15,7 @@ using std::set;
 vor_box::vor_box(int depth, int indicator, double center[], vor_qt* tree)
   : depth_(depth), indicator_(indicator), center_(center), tree_(tree),
     children_(nullptr), num_children_(0), is_active_(false), is_degen_(false),
-    bx(TOP), by(TOP) /* Fix! Real initialization is below; forced by C++. */ {
+    bx(TOP), by(TOP) /* Real initialization is below; forced by C++. */ {
   width_ = pow(2, -depth_) * tree_->width();
   bx = Interval(center[0] - width_ / 2.0, center[0] + width_ / 2.0);
   by = Interval(center[1] - width_ / 2.0, center[1] + width_ / 2.0);  
@@ -167,9 +167,6 @@ void vor_box::split() {
 
     for (auto it = objects_.begin(); it != objects_.end(); ++it) {
       if ((*it)->distance(mid_point) <= child_clearance + 2 * lip * children_[i]->radius()) {
-#if DEBUG
-	cout << *it << "\n";
-#endif
     	children_[i]->add_object(*it);
       }
     }
@@ -182,31 +179,30 @@ void vor_box::split() {
       
       if ((*it)->distance(mid_point) <= child_clearance + 2 * lip * children_[i]->radius()) {
 #if DEBUG
-	cout << *it << " " << (*it)->parent() << " " << (dynamic_cast<Edge*>(*it) != nullptr) << "\n";
+	// cout << *it << " " << (*it)->parent() << " " << (dynamic_cast<Edge*>(*it) != nullptr) << "\n";
 #endif
 	children_[i]->add_feature(*it);
 
 #if DEBUG
-	cout << (*it)->distance(mid_point) << " "
-	     << (*it)->parent()->distance(mid_point) << "\n";
+	// cout << (*it)->distance(mid_point) << " "
+	//      << (*it)->parent()->distance(mid_point) << "\n";
 
-	if (e) {
-	  cout << e->get_tstar().eval(bx, by) << " "
-	       << e->get_tstar().eval(center[0], center[1]) << "\n";
-	}
+	// if (e) {
+	//   cout << e->get_tstar().eval(bx, by) << " "
+	//        << e->get_tstar().eval(center[0], center[1]) << "\n";
+	// }
 
 	assert((*it)->distance(mid_point) >= (*it)->parent()->distance(mid_point));
 	assert(std::find(children_[i]->get_objects()->begin(),
 			 children_[i]->get_objects()->end(), (*it)->parent())
 	       != children_[i]->get_objects()->end());
-#endif	
+#endif
       }
     }
   }
-
+  
 #if DEBUG
   for (int i = 0; i < num_children(); i++) {
-    assert(children_[i]->num_objects() > 0);
     assert(children_[i]->num_features() > 0);
     assert(children_[i]->num_features() >= children_[i]->num_objects());
   }
@@ -418,14 +414,11 @@ bool vor_box::cmk(double scale) const {
     BiPoly f12 = f1.gradient().second;
     
     for (int j = i + 1; j < bisectors_.size(); j++) {
-      // // REMOVE REMOVE:
-      // if (!(i == 0 && j == 1)) {
-      // 	return true;
-      // }
-      
       BiPoly f2 = bisectors_[j];
       BiPoly f21 = f2.gradient().first;
       BiPoly f22 = f2.gradient().second;
+
+      assert(f1.eval(bx, by).contains(0) && f2.eval(bx, by).contains(0));
 
       // Evaluate Jacobian at midpoint.
       double z11 = f11.eval(mx, my);
@@ -489,6 +482,17 @@ bool vor_box::cmk(double scale) const {
       double g2m = g2.eval(mx, my - sw);
 
 #if DEBUG
+      cout << "center: " << center_[0] << " " << center_[1]
+	   << " f1-mid: " << f1.eval(mx, my)
+	   << ", f2-mid: " << f2.eval(mx, my)
+	   << " g1-mid: " << g1.eval(mx, my)
+	   << ", g2-mid: " << g2.eval(mx, my)
+	   << "\n";
+      cout << "f1 box: " << f1.eval(bx, by)
+	   << ", f2 box: " << f2.eval(bx, by)
+	   << " g1 box: " << g1.eval(bx, by)
+	   << ", g2 box: " << g2.eval(bx, by)
+	   << "\n";
       cout << "g1p: " << g1p << " g1m: " << g1m << " g2p: " << g2p << " g2m: " << g2m << "\n";
       cout << "g12+: "  << sw * g12.eval(rgt_x, span_y) << " g21+: " << sw * g21.eval(span_x, top_y)
 	   << " g12-: " << sw * g12.eval(lft_x, span_y) << " g21-: " << sw * g21.eval(span_x, bot_y) << "\n";
@@ -535,13 +539,14 @@ bool vor_box::cmk(double scale) const {
 #endif
 	return false;
       }
-#if DEBUG
-      cout << "MK succeeds.\n";
-      cout << mx << " " << my << "\n";
-#endif
     }
   }
 
+#if DEBUG
+  cout << "MK succeeds.\n";
+  cout << mx << " " << my << "\n";
+#endif
+  
   return true;
 }
 
@@ -716,16 +721,24 @@ void vor_box::activate_bisectors() {
 #if DEBUG
   cout << "Bisectors in box " << center_[0] << " " << center_[1] << " " << width_ / 2.0 << ":\n";
 #endif
-  for (Feature* f1 : features_) {
-    for (Feature* f2 : features_) {
+  for (int i = 0; i < features_.size(); i++) {
+    Feature* f1 = features_[i];
+    for (int j = i + 1; j < features_.size(); j++) {
+      Feature* f2 = features_[j];
       if (f1->parent() != f2->parent() || (PSEUDO_VOR && f1 != f2 && (f1->is_edge() && f2->is_edge()))) {
-	bisectors_.push_back(f1->dfun_sq() - f2->dfun_sq());
+	BiPoly bisector = f1->dfun_sq() - f2->dfun_sq();
+	if (bisector.eval(bx, by).contains(0)) {
+	  bisectors_.push_back(bisector);
+	}
 #if DEBUG
 	cout << (f1->dfun_sq() - f2->dfun_sq()).to_string() << "\n";
 #endif
       }
     }
   }
+#if DEBUG
+  cout << "\n";
+#endif
 }
 
 #define MAX_ACTIVE_FEATURES_PER_OBJECT 3
@@ -747,10 +760,10 @@ bool vor_box::few_active_features_per_object() {
   }
 
 #if DEBUG
-  for (auto it = counts.begin(); it != counts.end(); ++it) {
-    cout << it->second << ", ";
-  }
-  cout << "\n";
+  // for (auto it = counts.begin(); it != counts.end(); ++it) {
+  //   cout << it->second << ", ";
+  // }
+  // cout << "\n";
 #endif
 
   // TODO: Activating bisectors here is a hack. Fix.
