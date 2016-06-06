@@ -39,10 +39,12 @@ REQUIREMENTS:
 USAGE:
 
 Run format:
+
 ./subvor <options> <file name>
 
 Options:
-  --help                 Print help message.
+
+--help                 Print help message.
   --geps arg (=1)        Geometric epsilon.
   --aeps arg (=0.015625) Absolute epsilon.
   --save arg (=0)        Save an image of the construction.
@@ -53,10 +55,12 @@ Ex.
 ./subvor --geps=0.01 --save=true shapes-1-1-1
 
 Interaction:
+
 - Clicking anywhere toggles the underlying quadtree grid.
 - Scrolling forward zooms in on the point under the cursor. Zooming backwards zooms out.
 
 Input:
+
 The input file specifies n input points in the plane, (x_0, y_0), ..., (x_{n-1}, y_{n-1}) where x_i, y_i are integers in [0, 1024). Each of k input sites is a simple polygon specified as a sequence of input points in clockwise order. This includes the case where the input sites be points or line segments, i.e. degenerate polygons.
 
 Sites may each be equipped with a separate multiplicative weight or anisotropic norm. A multiplicative weight is specified as "w <c>", where c is the multiplicative weight points. The distance from a point u in the plane to a site V equipped with the multiplicative weight is then min_{v \in V} c * d(u, v), where d(. , .) denotes Euclidean distance. An anisotropic norm is specified as "m <a> <b> <c>", where the metric matrix M = [[a, b], [b, c]]. The distance from a point u in the plane to a site V equipped with the anisotropic norm is then min_{v \in V} sqrt((u - v)^T M (u - v)).
@@ -93,6 +97,7 @@ Input file example (3 unweighted points):
 See the input file "shapes-4-1-1" for a more elaborate example.
 
 Output:
+
 By default, the display will show:
 - Obstacles (shown in black).
 - The computed Voronoi diagram (shown in red).
@@ -105,7 +110,11 @@ Setting aeps smaller will result in fewer blue boxes (in theory, no blue boxes w
 
 BENCHMARKS:
 
-
+There are 4 python scripts for generating (random) inputs:
+- gen_points.py - Generates random (weighted, anisotropically weighted) points.
+- gen_circ.py   - Generates "roots of unity" points.
+- gen_segs.py   - Generates random (weighted, anisotropically weighted) non-intersecting line segments where no three segment endpoints non-collinear.
+- gen_mixed.py   - Generates random (weighted, anisotropically weighted) non-intersecting points and line segments where no input points are collinear with the endpoints of a segment.
 --------------------------------------------------------------------------------
 
 NOTES:
