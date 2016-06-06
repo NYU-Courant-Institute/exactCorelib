@@ -34,6 +34,14 @@ REQUIREMENTS:
 - PNG library            (required; for outputting figures).
 - Python and NumPy       (optional; for generating examples).
 
+All necessary packages can be obtained through Ubuntu's package system via apt-get:
+sudo apt-get install g++-5
+sudo apt-get install libboost-dev
+sudo apt-get install libglui2c2     # May not be available in some Ubuntu versions.
+sudo apt-get install freeglut3-dev
+sudo apt-get install libpng12-dev
+sudo apt-get install python-numpy
+
 --------------------------------------------------------------------------------
 
 USAGE:

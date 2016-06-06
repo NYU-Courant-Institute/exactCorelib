@@ -21,7 +21,7 @@ $(TARGET): $(OBJS)
 	$(CXX) -M $(CXXFLAGS) $< > $@
 
 clean:
-	rm -f *~ *.o $(TARGET)
+	rm -f *~ *.o test_* $(TARGET)
 
 # Test commands.
 paper_figures:
@@ -29,10 +29,10 @@ paper_figures:
 	make random_examples
 
 shapes:
-	./subvor shapes-1-1-1 --aeps=0.001 &
-	./subvor shapes-2-1-1 --aeps=0.001 &
-	./subvor shapes-4-1-1 --aeps=0.001 &
-	./subvor shapes-4-1-1 --geps=0.001 &
+	./subvor benchmarks/shapes-1-1-1 --aeps=0.001 &
+	./subvor benchmarks/shapes-2-1-1 --aeps=0.001 &
+	./subvor benchmarks/shapes-4-1-1 --aeps=0.001 &
+	./subvor benchmarks/shapes-4-1-1 --geps=0.001 &
 
 random_examples:
 	python benchmarks/gen_segs.py 20 -d 300
