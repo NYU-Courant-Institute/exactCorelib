@@ -520,7 +520,7 @@ void run() {
       construct.push(box);                   // TODO: Don't use "construct" queue.
       vor_edge_boxes.push_back(box);
     } else if (!box->cjc(JC_SCALE) ||
-	       !box->cmk(MK_SCALE) ||
+	       /* !box->cmk(MK_SCALE) || */
 	       inter_root(box, INT_SCALE)) { // num_obj == 3
       enqueue_children(box);
     } else {

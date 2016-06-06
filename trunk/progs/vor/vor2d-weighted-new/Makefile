@@ -1,37 +1,27 @@
-# Makefile for weighted Voronoi cell diagrams.
-CORE_PATH=../../..
-include ../Make.options
-
 CXX = g++-5
 CXXFLAGS = -std=c++11 -g
 
-TARGET = vor2d
+TARGET = subvor
 SRCS = $(wildcard *.cpp)
 OBJS = ${SRCS:.cpp=.o}
 DEPS = $(SRCS:.cpp=.depends)
 
-# Core level.
-LEV = 3
+INCLUDE=-lpng -lboost_program_options -L/usr/lib -lglut -lglui -lGLU -lGL
 
 # Build commands.
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $(OBJS) $(LDFLAGS) -lpng -lboost_program_options -L/usr/lib $(CORE_LIB) -lglui -o $(TARGET)
+	$(CXX) $(CXXFLAGS) $(OBJS) $(LDFLAGS) $(INCLUDE) -o $(TARGET)
 
 .cpp.o:
-	$(CXX) $(CXXFLAGS) $(CORE_INC) $(CORE_LIB) -DCORE_LEVEL=$(LEV) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
 
 %.depends: %.cpp
 	$(CXX) -M $(CXXFLAGS) $< > $@
 
 clean:
-	rm -f *~ *.o $(TARGET) lex.yy.c poly.tab.c
-
-parser:
-	bison -d poly.y
-	flex poly.l
-	g++ -std=c++11 -o poly_parser lex.yy.c poly.tab.c 
+	rm -f *~ *.o $(TARGET)
 
 # Test commands.
 test:

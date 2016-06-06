@@ -15,20 +15,109 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
-SubVor implements a prototype of the algorithms described in the companion paper, "Planar Minimization Diagrams via Subdivision with Applications to Anisotropic Voronoi Diagrams" by Huck Bennett, Evanthia Papadopoulou, and Chee Yap, to appear at the Eurographics Symposium on Geometry Processing 2016 (SGP) 2016.
+DESCRIPTION:
+
+SubVor is a program for computing the Voronoi diagram of a set of polygonal inputs, each equipped with a (possibly different) anisotropic norm. SubVor implements a prototype of the algorithms described in the companion paper, "Planar Minimization Diagrams via Subdivision with Applications to Anisotropic Voronoi Diagrams" by Huck Bennett, Evanthia Papadopoulou, and Chee Yap, to appear at the Eurographics Symposium on Geometry Processing 2016 (SGP) 2016.
 
 Huck Bennett wrote SubVor, in part by extending a previous subdivision-based program for computing Voronoi diagrams written by Jyh-Ming Lien. Both programs are (will be) distributed as part of the Core Library (http://cs.nyu.edu/exact/core_pages/intro.html).
 
-------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
-Requirements:
-- Ubuntu 16.04 (earlier versions of Ubuntu and other Linux environments may also work).
-- g++-5 (compiler).
-- Boost (C++ library, http://www.boost.org/).
-- OpenGL, GLUT, and GLUI.
+REQUIREMENTS:
 
-------------------------------------------------------------------------------
+- Ubuntu 16.04 (earlier versions of Ubuntu and other Linux environments will likely also work).
+- g++-5                  (required; compiler).
+- Boost                  (required; C++ library, http://www.boost.org/).
+- OpenGL, GLUT, and GLUI (required; for visualization).
+- PNG library            (required; for outputting figures).
+- Python and NumPy       (optional; for generating examples).
 
-Input format:
+--------------------------------------------------------------------------------
+
+USAGE:
+
+Run format:
+./subvor <options> <file name>
+
+Options:
+  --help                 Print help message.
+  --geps arg (=1)        Geometric epsilon.
+  --aeps arg (=0.015625) Absolute epsilon.
+  --save arg (=0)        Save an image of the construction.
+  --display arg (=1)     Display the consturcted Voronoi diagram.
+  --grid arg (=1)        Display the quadtree grid.
+
+Ex.
+./subvor --geps=0.01 --save=true shapes-1-1-1
+
+Interaction:
+- Clicking anywhere toggles the underlying quadtree grid.
+- Scrolling forward zooms in on the point under the cursor. Zooming backwards zooms out.
+
+Input:
+The input file specifies n input points in the plane, (x_0, y_0), ..., (x_{n-1}, y_{n-1}) where x_i, y_i are integers in [0, 1024). Each of k input sites is a simple polygon specified as a sequence of input points in clockwise order. This includes the case where the input sites be points or line segments, i.e. degenerate polygons.
+
+Sites may each be equipped with a separate multiplicative weight or anisotropic norm. A multiplicative weight is specified as "w <c>", where c is the multiplicative weight points. The distance from a point u in the plane to a site V equipped with the multiplicative weight is then min_{v \in V} c * d(u, v), where d(. , .) denotes Euclidean distance. An anisotropic norm is specified as "m <a> <b> <c>", where the metric matrix M = [[a, b], [b, c]]. The distance from a point u in the plane to a site V equipped with the anisotropic norm is then min_{v \in V} sqrt((u - v)^T M (u - v)).
+
+Input file format:
+
+<Comment lines beginning with '#'>
+<total number n of vertices used in input polygons>
+
+x_0 y_0
+x_1 y_1
+...
+x_{n-1} y_{n-1}
+
+<total number k of input sites>
+<optional multiplicative weight/anisotropic norm information>
+<sequence 1 of input point indices given in clockwise order>
+...
+<optional multiplicative weight/anisotropic norm information>
+<sequence k of input point indices given in clockwise order>
+
+Input file example (3 unweighted points):
+
+3
+300 300
+900 300
+600 900
+
+3
+0
+1
+2
+
+See the input file "shapes-4-1-1" for a more elaborate example.
+
+Output:
+By default, the display will show:
+- Obstacles (shown in black).
+- The computed Voronoi diagram (shown in red).
+- The subdivision grid (shown in gray).
+- Boxes split down to radius absolute epsilon (aeps) in which we cannot decide the topology (filled with blue).
+
+Setting aeps smaller will result in fewer blue boxes (in theory, no blue boxes when aeps is sufficiently small and the input is in general position). Setting geps smaller will result in a smoother Voronoi bisector (with Hausdorff distance arbitrarily close to the actual underlying Voronoi bisector for small enough geps).
+
+--------------------------------------------------------------------------------
+
+BENCHMARKS:
+
+
+--------------------------------------------------------------------------------
+
+NOTES:
+
+This program is a prototype. There are several major and minor issues with the program that should be noted. The most important ones are:
+
+Program issues:
+1. Use of machine precision (double precision) in computations.
+2. Rootbox construction. Currently the program follows the subdivision phase described in the paper fairly closely, but we are shortcutting the detailed rootbox construction.
+3. Use non-naive (e.g. centered-form) polynomial evaluation.
+
+Clean-up issues:
+1. Fix rampant memory leaking.
+2. Use standard (e.g. Boost) interval and bivariate polynomial classes.
+3. General clean-up, renaming, reorganization, and documentation.
