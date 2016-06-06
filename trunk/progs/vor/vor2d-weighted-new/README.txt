@@ -19,9 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 DESCRIPTION:
 
-SubVor is a program for computing the Voronoi diagram of a set of polygonal inputs, each equipped with a (possibly different) anisotropic norm. SubVor implements a prototype of the algorithms described in the companion paper, "Planar Minimization Diagrams via Subdivision with Applications to Anisotropic Voronoi Diagrams" by Huck Bennett, Evanthia Papadopoulou, and Chee Yap, to appear at the Eurographics Symposium on Geometry Processing 2016 (SGP) 2016.
+SubVor is a prototype of a program for computing the Voronoi diagram of a set of polygonal inputs, each equipped with a (possibly different) anisotropic norm. SubVor implements the algorithms described in the companion paper, "Planar Minimization Diagrams via Subdivision with Applications to Anisotropic Voronoi Diagrams" by Huck Bennett, Evanthia Papadopoulou, and Chee Yap, to appear at the Eurographics Symposium on Geometry Processing 2016 (SGP) 2016.
 
-Huck Bennett wrote SubVor, in part by extending a previous subdivision-based program for computing Voronoi diagrams written by Jyh-Ming Lien. Both programs are (will be) distributed as part of the Core Library (http://cs.nyu.edu/exact/core_pages/intro.html).
+Huck Bennett wrote SubVor, in part by using infrastructure by and extending a previous program written by Jyh-Ming Lien. Both programs are (will be) distributed as part of the Core Library (http://cs.nyu.edu/exact/core_pages/intro.html).
 
 --------------------------------------------------------------------------------
 
@@ -111,10 +111,11 @@ Setting aeps smaller will result in fewer blue boxes (in theory, no blue boxes w
 BENCHMARKS:
 
 There are 4 python scripts for generating (random) inputs:
-- gen_points.py - Generates random (weighted, anisotropically weighted) points.
+- gen_points.py - Generates random (anisotropically weighted) points.
 - gen_circ.py   - Generates "roots of unity" points.
-- gen_segs.py   - Generates random (weighted, anisotropically weighted) non-intersecting line segments where no three segment endpoints non-collinear.
-- gen_mixed.py   - Generates random (weighted, anisotropically weighted) non-intersecting points and line segments where no input points are collinear with the endpoints of a segment.
+- gen_segs.py   - Generates random (anisotropically weighted) non-intersecting line segments where no three segment endpoints non-collinear.
+- gen_mixed.py  - Generates random points and random line segments.
+
 --------------------------------------------------------------------------------
 
 NOTES:

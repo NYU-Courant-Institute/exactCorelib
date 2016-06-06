@@ -24,43 +24,47 @@ clean:
 	rm -f *~ *.o $(TARGET)
 
 # Test commands.
-test:
-	./vor2d ./tests/test_input &
+paper_figures:
+	make shapes
+	make random_examples
+
+shapes:
+	./subvor shapes-1-1-1 --aeps=0.001 &
+	./subvor shapes-2-1-1 --aeps=0.001 &
+	./subvor shapes-4-1-1 --aeps=0.001 &
+	./subvor shapes-4-1-1 --geps=0.001 &
+
+random_examples:
+	python benchmarks/gen_segs.py 20 -d 300
+	./subvor test_segs_d_300_20 &
+	./subvor test_segs_d_300_20 --geps=0.001 &
+	python benchmarks/gen_mixed.py 10 10 
+	./subvor test_mixed_10_pts_10_sgs --geps=0.001 &
+	python benchmarks/gen_points.py 20 -m -l 10
+	./subvor test_m_l_10_20 --geps=0.001 &
 
 conics:
-	./vor2d conics/ellipse &
-	./vor2d conics/parabola &
-	./vor2d conics/hyperbola &
+	./subvor benchmarks/conics/ellipse &
+	./subvor benchmarks/conics/parabola &
+	./subvor benchmarks/conics/hyperbola &
 
 conics_highres:
-	./vor2d conics/ellipse --geps=0.001 &
-	./vor2d conics/parabola --geps=0.001 &
-	./vor2d conics/hyperbola --geps=0.001 &
+	./subvor benchmarks/conics/ellipse --geps=0.001 &
+	./subvor benchmarks/conics/parabola --geps=0.001 &
+	./subvor benchmarks/conics/hyperbola --geps=0.001 &
 
-rand_w_10:
-	python gen_points.py 10 -w
-	./vor2d output_w_10 &
+rand_w_points_10:
+	python benchmarks/gen_points.py 10 -w
+	./subvor test_w_l_6_10 --aeps=0.001 &
 
-rand_w_10_geps:
-	python gen_points.py 10 -w
-	./vor2d output_w_10 --geps=0.001 &
+rand_w_points_10_highres:
+	python benchmarks/gen_points.py 10 -w
+	./subvor test_w_l_6_10 --geps=0.001 &
 
-rand_w_100:
-	python gen_points.py 100 -w
-	./vor2d output_w_100 &
+rand_w_segs_10:
+	python benchmarks/gen_segs.py 10 -w
+	./subvor test_segs_w_l_6_10 --aeps=0.001 &
 
-rand_w_100_geps:
-	python gen_points.py 100 -w
-	./vor2d output_w_100 --geps=0.001 &
-
-valgrind:
-	valgrind ./vor2d test_input
-
-poly_an:
-	./vor2d poly_an_test_input &
-
-an:
-	./vor2d an_test_input &
-
-box_test:
-	./vor2d c_ellipse3
+rand_w_segs_10_highres:
+	python benchmarks/gen_segs.py 10 -w
+	./subvor test_segs_w_l_6_10 --geps=0.001 &
