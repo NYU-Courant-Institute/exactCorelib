@@ -15,6 +15,14 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+gen_circ.py generates equally spaced points on the unit circle (i.e. the nth roots of unity).
+
+Usage:
+gen_circ.py <number of points>
+
+Example usage:
+gen_circ.py 10
 '''
 
 import random

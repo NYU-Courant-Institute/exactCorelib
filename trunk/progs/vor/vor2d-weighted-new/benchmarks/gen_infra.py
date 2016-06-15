@@ -15,6 +15,10 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+gen_infra.py provides infrastructure for the other test generation files, and is not meant to be used on its own.
+
+Reference: Section 1.5 in "Computational Geometry in C" by Joesph O'Rourke.
 '''
 
 import random

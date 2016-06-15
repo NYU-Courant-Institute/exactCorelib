@@ -15,14 +15,21 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+gen_segs.py generates random non-intersecting line segments in the plane such that no three segment endpoints are collinear.
+
+Usage:
+gen_segs.py <number of line segments> <options>
+
+Options:
+-w          -- Use weights.
+-m          -- Use anisotropic weights.
+-l <weight> -- Sets the maximum weight strength. This affects both weighted and anisotropically weighted diagrams.
+-d <length> -- Sets an upper bound on the length of line segments.
+
+Example usage:
+python gen_segs.py 10 -m -l 10 -d 300
 '''
-
-"""
-Code for generating random non-collinear, non-intersecting line segments
- in a box.
-
-Reference: Section 1.5 in "Computational Geometry in C" by Joesph O'Rourke.
-"""
 
 import numpy as np
 from sys import argv
@@ -65,7 +72,7 @@ def output_file(n):
     f.write("\n" + str(n) + "\n")
     for i in range(0, 2 * n, 2):
         if use_weights:
-            f.write("w " + str(iur(M_WEIGHT)) + "\n")
+            f.write("w " + str(iur(weight)) + "\n")
         elif use_matrix:
             m = raniso(weight)
             a, b, c = m[0][0], m[0][1], m[1][1]

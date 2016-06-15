@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 DESCRIPTION:
 
-SubVor is a prototype of a program for computing the Voronoi diagram of a set of polygonal inputs, each equipped with a (possibly different) anisotropic norm. SubVor implements the algorithms described in the companion paper, "Planar Minimization Diagrams via Subdivision with Applications to Anisotropic Voronoi Diagrams" by Huck Bennett, Evanthia Papadopoulou, and Chee Yap, to appear at the Eurographics Symposium on Geometry Processing 2016 (SGP) 2016.
+SubVor is a prototype of a program for computing the Voronoi diagram of a set of polygonal inputs, each equipped with a (possibly different) anisotropic norm. SubVor implements the algorithms described in the companion paper, "Planar Minimization Diagrams via Subdivision with Applications to Anisotropic Voronoi Diagrams" by Huck Bennett, Evanthia Papadopoulou, and Chee Yap, to appear at the Eurographics Symposium on Geometry Processing (SGP) 2016.
 
 Huck Bennett wrote SubVor, in part by using infrastructure by and extending a previous program written by Jyh-Ming Lien. Both programs are (will be) distributed as part of the Core Library (http://cs.nyu.edu/exact/core_pages/intro.html).
 
@@ -118,11 +118,20 @@ Setting aeps smaller will result in fewer blue boxes (in theory, no blue boxes w
 
 BENCHMARKS:
 
-There are 4 python scripts for generating (random) inputs:
+There are a number of examples in the "benchmarks" folder which may be tested using the Makefile. 
+- "make paper_figures" runs SubVor on 8 tests corresponding to those in the paper.
+- "make shapes" runs SubVor on several benchmarks with polygonal input. The sites are the same in each example, but are equipped with different norms in the different benchmarks.
+- "make random_examples" runs various random tests.
+- "make conics"/"make conics_highres" produce diagrams for an ellipse, parabola, and hyperbola. The second command computes the diagrams to high geometric precision.
+- "make rand_w_points_10/rand_w_points_10_highres" produces a random input of 10 points, each with a randomly generated multiplicative weight. The second command computes the diagrams to high geometric precision.
+- "make rand_w_segs_10/rand_w_segs_10_highres" produces a random input of 10 line segments, each with a randomly generated multiplicative weight. The second command computes the diagrams to high geometric precision.
+
+There are four Python scripts for generating random inputs with various properties:
 - gen_points.py - Generates random (anisotropically weighted) points.
 - gen_circ.py   - Generates "roots of unity" points.
 - gen_segs.py   - Generates random (anisotropically weighted) non-intersecting line segments where no three segment endpoints non-collinear.
 - gen_mixed.py  - Generates random points and random line segments.
+See the individual files for documentation.
 
 --------------------------------------------------------------------------------
 
@@ -133,7 +142,7 @@ This program is a prototype. There are several major and minor issues with the p
 Program issues:
 1. Use of machine precision (double precision) in computations.
 2. Rootbox construction. Currently the program follows the subdivision phase described in the paper fairly closely, but we are shortcutting the detailed rootbox construction.
-3. Use non-naive (e.g. centered-form) polynomial evaluation.
+3. Use of non-naive (e.g. centered-form) polynomial evaluation.
 
 Clean-up issues:
 1. Fix rampant memory leaking.

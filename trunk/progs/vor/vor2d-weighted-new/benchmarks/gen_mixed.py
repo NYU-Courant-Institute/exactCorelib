@@ -15,12 +15,23 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
 
-"""
-Code for generating random non-collinear, non-intersecting 
-points and line segments in a box.
-"""
+gen_mixed genereates random non-collinear, non-intersecting points and line segments in the plane.
+
+Usage:
+gen_mixed.py <number of points> <number of segments> <options>
+
+Options:
+-wp         -- Use weights for points.
+-mp         -- Use anisotropic weights for points.
+-ws         -- Use weights for line segments.
+-ms         -- Use anisotropic weights for line segments.
+-l <weight> -- Sets the maximum weight strength. This affects both weighted and anisotropically weighted diagrams.
+-d <length> -- Sets an upper bound on the length of line segments.
+
+Example usage:
+python gen_mixed.py 10 10 -wp -ms -l 10 -d 300
+'''
 
 import numpy as np
 from sys import argv
@@ -80,7 +91,7 @@ def output_file(np, ns):
     f.write("\n" + str(ns + np) + "\n")
     for i in range(0, 2 * ns, 2):
         if use_weights_sgs:
-            f.write("w " + str(iur(M_WEIGHT)) + "\n")
+            f.write("w " + str(iur(weight)) + "\n")
         elif use_matrix_sgs:
             m = raniso(weight)
             a, b, c = m[0][0], m[0][1], m[1][1]
@@ -89,7 +100,7 @@ def output_file(np, ns):
 
     for i in range(2 * ns, 2 * ns + np):
         if use_weights_pts:
-            f.write("w " + str(iur(M_WEIGHT)) + "\n")
+            f.write("w " + str(iur(weight)) + "\n")
         elif use_matrix_pts:
             m = raniso(weight)
             a, b, c = m[0][0], m[0][1], m[1][1]

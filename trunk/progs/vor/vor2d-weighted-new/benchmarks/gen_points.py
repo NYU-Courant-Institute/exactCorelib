@@ -15,6 +15,19 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+gen_points.py generates random points in the plane.
+
+Usage:
+gen_points.py <number of points> <options>
+
+Options:
+-w          -- Use weights.
+-m          -- Use anisotropic weights.
+-l <weight> -- Sets the maximum weight strength. This affects both weighted and anisotropically weighted diagrams.
+
+Example usage:
+python gen_points.py 10 -w -l 10
 '''
 
 import numpy as np
@@ -47,7 +60,7 @@ def output_file(n):
     f.write("\n" + sn + "\n")
     for i in range(n):
         if use_weights:
-            f.write("w " + str(iur(M_WEIGHT)) + "\n")
+            f.write("w " + str(iur(weight)) + "\n")
         elif use_matrix:
             m = raniso(weight)
             a, b, c = m[0][0], m[0][1], m[1][1]

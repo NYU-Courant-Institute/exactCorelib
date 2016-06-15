@@ -102,7 +102,7 @@ void init_options(int argc, char* argv[]) {
   desc.add_options()
     ("help", "Print this help message.")
     ("geps", po::value<double>(&geom_eps)->default_value(1.0), "Geometric epsilon.")
-    ("aeps", po::value<double>(&abs_eps)->default_value(1.0d / (1 << 6)), "Absolute epsilon.")
+    ("aeps", po::value<double>(&abs_eps)->default_value(1.0 / (1 << 6)), "Absolute epsilon.")
     ("save", po::value<bool>(&save_image)->default_value(false), "Save an image of the construction.")
     ("display", po::value<bool>(&display_image)->default_value(true), "Display the consturcted Voronoi diagram.")
     ("grid", po::value<bool>(&show_grid)->default_value(true), "Display the quadtree grid.")
@@ -429,9 +429,9 @@ void Mouse(int button, int state, int x, int y) {
 }
 
 #define MAX_OBJECTS_FOR_CONSTRUCTION 3 // TODO: Handle degenerate input. I.e., = infinity.
-#define MK_SCALE 2.0
-#define JC_SCALE 6.0
-#define INT_SCALE 6.0
+#define MK_SCALE 1.0
+#define JC_SCALE 3.0
+#define INT_SCALE 3.0
 
 bool inter_root(vor_box* box, double scale) {
   // TODO: Avoid iterating through all vertex boxes.
@@ -500,11 +500,11 @@ void blame(vor_box* box) {
 
 void enqueue_children(vor_box* box) {
   if (box->radius() < abs_eps) {
-      cout << "Warning: absolute epsilon reached.\n";
-      blame(box);
-      box->set_degen(true);
-      degen_boxes.push_back(box);
-      return;
+    cout << "Warning: absolute epsilon reached.\n";
+    blame(box);
+    box->set_degen(true);
+    degen_boxes.push_back(box);
+    return;
   }
   
   box->smooth_split();
@@ -539,7 +539,7 @@ void run() {
       construct.push(box);                   // TODO: Don't use "construct" queue.
       vor_edge_boxes.push_back(box);
     } else if (!box->cjc(JC_SCALE) ||
-	       /* !box->cmk(MK_SCALE) || */
+	       !box->cmk(MK_SCALE) ||
 	       inter_root(box, INT_SCALE)) { // num_obj == 3
       enqueue_children(box);
     } else {
