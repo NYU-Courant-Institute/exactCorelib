@@ -41,8 +41,17 @@ Description:
 	from New York State in the 2013 Siemens Math, Science and Technology
 	Competition (one of 100 students nationwide).  
 
+	(6) Subdirectory ball:
+	This is the work of Surin Ahn, a high school student at Mamaroneck
+	Union Free School, supervised by Chee Yap.  She was a Regional Finalist
+	from New York State in the 2013 Siemens Math, Science and Technology
+	Competition (one of 100 students nationwide).  
+
 Author:
-	Y.-J.Chiang, C.Yap, C.Wang (2012).
+	2012: Disc/Triangle: Y.-J.Chiang, C.Yap, C.Wang 
+	2013: 2-Link: Zhongdi Luo and C.Yap
+	2013: Ball: Surin Ahn and C.Yap
+	2014: Rod: Ziyao Wei and C.Yap
 
 $Id: README $
 ============================================================

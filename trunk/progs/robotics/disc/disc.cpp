@@ -62,10 +62,8 @@
 #include <gl/glui.h>
 #endif
 #ifdef __APPLE__
-#include "glui.h"
+#include <GLUI/glui.h>
 #endif
-
-#include <GL/glui.h>
 
 #include <set>
 //#include "CoreIo.h"

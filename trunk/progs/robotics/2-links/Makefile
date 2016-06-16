@@ -576,7 +576,6 @@ eg13 troom: ./2-links
 		512 512 $(windowPosX) $(windowPosY) \
 		2 $(seed)  $(inputDir) \
 		0 -95 0.08 \
-		$(verbose) $(title) \
 		$(verbose) "Eg13: T-room, path! (L1=149/150 => path/NOPATH)" \
 		$(smarterStrategy) \
 		$(threshold) \

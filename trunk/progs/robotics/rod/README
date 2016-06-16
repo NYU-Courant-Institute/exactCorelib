@@ -108,7 +108,10 @@ TODO:
 		we should allow the input of 3 points to
 		generate the fourth point when desired.
 (6) Generate more complex scenes:
-	need some tools for this
+	Need some tools for this.  Introduced an "Enhanced Syntax" for
+	describing polyhedral scenes, and a python program
+	"nput_interpreter.py" to convert an Enhanced Syntax to the "Basic
+	Syntax".
 (7) Transparencies:
 	the obstacles should allow some transparency so we can see obscured ball motion.
 (8) Multiple views:  should be able to set up two simultaneous views
