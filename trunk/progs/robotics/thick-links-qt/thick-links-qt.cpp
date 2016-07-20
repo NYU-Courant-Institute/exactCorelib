@@ -121,7 +121,7 @@ using namespace std;
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////
-string egName("non-crossing-2links_Troom.eg");
+string egName("WAFR2016_T-room3_a.eg");
 char egNameList[200][200];
 int numEg = 0;
 
@@ -176,7 +176,7 @@ double bandwidth = 0;
 
 vector<Box*> PATH;
 
-
+int ompl = 0;
 
 extern std::vector<int> expansions;
 
@@ -260,6 +260,7 @@ extern bool step;
 
 
 
+bool showPath(false);
 bool runAnim(true);
 bool pauseAnim(false);
 bool replayAnim(false);
@@ -270,17 +271,31 @@ extern int animationSpeedScaleBox;
 //find path using simple heuristic:
 //use distance to beta as key in PQ, see dijkstraQueue
 template<typename Cmp>
-bool findPath(Box* a, QuadTree* QT, int& ct) {
+bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
     bool isPath = false;
     vector<Box*> toReset;
     a->dist2Source = 0;
+//	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!237 a  " << a->x << " " << a->y
+//			<< " " << a->xi[0] << " " << a->xi[1] << " " << a->xi[2] << " "
+//			<< a->xi[3] << " " << a->status << endl;
+//	cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!238 a->dist2Source  "
+//			<< a->dist2Source << endl;
     dijkstraQueue<Cmp> dijQ;
     dijQ.push(a);
     toReset.push_back(a);
+    Box::Order tempOrder;
+    if (beta[2] > beta[3]) {
+        tempOrder = Box::GT;
+    } else {
+        tempOrder = Box::LT;
+    }
     while (!dijQ.empty()) {
 
         Box* current = dijQ.extract();
         current->visited = true;
+
+//		int aaa = dijQ.size();
+//		cout<<current->x<< " "<<current->y<<" "<<current->width<<" "<<current->status<<" "<<endl;
 
         // if current is MIXED, try expand it and push the children that is
         // ACTUALLY neighbors of the source set (set containing alpha) into the dijQ again
@@ -289,14 +304,31 @@ bool findPath(Box* a, QuadTree* QT, int& ct) {
             if (QT->expand(current, cldrn)) {
                 ++ct;
                 for (int i = 0; i < (int) cldrn.size(); ++i) {
+
                     // go through neighbors of each child to see if it's in source set
                     // if yes, this child go into the dijQ
                     bool isNeighborOfSourceSet = false;
-                    for (int j = 0; j < 4 && !isNeighborOfSourceSet; ++j) {
-                        for (vector<Box*>::iterator iter = cldrn[i]->Nhbrs[j].begin(); iter < cldrn[i]->Nhbrs[j].end(); ++iter) {
+                    for (int j = 0; j < 5 && !isNeighborOfSourceSet; ++j) {
+                        for (vector<Box*>::iterator iter =
+                                cldrn[i]->Nhbrs[j].begin();
+                                iter < cldrn[i]->Nhbrs[j].end(); ++iter) {
                             Box* n = *iter;
-
+//							cout
+//									<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!264 dist2Source != 0  "
+//									<< n->x << " " << n->y << " " << n->xi[0]
+//									<< " " << n->xi[1] << " " << n->xi[2] << " "
+//									<< n->xi[3] << " " << endl;
+//							cout
+//									<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!267 a->dist2Source  "
+//									<< a->dist2Source << endl;
+//							cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!268 a  "
+//									<< a->x << " " << a->y << " " << a->xi[0]
+//									<< " " << a->xi[1] << " " << a->xi[2] << " "
+//									<< a->xi[3] << " " << endl;
                             if (n->dist2Source == 0) {
+//								cout
+//										<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!265 dist2Source = 0  "
+//										<< n->x << " " << n->y << endl;
                                 isNeighborOfSourceSet = true;
                                 break;
                             }
@@ -308,6 +340,10 @@ bool findPath(Box* a, QuadTree* QT, int& ct) {
                         //if it's FREE, also insert to source set
                         case Box::FREE:
                             cldrn[i]->dist2Source = 0;
+//							cout
+//									<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!277 dist2Source = 0  "
+//									<< cldrn[i]->x << " " << cldrn[i]->y
+//									<< endl;
                             dijQ.push(cldrn[i]);
                             toReset.push_back(cldrn[i]);
                             break;
@@ -325,36 +361,52 @@ bool findPath(Box* a, QuadTree* QT, int& ct) {
                     }
                 }
             }
-
-            if (current->shouldSplit2D && current->height / 2 >= epsilon && current->width / 2 >= epsilon) {
+            if (current->shouldSplit2D && current->height / 2 >= epsilon
+                    && current->width / 2 >= epsilon) {
                 dijQ.push(current);
                 toReset.push_back(current);
+//				cout<<"push"<<endl;
             }
+
             continue;
         }
 
+//		cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!302 a->dist2Source  "
+//				<< a->dist2Source << endl;
         //found path!
-        if (current->status == Box::FREE && current->contains(beta[0], beta[1], beta[2], beta[3])) {
-            isPath = true;
-            break;
+        if (current->status == Box::FREE
+                && current->contains(beta[0], beta[1], beta[2], beta[3])) {
+            if (crossingOption) {
+                if ((current->order == Box::ALL || current->order == tempOrder)
+                        && current->dist2Source == 0) {
+                    isPath = true;
+                    break;
+                }
+            } else {
+                isPath = true;
+                break;
+            }
+
         }
 
         if (current->status == Box::FREE) {
             // if current is not MIXED, then must be FREE
             // go through it's neighbors and add FREE and MIXED ones to dijQ
             // also add FREE ones to source set
-            for (int i = 0; i < 4; ++i) {
-                int cnt = 0;
-
-                for (vector<Box*>::iterator iter = current->Nhbrs[i].begin(); iter < current->Nhbrs[i].end(); ++iter) {
-                    ++cnt;
-                }
-
-                for (vector<Box*>::iterator iter = current->Nhbrs[i].begin(); iter < current->Nhbrs[i].end(); ++iter) {
+            for (int i = 0; i < 5; ++i) {
+                for (vector<Box*>::iterator iter = current->Nhbrs[i].begin();
+                        iter < current->Nhbrs[i].end(); ++iter) {
                     Box* neighbor = *iter;
-                    if (!neighbor->visited && neighbor->dist2Source == -1 && (neighbor->status == Box::FREE || neighbor->status == Box::MIXED)) {
+                    if (!neighbor->visited && neighbor->dist2Source == -1
+                            && (neighbor->status == Box::FREE
+                                    || neighbor->status == Box::MIXED)) {
+                        //					cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!317 "
+                        //							<< neighbor->x << " " << neighbor->y << endl;
                         if (neighbor->status == Box::FREE) {
                             neighbor->dist2Source = 0;
+                            //						cout
+                            //								<< "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!316 dist2Source = 0  "
+                            //								<< neighbor->x << " " << neighbor->y << endl;
                         }
                         dijQ.push(neighbor);
                         toReset.push_back(neighbor);
@@ -362,7 +414,10 @@ bool findPath(Box* a, QuadTree* QT, int& ct) {
                 }
             }
         }
+
     }
+
+//	cout<<"before reset"<<endl;
 
     //these two fields are also used in dijkstraShortestPath
     // need to reset
@@ -562,6 +617,43 @@ void run() {
     genEmptyTree();
 
     if (interactive == 0) {
+        if (bandwidth > 180) {
+            bandwidth = 180;
+        }
+        if (bandwidth < 0) {
+            bandwidth = 0;
+        }
+
+        if (L1 > L2) {
+            R0 = L1;
+        } else {
+            R0 = L2;
+        }
+
+        while (alpha[2] >= 360) {
+            alpha[2] -= 360;
+        }
+        while (alpha[2] < 0) {
+            alpha[2] += 360;
+        }
+             while (alpha[3] >= 360) {
+            alpha[3] -= 360;
+        }
+        while (alpha[3] < 0) {
+            alpha[3] += 360;
+        }
+        while (beta[2] >= 360) {
+            beta[2] -= 360;
+        }
+        while (beta[2] < 0) {
+            beta[2] += 360;
+        }
+            while (beta[3] >= 360) {
+            beta[3] -= 360;
+        }
+        while (beta[3] < 0) {
+            beta[3] += 360;
+        }
     }
     Timer t;
 
@@ -572,13 +664,17 @@ void run() {
 
     if (QType == 0 || QType == 1) {
         boxA = QT->getBox(alpha[0], alpha[1], alpha[2], alpha[3], ct);
-        if (boxA == NULL) {
+        if (!boxA
+                || (crossingOption
+                        && angleDistance(alpha[2], alpha[3]) <= bandwidth)) {
             noPath = true;
             mw_out << "Start Configuration is not free\n";
         }
 
         boxB = QT->getBox(beta[0], beta[1], beta[2], beta[3], ct);
-        if (boxB == NULL) {
+        if (!boxB
+                || (crossingOption
+                        && angleDistance(beta[2], beta[3]) <= bandwidth)) {
             noPath = true;
             mw_out << "Goal Configuration is not free\n";
         }
@@ -596,23 +692,27 @@ void run() {
         }
     } else if (QType == 2 || QType == 3 || QType == 4) {
         boxA = QT->getBox(alpha[0], alpha[1], alpha[2], alpha[3], ct);
-        if (boxA == NULL) {
+        if (!boxA
+                || (crossingOption
+                        && angleDistance(alpha[2], alpha[3]) <= bandwidth)) {
             noPath = true;
             mw_out << "Start Configuration is not free\n";
         }
 
         boxB = QT->getBox(beta[0], beta[1], beta[2], beta[3], ct);
-        if (boxB == NULL) {
+        if (!boxB
+                || (crossingOption
+                        && angleDistance(beta[2], beta[3]) <= bandwidth)) {
             noPath = true;
             mw_out << "Goal Configuration is not free\n";
         }
         if (!noPath) {
             if (QType == 2) {
-                noPath = !findPath<DistCmp>(boxA, QT, ct);
+                noPath = !findPath<DistCmp>(boxA, boxB, QT, ct);
             } else if (QType == 3) {
-                noPath = !findPath<DistPlusSizeCmp>(boxA, QT, ct);
+                noPath = !findPath<DistPlusSizeCmp>(boxA, boxB, QT, ct);
             } else if (QType == 4) {
-                noPath = !findPath<VorCmp>(boxA, QT, ct);
+                noPath = !findPath<VorCmp>(boxA, boxB, QT, ct);
             }
         }
     }
@@ -621,7 +721,7 @@ void run() {
     if (!noPath) {
         Graph graph;
         PATH.clear();
-        PATH = graph.dijkstraShortestPath(boxA);
+        PATH = graph.dijkstraShortestPath(boxA, boxB);
     }
     if (verboseOption)
         cout << ">>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>\n";
@@ -869,6 +969,19 @@ void parseExampleFile() {
             verboseOption = atoi(sptr);
         }
 
+        if(strcmp(sptr, "non-crossing") == 0) {
+            sptr = strtok(NULL, "=: \t");
+            crossingOption = atoi(sptr);
+        }
+        if(strcmp(sptr, "bandwidth") == 0) {
+            sptr = strtok(NULL, "=: \t");
+            bandwidth = atof(sptr);
+        }
+        if (strcmp(sptr, "ompl") == 0) {
+            sptr = strtok(NULL, "=: \t");
+            ompl = atoi(sptr);
+        }
+
 
         if (strcmp(sptr, "animationSpeed") == 0) {
             sptr = strtok(NULL, "=: \t");
@@ -882,6 +995,15 @@ void parseExampleFile() {
             sptr = strtok(NULL, "=: \t");
             animationSpeedScaleBox = atoi(sptr);
         }
+    }
+
+    // OMPL
+    if(ompl == 1){
+        double degToRad = PI/180.0f;
+        alpha[0] = alpha[0] - L1*cos((alpha[2])*degToRad)*0.5f;
+        alpha[1] = alpha[1] - L1*sin((alpha[2])*degToRad)*0.5f;
+        beta[0] = beta[0] - L1*cos((beta[2])*degToRad)*0.5f;
+        beta[1] = beta[1] - L1*sin((beta[2])*degToRad)*0.5f;
     }
 }
 
@@ -938,7 +1060,8 @@ void parseConfigFile(Box* b) {
                 b->vorCorners.push_back(ptVec.back());
                 ptSet.insert(pt);
                 if (ptVec.size() > 1) {
-                    Wall* w = new Wall(ptVec[ptVec.size() - 2], ptVec[ptVec.size() - 1]);
+                    Wall* w = new Wall(ptVec[ptVec.size() - 2],
+                            ptVec[ptVec.size() - 1]);
                     b->addWall(w);
                     b->vorWalls.push_back(w);
                 }

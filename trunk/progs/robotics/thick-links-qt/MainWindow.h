@@ -44,6 +44,7 @@ private slots:
 
     void on_exit_clicked();
 
+    void on_showPath_clicked();
     void on_showAnim_clicked();
     void on_pauseAnim_clicked();
     void on_replayAnim_clicked();

@@ -70,14 +70,22 @@ AngleRange calcNuKappa(Point v, Corner *c, double link_length, double tau);
 AngleRange calcAngleRangeVC(Point v, Corner *c, double link_length, double tau);
 AngleRange calcAngleRangeVW(Point v, Wall *w, double link_length, double tau);
 
+double debug_x, debug_y;
 
 bool Box::split2D(vector<Box*>& chldn) {
     shouldSplit2D = false;
+//	//todo do sth to return false
+//	if (this->height < epsilon || this->width < epsilon) {
+////		std::cout << "split2D 94" << endl;
+//		return 0;
+//	}
 
     if (!this->isLeaf || this->status == FREE || this->status == STUCK) {
+
         return 0;
     }
 
+//	std::cout << "split2D" << endl;
     Box* children[4];
     //same as quadrants I, II, III, IV
     children[2] = new Box(x - width / 4, y + height / 4, width / 2, height / 2);
@@ -108,7 +116,8 @@ bool Box::split2D(vector<Box*>& chldn) {
     children[3]->Nhbrs[1].push_back(children[2]);
 
     for (int i = 0; i < 4; ++i) {
-        for (vector<Box*>::iterator iter = this->Nhbrs[i].begin(); iter != this->Nhbrs[i].end(); ++iter) {
+        for (vector<Box*>::iterator iter = this->Nhbrs[i].begin();
+                iter != this->Nhbrs[i].end(); ++iter) {
             Box* b = *iter;
             int foundDst = 0;
             for (int j = 0; j < 4; ++j) {
@@ -161,11 +170,16 @@ bool Box::split2D(vector<Box*>& chldn) {
         chldn.push_back(children[i]);
     }
     expansions.push_back(pAllLeaf->size());
+    //list<Box*>::iterator it = find(pAllLeaf->begin(), pAllLeaf->end(), this);
+    //pAllLeaf->erase(it);
 
     return true;
 }
 
 bool Box::splitAngle(vector<Box*>& chldn) {
+
+    debug_x = this->x;
+    debug_y = this->y;
 
     if (!this->isLeaf || this->status == FREE || this->status == STUCK) {
         return 0;
@@ -665,43 +679,43 @@ bool Box::splitAngle(vector<Box*>& chldn) {
     }
 
 
-//    if(this->x == 209 && this->y == 133){
-//        fprintf(fp, "l1AngleRanges %d\n", (int)l1AngleRanges.size());
-//        for(int i=0;i<(int)l1AngleRanges.size();++i){
-//            fprintf(fp, "%lf %lf\n", l1AngleRanges[i].lowerBound, l1AngleRanges[i].upperBound);
-//        }
-////        fprintf(fp, "l2AngleRanges %d\n", (int)l2AngleRanges.size());
-////        for(int i=0;i<(int)l2AngleRanges.size();++i){
-////            fprintf(fp, "%lf %lf\n", l2AngleRanges[i].lowerBound, l2AngleRanges[i].upperBound);
+//    if(this->x == 318 && this->y == 206){
+////        fprintf(fp, "l1AngleRanges %d\n", (int)l1AngleRanges.size());
+////        for(int i=0;i<(int)l1AngleRanges.size();++i){
+////            fprintf(fp, "%lf %lf\n", l1AngleRanges[i].lowerBound, l1AngleRanges[i].upperBound);
 ////        }
+//        fprintf(fp, "l2AngleRanges %d\n", (int)l2AngleRanges.size());
+//        for(int i=0;i<(int)l2AngleRanges.size();++i){
+//            fprintf(fp, "%lf %lf\n", l2AngleRanges[i].lowerBound, l2AngleRanges[i].upperBound);
+//        }
 //    }
 
     l1ForbidenZone = calcZone(l1AngleRanges);
     l2ForbidenZone = calcZone(l2AngleRanges);
 
-//    if(this->x == 209 && this->y == 133){
-//        fprintf(fp, "l1ForbidenZone %d\n", (int)l1ForbidenZone.size());
-//        for(int i=0;i<(int)l1ForbidenZone.size();++i){
-//            fprintf(fp, "%lf %lf\n", l1ForbidenZone[i].lowerBound, l1ForbidenZone[i].upperBound);
-//        }
-////        fprintf(fp, "l2ForbidenZone %d\n", (int)l2ForbidenZone.size());
-////        for(int i=0;i<(int)l2ForbidenZone.size();++i){
-////            fprintf(fp, "%lf %lf\n", l2ForbidenZone[i].lowerBound, l2ForbidenZone[i].upperBound);
+//    if(this->x == 318 && this->y == 206){
+////        fprintf(fp, "l1ForbidenZone %d\n", (int)l1ForbidenZone.size());
+////        for(int i=0;i<(int)l1ForbidenZone.size();++i){
+////            fprintf(fp, "%lf %lf\n", l1ForbidenZone[i].lowerBound, l1ForbidenZone[i].upperBound);
 ////        }
+//        fprintf(fp, "l2ForbidenZone %d\n", (int)l2ForbidenZone.size());
+//        for(int i=0;i<(int)l2ForbidenZone.size();++i){
+//            fprintf(fp, "%lf %lf\n", l2ForbidenZone[i].lowerBound, l2ForbidenZone[i].upperBound);
+//        }
 //    }
 
     l1SafeZone = calcOppoZone(l1ForbidenZone);
     l2SafeZone = calcOppoZone(l2ForbidenZone);
 
-//    if(this->x == 209 && this->y == 133){
-//        fprintf(fp, "l1SafeZone %d\n", (int)l1SafeZone.size());
-//        for(int i=0;i<(int)l1SafeZone.size();++i){
-//            fprintf(fp, "%lf %lf\n", l1SafeZone[i].lowerBound, l1SafeZone[i].upperBound);
-//        }
-////        fprintf(fp, "l2SafeZone %d\n", (int)l2SafeZone.size());
-////        for(int i=0;i<(int)l2SafeZone.size();++i){
-////            fprintf(fp, "%lf %lf\n", l2SafeZone[i].lowerBound, l2SafeZone[i].upperBound);
+//    if(this->x == 318 && this->y == 206){
+////        fprintf(fp, "l1SafeZone %d\n", (int)l1SafeZone.size());
+////        for(int i=0;i<(int)l1SafeZone.size();++i){
+////            fprintf(fp, "%lf %lf\n", l1SafeZone[i].lowerBound, l1SafeZone[i].upperBound);
 ////        }
+//        fprintf(fp, "l2SafeZone %d\n", (int)l2SafeZone.size());
+//        for(int i=0;i<(int)l2SafeZone.size();++i){
+//            fprintf(fp, "%lf %lf\n", l2SafeZone[i].lowerBound, l2SafeZone[i].upperBound);
+//        }
 //    }
 
     if (twoStrategyOption == 2) {
@@ -846,23 +860,58 @@ bool Box::splitAngle(vector<Box*>& chldn) {
 }
 
 bool Box::split(double epsilon, vector<Box*>& chldn) {
-    if ((this->height / 2 < epsilon && this->width / 2 < epsilon) || (twoStrategyOption > 0
-        && (int) walls.size() + (int) corners.size() <= sizeOfPhiB && !shouldSplit2D)) {
+    if ((this->height / 2 < epsilon && this->width / 2 < epsilon)
+            || (twoStrategyOption > 0
+                    && (int) walls.size() + (int) corners.size() <= sizeOfPhiB
+                    && !shouldSplit2D)) {
 
+//		std::cout << "splitangle" << endl;
         if (this->height / 2 < epsilon && this->width / 2 < epsilon) {
+//			std::cout << "split 603" << endl;
             return splitAngle(chldn);
+
         } else {
             QT->PQ->push(this);
+//			if(!PQ->empty()){
+//				std::cout  << endl;
+//			}
+
+//			std::cout << "split 711" << endl;
             bool result = splitAngle(chldn);
 
             isLeaf = true;
             status = MIXED;
+//			if(this->height / 2 < epsilon && this->width / 2 <epsilon){
+//				shouldSplit2D = false;
+//			}else{
             shouldSplit2D = true;
+//			}
+//			visited = false;
             dist2Source = -1;
+//			std::cout << "split 719" << endl;
+//			std::cout << "split 720" << endl;
             return result;
+
         }
+
     }
+//	else if (rB / 2 < r0 * 2 / THETA_MIN / 20) {
+//		//int n = ceil( 2 / THETA_MIN );
+//		//int m = 1;
+//		//for (int i = 0; i < n; ++i)
+//		//{
+//		//	splitAngle(epsilon);
+//		//}
+//		//return splitAngle(epsilon);
+//
+//		int n = ceil(2 / THETA_MIN);
+//		//n = 64;
+//		int m = 1;
+//		recursiveSplitAngle(epsilon, chldn, n, m);
+//		return true;
+//	}
     else {
+//		std::cout << "split 741" << endl;
         return split2D(chldn);
     }
 }
@@ -1146,11 +1195,13 @@ AngleRange calcNuKappa(Point v, Corner *c, double link_length, double tau){
     if(dist*dist > tau*tau+link_length*link_length){
         // Non-Crossing thick 2-links robot
         // equation
+        //fprintf(fp, "big\n");
         kappa = acos((link_length*link_length+dist*dist-tau*tau)/(2.0f*dist*link_length))*180.0f/PI;
     }
     else{
         // Non-Crossing thick 2-links robot
         // equation
+        //fprintf(fp, "small\n");
         kappa = asin(tau/dist)*180.0f/PI;
     }
     double nu = atan2(c->y-v.y, c->x-v.x)*180.0f/PI;
@@ -1165,7 +1216,7 @@ AngleRange calcNuKappa(Point v, Corner *c, double link_length, double tau){
 AngleRange calcAngleRangeVC(Point v, Corner *c, double link_length, double tau){
 
     AngleRange NuKappa = calcNuKappa(v, c, link_length, tau);
-    fprintf(fp, "v c %lf %lf\n", roundAngle(NuKappa.lowerBound-NuKappa.upperBound), roundAngle(NuKappa.lowerBound+NuKappa.upperBound));
+    //fprintf(fp, "v %lf %lf c %lf %lf   %lf %lf\n", v.x, v.y, c->x, c->y, roundAngle(NuKappa.lowerBound-NuKappa.upperBound), roundAngle(NuKappa.lowerBound+NuKappa.upperBound));
     return AngleRange(roundAngle(NuKappa.lowerBound-NuKappa.upperBound), roundAngle(NuKappa.lowerBound+NuKappa.upperBound));
     // (nu-k, nu+k)
 }
@@ -1184,7 +1235,9 @@ AngleRange calcAngleRangeVW(Point v, Wall *w, double link_length, double tau){
         CC = new Wall(new Corner(w->dst->x, w->dst->y), new Corner(w->src->x, w->src->y));
     }
 
-    double sigma = CC->distance_inf_line(v.x, v.y);
+    Corner *p = new Corner(0, 0);
+    double sigma = CC->distance_inf_line(v.x, v.y, p);
+    Point O(p->x, p->y);
 
     // special case
     if(sigma < tau){
@@ -1192,17 +1245,21 @@ AngleRange calcAngleRangeVW(Point v, Wall *w, double link_length, double tau){
         double dist_C = CC->dst->distance(v.x, v.y);
         double dist = CC->distance(v.x, v.y);
 
-        if(fabs(dist-dist_C_prime) > 0 && fabs(dist-dist_C) > 0){
+        // not good
+        if(fabs(dist-dist_C_prime) > 1e-10 && fabs(dist-dist_C) > 1e-10){
             return AngleRange(0,360);
         }
         else{
             Corner *c_witness;
             if(dist_C_prime < dist_C){
                 c_witness = CC->src;
+                if(dist_C_prime < tau) return AngleRange(0, 360);
             }
             else{
                 c_witness = CC->dst;
+                if(dist_C < tau) return AngleRange(0, 360);
             }
+
             AngleRange c_witness_NuKappa = calcNuKappa(v, c_witness, link_length, tau);
 
             return AngleRange(roundAngle(c_witness_NuKappa.lowerBound-c_witness_NuKappa.upperBound),  // Nu-k
@@ -1217,31 +1274,30 @@ AngleRange calcAngleRangeVW(Point v, Wall *w, double link_length, double tau){
 //    fprintf(fp, "OX_star %lf\n", OX_star);
 //    fprintf(fp, "OX_max %lf\n", OX_max);
 
-    Point O(0,0);
-    // y = ax+b
-    double a, b, a_, b_;
-    if(fabs(CC->dst->x-CC->src->x) > 0){
-        a = (CC->dst->y-CC->src->y)/(CC->dst->x-CC->src->x);
-        b = CC->src->y - CC->src->x*a;
-        a_ = -a;
-        b_ = v.y-v.x*a_;
+//    // y = ax+b
+//    double a, b, a_, b_;
+//    if(fabs(CC->dst->x-CC->src->x) > 0){
+//        a = (CC->dst->y-CC->src->y)/(CC->dst->x-CC->src->x);
+//        b = CC->src->y - CC->src->x*a;
+//        a_ = -a;
+//        b_ = v.y-v.x*a_;
 
-        if(fabs(a) > 0){
-            double aa = (a_-a);
-            O.x = (b-b_)/aa;
-            O.y = a*O.x+b;
-        }
-        // horizontal line
-        else{
-            O.x = v.x;
-            O.y = CC->src->y;
-        }
-    }
-    // vertical line
-    else{
-        O.x = CC->src->x;
-        O.y = v.y;
-    }
+//        if(fabs(a) > 0){
+//            double aa = (a_-a);
+//            O.x = (b-b_)/aa;
+//            O.y = a*O.x+b;
+//        }
+//        // horizontal line
+//        else{
+//            O.x = v.x;
+//            O.y = CC->src->y;
+//        }
+//    }
+//    // vertical line
+//    else{
+//        O.x = CC->src->x;
+//        O.y = v.y;
+//    }
 
     Point vec_CC((CC->dst->x-CC->src->x), (CC->dst->y-CC->src->y));
     double dist_vec_CC = sqrt(vec_CC.x*vec_CC.x+vec_CC.y*vec_CC.y);
@@ -1312,7 +1368,7 @@ AngleRange calcAngleRangeVW(Point v, Wall *w, double link_length, double tau){
     AngleRange beta_NuKappa  = calcNuKappa(v, new Corner(B.x, B.y), link_length, tau);
     double beta  = beta_NuKappa.lowerBound  + beta_NuKappa.upperBound;  // beta + kappa
 
-    fprintf(fp, "alpha %lf beta %lf\n", roundAngle(alpha), roundAngle(beta));
+    //fprintf(fp, "alpha %lf beta %lf\n", roundAngle(alpha), roundAngle(beta));
     return AngleRange(roundAngle(alpha), roundAngle(beta));
 }
 

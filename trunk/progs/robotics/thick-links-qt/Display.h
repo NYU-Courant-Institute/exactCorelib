@@ -80,7 +80,7 @@ protected:
     void drawPath(GLuint &vao, GLuint &vbo);
     void drawCircles(GLuint &vao, GLuint &vbo);
     void drawPivot(GLuint &vao, GLuint &vbo);
-    void drawRobot(Box*);
+    void drawRobot(Box*, double gradient);
 
     void freeBuffer();
 };

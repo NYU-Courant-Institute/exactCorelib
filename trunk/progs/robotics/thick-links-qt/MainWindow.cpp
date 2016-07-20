@@ -24,6 +24,7 @@ extern int seed;
 extern int QType;
 
 extern int inc;
+extern bool showPath;
 extern bool runAnim;
 extern bool replayAnim;
 extern bool pauseAnim;
@@ -41,7 +42,7 @@ extern int renderSteps;
 extern bool step;
 int incr(1);
 
-
+extern int ompl;
 
 int animationSpeed(90);
 int animationSpeedScale(5000);
@@ -241,6 +242,16 @@ void MainWindow::on_run_clicked()
 
         crossingOption=ui->non_crossing->isChecked();
         bandwidth=ui->bandwidth->value();
+
+        // OMPL
+        if(ompl == 1){
+            double degToRad = PI/180.0f;
+            alpha[0] = alpha[0] - L1*cos((alpha[2])*degToRad)*0.5f;
+            alpha[1] = alpha[1] - L1*sin((alpha[2])*degToRad)*0.5f;
+            beta[0] = beta[0] - L1*cos((beta[2])*degToRad)*0.5f;
+            beta[1] = beta[1] - L1*sin((beta[2])*degToRad)*0.5f;
+        }
+
     } else {
         //egName=ui->egFile->text().toStdString();
         egName = ui->comboBox->currentText().toStdString();
@@ -290,6 +301,7 @@ void MainWindow::on_run_clicked()
 
         ui->horizontalSlider->setValue(animationSpeed);
 
+        ui->non_crossing->setChecked(crossingOption);
         ui->bandwidth->setValue(bandwidth);
     }
 
@@ -333,6 +345,10 @@ void MainWindow::on_exit_clicked()
     this->close();
 }
 
+void MainWindow::on_showPath_clicked() {
+    showPath = !showPath;
+    this->update();
+}
 void MainWindow::on_showAnim_clicked() {
     runAnim = true;
     this->update();

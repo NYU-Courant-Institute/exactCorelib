@@ -26,7 +26,8 @@ public:
 
     //distance functions
     virtual double distance(double x, double y);
-    double distance_inf_line(double x, double y);
+    double distance_inf_line(double x, double y, Corner *p);
+    bool distance_at_end(double x, double y);
     double distance_star(double x, double y);
     short distance_sign(double x, double y);
 

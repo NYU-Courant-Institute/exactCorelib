@@ -37,7 +37,7 @@ double Wall::distance(double x, double y)
     return sqrt( (x-x0)*(x-x0) + (y-y0)*(y-y0) );
 }
 
-double Wall::distance_inf_line(double x, double y)
+double Wall::distance_inf_line(double x, double y, Corner *p)
 {
     double x1 = src->x;
     double x2 = dst->x;
@@ -46,7 +46,20 @@ double Wall::distance_inf_line(double x, double y)
     double u = ( (x-x1)*(x2-x1) + (y-y1)*(y2-y1) ) / ( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
     double x0 = u*x2 + (1-u)*x1;
     double y0 = u*y2 + (1-u)*y1;
+    p->x = x0;
+    p->y = y0;
     return sqrt( (x-x0)*(x-x0) + (y-y0)*(y-y0) );
+}
+
+bool Wall::distance_at_end(double x, double y)
+{
+    double x1 = src->x;
+    double x2 = dst->x;
+    double y1 = src->y;
+    double y2 = dst->y;
+    double u = ( (x-x1)*(x2-x1) + (y-y1)*(y2-y1) ) / ( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
+
+    return ((u < 0) || (u > 1));
 }
 
 bool Wall::isRight(double x, double y)

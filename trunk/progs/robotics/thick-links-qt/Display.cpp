@@ -33,6 +33,7 @@ extern bool noPath;
 
 extern bool hideBox;
 extern bool hideBoxBoundary;
+extern bool showPath;
 extern bool runAnim;
 extern bool pauseAnim;
 extern bool replayAnim;
@@ -170,7 +171,7 @@ void Display::initializeGL() {
    initializeOpenGLFunctions();
 
     // Set background color
-    glClearColor(0.7, 0.7, 0.7, 1.0);
+    glClearColor(1, 1, 1, 1.0);
     glEnable(GL_DOUBLEBUFFER);
 
     program = new shader("simple.vert", "simple.frag");
@@ -231,6 +232,12 @@ void Display::paintGL() {
         }
 
 
+
+
+
+
+
+
         //Lines Representing Robot at Start (alpha) and End (beta)
         double degToRad = PI/180.0f;
         genLine(thickness, alpha[0], alpha[1], alpha[0]+L1*cos(alpha[2]*degToRad), alpha[1]+L1*sin(alpha[2]*degToRad), 1,0,1);
@@ -254,9 +261,10 @@ void Display::paintGL() {
         filledPivot.clear();
 
 
-        genLine(thickness, beta[0], beta[1], beta[0]+L1*cos(beta[2]*degToRad), beta[1]+L1*sin(beta[2]*degToRad), 0.25,0,0.25);
-        genFilledPivot(thickness/2.0f, beta[0], beta[1], 0.25,0,0.25);
-        genFilledCircle(thickness/2.0f, beta[0]+L1*cos(beta[2]*degToRad), beta[1]+L1*sin(beta[2]*degToRad), 0.25,0,0.25);
+
+        genLine(thickness, beta[0], beta[1], beta[0]+L1*cos(beta[2]*degToRad), beta[1]+L1*sin(beta[2]*degToRad), 0.4,0,0.4);
+        genFilledPivot(thickness/2.0f, beta[0], beta[1], 0.4,0,0.4);
+        genFilledCircle(thickness/2.0f, beta[0]+L1*cos(beta[2]*degToRad), beta[1]+L1*sin(beta[2]*degToRad), 0.4,0,0.4);
         drawCircles(b_goal1_vao, b_goal1_vbo);
         drawLines(b_goal1_vao, b_goal1_vbo);
         drawPivot(b_goal1_vao, b_goal1_vbo);
@@ -264,9 +272,9 @@ void Display::paintGL() {
         lines.clear();
         filledPivot.clear();
 
-        genLine(thickness, beta[0], beta[1], beta[0]+L2*cos(beta[3]*degToRad), beta[1]+L2*sin(beta[3]*degToRad), 0,0.25,0);
-        genFilledPivot(thickness/2.0f, beta[0], beta[1], 0,0.25,0);
-        genFilledCircle(thickness/2.0f, beta[0]+L2*cos(beta[3]*degToRad), beta[1]+L2*sin(beta[3]*degToRad), 0,0.25,0);
+        genLine(thickness, beta[0], beta[1], beta[0]+L2*cos(beta[3]*degToRad), beta[1]+L2*sin(beta[3]*degToRad), 0,0.4,0);
+        genFilledPivot(thickness/2.0f, beta[0], beta[1], 0,0.4,0);
+        genFilledCircle(thickness/2.0f, beta[0]+L2*cos(beta[3]*degToRad), beta[1]+L2*sin(beta[3]*degToRad), 0,0.4,0);
         drawCircles(b_goal2_vao, b_goal2_vbo);
         drawLines(b_goal2_vao, b_goal2_vbo);
         drawPivot(b_goal2_vao, b_goal2_vbo);
@@ -274,8 +282,14 @@ void Display::paintGL() {
         lines.clear();
         filledPivot.clear();
 
-
-
+        if(showPath){
+            for(int i=0;i<PATH.size();i+=20){
+            //for(int i=PATH.size()-1;i>=0;i-=20){
+                double gradient = i;
+                gradient = gradient*0.6/(double)PATH.size()+0.4;
+                drawRobot(PATH.at(i), gradient);
+            }
+        }
 
         // If a Path Exists, Generate the Line Representing It
         if (!noPath) {
@@ -295,13 +309,17 @@ void Display::paintGL() {
 
     if(runAnim && !noPath){
         if(pauseAnim) {
-            drawRobot(PATH.at(pSize-inc-1));
+            double gradient = pSize-inc-1;
+            gradient = gradient*0.6/(double)PATH.size()+0.4;
+            drawRobot(PATH.at(pSize-inc-1), gradient);
         }
         else {
             regenShapes=false;
             pSize=PATH.size();
             if(inc<pSize){
-                drawRobot(PATH.at(pSize-inc-1));
+                double gradient = pSize-inc-1;
+                gradient = gradient*0.6/(double)PATH.size()+0.4;
+                drawRobot(PATH.at(pSize-inc-1), gradient);
                 inc++;
 
                 if(hideBox) usleep(  (99-animationSpeed) * animationSpeedScale);
@@ -338,7 +356,7 @@ double theta1;
 double theta2;
 double oldAngleForRender1 = -1;
 double oldAngleForRender2 = -1;
-void Display::drawRobot(Box* b){
+void Display::drawRobot(Box* b, double gradient){
 
     if (crossingOption) {
         double max = 0;
@@ -384,10 +402,13 @@ void Display::drawRobot(Box* b){
         theta2 = b->xi[Box::UPPER2];
     }
 
+    //fprintf(fp, "%lf %lf theta %lf %lf\n", b->x, b->y, theta1, theta2);
+
+
     double deg2rad = PI/180.0f;
-    genLine(thickness, b->x, b->y, b->x+L1*cos(theta1*deg2rad), b->y+L1*sin(theta1*deg2rad), 0.5,0,0.5);
-    genFilledPivot(thickness/2.0f, b->x, b->y, 0.5,0,0.5);
-    genFilledCircle(thickness/2.0f, b->x+L1*cos(theta1*deg2rad), b->y+L1*sin(theta1*deg2rad), 0.5,0,0.5);
+    genLine(thickness, b->x, b->y, b->x+L1*cos(theta1*deg2rad), b->y+L1*sin(theta1*deg2rad), gradient,0,gradient);
+    genFilledPivot(thickness/2.0f, b->x, b->y, gradient,0,gradient);
+    genFilledCircle(thickness/2.0f, b->x+L1*cos(theta1*deg2rad), b->y+L1*sin(theta1*deg2rad), gradient,0,gradient);
     drawCircles(b_robot1_vao, b_robot1_vbo);
     drawLines(b_robot1_vao, b_robot1_vbo);
     drawPivot(b_robot1_vao, b_robot1_vbo);
@@ -395,9 +416,9 @@ void Display::drawRobot(Box* b){
     lines.clear();
     filledPivot.clear();
 
-    genLine(thickness, b->x, b->y, b->x+L2*cos(theta2*deg2rad) , b->y+L2*sin(theta2*deg2rad), 0,0.5,0);
-    genFilledPivot(thickness/2.0f, b->x, b->y, 0,0.5,0);
-    genFilledCircle(thickness/2.0f, b->x+L2*cos(theta2*deg2rad) , b->y+L2*sin(theta2*deg2rad), 0,0.5,0);
+    genLine(thickness, b->x, b->y, b->x+L2*cos(theta2*deg2rad) , b->y+L2*sin(theta2*deg2rad), 0,gradient,0);
+    genFilledPivot(thickness/2.0f, b->x, b->y, 0,gradient,0);
+    genFilledCircle(thickness/2.0f, b->x+L2*cos(theta2*deg2rad) , b->y+L2*sin(theta2*deg2rad), 0,gradient,0);
     drawCircles(b_robot2_vao, b_robot2_vbo);
     drawLines(b_robot2_vao, b_robot2_vbo);
     drawPivot(b_robot2_vao, b_robot2_vbo);

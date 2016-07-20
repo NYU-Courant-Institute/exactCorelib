@@ -145,7 +145,7 @@ public:
 
                 }
                 if (allLeaf[i]->status == Box::STUCK) {
-                    return NULL;
+                    return 0;
                 }
                 q.push(allLeaf[i]);
             }
@@ -190,14 +190,14 @@ public:
                         }
 
                     } else if (cldrn[i]->status == Box::STUCK) {
-                        return NULL;
+                        return 0;
                     } else {
                         q.push(cldrn[i]);
                     }
                 }
             }
         }
-        return NULL;
+        return 0;
     }
 
     bool expand(Box* b) {

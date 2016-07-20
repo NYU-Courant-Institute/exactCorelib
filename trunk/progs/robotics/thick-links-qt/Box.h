@@ -475,7 +475,7 @@ public:
                     containsA1 = true;
                 }
             } else {
-                if ((360 >= a1 && a1 >= xi[0]) || (xi[1] > a1 && a1 >= 0)) {
+                if ((360 > a1 && a1 >= xi[0]) || (xi[1] > a1 && a1 >= 0)) {
                     containsA1 = true;
                 }
             }
@@ -486,7 +486,7 @@ public:
                     containsA2 = true;
                 }
             } else {
-                if ((360 >= a2 && a2 >= xi[2]) || (xi[3] > a2 && a2 >= 0)) {
+                if ((360 > a2 && a2 >= xi[2]) || (xi[3] > a2 && a2 >= 0)) {
                     containsA2 = true;
                 }
             }
