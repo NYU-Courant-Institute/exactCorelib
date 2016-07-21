@@ -1,6 +1,6 @@
 /**
 SmoothQuadtree, an implementation of the smooth quadtree data structure.
-Copyright (C) 2016 Huck Bennett.
+Copyright (C) 2016 Huck Bennett and Chee Yap.
 For comments or questions, please contact Huck Bennett at hbennett@cs.nyu.edu.
 
 This program is free software: you can redistribute it and/or modify
