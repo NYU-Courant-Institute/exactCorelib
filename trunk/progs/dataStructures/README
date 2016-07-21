@@ -1,0 +1,44 @@
+SmoothQuadtree, an implementation of the smooth quadtree data structure.
+Copyright (C) 2016 Huck Bennett.
+For comments or questions, please contact Huck Bennett at hbennett@cs.nyu.edu.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Description:
+A templated, d-dimensional implementation of the smooth quadtree data structure.
+A quadtree is called "smooth" if every pair of adjacent boxes differ in
+depth by at most 1. The smooth quadtree data structure maintains smoothness
+as an invariant.
+
+This program is based on the paper "Amortized Analysis of Smooth Quadtrees in All Dimensions" by Huck Bennett and Chee Yap, Scandinavian Symposium and Workshops on Algorithm Theory (SWAT) 2014, and Computational Geometry: Theory and Applications (to appear).
+
+This data structure also appears in the Core Library:
+http://cs.nyu.edu/exact/core_pages/intro.html.
+
+The ith bit of the child index indicates whether the box is above or below the center of the box in the ith dimension.
+ 
+For example, in 2 dimensions the children are indexed as follows:
+   ______ ______
+  |      |      |
+  |  10  |  11  |
+  |______|______|
+  |      |      |
+  |  00  |  01  |
+  |______|______|
+
+For an example of this data structure used in an application, see https://github.com/hbennett/SubVor.
+ 
+TODO:
+- Clean up direction/child indicator bit logic.
+- Use smart pointers.

@@ -1,10 +1,10 @@
-EXE_NAME=smooth_quadtree_test
+SQ=smooth_quadtree_test
 
 build:
-	g++ -std=c++11 -g smooth_quadtree_test.cc -o $(EXE_NAME)
+	g++ -std=c++11 -g smooth_quadtree_test.cpp -o $(SQ)
 test:
-	./$(EXE_NAME)
+	./$(SQ)
 valgrind:
-	valgrind ./$(EXE_NAME) -v --leak-check=full --track-origins=yes
+	valgrind ./$(SQ) -v --leak-check=full --track-origins=yes
 clean:
-	rm -f *~ *.o $(EXE_NAME)
+	rm -f *~ *.o $(SQ)
