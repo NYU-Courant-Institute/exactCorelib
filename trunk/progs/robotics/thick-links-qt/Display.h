@@ -1,90 +1,56 @@
-//==============================================================================
-// Display.h
-// =================
-// This class is the widget on ControlWindow that renders the scene.
-// Display generates and paints boxes, walls, and circles using OpenGL
-// to allow the user to get a full understanding of the program's output.
-//
-// AUTHOR: Bryant Curto (bryantcurto@gmail.com)
-// CREATED: 2015-07-28
-//
-// Copyright (c) 2015 Bryant Curto
-//==============================================================================
-
 #ifndef __disc__Display__
 #define __disc__Display__
 
 // Custom
-#include "shader.h"
 #include "MainWindow.h"
 #include "Box.h"
 #include "QuadTree.h"
 #include "Polygon.h"
+#include "Vertex.h"
 
-
-// Qt
+// Qt/OpenGL
 #include <QOpenGLWidget>
-#include <QOpenGLFunctions>
-
-// OpenGL
-#include <gl3.h>
+#include <QGLWidget>
+#include <QtOpenGL>
+#include "glu.h"
 
 // Standard Library
 #include <vector>
 
 
-class Display : public QOpenGLWidget, protected QOpenGLFunctions
+class Display : public QOpenGLWidget
 {
+    Q_OBJECT
 public:
     Display(QWidget* parent = 0);
     virtual ~Display();
 
-    void genScene();
-    void setControlWindow(MainWindow*);
-
-
 
 protected:
-    // Essential Functions Inherited from QOpenGLWidget
-    virtual void initializeGL() Q_DECL_OVERRIDE;
-    virtual void paintGL() Q_DECL_OVERRIDE;
-    virtual void resizeGL(int width, int height) Q_DECL_OVERRIDE;
+    void initializeGL();
+    void paintGL();
+    void resizeGL(int width, int height);
 
-    shader* program;                    // Shader program used by OpenGL
-    MainWindow* window;                  // Motion Planning window
+
+private:
+    void renderScene();
 
     /*********************************
      * Functions used to paint scene *
      *********************************/
-    // Helper Functions
-    void toNormalDeviceCoords(double& x, double& y);
-    inline void setVertexColor(std::vector<double>& array, float r, float g, float b);
-    void perpVertices(float thickness_l, std::vector<double>& storage, double a_x, double a_y,
-                    double b_x, double b_y, float red, float green, float blue);
-    // Generate Shapes
-    void genPath(std::vector<Box*>& path, double* beta, double* alpha, double R0);
-    void genLine(float thickness_l, double a_x, double a_y, double b_x, double b_y, float red, float green, float blue);
-    void genQuad(Box* b, double epsilon);
-    void genFilledCircle(double radius, double x, double y, float red, float green, float blue);
-    void genFilledPivot(double radius, double x, double y, float red, float green, float blue);
-    void putQuads();
+    void putBoxes();
 
+    void drawBoxes(Box* b, double epsilon);
+    void drawBoxesBoundary(Pose a, Pose b, Pose c, Pose d);
+    void drawPath();
+    void drawRobot(Box* b, double gradient);
+    void drawRobot(Pose p, double gradient);
+    void drawLink(Pose a, Pose b, Color clr);
+    void drawCircle(Pose a, Color clr);
+    void drawQuadrilateral(Pose a, Pose b, Pose c, Pose d, Color clr);
+    void drawQuadrilateralOutline(Pose a, Pose b, Pose c, Pose d, Color clr);
 
-    void genWalls(Box* b);
-    void treeTraverse(Box* b, double epsilon);
-    void treeTraverse_infSteps(Box* b, double epsilon);
-    void treeTraverse_altSteps(Box* b, double epsilon, long maxSteps);
-    // Paint Shapes to Screen
-    void drawLines(GLuint &vao, GLuint &vbo);
-    void drawObstacles(GLuint &vao, GLuint &vbo, GLuint &ebo);
-    void drawQuads(GLuint &vao, GLuint &vbo, GLuint &ebo);
-    void drawQuadsBoundary(GLuint &vao, GLuint &vbo, GLuint &ebo);
-    void drawPath(GLuint &vao, GLuint &vbo);
-    void drawCircles(GLuint &vao, GLuint &vbo);
-    void drawPivot(GLuint &vao, GLuint &vbo);
-    void drawRobot(Box*, double gradient);
-
-    void freeBuffer();
+    void drawObstacles();
 };
 
 #endif /* defined(__disc__Display__) */

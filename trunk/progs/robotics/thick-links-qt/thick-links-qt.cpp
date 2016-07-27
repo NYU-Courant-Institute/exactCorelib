@@ -67,6 +67,7 @@
 #include "Timer.h"
 #include "Polygon.h"
 #include "MainWindow.h"
+#include "Color.h"
 
 #include <QApplication>
 #include <QSurfaceFormat>
@@ -82,7 +83,7 @@ using namespace std;
 
 // GLOBAL INPUT Parameters ========================================
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-string cfgName("WAFR2016_8-ways_3.cfg");
+string cfgName("8-ways_center.cfg");
 char cfgNameList[200][200];
 int numEg = 0;
 string inputDir("inputs"); 		// Path for input files
@@ -119,7 +120,8 @@ bool noPath(true);			// True means there is "No path.
 bool hideBox(true);
 bool hideBoxBoundary(true);  		// don't draw box boundary
 bool showTrace(false);
-bool showPath(false);
+bool showPath(true);
+bool showFilledObstacles(false);
 bool safeAngle(false);
 bool runAnim(true);
 bool pauseAnim(false);
@@ -157,6 +159,22 @@ stringstream ssInfo;
 
 bool leafBoxesDrawed = false;
 int firstPolygonClockwise = 0;
+
+// color coding variable ========================================
+Color clr_totalFREE(0, 1, 0, 0.5);     // green
+Color clr_partialFREE(0.25, 1, 0.25, 0.5); // dark green
+Color clr_MIXED(1, 1, 0, 0.5); // yellow
+Color clr_STUCK(1, 0, 0, 0.5); // red
+Color clr_EPS(0.5, 0.5, 0.5, 1); // grey
+Color clr_UNKNOWN(1, 1, 0, 0.5); // white
+
+Color clr_start(1,0,1,0.5);    // purple
+Color clr_goal(0.4,0,0.4,0.5); // dark purple
+Color clr_robot(0.7,0,0.7,0.5); // purple
+
+Color clr_path(0.5,0,0,1); // dark red
+Color clr_obstacle(0,0,1,1); // blue
+Color clr_boundary(1,1,1,1); // black
 
 
 extern vector<int> expansions;
@@ -363,11 +381,6 @@ int main(int argc, char* argv[]) {
         "If it is not, rename the folder to \"thick-links-qt\" before running again.\n";
     }
 
-    QSurfaceFormat format;
-    format.setMajorVersion(3);
-    format.setMinorVersion(3);
-    format.setProfile(QSurfaceFormat::CoreProfile);
-    QSurfaceFormat::setDefaultFormat(format);
     // Allow creation of Qt GUI
     QApplication app(argc, argv);
     fp = fopen("debug.txt", "w");

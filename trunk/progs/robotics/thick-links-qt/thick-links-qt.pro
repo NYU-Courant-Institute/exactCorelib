@@ -1,10 +1,6 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2015-08-15T12:35:03
-#
-#-------------------------------------------------
-
-QT       += core gui
+QT       += \
+core gui \
+opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -20,11 +16,10 @@ SOURCES +=\
     QuadTree.cpp \
     Timer.cpp \
     thick-links-qt.cpp \
+#    thick-links-test.cpp \
     Wall.cpp \
     fileProcessor.cpp \
-    Display.cpp \
-    shader.cpp \
-    ShaderException.cpp
+    Display.cpp
 
 HEADERS  += MainWindow.h \
     Box.h \
@@ -39,11 +34,8 @@ HEADERS  += MainWindow.h \
     Feature.h \
     Wall.h \
     Display.h \
-    shader.h \
-    ShaderException.h
+    Color.h \
+    Vertex.h \
+    Pose.h
 
 FORMS    += MainWindow.ui
-
-DISTFILES += \
-    simple.frag \
-    simple.vert

@@ -29,7 +29,7 @@ using namespace std;
 
 
 int t_idx;
-double s_round = 100;
+double s_round = 30;
 double rec_time[100];
 double cnt_steps[100];
 double cnt_expansion[100];
@@ -39,6 +39,8 @@ struct analysis{
     double ave, sd;
     double best;
 };
+
+char WAFR2016cfgName[10][100];
 
 
 string cfgName("WAFR2016_8-ways_3.cfg");
@@ -333,29 +335,47 @@ int main(int argc, char* argv[]) {
     //QApplication app(argc, argv);
     //fp = fopen("debug.txt", "w");
     //if(fp == NULL) return 0;
+    //parseExampleList();
+
+    sprintf(WAFR2016cfgName[0], "WAFR2016_8-ways_");
+    sprintf(WAFR2016cfgName[1], "WAFR2016_bugtrap2_");
+    sprintf(WAFR2016cfgName[2], "WAFR2016_IJRR2006_");
+    sprintf(WAFR2016cfgName[3], "WAFR2016_maze_");
+    sprintf(WAFR2016cfgName[4], "WAFR2016_rand100_");
+    sprintf(WAFR2016cfgName[5], "WAFR2016_T-room3_");
+    sprintf(WAFR2016cfgName[6], "WAFR2016_bugtrap2-noPath_");
+
+
+    for(int all=0;all<7;++all){
+        for(int abcdef=1;abcdef<=2;++abcdef){
+            char ss[200];
+            sprintf(ss, "%s%c_%d.cfg", WAFR2016cfgName[all], 'a', abcdef*4);
+            cfgName =  ss;
 
 
 
+            //testing
+            parseExampleFile();
 
+            fprintf(stderr, "start\n");
+            fprintf(stderr, "%s run %.lf\n", cfgName.c_str(), s_round);
+            fprintf(stderr, "configuration:\n\tL1: %.lf\n\tL2: %.lf\n\tThickness: %.lf\n\tepsilon: %.lf\n", L1, L2, thickness, epsilon);
 
+            //window = new MainWindow();
+            suc = 0;
+            for(t_idx=0;t_idx<(int)s_round;++t_idx)
+                run();
+            //window->show();
 
+            struct analysis s_timing    = calcStatistics(rec_time);
+            struct analysis s_steps     = calcStatistics(cnt_steps);
+            struct analysis s_expansion = calcStatistics(cnt_expansion);
 
-    //testing
-    parseExampleList();
-    parseExampleFile();
-    //window = new MainWindow();
-    for(t_idx=0;t_idx<(int)s_round;++t_idx)
-        run();
-    //window->show();
-
-    struct analysis s_timing    = calcStatistics(rec_time);
-    struct analysis s_steps     = calcStatistics(cnt_steps);
-    struct analysis s_expansion = calcStatistics(cnt_expansion);
-
-    fprintf(stderr, "%s\n", cfgName.c_str());
-    fprintf(stderr, "timing    %lf %lf %lf\n", s_timing.ave, s_timing.best, s_timing.sd);
-    fprintf(stderr, "steps     %lf %lf %lf\n", s_steps.ave, s_steps.best, s_steps.sd);
-    fprintf(stderr, "expansion %lf %lf %lf\n", s_expansion.ave, s_expansion.best, s_expansion.sd);
+            fprintf(stderr, "timing    %lf %lf %lf %lf\n", s_timing.ave, s_timing.best, s_timing.sd, suc/s_round);
+            fprintf(stderr, "steps     %lf %lf %lf\n", s_steps.ave, s_steps.best, s_steps.sd);
+            fprintf(stderr, "expansion %lf %lf %lf\n\n", s_expansion.ave, s_expansion.best, s_expansion.sd);
+        }
+    }
 
     //return app.exec();
 
@@ -430,11 +450,6 @@ void genEmptyTree() {
 void run() {
     runCount++;
 
-    ssoutLastTime.str("");
-    ssoutLastTime << ssout.str();
-    ssout.str("");
-    ssout << "Run No. " << runCount << ":" << endl;
-
     currentStep = 0;
     currentPathStep = 0;
     leafBoxesDrawed = false;
@@ -490,13 +505,13 @@ void run() {
         boxA = QT->getBox(alpha[0], alpha[1], alpha[2], alpha[3], ct);
         if (!boxA || (crossingOption && angleDistance(alpha[2], alpha[3]) <= bandwidth)) {
             noPath = true;
-            mw_out << "Start Configuration is not free\n";
+            cerr << "Start Configuration is not free\n";
         }
 
         boxB = QT->getBox(beta[0], beta[1], beta[2], beta[3], ct);
         if (!boxB || (crossingOption && angleDistance(beta[2], beta[3]) <= bandwidth)) {
             noPath = true;
-            mw_out << "Goal Configuration is not free\n";
+            cerr << "Goal Configuration is not free\n";
         }
 
         // In the following loop, "noPath" should really mean "hasPath"
@@ -512,13 +527,13 @@ void run() {
         boxA = QT->getBox(alpha[0], alpha[1], alpha[2], alpha[3], ct);
         if (!boxA || (crossingOption && angleDistance(alpha[2], alpha[3]) <= bandwidth)) {
             noPath = true;
-            mw_out << "Start Configuration is not free\n";
+            cerr << "Start Configuration is not free\n";
         }
 
         boxB = QT->getBox(beta[0], beta[1], beta[2], beta[3], ct);
         if (!boxB || (crossingOption && angleDistance(beta[2], beta[3]) <= bandwidth)) {
             noPath = true;
-            mw_out << "Goal Configuration is not free\n";
+            cerr << "Goal Configuration is not free\n";
         }
         if (!noPath) {
             if (QType == 2) {
@@ -599,8 +614,8 @@ int skip_comment_line(std::ifstream & in) {
         }
     } while (c == ' ' || c == '\t' || c == '\n'); //ignore white spaces and newlines
 
-    if (c == EOF)
-        mw_out << "unexpected end of file.\n" ;
+    //if (c == EOF)
+    //    mw_out << "unexpected end of file.\n" ;
 
     in.putback(c); // this is non-white and non-comment char!
     return c;
@@ -618,10 +633,10 @@ int skip_backslash_new_line(std::istream & in) {
 
         if (c == '\n')
             c = in.get();
-        else
-// assuming the very special file format noted above!
-            mw_out
-                    << "continuation line \\ must be immediately followed by new line.\n";
+        //else
+            // assuming the very special file format noted above!
+        //    mw_out
+        //            << "continuation line \\ must be immediately followed by new line.\n";
     } //while
     return c;
 } //skip_backslash_new_line

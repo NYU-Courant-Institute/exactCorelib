@@ -18,6 +18,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    //void showAngleBound(double t1_lowerBound, double t1_upperBound, double t2_lowerBound, double t2_upperBound);
+
 
     // Print text
     virtual MainWindow& operator<<(const std::string&);
@@ -45,6 +47,7 @@ private slots:
 
     void on_showTrace_clicked();
     void on_showPath_clicked();
+    void on_showFilledObstacles_clicked();
     void on_showAnim_clicked();
     void on_pauseAnim_clicked();
     void on_replayAnim_clicked();
@@ -64,6 +67,7 @@ private slots:
     void on_horizontalSlider_valueChanged(int value);
 
     void on_saveCfg_clicked();
+
 
 private:
     Ui::MainWindow *ui;

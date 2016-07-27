@@ -25,6 +25,7 @@ extern double scale;
 extern int inc;
 extern bool showTrace;
 extern bool showPath;
+extern bool showFilledObstacles;
 extern bool runAnim;
 extern bool replayAnim;
 extern bool pauseAnim;
@@ -160,6 +161,13 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
 
     ui->textOutputInfo->setText(QString::fromStdString(box_info));
 }
+
+// void MainWindow::showAngleBound(double t1_lowerBound, double t1_upperBound, double t2_lowerBound, double t2_upperBound){
+//     char tmp_buff[200];
+//     string box_info;
+//     sprintf(tmp_buff, "theta 1: [%lf, %lf]\ntheta 2: [%lf, %lf]\n", t1_lowerBound, t1_upperBound, t2_lowerBound, t2_upperBound);
+//     ui->angleBoundOutputInfo->setText(QString::fromStdString(box_info));
+// }
 
 //================================//
 //     Display Text to Window     //
@@ -317,7 +325,6 @@ void MainWindow::on_run_clicked()
     inc = 0;
     run();
 
-    ui->openGLWidget->genScene();
     ui->openGLWidget->update();
 }
 
@@ -349,6 +356,10 @@ void MainWindow::on_showPath_clicked() {
     showPath = !showPath;
     this->update();
 }
+void MainWindow::on_showFilledObstacles_clicked() {
+    showFilledObstacles = !showFilledObstacles;
+    this->update();
+}
 void MainWindow::on_showAnim_clicked() {
     runAnim = true;
     this->update();
@@ -367,21 +378,18 @@ void MainWindow::on_replayAnim_clicked() {
 void MainWindow::on_hideBox_clicked()
 {
     hideBox=ui->hideBox->isChecked();
-    ui->openGLWidget->genScene();
-    ui->openGLWidget->update();
+    this->update();
 }
 void MainWindow::on_hideBoxBoundary_clicked()
 {
     hideBoxBoundary=ui->hideBoxBoundary->isChecked();
-    ui->openGLWidget->genScene();
-    ui->openGLWidget->update();
+    this->update();
 }
 
 void MainWindow::on_safe_angle_clicked()
 {
     safeAngle=ui->safe_angle->isChecked();
-    ui->openGLWidget->genScene();
-    ui->openGLWidget->update();
+    this->update();
 }
 
 void MainWindow::on_non_crossing_clicked(){
@@ -417,25 +425,17 @@ void MainWindow::on_inc_valueChanged(int arg1)
     incr=arg1;
 }
 
-void MainWindow::on_left_clicked()
-{
+void MainWindow::on_left_clicked() {
     if(renderSteps-incr<1) return;
     renderSteps-=incr;
-
     ui->steplabel->setText("Step: "+QString::number(renderSteps));
-
-    ui->openGLWidget->genScene();
     ui->openGLWidget->update();
 }
 
-void MainWindow::on_right_clicked()
-{
-
+void MainWindow::on_right_clicked() {
     renderSteps+=incr;
     if(renderSteps>(int)expansions.size()-1) renderSteps=expansions.size()-1;
     ui->steplabel->setText("Step: "+QString::number(renderSteps));
-
-    ui->openGLWidget->genScene();
     ui->openGLWidget->update();
 }
 
