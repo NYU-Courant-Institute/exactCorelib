@@ -14,8 +14,9 @@ Description:
 	paper "Numerical Subdivision Methods in Motion Planning" by
 	Y.-J.Chiang and C.Yap (2011).
 
-Author:
-	J-M. Lien, C.Yap, V.Sharma (2012).
+Authors:
+	J-M. Lien, C.Yap, V.Sharma (2012)
+	Huck Bennett, C.Yap (2015-6)
 
 $Id: README $
 ============================================================
@@ -26,10 +27,20 @@ Files:
 
 Directories:
 	data		-- This directory has various data files
+	
 	vor2d		-- a numerical subdivision-based algorithm for the Voronoi complex
 			   of a polygonal set
+	
 	vor3d		-- a numerical subdivision-based algorithm for the Voronoi complex
 			   of a polyhedral set
+	
+	vor2d-weighted	-- Implementation of anisotropic Vor diagram of polygonal set
+	vor2d-weighted-new
+			-- The version given the "Reproducibility Stamp" at
+				SGP 2016 in Berlin, based on our paper
+			
+				"Planar Minimization Diagrams via Subdivision
+				 with Applications to Anisotropic Vor diagrams"
 
 ============================================================
 ============================================================
