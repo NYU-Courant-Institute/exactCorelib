@@ -126,6 +126,7 @@ bool safeAngle(false);
 bool runAnim(true);
 bool pauseAnim(false);
 bool replayAnim(false);
+bool inPoly;
 
 int crossingOption = 0; //  Crossing Option    0: original  1: non-crossing
 double bandwidth = 0;
@@ -842,6 +843,8 @@ void parseExampleFile() {
 }
 
 void parseConfigFile(Box* b) {
+
+    inPoly = false;
     polygons.clear();
     srcInPolygons.clear();
 
@@ -849,82 +852,93 @@ void parseConfigFile(Box* b) {
     ss << inputDir << "/" << fileName;	// create full file name
     std::string s = ss.str();
 
-    fileProcessor(s);	// this will clean the input and put in
-
-    ifstream ifs("output-tmp.txt");
-    if (!ifs) {
-        cerr << "cannot open input file" << endl;
-        exit(1);
-    }
-
-    // First, get to the beginning of the first token:
-    skip_comment_line(ifs);
-
     int nPt, nPolygons;	// previously, nPolygons was misnamed as nFeatures
-    ifs >> nPt;
 
-    //Read input points:
-    vector<double> pts(nPt * 2);
-    for (int i = 0; i < nPt; ++i) {
-        ifs >> pts[i * 2] >> pts[i * 2 + 1];
+    char checkFileName[100];
+    sprintf(checkFileName, "%s", fileName.c_str());
+    int lenCheckFileName = strlen(checkFileName);
+
+    // read .raw file
+    if(checkFileName[lenCheckFileName-1] == 'w' && checkFileName[lenCheckFileName-1] == 'a' && checkFileName[lenCheckFileName-1] == 'r'){
+    }
+    // read .txt file
+    else{
+        fileProcessor(s);	// this will clean the input and put in
+
+        ifstream ifs("output-tmp.txt");
+        if (!ifs) {
+            cerr << "cannot open input file" << endl;
+            exit(1);
+        }
+
+        // First, get to the beginning of the first token:
+        skip_comment_line(ifs);
+
+        ifs >> nPt;
+
+        //Read input points:
+        vector<double> pts(nPt * 2);
+        for (int i = 0; i < nPt; ++i) {
+            ifs >> pts[i * 2] >> pts[i * 2 + 1];
+        }
+
+        //Read input polygons:
+        ifs >> nPolygons;
+        string temp;
+        std::getline(ifs, temp);
+        for (int i = 0; i < nPolygons; ++i) {
+            Polygon tempPolygon;
+            string s;
+            std::getline(ifs, s);
+            stringstream sss(s);
+            vector<Corner*> ptVec;
+            set<int> ptSet;
+            while (sss) {
+                int pt;
+                /// TODO:
+                sss >> pt;
+                pt -= 1;	//1 based array
+                if (ptSet.find(pt) == ptSet.end()) {
+                    ptVec.push_back(new Corner(pts[pt * 2] * scale + deltaX, pts[pt * 2 + 1] * scale + deltaY));
+
+                    b->addCorner(ptVec.back());
+                    b->vorCorners.push_back(ptVec.back());
+                    ptSet.insert(pt);
+                    if (ptVec.size() > 1) {
+                        Wall* w = new Wall(ptVec[ptVec.size() - 2], ptVec[ptVec.size() - 1]);
+                        b->addWall(w);
+                        b->vorWalls.push_back(w);
+                    }
+                }	//if
+                //new pt already appeared, a loop is formed.
+                //should only happen on first and last pt
+                else {
+                    if (ptVec.size() > 1) {
+                        Wall* w = new Wall(ptVec[ptVec.size() - 1], ptVec[0]);
+                        b->addWall(w);
+                        b->vorWalls.push_back(w);
+                        break;
+                    }
+                }
+            }		// while(ss)
+            tempPolygon.corners = ptVec;
+            tempPolygon.corners.push_back(ptVec[0]);
+            polygons.push_back(tempPolygon);
+            if (pointInPolygon(alpha[0], alpha[1], tempPolygon)) {
+                srcInPolygons.push_back(1);
+            }
+            else {
+                srcInPolygons.push_back(0);
+                inPoly = true;
+            }
+            if (i == 0) {		// if first polygon is clockwise, set globalMark
+                firstPolygonClockwise = checkClockwise(tempPolygon);
+            }
+        }		//for i=0 to nPolygons
+        ifs.close();
+        std::remove("output-tmp.txt");
     }
 
-    //Read input polygons:
-    ifs >> nPolygons;
-    string temp;
-    std::getline(ifs, temp);
-    for (int i = 0; i < nPolygons; ++i) {
-        Polygon tempPolygon;
-        string s;
-        std::getline(ifs, s);
-        stringstream sss(s);
-        vector<Corner*> ptVec;
-        set<int> ptSet;
-        while (sss) {
-            int pt;
-            /// TODO:
-            sss >> pt;
-            pt -= 1;	//1 based array
-            if (ptSet.find(pt) == ptSet.end()) {
-                ptVec.push_back(
-                        new Corner(pts[pt * 2] * scale + deltaX,
-                                pts[pt * 2 + 1] * scale + deltaY));
-
-                b->addCorner(ptVec.back());
-                b->vorCorners.push_back(ptVec.back());
-                ptSet.insert(pt);
-                if (ptVec.size() > 1) {
-                    Wall* w = new Wall(ptVec[ptVec.size() - 2],
-                            ptVec[ptVec.size() - 1]);
-                    b->addWall(w);
-                    b->vorWalls.push_back(w);
-                }
-            }	//if
-            //new pt already appeared, a loop is formed.
-            //should only happen on first and last pt
-            else {
-                if (ptVec.size() > 1) {
-                    Wall* w = new Wall(ptVec[ptVec.size() - 1], ptVec[0]);
-                    b->addWall(w);
-                    b->vorWalls.push_back(w);
-                    break;
-                }
-            }
-        }		// while(ss)
-        tempPolygon.corners = ptVec;
-        tempPolygon.corners.push_back(ptVec[0]);
-        polygons.push_back(tempPolygon);
-        if (pointInPolygon(alpha[0], alpha[1], tempPolygon)) {
-            srcInPolygons.push_back(1);
-        }
-        else {
-            srcInPolygons.push_back(0);
-        }
-        if (i == 0) {		// if first polygon is clockwise, set globalMark
-               firstPolygonClockwise = checkClockwise(tempPolygon);
-        }
-    }		//for i=0 to nPolygons
-    ifs.close();
     if (true) {
         mw_out << "input file name = " << s <<"\n";
         mw_out << "nPt=" << nPt<<"\n";

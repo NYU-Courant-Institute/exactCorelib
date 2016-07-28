@@ -5,6 +5,7 @@
 #include <QMouseEvent>
 
 #include "Timer.h"
+#include "Triangle.h"
 
 namespace Ui {
 class MainWindow;

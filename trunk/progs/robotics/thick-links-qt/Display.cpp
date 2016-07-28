@@ -36,6 +36,7 @@ extern bool safeAngle;
 extern bool runAnim;
 extern bool pauseAnim;
 extern bool replayAnim;
+extern bool inPoly;
 
 extern int animationSpeed;
 extern int animationSpeedScale;
@@ -76,6 +77,9 @@ bool step(false);
 unsigned int pSize;
 int lim;
 
+bool doTriangulation(false);
+vector<Triangle> triangles;
+
 /*
  * CONSTRUCTOR
  *
@@ -105,6 +109,7 @@ void Display::initializeGL() {
 
     // Set background color
     glClearColor(1, 1, 1, 1.0);
+    //else       glClearColor(0.6,0.6,0.6,1);
     glClearDepth(1.0f);
     //glEnable(GL_DOUBLEBUFFER);
 }
@@ -147,10 +152,10 @@ void Display::renderScene(){
     Pose start = Pose(alpha[0], alpha[1], alpha[2], alpha[3]);
     Pose goal = Pose(beta[0], beta[1], beta[2], beta[3]);
 
+    drawObstacles();
+
     drawRobot(start, 0.4);
     drawRobot(goal, 1);
-
-    drawObstacles();
 
 
     if (!noPath) {
@@ -315,8 +320,8 @@ void Display::drawLink(Pose a, Pose b, Color clr) {
 //    double vec_x = b.x-a.x;
 //    double vec_y = b.y-a.y;
 //    double norm2 = sqrt(vec_x*vec_x+vec_y*vec_y);
-//    vec_x = vec_x/norm2;
-//    vec_y = -vec_y/norm2;
+//    vec_x = -vec_x/norm2;
+//    vec_y = vec_y/norm2;
 
 //    // 1st Corner: lower left
 //    Pose lower_left  = Pose(a.x+thickness*vec_x*0.5f, a.y+thickness*vec_y*0.5f);
@@ -327,7 +332,8 @@ void Display::drawLink(Pose a, Pose b, Color clr) {
 //    // 4th Corner: upper left
 //    Pose upper_left  = Pose(b.x+thickness*vec_x*0.5f, b.y+thickness*vec_y*0.5f);
 
-//    drawQuadrilateral(lower_left, lower_right, upper_right, upper_left, clr);
+//    drawTriangle(lower_left, lower_right, upper_left, clr);
+//    drawTriangle(upper_left, lower_right, upper_right, clr);
 }
 
 void Display::drawCircle(Pose a, Color clr){
@@ -445,20 +451,45 @@ void Display::drawObstacles() {
     }
     glLineWidth(1.0);
 
-    if(showFilledObstacles){
-        for(int p=0;p<(int)polygons.size();++p){
-            glColor3f(0.6,0.6,0.6);
-
-            glBegin(GL_TRIANGLE_FAN);
-                for(int i=0;i<(int)polygons[p].corners.size();++i){
-                    Corner* c = polygons[p].corners[i];
-                    glVertex2f(c->x, c->y);
+    if(showFilledObstacles){        
+        if(!doTriangulation){
+            doTriangulation = true;
+            for(int p=0;p<(int)polygons.size();++p){
+                Vector2dVector a;
+                for(int j=0;j<(int)polygons[p].corners.size()-1;++j){
+                    a.push_back(Vector2d(polygons[p].corners[j]->x, polygons[p].corners[j]->y));
                 }
-                Corner* ori = polygons[p].corners[0];
-                glVertex2f(ori->x, ori->y);
-            glEnd();
+                // allocate an STL vector to hold the answer.
+                Vector2dVector result;
+                //  Invoke the triangulator to triangulate this polygon.
+                Triangulate::Process(a,result);
+                // print out the results.
+                int tcount = result.size()/3;
+
+                for (int i=0; i<tcount; i++){
+                    const Vector2d &p1 = result[i*3+0];
+                    const Vector2d &p2 = result[i*3+1];
+                    const Vector2d &p3 = result[i*3+2];
+                    Triangle tmp(Pose(p1.GetX(),p1.GetY()), Pose(p2.GetX(),p2.GetY()), Pose(p3.GetX(),p3.GetY()));
+                    triangles.push_back(tmp);
+                }
+            }
+        }
+        else{
+            for(int tri=0;tri<(int)triangles.size();++tri){
+                drawTriangle(triangles[tri].a, triangles[tri].b, triangles[tri].c, Color(0.6,0.6,0.6));
+            }
         }
     }
+}
+
+void Display::drawTriangle(Pose a, Pose b, Pose c, Color clr) {
+    glColor3fv(clr.rgb);
+    glBegin(GL_TRIANGLES);
+        glVertex2f( a.x, a.y );
+        glVertex2f( b.x, b.y );
+        glVertex2f( c.x, c.y );
+    glEnd();
 }
 
 void Display::drawPath() {

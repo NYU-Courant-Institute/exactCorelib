@@ -19,7 +19,8 @@ SOURCES +=\
 #    thick-links-test.cpp \
     Wall.cpp \
     fileProcessor.cpp \
-    Display.cpp
+    Display.cpp \
+    triangulate.cpp
 
 HEADERS  += MainWindow.h \
     Box.h \
@@ -36,6 +37,8 @@ HEADERS  += MainWindow.h \
     Display.h \
     Color.h \
     Vertex.h \
-    Pose.h
+    Pose.h \
+    triangulate.h \
+    Triangle.h
 
 FORMS    += MainWindow.ui

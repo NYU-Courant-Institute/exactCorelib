@@ -42,6 +42,8 @@ extern int renderSteps;
 extern bool step;
 
 extern std::vector<int> expansions;
+extern bool doTriangulation;
+extern vector<Triangle> triangles;
 
 int incr(1);
 int animationSpeed(90);
@@ -119,6 +121,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->inc->setEnabled(false);
     ui->left->setEnabled(false);
     ui->right->setEnabled(false);
+
+    doTriangulation = false;
+    triangles.clear();
 }
 
 MainWindow::~MainWindow()
@@ -325,6 +330,8 @@ void MainWindow::on_run_clicked()
     inc = 0;
     run();
 
+    doTriangulation = false;
+    triangles.clear();
     ui->openGLWidget->update();
 }
 

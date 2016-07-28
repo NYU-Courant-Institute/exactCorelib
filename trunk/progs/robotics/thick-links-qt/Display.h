@@ -7,6 +7,8 @@
 #include "QuadTree.h"
 #include "Polygon.h"
 #include "Vertex.h"
+#include "Triangle.h"
+#include "triangulate.h"
 
 // Qt/OpenGL
 #include <QOpenGLWidget>
@@ -49,6 +51,7 @@ private:
     void drawCircle(Pose a, Color clr);
     void drawQuadrilateral(Pose a, Pose b, Pose c, Pose d, Color clr);
     void drawQuadrilateralOutline(Pose a, Pose b, Pose c, Pose d, Color clr);
+    void drawTriangle(Pose a, Pose b, Pose c, Color clr);
 
     void drawObstacles();
 };
