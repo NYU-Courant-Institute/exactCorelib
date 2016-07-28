@@ -1,3 +1,16 @@
+/* **************************************
+   File: smooth_quadtree.h
+
+   Description: 
+   	Implementation of Smooth Quadtree data structure
+
+   Author:  Huck Bennett and Chee Yap 
+   Date:    June, 2016
+
+   Since Core Library  Version 2.1
+   $Id:$
+ ************************************** */
+
 /**
 SmoothQuadtree, an implementation of the smooth quadtree data structure.
 Copyright (C) 2016 Huck Bennett and Chee Yap.

@@ -1,3 +1,15 @@
+/* **************************************
+   File: smooth_quadtree_test.ccp
+
+   Description: 
+ 	An implementation of the smooth quadtree data structure.
+ 
+   Author: Huck Bennett, 9/21/2014
+ 
+   Since Core Library  Version 2.1
+   $Id:$
+ ************************************** */
+
 /**
 SmoothQuadtree, an implementation of the smooth quadtree data structure.
 Copyright (C) 2016 Huck Bennett and Chee Yap.

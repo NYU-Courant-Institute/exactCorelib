@@ -1,11 +1,14 @@
-/**
- *  File: smooth_quadtree_test.cc
- *
- *  Description: 
- *  An implementation of the smooth quadtree data structure.
- *
- *  Written by Huck Bennett, 9/21/2014
- */
+/* **************************************
+   File: smooth_quadtree_test.cc
+
+   Description: 
+ 	An implementation of the smooth quadtree data structure.
+ 
+   Author: Huck Bennett, 9/21/2014
+ 
+   Since Core Library  Version 2.1
+   $Id:$
+ ************************************** */
 
 #include "smooth_quadtree.h"
 #include <assert.h>
