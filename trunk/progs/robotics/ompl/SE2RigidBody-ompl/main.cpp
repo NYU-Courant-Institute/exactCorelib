@@ -44,6 +44,7 @@ struct CFG{
 CFG start, goal;
 char cfgPath[1000], tmp[1000];
 double s_round = 100;
+int succc[100];
 
 void parseExampleFile();
 void run(int planner_idx);
@@ -259,9 +260,11 @@ void run(int planner_idx) {
 
         // Jul. 20 Tom
         bool solved = setup.solve();
+        succc[i] = -1;
         if(solved && setup.haveExactSolutionPath()){ // Fail easily, even for simple cases!
         //if(solved && setup.haveSolutionPath()){
             suc++;
+            succc[i] = 1;
         }
         //setup.getSolutionPath().print(std::cout);
 
@@ -280,7 +283,7 @@ void run(int planner_idx) {
     sd = sqrt(sd/s_round);
     double best = FLT_MAX;
     for(int i=0;i<(int)s_round;++i){
-        if(tt[i] < best){
+        if(tt[i] < best && succc[i] > 0){
             best = tt[i];
         }
     }
