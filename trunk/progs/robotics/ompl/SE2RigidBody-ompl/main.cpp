@@ -29,8 +29,24 @@ using namespace ompl;
 //#define mw_out (*window)
 //static MainWindow *window;
 
+FILE *wp;
+
+char WAFR2016cfgName[10][100];
+
+std::string cfgName("T-room3.cfg");
+std::string robot("link-70-8_c.raw");
+std::string world("bugtrap2_c.raw");
+
+struct CFG{
+    double x, y, theta;
+};
+
+CFG start, goal;
+char cfgPath[1000], tmp[1000];
+double s_round = 100;
+
 void parseExampleFile();
-void run();
+void run(int planner_idx);
 
 std::string workingDir = QDir::currentPath().toStdString();
 int main(int argc, char** argv) {
@@ -83,8 +99,33 @@ int main(int argc, char** argv) {
 
     //QApplication app(argc, argv);
     //window = new MainWindow();
-    parseExampleFile();
-    run();
+
+    sprintf(WAFR2016cfgName[0], "T-room3");
+    sprintf(WAFR2016cfgName[1], "maze");
+    sprintf(WAFR2016cfgName[2], "randTri100");
+    sprintf(WAFR2016cfgName[3], "8-ways");
+    sprintf(WAFR2016cfgName[4], "IJRR2006");
+    sprintf(WAFR2016cfgName[5], "bugtrap2");
+    sprintf(WAFR2016cfgName[6], "bugtrap2_noPath");
+
+    wp = fopen("analysis.txt", "w");
+    if(wp == NULL) return 0;
+    for(int all=0;all<7;++all){
+        char ss[200];
+        sprintf(ss, "%s.cfg", WAFR2016cfgName[all]);
+        cfgName =  ss;
+        parseExampleFile();
+
+        fprintf(wp, "start\n");
+        fprintf(wp, "%s run %.lf\n", cfgName.c_str(), s_round);
+        fprintf(wp, "configuration:\n\trobot: %s\n", robot.c_str());
+
+        for(int i=0;i<4;++i) // planner idx
+            run(i);
+
+        fprintf(wp, "finish\n\n");
+    }
+    fclose(wp);
 
     //window->show();
 
@@ -92,7 +133,7 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-double roundAngle(double theta){
+double s_roundAngle(double theta){
     while(theta >= 360) theta -= 360;
     while(theta < 0)    theta += 360;
     return theta;
@@ -100,19 +141,8 @@ double roundAngle(double theta){
 
 double PI = 3.1415926535897f;
 double orientation2OMPL(double theta){
-    return PI*(roundAngle(theta)-180.0f)/180.0f;
+    return PI*(s_roundAngle(theta)-180.0f)/180.0f;
 }
-
-std::string cfgName("T-room3.cfg");
-std::string robot("link-70-8_c.raw");
-std::string world("bugtrap2_c.raw");
-
-struct CFG{
-    double x, y, theta;
-};
-
-CFG start, goal;
-char cfgPath[1000], tmp[1000];
 
 void parseExampleFile() {
 
@@ -170,7 +200,7 @@ void parseExampleFile() {
 }
 
 int runCount = 1;
-void run() {
+void run(int planner_idx) {
     // plan in SE2
     app::SE2RigidBodyPlanning setup;
 
@@ -178,15 +208,14 @@ void run() {
     // load the robot and the environment
     std::string robot_fname = workingDir + "/inputs/" + robot;
     std::string env_fname = workingDir + "/inputs/" + world;
-    fprintf(stderr, "%s %s\n", robot_fname.c_str(), env_fname.c_str());
-    fprintf(stderr, "%lf %lf %lf -> %lf %lf %lf\n", start.x, start.y, start.theta, goal.x, goal.y, goal.theta);
+    fprintf(wp, "%s %s\n", robot_fname.c_str(), env_fname.c_str());
+    fprintf(wp, "%lf %lf %lf -> %lf %lf %lf\n", start.x, start.y, start.theta, goal.x, goal.y, goal.theta);
     setup.setRobotMesh(robot_fname.c_str());
     setup.setEnvironmentMesh(env_fname.c_str());
 
-    double round = 100;
     double tt[100];
     double suc = 0;
-    for(int i=0;i<(int)round;++i){
+    for(int i=0;i<(int)s_round;++i){
         // define starting state
         base::ScopedState<base::SE2StateSpace> m_start(setup.getSpaceInformation());
         m_start->setX(start.x);
@@ -204,11 +233,22 @@ void run() {
         // choose different sampling method
         ompl::base::SpaceInformationPtr si_ptr = setup.getSpaceInformation();
 
-        ompl::base::PlannerPtr target_planner_ptr(new ompl::geometric::RRT(si_ptr));
-        //ompl::base::PlannerPtr target_planner_ptr(new ompl::geometric::PRM(si_ptr));
-        //ompl::base::PlannerPtr target_planner_ptr(new ompl::geometric::BITstar(si_ptr));
-        //ompl::base::PlannerPtr target_planner_ptr(new ompl::geometric::EST(si_ptr));
-        setup.setPlanner(target_planner_ptr);
+        if(planner_idx == 0){
+            ompl::base::PlannerPtr target_planner_ptr(new ompl::geometric::RRT(si_ptr));
+            setup.setPlanner(target_planner_ptr);
+        }
+        else if(planner_idx == 1){
+            ompl::base::PlannerPtr target_planner_ptr(new ompl::geometric::PRM(si_ptr));
+            setup.setPlanner(target_planner_ptr);
+        }
+        else if(planner_idx == 2){
+            ompl::base::PlannerPtr target_planner_ptr(new ompl::geometric::BITstar(si_ptr));
+            setup.setPlanner(target_planner_ptr);
+        }
+        else if(planner_idx == 3){
+            ompl::base::PlannerPtr target_planner_ptr(new ompl::geometric::EST(si_ptr));
+            setup.setPlanner(target_planner_ptr);
+        }
 
         // attempt to solve the problem, and print it to screen if a solution is found
         // Jul. 16 Tom
@@ -230,20 +270,20 @@ void run() {
 
     double total = 0;
     double sd = 0, ave = 0;
-    for(int i=0;i<(int)round;++i){
+    for(int i=0;i<(int)s_round;++i){
         total += tt[i];
     }
-    ave = total/round;
-    for(int i=0;i<(int)round;++i){
+    ave = total/s_round;
+    for(int i=0;i<(int)s_round;++i){
         sd += (tt[i]-ave)*(tt[i]-ave);
     }
-    sd = sqrt(sd/round);
+    sd = sqrt(sd/s_round);
     double best = FLT_MAX;
-    for(int i=0;i<(int)round;++i){
+    for(int i=0;i<(int)s_round;++i){
         if(tt[i] < best){
             best = tt[i];
         }
     }
-    fprintf(stderr, "%s %s\n", cfgName.c_str(), setup.getPlanner()->getName().c_str());
-    fprintf(stderr, "%lf %lf %lf %lf\n", ave, best, sd, suc/round);
+    fprintf(wp, "%s %s\n", cfgName.c_str(), setup.getPlanner()->getName().c_str());
+    fprintf(wp, "%lf %lf %lf %lf\n", ave, best, sd, suc/s_round);
 }
