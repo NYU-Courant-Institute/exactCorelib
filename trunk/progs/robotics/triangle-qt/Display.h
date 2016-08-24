@@ -6,6 +6,8 @@
 #include "Box.h"
 #include "QuadTree.h"
 #include "Vertex.h"
+#include "triangulate.h"
+#include "Triangle.h"
 
 
 // Qt

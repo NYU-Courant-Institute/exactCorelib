@@ -27,6 +27,7 @@ extern bool hideBox;
 extern bool showAnim;
 extern bool pauseAnim;
 extern bool replayAnim;
+extern bool showFilledObstacles;
 
 // usleep((99-animationSpeed)*animationSpeedScale);
 extern int animationSpeed;         // control the speed on the slider
@@ -50,6 +51,8 @@ extern Color clr_obstacle;
 extern Color clr_boundary;
 
 
+bool doTriangulation(false);
+vector<Triangle> triangles;
 
 // Member Variables
 static int numQuads = 0;
@@ -174,6 +177,9 @@ void Display::renderScene() {
         glDisable(GL_BLEND);
     }
 
+
+    drawObstacles();
+
     Pose start = Pose(alpha[0], alpha[1], alpha[2]);
     Pose goal = Pose(beta[0], beta[1], beta[2]);
 
@@ -229,8 +235,6 @@ void Display::renderScene() {
 
     drawRobot(start, clr_start);
     drawRobot(goal, clr_goal);
-
-    drawObstacles();
 }
 
 //===========================================================//
@@ -325,7 +329,7 @@ void Display::drawBoxes(Box* b, double epsilon) {
  */
 void Display::drawObstacles() {
     Box* b = QT->pRoot;
-    glLineWidth(2.0);
+    glLineWidth(3.0);
     for (list<Wall*>::iterator iter = b->walls.begin(); iter != b->walls.end(); ++iter) {
         Wall* w = *iter;
         glColor4fv(clr_obstacle.rgba);
@@ -335,6 +339,37 @@ void Display::drawObstacles() {
         glEnd();
     }
     glLineWidth(1.0);
+
+    if(showFilledObstacles){
+        if(!doTriangulation){
+            doTriangulation = true;
+            for(int p=0;p<(int)polygons.size();++p){
+                Vector2dVector a;
+                for(int j=0;j<(int)polygons[p].corners.size()-1;++j){
+                    a.push_back(Vector2d(polygons[p].corners[j]->x, polygons[p].corners[j]->y));
+                }
+                // allocate an STL vector to hold the answer.
+                Vector2dVector result;
+                //  Invoke the triangulator to triangulate this polygon.
+                Triangulate::Process(a,result);
+                // print out the results.
+                int tcount = result.size()/3;
+
+                for (int i=0; i<tcount; i++){
+                    const Vector2d &p1 = result[i*3+0];
+                    const Vector2d &p2 = result[i*3+1];
+                    const Vector2d &p3 = result[i*3+2];
+                    Triangle tmp(Pose(p1.GetX(),p1.GetY()), Pose(p2.GetX(),p2.GetY()), Pose(p3.GetX(),p3.GetY()));
+                    triangles.push_back(tmp);
+                }
+            }
+        }
+        else{
+            for(int tri=0;tri<(int)triangles.size();++tri){
+                drawTriangle(triangles[tri].a, triangles[tri].b, triangles[tri].c, Color(0.6,0.6,0.6), true, false);
+            }
+        }
+    }
 }
 
 /*

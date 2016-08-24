@@ -46,6 +46,7 @@ private slots:
     void on_show_clicked();
     void on_pause_clicked();
     void on_replay_clicked();
+    void on_showFilledObstacles_clicked();
 
     void on_boundary_clicked();
     void on_hidebox_clicked();

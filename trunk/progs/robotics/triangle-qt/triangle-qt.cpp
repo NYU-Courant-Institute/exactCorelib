@@ -109,22 +109,23 @@ using namespace std;
 //  double triRobo[2] = {0.95, 1.05};
 //
 // (d) Right-Angle Isosceles Robot
-double triRobo[2] = {150.0f/180.0f, 190.0f/180.0f};
+double triRobo[2] = {150.0f/180.0f, 210.0f/180.0f};
 //
 // (e) Off-Center Robot
 // double triRobo[2] = {0.3, 0.6};
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////
-string egName("SoCG2016_tri_demo1.eg");    // Input example name
-string fileName("bugtrap.txt"); 		// Input file name
+string cfgName("tri_parking.eg");    // Input example name
+string fileName("map_parking.txt"); 		// Input file name
 string inputDir("inputs");              // Path for input files
+string workingDir;
 
-double alpha[3] = { 250, 350, 0 };		// start configuration
-double beta[3] = { 30, 30, 90 };         // goal configuration
+double alpha[3] = { 400, 360, 180 };		// start configuration
+double beta[3] = { 100, 110, 0 };         // goal configuration
 double epsilon = 2;			// resolution parameter
 
-double R0 = 37;
+double R0 = 86;
 double boxWidth = 512;			// Initial box width
 double boxHeight = 512;			// Initial box height
 int windowPosX = 320;			// X Position of Window
@@ -145,7 +146,7 @@ int drawPathOption = 0;
 int twoStrategyOption = 0;          //  Two-Strategy Option    0: original 1: smarter
 int sizeOfPhiB = 0;
 
-char egNameList[200][200];
+char cfgNameList[200][200];
 int numEg = 0;
 Box* boxA;				// start box (containing alpha)
 Box* boxB;				// goal box (containing beta)
@@ -190,7 +191,8 @@ extern bool step;
 bool showAnim(true);
 bool pauseAnim(false);
 bool replayAnim(false);
-int animationSpeed(90);
+bool showFilledObstacles(false);
+int animationSpeed(99);
 int animationSpeedScale(5000);
 int animationSpeedScaleBox(100);
 
@@ -352,7 +354,7 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 int main(int argc, char* argv[]) {
 
     bool foundFiles = false;
-    std::string workingDir = QDir::currentPath().toStdString();
+    workingDir = QDir::currentPath().toStdString();
 
     // Test if the build directory is triangle-qt. If so,
     // the path to the current working directory will
@@ -674,34 +676,49 @@ int skip_backslash_new_line(std::istream & in) {
 } //skip_backslash_new_line
 
 
-char egPath[200], tmp[200];
-void parseExampleList() {
-    sprintf(egPath, "ls -R > tmpList");
-    system(egPath);
+char cfgPath[200], tmp[200], sptr[200];
+void parseExampleList(){
 
-    sprintf(egPath, "tmpList");
-    FILE *fptr = fopen(egPath, "r");
-    if(fptr == NULL) return ;
-    while(fgets(tmp, 200, fptr) != NULL){
-        char *sptr = strtok(tmp, " \n");
-        while(sptr != NULL){
-            int len = strlen(sptr);
-            if(len > 3 && sptr[len-1] == 'g' && sptr[len-2] == 'e' && sptr[len-3] == '.'){
-                strcpy(egNameList[numEg], sptr);
-                ++numEg;
-            }
-            sptr = strtok(NULL, " \n");
+    //    8/24/2016: Tom
+    //               new way to parse files in a folder
+    string cfgDir = workingDir + "/" + inputDir;
+    QDir tmpDir(cfgDir.c_str());
+    QStringList fileList = tmpDir.entryList();
+    while(!fileList.empty()){
+        QString fileName_l = fileList.front();
+        strcpy(sptr, fileName_l.toStdString().c_str());
+        int len = strlen(sptr);
+        if(len > 4 && sptr[len-1] == 'g' && sptr[len-2] == 'f' && sptr[len-3] == 'c' && sptr[len-4] == '.'){
+            strcpy(cfgNameList[numEg], sptr);
+            ++numEg;
         }
+        fileList.pop_front();
     }
 
-    sprintf(egPath, "rm -rf tmpList");
-    system(egPath);
+//    sprintf(cfgPath, "ls -R > tmpList");
+//    system(cfgPath);
+//    sprintf(cfgPath, "tmpList");
+//    FILE *fptr = fopen(cfgPath, "r");
+//    if(fptr == NULL) return ;
+//    while(fgets(tmp, 200, fptr) != NULL){
+//        char *sptr = strtok(tmp, " \n");
+//        while(sptr != NULL){
+//            int len = strlen(sptr);
+//            if(len > 3 && sptr[len-1] == 'g' && sptr[len-2] == 'e' && sptr[len-3] == '.'){
+//                strcpy(cfgNameList[numEg], sptr);
+//                ++numEg;
+//            }
+//            sptr = strtok(NULL, " \n");
+//        }
+//    }
+//    sprintf(cfgPath, "rm -rf tmpList");
+//    system(cfgPath);
 }
 
 void parseExampleFile() {
 
-    sprintf(egPath, "%s/%s", inputDir.c_str(), egName.c_str());
-    FILE *fptr = fopen(egPath, "r");
+    sprintf(cfgPath, "%s/%s", inputDir.c_str(), cfgName.c_str());
+    FILE *fptr = fopen(cfgPath, "r");
     if (fptr == NULL) return ;
 
     while (fgets(tmp, 200, fptr) != NULL){

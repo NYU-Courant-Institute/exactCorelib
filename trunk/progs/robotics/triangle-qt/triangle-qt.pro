@@ -25,7 +25,8 @@ SOURCES +=\
     Wall.cpp \
     fileProcessor.cpp \
     Display.cpp \
-    DisplayRobot.cpp
+    DisplayRobot.cpp \
+    triangulate.cpp
 
 HEADERS  += MainWindow.h \
     Box.h \
@@ -43,8 +44,10 @@ HEADERS  += MainWindow.h \
     Color.h \
     Pose.h \
     Vertex.h \
-    DisplayRobot.h
-#    Triangle.h
+    DisplayRobot.h \
+    triangulate.h \
+    Triangle.h
+
 
 FORMS    += \
 MainWindow.ui

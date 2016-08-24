@@ -3,14 +3,16 @@
 
 using namespace std;
 
-extern char egNameList[200][200];
+extern char cfgNameList[200][200];
 extern int numEg;
-extern string egName;
+extern string cfgName;
 extern string fileName;
 extern double alpha[3];		// start configuration
 extern double beta[3];		// goal configuration
 extern double epsilon;	    // resolution parameter
 extern std::vector<int> expansions;
+extern bool doTriangulation;
+extern vector<Triangle> triangles;
 extern double triRobo[2];
 extern double R0;
 extern int seed;
@@ -19,6 +21,7 @@ extern bool showAnim;
 extern bool pauseAnim;
 extern bool replayAnim;
 extern bool finishedAnim;
+extern bool showFilledObstacles;
 extern int animationSpeed;
 extern bool hideBoxBoundary;
 extern bool hideBox;
@@ -46,15 +49,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     for(int i=0;i<numEg;++i) {
-        ui->comboBox->addItem(egNameList[i]);
+        ui->comboBox->addItem(cfgNameList[i]);
     }
     for(int i=0;i<numEg;++i) {
-        if (strcmp(egNameList[i], egName.c_str()) == 0) {
+        if (strcmp(cfgNameList[i], cfgName.c_str()) == 0) {
             ui->comboBox->setCurrentIndex(i);
         }
     }
 
-    //ui->egFile->setText(QString::fromStdString(egName));
+    //ui->egFile->setText(QString::fromStdString(cfgName));
     ui->inputFile->setText(QString::fromStdString(fileName.substr(0,fileName.length()-4)));
 
     ui->aX->setValue(alpha[0]);
@@ -99,6 +102,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->inc->setEnabled(false);
     ui->left->setEnabled(false);
     ui->right->setEnabled(false);
+
+    doTriangulation = false;
+    triangles.clear();
 }
 
 MainWindow::~MainWindow()
@@ -240,7 +246,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
 void MainWindow::on_run_clicked()
 {
     char egPre[200], egCur[200];
-    sprintf(egPre, "%s", egName.c_str());
+    sprintf(egPre, "%s", cfgName.c_str());
     //sprintf(egCur, "%s", ui->egFile->text().toStdString().c_str());
     sprintf(egCur, "%s", ui->comboBox->currentText().toStdString().c_str());
     if (strcmp(egPre, egCur) == 0) {
@@ -271,8 +277,8 @@ void MainWindow::on_run_clicked()
 
         hideBoxBoundary=ui->boundary->isChecked();
     } else {
-        //egName=ui->egFile->text().toStdString();
-        egName = ui->comboBox->currentText().toStdString();
+        //cfgName=ui->egFile->text().toStdString();
+        cfgName = ui->comboBox->currentText().toStdString();
         parseExampleFile();
 
         ui->inputFile->setText(QString::fromStdString(fileName.substr(0,fileName.length()-4)));
@@ -321,6 +327,9 @@ void MainWindow::on_run_clicked()
     inc = 0;
     run();
 
+    doTriangulation = false;
+    triangles.clear();
+
     ui->openGLWidget->update();
     ui->openGLWidget_2->update();
 }
@@ -362,6 +371,11 @@ void MainWindow::on_pause_clicked() {
 
 void MainWindow::on_replay_clicked() {
     replayAnim = true;
+    this->update();
+}
+
+void MainWindow::on_showFilledObstacles_clicked() {
+    showFilledObstacles = !showFilledObstacles;
     this->update();
 }
 
