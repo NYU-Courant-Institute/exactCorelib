@@ -11,7 +11,7 @@
  * work correctly. The missing section of the BigFloat / BigInt API can
  * be added to these classes 
  *
- * Author: Narayan Kamath
+ * Author: Narayan Kamath (Oxford University, 2010)
  * Since Core 2.0
  */
 #ifndef __CORE_WRAPPERS_H__

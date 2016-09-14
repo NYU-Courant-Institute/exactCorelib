@@ -100,9 +100,11 @@ typedef long machine_long;
   #define double Expr
   #undef long
   #define long BigInt
+#elif CORE_LEVEL == 4	// This allows all the types to mix
+			// but type conversions are not fully defined
 #elif CORE_LEVEL == 5	// this is a hack to allow users (Willi Mann)
-			// to get "Level 3 doubles" (i.e., Expr)
-			// and at the same time use "unsigned long" with no error.
+			// to get "Level 3 doubles" (i.e., Expr), and
+			// at the same time use "unsigned long" with no error.
   #undef double
   #define double Expr
 #endif
