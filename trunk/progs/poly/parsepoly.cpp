@@ -1,6 +1,6 @@
 /* **************************************
    File: ParsePoly.cpp
-	Test the usage of constructor from strings for POlynomials.
+	Test the usage of constructor from strings for Polynomials.
 
    Author:  Vikram Sharma
    Date:    Oct. 1 2004

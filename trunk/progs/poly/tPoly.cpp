@@ -4,7 +4,6 @@
  Purpose: basic testing of the polynomial class
 
  USAGE:
-	> tPoly [InteractiveMode]
 
 	If an optional argument [InteractiveMode] is given,
 	the mode is interactive.

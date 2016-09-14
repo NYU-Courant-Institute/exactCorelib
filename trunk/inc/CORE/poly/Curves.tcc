@@ -976,7 +976,9 @@ std::ostream& operator<<(std::ostream& o, BiPoly<NT>& p) {
 	o << "0" << std::endl;
   } else {
 	int i=0;
-		  //	while (p.coeffX[i++].getTrueDegree() == -1); // This is pushing the index one more than necessary; e.g., if i=0 then we start from 1
+		  //	while (p.coeffX[i++].getTrueDegree() == -1);
+		  //	This is pushing the index one more than necessary;
+		  //	e.g., if i=0 then we start from 1
 	  while (zeroP(p.coeffX[i])) i++;
 	  if (i > 0) o << "y^" << i; // We are not outputing the constant coefficient -- Vikram Jan 2013
 	o << "(" << p.coeffX[i].toString() << ")";
