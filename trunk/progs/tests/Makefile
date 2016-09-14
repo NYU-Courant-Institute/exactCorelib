@@ -11,11 +11,12 @@ p= zero
 p= tExpr
 p= tCin
 p= tQueue
+p= tFinite
 
 LEV= 3
 TARGETS=tQueue
 MORE_TARGETS= floor_ceil bench \
-	tCin linn
+	tCin linn tFinite
 
 test: $(TARGETS)
 	./tQueue
