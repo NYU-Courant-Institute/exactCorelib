@@ -66,9 +66,10 @@ public:
 extern bool fpFilterFlag;
 
 // Chee: this is needed to avoid the isfinite() error below:
-//extern bool isfinite (float x);
-//extern bool isfinite (double x);
-//extern bool isfinite (long double x);
+//  (I comment the next 3 lines for MacOS)
+extern bool isfinite (float x);
+extern bool isfinite (double x);
+extern bool isfinite (long double x);
 
 /// turn floating-point filter on/off
 inline bool setFpFilterFlag(bool f) {
@@ -113,13 +114,16 @@ class BfsFilter {
 private:
   void compute_cache () {
     double Val = maxAbs*ind*CORE_EPS;
-  //  Sep'14, Chee: finite(fpVal) is deprecated on MacOS!  so must use isfinite(fpVal)
+  //  Sep'14, Chee: finite(fpVal) is deprecated on MacOS! 
+  //  	so must use isfinite(fpVal)
   //  Furthermore, there is a error of this nature:
-  //	"there are no arguments to 'isfinite' that depend on a template parameter"
+  // "there are no arguments to 'isfinite' that depend on a template parameter"
   //	See:
   //http://stackoverflow.com/questions/9941987/there-are-no-arguments-that-depend-on-a-template-parameter
-  //  Solution is to declare the "extern bool isfinite()" above.
-    _isok = isfinite(fpVal)&&(::fabs(fpVal)>Val);
+  //  Solution is to declare the "extern bool isfinite()" as above.
+  // Sep'16, Chee: we can now use std::isfinite(fpVal) defined
+  // 	in <cmath> (see progs/tests/tFinite.cpp):
+    _isok = std::isfinite(fpVal)&&(::fabs(fpVal)>Val);
     if (!_isok) return;
     _sign = (fpVal == 0.0) ? 0 : (fpVal > 0.0 ? 1: -1);
     _lMSB = (sign() == 0) ? MSB_MIN : long(ilogb(::fabs(fpVal) - Val));

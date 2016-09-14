@@ -188,6 +188,7 @@ BiPoly<NT>::BiPoly(const string & s, char myX, char myY){
 	string ss(s);
 	constructFromString(ss, myX, myY);
 }
+// Construct from string, with non-standard 'x' and 'y':
 template <class NT>
 void BiPoly<NT>::constructFromString(string & s, char myX, char myY){
 	  if((myX != 'x' || myX != 'X') && (myY != 'y' || myY != 'Y')){
@@ -264,7 +265,7 @@ int BiPoly<NT>::getnumber(const char* c, int start, unsigned int len,
   }
   temp[j] = '\0';
   // This conversion from string to NT is not working
-  // for NT type of int, long.
+  // for NT type of int, long.  See Promote.h.
   NT cf;
   if(hasStringConstructor<NT>::check())
     cf = NT(temp);
@@ -400,6 +401,7 @@ int BiPoly<NT>::getterm(string s, BiPoly<NT> & P){
   return ind;
 }
 
+// Construct bipoly from a single string with standard vars 'x' and 'y':
 template <class NT>
 BiPoly<NT> BiPoly<NT>::getbipoly(string s){
 	

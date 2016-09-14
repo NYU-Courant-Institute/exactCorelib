@@ -163,6 +163,8 @@ eighth test:
 	@echo "Testing Sample Programs..."
 	-${MAKE} -C progs test 2>&1 | tee ${CORE_PATH}/tmp/DIAG_TEST_DEMO
 	@echo "See file tmp/DIAG_TEST_DEMO for screen output"
+	@echo "Some of the tests are self-validating, and prints"
+	@echo "   either CORRECT or ERROR accordingly."
 	@echo ""
 
 # Basic Timing: just time all the tests 

@@ -40,7 +40,7 @@ template < class NT >
 struct hasExactDivision {
 // This default function is supposed to work for NT other than BigRat or Expr
   static bool check() {	
-     return false;
+     return false;	// default is false!
   }
 };
 
@@ -51,22 +51,23 @@ template<> struct hasExactDivision<Expr> {
 };
 template<> struct hasExactDivision<BigRat> {
   static bool check() {
-     return false;
+     //return false;	//Chee,9/2016: OOPS! shouldn't this be true?
+     return true;	//	I set this to true.
   }
 };
 
 /// hasStringConstructor()
 ///   CHECKING if NT has string constructor
 ///   NOTE: it is important that the compiler does not try to
-///   convert string to NT
+///		convert string to NT
 ///   USAGE:  If you want to check if a number type NT has string converter, 
-///           do for example,
-///            if (hasStringConstructor< NT >::check()) ...
+///		do for example,
+///               if (hasStringConstructor< NT >::check()) ...
 ///   		We use this in Curves.tcc class.
 template <class NT>
 struct hasStringConstructor {
   static bool check() {
-    return true;
+    return true;	// default is true!
   }
   static NT convert(const char* str) {
     return NT(str);
