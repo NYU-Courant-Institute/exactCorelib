@@ -1,0 +1,13 @@
+README
+
+Homotopy Path is a project to implement
+certified homotopy path finding.
+
+--Michael Burr, Juan Xu and Chee Yap
+  July 2016
+
+
+TODO:
+	-- define a new Frisco format called "string"
+		that accepts our string representation
+		of polynomials
