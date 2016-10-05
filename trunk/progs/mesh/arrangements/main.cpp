@@ -210,15 +210,19 @@ int main(int argc, char **argv) {
   }
   
   unsigned int num_ambiguous = ambiguous.size();   // statistic collections
-  cout << "Ambiguous regions: " << endl;
   
-  for(unsigned int i = 0; i < ambiguous.size(); i++) 
-  {
-    if(i > max_ambiguous_box)
+  if (ambiguous.size() == 0)
+  	cout << "There are NO ambiguous regions! " << endl;
+  else {
+  	cout << "Ambiguous regions: " << endl;
+	for(unsigned int i = 0; i < ambiguous.size(); i++) 
+	{
+	  if(i > max_ambiguous_box)
 	    break;
-    const Box *b = ambiguous[i];
-    cout << "X: " << b->x_range << " , Y: " << b->y_range << endl;
-  }
+	  const Box *b = ambiguous[i];
+	  cout << "X: " << b->x_range << " , Y: " << b->y_range << endl;
+	}
+  }//else
   
 
   unsigned int num_excludes = exclude.size();  // statistic collections

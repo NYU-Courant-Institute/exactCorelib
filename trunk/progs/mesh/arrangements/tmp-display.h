@@ -1,7 +1,8 @@
 #ifndef MK_DISPLAY_H_
 #define MK_DISPLAY_H_
 
-#include <GLUT/glut.h>
+//#include <GLUT/glut.h>
+#include <GL/glut.h>
 #include <utility>
 #include <vector>
 
