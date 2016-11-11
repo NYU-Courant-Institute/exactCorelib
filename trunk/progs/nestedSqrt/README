@@ -19,5 +19,32 @@ SYNOPSIS:
 
 NOTE: the Incremental Flag feature is temporarily unavailable
 	in Core2 (Nov 2009).
+
+
+Timing Data:
+    Nov 11, 2016: On Windows10/Cygwin (Chee's Surface Book):
+	>> time nestedSqrt.exe 12
+		E = SQRE(2, 12) = 1.04439e+1233
+		    where SQRE(2,k)= SQRE(2,k-1)**2
+		e = SQRT(E-1, 12) = 2
+		    where SQRT(F,k)= sqrt(log(F,k-1))
+		e - 2 = -4.675281963355559256809927252090048946318e-1237
+		    N.B. e - 2 should a very small negative number
+		
+		real    0m1.646s
+		user    0m1.593s
+		sys     0m0.031s
+	
+	>> time nestedSqrt.exe 15
+		E = SQRE(2, 15) = 1.41546e+9864
+		    where SQRE(2,k)= SQRE(2,k-1)**2
+		e = SQRT(E-1, 15) = 2
+		    where SQRT(F,k)= sqrt(log(F,k-1))
+		e - 2 = -4.312033670396506617906129265050487337486e-9869
+		    N.B. e - 2 should a very small negative number
+		
+		real    3m38.834s
+		user    3m23.265s
+		sys     0m13.953s
 ========================================================================
 
