@@ -34,7 +34,7 @@ WIDTH = 1024
 def iur(bnd):
     u = 0.0
     while u == 0.0:
-        u = random.uniform(0.0, bnd)
+        u = random.uniform(1.0, bnd)
     return u if random.randint(0, 1) == 0 else 1.0 / u
 
 def rcoor():

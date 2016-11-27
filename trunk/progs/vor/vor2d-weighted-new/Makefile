@@ -54,14 +54,14 @@ random_examples:
 	./subvor test_m_l_10_20 --geps=0.001 --grid=false &
 
 conics:
-	./subvor benchmarks/conics/ellipse &
-	./subvor benchmarks/conics/parabola &
-	./subvor benchmarks/conics/hyperbola &
+	./subvor benchmarks/conics/ellipse --save=true &
+	./subvor benchmarks/conics/parabola --save=true &
+	./subvor benchmarks/conics/hyperbola --save=true &
 
 conics_highres:
-	./subvor benchmarks/conics/ellipse --geps=0.001 &
-	./subvor benchmarks/conics/parabola --geps=0.001 &
-	./subvor benchmarks/conics/hyperbola --geps=0.001 &
+	./subvor benchmarks/conics/ellipse --geps=0.001 --save=true &
+	./subvor benchmarks/conics/parabola --geps=0.001 --save=true &
+	./subvor benchmarks/conics/hyperbola --geps=0.001 --save=true &
 
 rand_w_points_10:
 	python benchmarks/gen_points.py 10 -w

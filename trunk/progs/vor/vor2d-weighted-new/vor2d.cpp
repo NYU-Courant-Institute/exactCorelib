@@ -202,7 +202,7 @@ void save_png() {
 
   png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
   info_ptr = png_create_info_struct(png_ptr);
-
+  
   for (int i = 0; i < window_width; i++) {
     row_ptrs[i] = (png_bytep) malloc(sizeof(png_bytep) * RGBA_COMPS * window_width);
   }
@@ -431,7 +431,7 @@ void Mouse(int button, int state, int x, int y) {
 #define MAX_OBJECTS_FOR_CONSTRUCTION 3 // TODO: Handle degenerate input. I.e., = infinity.
 #define MK_SCALE 1.0
 #define JC_SCALE 3.0
-#define INT_SCALE 3.0
+#define INT_SCALE 5.0
 
 bool inter_root(vor_box* box, double scale) {
   // TODO: Avoid iterating through all vertex boxes.
