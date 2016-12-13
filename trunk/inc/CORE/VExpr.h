@@ -1,5 +1,5 @@
 /****************************************************************************
- * VExpr.h -- EGC number class providing guarranteed precision
+ * VExpr.h -- EGC number class providing guaranteed precision
  *
  * Core Library Version 2.0, March 2006
  * Copyright (c) 1995-2006 Exact Computation Project

@@ -1052,7 +1052,7 @@ protected:
   virtual void compute_rootBd()
   { rootBd().neg(child->get_rootBd()); }
   virtual bool compute_r_approx(prec_t prec) {
-    return check_exact(appValue().neg(child->r_approx(prec), prec));
+    return this->check_exact(appValue().neg(child->r_approx(prec), prec));
   } 
   virtual bool compute_a_approx(prec_t prec) {
     return this->check_exact(appValue().neg(child->a_approx(prec),
@@ -1110,7 +1110,7 @@ protected:
   virtual bool compute_r_approx(prec_t prec) {
     // compute_r_approx is called by r_approx only --
     // if child's sign is zero, compute_r_approx is not called	  
-    return check_exact(appValue().sqrt(child->r_approx(prec*2), prec));
+    return this->check_exact(appValue().sqrt(child->r_approx(prec*2), prec));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1157,7 +1157,7 @@ protected:
   virtual void compute_rootBd()
   { rootBd().root(child->get_rootBd(), 3); }
   virtual bool compute_r_approx(prec_t prec) {
-    return check_exact(appValue().cbrt(child->r_approx(prec*3), prec));
+    return this->check_exact(appValue().cbrt(child->r_approx(prec*3), prec));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1201,7 +1201,7 @@ protected:
   virtual bool compute_lMSB() 
   { return false;}
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().sin(child->a_approx(prec+1), abs2rel(prec+1)));
+    return this->check_exact(appValue().sin(child->a_approx(prec+1), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1244,7 +1244,7 @@ protected:
   virtual bool compute_lMSB() 
   { return false;}
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().cos(child->a_approx(prec+1), abs2rel(prec+1)));
+    return this->check_exact(appValue().cos(child->a_approx(prec+1), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1287,7 +1287,7 @@ protected:
   virtual bool compute_lMSB() 
   { return false;}
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().tan(child->a_approx(prec+3), abs2rel(prec+1)));
+    return this->check_exact(appValue().tan(child->a_approx(prec+3), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1328,7 +1328,7 @@ protected:
   virtual bool compute_lMSB() 
   { return false;}
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().cot(child->a_approx(prec+2), abs2rel(prec+1)));
+    return this->check_exact(appValue().cot(child->a_approx(prec+2), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1369,7 +1369,7 @@ protected:
   virtual bool compute_lMSB() 
   { lMSB() = floorlg(abs(child->a_approx(2).get_min())); return true;}
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().asin(child->a_approx(prec+2), abs2rel(prec+1)));
+    return this->check_exact(appValue().asin(child->a_approx(prec+2), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1410,7 +1410,7 @@ protected:
   virtual bool compute_lMSB() 
   { return false;}
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().acos(child->a_approx(prec+2), abs2rel(prec+1)));
+    return this->check_exact(appValue().acos(child->a_approx(prec+2), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1451,7 +1451,7 @@ protected:
   virtual bool compute_lMSB() 
   { return false;}
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().atan(child->a_approx(prec+2), abs2rel(prec+2)));
+    return this->check_exact(appValue().atan(child->a_approx(prec+2), abs2rel(prec+2)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1510,7 +1510,7 @@ protected:
   }
   virtual bool compute_a_approx(prec_t prec) {
     prec_t L = prec + 2 * (abs(child->appValue().get_max()).get_ui() + 1);
-    return check_exact(appValue().exp(child->a_approx(L), abs2rel(prec+1)));
+    return this->check_exact(appValue().exp(child->a_approx(L), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1569,7 +1569,7 @@ protected:
   }
   virtual bool compute_a_approx(prec_t prec) {
     prec_t L = prec + 2 * (abs(child->appValue().get_max()).get_ui() + 1);
-    return check_exact(appValue().exp2(child->a_approx(L), abs2rel(prec+1)));
+    return this->check_exact(appValue().exp2(child->a_approx(L), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1628,7 +1628,7 @@ protected:
   }
   virtual bool compute_a_approx(prec_t prec) {
     prec_t L = prec + 2 * (abs(child->appValue().get_max()).get_ui() + 1);
-    return check_exact(appValue().exp10(child->a_approx(L), abs2rel(prec+1)));
+    return this->check_exact(appValue().exp10(child->a_approx(L), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1680,7 +1680,7 @@ protected:
   virtual bool compute_lMSB() 
   { lMSB() = floorlg(child->get_lMSB()); return true; }
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().log2(child->a_approx(prec+1-floorlg(child->a_approx(2).get_min())), abs2rel(prec+1)));
+    return this->check_exact(appValue().log2(child->a_approx(prec+1-floorlg(child->a_approx(2).get_min())), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1733,7 +1733,7 @@ protected:
   virtual bool compute_lMSB() 
   { lMSB() = floorlg(child->get_lMSB()); return true; }
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().log(child->a_approx(prec+1-floorlg(child->a_approx(2).get_min())), abs2rel(prec+1)));
+    return this->check_exact(appValue().log(child->a_approx(prec+1-floorlg(child->a_approx(2).get_min())), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1786,7 +1786,7 @@ protected:
   virtual bool compute_lMSB() 
   { lMSB() = floorlg(child->get_lMSB()); return true; }
   virtual bool compute_a_approx(prec_t prec) {
-    return check_exact(appValue().log10(child->a_approx(prec+1-floorlg(child->a_approx(2).get_min())), abs2rel(prec+1)));
+    return this->check_exact(appValue().log10(child->a_approx(prec+1-floorlg(child->a_approx(2).get_min())), abs2rel(prec+1)));
   }
 #ifdef CORE_DEBUG
   virtual std::string op()
@@ -1837,7 +1837,7 @@ protected:
   virtual void compute_rootBd()
   { rootBd().root(child->get_rootBd(), m_k); }
   virtual bool compute_r_approx(prec_t prec) {
-    return check_exact(appValue().root(child->r_approx(prec*m_k),
+    return this->check_exact(appValue().root(child->r_approx(prec*m_k),
 			    m_k, prec));
   }
 #ifdef CORE_DEBUG
@@ -2065,7 +2065,7 @@ protected:
   virtual void compute_rootBd()
   { rootBd().mul(first->get_rootBd(), second->get_rootBd()); }
   virtual bool compute_r_approx(prec_t prec) {
-   return check_exact(appValue().mul(first->r_approx(prec+2),
+   return this->check_exact(appValue().mul(first->r_approx(prec+2),
 			   second->r_approx(prec+2), prec+1));
   }
   BigInt getZTVal() { return first->getZTVal() * second->getZTVal(); }
@@ -2125,7 +2125,7 @@ protected:
   virtual bool compute_r_approx(prec_t prec) {
     return this->check_exact(appValue().div(first->r_approx(prec+2),
 			    second->r_approx(prec+2), prec+1));
-    // Chee: April 2013: added "this->" to check_exact to try to remove warning.
+    // Chee: April 2013: added "this->" to check_exact to remove warning.
   }
   BigInt getZTVal() { return first->getZTVal() / second->getZTVal(); }
   BigFloat getFTVal() { return first->getFTVal() / second->getFTVal(); }

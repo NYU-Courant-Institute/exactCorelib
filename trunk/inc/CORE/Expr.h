@@ -1,5 +1,5 @@
 /****************************************************************************
- * Expr.h -- EGC number class providing guarranteed precision
+ * Expr.h -- EGC number class providing guaranteed precision
  *
  * Core Library Version 2.0, March 2006
  * Copyright (c) 1995-2006 Exact Computation Project
@@ -489,8 +489,7 @@ public:
   friend bool operator>(const ExprT& x, const ExprT& y)
   { return x.cmp(y) > 0; }
 
-  friend std::istream& operator>>(std::istream& is, ExprT& x)
-  { 
+  friend std::istream& operator>>(std::istream& is, ExprT& x) { 
     std::string str;
     is >> str;
     x.construct_from_string(str.c_str(), 10, digits2bits(getDefaultInputDigits()));
@@ -507,7 +506,6 @@ public:
     if (p->sign()) return p->approx2(defRelPrec,defAbsPrec).get_str();
     else return std::string("0");
 }
-//@}
 
 public: // public methods
   /// return relative approximation
@@ -623,7 +621,7 @@ private:
   }
 private:
   ExprRep* m_rep; ///<- internal representation
-}; // end if ExprT
+}; // end of ExprT
 
 CORE_END_NAMESPACE
 
