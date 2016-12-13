@@ -14,7 +14,7 @@ Many of our programs are self-validating:
 
 To check for errors: grep these diagnostic files 
 	-- grep "ERROR" to see if CORE has any errors;
-	-- grep "error" or "Error" to see if there are compiler errors;
+	-- grep "error:" to see if there are compiler errors;
 	-- grep "cannot" to see if there are missing files. 
 
 Also, Core may create and write messages in 
