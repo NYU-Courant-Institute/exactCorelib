@@ -38,9 +38,7 @@
 #include <CORE/Wrappers.h>
 #endif
 
-// REMARK: why do we include all these files 
-// 	if CORE_LEVEL=1?
-//
+// REMARK: even in Level 1, we may access the basic BigNumbers
 // level 1
 #include <CORE/BigInt.h> 
 #include <CORE/BigRat.h>
