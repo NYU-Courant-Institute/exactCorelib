@@ -12,6 +12,12 @@
 # Core Library, $Id: Makefile,v 1.1 2010/06/22 16:25:15 exact Exp $
 
 
+
+# turn assertions off
+#VAR=Opt
+# turn assertions on (this is the normal mode for this folder)
+ VAR=Debug
+
 include ../Make.options
 
 #=================================================

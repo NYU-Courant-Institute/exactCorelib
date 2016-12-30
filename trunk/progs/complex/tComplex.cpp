@@ -290,6 +290,7 @@ template <typename NT> void TestAdditional() {
   // Chee, 12/2016: 
   assert(minusOne == i*i);
   assert(a * three == a+a+a);
+  // assert(0==1);	// Deliberate error to check assertions 
 }
 
 // RUN ALL TESTS:
