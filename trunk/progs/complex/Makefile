@@ -1,8 +1,16 @@
-# Makefile for bareiss 
+# Makefile for complex 
 #
 # (template Makefile for simple targets)
 #
+# Chee, Dec 2016: 
+#	Be sure sure to choose Core Compiler Option of
+#		VAR=Debug
+#	in order for the asserts to be effective.
+#	Note that VAR="" or VAR=Opt includes compiler flag "-DNDEBUG"
+#	which turns off assertions.
+#
 # Core Library, $Id: Makefile,v 1.1 2010/06/22 16:25:15 exact Exp $
+
 
 include ../Make.options
 
@@ -37,6 +45,9 @@ tComplex: tComplex.o
 clean:
 	-@test -z "*.o" || rm -f *.o
 
+vclean: clean
+	-@test -z "tComplex" || rm -f tComplex
+	-@test -z "tComplex.exe" || rm -f tComplex.exe
 #=================================================
 # Remove executable files
 #=================================================

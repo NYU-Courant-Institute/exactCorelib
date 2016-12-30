@@ -46,6 +46,7 @@
 
 #include <iostream>
 #include <vector>
+#include <assert.h>
 
 // Define CORE_LEVEL to 4 to allow for mixed mode operation.
 #ifndef CORE_LEVEL
@@ -98,6 +99,10 @@ int main(int argc, char **argv) {
   cout << "LEVEL (1) - Wrappers" << endl;
   RunAllTests<DoubleWrapper>();
   cout << "Passed." << endl;
+
+  // Chee, 12/2016: assert is not working?
+  assert(1 == 0);
+
 
   return 0;
 }//main
@@ -272,7 +277,7 @@ template <typename NT> void TestEquality() {
 
 template <typename NT> void TestAdditional() {
   typedef ComplexT<NT> Complex;
-  typedef PolarComplexT<NT> PComplex;
+  //typedef PolarComplexT<NT> PComplex;
 
   const Complex zero;
   const Complex one(1, 0);
@@ -282,6 +287,9 @@ template <typename NT> void TestAdditional() {
   assert(0 == zero.mod());
   assert(1 == one.mod() && 1 == i.mod());
   assert(0 == one.arg());
+  // Chee, 12/2016: assert is not working?
+  assert(1 == i*i);
+  assert(1 == 0);
 }
 
 // RUN ALL TESTS:
