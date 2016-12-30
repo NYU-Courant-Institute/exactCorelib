@@ -1,4 +1,9 @@
-README file for progs/complex
+# README file for progs/complex
+#
+# (template Makefile for simple targets)
+#
+# Core Library, $Id: Makefile,v 1.1 2010/06/22 16:25:15 exact Exp $
+
 
 	A complex number package developed primarily for use
 	in the CEVAL algorithm (progs/mesh/ceval) . It contains
@@ -8,4 +13,5 @@ README file for progs/complex
 	conversions between the two types.
 
 --Narayan (June 2010)
+
 
