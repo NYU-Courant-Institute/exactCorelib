@@ -100,10 +100,6 @@ int main(int argc, char **argv) {
   RunAllTests<DoubleWrapper>();
   cout << "Passed." << endl;
 
-  // Chee, 12/2016: assert is not working?
-  assert(1 == 0);
-
-
   return 0;
 }//main
 
@@ -282,14 +278,18 @@ template <typename NT> void TestAdditional() {
   const Complex zero;
   const Complex one(1, 0);
   const Complex i(0, 1);
+  const Complex minusOne(-1, 0);
+  const Complex a(123, -456);
+  const Complex three(3, 0);
 
   // Some simple tests on |z| and arg(z) .
   assert(0 == zero.mod());
   assert(1 == one.mod() && 1 == i.mod());
   assert(0 == one.arg());
-  // Chee, 12/2016: assert is not working?
-  assert(1 == i*i);
-  assert(1 == 0);
+
+  // Chee, 12/2016: 
+  assert(minusOne == i*i);
+  assert(a * three == a+a+a);
 }
 
 // RUN ALL TESTS:
