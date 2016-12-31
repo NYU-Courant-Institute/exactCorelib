@@ -32,8 +32,12 @@ int main()
    for (int k=1;k<=nb_roots;++k){
      BFInterval bfi_sturm = my_sturm.isolateRoot(k, -1000.5, 1000);
      cout << bfi_sturm.first << " " << bfi_sturm.second << endl;
-     Expr res=rootOf(poly, bfi_sturm);
-     cout <<  "Root "<< res << endl;
+
+	// WARNING: rootOf(poly, bfi_sturm) is not yet implemented
+	// 		for Polynomial<BigRat>
+	//
+     // Expr res= CORE::rootOf(poly, bfi_sturm);
+     // cout <<  "Root "<< res << endl;
    }
 
    return 0;

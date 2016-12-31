@@ -105,8 +105,11 @@ int main() {
   // test comparison operator
   bool b;
   b = x == y;
+  cout << "True or false: " << x << "==" << y << " ?" << b << endl;
   b = x == 100;
+  cout << "True or false: " << x << "== 100 ? " << b << endl;
   b = 100 == x;
+  cout << "True or false: 100 == " << x << " ? " << b << endl;
 
   return 0;
 }

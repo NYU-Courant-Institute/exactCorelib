@@ -103,8 +103,11 @@ int main() {
   // test comparison operator
   bool b;
   b = x == y;
+  cout << "True or False? " << x << " == " << y << " ? " << b << endl;
   b = x == 100;
+  cout << "True or False? " << x << " == 100 ? " << b << endl;
   b = 100 == x;
+  cout << "True or False? 100 == " << x << " ? " << b << endl;
 
   BigInt zz = x.get_z();
   return 0;
