@@ -26,18 +26,54 @@ int main()
    Polynomial<BigRat> poly(50, c);
    poly.contract();
 
+   cout << "Polynomial is    x^{50} - 50 x^2 + 20 x - 2" << endl;
+   cout << "Its real roots are: " << endl;
+   cout << "       -1.09254,   0.2,    0.2,    1.07565 " << endl;
+   cout << "Sturm Sequence produces these intervals: " << endl;
+
    Sturm<BigRat> my_sturm(poly);
 
    int nb_roots=my_sturm.numberOfRoots(-1000, 1000);
    for (int k=1;k<=nb_roots;++k){
      BFInterval bfi_sturm = my_sturm.isolateRoot(k, -1000.5, 1000);
-     cout << bfi_sturm.first << " " << bfi_sturm.second << endl;
+     cout << "     [" << bfi_sturm.first << ", "
+	 << bfi_sturm.second << "]" << endl;
 
-	// WARNING: rootOf(poly, bfi_sturm) is not yet implemented
+	// TODO WARNING: rootOf(poly, bfi_sturm) is not yet implemented
 	// 		for Polynomial<BigRat>
 	//
      // Expr res= CORE::rootOf(poly, bfi_sturm);
      // cout <<  "Root "<< res << endl;
+   }
+
+
+   // ======================================
+   // Repeat the above for Polynomial<BigInt>:
+   // ======================================
+   BigInt cc[51];
+   cc[0]= BigInt(-2);
+   cc[1]= BigInt(20);
+   cc[2]= BigInt(-50);
+   cc[50]= BigInt(1);
+   for (int k=3;k<50;++k) cc[k]=0;
+
+   Polynomial<BigInt> new_poly(50, cc);
+   new_poly.contract();
+
+   Sturm<BigFloat> new_sturm(new_poly);
+
+   nb_roots = new_sturm.numberOfRoots(-1000, 1000);
+   
+   for (int k=1;k<=nb_roots;++k){
+     BFInterval bfi_sturm = new_sturm.isolateRoot(k, -1000.5, 1000);
+     cout << "     [" << bfi_sturm.first << ", "
+	 << bfi_sturm.second << "]" << endl;
+
+	// TODO WARNING: rootOf(poly, bfi_sturm) is not yet implemented
+	// 		for Polynomial<BigFloat>
+	//
+      Expr res= CORE::rootOf(new_poly, bfi_sturm);
+      cout <<  "Root "<< res << endl;
    }
 
    return 0;
