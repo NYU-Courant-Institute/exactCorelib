@@ -138,7 +138,7 @@ int main( int argc, char *argv[] ) {
 
     setDefaultOutputDigits(outDigit);
 
-    int argPrec = 100;
+    //int argPrec = 100;
     function_test("sin", strArg, outDigit, false, true, strMap["sin"]);  
     function_test("cos", strArg, outDigit, false, true, strMap["cos"]);  
     function_test("tan", strArg, outDigit, false, true, strMap["tan"]);  
@@ -155,7 +155,7 @@ int main( int argc, char *argv[] ) {
     setDefaultOutputDigits(outDigit);
     string strArg("0.001");
     
-    argPrec = 250;
+    // argPrec = 250;
     function_test("sin", strArg, outDigit, false, true, strMap2["sin"]);  
     function_test("cos", strArg, outDigit, false, true, strMap2["cos"]);  
     function_test("tan", strArg, outDigit, false, true, strMap2["tan"]);  

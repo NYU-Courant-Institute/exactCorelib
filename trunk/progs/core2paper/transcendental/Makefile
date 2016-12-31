@@ -74,6 +74,6 @@ clean:
 ALL=$(TARGETS) $(MORE_TARGETS) tConst tElemFun tZimmermann
 EXEPROGS=$(ALL:=$(EXETYPE))
 
-veryclean: clean
+vclean veryclean: clean
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
 
