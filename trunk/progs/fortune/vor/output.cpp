@@ -55,11 +55,11 @@ void out_bisector(Edge& e)
 // output endpoint (ep)
 void out_ep(Edge& e)
 {
-   if(!triangulate & plot) 
+   if((!triangulate) & plot) 	// put (..) around ! to avoid warning
       clip_line(e,1);
-   if(!triangulate & postscript) 
+   if((!triangulate) & postscript) 	// put (..) around ! to avoid warning
       clip_line(e,0);
-   if(!triangulate & !plot & !postscript)
+   if((!triangulate) & (!plot) & (!postscript))	// put (..) around ! 
    {	cout << "e " << e.r->edgenbr << " " ;
    
    if (e.r->ep[le].isNull()) cout << "-1 ";
@@ -83,7 +83,7 @@ Vertex::output()
 {
    double xd = x();
    double yd = y();
-   if(!triangulate & !plot &!debug & !postscript)
+   if(!triangulate && !plot && !debug && !postscript)
       cout << "v " << xd << " " << yd << "\n";
    if(debug)
       cout << "vertex(" << id() << ") at " << xd << " " << yd << "\n";
@@ -96,14 +96,14 @@ Site::output()
    double xd = x();
    double yd = y();
 #ifdef PLOT
-   if(!triangulate & plot & !debug)
+   if(!triangulate && plot && !debug)	// changed & to && to avoid warning
       circle (xd, yd, cradius);
 #endif
-   if(!triangulate & postscript & !debug)
+   if(!triangulate && postscript && !debug)  // changed & to && to avoid warning
    { OutPoint(x(),y());
 	  cout << " vertex\n";
    }
-   if(!triangulate & !plot & !debug & !postscript)
+   if(!triangulate && !plot && !debug && !postscript)// changed & to && 
       cout << "s " << xd << " " << yd << "\n";
    if(debug)
       cout << "site (" << id() << ") at " << xd
