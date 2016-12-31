@@ -93,7 +93,7 @@ int main( int argc, char *argv[] ) {
 // For user given test inputs:
   if (argc>1) {
 	string stringIn, stringAns;
-	int answer;
+	int answer = 0; // set to 0 to avoid warning
     stringIn=argv[1];
     if (argc>2) stringAns=argv[2];
     if (argc>3) answer=atoi(argv[3]);
