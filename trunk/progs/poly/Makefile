@@ -311,7 +311,7 @@ clean:
 ALL=$(TARGETS) $(MORE_TARGETS)
 EXEPROGS=$(ALL:=$(EXETYPE))
 
-veryclean: clean
+vclean veryclean: clean
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
 	-@rm -f tDescartes$(EXETYPE) tDescartesExp$(EXETYPE) tDescartesBF$(EXETYPE) \
 		tDescartesInt$(EXETYPE) tDescartesLon$(EXETYPE) tDescartesRat$(EXETYPE)

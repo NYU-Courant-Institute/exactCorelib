@@ -38,9 +38,9 @@ int main(int argc, char** argv){
 
     setDefaultAbsPrecision(prec);
 
-    bool slowTest = false;
-    if (argc >= 3) 
-	slowTest = true;		// if user specifies precision
+    // bool slowTest = false;		// slowTest is not used
+    // if (argc >= 3) 
+    //    slowTest = true;		// if user specifies precision
   
     // SET OUTPUT PRECISION
     cout.setf(ios::scientific, ios::floatfield);  // choose scientific notation
