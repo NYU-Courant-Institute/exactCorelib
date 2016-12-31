@@ -349,14 +349,15 @@ public:
   /// return the true degree
   int getTrueDegree() const {
     int i = getDegree();
-	NT c;
-    while (i>=0 && sign(coeff()[i]) == 0) --i;// We are assuming that i>=0 is tested first
-	/*  if(i >= 0) // The commented line above is correct. We need to check before the while loop whether i >= 0. Vikram Jan 2013
-	  {
+    while (i>=0 && sign(coeff()[i]) == 0) --i;// Note that i>=0 is tested first
+	/*  The previous line is correct.  We just need to check before
+	 *  the while loop whether i >= 0. Vikram Jan 2013
+	 *  NT c; 
+	 *  if(i >= 0) {
 		c = coeff()[i];
-    	while (i>=0 && sign(c) == 0) {
-	    --i;
-	    c = coeff()[i];
+	    	while (i>=0 && sign(c) == 0) {
+		    --i;
+		    c = coeff()[i];
 		}
 	  }*/
     return i;
