@@ -68,6 +68,6 @@ clean:
 #=================================================
 EXEPROGS=$(TARGETS:=$(EXETYPE))
 
-veryclean: clean
+vclean veryclean: clean
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
 
