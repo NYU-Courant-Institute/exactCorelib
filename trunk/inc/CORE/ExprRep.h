@@ -857,7 +857,7 @@ public:
       core_error("root index out of bound", __FILE__, __LINE__, true);
       assert(0);
     }
-    // refine initial interval to absolte error of 2^53
+    // refine initial interval to absolute error of 2^53
     I = ss.newtonRefine(I, 54);
     // we get an exact root
     if (I.first == I.second) value = I.first;

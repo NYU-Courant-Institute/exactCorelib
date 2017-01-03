@@ -62,5 +62,20 @@ int main(int argc, char* argv[]) {
   cout << "eee.r_approx()=" << eee.r_approx(digits2bits(prec)) << endl; 
   cout << "eee=" << eee << endl; 
 
+  // Testing rootOf(poly,bfi) construction:
+  BigInt coeff[3] = {2, 0, 1};
+  const Polynomial<BigInt> poly(2, coeff);	// x^2 - 2 
+  //
+  //const BFInterval bfi(1,2);
+  //Expr aa = CORE::rootOf(poly, bfi):
+  //
+  const BigFloat left(1);
+  const BigFloat right(2);
+  //Expr aa = CORE::rootOf(poly, left, right):
+  Expr aa = CORE::rootOf(poly, left, right):
+
+  cout << "aa= " << aa << endl;
+
+
   return 0;
 }

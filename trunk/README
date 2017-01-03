@@ -12,7 +12,7 @@
 *
 *                    http://cs.nyu.edu/exact/
 *        
-*  Copyright (c) 1998-2010 by Exact Computation Project, NYU
+*  Copyright (c) 1998-2016 by Exact Computation Project, NYU
 *
 *  $Id: README,v 1.12 2010/07/12 13:48:47 exact Exp $
 *************************************************************
@@ -248,7 +248,6 @@ README FILE: TABLE OF CONTENTS
                              -- e.g. PLATFORM=gnu, LINKAGE=static, VAR=, etc.
 
    3.4) STAGE 1: INSTALLING GMP 
-
         a) PRELIMINARY STEP:   For most Unix-like OS (e.g., Solaris, Linux),
         gmp will automatically build BOTH a static and a dynamic library.  
         In this case, most compilers will link to the dynamic gmp library.
@@ -342,7 +341,6 @@ README FILE: TABLE OF CONTENTS
         make programs.  The first three steps takes 15-25 minutes.
 
    3.5) STAGE 2: INSTALLING MPFR
-
 	Stage 2 is very similar to Stage 1.
         As for Stage 1, we have three possible scenarios:
 
@@ -383,7 +381,6 @@ README FILE: TABLE OF CONTENTS
                                 Output in file ${CORE_PATH}/tmp/DIAG_TEST_MPFR
 
    3.6) STAGE 3: BUILD CORE LIBRARY.
-        
         Now that gmp and mpfr are properly installed, you are ready to 
         install CORE.  IMPORTANT: the compilation settings for STAGE 3 
         are found in ${CORE_PATH}/Make.config.  They are described 
@@ -403,7 +400,6 @@ README FILE: TABLE OF CONTENTS
         The source files for the Core Library are found in
         ${CORE_PATH}/src.  If you only want to make "libcore++.a", type
         "make" while in ${CORE_PATH}/src.
-
 
    3.7) STAGE 4: TESTING AND TIMING.
         If you had chosen LINKAGE to be "shared" above, then make sure
@@ -466,7 +462,6 @@ README FILE: TABLE OF CONTENTS
         can freely access each other's files (a big bonus).
 
    3.10) VARIANT INSTALLATIONS
-
         (0) INSTALLING GMP AND/OR MPFR:
         Perhaps you only downloaded the base or standard version of CORE,
         but the above steps for installing GMP and/or MPFR did not work.
@@ -622,8 +617,7 @@ README FILE: TABLE OF CONTENTS
         Other possible values are "sun", "cyg", "mingw", "sgi", "mac".
         The "sgi" option has not been tested in the latest library.
 
-  3.10) CORE EXTENSIONS.
-
+  3.11) CORE EXTENSIONS.
         Under ${CORE_PATH}/ext, you will find extensions of Core Library
         to encode knowledge of algebraic and geometric domains.  These
         "CORE Extensions" (COREX) are quite rudimentary at present, but 
@@ -633,8 +627,7 @@ README FILE: TABLE OF CONTENTS
         Level 1 and Level 3 versions of these libraries, so that you can
         compile your application in either of these two accuracy levels.
 
-  3.11) HOUSEKEEPING AND UNINSTALL
-
+  3.12) HOUSEKEEPING AND UNINSTALL
         To uninstall the library, simple delete all the files under
         ${CORE_PATH} (i.e., we do not put files anywhere).  If gmp and
         mpfr are installed under ${CORE_PATH} you may want to move them first.
@@ -818,7 +811,6 @@ README FILE: TABLE OF CONTENTS
             Andreas Fabri, Michael Hemmer, Athanasios Kakargias,
             Daniel Russell, Ron Wein.
 
-   
    PLANS:
        -- improved precision-sensitive algorithm
        -- improved bounds (measure of Sekigawa, etc)
@@ -862,7 +854,6 @@ README FILE: TABLE OF CONTENTS
              the printed value may have error.
        -- level II is not fully supported
        -- level IV is not fully defined 
-
 
 *************************************************************
 5) ACKNOWLEDGMENT and BRIEF HISTORY

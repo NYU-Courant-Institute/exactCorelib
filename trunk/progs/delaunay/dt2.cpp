@@ -499,14 +499,14 @@ vertices are those in the list marked as onhull.
 void	ConstructHull( void )
 {
    tVertex  v, vnext;
-   bool	    changed;	/* T if addition changes hull; not used. */
+   //bool	    changed;	/* T if addition changes hull; not used. */
 
    v = vertices;
    do {
       vnext = v->next;
       if ( !v->mark ) {
          v->mark = PROCESSED;
-	 changed = AddOne( v );
+	 //changed = AddOne( v );
 	 CleanUp();
 
 	 if ( check ) {

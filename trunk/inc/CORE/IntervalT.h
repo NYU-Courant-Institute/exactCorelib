@@ -13,12 +13,15 @@
  * Written by
  *       Narayan Kamath (kamath.narayan@gmail.com), Oxford, June 2010.
  *
- * Updates: Remove evaluation of polynomial (eval() function in Poly.h has done this)
- *          Remove evaluation of bipoly (eval() function in Curves.h has done this)
+ * Updates by
+ *     Shang and Chee (Aug, 2011)
+ * Remove evaluation of polynomial
+ * 		(eval() function in Poly.h has done this)
+ *          Remove evaluation of bipoly
+ *          	(eval() function in Curves.h has done this)
  *          Remove inclusion of Curves.h (IntervalT is a basic class
- *          and it should know nothing about other classes)
+ *          	and it should know nothing about other classes)
  *          instead, others should include this file.
- *          Shang and Chee (Aug, 2011)
  *
  * WWW URL: http://cs.nyu.edu/exact/
  * Email: exact@cs.nyu.edu
@@ -29,9 +32,9 @@
 
 CORE_BEGIN_NAMESPACE
 
-// This inclusion should be removed
-// Instead, Curves.h should include IntervalT.h
-// Chee and Shang (Aug, 2011)
+// This inclusion removed:
+// 	Instead, Curves.h should include IntervalT.h
+// 	Chee and Shang (Aug, 2011)
 // #include "poly/Curves.h"
 
 // A namespace used to declare functions used in extended

@@ -23,7 +23,7 @@
  ***************************************************************************/
 
 /* **************************************************
- * COMMENTS on Expr.h:
+ * Overview of Expr.h:
  *
  * 	The main class here is a templated class called ExprT.
  * 	It takes 3 classes as template arguments:
@@ -64,7 +64,7 @@
  *
  * TODO: Unfortunately, other root bounds which were previously
  *       implemented in Core 1.7 (Li-Yap Bound, Mahler Measure)
- *       have not been implemented.
+ *       have not been implemented in Core 2.0.
  * **************************************************/
 
 #ifndef __CORE_EXPR_H__
@@ -384,7 +384,7 @@ public:
     return root(ExprT(n),k);
   }
 
-  /// helper function for constructing Polynomial node (n-th node)
+  /// helper function for constructing Polynomial node (n-th root of poly p)
   template <class NT>
   friend ExprT rootOf(const Polynomial<NT>& p, int n = 0) {
     return ExprT(new ConstPolyRepT<RootBd, Filter, Kernel, NT>(p, n));
@@ -653,7 +653,10 @@ CORE_BEGIN_NAMESPACE
 //
 // CASE 2-a: kary-BFMSS root bound (based on double) + BFS filter
 //
- typedef ExprT<BfmsskRootBd_double<BigFloat2>, BfsFilter<BigFloat2>, BigFloat2> Expr;
+ typedef ExprT<	BfmsskRootBd_double<BigFloat2>,
+ 		BfsFilter<BigFloat2>,
+		BigFloat2>
+	Expr;
 //
 // CASE 2-b: kary-BFMSS root bound (based on BigFloat) + BFS filter
 //
@@ -775,6 +778,10 @@ inline long ceilLg(const Expr& x) {
     return ceilLg(ceil(x));
 }
 
+// Chee, Dec2016: need
+// 	rootOf(poly, n)
+// 	rootOf(poly, bfi)
+// 	rootOf(poly, left, right)
 
 CORE_END_NAMESPACE
 #endif // __CORE_EXPR_H__
