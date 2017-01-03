@@ -12,8 +12,8 @@ cputime ()
 }
 
 int main(int argc, char* argv[]) {
-  //unsigned long prec = 100;
-  size_t prec = 100;
+  //unsigned long prec = 30;
+  size_t prec = 30; // 30 digits
   int st, st0;
 
   if (argc > 1)
@@ -21,22 +21,34 @@ int main(int argc, char* argv[]) {
 
   st = cputime();
 
-  cout << digits2bits(100) << endl;
+  cout << "100 digits is equal to " << digits2bits(100) << " bits!" << endl;
 
-  Expr x = root(Expr(2), 5);
-  Expr xx = root(Expr(4), 5);
-  Expr xxx = root(Expr(8), 5);
-  Expr xxxx = Expr(7) + x - 5*xxx;
-  cout << "x=" << x.r_approx(digits2bits(prec)) << endl;
-  cout << "xx=" << xx.r_approx(digits2bits(prec))<< endl;
-  cout << "xxx=" << xxx.r_approx(digits2bits(prec)) << endl;
-  cout << "xxxx=" << xxxx.r_approx(digits2bits(prec)) << endl;
+  Expr x = root(Expr(2), 4);
+  Expr xx = root(Expr(4), 4);
+  Expr xxx = root(Expr(8), 4);
+  Expr xxxx = root(Expr(16), 4);
+  Expr y = Expr(7) + x - 5*xxx;
+  cout << "x: 4th root of 2 =" << x.r_approx(digits2bits(prec)) << endl;
+  cout << "xx: 4th root of 4=" << xx.r_approx(digits2bits(prec))<< endl;
+  cout << "xxx: 4th root of 8=" << xxx.r_approx(digits2bits(prec)) << endl;
+  cout << "xxxx: 4th root of 16=" << xxxx.r_approx(digits2bits(prec)) << endl;
+  cout << "y: 7 + x - 5 xxx = " << y.r_approx(digits2bits(prec)) << endl;
+
   Expr r = cbrt(xxxx) + xx - x;
   cout << "r=" << r.r_approx(digits2bits(prec)) << endl;
   cout << "r.sign()=" << r.sign() << endl; 
   cout << "r.uMSB()=" << r.uMSB() << endl; 
   cout << "r.lMSB()=" << r.lMSB() << endl; 
   cout << "digits2bits(prec)=" << digits2bits(prec) << endl; 
+
+  r = cbrt(Expr(17));
+  x = root(Expr(17), 3);
+  cout << "cbrt(17) = " << r.r_approx(digits2bits(prec)) << endl;
+  cout << "root(17, 3) = " << x.r_approx(digits2bits(prec)) << endl;
+  if (x==r) 
+      cout << "cbrt(17) = root(17,3) -- CORRECT!" << endl;
+  else
+      cout << "cbrt(17) != root(17,3) -- ERROR!" << endl;
 
   Expr::KT value = r.r_approx(digits2bits(prec));
   cout << "r.diam=" << value.abs_diam() << endl;
@@ -65,16 +77,23 @@ int main(int argc, char* argv[]) {
   // Testing rootOf(poly,bfi) construction:
   BigInt coeff[3] = {2, 0, 1};
   const Polynomial<BigInt> poly(2, coeff);	// x^2 - 2 
+  Expr aa;
+  ConstPolyRepT
+  //
+  //  WHY FAIL? :	
+  //  	-- how to call a templated friend function?
+  //  	-- is it a c++11 issue?
+  <BigInt>Expr aa = rootOf<BigInt>(poly, 1);
+  cout << "aa= " << aa.r_approx(digits2bits(prec)) << endl;
   //
   //const BFInterval bfi(1,2);
   //Expr aa = CORE::rootOf(poly, bfi):
   //
   const BigFloat left(1);
   const BigFloat right(2);
-  //Expr aa = CORE::rootOf(poly, left, right):
-  Expr aa = CORE::rootOf(poly, left, right):
-
-  cout << "aa= " << aa << endl;
+  //Expr aa = rootOf(poly, left, right):
+  //Expr aa = rootOf(poly, left, right):
+  //cout << "aa= " << aa << endl;
 
 
   return 0;
