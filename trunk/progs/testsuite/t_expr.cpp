@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
   //  WHY FAIL? :	
   //  	-- how to call a templated friend function?
   //  	-- is it a c++11 issue?
-  <BigInt>Expr aa = rootOf<BigInt>(poly, 1);
+  Expr aa = rootOf<BigInt>(poly); // default n=0 smallest positive root
   cout << "aa= " << aa.r_approx(digits2bits(prec)) << endl;
   //
   //const BFInterval bfi(1,2);
