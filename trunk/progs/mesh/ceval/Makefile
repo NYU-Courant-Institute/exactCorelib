@@ -14,6 +14,7 @@
 # Core Library, $Id: Makefile,v 1.11 2011/05/05 16:20:23 exact Exp $
 
 CORE_PATH=../../..
+VAR=Opt
 include ../Make.options
 
 #=================================================
