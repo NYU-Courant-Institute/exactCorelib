@@ -17,6 +17,10 @@
 # $^ -- The names of all the prerequisites, with spaces between them.
 # $? -- The names of all the prerequisites that are newer than the 
 #       target, with spaces between them.
+#
+# Chee, 3Jan2017:
+#		added "-std=c++11" flags
+#
 #====================================================================
 
 # CHOOSE CORE_LEVEL:
@@ -29,7 +33,8 @@ endif
 #	${CXX} $(LDFLAGS) $< $(CORE_LIB) -o $@
 
 %: %.o
-	${CXX} $(LDFLAGS) $< -lcorex++$(VAR)_level${LEV} $(CORE_LIB) -o $@
+	${CXX} -std=c++11 \
+		$(LDFLAGS) $< -lcorex++$(VAR)_level${LEV} $(CORE_LIB) -o $@
 
 
 #
@@ -37,7 +42,8 @@ endif
 #
 
 .cpp.o:
-	${CXX} -c $(CXXFLAGS) $(CORE_INC) -DCORE_LEVEL=${LEV} $< -o $@
+	${CXX} -std=c++11 \
+		-c $(CXXFLAGS) $(CORE_INC) -DCORE_LEVEL=${LEV} $< -o $@
 
 #=================================================
 # Cleaning directory
