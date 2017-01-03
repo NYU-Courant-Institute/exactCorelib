@@ -45,7 +45,7 @@ int main()
         CORE::BFInterval bfi_sturm = my_sturm.isolateRoot(k, -1000, 1000);
         std::cout << bfi_sturm.first << " " << bfi_sturm.second << std::endl;
 
-	// WARNING: rootOf(poly, bfi_sturm) is not yet implemented
+	// rootOf(poly, bfi_sturm) is not yet implemented
 	// 		for Polynomial<BigRat>
 	//
         // CORE::Expr res=CORE::rootOf(poly, bfi_sturm);

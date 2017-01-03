@@ -75,23 +75,24 @@ int main(int argc, char* argv[]) {
   cout << "eee=" << eee << endl; 
 
   // Testing rootOf(poly,bfi) construction:
-  BigInt coeff[3] = {2, 0, 1};
-  const Polynomial<BigInt> poly(2, coeff);	// x^2 - 2 
+  BigInt coeff[3] = {-2, 0, 1};
+  const Polynomial<BigInt> poly = Polynomial<BigInt>(2, coeff);
+  		//poly = x^2 - 2 
   Expr aa;
-  ConstPolyRepT
   //
   //  WHY FAIL? :	
   //  	-- how to call a templated friend function?
   //  	-- is it a c++11 issue?
-  Expr aa = rootOf<BigInt>(poly); // default n=0 smallest positive root
+  //  	-- Burr said that it worked for him.
+  aa = rootOf<BigInt>(poly); // default n=0 smallest positive root
   cout << "aa= " << aa.r_approx(digits2bits(prec)) << endl;
   //
   //const BFInterval bfi(1,2);
-  //Expr aa = CORE::rootOf(poly, bfi):
+  //aa = CORE::rootOf(poly, bfi):
   //
   const BigFloat left(1);
   const BigFloat right(2);
-  //Expr aa = rootOf(poly, left, right):
+  //aa = rootOf(poly, left, right):
   //Expr aa = rootOf(poly, left, right):
   //cout << "aa= " << aa << endl;
 
