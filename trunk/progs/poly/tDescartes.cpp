@@ -99,7 +99,7 @@ int main(int argc, char** argv){
 // The next test will fail in NT=int or NT=long, so we omit it.
 #ifndef _NT_LONG
 #ifndef _NT_INT
-// Jihun Jan, 2007 : Until now, Descartes holts on TEST 4. need to work on this.
+// Jihun Jan, 2007 : Until now, Descartes halts on TEST 4. need to work on this.
 #ifndef _NT_EXP
 
     cout <<"=============================================================\n"
