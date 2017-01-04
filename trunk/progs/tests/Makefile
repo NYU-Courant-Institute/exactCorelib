@@ -12,6 +12,7 @@ p= tExpr
 p= tCin
 p= tQueue
 p= tFinite
+p= coreid
 
 LEV= 3
 TARGETS=tQueue
@@ -65,6 +66,8 @@ triplyNested: triplyNested.o
 
 cu: triplyNested
 	triplyNested
+
+coreid: coreid.o
 
 1: 1.o
 
