@@ -80,10 +80,9 @@ int main(int argc, char* argv[]) {
   		//poly = x^2 - 2 
   Expr aa;
   //
-  //  WHY FAIL? :	
-  //  	-- how to call a templated friend function?
+  //  The following is a new issue in g++5.4.0, but not in g++4.9.3. 
   //  	-- is it a c++11 issue?
-  //  	-- Burr said that it worked for him.
+  //  	-- It worked for Burr's g++4.9.3 (MacOS), but not g++5.4.0.
   aa = rootOf<BigInt>(poly); // default n=0 smallest positive root
   cout << "aa= " << aa.r_approx(digits2bits(prec)) << endl;
   //

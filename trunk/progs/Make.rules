@@ -28,7 +28,7 @@ ifndef LEV
    LEV=3
 endif
 
-# OLD:
+# Original:
 #%: %.o
 #	${CXX} $(LDFLAGS) $< $(CORE_LIB) -o $@
 

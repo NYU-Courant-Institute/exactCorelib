@@ -53,6 +53,8 @@ kahan: kahan.o
 
 t_tmp: t_tmp.o
 
+tt: tt.o
+
 #@end targets
 
 include ${CORE_DIR}/progs/Make.rules
