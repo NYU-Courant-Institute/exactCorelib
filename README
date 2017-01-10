@@ -1,0 +1,15 @@
+README
+
+This is a level above Corelib2.
+we have in this folder, 
+
+	gmp-6.1.2	-- latest gmp
+	gmp 		-- link to gmp-6.1.2
+	mpfr-3.1.5	-- latest mpfr
+	mpfr		-- link to mpfr-3.1.5
+
+	gmp-old		-- older version of gmp
+	mpfr-old	-- older version of mpfr
+	branches	-- branches of corelib2
+	trunk		-- corelib2
+	mpsolve
