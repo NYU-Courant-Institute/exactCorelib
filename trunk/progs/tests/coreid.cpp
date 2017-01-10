@@ -1,4 +1,3 @@
-
 /***************************************************
  *	file: coreid.cpp
  *
@@ -8,7 +7,11 @@
  *		     cout << "Type T = " << typeid(T).name() << endl;
  *
  * 	This is useful for debugging.
- * 	Here are the outputs in each CORE_LEVEL:
+ *
+ *	--Chee Yap (Jan 2017)
+ *
+ * **************************************************
+ * 	Here are the typeid outputs in each CORE_LEVEL (Jan 2017):
  *
  * 	CORE_LEVEL 1:
  *		>>>  Core Number Types:
@@ -67,7 +70,6 @@
  *		Test type BigFloat2 = N4CORE9BigFloat2E
  *		Test type Expr = N4CORE5ExprTINS_19BfmsskRootBd_doubleINS_9BigFloat2EEENS_9BfsFilterIS2_EES2_EE
  *
- *	--Chee Yap (Jan 2017)
  ***************************************************/
 
 
@@ -75,8 +77,9 @@
 
 
 // levels should be set by LEV in Makefile:  
-//   Jan2017: the current Makefile seems not to set this right...
-#define CORE_LEVEL 4
+//   Jan2017: override the Makefile (which seems not to do it)
+// #define CORE_LEVEL 4
+#define CORE_LEVEL 3
 #include "CORE.h"
 
 using namespace std;
@@ -92,7 +95,7 @@ template<typename T>
 int main(int argc, char* argv[]) {
 
 
-  cout << ">>>  Core Number Types:" << endl;
+  cout << ">>>  Core Number Types: ------------------------" << endl;
   test<int>("int");
   test<long>("long");
   test<float>("float");
@@ -105,5 +108,16 @@ int main(int argc, char* argv[]) {
   test<BFInterval>("BFInterval");
   test<BigFloat2>("BigFloat2");
   test<Expr>("Expr");
+
+  cout << "\n >>>  Computed Number Types: ------------------------" << endl;
+
+  cout << "    What is the type of sqrt(int)?" << endl;
+  for (int i=0; i<6; i++) {
+	cout << "int i = " << i 
+	    << ", typeid(i).name = " << typeid(i).name() << endl;
+	cout << "   sqrt(i) = " << sqrt(i) 
+	    << ", typeid(sqrt(i)).name = " << typeid(sqrt(i)).name() << endl;
+  }
+
 
 }//main

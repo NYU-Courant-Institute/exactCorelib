@@ -13,20 +13,26 @@ p= tCin
 p= tQueue
 p= tFinite
 p= coreid
+p= tfriend
+p= tCoreAux
 
 LEV= 3
-TARGETS=tQueue
+TARGETS=${p}
 MORE_TARGETS= floor_ceil bench \
 	tCin linn tFinite
 
-test: $(TARGETS)
+test: tQueue tFinite
 	./tQueue
+	./tFinite
 
 moretest: $(MORE_TARGETS)
 	./floor_ceil
 	./bench
 
-p ${p}: ${p}.cpp
+r run:
+	./${p}
+
+c compile ${p}: ${p}.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) ${p}.cpp -o ${p}.o
 	${CXX} $(LDFLAGS) ${p}.o $(CORE_LIB) -o ${p}
 
@@ -67,8 +73,6 @@ triplyNested: triplyNested.o
 cu: triplyNested
 	triplyNested
 
-coreid: coreid.o
-
 1: 1.o
 
 t: t.o
@@ -76,6 +80,12 @@ t: t.o
 hw2_4:hw2_4.o
 
 precision: precision.o
+
+coreid: coreid.o
+
+tfriend: tfriend.o
+
+tcoreaux: tCoreAux.o
 
 #=================================================
 # Rules
