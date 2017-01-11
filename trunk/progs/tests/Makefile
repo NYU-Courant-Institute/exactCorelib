@@ -7,8 +7,6 @@ include $(CORE_PATH)/progs/Make.options
 # Define target files (put all your files here)
 #=================================================
 p= floorLg
-p= zero
-p= tExpr
 p= tCin
 p= tQueue
 p= tFinite
@@ -18,12 +16,15 @@ p= tCoreAux
 
 LEV= 3
 TARGETS=${p}
+
+//test TARGETS: tQueue tFinite tCoreAux 
 MORE_TARGETS= floor_ceil bench \
 	tCin linn tFinite
 
-test: tQueue tFinite
+test: tQueue tFinite tCoreAux 
 	./tQueue
 	./tFinite
+	./tCoreAux 1035
 
 moretest: $(MORE_TARGETS)
 	./floor_ceil

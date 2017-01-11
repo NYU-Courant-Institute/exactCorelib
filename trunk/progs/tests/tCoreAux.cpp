@@ -5,8 +5,11 @@
  * 		stringToNumber<T>( string s)
  *		numberToString( T number)
  *	
- *	These are inverses for BigInt, BigRat
+ *	These are inverses for BigInt, BigRat, BigFloat.
+ *	The tests below confirm that they are inverses.
  *
+ *	NOTE: a deeper investigation is needed -- it is
+ *	rather suprising that it could be "CORRECT" for BigFloat.
  *
  * --Chee Yap (Jan 2017)
  * **************************************************
@@ -20,8 +23,11 @@
 
 using namespace std;
 
-void diag(string s, string ss, string cor, string err){
-    if (s.compare(ss) == 0)
+
+//diag prints "CORRECT" message if s1==s2
+// 	and "ERROR" otherwise
+void diag(string s1, string s2, string cor, string err){
+    if (s1.compare(s2) == 0)
 	cout << cor << endl;
     else
 	cout << err << endl;
@@ -29,8 +35,11 @@ void diag(string s, string ss, string cor, string err){
 
 
 int main(int argc, char* argv[]) {
-
     int start=1022, finish=1025;
+    if (argc>1) finish = atoi(argv[1]);
+    if (argc>2) start = atoi(argv[2]);
+
+
     for (int i=start; i<finish; i++){
     	cout << "int i     = " << CORE::numberToString(i) << endl;
 	BigInt bi = BigInt(i);
