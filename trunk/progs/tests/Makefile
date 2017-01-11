@@ -18,13 +18,13 @@ LEV= 3
 TARGETS=${p}
 
 //test TARGETS: tQueue tFinite tCoreAux 
-MORE_TARGETS= floor_ceil bench \
-	tCin linn tFinite
-
 test: tQueue tFinite tCoreAux 
 	./tQueue
 	./tFinite
 	./tCoreAux 1035
+
+MORE_TARGETS= floor_ceil bench \
+	tCin linn tFinite
 
 moretest: $(MORE_TARGETS)
 	./floor_ceil

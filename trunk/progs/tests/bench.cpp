@@ -50,7 +50,8 @@ void bench_2(const Expr &x, const Expr &y)
   assert(e == 0); 
 
   // Print the root bound of e
-  std::cerr << "root bound = " << e.rep()->get_rootBd().get_bound(e.rep()->get_Deg()) << std::endl;
+  std::cerr << "root bound = "
+      << e.rep()->get_rootBd().get_bound(e.rep()->get_Deg()) << std::endl;
 }
 
 void experiment_1(int loops) {
