@@ -200,6 +200,7 @@ help:
 	@echo "   testgmp -- to test if you have installed gmp"
 	@echo "   testmpfr -- to test if you have installed mpfr"
 
+
 opt options check:
 	@echo "YOUR CURRENT CORE ENVIRONMENT VARIABLES ARE: "
 	@echo "  PLATFORM:	" ${PLATFORM}

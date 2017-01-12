@@ -72,9 +72,9 @@ void core_test(T1 ans, T2 unknown, std::string msg1 = "", std::string msg2 = "")
 }
 
 // help inline functions for size_t
-// 2/24/09: Willi Mann suggested replacing size_t by unsigned int since size_t is defined
-// 	as unsigend int on some platform and as unsigned long on others.
-//msb_t ceillg(size_t v);
+// 2/24/09: Willi Mann suggested replacing size_t by unsigned int since size_t
+// is defined as unsigned int on some platform and as unsigned long on others.
+//	msb_t ceillg(size_t v);
 msb_t ceillg(unsigned int v);
 
 // help inline functions for long
@@ -272,7 +272,7 @@ inline void getDigits(std::string& strin, std::string& strout,
      strout="0";
   }
   if (isZero) sign=0;
-}  
+}//getDigits  
 
 /// Function to convert a decimal string into a BigRat
 inline BigRat stringToBigRat(const char* pStrIn) {
@@ -292,9 +292,30 @@ inline BigRat stringToBigRat(const char* pStrIn) {
   return(sgn * XIn);
 }
 
+/// Function to convert a decimal string into a BigRat
 inline BigRat stringToBigRat(std::string & strIn) {
   return stringToBigRat(strIn.c_str());
 }
+
+/// Templated function numberToString( T number)
+template <typename T>
+	std::string numberToString ( T number )
+	{
+	    std::ostringstream ss;
+	   ss << number;
+	   return ss.str();
+	}
+// usage: string s = numberToString(T number)
+// NOTE: T might not be a number.
+
+/// Templated function stringToNumber<T>( string s)
+template <typename T>
+	 T stringToNumber ( std::string & s ) {
+	     std::istringstream ss(s);
+	    T result;
+	    return ss >> result ? result : 0;
+	 }
+// usage: T x = stringToNumber<T>(string s)
 
 ////////////////////////////////////////////////////
 // Jan 2010: decided to write a general version

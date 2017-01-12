@@ -830,7 +830,7 @@ private:
   // specialized version for double
   void init_flags(double v) 
   { set_flags(sgn(v), ceillg(v), floorlg(v)); }
-};
+};//ConstRepT class
 
 /// \class ConstPolyRepT 
 /// \brief Const Poly node
@@ -852,7 +852,7 @@ protected:
 public:
   ConstPolyRepT(const Polynomial<NT>& p, int n) : ss(p) {
     I = ss.isolateRoot(n);
-    // check whether n-th root exists
+    // check whether n-th root exists  // n=0 means smallest positive root
     if (I.first == 1 && I.second == 0) {
       core_error("root index out of bound", __FILE__, __LINE__, true);
       assert(0);
@@ -907,7 +907,7 @@ protected:
   virtual std::string op()
   { return std::string("rootOf"); }
 #endif 
-};
+}; //ConstPolyRepT class
 
 /// \class PiRepT
 template <typename RootBd, typename Filter, typename Kernel>
@@ -931,7 +931,7 @@ public:
   {}
 protected:
   void compute_filter() {
-    filter().set(3.1415926535897932384626433832795028F);// Chee: this is strange,
+    filter().set(3.1415926535897932384626433832795028F);// Chee: strange,
     // I expect filter values to have error bounds...
   }
   void compute_numtype() {
@@ -975,7 +975,7 @@ public:
   {}
 protected:
   void compute_filter() {
-    filter().set(2.72);// Chee: this is strange -- filters should be an interval
+    filter().set(2.72);// Chee: strange -- filters should be an interval
     // need error bound?
   }
   void compute_numtype() {
