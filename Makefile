@@ -19,12 +19,13 @@ default: lock
 
 
 lock:
-	cd trunk; lock Makefile Make.config -m "make lock"
-	cd trunk/progs; lock Makefile Make.config -m "make lock"
+	cd trunk; svn lock Makefile Make.config -m "make lock"
+	cd trunk/progs; svn lock Makefile Make.options Make.rules \
+		-m "make lock"
 
 unlock:
-	cd trunk; unlock Makefile Make.config 
-	cd trunk/progs; unlock Makefile Make.config 
+	cd trunk; svn unlock Makefile Make.config 
+	cd trunk/progs; svn unlock Makefile Make.options Make.rules 
 
 #########################################
 # END
