@@ -384,19 +384,25 @@ public:
     return root(ExprT(n),k);
   }
 
+  //Chee, Jan 2017: the next 3 rootOf(...) methods uses a trick of Burr/Jihun
+  //	to overcome a "friend template" issue of g++5.4.0 by
+  //	introducing a dummy ExprT& argument for rootOf(e,...):
+  //
   /// helper function for constructing Polynomial node (n-th root of poly p)
   template <class NT>
-  friend ExprT rootOf(const Polynomial<NT>& p, int n = 0) {
+  friend ExprT rootOf(const ExprT & e, const Polynomial<NT>& p, int n = 0) {
     return ExprT(new ConstPolyRepT<RootBd, Filter, Kernel, NT>(p, n));
   }
   /// helper function for constructing Polynomial node witb BFInterval
   template <class NT>
-  friend ExprT rootOf(const Polynomial<NT>& p, const BFInterval& I) {
+  friend ExprT rootOf(const ExprT & e, const Polynomial<NT>& p,
+		const BFInterval& I) {
     return ExprT(new ConstPolyRepT<RootBd, Filter, Kernel, NT>(p, I));
   }
   /// helper function for constructing Polynomial node with pair of BigFloats
   template <class NT, class T>
-  friend ExprT rootOf(const Polynomial<NT>& p, const T& x, const T& y) {
+  friend ExprT rootOf(const ExprT & e, const Polynomial<NT>& p,
+	  const T& x, const T& y) {
     return ExprT(new ConstPolyRepT<RootBd, Filter, Kernel, NT>(p, BFInterval(x, y)));
   }
 
@@ -649,7 +655,8 @@ CORE_BEGIN_NAMESPACE
 //
 // CASE 1-b: BFMSS root bound (based on long) + BFS filter
 //
-//    typedef ExprT<BfmssRootBd<BigFloat2>, BfsFilter<BigFloat2>, BigFloat2> Expr;
+//    typedef ExprT<BfmssRootBd<BigFloat2>,
+//    			BfsFilter<BigFloat2>, BigFloat2> Expr;
 //
 // CASE 2-a: kary-BFMSS root bound (based on double) + BFS filter
 //
@@ -660,22 +667,42 @@ CORE_BEGIN_NAMESPACE
 //
 // CASE 2-b: kary-BFMSS root bound (based on BigFloat) + BFS filter
 //
-//   typedef ExprT<BfmsskRootBd_BigFloat<BigFloat2>, BfsFilter<BigFloat2>, BigFloat2> Expr;
+//   typedef ExprT<BfmsskRootBd_BigFloat<BigFloat2>,
+//   			BfsFilter<BigFloat2>, BigFloat2> Expr;
 //
 // CASE 2-c: kary-BFMSS root bound (based on long) + BFS filter
 //
-//    typedef ExprT<BfmsskRootBd<BigFloat2>, BfsFilter<BigFloat2>, BigFloat2> Expr;
+//    typedef ExprT<BfmsskRootBd<BigFloat2>,
+//    			BfsFilter<BigFloat2>, BigFloat2> Expr;
 //
 // CASE 2-d: kary-BFMSS root bound (based on double) + Dummy filter
 //
-//    typedef ExprT<BfmsskRootBd_double<BigFloat2>, DummyFilter, BigFloat2> Expr;
+//    typedef ExprT<BfmsskRootBd_double<BigFloat2>,
+//    			DummyFilter, BigFloat2> Expr;
 //
-// CASE 3: Dummy root bound + Dummy filter (NOTE: Apparently not implemented!)
+// CASE 3: Dummy root bound + Dummy filter (NOTE: not implemented!)
 //
 //   typedef ExprT<DummyRootBd<10>, DummyFilter, BigFloat2> Expr;
 //
 //=======================================================
 //
+/// rootOf (combining Burr's trick with Jihun's solution):
+template <class NT>
+Expr rootOf(const Polynomial<NT>& p, int n = 0) {
+    Expr e;
+    return rootOf(e, p, n);
+}
+template <class NT>
+Expr rootOf(const Polynomial<NT>& p, const BFInterval& I) {
+    Expr e;
+    return rootOf(e, p, I);
+}
+template <class NT, class T>
+  Expr rootOf(const Polynomial<NT>& p, const T& x, const T& y) {
+    Expr e;
+    return rootOf(e, p, BFInterval(x, y));
+  }
+
 
 /// pi()
 inline Expr pi() {
@@ -777,11 +804,6 @@ inline long ceilLg(const Expr& x) {
   else
     return ceilLg(ceil(x));
 }
-
-// Chee, Dec2016: need
-// 	rootOf(poly, n)
-// 	rootOf(poly, bfi)
-// 	rootOf(poly, left, right)
 
 CORE_END_NAMESPACE
 #endif // __CORE_EXPR_H__
