@@ -369,9 +369,10 @@ public:
       return ExprT(new ATanRep(e.rep()));
   }
 
-  // radical -- alternative name for root(n,k)
+  // Chee: we use the same trick as for rootOf(...):
+  /// radical -- alternative name for root(n,k)
   template<class NT>
-  friend ExprT radical(const NT& n, unsigned long k) {
+  friend ExprT radical(const ExprT& e, const NT& n, unsigned long k) {
     assert(n>=0 && k>=1);
     /*  This code is slower because root calls MPFR
      *  while this code uses our own Newton iteration.
@@ -686,7 +687,8 @@ CORE_BEGIN_NAMESPACE
 //
 //=======================================================
 //
-/// rootOf (combining Burr's trick with Jihun's solution):
+// External definition of rootOf and radical
+// 	(combining Burr's with Jihun's trick):
 template <class NT>
 Expr rootOf(const Polynomial<NT>& p, int n = 0) {
     Expr e;
@@ -702,7 +704,11 @@ template <class NT, class T>
     Expr e;
     return rootOf(e, p, BFInterval(x, y));
   }
-
+template <class NT>
+  Expr radical(const NT& n, unsigned long k) {
+    Expr e;
+    return radical(e, n, k);
+  }
 
 /// pi()
 inline Expr pi() {
