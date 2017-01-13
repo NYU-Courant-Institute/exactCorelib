@@ -125,13 +125,12 @@ int main()
    for (int k=1;k<=nb_roots;++k){
 	bigInt_res = rootOf(bigInt_poly, k);
 	diag(bigInt_res - result[k-1], 
-        cor + k, err + k);
-        // (cor + k) + "-th root",
-        // (err + k) + "-th root")
+        	cor + numberToString(k) + "-th root",
+		err + numberToString(k) + "-th root");
    }
 
    BFInterval const bfi_1 = new_sturm.isolateRoot(1, -100, 100);
-   res1 = rootOf(bigInt_poly, bfi_1);
+   Expr res1 = rootOf(bigInt_poly, bfi_1);
    cout <<  "1st Root = " << res1 << endl;
 
 
