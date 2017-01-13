@@ -117,10 +117,10 @@ int main(int argc, char* argv[]) {
   BigInt coef[3] = {-1, -1, 1};
   const Polynomial<BigInt>pp = Polynomial<BigInt>(2, coef);
   		//pp = x^2 - x - 1 
-  aa = rootOf(pp, 1); // aa is equal to phi=1.618...
+  aa = rootOf(pp, 1, 2); // aa is equal to phi=1.618...
   cout << "Golden Ratio, phi = " << aa.r_approx(digits2bits(prec)) << endl;
-  bb = rootOf(pp, -1); // bb is equal to phi=-0.618...
-  cout << "Golden Ratio, phi-hat = " << aa.r_approx(digits2bits(prec)) << endl;
+  bb = rootOf(pp, -1, 0); // bb is equal to phi=-0.618...
+  cout << "Golden Ratio, phi-hat = " << bb.r_approx(digits2bits(prec)) << endl;
   if (aa*aa == aa + Expr(1))
       cout << "phi * phi ==  phi + 1:  CORRECT!" << endl;
   else
