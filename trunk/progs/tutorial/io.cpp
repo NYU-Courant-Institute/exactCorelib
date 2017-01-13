@@ -8,8 +8,8 @@
 			controlled by setDefaultPrecision(rel,abs)
 		(2) the precision of output,
 			controlled by setDefaultOutputDigits(n, os).
-			This basically calls the std::setprecision(digits) of
-			std::ostreams.setprecision(n).
+			This basically calls the setprecision(digits) of
+			ostreams.setprecision(n).
 		(3) the precision for reading inputs,
 			controlled by setDefaultInputDigits(n)
 
@@ -29,6 +29,8 @@
 
 #include "CORE/CORE.h"
 
+using namespace std;
+
 int main( int argc, char *argv[] ) {
 
   // This is the default setting:
@@ -36,64 +38,64 @@ int main( int argc, char *argv[] ) {
   //setDefaultInputDigits(CORE_INFTY);
 
   double X("-1234.567890");
-  std::cout << "  Let X=1234.567890\n";
-  std::cout << "  Default Printout of X : \n    "
-	<< X << std::endl;
-  std::cout << "  Printout of X after setprecision(10) : \n    "
-	<< std::setprecision(10) << X 
+  cout << "  Let X=1234.567890\n";
+  cout << "  Default Printout of X : \n    "
+	<< X << endl;
+  cout << "  Printout of X after setprecision(10) : \n    "
+	<< setprecision(10) << X 
 	<< "\n     -- so `output width' (=10 here) counts the decimal point\n";
-  std::cout << "  Printout of X after setprecision(6): \n    "
-	<< std::setprecision(6) << X
-	<< "\n     -- so the default width is 6" << std::endl;
+  cout << "  Printout of X after setprecision(6): \n    "
+	<< setprecision(6) << X
+	<< "\n     -- so the default width is 6" << endl;
 
   setScientificFormat();
 
-  std::cout << "  Printout of X after setScientificFormat(): \n    "
+  cout << "  Printout of X after setScientificFormat(): \n    "
 	<< X << "\n     -- the width remains set at 6 \n"
   	<< "     -- but decimal point in Scientific width is not counted! \n"
   	<< "     -- Note the rounding of the last digit\n";
-  std::cout << "  Printout of X after setprecision(10) : \n    "
-	<< std::setprecision(10) << X << std::endl;
-  std::cout << "  Printout of X after setprecision(11) : \n    "
-	<< std::setprecision(11) << X 
-	<< "\n     -- an artificial zero digit is printed"  << std::endl;
-  std::cout << "  Printout of X after setprecision(12) : \n    "
-	<< std::setprecision(12) << X 
-	<< "\n     -- another artificial zero digit!"  << std::endl;
-  std::cout << "  Printout of X after setprecision(100) : \n    "
-	<< std::setprecision(100) << X 
-	<< "\n     -- Should print correctly"  << std::endl;
-  std::cout << "  Printout of X after setprecision(200) : \n    "
-	<< std::setprecision(200) << X 
-	<< "\n     -- Should see print out errors!"  << std::endl;
-  std::cout << "  FIX: set defInputDigits to INFTY before reading X \n";
+  cout << "  Printout of X after setprecision(10) : \n    "
+	<< setprecision(10) << X << endl;
+  cout << "  Printout of X after setprecision(11) : \n    "
+	<< setprecision(11) << X 
+	<< "\n     -- an artificial zero digit is printed"  << endl;
+  cout << "  Printout of X after setprecision(12) : \n    "
+	<< setprecision(12) << X 
+	<< "\n     -- another artificial zero digit!"  << endl;
+  cout << "  Printout of X after setprecision(100) : \n    "
+	<< setprecision(100) << X 
+	<< "\n     -- Should print correctly"  << endl;
+  cout << "  Printout of X after setprecision(200) : \n    "
+	<< setprecision(200) << X 
+	<< "\n     -- Should see print out errors!"  << endl;
+  cout << "  FIX: set defInputDigits to INFTY before reading X \n";
 
   defInputDigits = CORE_INFTY;
   setDefaultPrecision(CORE_INFTY,800);
 
   // X = double("1234.567890");
-  X=std::string("-1234.567890"); // why is this a problem for Core2?
+  X=string("-1234.567890"); // why is this a problem for Core2?
 
-  std::cout << "  printout X after setprecision(20) : \n    "
-	<< std::setprecision(20) << X  << std::endl;
-  std::cout << "  Try Again: printout X after setprecision(200) : \n    "
-	<< std::setprecision(200) << X 
-	<< "\n     -- Should see no printout errors!"  << std::endl;
+  cout << "  printout X after setprecision(20) : \n    "
+	<< setprecision(20) << X  << endl;
+  cout << "  Try Again: printout X after setprecision(200) : \n    "
+	<< setprecision(200) << X 
+	<< "\n     -- Should see no printout errors!"  << endl;
 
   setPositionalFormat();
-  std::cout << "  Printout of X after setPositionalFormat(): \n    "
-	<< X << std::endl;
-  std::cout << "  Printout of X after setprecision(11): \n    "
-	<< std::setprecision(11) << X
-	<< "\n     -- only one extra zero printed, as expected" << std::endl;
-  std::cout << "  Printout of X after setprecision(5): \n    "
-	<< std::setprecision(5) << X
-	<< "\n     -- rounding to a 4-digit integer" << std::endl;
-  std::cout << "  Printout of X after setprecision(4): \n    "
-	<< std::setprecision(4) << X
-	<< "\n     -- we are forced to go to scientific format" << std::endl;
+  cout << "  Printout of X after setPositionalFormat(): \n    "
+	<< X << endl;
+  cout << "  Printout of X after setprecision(11): \n    "
+	<< setprecision(11) << X
+	<< "\n     -- only one extra zero printed, as expected" << endl;
+  cout << "  Printout of X after setprecision(5): \n    "
+	<< setprecision(5) << X
+	<< "\n     -- rounding to a 4-digit integer" << endl;
+  cout << "  Printout of X after setprecision(4): \n    "
+	<< setprecision(4) << X
+	<< "\n     -- we are forced to go to scientific format" << endl;
 
-  std::cout << "\n To see what happens if X were not exact, we next set Y = 1/3.\n"
+  cout << "\n To see what happens if X were not exact, we next set Y = 1/3.\n"
 	<< "    Here Y is an expression\n"
   	<< "    We evaluate Y relative precision 53 (15.9 digits) \n"
 	<< "    by calling setDefaultPrecision(53,CORE_INFTY). \n";
@@ -102,43 +104,43 @@ int main( int argc, char *argv[] ) {
   double Y = one / three;
   setDefaultPrecision(53, CORE_INFTY);
 
-  std::cout << "  Output In Positional Format\n";
-  std::cout << "    Cout precision 12:      " << std::setprecision(12) << Y << std::endl;
-  std::cout << "    Cout precision 15:      " << std::setprecision(15) << Y << std::endl;
-  std::cout << "    Cout precision 16:      " << std::setprecision(16) << Y << std::endl;
-  std::cout << "        -- no guarantee that you will see more digits!" << std::endl;
-  std::cout << "    Cout precision 17:      " << std::setprecision(17) << Y << std::endl;
-  std::cout << "        -- you may see more because CORE has exceeded the requirements!" << std::endl;
-  std::cout << "    Cout precision 18:      " << std::setprecision(18) << Y << std::endl;
-  std::cout << "    Cout precision 19:      " << std::setprecision(19) << Y << std::endl;
-  std::cout << "    Cout precision 20:      " << std::setprecision(20) << Y << std::endl;
-  std::cout << "    Cout precision 21:      " << std::setprecision(21) << Y << std::endl;
-  std::cout << "    Cout precision 22:      " << std::setprecision(22) << Y << std::endl;
-  std::cout << "    Cout precision 23:      " << std::setprecision(23) << Y << std::endl;
-  std::cout << "    Cout precision 24:      " << std::setprecision(24) << Y << std::endl;
-  std::cout << "    Cout precision 25:      " << std::setprecision(25) << Y << std::endl;
-  std::cout << "    Cout precision 26:      " << std::setprecision(26) << Y << std::endl;
-  std::cout << "    Cout precision 27:      " << std::setprecision(27) << Y << std::endl;
-  std::cout << "    Cout precision 28:      " << std::setprecision(28) << Y << std::endl;
-  std::cout << "    Cout precision 29:      " << std::setprecision(29) << Y << std::endl;
-  std::cout << "    Cout precision 30:      " << std::setprecision(30) << Y << std::endl;
-  std::cout << "    Cout precision 31:      " << std::setprecision(31) << Y << std::endl;
+  cout << "  Output In Positional Format\n";
+  cout << "    Cout precision 12:      " << setprecision(12) << Y << endl;
+  cout << "    Cout precision 15:      " << setprecision(15) << Y << endl;
+  cout << "    Cout precision 16:      " << setprecision(16) << Y << endl;
+  cout << "        -- no guarantee that you will see more digits!" << endl;
+  cout << "    Cout precision 17:      " << setprecision(17) << Y << endl;
+  cout << "        -- you may see more because CORE has exceeded the requirements!" << endl;
+  cout << "    Cout precision 18:      " << setprecision(18) << Y << endl;
+  cout << "    Cout precision 19:      " << setprecision(19) << Y << endl;
+  cout << "    Cout precision 20:      " << setprecision(20) << Y << endl;
+  cout << "    Cout precision 21:      " << setprecision(21) << Y << endl;
+  cout << "    Cout precision 22:      " << setprecision(22) << Y << endl;
+  cout << "    Cout precision 23:      " << setprecision(23) << Y << endl;
+  cout << "    Cout precision 24:      " << setprecision(24) << Y << endl;
+  cout << "    Cout precision 25:      " << setprecision(25) << Y << endl;
+  cout << "    Cout precision 26:      " << setprecision(26) << Y << endl;
+  cout << "    Cout precision 27:      " << setprecision(27) << Y << endl;
+  cout << "    Cout precision 28:      " << setprecision(28) << Y << endl;
+  cout << "    Cout precision 29:      " << setprecision(29) << Y << endl;
+  cout << "    Cout precision 30:      " << setprecision(30) << Y << endl;
+  cout << "    Cout precision 31:      " << setprecision(31) << Y << endl;
 
-  std::cout << "THE NUMBER OF OUTPUT DIGITS SHOULD STOP SOMEWHAT BEFORE 31 \n"
+  cout << "THE NUMBER OF OUTPUT DIGITS SHOULD STOP SOMEWHAT BEFORE 31 \n"
 	<< "SINCE CORE EXCEEDS THE REQUESTED PRECISION BY A FACTOR of 2\n" ;
 
-  std::cout << "To unsure that you really see 31 DIGITS, we must compute to \n"
+  cout << "To ensure that you really see 31 DIGITS, we must compute to \n"
 	<< "102 relative bits of precision: by calling Y.approx(103, CORE_INFTY) \n";
 
   Y.approx(103, CORE_INFTY);
-  std::cout << "    Cout precision 31:      " << std::setprecision(31) << Y << std::endl;
-  std::cout << "    Cout precision 36:      " << std::setprecision(36) << Y << std::endl;
-  std::cout << "    Cout precision 41:      " << std::setprecision(41) << Y << std::endl;
-  std::cout << "    Cout precision 46:      " << std::setprecision(46) << Y << std::endl;
-  std::cout << "    Cout precision 51:      " << std::setprecision(51) << Y << std::endl;
+  cout << "    Cout precision 31:      " << setprecision(31) << Y << endl;
+  cout << "    Cout precision 36:      " << setprecision(36) << Y << endl;
+  cout << "    Cout precision 41:      " << setprecision(41) << Y << endl;
+  cout << "    Cout precision 46:      " << setprecision(46) << Y << endl;
+  cout << "    Cout precision 51:      " << setprecision(51) << Y << endl;
 
-  std::cout << "Now, we do Y.approx(123, CORE_INFTY) \n";
+  cout << "Now, we do Y.approx(123, CORE_INFTY) \n";
 
   Y.approx(123, CORE_INFTY);
-  std::cout << "    Cout precision 51:      " << std::setprecision(51) << Y << std::endl;
+  cout << "    Cout precision 51:      " << setprecision(51) << Y << endl;
 }
