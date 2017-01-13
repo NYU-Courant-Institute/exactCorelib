@@ -118,7 +118,7 @@ int main(int argc , char ** argv) {
 
   if (n >= 0) {
      Expr mthrootn = radical(n,m);
-     mthrootn.approx(1000);
+     mthrootn.approx(Prec);
      cout << "The " << m << "-th root of "<< n << " is "
 	     << mthrootn.approx() << endl;
    
