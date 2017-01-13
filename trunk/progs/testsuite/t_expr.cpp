@@ -74,27 +74,61 @@ int main(int argc, char* argv[]) {
   cout << "eee.r_approx()=" << eee.r_approx(digits2bits(prec)) << endl; 
   cout << "eee=" << eee << endl; 
 
-  // Testing rootOf(poly,bfi) construction:
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+  // Testing rootOf(poly,...) constructions:
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
   BigInt coeff[3] = {-2, 0, 1};
   const Polynomial<BigInt> poly = Polynomial<BigInt>(2, coeff);
   		//poly = x^2 - 2 
-  Expr aa;
+  Expr aa = rootOf<BigInt>(poly); // default n=0 smallest positive root
+  cout << "aa=sqrt(2) = " << aa.r_approx(digits2bits(prec)) << endl;
+
+  if (aa*aa == Expr(2))
+      cout << "aa*aa == 2:  CORRECT!" << endl;
+  else
+      cout << "aa*aa != 2:  ERROR!" << endl;
+
   //
-  //  The following is a new issue in g++5.4.0, but not in g++4.9.3. 
-  //  	-- is it a c++11 issue?
-  //  	-- It worked for Burr's g++4.9.3 (MacOS), but not g++5.4.0.
-  aa = rootOf<BigInt>(poly); // default n=0 smallest positive root
-  cout << "aa= " << aa.r_approx(digits2bits(prec)) << endl;
-  //
-  //const BFInterval bfi(1,2);
-  //aa = CORE::rootOf(poly, bfi):
+  const BFInterval bfi(1,2);
+  Expr bb = CORE::rootOf(poly, bfi);
+  if (aa == bb)
+      cout << "aa == bb:  CORRECT!" << endl;
+  else
+      cout << "aa != bb:  ERROR!" << endl;
   //
   const BigFloat left(1);
   const BigFloat right(2);
-  //aa = rootOf(poly, left, right):
-  //Expr aa = rootOf(poly, left, right):
-  //cout << "aa= " << aa << endl;
+  Expr cc = rootOf(poly, left, right);
+  if (aa == cc)
+      cout << "aa == cc:  CORRECT!" << endl;
+  else
+      cout << "aa != cc:  ERROR!" << endl;
 
+  Expr dd = CORE::rootOf(poly, BFInterval(-2,-1));
+  cout << "dd= -sqrt(2) = " << dd.r_approx(digits2bits(prec)) << endl;
+  if (aa + dd == 0)
+      cout << "aa ++ dd == 0:  CORRECT!" << endl;
+  else
+      cout << "aa != dd     :  ERROR!" << endl;
+
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+  // Testing golden ratio via rootOf(poly,...) 
+  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+  BigInt coef[3] = {-1, -1, 1};
+  const Polynomial<BigInt>pp = Polynomial<BigInt>(2, coef);
+  		//pp = x^2 - x - 1 
+  aa = rootOf(pp, 1); // aa is equal to phi=1.618...
+  cout << "Golden Ratio, phi = " << aa.r_approx(digits2bits(prec)) << endl;
+  bb = rootOf(pp, -1); // bb is equal to phi=-0.618...
+  cout << "Golden Ratio, phi-hat = " << aa.r_approx(digits2bits(prec)) << endl;
+  if (aa*aa == aa + Expr(1))
+      cout << "phi * phi ==  phi + 1:  CORRECT!" << endl;
+  else
+      cout << "phi * phi !=  phi + 1:  ERROR!" << endl;
+  if (aa * (aa- Expr(1)) == Expr(1))
+      cout << "1/phi ==  phi - 1:  CORRECT!" << endl;
+  else
+      cout << "1/phi !=  phi - 1:  ERROR!" << endl;
 
   return 0;
 }
