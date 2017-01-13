@@ -8,6 +8,8 @@
 #include <CORE/poly/Poly.h>
 #include <iostream>
 
+using namespace std;
+
 int main()
 {
     CORE::BigRat c[9];
@@ -32,25 +34,23 @@ int main()
 
     CORE::Polynomial<CORE::BigRat> poly(8, c);
 
-    std::cout << poly << std::endl;
+    cout << "Polynomial of degree 8 : " << poly << endl;
 
     poly.contract();
 
     CORE::Sturm<CORE::BigRat> my_sturm(poly);
     int nb_roots=my_sturm.numberOfRoots(-1000, 1000);
 
-    std::cout << nb_roots<< std::endl;
+    cout << "Number of Real Roots = " << nb_roots<< endl;
 
     for (int k=1;k<=nb_roots;++k){
         CORE::BFInterval bfi_sturm = my_sturm.isolateRoot(k, -1000, 1000);
-        std::cout << bfi_sturm.first << " " << bfi_sturm.second << std::endl;
+        cout << "the " + CORE::numberToString(k)
+	    		+ "-th isolating interval is ["
+	    << bfi_sturm.first << ", " << bfi_sturm.second << "]" << endl;
 
-	// rootOf(poly, bfi_sturm) was working in g++4.9.3 (MacOS)
-	// 	but is broken for g++5.4.0 (in Cygwin+MacOS)
-	// 
-	//
-        // CORE::Expr res=CORE::rootOf(poly, bfi_sturm);
-        // std::cout <<  "Root "<< res << std::endl;
+        CORE::Expr res=CORE::rootOf(poly, bfi_sturm);
+        cout <<  "   -- this root is "<< res << endl;
     }
    
     return 0;
