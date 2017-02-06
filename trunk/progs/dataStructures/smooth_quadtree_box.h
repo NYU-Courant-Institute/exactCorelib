@@ -68,12 +68,42 @@ class SmoothQuadtreeBox {
     delete[] center_;
   }
 
+  /**
+   * Splits this box, and then smooths the quadtree.
+   */ 
   void smooth_split() {
     if (!is_leaf()) {
       return;
     }
     smooth_split_aux();
     tree_->inc_smooth_splits();
+  }
+
+  /** 
+   * Returns the unique smallest neighbor in direction dir of equal or greater
+   * size, or NULL if no such neighbor exists.
+   */
+  SmoothQuadtreeBox<T>* principal_neighbor_dir(int dir) const {
+    int axis = fabs(dir);
+    int sign = (dir < 0) ? 0 : 1;
+    return neighbors_[(axis - 1) + sign * dimension()];
+  }
+
+  /**
+   * Returns all of the leaf neighbors in direction dir.
+   */
+  shared_ptr<vector<SmoothQuadtreeBox<T>*>> leaf_neighbors_dir(int dir) const {
+    shared_ptr<vector<SmoothQuadtreeBox<T>*>> neighbors(new vector<SmoothQuadtreeBox<T>*>());
+    SmoothQuadtreeBox<T>* cur_neighbor = principal_neighbor_dir(dir);
+
+    if (cur_neighbor == nullptr) {
+      return neighbors;
+    } else if (cur_neighbor->is_leaf()) {
+      neighbors->push_back(cur_neighbor);
+      return neighbors;
+    } else { // cur_neighbor is non-null and split.
+      return cur_neighbor->enumerate_halfspace_leaf_descendants(-dir);
+    }
   }
 
   void set_data(T* data) {
@@ -98,30 +128,6 @@ class SmoothQuadtreeBox {
 
   bool is_leaf() const {
     return children_ == nullptr;
-  }
-
-  /** 
-   * Returns the unique smallest neighbor in direction dir of equal or greater
-   * size, or NULL if no such neighbor exists.
-   */
-  SmoothQuadtreeBox<T>* principal_neighbor_dir(int dir) const {
-    int axis = fabs(dir);
-    int sign = (dir < 0) ? 0 : 1;
-    return neighbors_[(axis - 1) + sign * dimension()];
-  }
-
-  shared_ptr<vector<SmoothQuadtreeBox<T>*>> leaf_neighbors_dir(int dir) const {
-    shared_ptr<vector<SmoothQuadtreeBox<T>*>> neighbors (new vector<SmoothQuadtreeBox<T>*>());
-    SmoothQuadtreeBox<T>* cur_neighbor = principal_neighbor_dir(dir);
-
-    if (cur_neighbor == nullptr) {
-      return neighbors;
-    } else if (cur_neighbor->is_leaf()) {
-      neighbors->push_back(cur_neighbor);
-      return neighbors;
-    } else { // cur_neighbor is non-null and split.
-      return cur_neighbor->enumerate_halfspace_leaf_descendants(-dir);
-    }
   }
 
   const int depth() const {

@@ -41,7 +41,7 @@ template <typename T>
 class SmoothQuadtree {
  public:
   SmoothQuadtree<T>(int dimension, double width) : dimension_(dimension), width_(width) {
-    assert(1 <= dimension && dimension <= 31);
+    assert(1 <= dimension && dimension <= 32);
 
     double* center = new double[dimension];
     for (int i = 0; i < dimension; i++) {
@@ -59,13 +59,12 @@ class SmoothQuadtree {
     delete root_;
   }
 
-  SmoothQuadtreeBox<T>* root() {
-    return root_;
-  }
-
   /**
-   * Returns the leaf box containing a point,
-   * or NULL if point is outside of the subdivision.
+   * Returns the leaf box containing a point (x_1, x_2, ... x_n),
+   * or nullptr if the point lies outside of the subdivision.
+   *
+   * Note that the values x_i appear in LITTLE ENDIAN order, as opposed
+   * to the child indicators which appear in BIG ENDIAN order.
    */
   SmoothQuadtreeBox<T>* get_box(const vector<double>& point) {
     if (point.size() != dimension_) {
@@ -92,6 +91,10 @@ class SmoothQuadtree {
     }
 
     return cur_box;
+  }
+
+  SmoothQuadtreeBox<T>* root() {
+    return root_;
   }
 
   const int dimension() const {
