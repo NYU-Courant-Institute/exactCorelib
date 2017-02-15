@@ -15,9 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
--------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 Description:
--------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 A templated, d-dimensional implementation of the smooth quadtree data structure.
 A quadtree is called "smooth" if every pair of adjacent boxes differ in
@@ -49,9 +49,9 @@ For example, in 2 dimensions the children are indexed as follows:
   |  00  |  01  |
   |______|______|
 
--------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 Basic API:
--------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 The interesting functions work as described below. There are also a number of getter and setter functions.
 
@@ -85,9 +85,9 @@ Returns the unique smallest neighbor in direction dir of equal or greater size, 
 
 Returns all of the leaf neighbors in direction dir.
 
--------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 TODO/Bugs:
--------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 TODO:
 - Clean up direction/child indicator bit logic.

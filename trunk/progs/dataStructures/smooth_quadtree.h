@@ -45,7 +45,7 @@ class SmoothQuadtree {
 
     double* center = new double[dimension];
     for (int i = 0; i < dimension; i++) {
-      center[i] = 0.0;
+      center[i] = 0.0;  // should generalize (Chee)
     }
 
     root_ = new SmoothQuadtreeBox<T>(0 /* depth */, 0 /* indicator */, center, this);
