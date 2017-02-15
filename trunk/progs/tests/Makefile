@@ -13,6 +13,7 @@ p= tFinite
 p= coreid
 p= tfriend
 p= tCoreAux
+p= tSqrt
 
 LEV= 3
 TARGETS=${p}
@@ -87,6 +88,8 @@ coreid: coreid.o
 tfriend: tfriend.o
 
 tcoreaux: tCoreAux.o
+
+tSqrt: tSqrt.o
 
 #=================================================
 # Rules
