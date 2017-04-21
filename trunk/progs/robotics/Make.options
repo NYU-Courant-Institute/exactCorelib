@@ -50,7 +50,8 @@ else
    #	 -lcore++$(VAR) -lmpfr -lgmp  -lglut -lGLU -lGL -lglew
 
    CORE_LIB=-L/usr/lib/nvidia-331 -L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib -L$(CORE_PATH)/gmp/lib\
-         -lglut -lglui -lGLU -lGL -lGLEW -lm
+	  -lGLU -lGL -lm
+        # -lglut -lglui -lGLU -lGL -lGLEW -lm
 #	  -lglut -lglui -lGL -lGLEW -lm
    #-lmpfr -lgmp -lm -lglut32 -lglu32 -lopengl32
 endif
