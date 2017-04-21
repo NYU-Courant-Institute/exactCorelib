@@ -609,7 +609,7 @@ bool Box::checkIntersectTAS(Wall &w, Triangle &tri, bool mirrored) {
 
       Corner A0_ext1, A0_ext2;
 
-      inner_circle.intersectLine(la0b0, A0_ext2, A0_ext1);
+      inner_circle.intersectLine(la0b0, A0_ext1, A0_ext2);
 
       Wall seg_B0A0(B0_ext, A0_ext1);
       if (Line2d::lineSegIntsct(w, seg_B0A0))
