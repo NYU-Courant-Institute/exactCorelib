@@ -3,9 +3,12 @@
 
 int main(int argc, char* argv[]) {
 
+    if (argc >2) {
+      cfgName = argv[2];		//config file
+      parseExampleFile();
+    }
     if (argc >1) interactive = atoi(argv[1]);//interactive or no
-    if (argc >2) cfgName = argv[2];		//config file
-    parseExampleFile();
+
     if (argc > 3  && argv[3][0]!='#')fileName = argv[3];	//enviroment file
     if (argc > 4  && argv[4][0]!='#')inputDir = argv[4];	//Path for input files
     if (argc > 5  && argv[5][0]!='#')robotDir = argv[5];	//Path for robot files
