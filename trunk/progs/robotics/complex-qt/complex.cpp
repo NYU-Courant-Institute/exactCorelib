@@ -363,22 +363,21 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
     return isPath;
 }
 
+
 bool loadComplexRobot(string& robot_file, vector<Triangle>& compRoboTri) {
 
-  ifstream infile;
-  infile.open(robot_file);
-  if (!infile.is_open()) {
-    std::cout << "Robot file "<< robot_file << " open failed.";
-    return false;
+  fileProcessor(robot_file);	// this will clean the input and put in
+
+  ifstream infile("output-tmp.txt");
+  if (!infile) {
+      cerr << "cannot open input file" << endl;
+      exit(1);
   }
-  string line;
 
   int nv, nt;
   vector< Vector2d > verts;
 
-  while (!getline(infile, line) || line.size() == 0 || line[0]=='#'){}
-
-  nv = stoi(line);
+  infile >> nv;
   double x,y;
   while(nv--) {
     infile >> x >> y;

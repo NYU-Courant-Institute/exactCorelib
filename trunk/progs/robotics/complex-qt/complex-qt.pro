@@ -27,7 +27,7 @@ SOURCES +=\
     fileProcessor.cpp \
     Display.cpp \
     DisplayRobot.cpp \
-    triangulate.cpp
+    Triangulate.cpp
 
 HEADERS  += MainWindow.h \
     Box.h \
@@ -46,7 +46,7 @@ HEADERS  += MainWindow.h \
     Pose.h \
     Vertex.h \
     DisplayRobot.h \
-    triangulate.h \
+    Triangulate.h \
     Triangle.h
 
 
