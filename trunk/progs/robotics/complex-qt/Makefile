@@ -89,6 +89,7 @@ seed   = 111			#  for random number generator
 deltaX  = 0			#  x-translation of input file
 deltaY  = 0			#  y-translation of input file
 scale  = 1			#  scaling of input file
+verbosity  = 1			#  0 is least verbose, 1 is slightly more
 
 #=================================================
 # Define target files (put all your files here)
@@ -117,6 +118,7 @@ test: $(TARGETS)
 		$(windowPosX) $(windowPosY) \
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
 		&
 
 testall: $(TARGETS)
@@ -137,6 +139,7 @@ testb: $(TARGETS)
 		$(windowPosX) $(windowPosY) \
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
 		&
 
 help:
@@ -543,6 +546,7 @@ esaL1 Lparking: complex
 		$(windowPosX) $(windowPosY) \
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
 		&
 
 esaL2 Lgateway: complex
@@ -556,6 +560,7 @@ esaL2 Lgateway: complex
 		$(windowPosX) $(windowPosY) \
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
 		&
 
 esaL3 Lrand100: complex
@@ -569,6 +574,7 @@ esaL3 Lrand100: complex
 		$(windowPosX) $(windowPosY) \
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
 		&
 
 esaL4 Lrand200: complex
@@ -582,6 +588,7 @@ esaL4 Lrand200: complex
 		$(windowPosX) $(windowPosY) \
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
 		&
 
 esaL5 Lbugtrap2: complex
@@ -595,6 +602,7 @@ esaL5 Lbugtrap2: complex
 		$(windowPosX) $(windowPosY) \
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
 		&
 
 esaL6 Lbugtrap2no: complex
@@ -608,6 +616,7 @@ esaL6 Lbugtrap2no: complex
 		$(windowPosX) $(windowPosY) \
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
 		&
 
 esaL Lexperiments: 
@@ -641,6 +650,7 @@ esaS1 Sparking: complex
 		$(windowPosX) $(windowPosY) \
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
 		&
 
 esaS2 Sgateway: complex
@@ -654,6 +664,7 @@ esaS2 Sgateway: complex
 		$(windowPosX) $(windowPosY) \
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
 		&
 
 esaS3 Srand100: complex
@@ -667,6 +678,7 @@ esaS3 Srand100: complex
 		$(windowPosX) $(windowPosY) \
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
 		&
 
 esaS4 Srand200: complex
@@ -680,6 +692,7 @@ esaS4 Srand200: complex
 		$(windowPosX) $(windowPosY) \
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
 		&
 
 esaS5 Sbugtrap2: complex
@@ -693,6 +706,7 @@ esaS5 Sbugtrap2: complex
 		$(windowPosX) $(windowPosY) \
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
 		&
 
 esaS6 Sbugtrap2no: complex
@@ -706,6 +720,7 @@ esaS6 Sbugtrap2no: complex
 		$(windowPosX) $(windowPosY) \
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
 		&
 
 esaS-: 
