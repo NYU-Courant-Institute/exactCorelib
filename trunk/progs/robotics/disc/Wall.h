@@ -25,6 +25,6 @@ public:
 	double distance(double x, double y);
 
 	bool isRight(double x, double y);
-	bool inter
+	bool inter;
 
 };

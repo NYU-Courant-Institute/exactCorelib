@@ -119,8 +119,7 @@ all: $(TARGETS)
 test: $(TARGETS)
 	./disc 1 \
 		$(startX) $(startY)  $(goalX) $(goalY) \
-	
-	make $(epsilon)  $(radius)  input.txt  $(boxWidth) $(boxHt) \
+		$(epsilon)  $(radius)  input.txt  $(boxWidth) $(boxHt) \
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		&
