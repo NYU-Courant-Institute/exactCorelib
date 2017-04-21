@@ -30,6 +30,7 @@ int main(int argc, char* argv[]) {
     if (argc > 21 && argv[21][0]!='@')deltaX  = atof(argv[21]); // x-translation of input file
     if (argc > 22 && argv[22][0]!='@')deltaY  = atof(argv[22]); // y-translation of input file
     if (argc > 23 && argv[23][0]!='@')scale  = atof(argv[23]);		// scaling of input file
+    if (argc > 24 && argv[24][0]!='@')verboseOption  = atoi(argv[24]);		// verbosity of output
 
 
     if (interactive > 0) {	// non-interactive

@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
     if (argc > 21) deltaX  = atof(argv[21]); // x-translation of input file
     if (argc > 22) deltaY  = atof(argv[22]); // y-translation of input file
     if (argc > 23) scale  = atof(argv[23]);		// scaling of input file
+    if (argc > 24 && argv[24][0]!='@')verboseOption  = atoi(argv[24]);		// verbosity of output
 
 
     bool foundFiles = false;
