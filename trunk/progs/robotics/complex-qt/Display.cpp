@@ -59,7 +59,8 @@ vector<Triangle> triangles;
 static int numQuads = 0;
 unsigned int inc(0);
 unsigned int renderSteps(1);
-bool step(false);
+//bool step(false);
+extern bool step; // define in complex.cpp or complex-qt.cpp
 // Stores Vertices of Shapes
 static std::vector<Vertex>  hollowCircles;
 static std::vector<Vertex>  filledCircles;

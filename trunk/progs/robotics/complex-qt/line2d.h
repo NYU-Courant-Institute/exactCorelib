@@ -192,6 +192,9 @@ public:
     double r;
     Circle (double xx, double yy, double rr):x(xx), y(yy), r(rr) {}
 
+    // Check if circle intersects a line
+    // 	(and returns 2 intersection points if true)
+    //
     bool intersectLine(Line2d & L, double &inter_x1, double &inter_y1,
                                    double &inter_x2, double &inter_y2) {
       double dist = L.a*x + L.b*y + L.c;
@@ -234,7 +237,8 @@ public:
         swap(inter_x1, inter_x2);
         swap(inter_y1, inter_y2);
       }
-    }
+      return true;
+    }//intersectLine
 
     bool intersectLine(Line2d& L, Corner& c1, Corner& c2){
       return intersectLine(L, c1.x, c1.y, c2.x, c2.y);

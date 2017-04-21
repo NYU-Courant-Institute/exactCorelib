@@ -556,7 +556,7 @@ bool Box::checkInsideTAS(Corner &c, Triangle &tri, bool mirrored) {
   if (Ra<0) Ra = 0;
   Rc = Rc + rB;
   double dist = c.distance(Ox, Oy);
-  double angle = atan2(c.y - Oy, c.x - Ox)/PI;
+  // double angle = atan2(c.y - Oy, c.x - Ox)/PI;
 
   Corner a0(tri.a.x * r0 + Ox, tri.a.y * r0 + Oy);
   Corner b0(tri.b.x * r0 + Ox, tri.b.y * r0 + Oy);
@@ -726,8 +726,10 @@ bool Box::checkIntersectTAS(Wall &w, Triangle &tri, bool mirrored) {
 void Box::updateStatusSmall() {
   if (status != UNKNOWN) return;
 
-  double outerDomain = r0 + rB;
-  bool isSTUCK = false;
+  // outerDomain SHOULD BE USED TO SPEED CODE!!!   (TO DO)
+  //double outerDomain = r0 + rB;
+  
+  //  bool isSTUCK = false;
 
   int total_corners_left = 0;
   int total_walls_left = 0;

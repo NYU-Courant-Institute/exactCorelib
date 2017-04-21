@@ -198,7 +198,7 @@ int currentStep = 0;
 int stepIncrease = 0;
 int currentPathStep = 0;
 
-extern bool step;
+bool step(false);
 
 bool showAnim(true);
 bool pauseAnim(false);
