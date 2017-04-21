@@ -128,3 +128,14 @@ void Corner::rotate(double angle, double x_pivot, double y_pivot) {
   x = xnew + x_pivot;
   y = ynew + y_pivot;
 }
+
+void Corner::rotate(double angle, Corner& d) {
+  x -= d.x;
+  y -= d.y;
+  double s = sin(angle);
+  double c = cos(angle);
+  double xnew = x * c - y * s;
+  double ynew = x * s + y * c;
+  x = xnew + d.x;
+  y = ynew + d.y;
+}

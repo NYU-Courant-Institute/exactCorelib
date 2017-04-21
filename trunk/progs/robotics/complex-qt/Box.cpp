@@ -346,6 +346,7 @@ bool Box::split( double epsilon, vector<Box*>& chldn ) {
         //}
         //return splitAngle(epsilon);
       if (rB < epsilon) {
+      //if (rB < r0) {
         int n = ceil( 2 / THETA_MIN );
         n = 32;
         int m = 1;
@@ -469,7 +470,7 @@ int Box::isNhbr( Box* b1, Box* b2 ) {
 void Box::updateStatusBig() {
     if (status != UNKNOWN) return;
 
-    double outerDomain = r0 * sqrt(2) + rB;
+    double outerDomain = r0 + rB;
     // innerDomain unused:
     // double innerDomain = r0 > rB ? r0 - rB : 0;
     int total_corners_left = 0;
@@ -569,12 +570,12 @@ bool Box::checkInsideTAS(Corner &c, Triangle &tri, bool mirrored) {
   c1.rotate(angle_end*PI, Ox, Oy);
 
 
-  Line2d la0b0(a0.x, a0.y, b0.x, b0.y);
-  la0b0.expandRight(rB);
-  Line2d lb0c0(b0.x, b0.y, c0.x, c0.y);
-  lb0c0.expandRight(rB);
-  Line2d lc1a1(c1.x, c1.y, a1.x, a1.y);
-  lc1a1.expandRight(rB);
+  Line2d la0b0(a0, b0);
+  la0b0.shiftRight(rB);
+  Line2d lb0c0(b0, c0);
+  lb0c0.shiftRight(rB);
+  Line2d lc1a1(c1, a1);
+  lc1a1.shiftRight(rB);
 
   return (dist <= Rc) && (dist >= Ra) && la0b0.isRight(c.x,c.y) && lb0c0.isRight(c.x,c.y) && lc1a1.isRight(c.x,c.y);
 }
@@ -610,8 +611,8 @@ bool Box::checkIntersectTAS(Wall &w, Triangle &tri, bool mirrored) {
      swap(angle_start, angle_end);
   }
 
-
-
+  // finished mirroring
+  // start checking
   Ra = Ra - rB;
   if (Ra<0) Ra = 0;
   Rc = Rc + rB;
@@ -628,84 +629,93 @@ bool Box::checkIntersectTAS(Wall &w, Triangle &tri, bool mirrored) {
   c1.rotate(angle_end*PI, Ox, Oy);
 
 
-  Line2d la0b0(a0.x, a0.y, b0.x, b0.y);
-  la0b0.expandRight(rB);
-  Line2d lb0c0(b0.x, b0.y, c0.x, c0.y);
-  lb0c0.expandRight(rB);
-  Line2d lc1a1(c1.x, c1.y, a1.x, a1.y);
-  lc1a1.expandRight(rB);
+  Line2d la0b0(a0, b0);
+  la0b0.shiftRight(rB);
+  Line2d lb0c0(b0, c0);
+  lb0c0.shiftRight(rB);
+  Line2d lc1a1(c1, a1);
+  lc1a1.shiftRight(rB);
 
   Line2d lwall(w.src->x, w.src->y, w.dst->x, w.dst->y);
 
-  double extendBx, extendBy;
-  la0b0.intersection(lb0c0, extendBx, extendBy);
+  Corner B0_ext;
+  la0b0.intersection(lb0c0, B0_ext);
   Circle outer_circle(Ox, Oy, Rc);
-  double extendCx, extendCy, extendCx_other, extendCy_other;
-  outer_circle.intersectLine(lb0c0, extendCx, extendCy, extendCx_other, extendCy_other);
+  Corner C0_ext1, C0_ext2;
+  outer_circle.intersectLine(lb0c0, C0_ext1, C0_ext2);
 
-  if (Line2d::lineSegIntsct(w.src->x, w.src->y, w.dst->x, w.dst->y, extendBx, extendBy, extendCx, extendCy))
+  Wall seg_B0C0(B0_ext, C0_ext1);
+  if (Line2d::lineSegIntsct(w, seg_B0C0))
     return true; // intersect with extended side BC
 
-  double thetaC0 = outer_circle.getTheta(extendCx, extendCy);
+  double thetaC0 = outer_circle.getTheta(C0_ext1);
 
 
-  double extendC1x, extendC1y, extendC1x_other, extendC1y_other;
-  outer_circle.intersectLine(lc1a1, extendC1x_other, extendC1y_other, extendC1x, extendC1y);
-  double thetaC1 = outer_circle.getTheta(extendC1x, extendC1y);
+  Corner C1_ext1, C1_ext2;
+  outer_circle.intersectLine(lc1a1, C1_ext2, C1_ext1);
+  double thetaC1 = outer_circle.getTheta(C1_ext1);
 
-  double wcx1,wcy1,wcx2,wcy2;
-  outer_circle.intersectLine(lwall,wcx1,wcy1,wcx2,wcy2);
-  double thetawc1 = outer_circle.getTheta(wcx1, wcy1);
-  double thetawc2 = outer_circle.getTheta(wcx2, wcy2);
+  Corner w_outer_circ1, w_outer_circ2;
+  outer_circle.intersectLine(lwall,w_outer_circ1,w_outer_circ2);
 
   auto angleBetween = [](double a, double b0, double b1) {
       if (b0<=b1) return (a>=b0 && a<=b1);
       else return !(a>=b1 && a<=b0);
   };
 
-  if (angleBetween(thetawc1, thetaC0 , thetaC1) && wcx1>=w.src->x && wcx1<=w.dst->x)
+  if (angleBetween(outer_circle.getTheta(w_outer_circ1), thetaC0 , thetaC1)
+        && w.isOnSegment(w_outer_circ1))
     return true; // intersect with extended arc CC'
-  if (angleBetween(thetawc2, thetaC0 , thetaC1) && wcx2>=w.src->x && wcx2<=w.dst->x)
+
+  if (angleBetween(outer_circle.getTheta(w_outer_circ2), thetaC0 , thetaC1)
+        && w.isOnSegment(w_outer_circ2))
     return true; // intersect with extended arc CC'
 
   if (Ra > 0) { // has inner circle
       Circle inner_circle(Ox, Oy, Ra);
 
-      double extendAx, extendAy, extendAx_other, extendAy_other;
-      inner_circle.intersectLine(la0b0, extendAx_other, extendAy_other, extendAx, extendAy);
+      Corner A0_ext1, A0_ext2;
 
-      if (Line2d::lineSegIntsct(w.src->x, w.src->y, w.dst->x, w.dst->y, extendBx, extendBy, extendAx, extendAy))
+      inner_circle.intersectLine(la0b0, A0_ext2, A0_ext1);
+
+      Wall seg_B0A0(B0_ext, A0_ext1);
+      if (Line2d::lineSegIntsct(w, seg_B0A0))
         return true; // intersect with extended side BA
 
-      double thetaA0 = inner_circle.getTheta(extendAx, extendAy);
+      double thetaA0 = inner_circle.getTheta(A0_ext1);
 
 
-      double extendA1x, extendA1y, extendA1x_other, extendA1y_other;
-      inner_circle.intersectLine(lc1a1, extendA1x_other, extendA1y_other, extendA1x, extendA1y);
-      double thetaA1 = inner_circle.getTheta(extendA1x, extendA1y);
+      Corner A1_ext1, A1_ext2;
+      inner_circle.intersectLine(lc1a1, A1_ext2, A1_ext1);
+      double thetaA1 = inner_circle.getTheta(A1_ext1);
 
-
-      if (Line2d::lineSegIntsct(w.src->x, w.src->y, w.dst->x, w.dst->y, extendC1x, extendC1y, extendA1x, extendA1y))
+      Wall seg_C1A1(C1_ext1, A1_ext1);
+      if (Line2d::lineSegIntsct(w, seg_C1A1 ))
         return true; // intersect with extended side C'A'
 
-      double wcx1,wcy1,wcx2,wcy2;
-      inner_circle.intersectLine(lwall,wcx1,wcy1,wcx2,wcy2);
-      double thetawc1 = inner_circle.getTheta(wcx1, wcy1);
-      double thetawc2 = inner_circle.getTheta(wcx2, wcy2);
+      Corner w_inner_circ1, w_inner_circ2;
+      inner_circle.intersectLine(lwall,w_inner_circ1, w_inner_circ2);
 
-      if (angleBetween(thetawc1, thetaA0 , thetaA1) && wcx1>=w.src->x && wcx1<=w.dst->x)
+      if (angleBetween(outer_circle.getTheta(w_inner_circ1), thetaA0 , thetaA1)
+            && w.isOnSegment(w_inner_circ1))
         return true; // intersect with extended arc AA'
-      if (angleBetween(thetawc2, thetaA0 , thetaA1) && wcx2>=w.src->x && wcx2<=w.dst->x)
+
+      if (angleBetween(outer_circle.getTheta(w_inner_circ2), thetaA0 , thetaA1)
+            && w.isOnSegment(w_inner_circ2))
         return true; // intersect with extended arc AA'
+
+
   }
   else {// no inner circle
-      double extendAx, extendAy;
-      la0b0.intersection(lc1a1, extendAx, extendAy);
+      Corner A0_ext;
+      la0b0.intersection(lc1a1, A0_ext);
 
-      if (Line2d::lineSegIntsct(w.src->x, w.src->y, w.dst->x, w.dst->y, extendBx, extendBy, extendAx, extendAy))
+      Wall seg_B0A0(B0_ext, A0_ext);
+      if (Line2d::lineSegIntsct(w, seg_B0A0))
         return true; // intersect with extended side BA
-      if (Line2d::lineSegIntsct(w.src->x, w.src->y, w.dst->x, w.dst->y, extendC1x, extendC1y, extendAx, extendAy))
-        return true; // intersect with extended side C'A'
+      Wall seg_C1A0(C1_ext1, A0_ext);
+      if (Line2d::lineSegIntsct(w, seg_C1A0))
+        return true; // intersect with extended side C'A
   }
 
 
@@ -716,7 +726,7 @@ bool Box::checkIntersectTAS(Wall &w, Triangle &tri, bool mirrored) {
 void Box::updateStatusSmall() {
   if (status != UNKNOWN) return;
 
-  double outerDomain = r0 * sqrt(2) + rB;
+  double outerDomain = r0 + rB;
   bool isSTUCK = false;
 
   int total_corners_left = 0;

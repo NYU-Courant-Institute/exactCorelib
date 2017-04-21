@@ -56,8 +56,8 @@ using namespace std;
 
 // GLOBAL VARIABLES
 
-unsigned int BUFFERSIZE = 200;
-char * lineBuffer = new char[BUFFERSIZE];
+const unsigned int BUFFERSIZE = 200;
+char lineBuffer[BUFFERSIZE];
 
 ifstream ifile;
 

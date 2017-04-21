@@ -1,4 +1,7 @@
 #include <math.h>
+#include <Corner.h>
+#include <Wall.h>
+
 
 class Line2d
 {
@@ -18,6 +21,10 @@ public:
         b = b / n;
         c = c / n;
     }
+    Line2d(const Corner& c1, const Corner& c2): Line2d(c1.x, c1.y, c2.x, c2.y)
+    {
+    }
+
 
 //	void expand(double d)
 //	{
@@ -32,8 +39,15 @@ public:
 //		}
 //	}
 
-    bool expandRight(double d) {
+    // shift the line to its right by distance d
+    bool shiftRight(double d) {
         c-=d;
+        return true;
+    }
+
+    // shift the line to its left by distance d
+    bool shiftLeft(double d) {
+        c+=d;
         return true;
     }
 
@@ -105,19 +119,25 @@ public:
         return false;
     }
 
-    void intersection(const Line2d& l, double& x, double& y) {
+    bool intersection(const Line2d& l, double& x, double& y) {
         double c1 = this->c;
         double c2 = l.c;
         double a1 = this->a;
         double a2 = l.a;
         double b1 = this->b;
         double b2 = l.b;
-//        y = ( c2*a1 -c1*a2 ) / ( b1*a2 - b2*a1 );
-//        x = ( c2*b1 -c1*b2 ) / ( a1*b2 - a2*b1 );
-        if((a2*b1-a1*b2) != 0) y = (a1*c2-a2*c1)/(a2*b1-a1*b2);
-        else                   y = 0;
-        if(a1 != 0) x = (-b1*y-c1)/a1;
-        else        x = 0;
+
+        if (a2*b1-a1*b2 == 0) {
+        // the two line are parallel
+          return false;
+        }
+        y = ( c2*a1 -c1*a2 ) / ( b1*a2 - b2*a1 );
+        x = ( c2*b1 -c1*b2 ) / ( a1*b2 - a2*b1 );
+        return true;
+    }
+
+    bool intersection(const Line2d& l, Corner& c) {
+        return intersection(l, c.x, c.y);
     }
 
     bool isRight(double x, double y)
@@ -156,6 +176,11 @@ public:
 //        double v4 = L1.a*x4+L1.b*y4+L1.c;
 
 //        return ((v1*v2 <= 0) && (v3*v4 <= 0));
+    }
+
+    static bool lineSegIntsct(Wall & A, Wall & B ) {
+      return lineSegIntsct(A.src->x, A.src->y, A.dst->x, A.dst->y,
+                           B.src->x, B.src->y, B.dst->x, B.dst->y );
     }
 };
 
@@ -211,6 +236,10 @@ public:
       }
     }
 
+    bool intersectLine(Line2d& L, Corner& c1, Corner& c2){
+      return intersectLine(L, c1.x, c1.y, c2.x, c2.y);
+    }
+
     double getTheta(double xx, double yy) {
       double ans = atan2(yy-y, xx-x);
       double PI = atan2(0,-1);
@@ -218,6 +247,9 @@ public:
       return ans;
     }
 
+    double getTheta(const Corner &c) {
+      return getTheta(c.x,c.y);
+    }
 };
 
 class Arc : Circle

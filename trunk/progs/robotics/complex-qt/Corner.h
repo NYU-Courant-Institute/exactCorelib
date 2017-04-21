@@ -17,6 +17,7 @@ public:
     {
 
     }
+    Corner(): x(0), y(0) {}
 
     double distance(double x2, double y2)
     {
@@ -43,5 +44,7 @@ public:
     bool isDangling(){ return preWall==NULL || nextWall==NULL; }
 
     void rotate(double angle, double x_pivot, double y_pivot);
+
+    void rotate(double angle, Corner& d);
 };
 

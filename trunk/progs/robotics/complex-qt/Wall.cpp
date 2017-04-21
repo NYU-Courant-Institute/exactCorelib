@@ -202,3 +202,20 @@ bool Wall::inZone_star(Box * b)
 
     return false;
 }
+
+bool Wall::isOnSegment(Corner& c) {
+  int xmin = min(this->src->x, this->dst->x);
+  int xmax = max(this->src->x, this->dst->x);
+  int ymin = min(this->src->y, this->dst->y);
+  int ymax = max(this->src->y, this->dst->y);
+  if (c.x > xmax || c.x < xmin || c.y > ymax || c.y < ymin) return false;
+
+  double v1x = c.x - src->x;
+  double v1y = c.y - src->y;
+  double v2x = c.x - dst->x;
+  double v2y = c.y - dst->y;
+
+  const double EPS = 1E-8;
+  double cross = v1x*v2y - v1y*v2x;
+  return (abs(cross) < EPS);
+}

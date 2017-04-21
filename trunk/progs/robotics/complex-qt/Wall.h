@@ -28,6 +28,8 @@ public:
     Corner* dst;
 
     Wall(Corner* s, Corner* d);
+    Wall(Corner& s, Corner& d): Wall(&s, &d) {}
+
 
     //distance functions
     virtual double distance(double x, double y);
@@ -44,5 +46,7 @@ public:
     virtual bool inZone_star(Box * b);
 
     bool isRight(double x, double y);
+
+    bool isOnSegment(Corner& c);
 
 };

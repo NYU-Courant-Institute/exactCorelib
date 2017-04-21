@@ -266,6 +266,9 @@
          <property name="toolTipDuration">
           <number>-4</number>
          </property>
+         <property name="text">
+          <string>L</string>
+         </property>
         </widget>
        </item>
        <item>
@@ -719,34 +722,6 @@
      <string>Filled Obstacles</string>
     </property>
    </widget>
-   <zorder>textOutput</zorder>
-   <zorder>run</zorder>
-   <zorder>horizontalLayoutWidget</zorder>
-   <zorder>verticalLayoutWidget</zorder>
-   <zorder>verticalLayoutWidget_2</zorder>
-   <zorder>verticalLayoutWidget_3</zorder>
-   <zorder>horizontalLayoutWidget_9</zorder>
-   <zorder>verticalLayoutWidget_4</zorder>
-   <zorder>exit</zorder>
-   <zorder>line</zorder>
-   <zorder>line_2</zorder>
-   <zorder>line_3</zorder>
-   <zorder>line_4</zorder>
-   <zorder>openGLWidget</zorder>
-   <zorder>boundary</zorder>
-   <zorder>show</zorder>
-   <zorder>verticalLayoutWidget_5</zorder>
-   <zorder>steplabel</zorder>
-   <zorder>horizontalLayoutWidget_3</zorder>
-   <zorder>verticalLayoutWidget_6</zorder>
-   <zorder>horizontalLayoutWidget_2</zorder>
-   <zorder>pause</zorder>
-   <zorder>replay</zorder>
-   <zorder>textBrowser</zorder>
-   <zorder>openGLWidget_2</zorder>
-   <zorder>hidebox</zorder>
-   <zorder>showFilledObstacles</zorder>
-   <zorder>label_2</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

@@ -126,7 +126,7 @@ double triRobo[2] = {150.0f/180.0f, 210.0f/180.0f};
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////
-string cfgName("L_rand100.cfg");    // Input example name
+string cfgName("L_parking.cfg");    // Input example name
 string fileName("map_parking.txt"); 		// Input file name
 string inputDir("inputs");              // Path for input files
 string workingDir;
@@ -136,11 +136,11 @@ string robotDir("robots");
 string robotName("L.rob");
 
 
-double alpha[3] = { 400, 360, 0 };		// start configuration
-double beta[3] = { 100, 110, 0 };         // goal configuration
+double alpha[3] = { 240, 320, 0 };		// start configuration
+double beta[3] = { 400, 320, 0 };         // goal configuration
 double epsilon = 2;			// resolution parameter
 
-double R0 = 90;
+double R0 = 86;
 double boxWidth = 512;			// Initial box width
 double boxHeight = 512;			// Initial box height
 int windowPosX = 320;			// X Position of Window
@@ -208,8 +208,8 @@ bool pauseAnim(false);
 bool replayAnim(false);
 bool showFilledObstacles(false);
 int animationSpeed(99);
-int animationSpeedScale(5000);
-int animationSpeedScaleBox(100);
+int animationSpeedScale(1000);
+int animationSpeedScaleBox(500);
 
 
 // color coding variable ========================================
@@ -368,26 +368,35 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 
 bool loadComplexRobot(string& robot_file, vector<Triangle>& compRoboTri) {
 
-  ifstream infile;
-  infile.open(robot_file);
-  if (!infile.is_open()) {
-    mw_out << "Robot file "<< robot_file << " open failed.";
-    return false;
+  fileProcessor(robot_file);	// this will clean the input and put in "output-tmp.txt"
+
+  ifstream infile("output-tmp.txt");
+  if (!infile) {
+      cerr << "cannot open input file" << endl;
+      exit(1);
   }
-  string line;
 
   int nv, nt;
-  vector< Vector2d > verts;
+  vector<Vector2d> verts;
 
-  while (!getline(infile, line) || line.size() == 0 || line[0]=='#'){}
-
-  nv = stoi(line);
+  infile >> nv;
   double x,y;
+
+  double maxdist=0;
   while(nv--) {
     infile >> x >> y;
+    maxdist = max(maxdist, x*x+y*y);
     verts.push_back(Vector2d(x,y));
   }
+  maxdist = sqrt(maxdist);
+  if (maxdist !=0 ){
+    for (Vector2d& v:verts) {
+      v.Set(v.GetX()/maxdist, v.GetY()/maxdist);
+    }
+  }
+
   infile >> nt;
+
   compRoboTri.clear();
   while(nt--) {
     int a,b,c;
