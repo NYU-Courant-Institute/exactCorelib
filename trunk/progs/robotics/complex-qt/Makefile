@@ -635,7 +635,7 @@ esaL Lexperiments:
 
 esaS1 Sparking: complex
 		./complex 1 \
-		snow_parking.cfg  @filename  @inputDir \
+		S_parking.cfg  @filename  @inputDir \
 		@robotDir  @robotName \
 		@alpha0 @alpha1  @alpha2 \
 		@beta0 @beta1 @beta2 \
@@ -648,7 +648,7 @@ esaS1 Sparking: complex
 
 esaS2 Sgateway: complex
 		./complex 1 \
-		snow_gateway.cfg  @filename  @inputDir \
+		S_gateway.cfg  @filename  @inputDir \
 		@robotDir  @robotName \
 		@alpha0 @alpha1  @alpha2 \
 		@beta0 @beta1 @beta2 \
@@ -661,7 +661,7 @@ esaS2 Sgateway: complex
 
 esaS3 Srand100: complex
 		./complex 1 \
-		snow_rand100.cfg  @filename  @inputDir \
+		S_rand100.cfg  @filename  @inputDir \
 		@robotDir  @robotName \
 		@alpha0 @alpha1  @alpha2 \
 		@beta0 @beta1 @beta2 \
@@ -674,7 +674,7 @@ esaS3 Srand100: complex
 
 esaS4 Srand200: complex
 		./complex 1 \
-		snow_rand200.cfg  @filename  @inputDir \
+		S_rand200.cfg  @filename  @inputDir \
 		@robotDir  @robotName \
 		@alpha0 @alpha1  @alpha2 \
 		@beta0 @beta1 @beta2 \
@@ -685,9 +685,9 @@ esaS4 Srand200: complex
 		$(deltaX) $(deltaY) $(scale) \
 		$(verbosity) \
 
-esaS5 Sbugtrap2: complex
+esaS5 Srand200no: complex
 		./complex 1 \
-		snow_bugtrap2.cfg  @filename  @inputDir \
+		S_bugtrap2.cfg  @filename  @inputDir \
 		@robotDir  @robotName \
 		@alpha0 @alpha1  @alpha2 \
 		@beta0 @beta1 @beta2 \
@@ -698,9 +698,9 @@ esaS5 Sbugtrap2: complex
 		$(deltaX) $(deltaY) $(scale) \
 		$(verbosity) \
 
-esaS6 Sbugtrap2no: complex
+esaS6 Sbugtrap2: complex
 		./complex 1 \
-		snow_bugtrap2_nopath.cfg  @filename  @inputDir \
+		S_bugtrap2_nopath.cfg  @filename  @inputDir \
 		@robotDir  @robotName \
 		@alpha0 @alpha1  @alpha2 \
 		@beta0 @beta1 @beta2 \
