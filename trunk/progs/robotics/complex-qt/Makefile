@@ -94,9 +94,11 @@ scale  = 1			#  scaling of input file
 TARGETS = complex
 
 OBJ_FILES = Box.o Corner.o QuadTree.o Polygon.o Wall.o \
-	    Timer.o FileProcessor.o \
+	    Timer.o fileProcessor.o \
 
 all: $(TARGETS)
+
+complex: $(OBJ_FILES) complex.o
 
 # note: this target is the standard target that Core Library uses
 #       to test its subdirectories.   So the program must run in a
