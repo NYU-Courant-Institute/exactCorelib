@@ -167,7 +167,7 @@ int fileProcessor(string infileName){
     }//while good
     ifile.close();
   }//if
-  else cout << "Unable to open file input file"; 	// error if cannot open
+  else cout << "Unable to open file input file :" << infileName << endl; 	// error if cannot open
 
   ofile.close();
 

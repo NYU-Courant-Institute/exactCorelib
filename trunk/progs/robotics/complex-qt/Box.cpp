@@ -12,7 +12,6 @@
 
 //extern vector<Polygon> polygons;
 //extern vector<int> srcInPolygons;
-extern double triRobo[2];
 extern vector<Triangle> compRoboTriangles;
 
 extern int twoStrategyOption;
@@ -31,72 +30,6 @@ int maxDep = 1;
 vector<Box*>* Box::pAllLeaf = 0;
 vector<int> expansions;
 int Box::oppositeDir[6] = {2, 3, 0, 1, 5, 4};
-
-void Box::getRoundTriVerts(double& v01x, double& v01y, double& v02x, double& v02y,
-                           double& v11x, double& v11y, double& v12x, double& v12y,
-                           double& v21x, double& v21y, double& v22x, double& v22y) {
-    double r = r0;
-    double theta1 = triRobo[0];
-    double theta2 = triRobo[1];
-    double xi1 = this->xi[0];
-    double xi2 = this->xi[1];
-
-    double temp1 = xi1;
-    //while (temp1 > 2) temp1 -= 2;
-    double temp2 = xi2;
-    //while (temp2 > 2) temp2 -= 2;
-    v01x = r * cos(temp1 * PI);
-    v01y = r * sin(temp1 * PI);
-    v02x = r * cos(temp2 * PI);
-    v02y = r * sin(temp2 * PI);
-
-    temp1 = xi1 + theta1;
-    //while (temp1 > 2) temp1 -= 2;
-    temp2 = xi2 + theta1;
-    //while (temp2 > 2) temp2 -= 2;
-    v11x = r * cos(temp1 * PI);
-    v11y = r * sin(temp1 * PI);
-    v12x = r * cos(temp2 * PI);
-    v12y = r * sin(temp2 * PI);
-
-    temp1 = xi1 + theta2;
-    //while (temp1 > 2) temp1 -= 2;
-    temp2 = xi2 + theta2;
-    //while (temp2 > 2) temp2 -= 2;
-    v21x = r * cos(temp1 * PI);
-    v21y = r * sin(temp1 * PI);
-    v22x = r * cos(temp2 * PI);
-    v22y = r * sin(temp2 * PI);
-}
-
-//void Box::getRoundTriVerts(Triangle &Trixi0, Triangle &Trixi1) {
-//    double r = r0;
-//    double theta1 = triRobo[0];
-//    double theta2 = triRobo[1];
-//    double xi1 = this->xi[0];
-//    double xi2 = this->xi[1];
-
-//    double temp1 = xi1;
-//    //while (temp1 > 2) temp1 -= 2;
-//    double temp2 = xi2;
-//    //while (temp2 > 2) temp2 -= 2;
-//    Trixi0.a = Pose(r * cos(temp1 * PI), r * sin(temp1 * PI));
-//    Trixi1.a = Pose(r * cos(temp2 * PI), r * sin(temp2 * PI));
-
-//    temp1 = xi1 + theta1;
-//    //while (temp1 > 2) temp1 -= 2;
-//    temp2 = xi2 + theta1;
-//    //while (temp2 > 2) temp2 -= 2;
-//    Trixi0.b = Pose(r * cos(temp1 * PI), r * sin(temp1 * PI));
-//    Trixi1.b = Pose(r * cos(temp2 * PI), r * sin(temp2 * PI));
-
-//    temp1 = xi1 + theta2;
-//    //while (temp1 > 2) temp1 -= 2;
-//    temp2 = xi2 + theta2;
-//    //while (temp2 > 2) temp2 -= 2;
-//    Trixi0.c = Pose(r * cos(temp1 * PI), r * sin(temp1 * PI));
-//    Trixi1.c = Pose(r * cos(temp2 * PI), r * sin(temp2 * PI));
-//}
 
 bool Box::split2D( double epsilon, vector<Box*>& chldn )
 {

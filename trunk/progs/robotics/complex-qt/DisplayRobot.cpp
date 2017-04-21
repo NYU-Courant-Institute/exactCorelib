@@ -9,7 +9,6 @@
 #include <Triangle.h>
 
 // Global Variables in complex-qt.cpp
-extern double triRobo[2];
 extern vector<Triangle> compRoboTriangles;
 
 extern double R0;
@@ -83,17 +82,6 @@ void DisplayRobot::renderScene() {
     drawRobot(mid, clr_robot);
     drawCircle();
 }
-/*
-void DisplayRobot::drawRobot(Pose p, Color c){
-    drawTriangle(Pose(R0*cos((p.theta)*PI)+p.x, R0*sin((p.theta)*PI)+p.y),
-                 Pose(R0*cos((triRobo[0]+p.theta)*PI)+p.x, R0*sin((triRobo[0]+p.theta)*PI)+p.y),
-                 Pose(R0*cos((triRobo[1]+p.theta)*PI)+p.x, R0*sin((triRobo[1]+p.theta)*PI)+p.y),
-                 c, true, true);
-    drawLine(Pose(R0*cos((p.theta)*PI)+p.x, R0*sin((p.theta)*PI)+p.y));
-    drawLine(Pose(R0*cos((triRobo[0]+p.theta)*PI)+p.x, R0*sin((triRobo[0]+p.theta)*PI)+p.y));
-    drawLine(Pose(R0*cos((triRobo[1]+p.theta)*PI)+p.x, R0*sin((triRobo[1]+p.theta)*PI)+p.y));
-}
-*/
 
 void DisplayRobot::drawRobot(Pose p, Color c){
     for (Triangle & tri:compRoboTriangles) {

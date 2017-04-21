@@ -14,7 +14,6 @@ extern std::string fileName;
 extern double alpha[3];
 extern double beta[3];
 extern double epsilon;
-extern double triRobo[2];
 extern vector<Triangle> compRoboTriangles;
 extern double R0;
 extern int QType;
@@ -392,22 +391,6 @@ void Display::drawPath(Pose start, Pose goal) {
     glEnd();
     glLineWidth(1.0);
 }
-
-/*
-void Display::drawRobot(Box* b, Color c){
-    drawTriangle(Pose(R0*cos((b->xi[0])*PI)+b->x, R0*sin((b->xi[0])*PI)+b->y),
-                 Pose(R0*cos((triRobo[0]+b->xi[0])*PI)+b->x, R0*sin((triRobo[0]+b->xi[0])*PI)+b->y),
-                 Pose(R0*cos((triRobo[1]+b->xi[0])*PI)+b->x, R0*sin((triRobo[1]+b->xi[0])*PI)+b->y),
-                 c, true, true);
-}
-
-void Display::drawRobot(Pose p, Color c){
-    drawTriangle(Pose(R0*cos((p.theta)*PI)+p.x, R0*sin((p.theta)*PI)+p.y),
-                 Pose(R0*cos((triRobo[0]+p.theta)*PI)+p.x, R0*sin((triRobo[0]+p.theta)*PI)+p.y),
-                 Pose(R0*cos((triRobo[1]+p.theta)*PI)+p.x, R0*sin((triRobo[1]+p.theta)*PI)+p.y),
-                 c, true, true);
-}
-*/
 
 
 void Display::drawRobot(Pose p, Color c){

@@ -46,8 +46,10 @@ HEADERS  += MainWindow.h \
     Pose.h \
     Vertex.h \
     DisplayRobot.h \
-    Triangulate.h \
-    Triangle.h
+    triangulate.h \
+    Triangle.h \
+    complex.h \
+    complex-qt.h \
 
 
 FORMS    += \

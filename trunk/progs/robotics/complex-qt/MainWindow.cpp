@@ -16,7 +16,6 @@ extern double epsilon;	    // resolution parameter
 extern std::vector<int> expansions;
 extern bool doTriangulation;
 extern vector<Triangle> triangles;
-extern double triRobo[2];
 extern double R0;
 extern int seed;
 extern int QType;
