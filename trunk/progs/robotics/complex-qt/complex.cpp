@@ -1,4 +1,4 @@
-#define mw_out std::cout
+#define mw_out std::cout<<'\t'
 #include "complex.h"
 
 int main(int argc, char* argv[]) {
