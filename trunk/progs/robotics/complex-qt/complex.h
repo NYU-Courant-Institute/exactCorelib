@@ -274,23 +274,46 @@ bool loadComplexRobot(string& robot_file, vector<Triangle>& compRoboTri) {
   int nv, nt;
   vector< Vector2d > verts;
 
+
   infile >> nv;
+
+
   double x,y;
-  while(nv--) {
+  double maxdist = 0;
+  for (int i = 0; i < nv; ++i) {
     infile >> x >> y;
     verts.push_back(Vector2d(x,y));
+    maxdist = max(maxdist, x*x + y*y);
   }
-  infile >> nt;
+  maxdist = sqrt(maxdist);
+
   compRoboTri.clear();
-  while(nt--) {
-    int a,b,c;
-    infile >> a >> b >> c;
-    Triangle tmp(Pose(verts[a].GetX(),verts[a].GetY()),
-                 Pose(verts[b].GetX(),verts[b].GetY()),
-                 Pose(verts[c].GetX(),verts[c].GetY()));
-    compRoboTri.push_back(tmp);
+  if (infile >> nt) { // if manually input triangles
+    for (int i = 0; i < nt; ++i)  {
+      int a,b,c;
+      infile >> a >> b >> c;
+      compRoboTri.emplace_back(Pose(verts[a].GetX()/maxdist,verts[a].GetY()/maxdist),
+                               Pose(verts[b].GetX()/maxdist,verts[b].GetY()/maxdist),
+                               Pose(verts[c].GetX()/maxdist,verts[c].GetY()/maxdist));
+    }
+  }
+  else {  // otherwise, construct the triangles by neighbouring verts and the origin
+    for (auto it = verts.begin(); it !=verts.end(); ++it) {
+      if (it->GetX() == 0 && it->GetY() == 0) it = verts.erase(it);
+    }
+    Vector2d origin(0,0);
+    for(unsigned int k = 0; k < verts.size(); ++k) {
+      unsigned int j = (k + 1) % verts.size();
+      compRoboTri.emplace_back(Pose(origin.GetX(),origin.GetY()),
+                               Pose(verts[k].GetX()/maxdist,verts[k].GetY()/maxdist),
+                               Pose(verts[j].GetX()/maxdist,verts[j].GetY()/maxdist));
+      }
   }
 
+
+  if (verboseOption) {
+      mw_out << "Robot has "<< nv << " verts, " << nt << " triangles.\n";
+  }
   return true;
 }
 
@@ -328,7 +351,7 @@ void genEmptyTree() {
     }
     QT = new QuadTree(root, epsilon, QType);
 
-    if (verboseOption)  mw_out << "done genEmptyTree \n";
+    //if (verboseOption)  mw_out << "done genEmptyTree \n";
 }
 
 void run() {
@@ -340,12 +363,12 @@ void run() {
 
     // bo debug
     string robot_file = robotDir + "/" + robotName;
+    mw_out << "robot file name = " << robot_file << "\n";
     if (interactive == 0) robot_file = workingDir + "/" + robot_file;
     if (!loadComplexRobot(robot_file, compRoboTriangles)){
         return;
     }
 
-    verboseOption = true;
 
     if (interactive == 0) {
         while (alpha[2] >= 360) {

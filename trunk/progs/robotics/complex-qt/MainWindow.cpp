@@ -281,6 +281,7 @@ void MainWindow::on_run_clicked()
         parseExampleFile();
 
         ui->inputFile->setText(QString::fromStdString(fileName.substr(0,fileName.length()-4)));
+        ui->robotFile->setText(QString::fromStdString(robotName.substr(0,robotName.length()-4)));
 
         ui->aX->setValue(alpha[0]);
         ui->aY->setValue(alpha[1]);
