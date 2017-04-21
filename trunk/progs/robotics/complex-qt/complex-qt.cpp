@@ -126,7 +126,7 @@ double triRobo[2] = {150.0f/180.0f, 210.0f/180.0f};
 
 // GLOBAL INPUT Parameters ========================================
 //////////////////////////////////////////////////////////////////////////////////
-string cfgName("L_parking.cfg");    // Input example name
+string cfgName("L_rand100.cfg");    // Input example name
 string fileName("map_parking.txt"); 		// Input file name
 string inputDir("inputs");              // Path for input files
 string workingDir;
@@ -136,11 +136,11 @@ string robotDir("robots");
 string robotName("L.rob");
 
 
-double alpha[3] = { 240, 320, 0 };		// start configuration
-double beta[3] = { 400, 320, 0 };         // goal configuration
+double alpha[3] = { 400, 360, 0 };		// start configuration
+double beta[3] = { 100, 110, 0 };         // goal configuration
 double epsilon = 2;			// resolution parameter
 
-double R0 = 86;
+double R0 = 90;
 double boxWidth = 512;			// Initial box width
 double boxHeight = 512;			// Initial box height
 int windowPosX = 320;			// X Position of Window
@@ -208,8 +208,8 @@ bool pauseAnim(false);
 bool replayAnim(false);
 bool showFilledObstacles(false);
 int animationSpeed(99);
-int animationSpeedScale(1000);
-int animationSpeedScaleBox(500);
+int animationSpeedScale(5000);
+int animationSpeedScaleBox(100);
 
 
 // color coding variable ========================================
@@ -368,35 +368,26 @@ bool findPath(Box* a, Box* b, QuadTree* QT, int& ct) {
 
 bool loadComplexRobot(string& robot_file, vector<Triangle>& compRoboTri) {
 
-  fileProcessor(robot_file);	// this will clean the input and put in "output-tmp.txt"
-
-  ifstream infile("output-tmp.txt");
-  if (!infile) {
-      cerr << "cannot open input file" << endl;
-      exit(1);
+  ifstream infile;
+  infile.open(robot_file);
+  if (!infile.is_open()) {
+    mw_out << "Robot file "<< robot_file << " open failed.";
+    return false;
   }
+  string line;
 
   int nv, nt;
-  vector<Vector2d> verts;
+  vector< Vector2d > verts;
 
-  infile >> nv;
+  while (!getline(infile, line) || line.size() == 0 || line[0]=='#'){}
+
+  nv = stoi(line);
   double x,y;
-
-  double maxdist=0;
   while(nv--) {
     infile >> x >> y;
-    maxdist = max(maxdist, x*x+y*y);
     verts.push_back(Vector2d(x,y));
   }
-  maxdist = sqrt(maxdist);
-  if (maxdist !=0 ){
-    for (Vector2d& v:verts) {
-      v.Set(v.GetX()/maxdist, v.GetY()/maxdist);
-    }
-  }
-
   infile >> nt;
-
   compRoboTri.clear();
   while(nt--) {
     int a,b,c;
@@ -412,6 +403,31 @@ bool loadComplexRobot(string& robot_file, vector<Triangle>& compRoboTri) {
 
 
 int main(int argc, char* argv[]) {
+
+	if (argc >1) interactive = atoi(argv[1]);//interactive or no
+	if (argc >2) cfgName = argv[2];		//config file
+	if (argc >3) fileName = argv[3]		//enviroment file
+	if (argc >4) inputDir = argv[4]		//Path for input files
+	if (argc >5) robotDir = argv[5]		//Path for robot files
+	if (argc >6) robotName = argv[6]	//robot 
+	if (argc >7) alpha[0] = atof(argv[7])	// startx	
+	if (argc >8) alpha[1] = atof(argv[8])	// starty
+	if (argc >9) alpha[2] = atof(argv[9])	// startTheta
+	if (argc >10) beta[0] = atof(argv[10])	// goalx
+	if (argc >11) beta[1] = atof(argv[11])	// goaly
+	if (argc >12) beta[2] = atof(argv[12])	// goalTheta
+	if (argc >13) epsilon = atof(argv[13])	// resolution parameter
+	if (argc >14) R0 	= atof(argv[14])	// robot radius
+	if (argc > 15) boxWidth = atof(argv[15]);		// boxWidth
+	if (argc > 16) boxHeight = atof(argv[16]);	// boxHeight
+	if (argc > 17) windowPosX = atoi(argv[17]);	// window X pos
+	if (argc > 18) windowPosY = atoi(argv[18]);	// window Y pos
+	if (argc > 19) QType   = atoi(argv[19]); // PriorityQ Type(random or no)
+	if (argc > 20) seed   = atoi(argv[20]);	 // for random number generator
+	if (argc > 21) deltaX  = atof(argv[21]); // x-translation of input file
+	if (argc > 22) deltaY  = atof(argv[22]); // y-translation of input file
+	if (argc > 23) scale  = atof(argv[23]);		// scaling of input file
+
 
     bool foundFiles = false;
     workingDir = QDir::currentPath().toStdString();

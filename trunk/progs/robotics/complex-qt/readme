@@ -1,9 +1,17 @@
-#  Triangle Demos for SoCG 2016 in Boston:
-#  	demo1	= bug2:
-#  			Fastest is Dist+Size (930 ms)
-#  			Next is Boundary Tracker (6680 ms)
-#  			Last is Greedy (26900 ms)
-#  	demo2 	= 100 triangles,
-#  			Fastest is Greedy (250 ms)
-#  			Next is Boundary Tracker (780 ms)
-#  			Last is Dist+Size (3840 ms)
+#  Complex Robot Demo for ESA 2017
+#  			
+#	taken from triangle code.
+
+
+
+# TODO:
+--	run() should set up signals to allow interruption.
+--	SHOULD NOT PASS epsilon around to methods.  
+		Should be global.
+--	geom2d should know how to 
+		construct lines from 2 points
+	
+-- 	WE SHOULD USE CoreLib's geom2d.
+
+		RIGHT NOW, we are just duplicating
+
