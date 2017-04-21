@@ -105,11 +105,16 @@ complex: $(OBJ_FILES) complex.o
 #       non-interactive mode (i.e., the first argument to "disc" is "1").
 #
 test: $(TARGETS)
-	./disc 1 \
-		$(startX) $(startY)  $(goalX) $(goalY) \
-		$(epsilon)  $(radius)  input.txt  $(boxWidth) $(boxHt) \
-       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
+	./complex 1 \
+		$(cfgName)  $(fileName)  $(inputDir) \
+		$(robotDir)  $(robotName) \
+		$(alpha0) $(alpha1)  $(alpha2) \
+		$(beta0) $(beta1) $(beta2) \
+		$(epsilon) $(R0) \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
 		&
 
 testall: $(TARGETS)
