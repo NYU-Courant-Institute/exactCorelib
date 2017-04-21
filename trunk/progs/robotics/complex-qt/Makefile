@@ -547,7 +547,6 @@ esaL1 Lparking: complex
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
 		$(verbosity) \
-		&
 
 esaL2 Lgateway: complex
 		./complex 1 \
@@ -561,7 +560,6 @@ esaL2 Lgateway: complex
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
 		$(verbosity) \
-		&
 
 esaL3 Lrand100: complex
 		./complex 1 \
@@ -575,7 +573,6 @@ esaL3 Lrand100: complex
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
 		$(verbosity) \
-		&
 
 esaL4 Lrand200: complex
 		./complex 1 \
@@ -589,7 +586,6 @@ esaL4 Lrand200: complex
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
 		$(verbosity) \
-		&
 
 esaL5 Lbugtrap2: complex
 		./complex 1 \
@@ -603,7 +599,6 @@ esaL5 Lbugtrap2: complex
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
 		$(verbosity) \
-		&
 
 esaL6 Lbugtrap2no: complex
 		./complex 1 \
@@ -617,7 +612,6 @@ esaL6 Lbugtrap2no: complex
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
 		$(verbosity) \
-		&
 
 esaL Lexperiments: 
 	echo  "ESA EXPERIMENTS 1 to 6 ==========\n" > outputs/esa-L
@@ -651,7 +645,6 @@ esaS1 Sparking: complex
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
 		$(verbosity) \
-		&
 
 esaS2 Sgateway: complex
 		./complex 1 \
@@ -665,7 +658,6 @@ esaS2 Sgateway: complex
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
 		$(verbosity) \
-		&
 
 esaS3 Srand100: complex
 		./complex 1 \
@@ -679,7 +671,6 @@ esaS3 Srand100: complex
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
 		$(verbosity) \
-		&
 
 esaS4 Srand200: complex
 		./complex 1 \
@@ -693,7 +684,6 @@ esaS4 Srand200: complex
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
 		$(verbosity) \
-		&
 
 esaS5 Sbugtrap2: complex
 		./complex 1 \
@@ -707,7 +697,6 @@ esaS5 Sbugtrap2: complex
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
 		$(verbosity) \
-		&
 
 esaS6 Sbugtrap2no: complex
 		./complex 1 \
@@ -721,7 +710,6 @@ esaS6 Sbugtrap2no: complex
 		$(QType) $(seed) \
 		$(deltaX) $(deltaY) $(scale) \
 		$(verbosity) \
-		&
 
 esaS-: 
 	echo  "ESA EXPERIMENTS 1 to 6 ==========\n" > outputs/esa-S
