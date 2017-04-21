@@ -1,0 +1,250 @@
+ESA EXPERIMENTS 1 to 6 ==========
+
+ESA 1 ===========================
+
+make[1]: Entering directory '/home/bo/dev/corelib2/trunk/progs/robotics/complex-qt'
+./complex 1 \
+	S_parking.cfg  @filename  @inputDir \
+	@robotDir  @robotName \
+	@alpha0 @alpha1  @alpha2 \
+	@beta0 @beta1 @beta2 \
+	@epsilon @R0 \
+	512			 512			 \
+	320		 20			 \
+	2			 111			 \
+	0			 0			 1			 \
+	1			 \
+
+	Non Interactive Run of Complex Robot	Run No. 1
+	robot file name = robots/snowflake.rob
+	Robot has 24 verts, 1489934376 triangles.
+	   radius = 84, eps = 4
+	   alpha = (400, 360, 0)
+	    beta = (290, 110, 0)
+	input file name = inputs/map_parking.txt
+	nPt=12
+	nPolygons=1
+	>>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>
+	>>
+	>>      ----->>  Path Found !
+	>>
+	>>      ----->>  Time used: 1605.73 ms
+	>>
+	>>      ----->>  Search Strategy: 	Greedy Strategy
+	>>
+	>>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>
+	    Expanded 3078 times
+	    total Free boxes: 3722
+	    total Stuck boxes: 0
+	    total Mixed boxes smaller than epsilon: 9962
+	    total Mixed boxes bigger than epsilon: 15301
+	############## END of RUN #########
+	Path was Found!
+make[1]: Leaving directory '/home/bo/dev/corelib2/trunk/progs/robotics/complex-qt'
+ESA 2 ===========================
+
+make[1]: Entering directory '/home/bo/dev/corelib2/trunk/progs/robotics/complex-qt'
+./complex 1 \
+	S_gateway.cfg  @filename  @inputDir \
+	@robotDir  @robotName \
+	@alpha0 @alpha1  @alpha2 \
+	@beta0 @beta1 @beta2 \
+	@epsilon @R0 \
+	512			 512			 \
+	320		 20			 \
+	2			 111			 \
+	0			 0			 1			 \
+	1			 \
+
+	Non Interactive Run of Complex Robot	Run No. 1
+	robot file name = robots/snowflake.rob
+	Robot has 24 verts, 2084558888 triangles.
+	   radius = 42, eps = 4
+	   alpha = (123, 237, 1.88889)
+	    beta = (458, 119, 1.38889)
+	input file name = inputs/input3.txt
+	nPt=24
+	nPolygons=6
+	>>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>
+	>>
+	>>      ----->>  No Path !
+	>>
+	>>      ----->>  Time used: 6070.74 ms
+	>>
+	>>      ----->>  Search Strategy: 	Greedy Strategy
+	>>
+	>>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>
+	    Expanded 104455 times
+	    total Free boxes: 119976
+	    total Stuck boxes: 0
+	    total Mixed boxes smaller than epsilon: 151814
+	    total Mixed boxes bigger than epsilon: 70891
+	############## END of RUN #########
+	No Path Found!
+make[1]: Leaving directory '/home/bo/dev/corelib2/trunk/progs/robotics/complex-qt'
+ESA 3 ===========================
+
+make[1]: Entering directory '/home/bo/dev/corelib2/trunk/progs/robotics/complex-qt'
+./complex 1 \
+	S_rand100.cfg  @filename  @inputDir \
+	@robotDir  @robotName \
+	@alpha0 @alpha1  @alpha2 \
+	@beta0 @beta1 @beta2 \
+	@epsilon @R0 \
+	512			 512			 \
+	320		 20			 \
+	2			 111			 \
+	0			 0			 1			 \
+	1			 \
+
+	Non Interactive Run of Complex Robot	Run No. 1
+	robot file name = robots/snowflake.rob
+	Robot has 24 verts, 1418405928 triangles.
+	   radius = 30, eps = 2
+	   alpha = (232, 468, 1)
+	    beta = (288, 128, 0.666667)
+	input file name = inputs/randTri100.txt
+	nPt=300
+	nPolygons=100
+	>>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>
+	>>
+	>>      ----->>  Path Found !
+	>>
+	>>      ----->>  Time used: 22203.7 ms
+	>>
+	>>      ----->>  Search Strategy: 	Greedy Strategy
+	>>
+	>>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>
+	    Expanded 155328 times
+	    total Free boxes: 176472
+	    total Stuck boxes: 134
+	    total Mixed boxes smaller than epsilon: 252588
+	    total Mixed boxes bigger than epsilon: 122939
+	############## END of RUN #########
+	Path was Found!
+make[1]: Leaving directory '/home/bo/dev/corelib2/trunk/progs/robotics/complex-qt'
+ESA 4 ===========================
+
+make[1]: Entering directory '/home/bo/dev/corelib2/trunk/progs/robotics/complex-qt'
+./complex 1 \
+	S_rand200.cfg  @filename  @inputDir \
+	@robotDir  @robotName \
+	@alpha0 @alpha1  @alpha2 \
+	@beta0 @beta1 @beta2 \
+	@epsilon @R0 \
+	512			 512			 \
+	320		 20			 \
+	2			 111			 \
+	0			 0			 1			 \
+	1			 \
+
+	Non Interactive Run of Complex Robot	Run No. 1
+	robot file name = robots/snowflake.rob
+	Robot has 24 verts, 1328855080 triangles.
+	   radius = 20, eps = 1
+	   alpha = (275, 98, 1.83333)
+	    beta = (218, 275, 1.91667)
+	input file name = inputs/randTri200.txt
+	nPt=600
+	nPolygons=200
+	>>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>
+	>>
+	>>      ----->>  Path Found !
+	>>
+	>>      ----->>  Time used: 9888.47 ms
+	>>
+	>>      ----->>  Search Strategy: 	Greedy Strategy
+	>>
+	>>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>
+	    Expanded 53224 times
+	    total Free boxes: 66144
+	    total Stuck boxes: 0
+	    total Mixed boxes smaller than epsilon: 85997
+	    total Mixed boxes bigger than epsilon: 64664
+	############## END of RUN #########
+	Path was Found!
+make[1]: Leaving directory '/home/bo/dev/corelib2/trunk/progs/robotics/complex-qt'
+ESA 5 ===========================
+
+make[1]: Entering directory '/home/bo/dev/corelib2/trunk/progs/robotics/complex-qt'
+./complex 1 \
+	S_rand200_nopath.cfg  @filename  @inputDir \
+	@robotDir  @robotName \
+	@alpha0 @alpha1  @alpha2 \
+	@beta0 @beta1 @beta2 \
+	@epsilon @R0 \
+	512			 512			 \
+	320		 20			 \
+	2			 111			 \
+	0			 0			 1			 \
+	1			 \
+
+	Non Interactive Run of Complex Robot	Run No. 1
+	robot file name = robots/snowflake.rob
+	Robot has 24 verts, -303627864 triangles.
+	   radius = 20, eps = 2
+	   alpha = (275, 98, 1.83333)
+	    beta = (218, 275, 1.91667)
+	input file name = inputs/randTri200.txt
+	nPt=600
+	nPolygons=200
+	>>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>
+	>>
+	>>      ----->>  No Path !
+	>>
+	>>      ----->>  Time used: 10034.4 ms
+	>>
+	>>      ----->>  Search Strategy: 	Greedy Strategy
+	>>
+	>>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>
+	    Expanded 82345 times
+	    total Free boxes: 96821
+	    total Stuck boxes: 20
+	    total Mixed boxes smaller than epsilon: 139458
+	    total Mixed boxes bigger than epsilon: 58754
+	############## END of RUN #########
+	No Path Found!
+make[1]: Leaving directory '/home/bo/dev/corelib2/trunk/progs/robotics/complex-qt'
+ESA 6 ===========================
+
+make[1]: Entering directory '/home/bo/dev/corelib2/trunk/progs/robotics/complex-qt'
+./complex 1 \
+	S_bugtrap2.cfg  @filename  @inputDir \
+	@robotDir  @robotName \
+	@alpha0 @alpha1  @alpha2 \
+	@beta0 @beta1 @beta2 \
+	@epsilon @R0 \
+	512			 512			 \
+	320		 20			 \
+	2			 111			 \
+	0			 0			 1			 \
+	1			 \
+
+	Non Interactive Run of Complex Robot	Run No. 1
+	robot file name = robots/snowflake.rob
+	Robot has 24 verts, -380147672 triangles.
+	   radius = 15, eps = 1
+	   alpha = (189, 120, 0.25)
+	    beta = (60, 370, 1.25)
+	input file name = inputs/bugtrap2.txt
+	nPt=72
+	nPolygons=2
+	>>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>
+	>>
+	>>      ----->>  Path Found !
+	>>
+	>>      ----->>  Time used: 39573.4 ms
+	>>
+	>>      ----->>  Search Strategy: 	Greedy Strategy
+	>>
+	>>>>>>>>>>>>>>> > > > > > > >>>>>>>>>>>>>>>>>>
+	    Expanded 696462 times
+	    total Free boxes: 788265
+	    total Stuck boxes: 0
+	    total Mixed boxes smaller than epsilon: 930416
+	    total Mixed boxes bigger than epsilon: 530104
+	############## END of RUN #########
+	Path was Found!
+make[1]: Leaving directory '/home/bo/dev/corelib2/trunk/progs/robotics/complex-qt'
+ESA end =========================
+

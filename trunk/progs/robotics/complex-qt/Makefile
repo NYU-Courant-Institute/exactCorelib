@@ -687,7 +687,7 @@ esaS4 Srand200: complex
 
 esaS5 Srand200no: complex
 		./complex 1 \
-		S_bugtrap2.cfg  @filename  @inputDir \
+		S_rand200_nopath.cfg  @filename  @inputDir \
 		@robotDir  @robotName \
 		@alpha0 @alpha1  @alpha2 \
 		@beta0 @beta1 @beta2 \
@@ -700,7 +700,7 @@ esaS5 Srand200no: complex
 
 esaS6 Sbugtrap2: complex
 		./complex 1 \
-		S_bugtrap2_nopath.cfg  @filename  @inputDir \
+		S_bugtrap2.cfg  @filename  @inputDir \
 		@robotDir  @robotName \
 		@alpha0 @alpha1  @alpha2 \
 		@beta0 @beta1 @beta2 \
