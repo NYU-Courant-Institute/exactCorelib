@@ -1,6 +1,6 @@
 #include <math.h>
-#include <Corner.h>
-#include <Wall.h>
+#include "Corner.h"
+#include "Wall.h"
 
 
 class Line2d

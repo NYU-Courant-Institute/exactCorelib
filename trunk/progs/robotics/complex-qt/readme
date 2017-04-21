@@ -15,3 +15,4 @@
 
 		RIGHT NOW, we are just duplicating
 
+--	Do memory leak check (delete/new)
