@@ -63,6 +63,8 @@ include ../Make.options
 
 #=================================================
 # User variables (you can change them in the command line)
+#	NOTE: if any variable value begins with '@' then it is
+#	not used (that means the default value from the cfg file is used)
 #=================================================
 interactive = 1			# 0=interactive, >0 is non-interactive
 cfgName = L_rand100.cfg		# config file
@@ -126,14 +128,19 @@ testa: $(TARGETS)
 
 testb: $(TARGETS)
 	./complex 1 \
-		$(startX) $(startY)  $(goalX) $(goalY) \
-		$(epsilon)  $(radius)  input2.txt  $(boxWidth) $(boxHt) \
-       		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
-		$(xtrans) $(ytrans) $(scale) \
+		L_parking.cfg  @filename  @inputDir \
+		@robotDir  @robotName \
+		@alpha0 @alpha1  @alpha2 \
+		@beta0 @beta1 @beta2 \
+		@epsilon @R0 \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
 		&
 
 help:
-	@echo "USAGE:  The main program is called disc.  Demos can be invoked thus:"
+	@echo "USAGE:  The main program is called complex.  Demos can be invoked thus:"
 	@echo "         > make eg"
 	@echo "         > make egX"
 	@echo "     where X is replaced by 0,1,2,3,4,5,6,100,200,300, etc."
@@ -142,11 +149,11 @@ help:
 	@echo "	ega, egb, egc"
 	@echo "	eg0,				-- no path example"
 	@echo "	eg1, eg1a, (bug, buga)		-- bugtrap"
-	@echo "	eg2, eg2a			-- like input2.txt, but with bounding box"
+	@echo "	eg2, eg2a	-- like input2.txt, but with bounding box"
 	@echo "	eg3, eg3a, eg3b			-- 100 random triangles"
 	@echo "	eg4 (maze)			-- maze"
 	@echo "	eg5, eg5a (bug2, bug2a)		-- double bugtrap"
-	@echo "	eg6, eg6a 			-- example from Kavraki's OOPSMP"
+	@echo "	eg6, eg6a 		-- example from Kavraki's OOPSMP"
 	@echo "	eg100, eg100a, eg100b		-- 100 random triangles"
 	@echo "	eg200, eg200a			-- 200 random triangles"
 	@echo "	eg300				-- 300 random triangles"
@@ -155,17 +162,17 @@ help:
 
 
 #=================================================
-# Examples of running disc program
+# Examples of running complex program
 #=================================================
 #
 # this is default, but every option may be changed at command line:
 # NOTE: in the random mode, after 11 runs, you will find the middle path.
 # 	After an additional 21 runs, you will find the third path.
 #
-eg:	disc
-	@echo "Target 'eg':  runs disc with the default options of Makefile"
+eg:	complex
+	@echo "Target 'eg':  runs complex with the default options of Makefile"
 	@echo "--  You can all of them in you 'make' command line, e.g.,"
-	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
+	@echo "--      > make eg radius=60 goalX=111 goalY=450 
 	./disc $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
 		$(epsilon) $(radius) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
@@ -518,6 +525,213 @@ eg300: disc
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		&
+
+#=================================================
+# Timing Table (from ESA 2017 for Complex Robot)
+#=================================================
+#=================================================
+# esaL  -- 6 experiments for L-robot
+#=================================================
+esaL1 Lparking: complex
+		./complex 1 \
+		L_parking.cfg  @filename  @inputDir \
+		@robotDir  @robotName \
+		@alpha0 @alpha1  @alpha2 \
+		@beta0 @beta1 @beta2 \
+		@epsilon @R0 \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
+		&
+
+esaL2 Lgateway: complex
+		./complex 1 \
+		L_gateway.cfg  @filename  @inputDir \
+		@robotDir  @robotName \
+		@alpha0 @alpha1  @alpha2 \
+		@beta0 @beta1 @beta2 \
+		@epsilon @R0 \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
+		&
+
+esaL3 Lrand100: complex
+		./complex 1 \
+		L_rand100.cfg  @filename  @inputDir \
+		@robotDir  @robotName \
+		@alpha0 @alpha1  @alpha2 \
+		@beta0 @beta1 @beta2 \
+		@epsilon @R0 \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
+		&
+
+esaL4 Lrand200: complex
+		./complex 1 \
+		L_rand200.cfg  @filename  @inputDir \
+		@robotDir  @robotName \
+		@alpha0 @alpha1  @alpha2 \
+		@beta0 @beta1 @beta2 \
+		@epsilon @R0 \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
+		&
+
+esaL5 Lbugtrap2: complex
+		./complex 1 \
+		L_bugtrap2.cfg  @filename  @inputDir \
+		@robotDir  @robotName \
+		@alpha0 @alpha1  @alpha2 \
+		@beta0 @beta1 @beta2 \
+		@epsilon @R0 \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
+		&
+
+esaL6 Lbugtrap2no: complex
+		./complex 1 \
+		L_bugtrap2_nopath.cfg  @filename  @inputDir \
+		@robotDir  @robotName \
+		@alpha0 @alpha1  @alpha2 \
+		@beta0 @beta1 @beta2 \
+		@epsilon @R0 \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
+		&
+
+esaL Lexperiments: 
+	echo  "ESA EXPERIMENTS 1 to 6 ==========\n" > outputs/esa-L
+	echo  "ESA 1 ===========================\n" >> outputs/esa-L
+	make esaL1 >> outputs/esa-L
+	echo "ESA 2 ===========================\n" >> outputs/esa-L
+	make esaL2 >> outputs/esa-L
+	echo "ESA 3 ===========================\n" >> outputs/esa-L
+	make esaL3 >> outputs/esa-L
+	echo "ESA 4 ===========================\n" >> outputs/esa-L
+	make esaL4 >> outputs/esa-L
+	echo "ESA 5 ===========================\n" >> outputs/esa-L
+	make esaL5 >> outputs/esa-L
+	echo "ESA 6 ===========================\n" >> outputs/esa-L
+	make esaL6 >> outputs/esa-L
+	echo "ESA end =========================\n" >> outputs/esa-L
+
+#=================================================
+# esaS  -- 6 experiments for SnowFlake robot
+#=================================================
+
+esaS1 Sparking: complex
+		./complex 1 \
+		snow_parking.cfg  @filename  @inputDir \
+		@robotDir  @robotName \
+		@alpha0 @alpha1  @alpha2 \
+		@beta0 @beta1 @beta2 \
+		@epsilon @R0 \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
+		&
+
+esaS2 Sgateway: complex
+		./complex 1 \
+		snow_gateway.cfg  @filename  @inputDir \
+		@robotDir  @robotName \
+		@alpha0 @alpha1  @alpha2 \
+		@beta0 @beta1 @beta2 \
+		@epsilon @R0 \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
+		&
+
+esaS3 Srand100: complex
+		./complex 1 \
+		snow_rand100.cfg  @filename  @inputDir \
+		@robotDir  @robotName \
+		@alpha0 @alpha1  @alpha2 \
+		@beta0 @beta1 @beta2 \
+		@epsilon @R0 \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
+		&
+
+esaS4 Srand200: complex
+		./complex 1 \
+		snow_rand200.cfg  @filename  @inputDir \
+		@robotDir  @robotName \
+		@alpha0 @alpha1  @alpha2 \
+		@beta0 @beta1 @beta2 \
+		@epsilon @R0 \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
+		&
+
+esaS5 Sbugtrap2: complex
+		./complex 1 \
+		snow_bugtrap2.cfg  @filename  @inputDir \
+		@robotDir  @robotName \
+		@alpha0 @alpha1  @alpha2 \
+		@beta0 @beta1 @beta2 \
+		@epsilon @R0 \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
+		&
+
+esaS6 Sbugtrap2no: complex
+		./complex 1 \
+		snow_bugtrap2_nopath.cfg  @filename  @inputDir \
+		@robotDir  @robotName \
+		@alpha0 @alpha1  @alpha2 \
+		@beta0 @beta1 @beta2 \
+		@epsilon @R0 \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
+		&
+
+esaS-: 
+	echo  "ESA EXPERIMENTS 1 to 6 ==========\n" > outputs/esa-S
+	echo  "ESA 1 ===========================\n" >> outputs/esa-S
+	make esaS1 >> outputs/esa-S
+	echo "ESA 2 ===========================\n" >> outputs/esa-S
+
+esaS Sexperiments: 
+	echo  "ESA EXPERIMENTS 1 to 6 ==========\n" > outputs/esa-S
+	echo  "ESA 1 ===========================\n" >> outputs/esa-S
+	make esaS1 >> outputs/esa-S
+	echo "ESA 2 ===========================\n" >> outputs/esa-S
+	make esaS2 >> outputs/esa-S
+	echo "ESA 3 ===========================\n" >> outputs/esa-S
+	make esaS3 >> outputs/esa-S
+	echo "ESA 4 ===========================\n" >> outputs/esa-S
+	make esaS4 >> outputs/esa-S
+	echo "ESA 5 ===========================\n" >> outputs/esa-S
+	make esaS5 >> outputs/esa-S
+	echo "ESA 6 ===========================\n" >> outputs/esa-S
+	make esaS6 >> outputs/esa-S
+	echo "ESA end =========================\n" >> outputs/esa-S
+
+
+
 
 #=================================================
 # Demos (from Talk at RCV 2013 in Berlin RSS Conference)
