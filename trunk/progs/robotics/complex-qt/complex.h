@@ -370,23 +370,25 @@ void run() {
     }
 
 
-    if (interactive == 0) {
-        while (alpha[2] >= 360) {
-            alpha[2] -= 360;
-        }
-        while (alpha[2] < 0) {
-            alpha[2] += 360;
-        }
-        alpha[2] = alpha[2]*deg2rad;
-
-        while (beta[2] >= 360) {
-            beta[2] -= 360;
-        }
-        while (beta[2] < 0) {
-            beta[2] += 360;
-        }
-        beta[2] = beta[2]*deg2rad;
+    //if (interactive == 0) {
+    // inputs are always in degrees
+    // human only under stand degrees
+    while (alpha[2] >= 360) {
+        alpha[2] -= 360;
     }
+    while (alpha[2] < 0) {
+        alpha[2] += 360;
+    }
+    alpha[2] = alpha[2]*deg2rad;
+
+    while (beta[2] >= 360) {
+        beta[2] -= 360;
+    }
+    while (beta[2] < 0) {
+        beta[2] += 360;
+    }
+    beta[2] = beta[2]*deg2rad;
+    //}
 
     if (verboseOption) {
         mw_out << "   radius = " << R0 << ", eps = " << epsilon<<"\n" ;
