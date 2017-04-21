@@ -115,10 +115,10 @@ testall: $(TARGETS)
 	make egb interactive=1
 
 testa: $(TARGETS)
-	./disc 1
+	./complex 1
 
 testb: $(TARGETS)
-	./disc 1 \
+	./complex 1 \
 		$(startX) $(startY)  $(goalX) $(goalY) \
 		$(epsilon)  $(radius)  input2.txt  $(boxWidth) $(boxHt) \
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
