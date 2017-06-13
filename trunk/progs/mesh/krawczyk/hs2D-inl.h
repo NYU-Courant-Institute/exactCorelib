@@ -111,7 +111,8 @@ class Hs2D : public BasePredicate<NT> {
     MatrixT<Interval> B(2), jacobian(2);
     // This matrix will always contain degenerate intervals.
     EvaluateBApprox(&B, x_mid.getL(), y_mid.getR());
-    EvaluateIntervalJacobian(&jacobian, x_range, y_range);
+    // 13jun2017(Remi&Chee): need to add "this->" to compile:
+    this->EvaluateIntervalJacobian(&jacobian, x_range, y_range);
     MatrixT<Interval> M = B*jacobian;
 
     bool extend = false;

@@ -103,7 +103,8 @@ class Krawczyk2D : public BasePredicate<NT> {
     // Section 3 :
     // Calculates {I - YF'(X)}(X - y)
     MatrixT<Interval> jacobian_interval(2), y_interval(2);
-    EvaluateIntervalJacobian(&jacobian_interval,
+    //12Jun2017(Remi&Chee): added "this->" to compile:
+    this->EvaluateIntervalJacobian(&jacobian_interval,
         x_range, y_range);  // This is F'(X)
     ConvertDegenerate(Y, &y_interval);
     VectorT<Interval> result = (I - y_interval*jacobian_interval) * diff;

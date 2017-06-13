@@ -51,7 +51,8 @@ COREX_LIB_LEVEL1=-lcorex++$(VAR)_level1
 
 # This works for GCC 3.x, but not for 2.9x, so I removed it
 # The user have to set LD_LIBRARY_PATH environment variable.
-ifeq (${LINKAGE}, shared)
-	LDFLAGS+=-R${CORE_PATH}/lib -R${CORE_PATH}/gmp/lib -R${CORE_PATH}/mpfr/lib
-endif
+#ifeq (${LINKAGE}, shared)
+#	LDFLAGS+=-R${CORE_PATH}/lib -R${CORE_PATH}/gmp/lib \
+#	-R${CORE_PATH}/mpfr/lib
+#endif
 
