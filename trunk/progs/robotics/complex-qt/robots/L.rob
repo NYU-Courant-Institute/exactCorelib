@@ -2,7 +2,8 @@
 #  This file describe a robot.	
 #	 The file formats like following:
 #	 N, number of vertices, followed by N lines of coordinates.
-#  M, number of trianlges, followed by M lines of triangles, defiend by indices its vertices
+#  M, number of triangles, followed by M lines of triangles,
+#	defined by indices for its vertices
 #  Currently, the triangles must be NICE, and the vertices must ordered CCW.
 #
 
