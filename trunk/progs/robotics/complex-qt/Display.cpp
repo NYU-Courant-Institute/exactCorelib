@@ -394,6 +394,7 @@ void Display::drawPath(Pose start, Pose goal) {
 
 
 void Display::drawRobot(Pose p, Color c){
+    int i = 0;
     for (Triangle & tri:compRoboTriangles) {
 
         Corner boxcenter(p.x,p.y);
@@ -407,10 +408,16 @@ void Display::drawRobot(Pose p, Color c){
         C.rotate(p.theta * PI,0,0);
         C = C + boxcenter;
 
+        Color used_c = c;
+        if (i++ < 3) { // use some special color for the first 4 triangles of the robot
+            used_c.rgba[0] = c.rgba[0] / 2;
+            used_c.rgba[1] = 1;
+            used_c.rgba[2] = c.rgba[2] / 2;
+        }
         drawTriangle(Pose(A.x,A.y),
                      Pose(B.x,B.y),
                      Pose(C.x,C.y),
-                     c, true, true);
+                     used_c, true, true);
     }
 }
 void Display::drawRobot(Box* b, Color c) {

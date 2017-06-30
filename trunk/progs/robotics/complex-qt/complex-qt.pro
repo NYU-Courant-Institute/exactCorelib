@@ -13,7 +13,17 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = complex-qt
 TEMPLATE = app
 
-LIBS += -lGLU
+##########################
+# This is used on Mac OS
+#
+INCLUDEPATH += /System/Library/Frameworks/OpenGL.framework/Headers
+LIBS += -F/Library/Frameworks
+LIBS += -framework OpenGL
+
+##########################
+# This is used on Linux
+#
+# LIBS += -lGLU
 
 SOURCES +=\
     MainWindow.cpp \

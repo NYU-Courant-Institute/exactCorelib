@@ -14,7 +14,13 @@
 #include <QOpenGLWidget>
 #include <QGLWidget>
 #include <QtOpenGL>
-#include "GL/glu.h"
+
+#ifdef __APPLE__
+#include <OpenGL/glu.h>
+#else
+#include <GL/glu.h>
+#endif
+
 
 // Standard Library
 #include <vector>
