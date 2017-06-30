@@ -6,7 +6,8 @@
 This file describes two File Formats for 2D and 3D polyhedral objects.
 
 	2D files describe a collection of polygons (not necessarily disjoint)
-	3D input files describe a collection of polyhedra (not necessarily disjoint)
+	3D input files describe a collection of polyhedra (not necessarily
+		disjoint)
 	The 3D format is basically a compatible extension of the 2D format
 
 ##################################################
@@ -90,7 +91,7 @@ It a sequence of lines with these elements:
 	200 320		# last point
 	
 	2		# 2 polygons
-	1 3 2 1		# first polygon (the inner triangle, listed counter-clockwise:
+	1 3 2 1		# first polygon (the inner triangle, listed CCW:
 			# 	(100,100), (200,300), (300,100), (100,100)
 	4 5 6 4		# second polygon (the outer triangle, listed clockwise)
 #
@@ -123,8 +124,9 @@ It a sequence of lines with these elements:
 		The implicit name of the i-th point (xi,yi,zi) is "Pi".
 		But you can also give your own name to any of these points,
 		where a name must begin with a letter followed by any number
-		of letters and digits.   To give the name "A2" to the point (x2,y2,z2),
-		your precede the coordinates of the points with the sequence "A2:",
+		of letters and digits.   To give the name "A2" to the point
+		(x2,y2,z2), your precede the coordinates of the points with the
+		sequence "A2:",
 		Thus: 
 	
 		x1 y1 z1, A2: x2 y2 z2, ... , xN yN, zN .
@@ -156,9 +158,10 @@ It a sequence of lines with these elements:
 		Each face (u,v,w) gives rise to 3 directed edges
 				(u,v), (v,w) and (w,u).
 		The boundary of the polyhedron to be a manifold:
-		This meanas that each direct edge (u,v) must not be duplicated,
+		This means that each direct edge (u,v) must not be duplicated,
 		and there should be its complementary edge (v,u) from another
-		face (v,u,w') (for some w').
+				face (v,u,w')
+		(for some w').
 		
 		#######################################
 		Polyhedra:
