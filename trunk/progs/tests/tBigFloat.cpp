@@ -73,6 +73,8 @@ int main(int argc, char* argv[])
 	//	make: *** [Makefile:36: r] Aborted (core dumped)
 	// But after commenting out the above 3 lines of code,
 	// the same error persists elsewhere.
+	// See, e.g., 
+	// https://stackoverflow.com/questions/32255374/mpfr-program-crashes-with-high-precision
     
     BigFloat b( 35,0, -4);
     BigFloat c( 49,0, 3);
