@@ -51,19 +51,28 @@ typedef std::vector<Polynomial<NT> >	VecPoly;
 int main(int argc, char* argv[])
 {
     // GET INPUT ARGUMENTS
-	int curveNo = 0;	// which curve to display
-	if (argc>1) curveNo = atoi(argv[1]);
+	//int curveNo = 0;	// which curve to display
+	//if (argc>1) curveNo = atoi(argv[1]);
 
     // SET INTERNAL PRECISION
     setDefaultAbsPrecision(CORE_posInfty); // puts defAbsPrec in control
-    int prec = 100;  
+    int prec = 100; 
     setDefaultRelPrecision(prec); // put defRelPrec in control
-    cout << setprecision(6);	  // output precision (6 digits)
+    //cout << setprecision(6);	  // output precision (6 digits)
+    cout << setprecision(52);	  // output precision (52 digits)
 
-    double x=2.4;
-    double y=1.2;
-
-    cout << "2.4 / 1.2 = " << x/y << endl; // output 2
+    // THE FOLLOWING USED TO WORK (before 2017)
+    // double x=2.4;
+    // double y=1.2;
+    // cout << "2.4 / 1.2 = " << x/y << endl; // output 2
+    	// Error message (2017):
+	//	> ./tBigFloat
+	//	2.4 / 1.2 = 2
+	//	init2.c:52: MPFR assertion failed: p >= 2 &&
+	//	  p <= ((mpfr_prec_t)((mpfr_uprec_t)(~(mpfr_uprec_t)0)>>1))
+	//	make: *** [Makefile:36: r] Aborted (core dumped)
+	// But after commenting out the above 3 lines of code,
+	// the same error persists elsewhere.
     
     BigFloat b( 35,0, -4);
     BigFloat c( 49,0, 3);
@@ -96,24 +105,6 @@ e/h = 49.
     cout << "BF(16,0,-1) = f =" << f << endl;
     cout << "BF(10,0,0)  = g =" << g << endl;
     cout << "BF(1,0,1)   = h =" << h << endl;
-    if (isDivisible(b,c)) cout << "b | c" << endl;
-    else cout << "b not divide c" <<endl;
-    if (isDivisible(d,c)) cout << "d | c" << endl;
-    else cout << "d not divide c" <<endl;
-    if (isDivisible(e,c)) cout << "e | c" << endl;
-    else cout << "e not divide c" <<endl;
-    if (isDivisible(g,f)) cout << "g | f" << endl;
-    else cout << "g not divide f" <<endl;
-
-    cout << "e*g =" << e*g << endl;
-
-    cout << "gcd(b,c) = " << gcd(b,c) << endl;
-    cout << "gcd(d,c) = " << gcd(d,c) << endl;
-    cout << "gcd(b,d) = " << gcd(b,d) << endl;
-    cout << "gcd(e,d) = " << gcd(e,d) << endl;
-
-    cout << "e/h = " << e/h << endl; // should be 49
-
     cout<<"##################################################" << endl;
     BigFloat zBF(0);
     cout << "BigFloat(0) = " << zBF << endl;

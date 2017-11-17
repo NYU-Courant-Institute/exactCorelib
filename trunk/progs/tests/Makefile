@@ -14,6 +14,7 @@ p= coreid
 p= tfriend
 p= tCoreAux
 p= tSqrt
+p= tBigFloat
 
 LEV= 3
 TARGETS=${p}
