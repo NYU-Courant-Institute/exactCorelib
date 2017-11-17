@@ -24,7 +24,12 @@ A quadtree is called "smooth" if every pair of adjacent boxes differ in
 depth by at most 1. The smooth quadtree data structure maintains smoothness
 as an invariant.
 
-This program is based on the paper "Amortized Analysis of Smooth Quadtrees in All Dimensions" by Huck Bennett and Chee Yap, Scandinavian Symposium and Workshops on Algorithm Theory (SWAT) 2014, and Computational Geometry: Theory and Applications (to appear). This data structure also appears in the Core Library: http://cs.nyu.edu/exact/core_pages/intro.html. For an example of this data structure used in an application, see https://github.com/hbennett/SubVor.
+This program is based on the paper "Amortized Analysis of Smooth Quadtrees in
+All Dimensions" by Huck Bennett and Chee Yap, Scandinavian Symposium and
+Workshops on Algorithm Theory (SWAT) 2014, and Computational Geometry: Theory
+and Applications (to appear). This data structure also appears in the Core
+Library: http://cs.nyu.edu/exact/core_pages/intro.html. For an example of this
+data structure used in an application, see https://github.com/hbennett/SubVor.
 
 ----------------------
 Description of files:

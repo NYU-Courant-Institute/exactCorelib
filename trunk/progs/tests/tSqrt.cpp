@@ -1,5 +1,6 @@
 /**
-* Feb 2017:  from
+* Feb 2017:  
+* Chee:  This is a cute example from
 * http://math.stackexchange.com/questions/2134903/is-there-any-mathematical-reason-for-this-digit-repetition-show
 * 
 * Is there any mathematical reason for this "digit-repetition"?

@@ -119,7 +119,8 @@ eg2 : main_ceval
 # eg3 (laguerre20 polynomial) gives explicit bounding box to search for roots:
 eg3 : main_ceval
 	./main_ceval --poly ./data/laguerre20.pol --display \
-		--x_max 70 --x_min 0 --y_min -1 --y_max 1
+		--x_min 0 --x_max 70  \
+		--y_min -1 --y_max 1
 
 # eg4 (laguerre20 polynomial) uses root bound calculations that
 # ensure that all roots are found:
