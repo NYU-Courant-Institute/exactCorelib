@@ -1,0 +1,12 @@
+Notes
+
+Nov, 2017:
+I need to start using MPFI into our codes in Core.
+
+In particular, the need to move from 
+	Double interval
+to
+	MPFI interval
+	
+This code from Burr shows how to do it.
+Juan had to implement this in our homotopy work.
