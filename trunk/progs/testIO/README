@@ -21,7 +21,12 @@ SYNOPSIS:
 		   for any number in the range [1.998,2.000].
 
   		-- how to set default precision 
-			e.g., setDefaultPrecision(160, CORE_INFTY)
+			e.g., setDefaultPrecision(52, CORE_INFTY)
+				gives you 52 relative bits of precision
+			e.g., setDefaultPrecision(CORE_INFTY, 1000)
+				gives you 1000 absolute bits of precision
+			e.g., setDefaultPrecision(52, 1000)
+				gives you "mixed" (52,1000) bits of precision
   		-- how to set output (or print) precision 
   			e.g., setDefaultPrintDigits(6)
 		-- how default precision and output precision interact
@@ -50,8 +55,9 @@ SYNOPSIS:
 		   iff the two strings s1, s2 are compatible
 		   (i.e., their "implicit intervals" overlap).
 		   E.g., the "implicit interval" for 1.234 is [1.233,1.235].
-		-- The new version generalizes the function "isCompatible(s1,s2)"
-	           to a new function "compatible(s1,s2)" that returns the first position
+		-- The new version generalizes the function
+		   "isCompatible(s1,s2)" to a new function
+		   "compatible(s1,s2)" that returns the first position
                    where the two strings becomes incompatible.   Then
                    the original "isCompatible(s1,s2)" is equivalent to
 	           "compatible(s1,s2) = min(length(s1),length(s2))".
