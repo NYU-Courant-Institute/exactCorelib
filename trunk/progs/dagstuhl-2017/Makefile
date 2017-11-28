@@ -14,8 +14,9 @@ include $(CORE_DIR)/progs/Make.options
 
 verbose=
 verbose=1
+prec=52
 
-args=$(verbose)
+args=$(verbose) $(prec)
 
 #=================================================
 # Define target files (put all your files here)
