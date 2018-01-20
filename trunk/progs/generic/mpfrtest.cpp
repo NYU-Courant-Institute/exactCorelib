@@ -1,5 +1,5 @@
 /*
-  file: testgmp.cpp
+  file: mpfrtest.cpp
 
   Purpose: Run this program before installing the Core Library
   		to see if you already have an installed gmp library
@@ -7,6 +7,8 @@
 	   If you pass this test, then you can skip Stage One of
 	   building the Core Library (which is simply to install gmp).
  */
+
+#include <cstddef>	// Chee, Jan 2018: you need this for MacOS
 
 #include <stdio.h>
 #include <mpfr.h>
