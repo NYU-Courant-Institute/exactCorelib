@@ -224,7 +224,7 @@ README FILE: TABLE OF CONTENTS
 
                 $(CORE_INSTALL)/core-X.Y.Z
    
-   3.3) There are three stages of installation:
+   3.3) There are four stages of installation:
                 STAGE 1 -- gmp installation
                 STAGE 2 -- mpfr installation
                 STAGE 3 -- create the core library, extensions, samples
@@ -232,7 +232,7 @@ README FILE: TABLE OF CONTENTS
         The screen output from the individual steps in these stages
         are stored in the files ${CORE_PATH}/tmp/DIAG_* for your diagnostics.
 
-        But before any of these steps, you must choose your PLATFORM.
+        But before any of these steps, you MUST choose your PLATFORM.
         PLATFORM is a combination of OS plus compiler.
         This variable is set in the Make.config file:
 
@@ -240,10 +240,10 @@ README FILE: TABLE OF CONTENTS
             % vi Make.config -- use "vi" or your favorite editor to edit
                                 the file ``Make.config''.   
                              -- Follow the instructions in the file.
-                             -- For most users, you only need to set the
-                                PLATFORM variable.
+                             -- For most users, you only need to set one
+			     	variable, the PLATFORM variable.
   
-        To see what your chosen options are, do:
+        To see what your current (default) options are, do:
             % make options   -- this will show the various global settings
                              -- e.g. PLATFORM=gnu, LINKAGE=static, VAR=, etc.
 
@@ -288,6 +288,10 @@ README FILE: TABLE OF CONTENTS
         Assuming you have a properly installed GMP in some directory, say
 		${your_gmp_install_dir}
         which was not found by the above "testgmp".  
+	For instance, for the MacOS, you might have your gmp (and mpfr)
+	under /opt/local/lib/libgmp*  and /opt/local/include/gmp*.
+	In that case, your_gmp_install_dir=/opt/local.
+
 	Typically, you will find under ${your_gmp_install_dir} several
 	subdirectories, including the following:
 		lib    include     share
