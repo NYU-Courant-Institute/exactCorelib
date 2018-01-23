@@ -1262,7 +1262,7 @@ public:
 
   // REMARK: unlike Core 1, there is no version of sqrt where we already
   // know a very good approximation, and we only want to increase
-  // its precision.  May be we should improve this.
+  // its precision.  Maybe we should improve this.
 
   /// \name power functions (raw version)
   //@{
