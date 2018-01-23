@@ -1283,6 +1283,7 @@ std::ostream& operator<<(std::ostream& o, const Polynomial<NT>& p) {
   return o;
 }//operator<<
 
+//
 template < class NT >
 std::istream& operator>>(std::istream& is, Polynomial<NT>& p) {
   // read degree and coeff
@@ -1293,7 +1294,7 @@ std::istream& operator>>(std::istream& is, Polynomial<NT>& p) {
     is >> coeff[i];
   // set coefficients for poly
   p.set(degree, coeff);
-  delete coeff;
+  delete[] coeff;   //Chee,Zhaoji, Jan'18: added "[]" to avoid warning.
   return is;
 }//operator>>
 
