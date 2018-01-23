@@ -180,7 +180,21 @@ README FILE: TABLE OF CONTENTS
 
                 http://www.cygwin.com.  
 
-   3.1) DOWNLOAD. First download the file core-X.Y.Z_full.tgz 
+   3.1) DOWNLOAD. 
+
+   	    =========================================================
+   	    |  Since 2014, we have asked users to directly download |
+	    |  from our SVN repository.  Please see instructions in |
+	    |     https://cs.nyu.edu/exact/core_pages/svn-core.html |
+   	    =========================================================
+
+	The following are pre-2014 instructions: still useful if you
+	want to test old versions of Core Library (e.g. Core1 has a
+	variety of root bounds which are not available in Core2).
+	Be fore warned -- Core1 was last tested using
+		gcc 5.4.0, 	gmp-4.2.4,	mpfr-3.1.5.
+   
+   	First download the file core-X.Y.Z_full.tgz 
         (for version X.Y.Z).  The current distribution is X.Y.Z=2.1.0.  
         The website for download is
 
@@ -899,6 +913,11 @@ README FILE: TABLE OF CONTENTS
         and BigFloat class), incorporation of transcendental functions into
         Expr, Redesigned BigFloat (split off another class called BigFloat2),
         general speed improvement 2-10 times.
+   Version 2.1 (Jul 2010) 
+	-- introduce anary nodes for sum and product
+	-- DoubleWrapper for machine double in Level 1
+		so that Levels 2 and 3 programs can compile in Level 1.
+	-- templated classes for linearAlgebra, intervals, complex numbers
 
 *************************************************************
 6)  LICENSE INFORMATION

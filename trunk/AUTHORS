@@ -44,8 +44,9 @@ Shang Wang	Author of miranda code in mesh (Summer 2011)
 		for intersecting 2 plane curves.
 Cong Wang	Main Author of Planner for Disc and Triangle Robot (2013)
 Zhongdi Luo	Main Author of Planner for 2-Link Robot (2014-5)
-Huck Bennett	Author of Box Subdivision Package (2015-16)
-Ching-Hsiang (Tom) Hsu	Main Author of Planner for Rod Robot (2016)
+Huck Bennett	Author of Box Subdivision Package (2015-17)
+Ching-Hsiang (Tom) Hsu	Main Author of Planner for Rod/Ring Robot (2016-2018)
+Remi Imbach	Author of Root Clustering software (2018)
 
 ==================================================
 
