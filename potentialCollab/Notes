@@ -1,0 +1,68 @@
+Potential Collaborators on Core
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Clifford Yapp (contacted me in May 2017 about CoreLib license)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	Seems very nice and knowledgeable and wants to
+	know about Licensing of Core.
+	www.spokeo.com (a people locator) said he is male age 37 in
+	Baltimore and Fallston, Maryland
+	(probably working at Army Research Lab?).
+	He is NOT Chinese (with various relatives "Yapp")
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	First Email in May 2017:
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	Dr. Yap,
+	
+	(my apologies if this email is a duplicate - I initially attempted to
+	send it to the exact@cs.nyu.edu email address but got a delivery
+	failed message when it expanded to pion@cs.nyu.edu...)
+	
+	Hi!  My name is Cliff Yapp, and I work on an open source CAD system
+	called BRL-CAD.
+	
+	I've recently been digging into modern research concerning robust
+	geometric calculations, and the EGC work came up in that search.
+	Although the EGC Introduction website indicates post 2009 research is
+	looking at moving beyond EGC due to performance concerns, I'm
+	wondering if EGC might serve as a useful "slow-but-working" fallback
+	for a number of features in BRL-CAD which currently suffer from
+	robustness problems.
+	
+	Looking at the CORE historical distributions, it looks as if the
+	choice of the QPL license was made circa 2004.  Although I've not
+	found anything indicating the specific reason for that choice, I'm
+	wondering if it was driven by a desire to match the CGAL licensing
+	scheme of that time?  If so, is there any possibility that at least
+	the "core" bits of CORE could be relicensed under a more liberal
+	license such as Apache or MIT (or, if those are too liberal, perhaps
+	the MPL2 ?)
+	
+	I hasten to state that if the choice of the QPL is retained
+	deliberately (either for philosophical reasons or to preserve the
+	possibility of commercial licensing) I fully respect that decision.
+	However, before I start diving into trying to create my own
+	implementation of the necessary robust primitives, I figured it was
+	worth inquiring as to whether or not the selection of QPL was
+	deliberate or simply a matter of convenience/default when working with
+	CGAL.  I've encountered both situations before, so it's usually worth
+	checking.
+	
+	Thanks for your time,
+	CY
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	See his email exchange with me. 
+	He goes under user name "starseeker" in professsional work
+	and coding.
+	Located a paper of his in 2015, see under stuff here.
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		"Adaptive Geometry Shader Tessellation for
+			Massive Geometry Display"
+		by
+		Lee A Butler and Clifford Yapp
+			Survivability/Lethality Analysis Directorate, ARL
+		This is a "declassified document" released by Clifford Yapp,
+		so he seems to be the lead author.
