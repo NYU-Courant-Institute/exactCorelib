@@ -62,7 +62,7 @@ alltests:	test time moretest
 #	Core Library Installation Steps
 #################################################################
 
-# Zeroth Step: setup default SVN download of Core
+# Zeroth Step: setup default SVN download of Core (Jan2018)
 zero svn-setup:
 	svn update --set-depth immediates doc progs
 	svn update --set-depth infinity ext inc src
