@@ -63,7 +63,7 @@ alltests:	test time moretest
 #################################################################
 
 # Zeroth Step: setup default SVN download of Core (Jan2018)
-zero svn-setup:
+zeroth svn-setup:
 	svn update --set-depth immediates doc progs
 	svn update --set-depth infinity ext inc src
 	-${MAKE} -C progs downloadBasicProgs
