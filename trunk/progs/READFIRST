@@ -1,7 +1,6 @@
 READFIRST
 
-There is a README file in $(CORE)/progs,
-and also in most subdirectories of (CORE)/progs.
+Please read the README file in this folder, $(CORE)/progs.
 
 But if you browse the subdirectories through our download
 pages, these files may not show up.  You can explicitly 

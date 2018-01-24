@@ -5,12 +5,17 @@ $Id: README,v 1.3 2010/06/25 10:15:48 exact Exp $
 
 Files in this subdirectory, $(CORE_PATH)/progs:
 	  README	-- this file
+	  FAQs		-- information on writing Core Programs
 	  Makefile	-- to make all examples
 	  Make.sh	-- shell script called by Makefile
 
 Subdirectories in $(CORE_PATH)/progs contain sample
 programs that use the Core library, testing and
 illustrating usage and features of our library.
+Not all subdirectories are populated automatically if you
+downloaded using our SVN instructions.  But you can download
+them using the instructions found in the FAQs file (item 41).
+
 If you want to compile and build your own CORE programs,
 take a look at the sample files in the "generic" subdirectory.
 

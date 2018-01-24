@@ -21,6 +21,8 @@ TABLE OF CONTENTS:
 	--23: Unit tests with different number types in Core?
 	--24: Mysterious errors with loads (ld)?
 	--31: What are the static objects in Core?
+	--41: How to check out additional files under progs
+	--51: Editors
 	--999: END
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -134,7 +136,7 @@ TABLE OF CONTENTS:
 	garbage digits.   This phenomena arises even if the internal
 	approximation is behaving correctly because the internal
 	representation is in binary and output is in decimal.
-	WE REPRESENT CORE LIBRARY TO NEVER PRINT GARBAGE DIGITS.
+	CORE LIBRARY WILL NEVER PRINT GARBAGE DIGITS.
 	For illustration of this, see progs/testIO/noGarbageDigits.cpp.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -391,9 +393,8 @@ TABLE OF CONTENTS:
 		in display_1.o and box_1.o
 	collect2: ld returned 1 exit status
 	make[1]: *** [cxy_1] Error 1
-	##################################################
 
-
+##################################################
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 --31: What are the static objects in Core?
@@ -412,6 +413,30 @@ TABLE OF CONTENTS:
 	can sometimes cause bus errors (it happens on MacOS, but
 	not on Cygwin).  We have go give up this dependency in
 	general.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--41: How to check out additional files under progs folder?
+	A: If you checked out from our SVN repository (since 2014),
+	we have arranged to download only some basic programs of
+	Core Library.  But some subfolders in progs are work in progress
+	and/or our experimental platform. Some (especially those on robot
+	motion planning) are very large.  But suppose you want to download
+	some of our robotics files:
+		> cd ${myCORE}
+		> cd progs
+		> svn up --set-depth immediates robotics
+	This will download many top level folders and files under
+	progs/robotics.  Next, if you decide to download the disc subfolder,
+	you can do this:
+		> cd robotics
+		> svn up --set-depth infinity disc
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--51: Editors
+	Our text files (README, FAQs, etc) uses tabs to indent paragraphs
+	indent, and are optimized for browsing by editors such as gvim
+	which can do automatic folding/unfolding of text files based on such
+	indents.  This FAQs file is an example.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 --999: END
