@@ -4,7 +4,6 @@ The following describes the file format for polynomials
 in the FRISCO Test Suite.  It is edited from Bini and Fiorentino:
 
 A. FILE FORMAT
-
 	Each file is an ASCII text file and contains one polynomial.
 	Each line in the file is interpreted in this order:
 
@@ -12,7 +11,6 @@ A. FILE FORMAT
 	These are lines that begin with "!".  We do not count them
 	in the description that follows.
 	E.g.,
-
 	  ! This is the Wilkinson polynomial of degree n
 	  ! defined by p(x)=(x-1)(x-2)...(x-n)
 
@@ -34,7 +32,7 @@ A. FILE FORMAT
 	      + f for float coefficients
 
 	E.g., "abc" = "dri"
-	stands for a dense real polynomial with integer coefficients.
+		stands for a dense real polynomial with integer coefficients.
 
   A.2.  The second line gives the precision of the coefficients in
 	decimal digits, where 0 denotes the infinite precision

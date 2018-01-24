@@ -1,5 +1,5 @@
 /***************************************************************
- * File: pointOnPlane.cpp
+ * File: pointOnPlane-dagstuhl.cpp
  * Author: Chee Yap <yap@cs.nyu.edu>
  *         Chen Li  <chenli@cs.nyu.edu>
  * Date:   12/98
@@ -37,14 +37,11 @@ int main() {
   int counter=0;
   for (int i=1; i<=N; i++) {
     for (int j=1; j<=N; j++) {
-      //Vector v(i, j*sqrt(j), 3.0);
-      //Line3d L(origin, v);      
       Line3d L(origin, Vector(i, j*sqrt(double(j)), 3.0));
       
       Point3d* intp = (Point3d*)P.intersection(L);
-      //cout << "p=" << *intp << endl;
       if (P.contains(*intp))
-        counter ++;
+      		  counter ++;
     }
   }
 

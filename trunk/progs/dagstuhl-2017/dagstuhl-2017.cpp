@@ -25,11 +25,15 @@
 using namespace std;
 using namespace CORE;
 
-  // Define "erf" function to be "min" (hack)
-  Expr erf(Expr a, Expr b){
+
+  Expr min(Expr a, Expr b){
       if (a>b) return b;
       return a;
   };
+  // Define "erf" function to be identity (hack)
+  Expr erf(Expr a){
+      return a;
+  }
 
   // logistic function
   Expr logistic(int n){
@@ -47,15 +51,22 @@ using namespace CORE;
 //////////////////////////////////////////////////
 int main( int argc, char *argv[] ) {
 
-
   // Command line arguments:
-  if (argc>1) coretest_verbose = true;
+  int verb = 0;
+  coretest_verbose = false;
+  if (argc>1) verb = atoi(argv[1]);
+  	if (verb > 0) coretest_verbose = true;
   int prec = 52;
-  if (argc>2) prec = atoi(argv[2]);	// prec is relative precision
+  if (argc>2) prec = atoi(argv[2]);	// prec is operation precision
+  	int oprec = 20;
+  if (argc>3) oprec = atoi(argv[3]);	// oprec is output precision
+  	int n = 10;
+  if (argc>4) n = atoi(argv[4]);	// n is number of iterations
   
   // Global unit test variables:
-  setDefaultPrecision(prec, CORE_INFTY);
-  cout.precision(20);	
+  setDefaultPrecision(prec, CORE_INFTY); // prec is in relative bits
+  cout.precision(oprec);		// oprec is in number of digits
+
   coretest_error=false;
   coretest_verbose=false;
 
@@ -76,8 +87,6 @@ int main( int argc, char *argv[] ) {
   BigFloat aa = a*a;
   BigFloat bb = b*b;
 
-  core_test(aa, a*a, "aa is wrong");
-
   BigFloat poly =  21*bb - 2*aa + 55*bb*bb - 10*aa*bb + (a/(2*b));
 
   core_test(poly, poly, "poly is wrong");
@@ -92,7 +101,7 @@ int main( int argc, char *argv[] ) {
        <<  "========================================"
        << endl;
 
-  logistic(10);
+  logistic(n);
   
   
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
@@ -101,116 +110,28 @@ int main( int argc, char *argv[] ) {
   //
   // 		erf(min(1000, abs(R, sin(4* atan(1)))))
   //
-  // 			-- but I do not have "erf"
-  //
   // 	where R is very large.
   //
-  // 	Note that atan(1)=Pi/4, and so sin(4*atan(1))= sin(Pi)=0.
+  // 	Note that atan(1)=Pi/4, and so sin(4*atan(1)) = sin(Pi)=0.
   // 		Thus ans should be 0.   Thus erf(0)=0.
   // 		Since Core Library does not have erf(x),
-  // 		we just compute "min"
+  // 		we just define erf(x)=x.
   
   cout <<  "========================================\n"
        << "(Example 3) Computing Rump's Example \n"
-      << "      ans = erf(Expr(1000), abs(R * sin(4* atan(1)))) \n"
-      << " where erf is redefined as the min(a,b).\n"
+      << "      ans = erf(min(1000, abs(R * sin(4* atan(1))))) \n"
+      << " where erf is re-defined as the erf(x)=x (hack).\n"
       <<  "========================================"
       << endl;
 
   Expr R=1000000000000;
-  Expr ans = erf(Expr(1000), abs(R * sin(4* atan(1))));
+  Expr at = atan(1);
+  Expr ans = erf(min(Expr(1000), abs(R * sin(4* at))));
 
-  core_test(1000, ans, "ans is wrong");
-
+  core_test(0, ans, "ans is wrong");
 
 
   return 0;
 }//main
 
 
-/* **************************************** ignore!
-
-  // set Default Input Digits (for conversion to internal format):
-  // 	defInputDigits = CORE_INFTY;	// exact input
-  // 	defInputDigits = 20;		// round to 20 digits
-
-  // setDefaultPrecision (R,A) -- sets "mixed R relative bits, A absolute bits"
-  // To get either unmixed R relative bits, set A=CORE_INFTY
-  // To get either unmixed A absolute bits, set R=CORE_INFTY
-		setDefaultPrecision(160, CORE_INFTY);
-	
-  // Set output (or print) precision 
-  		//setDefaultPrintDigits(67);	// 67 bits is 20 digits
-  		cout.precision(20);	// 67 bits is 20 digits
-  // To get scientific format:
-  	cout.setf(ios::scientific, ios::floatfield);
-  // To get positional format:
-	setPositionalFormat();
-  // To get back default format:
-  //	cout.setf(0, ios::floatfield); 
-
-
-  			// REMARK: this is really only a convention.
-  f = BigFloat("1"); 		// f=1
-  core_test(1, f.get_exp(), "f.get_exp() is wrong");
-  f = BigFloat("0.5"); 		// f=1/2
-  core_test(0, f.get_exp(), "f.get_exp() is wrong");
-  f = BigFloat("0.125"); 	// f=1/8
-  core_test(-2, f.get_exp(), "f.get_exp() is wrong");
-  f = BigFloat("1.125");	 // f=9/8
-  core_test(1, f.get_exp(), "f.get_exp() is wrong");
-  
-  // get mantissa:
-  f = BigFloat("31459");
-  BigInt z; int exp;
-  exp = f.get_z_exp(z);
-  
-  if(exp >= 0)
-    z *= power(BigInt(2), exp);
-  else
-    z /= power(BigInt(2), -exp);
-
-  core_test("31459", z.get_str(), "f.get_z_exp() is wrong");
-  
-  
-  // get exponent:
-  BigFloat f("0"); 		// f=0
-  core_test(0, f.get_exp(), "f.get_exp() is wrong");
-  			// REMARK: this is really only a convention.
-  f = BigFloat("1"); 		// f=1
-  core_test(1, f.get_exp(), "f.get_exp() is wrong");
-  f = BigFloat("0.5"); 		// f=1/2
-  core_test(0, f.get_exp(), "f.get_exp() is wrong");
-  f = BigFloat("0.125"); 	// f=1/8
-  core_test(-2, f.get_exp(), "f.get_exp() is wrong");
-  f = BigFloat("1.125");	 // f=9/8
-  core_test(1, f.get_exp(), "f.get_exp() is wrong");
-  
-  // get mantissa:
-  f = BigFloat("31459");
-  BigInt z; int exp;
-  exp = f.get_z_exp(z);
-  
-  if(exp >= 0)
-    z *= power(BigInt(2), exp);
-  else
-    z /= power(BigInt(2), -exp);
-
-  core_test("31459", z.get_str(), "f.get_z_exp() is wrong");
-  //
-  
-  // BigFloat2 string input:
-  BigFloat2 f2("0.0007891", 10); 
-  core_test(".0007891", f2.get_str(7), "BigFloat string input is wrong");
-  //
-  
-  f = "0.0625";
-  f2 = BigFloat2(f);
-  core_test(".0625", f2.get_str(), "BigFloat2.get_str is wrong");
-
-  if (coretest_error == false)
-    cout << "CORRECT!!! all test are passed" << endl;
-
-  return 0;
-}//main
- **************************************** */

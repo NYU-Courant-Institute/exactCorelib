@@ -56,9 +56,13 @@ ALLTARGETS= ${TARGETS} ${MORETARGETS}
 
 default: $(TARGETS)
 	
-test: $(TARGETS)
+# demo for Dagstuhl (2017)
+dag dagstuhl: 
+	./pointOnPlane1
+	./pointOnPlane3
+
+test2: $(TARGETS)
 	./scheinerman${LEV}
-	./pointOnPlane${LEV}
 
 moretest: $(MORETARGETS)
 	./simple${LEV}
@@ -75,15 +79,15 @@ p: ${p}
 
 ${p}: ${p}.o
 
-pointOnCircle${LEV}: pointOnCircle.o
+t1 pointOnCircle${LEV}: pointOnCircle.o
 
-pointOnPlane${LEV}: pointOnPlane.o
+t2 pointOnPlane${LEV}: pointOnPlane.o
 
-pointOnLine${LEV}: pointOnLine.o
+t3 pointOnLine${LEV}: pointOnLine.o
 
-scheinerman${LEV}: scheinerman.o
+t4 scheinerman${LEV}: scheinerman.o
 
-scheinermanx${LEV}: scheinermanx.o
+t4x scheinermanx${LEV}: scheinermanx.o
 	${CXX} $(LDFLAGS) $< -lcurses -lcorex++$(VAR)_level${LEV} $(CORE_LIB) -o $@
 
 golden${LEV}: golden.o

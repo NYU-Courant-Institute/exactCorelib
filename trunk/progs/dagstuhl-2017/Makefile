@@ -12,11 +12,12 @@ include $(CORE_DIR)/progs/Make.options
 # variables
 #=================================================
 
-verbose=
 verbose=1
 prec=52
+oprec=20
+n=20
 
-args=$(verbose) $(prec)
+args=$(verbose) $(prec) $(oprec) $(n)
 
 #=================================================
 # Define target files (put all your files here)
