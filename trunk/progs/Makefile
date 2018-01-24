@@ -86,7 +86,7 @@ test testbasic:
 	        ${MAKE} -C $$p test; echo ""; fi; \
 	done
 
-# download the basic programs by SVN
+# download the basic programs by SVN (Jan2018)
 downloadBasicProgs: 
 	@for p in ${basicprogs}; do \
 	  if test -d "$$p"; then \
