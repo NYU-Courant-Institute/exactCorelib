@@ -94,14 +94,6 @@ downloadBasicProgs:
 	done
 	
 
-# remove CVS from progs
-removeCVS: 
-	@for p in ${basicprogs}; do \
-	  if test -d "$$p"; then \
-		cd $$p; svn remove CVS; fi; \
-	done
-	
-
 ############################################################
 # NOTE: "moreprogs" is "more" than "basicprogs" in two ways:
 # 	(1) we have more programs than in basicprogs
