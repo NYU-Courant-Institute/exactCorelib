@@ -7,7 +7,6 @@ $Id: FAQs,v 1.2 2010/06/30 16:07:25 exact Exp $
 ======================================================================
 
 1. What license?
-
 	A:  Core Library is now under the terms of the Q Public License
     version 1.0. See the file LICENSE.QPL distributed with CORE.
 
@@ -33,7 +32,6 @@ $Id: FAQs,v 1.2 2010/06/30 16:07:25 exact Exp $
 	calls Real(str, prec).
 
 3. What is the speed of CORE programs? 
-
 	A: You can run and time all the test program by typing
 	"make time" (only in unix-like platforms).  The results will be
 	stored under $(CORE_PATH)/tmp/DIAG_TIMING.  For instance, for
@@ -58,7 +56,6 @@ $Id: FAQs,v 1.2 2010/06/30 16:07:25 exact Exp $
 	These aspects have not been an emphasis of our current development.
 
 4. How can I compile Core Library and CORE programs under Borland C++?
-
 	A: Here is a suggestion from Andreas Fabri 
 		<Andreas.Fabri@sophia.inria.fr>
 
@@ -97,9 +94,7 @@ $Id: FAQs,v 1.2 2010/06/30 16:07:25 exact Exp $
     >
     > ______________________
     
-
 5. How can we use Core Library with the CGAL library?
-
 	A: The latest Core Library (version 1.5 onwards) has provided 
 	   an interface (i.e., a header file) which allows you to
 	   seamlessly incorporate Core Level 3 numbers into CGAL programs.
@@ -108,16 +103,13 @@ $Id: FAQs,v 1.2 2010/06/30 16:07:25 exact Exp $
 	   Core Library can be downloaded as part of CGAL since 2003.
 
 6. How can I build CORE projects under Visual C++?
-
 	A: Please see the README file in the Core Distribution.
 
 7. How can I fix Stack Overflow Problems?
-
 	A: Please see the file "$(CORE_PATH)/doc/stackOverflow.txt" 
 	for details.
 
 8. Which Core Accuracy Levels should I use?
-
 	A: We recommend Levels 1 and 3 for most users.  In this case,
 	you either get the standard IEEE machine accuracy, or the
 	guaranteed accuracy.  Programs which are just "standard C++"
@@ -130,7 +122,6 @@ $Id: FAQs,v 1.2 2010/06/30 16:07:25 exact Exp $
 	This can be useful to speed up some applications.
 
 9. How can I use CORE without overloading machine double or machine long?
-
 	A: There are 3 possible solutions.  
 	One way is to use Core Level 4 accuracy:
 
@@ -153,7 +144,6 @@ $Id: FAQs,v 1.2 2010/06/30 16:07:25 exact Exp $
 		...
 
 10. Where do I look when when have installation problems?
-
 	A: There are several things to think about (these are based 
 	on actual reports by users).
 
@@ -238,7 +228,6 @@ $Id: FAQs,v 1.2 2010/06/30 16:07:25 exact Exp $
 	--Chee
 
 11. Trouble Shooting
-
 	-- large datasets can be a problem at Level 3 for two reasons:
 		(1) Space Problem: this is because Expr objects can be 
 		arbitrarily larger than its Level 1 counterpart (i.e.,
@@ -250,7 +239,6 @@ $Id: FAQs,v 1.2 2010/06/30 16:07:25 exact Exp $
 		about 32,000 points, the Core Version is feasible.
 
 12. Known Issues
-
 	-- When compiling Core Library v1.5 under Sun Workshop 6, the 
            following error occurs:
 

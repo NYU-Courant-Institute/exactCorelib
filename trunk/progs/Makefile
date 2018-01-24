@@ -83,8 +83,24 @@ test testbasic:
 	@for p in ${basicprogs}; do \
 	  if test -d "$$p"; then \
 		echo "Inside subdirectory " $$p ": =-=-=-=-=-=-=-=->>>"; \
-                ${MAKE} -C $$p test; echo ""; fi; \
+	        ${MAKE} -C $$p test; echo ""; fi; \
 	done
+
+# download the basic programs by SVN
+downloadBasicProgs: 
+	@for p in ${basicprogs}; do \
+	  if test -d "$$p"; then \
+		svn update --set-depth infinity $$p; fi; \
+	done
+	
+
+# remove CVS from progs
+removeCVS: 
+	@for p in ${basicprogs}; do \
+	  if test -d "$$p"; then \
+		cd $$p; svn remove CVS; fi; \
+	done
+	
 
 ############################################################
 # NOTE: "moreprogs" is "more" than "basicprogs" in two ways:

@@ -62,6 +62,12 @@ alltests:	test time moretest
 #	Core Library Installation Steps
 #################################################################
 
+# Zeroth Step: setup default SVN download of Core
+zero svn-setup:
+	svn update --set-depth immediates doc progs
+	svn update --set-depth infinity ext inc src
+	-${MAKE} -C progs downloadBasicProgs
+
 # First Step: configure for gmp
 first config-gmp:
 	@echo "First: Configure for GMP..."
