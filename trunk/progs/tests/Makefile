@@ -15,6 +15,7 @@ p= tfriend
 p= tCoreAux
 p= tSqrt
 p= tBigFloat
+p= zhaoji
 
 LEV= 3
 TARGETS=${p}
@@ -91,6 +92,8 @@ tfriend: tfriend.o
 tcoreaux: tCoreAux.o
 
 tSqrt: tSqrt.o
+
+zhaoji: zhaoji.o
 
 #=================================================
 # Rules
