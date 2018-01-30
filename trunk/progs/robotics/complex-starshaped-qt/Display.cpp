@@ -8,7 +8,7 @@
 #include <ctime>
 
 
-// Global Variables in complex-qt.cpp
+// Global Variables in complex-starshaped-qt.cpp
 extern QuadTree* QT;
 extern std::string fileName;
 extern double alpha[3];
@@ -59,7 +59,7 @@ static int numQuads = 0;
 unsigned int inc(0);
 unsigned int renderSteps(1);
 //bool step(false);
-extern bool step; // define in complex.cpp or complex-qt.cpp
+extern bool step; // define in complex.cpp or complex-starshaped-qt.cpp
 // Stores Vertices of Shapes
 static std::vector<Vertex>  hollowCircles;
 static std::vector<Vertex>  filledCircles;

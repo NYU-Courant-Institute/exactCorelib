@@ -10,7 +10,7 @@ opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = complex-qt
+TARGET = complex-starshaped-qt
 TEMPLATE = app
 
 ##########################
@@ -32,7 +32,7 @@ SOURCES +=\
     Polygon.cpp \
     QuadTree.cpp \
     Timer.cpp \
-    complex-qt.cpp \
+    complex-starshaped-qt.cpp \
     Wall.cpp \
     fileProcessor.cpp \
     Display.cpp \
@@ -59,7 +59,7 @@ HEADERS  += MainWindow.h \
     triangulate.h \
     Triangle.h \
     complex.h \
-    complex-qt.h \
+    complex-starshaped-qt.h \
 
 
 FORMS    += \

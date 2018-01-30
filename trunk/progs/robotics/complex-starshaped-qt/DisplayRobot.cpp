@@ -8,7 +8,7 @@
 #include <ctime>
 #include <Triangle.h>
 
-// Global Variables in complex-qt.cpp
+// Global Variables in complex-starshaped-qt.cpp
 extern vector<Triangle> compRoboTriangles;
 
 extern double R0;

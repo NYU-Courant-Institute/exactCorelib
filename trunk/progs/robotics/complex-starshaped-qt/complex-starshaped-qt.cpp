@@ -58,7 +58,7 @@ static MainWindow *window;
 
 #define mw_out (*window)
 #include "complex.h"
-#include "complex-qt.h"
+#include "complex-starshaped-qt.h"
 
 
 int main(int argc, char* argv[]) {
@@ -92,53 +92,53 @@ int main(int argc, char* argv[]) {
     bool foundFiles = false;
     workingDir = QDir::currentPath().toStdString();
 
-    // Test if the build directory is complex-qt. If so,
+    // Test if the build directory is complex-starshaped-qt. If so,
     // the path to the current working directory will
-    // include /complex-qt
-    unsigned long indexOfDesiredDir = workingDir.rfind("/complex-qt/");
+    // include /complex-starshaped-qt
+    unsigned long indexOfDesiredDir = workingDir.rfind("/complex-starshaped-qt/");
     if (indexOfDesiredDir != std::string::npos) {
         workingDir = workingDir.substr(0, indexOfDesiredDir + 5);
 
-        // Set current working directory to complex-qt
+        // Set current working directory to complex-starshaped-qt
         QDir::setCurrent(workingDir.c_str());
         foundFiles = true;
     }
 
     // Test if program was downloaded from Github, and is the build directory.
     // Downloading it from Github will result in the folder having the name
-    // /2-links-master instead of /complex-qt
+    // /2-links-master instead of /complex-starshaped-qt
     if (!foundFiles &&
-        (indexOfDesiredDir = workingDir.rfind("/complex-qt/")) != std::string::npos) {
+        (indexOfDesiredDir = workingDir.rfind("/complex-starshaped-qt/")) != std::string::npos) {
         workingDir = workingDir.substr(0, indexOfDesiredDir + 12);
 
-        // Set current working directory to /complex-qt-master
+        // Set current working directory to /complex-starshaped-qt-master
         QDir::setCurrent(workingDir.c_str());
 
         foundFiles = true;
     }
 
-    // Test if a build directory (/build-complex-qt-...) was created. This directory
-    // will reside in the same directory as /complex-qt
+    // Test if a build directory (/build-complex-starshaped-qt-...) was created. This directory
+    // will reside in the same directory as /complex-starshaped-qt
     if (!foundFiles &&
-        (indexOfDesiredDir = workingDir.rfind("/build-complex-qt")) != std::string::npos) {
+        (indexOfDesiredDir = workingDir.rfind("/build-complex-starshaped-qt")) != std::string::npos) {
         QDir dir(workingDir.substr(0, indexOfDesiredDir).c_str());
 
-        if (dir.exists("complex-qt/complex-qt.pro")) {                  // Test if /complex-qt exists
-            workingDir = workingDir.substr(0, indexOfDesiredDir) + "/complex-qt";
+        if (dir.exists("complex-starshaped-qt/complex-starshaped-qt.pro")) {                  // Test if /complex-starshaped-qt exists
+            workingDir = workingDir.substr(0, indexOfDesiredDir) + "/complex-starshaped-qt";
 
-            // Set current working directory to complex-qt
+            // Set current working directory to complex-starshaped-qt
             QDir::setCurrent(workingDir.c_str());
 
             foundFiles = true;
         }
     }
 
-    // /complex-qt could not be found
+    // /complex-starshaped-qt could not be found
     if (!foundFiles) {
         std::cerr << std::endl << "!! WARNING !!\n"
         << "The program may not work correctly or at all because the folder "
         "containing the program's files cannot be found.\n"
-        "Make sure that the program is inside of a folder named \"complex-qt\".\n";
+        "Make sure that the program is inside of a folder named \"complex-starshaped-qt\".\n";
     }
 
     if (interactive > 0) {	// non-interactive
