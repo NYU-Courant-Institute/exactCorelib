@@ -3,14 +3,17 @@
  * 	Taken from:
  *	https://stackoverflow.com/questions/15655070/how-to-detect-double-precision-floating-point-overflow-and-underflow
  *
- *	This program runs a for-loop for n times with this consequence:
+ * 	SYNOPSIS:	> fpOverflow [n]
  *
- *		For n=7, the overflow flag is turned on, but the
- *			underflow flag is not turned on.
- *		For n larger than 7, both the
- *			overflow and underflow flags are turned on.
- *		For n smaller than 7, both the
- *			overflow and underflow flags are not turned on.
+ *		will run a for-loop for n times.  The overflag and
+ *		underflow flag is initially turned off.  
+ *
+ *		If n=7, the overflow flag will be turned on, but the
+ *			underflow flag will not be turned on.
+ *		If n>7, both the
+ *			overflow and underflow flags will be turned on.
+ *		If n<7, both the
+ *			overflow and underflow flags will not be turned on.
  *		
  *	This program relies on the library <fenv> which has 
  *		functions to test the IEEE754 exceptions flags.
@@ -23,14 +26,15 @@
  *
  *	-- Chee (Jan 2018)
  *
- *	Funny BUG: if you compile this using "make fpOverflow", the
- *		the compiler includes all the usual compiler
- *		flags (which is largely unnecessary for this program),
- *		and the resulting executable is actually wrong: it will give
- *		wrong output.  But when you
- *		compile by using only the necessary flags
- *		(using "make fgOverflowX"),
- *		the problem goes away.
+ *	Optimization BUG: if you compile this program
+ *		using "make fpOverflow", the
+ *		resulting executable is actually wrong: it will never
+ *		show the overflow/underflow flags turned on!  Reason?
+ *		because the default flags include
+ *		the optimization flag (-O3).  Hence, we
+ *		provide a target ("make fgOverflowX") which compiles without
+ *		the optimization flags.  Now the overflow/underflow flags
+ *		are properly turned on.
  ****************************************************/
 #include <cfenv>
 #include <iostream>
