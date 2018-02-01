@@ -56,17 +56,17 @@ int main()
 
   for (int i=0; i<10; i++) {
 
-    // Integrals.
+    // Integers
     OK = OK && floor_ceil_test_2(i, i, i);
 
-    // Integrals but constructed from doubles.
+    // Integers but constructed from doubles.
     OK = OK && floor_ceil_test_2(1.0*i, i, i);
 
-    // Large integrals to check for possible overflow bugs.
+    // Large integers to check for possible overflow bugs.
     CORE::BigInt bi = 1000000*CORE::BigInt(1000000)*CORE::BigInt(1000000);
     OK = OK && floor_ceil_test_2(CORE::Expr(bi), bi, bi);
 
-    // Square roots of integrals (some of which are perfect squares...).
+    // Square roots of integers (some of which are perfect squares...).
     double d = sqrt(1.0*i);
     CORE::Expr e = sqrt(CORE::Expr(i));
     OK = OK && floor_ceil_test_2(e, (long) floor(d), (long) ceil(d));

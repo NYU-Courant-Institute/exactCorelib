@@ -6,7 +6,7 @@
 // 	Michael Burr's posed a stackoverflow question
 // 	to illustrate this error:
 //
-// 	http://stackoverflow.com/questions/41462908/scope-difference-between-g4-9-4-and-g5-4-0
+// http://stackoverflow.com/questions/41462908/scope-difference-between-g4-9-4-and-g5-4-0
 //
 // 	The following code of Burr
 // 	works in g++4.9.3, but not in g++5.4.0.  
