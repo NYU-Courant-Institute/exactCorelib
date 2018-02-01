@@ -89,20 +89,23 @@ tOverflow: tOverflow.o
 
 # Compiling fpOverflow.cpp the wrong way:
 # 	The executable produced by this target does not work properly!!!
-# 	Its wrong output is:
-#		Overflow flag before: 0
-#		Underflow flag before: 0
-#		Overflow flag after: 0
-#		Underflow flag after: 0
+#		> fpOverflow 10
+#			Overflow flag before: 0
+#			Underflow flag before: 0
+#			Overflow flag after: 0
+#			Underflow flag after: 0
+# 	This wrong output is wrong!
 fpOverflow: fpOverflow.o
 
 # Alternative (correct) way to compile fpOverflow.cpp:
-# 	Call this target directly to compile fpOverflow (avoiding above issue)
-# 	The executable produced by this target WORKS!
-#		Overflow flag before: 0
-#		Underflow flag before: 0
-#		Overflow flag after: 1
-#		Underflow flag after: 1
+# 	Call the target below to compile fpOverflow (it has no -O3 flag).
+# 	The executable produced by this target works as expected:
+#		> fpOverflow 10
+#			Overflow flag before: 0
+#			Underflow flag before: 0
+#			Overflow flag after: 1
+#			Underflow flag after: 1
+# 	This is the correct output!
 fpOverflowX: fpOverflow.o
 	g++ -c -std=c++11 -Wfatal-errors -Wall  -I. -I../../inc \
 	    -I../../mpfr/include -I../../gmp/include \
