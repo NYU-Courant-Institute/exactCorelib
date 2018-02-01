@@ -15,10 +15,11 @@ Programs:
 	next.cpp		-- gives the next double value.
 	bigRand.cpp		-- creates 53-bit random integers
 					which fit into machine doubles
+	fpOverflow.cpp		-- uses the <fenv> library routines to
+					detect overflow/underflow exceptions
 
 CORE Information Related to Machine Arithmetic
 ==============================================
-
 	CORE_EPS 		-- predefined constant equal to 2^{-52}.
 	Expr::doubleValue()	-- convertes an Expression to closest
 					machine double value
