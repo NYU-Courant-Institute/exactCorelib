@@ -2,7 +2,7 @@ README FILE
 ===========
 Since Core Library Version 1.6
 
-We do some simple tests to check IEEE number formats.
+We do simple tests to check IEEE number formats.
 Some of these tests are not specific to Core Library, but
 developers may find this information useful.
 
@@ -20,25 +20,20 @@ CORE Information Related to Machine Arithmetic
 ==============================================
 
 	CORE_EPS 		-- predefined constant equal to 2^{-52}.
-
 	Expr::doubleValue()	-- convertes an Expression to closest
 					machine double value
-					
 	Expr::doubleInterval(lb,ub) -- returns two double values lb, ub
 					that are upper and lower bounds
 					on the exact value.
-
 	Let d be a double, e an int:
 
 	frexp(d, &e) 		-- sets e to the exponent part of d.
-
 	ldexp(d, e)  		-- returns the value d * 2^e.
                                    (thus, we do a left-shift by y)
 
 ================
 ADDITIONAL NOTES:
 ================
-
     IEEE double
     ===========
    	bit 63 -- sign (1 bit)
@@ -56,6 +51,8 @@ ADDITIONAL NOTES:
 
    	Negative Infinity Float: 0x ff80 0000
    	Positve Infinity Float: 0x 7f80 0000
+================
+================
 
 
 
