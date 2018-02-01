@@ -18,15 +18,17 @@ ifdef DEBUG
 	XFLAGS = -DmyDEBUG
 endif
 
-p=ieeeFormat
-p=ieee
-p=coreEps
-p=tDoubleValue
-p=fpline
-p=next
-p=size
 p=bigRand
+p=coreEps
+p=fpline
 p=frexp
+p=ieee
+p=ieeeFormat
+p=next
+p=nextafter
+p=tOverflow
+p=tDoubleValue
+p=fpOverflow
 
 #=================================================
 # Define target files (put all your files here)
@@ -36,6 +38,13 @@ TARGETS= tDoubleValue
 default: $(TARGETS)
 
 MORETARGETS= ieeeFormat 
+
+ALLTARGETS= bigRand coreEps \
+	fpline frexp \
+	ieee ieeeFormat \
+	next nextafter \
+	tDoubleValue \
+	tOverflow fpOverflow 
 
 test: $(TARGETS)
 	./tDoubleValue
@@ -76,6 +85,14 @@ bigRand: bigRand.o
 
 frexp: frexp.o
 
+tOverflow: tOverflow.o
+
+fpOverflow: fpOverflow.o
+
+fpOverflowX: fpOverflow.o
+	g++ -c -std=c++11 -Wfatal-errors -Wall  -I. -I../../inc -I../../mpfr/include -I../../gmp/include fpOverflow.cpp -o fpOverflow.o
+	g++  fpOverflow.o -L../../lib -o fpOverflow
+	
 tt: tt.o
 
 #=================================================
@@ -97,8 +114,10 @@ clean:
 # Remove executable files
 #=================================================
 EXEPROGS=$(TARGETS:=$(EXETYPE)) $(MORETARGETS:=$(EXETYPE))
+ALLEXEPROGS=$(ALLTARGETS:=$(EXETYPE))
 
-veryclean: clean
+vclean veryclean: clean
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
 	-@test -z p$(EXETYPE) || rm -f p$(EXETYPE)
+	-@test -z "$(ALLEXEPROGS)" || rm -f $(ALLEXEPROGS)
 
