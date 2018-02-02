@@ -97,7 +97,7 @@ verbosity  = 1			#  0 is least verbose, 1 is slightly more
 TARGETS = complex
 
 OBJ_FILES = Box.o Corner.o QuadTree.o Polygon.o Wall.o \
-	    Timer.o fileProcessor.o \
+	    Timer.o fileProcessor.o Triangulate.o BasisShape.o\
 
 all: $(TARGETS)
 
@@ -528,6 +528,46 @@ eg300: disc
 		1 1111 $(inputDir) \
 		$(xtrans) $(ytrans) $(scale) \
 		&
+
+#=================================================
+# Timing Table (from RSS 2018 for Complex Robot)
+#=================================================
+#=================================================
+# rss18  -- 6 experiments
+#=================================================
+rss18_exp:
+	echo  "ESA EXPERIMENTS 1 to 12 ==========\n" > outputs/rss18_exp
+	for config_file in \
+		L_gateway.cfg \
+		L_gateway_nopath.cfg \
+		snow_sparks.cfg \
+		snow_sparks_r.cfg \
+		S_sparks.cfg \
+		S_sparks_nopath.cfg \
+		3L_sparks.cfg \
+		L_pillars.cfg \
+		L_pillars2.cfg \
+		L_pillars3.cfg \
+		L_pillars_blocked.cfg \
+		C_pillars.cfg \
+	; do \
+		echo "ESA EXPERIMENTS $$config_file ===========\n" >> outputs/rss18_exp ; \
+		./complex 1 \
+		$$config_file @filename  @inputDir \
+		@robotDir  @robotName \
+		@alpha0 @alpha1  @alpha2 \
+		@beta0 @beta1 @beta2 \
+		@epsilon @R0 \
+		$(boxWidth) $(boxHeight) \
+		$(windowPosX) $(windowPosY) \
+		$(QType) $(seed) \
+		$(deltaX) $(deltaY) $(scale) \
+		$(verbosity) \
+		>> outputs/rss18_exp ; \
+		echo  "END OF ESA EXPERIMENTS $$config_file ===========\n" >> outputs/rss18_exp ; \
+	done	
+	echo  "END OF ESA EXPERIMENTS ===========\n" >> outputs/rss18_exp
+
 
 #=================================================
 # Timing Table (from ESA 2017 for Complex Robot)
