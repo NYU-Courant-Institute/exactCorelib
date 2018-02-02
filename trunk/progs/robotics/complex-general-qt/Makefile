@@ -549,6 +549,7 @@ rss18_exp:
 		L_pillars2.cfg \
 		L_pillars3.cfg \
 		L_pillars_blocked.cfg \
+		L_pillars_blocked2.cfg \
 		C_pillars.cfg \
 	; do \
 		echo "ESA EXPERIMENTS $$config_file ===========\n" >> outputs/rss18_exp ; \
