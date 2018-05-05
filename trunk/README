@@ -103,7 +103,7 @@ README FILE: TABLE OF CONTENTS
    The library has been tested on MacOS, linux, cygwin and Windows. 
    It is also fully compatible with CGAL, and distributed with CGAL.
 
-   NOTE ON TERMINOLOGY.
+   NOTE ON NAMES.
    "Core" is not an abbreviation; we chose this name to suggest its
    role as the "numerical core" for robust geometric computations.
    It is also to remind ourselves (the designers) that "cores" are
@@ -140,10 +140,10 @@ README FILE: TABLE OF CONTENTS
                          to delete this directory if you don't need it later)
        gmp/          gmp installation directory (may be a link).  This
                          directory may be missing if you have your own gmp.
-			 From the SVN repository, you can link to ../gmp.
+                         From the SVN repository, you can link to ../gmp.
        mpfr/         mpfr installation directory (may be a link).  This
                          directory may be missing if you have your own mpfr.
-			 From the SVN repository, you can link to ../gmp.
+                         From the SVN repository, you can link to ../gmp.
 
    The full distribution has these additional files and directories:
 
@@ -157,19 +157,17 @@ README FILE: TABLE OF CONTENTS
 *************************************************************
 3) DOWNLOAD AND INSTALLATION
 
-   3.0) PREREQUISITE:
-        You must have "make" (GNU's gmake is recommended), "tar" and "gzip".
-        For compilers, "g++" is also recommended but not required.
-        In turn, "g++" will need "m4" (the macro preprocessor).
-        We DO NOT assume that you already have "gmp" (GNU's multiprecision
-        number package). If you do not download the full version, we will use
-        "wget" to automatically download gmp from the web).
+   3.1) PREREQUISITE
+        You must have "make" (GNU's gmake is recommended), and "svn"
+        to download Core Library.  You will need the "g++" compiler
+        and gmp/mpfr libraries to compile Core Library.
 
         For Windows: you could replace g++ with Visual C++.
-        However we highly recommend "Cygwin" from Red Hat.  This is a free
-        and easy-to-install Unix-like environment that sits on top of all 
-        versions of Windows.   All the needed tools (g++, m4, make, tar, gzip,
-        wget, etc) are available (you must choose them).  Advantages of Cygwin:
+        Here, we highly recommend the free "Cygwin".  This is a free
+        and easy-to-install Unix-OS that sits on top of all 
+        versions of Windows.   All the needed tools (g++, make, svn,
+        etc) are available to download (you must choose them).
+        Advantages of Cygwin:
         (I) There is no need for dual booting;
         (II) There is no need to partition your disc;
         (III) You can share files between Windows and Cygwin; 
@@ -180,64 +178,33 @@ README FILE: TABLE OF CONTENTS
 
                 http://www.cygwin.com.  
 
-   3.1) DOWNLOAD. 
+   3.2) DOWNLOAD 
+        Please follow the download instructions in
 
-   	    =========================================================
-   	    |  Since 2014, we have asked users to directly download |
-	    |  from our SVN repository.  Please see instructions in |
-	    |     https://cs.nyu.edu/exact/core_pages/svn-core.html |
-   	    =========================================================
+              https://cs.nyu.edu/exact/core_pages/downloads.html 
 
-	The following are pre-2014 instructions: still useful if you
-	want to test old versions of Core Library (e.g. Core1 has a
-	variety of root bounds which are not available in Core2).
-	Be fore warned -- Core1 was last tested using
-		gcc 5.4.0, 	gmp-4.2.4,	mpfr-3.1.5.
-   
-   	First download the file core-X.Y.Z_full.tgz 
-        (for version X.Y.Z).  The current distribution is X.Y.Z=2.1.0.  
-        The website for download is
+        Let the variable "CORE_PATH" refer to the folder where you
+        downloaded the Core Library.  Go to this folder:
 
-                http://cs.nyu.edu/exact/core.
+            > cd $(CORE_PATH)
+        
+        (">" denotes the command window prompt)
+        There is a README file (in fact, you are currently
+        reading this file:) with instructions for installing Core Library.
 
-        There are three distributions, a "base distribution", a "standard
-        distribution" and a "full distribution".  The standard distribution
-        includes the base distribution and documentation.  The full 
-        distribution includes the standard distribution, plus gmp and mpfr.
+            =========================================================
+            | Before 2014, we distributed Core Library in           |
+            | tar-gzipped files. These files may be downloaded at   |
+            |    https://cs.nyu.edu/exact/core_pages/downloads.html |
+            | The pre-2014 versions may still be useful.            |
+            | For example, Core1 implemented a variety of root      |
+            | bounds but Core2 only implemented one such bound.     |
+            | There are situations where the other bounds may speed |
+            | up difficult zero computation.                        |
+            | NOTE:   Core1 was last tested using                   |
+            |      gcc 5.4.0,    gmp-4.2.4,     mpfr-3.1.5.         |
+            =========================================================
 
-        The main steps here describes an installation from a full distribution 
-        in a unix-like environment: it is the simplest to install.
-        But see 3.10) below for *variant* installations: these include
-        installing only the base distribution, using dynamic libraries,
-        Windows platform, re-installing the Core Library, building Debugging
-        Versions of Core Library, etc.
-
-        (dated!) The overall installation time is 25-40 minutes on a typical
-        machine.  If you already have gmp, the time is halved (on Pentium III
-        800 MHz, 256 MB RAM, it takes 15 minutes). 
-
-   3.2) UNPACK. In your computer, go to the directory where you wish to
-        install the Core Library.  You don't have to be a superuser.
-        If this location is the value of
-        the environment variable CORE_INSTALL (in unix), you would do:
-
-            % cd $(CORE_INSTALL)
-
-        (% denotes the unix prompt in these instructions)
-        Move the file core-X.Y.Z_full.tgz there.  Now unzip and untar the
-        file by typing:
-
-            % gzip -cd core-X.Y.Z_full.tgz | tar xvf -
-
-        This creates a directory called core-X.Y.Z.  All the files and 
-        directories mentioned in 2) above, including this README file,
-        should now be in this directory.
-
-        In the following, the variable CORE_PATH denotes the full path
-        name of this newly created directory.  Hence, $(CORE_PATH) is really
-
-                $(CORE_INSTALL)/core-X.Y.Z
-   
    3.3) There are four stages of installation:
                 STAGE 1 -- gmp installation
                 STAGE 2 -- mpfr installation
@@ -250,15 +217,15 @@ README FILE: TABLE OF CONTENTS
         PLATFORM is a combination of OS plus compiler.
         This variable is set in the Make.config file:
 
-            % cd $(CORE_PATH)
-            % vi Make.config -- use "vi" or your favorite editor to edit
+            > cd $(CORE_PATH)
+            > vi Make.config -- use "vi" or your favorite editor to edit
                                 the file ``Make.config''.   
                              -- Follow the instructions in the file.
                              -- For most users, you only need to set one
-			     	variable, the PLATFORM variable.
+                                variable, the PLATFORM variable.
   
         To see what your current (default) options are, do:
-            % make options   -- this will show the various global settings
+            > make options   -- this will show the various global settings
                              -- e.g. PLATFORM=gnu, LINKAGE=static, VAR=, etc.
 
    3.4) STAGE 1: INSTALLING GMP 
@@ -270,11 +237,11 @@ README FILE: TABLE OF CONTENTS
         
         E.g., in csh/tcsh,
         
-         % setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${your_gmp_install_dir}/lib
+         > setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${your_gmp_install_dir}/lib
                
         E.g., in bash,
         
-         % export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${your_gmp_install_dir}/lib
+         > export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${your_gmp_install_dir}/lib
 
         For instance, ${your_gmp_install_dir} might be /usr/local.
         If you are installing gmp using option d) below, we suggest
@@ -291,8 +258,8 @@ README FILE: TABLE OF CONTENTS
         In any case, if you want to quickly check if you are in this
         best case situation, do the following:
 
-                % cd ${CORE_PATH} 
-                % make testgmp
+                > cd ${CORE_PATH} 
+                > make testgmp
 
         This test simply computes 12345 * 67890 = 838102050,
         and 111111111 * 111111111 = 12,345,678,987,654,321.
@@ -300,21 +267,21 @@ README FILE: TABLE OF CONTENTS
 
         c) YOU HAVE AN INSTALLED GMP BUT CORE COULD NOT FIND IT:
         Assuming you have a properly installed GMP in some directory, say
-		${your_gmp_install_dir}
+                ${your_gmp_install_dir}
         which was not found by the above "testgmp".  
-	For instance, for the MacOS, you might have your gmp (and mpfr)
-	under /opt/local/lib/libgmp*  and /opt/local/include/gmp*.
-	In that case, your_gmp_install_dir=/opt/local.
+        For instance, for the MacOS, you might have your gmp (and mpfr)
+        under /opt/local/lib/libgmp*  and /opt/local/include/gmp*.
+        In that case, your_gmp_install_dir=/opt/local.
 
-	Typically, you will find under ${your_gmp_install_dir} several
-	subdirectories, including the following:
-		lib    include     share
-	Then you can make a symbolic link from ${CORE_PATH}/gmp
-	using the following command:
+        Typically, you will find under ${your_gmp_install_dir} several
+        subdirectories, including the following:
+                lib    include     share
+        Then you can make a symbolic link from ${CORE_PATH}/gmp
+        using the following command:
 
-            % cd ${CORE_PATH}
-            % ln -s ${your_gmp_install_dir} gmp
-            % make testgmp
+            > cd ${CORE_PATH}
+            > ln -s ${your_gmp_install_dir} gmp
+            > make testgmp
 
         If you pass this test, you can go to STAGE 2.
 
@@ -333,8 +300,8 @@ README FILE: TABLE OF CONTENTS
         Here we assume you have downloaded our full distribution,
         which comes with gmp:
 
-            % cd ${CORE_PATH}
-            % make first     -- this is equivalent to "make config-gmp"
+            > cd ${CORE_PATH}
+            > make first     -- this is equivalent to "make config-gmp"
                              -- it uses the configuration program in gmp
                              -- it searches for system information
                                 (compiler, CPU, files, etc).
@@ -342,16 +309,16 @@ README FILE: TABLE OF CONTENTS
                                 in the file ${CORE_PATH}/tmp/DIAG_CONFIG_GMP.
                                 (E.g., if you do not have m4, the error will
                                 be detected here.)
-            % make second    -- this is equivalent to "make build-gmp"
+            > make second    -- this is equivalent to "make build-gmp"
                              -- this compiles gmp (takes a while!)
                              -- screen output from this process is placed
                                 in the file ${CORE_PATH}/tmp/DIAG_BUILD_GMP
-            % make third     -- installs gmp (same as "make install-gmp")
+            > make third     -- installs gmp (same as "make install-gmp")
                              -- screen output from this process is placed
                                 in the file ${CORE_PATH}/tmp/DIAG_INSTALL_GMP
                                 (at this point, you can go to the gmp directory
                                 and do a "make check" for extra assurance)
-            % make testgmp   -- you must pass this test to continue.
+            > make testgmp   -- you must pass this test to continue.
                                 output in file ${CORE_PATH}/tmp/DIAG_TEST_GMP
 
         IMPORTANT: Our top level make file is written for GNU's gmake.
@@ -359,43 +326,43 @@ README FILE: TABLE OF CONTENTS
         make programs.  The first three steps takes 15-25 minutes.
 
    3.5) STAGE 2: INSTALLING MPFR
-	Stage 2 is very similar to Stage 1.
+        Stage 2 is very similar to Stage 1.
         As for Stage 1, we have three possible scenarios:
 
         a) If you have already installed MPFR, you can verify this by
 
-                % cd ${CORE_PATH} 
-                % make testmpfr
+                > cd ${CORE_PATH} 
+                > make testmpfr
 
         If your screen shows the answer 8.3810205000e8 and 3.1415929208,
         you have passed the test and may go to STAGE 3.
 
         b) You have installed MPFR, but it could not be found 
         by the compiler in a).  Suppose your MPFR is installed in
-	the directory called ${your_mpfr_install_dir}.  
-	This might be the same directory as ${your_gmp_install_dir}.
-	For instance, you expect to find the file mpfr.h in 
-	${your_mpfr_install_dir}/include.  In this case, we could make a 
+        the directory called ${your_mpfr_install_dir}.  
+        This might be the same directory as ${your_gmp_install_dir}.
+        For instance, you expect to find the file mpfr.h in 
+        ${your_mpfr_install_dir}/include.  In this case, we could make a 
         symbolic link from ${CORE_PATH}/mpfr using the following command:
 
-            % cd ${CORE_PATH}
-            % ln -s ${your_mpfr_install_dir} mpfr
-            % make testmpfr
+            > cd ${CORE_PATH}
+            > ln -s ${your_mpfr_install_dir} mpfr
+            > make testmpfr
 
         If you pass this test, you can go to STAGE 3.
 
         c) If you do not have MPFR, we will install MPFR as follows:
 
-            % make fourth    -- configures mpfr (same as "make config-mpfr")
+            > make fourth    -- configures mpfr (same as "make config-mpfr")
                              -- screen output is placed in the file
                                 ${CORE_PATH}/tmp/DIAG_CONFIG_MPFR
-            % make fifth     -- builds mpfr library (same as "make build-mpfr")
+            > make fifth     -- builds mpfr library (same as "make build-mpfr")
                              -- screen output is placed
                                 in the file ${CORE_PATH}/tmp/DIAG_BUILD_MPFR
-            % make sixth     -- installs mpfr (same as "make install-mpfr")
+            > make sixth     -- installs mpfr (same as "make install-mpfr")
                              -- screen output is placed
                                 in the file ${CORE_PATH}/tmp/DIAG_INSTALL_MPFR
-            % make testmpfr  -- you must pass this test to continue.
+            > make testmpfr  -- you must pass this test to continue.
                                 Output in file ${CORE_PATH}/tmp/DIAG_TEST_MPFR
 
    3.6) STAGE 3: BUILD CORE LIBRARY.
@@ -404,8 +371,8 @@ README FILE: TABLE OF CONTENTS
         are found in ${CORE_PATH}/Make.config.  They are described 
         in Step 3.3) above, and also Step 3.10) below.  Do the following:
 
-            % cd ${CORE_PATH}
-            % make seventh    -- this is equivalent to a plain "make", or
+            > cd ${CORE_PATH}
+            > make seventh    -- this is equivalent to a plain "make", or
                                 "make core", or "make corelib; make corex; 
                                 make demo".
                              -- screen output is placed in the files
@@ -424,8 +391,8 @@ README FILE: TABLE OF CONTENTS
         that your LD_LIBRARY_PATH contains the directory ${CORE_PATH}/lib
         (see 3.10(4) below).
 
-            % cd ${CORE_PATH}
-            % make eighth     -- equivalent to "make test".  Screen output is
+            > cd ${CORE_PATH}
+            > make eighth     -- equivalent to "make test".  Screen output is
                                 placed in the file ${CORE_PATH}/tmp/DIAG_TEST_DEMO
 
         This tests all the previously compiled programs 
@@ -437,7 +404,7 @@ README FILE: TABLE OF CONTENTS
         (search for the word "ERROR" to catch obvious errors).
         You can also time it:
 
-            % make ninth       -- equivalent to "make time"; it uses the "time"
+            > make ninth       -- equivalent to "make time"; it uses the "time"
                                   utility to measure the time "make test" 
                                -- screen output is placed in 
                                   the file ${CORE_PATH}/tmp/DIAG_TIME
@@ -488,17 +455,17 @@ README FILE: TABLE OF CONTENTS
         has been tested with CORE).  Suppose the downloaded GMP tar file is
         "gmp-4.2.4.tar.gz".  Put this into $(CORE_PATH) and do:
 
-                % gzip -cd gmp-4.2.4.tar.gz | tar -xvf -
-                % ln -s gmp-4.2.4 gmp
-                % make gmp
+                > gzip -cd gmp-4.2.4.tar.gz | tar -xvf -
+                > ln -s gmp-4.2.4 gmp
+                > make gmp
 
         That is it!  The screen output at the end will include a test of
         gmp, showing some correctly computed digits.
         Do the same for your MPFR downloaded file:
 
-                % gzip -cd mpfr-2.4.0.tar.gz | tar -xvf -
-                % ln -s gmp-2.4.0 mpfr
-                % make mpfr
+                > gzip -cd mpfr-2.4.0.tar.gz | tar -xvf -
+                > ln -s gmp-2.4.0 mpfr
+                > make mpfr
 
         Again, the screen output at the end include a test of mpfr.
 
@@ -514,9 +481,9 @@ README FILE: TABLE OF CONTENTS
         At this point there are two possibilities.
         You may not have to do anything.  To test this, try the following:
 
-                % cd ${CORE_PATH}
-                % make testgmp
-                % make testmpfr
+                > cd ${CORE_PATH}
+                > make testgmp
+                > make testmpfr
 
         If these tests print encouraging messages,
         you may continue from STAGE 3 (Step 3.6) above.  
@@ -588,7 +555,7 @@ README FILE: TABLE OF CONTENTS
         variable LD_LIBRARY_PATH as follows:
 
         for "csh/tcsh",  
-            % setenv LD_LIBRARY_PATH \
+            > setenv LD_LIBRARY_PATH \
                 ${CORE_PATH}/lib:${CORE_PATH}/gmp/lib:${LD_LIBRARY_PATH}.
         
         for "bash",
@@ -732,7 +699,6 @@ README FILE: TABLE OF CONTENTS
         * Polynomials now accept string inputs. 
             E.g., Polynomial<BigInt> p = "x^3 - 2x^2 + 17x - 4";
    -- Compatibility with gmp 4.1, and gcc 3.3
-
    -- Introduced a common Reference Counting facility for all
          Core number types, encoded in the two templated classes:
                 RCRepImpl<class N>
@@ -772,7 +738,6 @@ README FILE: TABLE OF CONTENTS
       to turn on gmp C++ classes, un-comment macro CORE_USE_GMPXX
       in CoreImpl.h and recompile Core Library; there is no need to compile
       GMP C++ library since all necessary code are in Core Library already.
-
    -- Updated Core Library Tutorial
    -- Simple openGL display for curves: see CORE_PATH/ext/graphics/
    -- Bug fixes
@@ -914,10 +879,11 @@ README FILE: TABLE OF CONTENTS
         Expr, Redesigned BigFloat (split off another class called BigFloat2),
         general speed improvement 2-10 times.
    Version 2.1 (Jul 2010) 
-	-- introduce anary nodes for sum and product
-	-- DoubleWrapper for machine double in Level 1
-		so that Levels 2 and 3 programs can compile in Level 1.
-	-- templated classes for linearAlgebra, intervals, complex numbers
+        -- introduce anary nodes for sum and product
+        -- DoubleWrapper for machine double in Level 1
+                so that Levels 2 and 3 programs can compile in Level 1.
+        -- templated classes for linearAlgebra, intervals, complex numbers
+   Version 2.2 (Jul 2014) 
 
 *************************************************************
 6)  LICENSE INFORMATION

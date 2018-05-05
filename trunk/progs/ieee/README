@@ -2,7 +2,7 @@ README FILE
 ===========
 Since Core Library Version 1.6
 
-We do simple tests to check IEEE number formats.
+We do simple tests to check IEEE number formats, and to catch exceptions.
 Some of these tests are not specific to Core Library, but
 developers may find this information useful.
 

@@ -35,9 +35,12 @@
  *		provide a target ("make fgOverflowX") which compiles without
  *		the optimization flags.  Now the overflow/underflow flags
  *		are properly turned on.
+ *		Try this?
+ *			#pragma fenv_access (on)  
  ****************************************************/
 #include <cfenv>
 #include <iostream>
+
 
 int main(int argc, char* argv[]) {
 

@@ -15,6 +15,9 @@
 #include <cmath>
 #include <ieeefp.h>
 
+//#pragma fenv_access (on)  
+
+
 using namespace std;
 
 // test( s )
