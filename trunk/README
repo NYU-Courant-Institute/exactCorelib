@@ -883,7 +883,6 @@ README FILE: TABLE OF CONTENTS
         -- DoubleWrapper for machine double in Level 1
                 so that Levels 2 and 3 programs can compile in Level 1.
         -- templated classes for linearAlgebra, intervals, complex numbers
-   Version 2.2 (Jul 2014) 
 
 *************************************************************
 6)  LICENSE INFORMATION
