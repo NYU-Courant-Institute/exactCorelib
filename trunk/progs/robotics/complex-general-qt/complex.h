@@ -353,7 +353,7 @@ bool loadComplexRobot(string& robot_file, vector<Triangle>& compRoboTri,
 
 
   if (verboseOption) {
-      mw_out << "Robot has "<< nv << " verts, " << compRoboTri.size() << " triangles.\n";
+      mw_out << "Robot has "<< nv << " verts, " << (int)compRoboTri.size() << " triangles.\n";
   }
   return true;
 }

@@ -16,14 +16,14 @@ TEMPLATE = app
 ##########################
 # This is used on Mac OS
 #
-INCLUDEPATH += /System/Library/Frameworks/OpenGL.framework/Headers
-LIBS += -F/Library/Frameworks
-LIBS += -framework OpenGL
+#INCLUDEPATH += /System/Library/Frameworks/OpenGL.framework/Headers
+#LIBS += -F/Library/Frameworks
+#LIBS += -framework OpenGL
 
 ##########################
 # This is used on Linux
 #
-# LIBS += -lGLU
+LIBS += -lGLU
 
 SOURCES +=\
     MainWindow.cpp \
