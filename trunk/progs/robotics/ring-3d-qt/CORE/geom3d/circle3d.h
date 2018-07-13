@@ -4,6 +4,9 @@
  *      Basic 3-dimensional geometry
  * Author: Ching-Hsiang Hsu (chhsu@cs.nyu.edu), 2017.
  *
+ * COMMENTS:
+ * 	"circle3d" should perhaps be called sphere2d ?
+ *
  *****************************************************************
  * CORE Library Version 1.4 (July 2001)
  *       Chee Yap <yap@cs.nyu.edu>
@@ -33,9 +36,9 @@ class Circle3d : public GeomObj {
 
 private:
   
-  Point3d p;
-  double r;
-  Vector n;
+  Point3d p;	// center of sphere
+  double r;	// radius of sphere
+  Vector n;	// this is not essential, but help in point-vector operations
 
 public:
 
@@ -43,9 +46,11 @@ public:
    *   constructors
    ************************************************************/
 
-  Circle3d(const Point3d& pp, double rr, const Vector& nn): p(pp), r(rr), n(nn) {}
+  Circle3d(const Point3d& pp, double rr, const Vector& nn)
+      : p(pp), r(rr), n(nn) {}
 
-  Circle3d(const Circle3d& C): p(C.p), r(C.r), n(C.n) {}
+  Circle3d(const Circle3d& C)
+      : p(C.p), r(C.r), n(C.n) {}
 
   Circle3d(): p(ORIGIN_3D), r(0), n(0,0,0) {}
   //trivial triangle
@@ -89,6 +94,6 @@ public:
   friend std::istream& operator>>(std::istream& in, Circle3d& C);
   friend std::ostream& operator<<(std::ostream & out, const Circle3d& C);
   
-}; //class Triangle3d
+}; //class Circle3d
 
 #endif

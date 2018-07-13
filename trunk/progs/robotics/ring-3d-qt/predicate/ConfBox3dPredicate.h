@@ -12,6 +12,6 @@ class ConfBox3dPredicate {
   void checkCollisionDetectionFeatureSet(ConfBox3d* b);
   void checkVoronoiFeatureSet(ConfBox3d *b);
 
-  double findCleanrance(ConfBox3d *b, Circle3d cir);
-  void findCleanrance2(ConfBox3d *b, Circle3d cir);
+  double findClearance(ConfBox3d *b, Circle3d cir);
+  void findClearance2(ConfBox3d *b, Circle3d cir);
 };

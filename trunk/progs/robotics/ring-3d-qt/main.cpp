@@ -9,10 +9,10 @@
    NOTES:
    0. This file originated in the (3d) ball program done by
    	Surin Ahn (June 2013) for the
-    2013 Siemens Science & Math Competition under the
+    	2013 Siemens Science & Math Competition under the
 	supervision of Professor Yap.  Surin was a
-    Regional Finalist (one out of 100 nationwide) from New York.
-    In 2014, she went to Princeton in Computer Science.
+    	Regional Finalist (one out of 100 nationwide) from New York.
+    	In 2014, she went to Princeton in Computer Science.
    1. See examples of running this program in the Makefile.
    2. Format of input environment: see README FILE
    3. Use WASD keys to rotate the scene
@@ -20,7 +20,8 @@
    	to be consistent with our general SSS framework.
 
 Author:
-    Surin Ahn, Ching-Hsiang Hsu, Ziyao Wei, Yi-Jen Chiang and Chee Yap (Fall 2015)
+    Surin Ahn, Ching-Hsiang Hsu, Ziyao Wei, Yi-Jen Chiang and Chee Yap
+    (Fall 2015)
 
 Update:
     July. 09, 2017
@@ -38,8 +39,10 @@ Update:
 
 using namespace std;
 
-SoftSubdivisionSearch* initializeSSS(Point3d start, Point3d goal, string workingDir) {
-    ConfBox3d* root = new ConfBox3d(Point3d(boxWidth/2, boxWidth/2, boxWidth/2), boxWidth);
+SoftSubdivisionSearch* initializeSSS (
+	Point3d start, Point3d goal, string workingDir) {
+    ConfBox3d* root =
+	new ConfBox3d(Point3d(boxWidth/2, boxWidth/2, boxWidth/2), boxWidth);
     ConfBox3d::r0 = R;
 
     parseConfigFile(root);

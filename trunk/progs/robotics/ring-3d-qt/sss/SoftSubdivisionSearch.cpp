@@ -62,7 +62,7 @@ SoftSubdivisionSearch::SoftSubdivisionSearch(ConfBox3d* root, double e, int sear
   predicate = new ConfBox3dPredicate();
   if(searchType == VORONOI || searchType == BIVORONOI){
     predicate->checkVoronoiFeatureSet(pRoot);
-    predicate->findCleanrance2(pRoot, pRoot->ring);
+    predicate->findClearance2(pRoot, pRoot->ring);
   }
 
   predicate->checkCollisionDetectionFeatureSet(pRoot);
@@ -102,7 +102,7 @@ bool SoftSubdivisionSearch::expand(ConfBox3d* b) {
     for (int i = 0; i < b->children.size(); ++i) {
       if(searchType == VORONOI || searchType == BIVORONOI){
         predicate->checkVoronoiFeatureSet(b->children[i]);
-        predicate->findCleanrance2(b->children[i], b->children[i]->ring);
+        predicate->findClearance2(b->children[i], b->children[i]->ring);
       }
 
       predicate->checkCollisionDetectionFeatureSet(b->children[i]);

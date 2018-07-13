@@ -732,7 +732,7 @@ void ConfBox3dPredicate::checkCollisionDetectionFeatureSet(ConfBox3d* b) {
 
 // Sep(mB, f) <= 2rB + clearance(mB)
 void ConfBox3dPredicate::checkVoronoiFeatureSet(ConfBox3d *b){
-  double sep = 2*b->rB+findCleanrance(b, b->ring);
+  double sep = 2*b->rB+findClearance(b, b->ring);
 
   if(b->vorCorners.size()){
     for(list<Corner*>::iterator it = b->vorCorners.begin(); it != b->vorCorners.end();){
@@ -778,7 +778,7 @@ void ConfBox3dPredicate::checkVoronoiFeatureSet(ConfBox3d *b){
 } // checkVoronoiFeatureSet
 
 //find the nearest feature of ring, and return the distance
-double ConfBox3dPredicate::findCleanrance(ConfBox3d *b, Circle3d cir){
+double ConfBox3dPredicate::findClearance(ConfBox3d *b, Circle3d cir){
 
   double mindistW = std::numeric_limits<double>::max();
   Wall* nearestWall = NULL;
@@ -817,10 +817,10 @@ double ConfBox3dPredicate::findCleanrance(ConfBox3d *b, Circle3d cir){
   if(clearance > mindistE) clearance = mindistE;
   if(clearance > mindistC) clearance = mindistC;
   return clearance;
-} // findCleanrance
+} // findClearance
 
 //find the nearest voronoi feature of mB and record the nearest feature
-void ConfBox3dPredicate::findCleanrance2(ConfBox3d *b, Circle3d cir){
+void ConfBox3dPredicate::findClearance2(ConfBox3d *b, Circle3d cir){
 
   double mindistW = std::numeric_limits<double>::max();
   b->nearestW = NULL;
@@ -854,4 +854,4 @@ void ConfBox3dPredicate::findCleanrance2(ConfBox3d *b, Circle3d cir){
       b->nearestC = c;
     }
   }
-} // findCleanrance2
+} // findClearance2

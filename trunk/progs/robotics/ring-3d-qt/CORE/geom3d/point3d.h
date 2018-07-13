@@ -1,4 +1,3 @@
-
 /*****************************************************************
  * File: point3d.h
  * Synopsis:
@@ -115,7 +114,8 @@ public:
                               const Point3d& c, const Point3d& d);
 
 
-
+  // 7/18, Chee: point3d class should not know about circles!
+  // 	Move these to circle class
   void separation_circle( Circle3d &cir, Point3d *& cir_p ) const;
   Point3d* separation_circle(Circle3d &cir) const;
   double separation_circleL(Circle3d &cir) const;

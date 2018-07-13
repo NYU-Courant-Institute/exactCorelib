@@ -275,25 +275,28 @@ double Triangle3d::distance( const Point3d& pt ) const {
   return sqrt(sqrDistance);
 }
 
+// Returns the closest point of the triangle to argument p
+//
 Point3d Triangle3d::nearPt( const Point3d& p ) const {
 
+  // Check if the closest point to triangle is interior of triangle:
   Point3d pro(this->toPlane().projection(p));
   if(this->distance(pro) < 1e-8){
-    return pro;
+    return pro;		
   }
   else{
     Point3d seg_p[3];
     double seg_d[3];
     Segment3d ab(p0, p1);
-    seg_p[0] = ab.nearPt(p);
+    seg_p[0] = ab.nearPt(p);	// seg_p[0] is closest point to ab
     Segment3d bc(p1, p2);
-    seg_p[1] = bc.nearPt(p);
+    seg_p[1] = bc.nearPt(p);	// seg_p[1] is closest point to bc
     Segment3d ca(p2, p0);
-    seg_p[2] = ca.nearPt(p);
+    seg_p[2] = ca.nearPt(p);	// seg_p[1] is closest point to bc
 
     double minD(p.distance(seg_p[0]));
     Point3d closestP(seg_p[0]);
-    for(int i=1;i<3;++i){
+    for(int i=1;i<3;++i){	// this code can be improved (Chee)
       seg_d[i] = p.distance(seg_p[i]);
       if(minD > seg_d[i]){
         minD = seg_d[i];
@@ -301,9 +304,9 @@ Point3d Triangle3d::nearPt( const Point3d& p ) const {
       }
     }
 
-    return closestP;
+    return closestP;	
   }
-}
+}//nearPt
 
 Polygon3d* Triangle3d::toPolygon() const {
   Polygon3d* plg = new Polygon3d();
@@ -645,7 +648,12 @@ int Triangle3d::coplanar_orientation( const Point3d& pa, const Point3d& pb,
   return s1*s2;
 }
 
-void Triangle3d::separation_circle( Circle3d &cir, Point3d *& tri_p, Point3d *& cir_p ) const {
+// Returns the closest pair (tri_p, cir_p)
+// 	where tri_p is on triangle, cir_p is on circle.
+//     
+void Triangle3d::separation_circle(
+	Circle3d &cir, Point3d *& tri_p, Point3d *& cir_p ) const {
+
   Point3d onCircle(*(this->separation_circle(cir)));
   Point3d onTriangle(this->nearPt(onCircle));
 
@@ -653,9 +661,11 @@ void Triangle3d::separation_circle( Circle3d &cir, Point3d *& tri_p, Point3d *& 
   tri_p = new Point3d(onTriangle);
 }
 
+// Returns a point on Triangle that is closest to circle cir.
+//
 Point3d* Triangle3d::separation_circle( Circle3d &cir ) const {
 
-  Point3d onCircle;
+  Point3d onCircle;	// the closest point of the Triangle to circle
   Point3d near(this->nearPt(cir.P()));
   Point3d pro(cir.toPlane().projection(near));
 
@@ -713,7 +723,8 @@ Point3d* Triangle3d::separation_circle( Circle3d &cir ) const {
         for(int i=0;i<12;++i){
           if(pp[i] == NULL) continue;
           if(verbose && g_p == Point3d(260, 196, 124))
-            fprintf(g_fptr, "found pt %d  %f %f %f\n", i, pp[i]->X(), pp[i]->Y(), pp[i]->Z());
+            fprintf(g_fptr, "found pt %d  %f %f %f\n",
+		    i, pp[i]->X(), pp[i]->Y(), pp[i]->Z());
           double d(this->distance(*pp[i]));
           if(minD > d){
             minD = d;
@@ -762,7 +773,8 @@ Point3d* Triangle3d::separation_circle( Circle3d &cir ) const {
       if(pp[i] == NULL) continue;
       double d(this->distance(*pp[i]));
       //if(verbose)
-      //fprintf(g_fptr, "intersection %d  %f %f %f\n", i, pp[i]->X(), pp[i]->Y(), pp[i]->Z());
+      //fprintf(g_fptr, "intersection %d  %f %f %f\n",
+      //	i, pp[i]->X(), pp[i]->Y(), pp[i]->Z());
       if(minD > d){
         minD = d;
         closestP = *pp[i];
