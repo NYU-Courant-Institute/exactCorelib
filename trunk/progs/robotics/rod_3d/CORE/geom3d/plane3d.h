@@ -34,9 +34,9 @@ class Plane3d : public GeomObj {
   double b;
   double c;
   double d;
-  Vector n;
+  Vector n;	// presumably (a nx + b ny + c nz = 0)
 
-  Point3d p0;
+  Point3d p0;	// presumably p0 lies on ax+by+cz+d=0
 
  public:
   /************************************************************
