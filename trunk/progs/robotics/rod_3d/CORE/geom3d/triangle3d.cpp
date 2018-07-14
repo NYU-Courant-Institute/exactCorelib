@@ -664,6 +664,7 @@ double Triangle3d::separation(const Segment3d& s) const {
   return min_dist;
 }
 
+// CHECK: (intersection of ball and cone)
 // The first 4 half-space are the side of the cone.
 // The last half-sapce is the horizontal plane H0 in the paper.
 bool Triangle3d::intersectHalfspaces(const std::vector<Plane3d>& half_spaces,

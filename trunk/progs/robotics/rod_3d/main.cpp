@@ -182,7 +182,7 @@ int main(int argc, char* argv[]) {
   if (argc > 30) transparency = atoi(argv[30]);
   if (argc > 31) frame_rate = atoi(argv[31]);
 
-  debug_ptr = fopen("debug.txt", "w");
+  debug_ptr = fopen("debug2.txt", "w");
 
   // Allow creation of Qt GUI
   QApplication app(argc, argv);

@@ -287,7 +287,7 @@ void ConfBox3dPredicate::checkCollisionFeatureSet(ConfBox3d* box,
                      box->center.Z() - n.Z() * box->rB);
     half_spaces.emplace_back(bottom_H, -n);
 
-    // test the corner is inside the ball(l0+rB) and the 5 halp space
+    // test the corner is inside the ball(l0+rB) and the 5 half space
     for (const auto& corner : parent->corners) {
       if (corner->point().intersectHalfspaces(half_spaces, box->center,
                                               outer_distance)) {
@@ -296,7 +296,7 @@ void ConfBox3dPredicate::checkCollisionFeatureSet(ConfBox3d* box,
       }
     }
 
-    // test the edge is inside the ball(l0+rB) and the 5 halp space
+    // test the edge is inside the ball(l0+rB) and the 5 half space
     for (const auto& edge : parent->edges) {
       if (edge->segment().intersectHalfspaces(half_spaces, box->center,
                                               outer_distance)) {
@@ -305,7 +305,7 @@ void ConfBox3dPredicate::checkCollisionFeatureSet(ConfBox3d* box,
       }
     }
 
-    // test the wall is inside the ball(l0+rB) and the 5 halp space
+    // test the wall is inside the ball(l0+rB) and the 5 half space
     for (const auto& wall : parent->walls) {
       if (wall->triangle().intersectHalfspaces(half_spaces, box->center,
                                                outer_distance)) {

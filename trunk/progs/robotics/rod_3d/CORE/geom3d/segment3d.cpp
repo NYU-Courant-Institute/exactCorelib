@@ -372,6 +372,7 @@ GeomObj* Segment3d::intersection(const Segment3d& s) const {
   }
 }
 
+// CHECK: (intersection of ball and cone)
 // The first 4 half_space are the side of the cone.
 // The last half_sapce is the horizontal plane H0 in the paper.
 bool Segment3d::intersectHalfspaces(const std::vector<Plane3d>& half_spaces,
