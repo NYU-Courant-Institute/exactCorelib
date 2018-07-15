@@ -224,6 +224,8 @@ void ConfBox3dPredicate::checkCollisionFeatureSet(ConfBox3d* box,
     Point3d rotation_point[5];
     double du[4] = {-1, 1, 1, -1};
     double dv[4] = {-1, -1, 1, 1};
+
+    // Chee: This is to get the 4 corners of the rotation square B^r:
     for (int i = 0; i < 4; ++i) {
       if (1 - fabs(box->rotation_center.X()) < EPS) {
         rotation_point[i].set(
@@ -246,6 +248,8 @@ void ConfBox3dPredicate::checkCollisionFeatureSet(ConfBox3d* box,
     rotation_point[4] = rotation_point[0];
 
     // 1)
+    // Chee: This is to build up the four planes that define the
+    // square cone:
     std::vector<Plane3d> half_spaces;
     for (int i = 0; i < 4; ++i) {
       Triangle3d triangle, Triangle;
@@ -277,6 +281,10 @@ void ConfBox3dPredicate::checkCollisionFeatureSet(ConfBox3d* box,
     }
 
     // 2)
+    // Chee: This is to construct the fifth plane.
+    // 	It should be the plane containing a face of B^t 
+    // 	and parallel to the square B^r.
+    // 		SO THIS CODE IS WRONG (see p.11 of paper)
     Point3d rotation_center_on_sphere =
         Rot3d::cube2sphere(box->rotation_center);
     Vector n(rotation_center_on_sphere.X(), rotation_center_on_sphere.Y(),
@@ -380,7 +388,7 @@ void ConfBox3dPredicate::checkCollisionFeatureSet(ConfBox3d* box,
   if (box->corners.empty() && box->edges.empty() && box->walls.empty()) {
     box->status = classification(box->parent, box->center);
   }
-}
+} // checkCollisionFeatureSet
 
 // Sep(center, f) <= 2rB + clearance(center)
 void ConfBox3dPredicate::checkVoronoiFeatureSet(ConfBox3d* box,
@@ -465,4 +473,4 @@ void ConfBox3dPredicate::findVorCleanrance(ConfBox3d* box, Segment3d& rod) {
       box->nearest_wall = vor_wall;
     }
   }
-}  // findVorCleanrance
+}  // findVorClearance

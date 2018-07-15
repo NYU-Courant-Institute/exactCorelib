@@ -378,6 +378,9 @@ GeomObj* Segment3d::intersection(const Segment3d& s) const {
 // CHECK: (intersection of ball and cone)
 // The first 4 half_space are the side of the cone.
 // The last half_space is the horizontal plane H0 in the rod-ring paper.
+// 	THIS CODE IS WRONG: the "pole" (better to call it "axis"
+// 	of the cone) is much simpler: it is just the ray from
+// 		m(B^t) to m(B^t)+m(B^r).
 bool Segment3d::intersectHalfspaces(const std::vector<Plane3d>& half_spaces,
                                     const Point3d& center,
                                     const double outer_distance) const {
