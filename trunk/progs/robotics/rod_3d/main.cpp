@@ -14,6 +14,7 @@
 #include <vector>
 
 #include <QApplication>
+#include <QCoreApplication>
 #include <QDir>
 
 #include "main.h"
@@ -98,7 +99,8 @@ void run() {
 
 void pwdWorkingDir() {
   bool found_dir = false;
-  std::string folder_name = "/rod_3d/";
+  std::string folder_name =
+      "/" + QCoreApplication::applicationName().toStdString() + "/";
   working_dir = QDir::currentPath().toStdString();
 
   // Test if the build directory is rod_3d. If so,
@@ -128,7 +130,7 @@ void pwdWorkingDir() {
     }
   }
 
-  // /rod-3d-qt could not be found
+  // /rod_3d could not be found
   if (!found_dir) {
     std::cerr << std::endl
               << "!! WARNING !!\n"

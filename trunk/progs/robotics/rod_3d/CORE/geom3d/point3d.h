@@ -119,7 +119,7 @@ class Point3d : public GeomObj {
                               const Point3d& c, const Point3d& d);
 
   bool intersectHalfspaces(const std::vector<Plane3d>& half_spaces,
-                           const Point3d& center,
+                           const Point3d& translation_center,
                            const double outer_distance) const;
 
   double separation(const Segment3d& s) const;

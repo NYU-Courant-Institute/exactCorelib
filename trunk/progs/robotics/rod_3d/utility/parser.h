@@ -538,6 +538,15 @@ void parseConfigFile(ConfBox3d* b) {
   for (auto&& edge : b->edges) {
     edge->setConvexity(edge->isConvex());
   }
+
+  FILE* f = fopen("env_rand100.raw", "w");
+  for (const auto& wall : b->walls) {
+    fprintf(f, "1 1 1 %f %f %f %f %f %f %f %f %f\n", wall->a->point().X(),
+            wall->a->point().Y(), wall->a->point().Z(), wall->b->point().X(),
+            wall->b->point().Y(), wall->b->point().Z(), wall->c->point().X(),
+            wall->c->point().Y(), wall->c->point().Z());
+  }
+  fclose(f);
 }
 
 #endif  // PARSER_H

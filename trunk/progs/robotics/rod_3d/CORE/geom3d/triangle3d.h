@@ -163,7 +163,8 @@ class Triangle3d : public GeomObj {
   double separation(const Segment3d& s) const;
 
   bool intersectHalfspaces(const std::vector<Plane3d>& half_spaces,
-                           const Point3d& center,
+                           const Point3d& translation_center,
+                           const Point3d& rotation_center_on_sphere,
                            const double outer_distance) const;
 
   /************************************************************

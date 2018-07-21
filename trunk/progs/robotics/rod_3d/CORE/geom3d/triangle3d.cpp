@@ -668,15 +668,22 @@ double Triangle3d::separation(const Segment3d& s) const {
 // The first 4 half-space are the side of the cone.
 // The last half-sapce is the horizontal plane H0 in the paper.
 bool Triangle3d::intersectHalfspaces(const std::vector<Plane3d>& half_spaces,
-                                     const Point3d& center,
+                                     const Point3d& translation_center,
+                                     const Point3d& rotation_center_on_sphere,
                                      const double outer_distance) const {
   Segment3d segment_p0p1(this->p0, this->p1);
   Segment3d segment_p1p2(this->p1, this->p2);
   Segment3d segment_p2p0(this->p2, this->p0);
 
-  if (segment_p0p1.intersectHalfspaces(half_spaces, center, outer_distance) ||
-      segment_p1p2.intersectHalfspaces(half_spaces, center, outer_distance) ||
-      segment_p2p0.intersectHalfspaces(half_spaces, center, outer_distance)) {
+  if (segment_p0p1.intersectHalfspaces(half_spaces, translation_center,
+                                       rotation_center_on_sphere,
+                                       outer_distance) ||
+      segment_p1p2.intersectHalfspaces(half_spaces, translation_center,
+                                       rotation_center_on_sphere,
+                                       outer_distance) ||
+      segment_p2p0.intersectHalfspaces(half_spaces, translation_center,
+                                       rotation_center_on_sphere,
+                                       outer_distance)) {
     return true;
   }
 
@@ -686,12 +693,13 @@ bool Triangle3d::intersectHalfspaces(const std::vector<Plane3d>& half_spaces,
   if (intersection != NULL) {
     if (intersection->dim() == 0) {
       Point3d intersection_point = *(Point3d*)intersection;
-      return intersection_point.intersectHalfspaces(half_spaces, center,
-                                                    outer_distance);
+      return intersection_point.intersectHalfspaces(
+          half_spaces, translation_center, outer_distance);
     } else {  // intersection->dim() == 1 (segment)
       Segment3d intersection_segment = *(Segment3d*)intersection;
-      return intersection_segment.intersectHalfspaces(half_spaces, center,
-                                                      outer_distance);
+      return intersection_segment.intersectHalfspaces(
+          half_spaces, translation_center, rotation_center_on_sphere,
+          outer_distance);
     }
   }
 

@@ -38,7 +38,7 @@ MainWindow *window;
 FILE *debug_ptr;
 
 // File
-std::string cfg_name("WAFR18_1comp.cfg");
+std::string cfg_name("WAFR18_rand100.cfg");
 std::vector<std::string> cfg_name_list;
 int num_cfg = 0;
 std::string working_dir;

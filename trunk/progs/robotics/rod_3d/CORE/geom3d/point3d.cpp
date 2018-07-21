@@ -147,13 +147,13 @@ double volume(const Point3d& a, const Point3d& b, const Point3d& c,
 }
 
 bool Point3d::intersectHalfspaces(const std::vector<Plane3d>& half_spaces,
-                                  const Point3d& center,
+                                  const Point3d& translation_center,
                                   const double outer_distance) const {
   if (verbose)
     fprintf(debug_ptr,
             "point intersectHalfspaces distance %f out_distance %f\n",
-            this->distance(center), outer_distance);
-  if (this->distance(center) > outer_distance) {
+            this->distance(translation_center), outer_distance);
+  if (this->distance(translation_center) > outer_distance) {
     return false;
   }
   // test whether the corner is inside the n half space

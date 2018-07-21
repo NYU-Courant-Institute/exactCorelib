@@ -1,5 +1,5 @@
 /*****************************************************************
- * File: segment3d.ccp
+ * File: segment3d.cc
  * Synopsis:
  *      Basic 3-dimensional geometry
  * Author: Shubin Zhao (shubinz@cs.nyu.edu), 2001.
@@ -179,9 +179,6 @@ double Segment3d::separation(const Segment3d& s) const {
   return dP.norm();  // return the closest distance
 }
 
-// Point3d Segment3d::closestPoint(const Segment3d& s) 
-//  returns the point of *this segment
-//
 Point3d Segment3d::closestPoint(const Segment3d& s) const {
   Vector u(stopPt() - startPt());
   Vector v(s.stopPt() - s.startPt());
@@ -245,8 +242,8 @@ Point3d Segment3d::closestPoint(const Segment3d& s) const {
 
   Point3d closest_point(startPt().X() + sc * u.X(), startPt().Y() + sc * u.Y(),
                         startPt().Z() + sc * u.Z());
-  return closest_point;  // this point belongs *this segment.
-}//closestPoint
+  return closest_point;
+}
 
 bool Segment3d::contains(const Point3d& p) const {
   if (!toLine().contains(p)) return false;
@@ -377,19 +374,16 @@ GeomObj* Segment3d::intersection(const Segment3d& s) const {
 
 // CHECK: (intersection of ball and cone)
 // The first 4 half_space are the side of the cone.
-// The last half_space is the horizontal plane H0 in the rod-ring paper.
-// 	THIS CODE IS WRONG: the "pole" (better to call it "axis"
-// 	of the cone) is much simpler: it is just the ray from
-// 		m(B^t) to m(B^t)+m(B^r).
+// The last half_sapce is the horizontal plane H0 in the paper.
 bool Segment3d::intersectHalfspaces(const std::vector<Plane3d>& half_spaces,
-                                    const Point3d& center,
+                                    const Point3d& translation_center,
+                                    const Point3d& rotation_center_on_sphere,
                                     const double outer_distance) const {
-  Point3d base = half_spaces.back().point();
-  Point3d apex = Point3d(base.X() - half_spaces.back().normal().X() * 1e6,
-                         base.Y() - half_spaces.back().normal().Y() * 1e6,
-                         base.Z() - half_spaces.back().normal().Z() * 1e6);
-	// Chee: apex is very odd!  It is close to normal because of 1e6, but
-	// only approximately. 
+  Point3d base = translation_center;
+  Point3d apex = Point3d(base.X() + rotation_center_on_sphere.X() * 1e6,
+                         base.Y() + rotation_center_on_sphere.Y() * 1e6,
+                         base.Z() + rotation_center_on_sphere.Z() * 1e6);
+
   Segment3d pole = Segment3d(base, apex);
   Point3d closest_point = this->closestPoint(pole);
   if (verbose)
@@ -399,14 +393,18 @@ bool Segment3d::intersectHalfspaces(const std::vector<Plane3d>& half_spaces,
         "%d\n",
         startPt().X(), startPt().Y(), startPt().Z(), stopPt().X(), stopPt().Y(),
         stopPt().Z(), closest_point.X(), closest_point.Y(), closest_point.Z(),
-        p0.intersectHalfspaces(half_spaces, center, outer_distance),
-        p1.intersectHalfspaces(half_spaces, center, outer_distance),
-        closest_point.intersectHalfspaces(half_spaces, center, outer_distance));
+        p0.intersectHalfspaces(half_spaces, translation_center, outer_distance),
+        p1.intersectHalfspaces(half_spaces, translation_center, outer_distance),
+        closest_point.intersectHalfspaces(half_spaces, translation_center,
+                                          outer_distance));
 
-  return p0.intersectHalfspaces(half_spaces, center, outer_distance) ||
-         p1.intersectHalfspaces(half_spaces, center, outer_distance) ||
-         closest_point.intersectHalfspaces(half_spaces, center, outer_distance);
-}// intersectHalfspaces
+  return p0.intersectHalfspaces(half_spaces, translation_center,
+                                outer_distance) ||
+         p1.intersectHalfspaces(half_spaces, translation_center,
+                                outer_distance) ||
+         closest_point.intersectHalfspaces(half_spaces, translation_center,
+                                           outer_distance);
+}
 
 // return bisector plane
 Plane3d Segment3d::bisect_plane() const {
