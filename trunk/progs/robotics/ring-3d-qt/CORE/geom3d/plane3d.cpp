@@ -142,12 +142,6 @@ double Plane3d::distance( const Segment3d& s ) const {
     return std::min( distance( s.startPt() ), distance( s.stopPt() ) );
 }
 
-// Comment?
-double Plane3d::between( Plane3d pl, Point3d p, double r ){
-  double L(pl.distance(p)+this->distance(p));
-  return (L <= r+1e-8);
-}
-
  // test if the line is paralell to the plane
  // return dim of intersection
 int Plane3d::intersects( const Line3d& l ) const {

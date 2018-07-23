@@ -52,6 +52,8 @@ vector<ConfBox3d*> Path::dijkstraSafePath(ConfBox3d* a, ConfBox3d* b) {
       ConfBox3d* neighbor = current->neighbors[i];
       if (!neighbor->visited && neighbor->status == FREE) {
         double dist2pre = current->mB.distance(neighbor->mB);
+        if(current->rot_width != -2 && neighbor->rot_width != -2)
+          dist2pre += current->rot_mB.distance(neighbor->rot_mB);
         double dist2src = dist2pre + current->distDij;
 
         if (neighbor->distDij == -1) {
@@ -89,6 +91,8 @@ vector<ConfBox3d*> Path::dijkstraShortestPath(ConfBox3d* a, ConfBox3d* b) {
       ConfBox3d* neighbor = current->neighbors[i];
       if (!neighbor->visited && neighbor->status == FREE) {
         double dist2pre = current->mB.distance(neighbor->mB);
+        if(current->rot_width != -2 && neighbor->rot_width != -2)
+          dist2pre += current->rot_mB.distance(neighbor->rot_mB);
         double dist2src = dist2pre + current->distDij;
 
         if (neighbor->distDij == -1) {

@@ -241,9 +241,26 @@ Plane3d Segment3d::bisect_plane() const {
 
 void Segment3d::separation_circle( Circle3d &cir, Point3d *& seg_p, Point3d *& cir_p ) const {
 
-  Point3d onCircle(*(this->separation_circle(cir)));
-  cir_p = new Point3d(onCircle);
-  seg_p = new Point3d(this->nearPt(onCircle));
+  Point3d p0_ = cir.toPlane().projection(p0);
+  Point3d p1_ = cir.toPlane().projection(p1);
+
+  Segment3d seg(p0_, p1_);
+  Point3d closestP_(seg.nearPt(cir.P()));
+  Line3d l(cir.P(), Vector(closestP_-cir.P()));
+
+  Point3d pp1, pp2;
+  cir.intersection(l, pp1, pp2);
+  double d1 = pp1.distance(cir.P());
+  double d2 = pp2.distance(cir.P());
+  if(d1 < d2){
+    cir_p = new Point3d(pp1);
+    seg_p = new Point3d(this->nearPt(pp1));
+  }
+  else{
+    cir_p = new Point3d(pp2);
+    seg_p = new Point3d(this->nearPt(pp2));
+  }
+
 
 //  Point3d p0_ = cir.toPlane().projection(p0);
 //  Point3d p1_ = cir.toPlane().projection(p1);
@@ -260,56 +277,23 @@ void Segment3d::separation_circle( Circle3d &cir, Point3d *& seg_p, Point3d *& c
 
 Point3d* Segment3d::separation_circle( Circle3d &cir ) const {
 
-  Point3d closestP;
-  double minD(std::numeric_limits<float>::max());
-  Point3d near(this->nearPt(cir.P()));
-  Point3d pro(cir.toPlane().projection(near));
+  Point3d p0_ = cir.toPlane().projection(p0);
+  Point3d p1_ = cir.toPlane().projection(p1);
 
-  if(toLine().isParallel(Line3d(cir.P(), cir.normal()))){
+  Segment3d seg(p0_, p1_);
+  Point3d closestP_(seg.nearPt(cir.P()));
+  Line3d l(cir.P(), Vector(closestP_-cir.P()));
 
-    Point3d *pp[4];
-    Line3d l[2];
-    l[0] = Line3d(cir.P(), Vector(pro-cir.P()));
-    cir.intersection(l[0], &pp[0], &pp[1]);
-    l[1] = Line3d(cir.toPlane().projection(this->startPt()),
-                  Vector(cir.toPlane().projection(this->stopPt())-cir.toPlane().projection(this->startPt())));
-    cir.intersection(l[1], cir.toPlane().projection(this->startPt()), &pp[2], &pp[3]);
-
-    for(int i=0;i<4;++i){
-      if(pp[i] == NULL) continue;
-      double d(this->distance(*pp[i]));
-      if(minD > d){
-        minD = d;
-        closestP = *pp[i];
-      }
-    }
-    for(int i=0;i<4;++i)
-      delete pp[i];
+  Point3d pp1, pp2;
+  cir.intersection(l, pp1, pp2);
+  double d1 = pp1.distance(cir.P());
+  double d2 = pp2.distance(cir.P());
+  if(d1 < d2){
+    return new Point3d(pp1);
   }
   else{
-
-    Point3d *pp[6];
-    Line3d l[3];
-    l[0] = Line3d(cir.P(), Vector(pro-cir.P()));
-    cir.intersection(l[0], &pp[0], &pp[1]);
-    l[1] = Line3d(cir.P(), Vector(cir.toPlane().projection(p0)-cir.P()));
-    cir.intersection(l[1], &pp[2], &pp[3]);
-    l[2] = Line3d(cir.P(), Vector(cir.toPlane().projection(p1)-cir.P()));
-    cir.intersection(l[2], &pp[4], &pp[5]);
-
-    for(int i=0;i<6;++i){
-      if(pp[i] == NULL) continue;
-      double d(this->distance(*pp[i]));
-      if(minD > d){
-        minD = d;
-        closestP = *pp[i];
-      }
-    }
-    for(int i=0;i<6;++i)
-      delete pp[i];
+    return new Point3d(pp2);
   }
-
-  return new Point3d(closestP);
 
 //  Point3d p0_ = cir.toPlane().projection(p0);
 //  Point3d p1_ = cir.toPlane().projection(p1);
@@ -325,8 +309,23 @@ Point3d* Segment3d::separation_circle( Circle3d &cir ) const {
 
 double Segment3d::separation_circleL( Circle3d &cir ) const {
 
-  Point3d onCircle(*(this->separation_circle(cir)));
-  return this->distance(onCircle);
+  Point3d p0_ = cir.toPlane().projection(p0);
+  Point3d p1_ = cir.toPlane().projection(p1);
+
+  Segment3d seg(p0_, p1_);
+  Point3d closestP_(seg.nearPt(cir.P()));
+  Line3d l(cir.P(), Vector(closestP_-cir.P()));
+
+  Point3d pp1, pp2;
+  cir.intersection(l, pp1, pp2);
+  double d1 = pp1.distance(cir.P());
+  double d2 = pp2.distance(cir.P());
+  if(d1 < d2){
+    return this->distance(pp1);
+  }
+  else{
+    return this->distance(pp2);
+  }
 
 //  Point3d p0_ = cir.toPlane().projection(p0);
 //  Point3d p1_ = cir.toPlane().projection(p1);

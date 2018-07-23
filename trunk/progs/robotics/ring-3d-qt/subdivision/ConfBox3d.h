@@ -29,6 +29,10 @@ class ConfBox3d {
 
   double width;
   double rot_width;
+  // special usage for square
+  double rot_x_width;
+  double rot_y_width;
+  double rot_z_width;
 
   int depth;
   static double r0;
@@ -99,8 +103,8 @@ class ConfBox3d {
 
   vector<ConfBox3d*> getNeighbors();
 
+  bool sameDirectionAdjacent(Box3d* b, Rot3dSide* r);
   bool isNeighbor(ConfBox3d* other);
-  bool isAdjacent(ConfBox3d* other);
 
   bool split(double epsilon);
 

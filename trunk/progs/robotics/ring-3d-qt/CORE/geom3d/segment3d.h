@@ -145,10 +145,7 @@ public:
    // return bisector plane
 
 
-  // 7/18, Chee: segment class should not know about circle!
-  // 	Move to circle class.
-  void separation_circle(
-	  Circle3d &cir, Point3d *& seg_p, Point3d *& cir_p ) const;
+  void separation_circle( Circle3d &cir, Point3d *& seg_p, Point3d *& cir_p ) const;
   Point3d* separation_circle( Circle3d &cir ) const;
   double separation_circleL( Circle3d &cir ) const;
    

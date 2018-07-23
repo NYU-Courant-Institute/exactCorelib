@@ -28,7 +28,6 @@
 
 extern bool verbose;
 extern FILE* g_fptr;
-extern Point3d g_p;
 
 Triangle3d::Triangle3d(const Point3d& v1, const Point3d& v2, const Point3d& v3)
     :p0(v1), p1(v2), p2(v3) {
@@ -275,28 +274,25 @@ double Triangle3d::distance( const Point3d& pt ) const {
   return sqrt(sqrDistance);
 }
 
-// Returns the closest point of the triangle to argument p
-//
 Point3d Triangle3d::nearPt( const Point3d& p ) const {
 
-  // Check if the closest point to triangle is interior of triangle:
   Point3d pro(this->toPlane().projection(p));
   if(this->distance(pro) < 1e-8){
-    return pro;		
+    return pro;
   }
   else{
     Point3d seg_p[3];
     double seg_d[3];
     Segment3d ab(p0, p1);
-    seg_p[0] = ab.nearPt(p);	// seg_p[0] is closest point to ab
+    seg_p[0] = ab.nearPt(p);
     Segment3d bc(p1, p2);
-    seg_p[1] = bc.nearPt(p);	// seg_p[1] is closest point to bc
+    seg_p[1] = bc.nearPt(p);
     Segment3d ca(p2, p0);
-    seg_p[2] = ca.nearPt(p);	// seg_p[1] is closest point to bc
+    seg_p[2] = ca.nearPt(p);
 
     double minD(p.distance(seg_p[0]));
     Point3d closestP(seg_p[0]);
-    for(int i=1;i<3;++i){	// this code can be improved (Chee)
+    for(int i=1;i<3;++i){
       seg_d[i] = p.distance(seg_p[i]);
       if(minD > seg_d[i]){
         minD = seg_d[i];
@@ -304,9 +300,9 @@ Point3d Triangle3d::nearPt( const Point3d& p ) const {
       }
     }
 
-    return closestP;	
+    return closestP;
   }
-}//nearPt
+}
 
 Polygon3d* Triangle3d::toPolygon() const {
   Polygon3d* plg = new Polygon3d();
@@ -648,140 +644,92 @@ int Triangle3d::coplanar_orientation( const Point3d& pa, const Point3d& pb,
   return s1*s2;
 }
 
-// Returns the closest pair (tri_p, cir_p)
-// 	where tri_p is on triangle, cir_p is on circle.
-//     
-void Triangle3d::separation_circle(
-	Circle3d &cir, Point3d *& tri_p, Point3d *& cir_p ) const {
+void Triangle3d::separation_circle( Circle3d &cir, Point3d *& tri_p, Point3d *& cir_p ) const {
 
-  Point3d onCircle(*(this->separation_circle(cir)));
-  Point3d onTriangle(this->nearPt(onCircle));
-
-  cir_p = new Point3d(onCircle);
-  tri_p = new Point3d(onTriangle);
-}
-
-// Returns a point on Triangle that is closest to circle cir.
-//
-Point3d* Triangle3d::separation_circle( Circle3d &cir ) const {
-
-  Point3d onCircle;	// the closest point of the Triangle to circle
   Point3d near(this->nearPt(cir.P()));
+  Point3d onCircle;
+  Point3d onTriangle;
+
   Point3d pro(cir.toPlane().projection(near));
 
   if(toPlane().isParallel(cir.toPlane())){
-    Plane3d pl(cir.toPlane());
-    Triangle3d T(pl.projection(p0), pl.projection(p1), pl.projection(p2));
-    Point3d near2(T.nearPt(cir.P()));
+    Point3d pp1, pp2;
+    Line3d l(cir.P(), Vector(pro-cir.P()));
+    cir.intersection(l, pp1, pp2);
 
-    Point3d closestP;
-    double minD(std::numeric_limits<float>::max());
+    if(pp1.distance(pro) < pp2.distance(pro))
+      onCircle = pp1;
+    else
+      onCircle = pp2;
+  }
+  else{
+    Point3d pp[4];
+    double dd[4];
+    Line3d l1(*(Line3d *)(toPlane().intersection(cir.toPlane())));
+    Line3d l2(cir.P(), Vector(pro-cir.P()));
+    cir.intersection(l1, pro, pp[0], pp[1]);
+    cir.intersection(l2, pp[2], pp[3]);
 
-    if(T.distance(cir.P()) < 1e-8){ // circle's center is inside the triangle
-
-      if(verbose && g_p == Point3d(260, 196, 124))
-        fprintf(g_fptr, "parallel\n");
-
-      // circle is completely covered the triangle
-      if(near2.distance(cir.P()) > cir.R()){
-        Point3d *pp[2];
-        Line3d l(cir.P(), Vector(near2-cir.P()));
-        cir.intersection(l, &pp[0], &pp[1]);
-
-        for(int i=0;i<2;++i){
-          if(pp[i] == NULL) continue;
-          double d(near2.distance(*pp[i]));
-          if(minD > d){
-            minD = d;
-            closestP = *pp[i];
-          }
-        }
-        for(int i=0;i<2;++i)
-          delete pp[i];
+    Point3d closestP(pp[0]);
+    double minD(this->distance(pp[0]));
+    if(verbose)
+    fprintf(g_fptr, "pp 0 (%f, %f, %f) dist %f\n", pp[0].X(), pp[0].Y(), pp[0].Z(), minD);
+    for(int i=1;i<4;++i){
+      dd[i] = this->distance(pp[i]);
+      if(verbose)
+      fprintf(g_fptr, "pp i (%f, %f, %f) dist %f\n", pp[0].X(), pp[0].Y(), pp[0].Z(), dd[i]);
+      if(minD > dd[i]){
+        minD = dd[i];
+        closestP = pp[i];
       }
-      // circle is inside the triangle
-      else{
-        if(verbose && g_p == Point3d(260, 196, 124))
-          fprintf(g_fptr, "inside\n");
-        Point3d *pp[12];
-        Line3d l[6];
-        l[0] = Line3d(cir.P(), Vector(T.V1()-cir.P()));
-        cir.intersection(l[0], &pp[0], &pp[1]);
-        l[1] = Line3d(cir.P(), Vector(T.V2()-cir.P()));
-        cir.intersection(l[1], &pp[2], &pp[3]);
-        l[2] = Line3d(cir.P(), Vector(T.V3()-cir.P()));
-        cir.intersection(l[2], &pp[4], &pp[5]);
-
-        l[3] = Line3d(T.V1(), Vector(T.V2()-T.V1()));
-        cir.intersection(l[3], &pp[6], &pp[7]);
-        l[4] = Line3d(T.V2(), Vector(T.V3()-T.V2()));
-        cir.intersection(l[4], &pp[8], &pp[9]);
-        l[5] = Line3d(T.V3(), Vector(T.V1()-T.V3()));
-        cir.intersection(l[5], &pp[10], &pp[11]);
-
-        double minD(std::numeric_limits<float>::max());
-        for(int i=0;i<12;++i){
-          if(pp[i] == NULL) continue;
-          if(verbose && g_p == Point3d(260, 196, 124))
-            fprintf(g_fptr, "found pt %d  %f %f %f\n",
-		    i, pp[i]->X(), pp[i]->Y(), pp[i]->Z());
-          double d(this->distance(*pp[i]));
-          if(minD > d){
-            minD = d;
-            closestP = *pp[i];
-          }
-        }
-        for(int i=0;i<12;++i)
-          delete pp[i];
-      }
-    }
-    // circle is outside the triangle
-    else{
-      Point3d *pp[2];
-      Line3d l(cir.P(), Vector(near2-cir.P()));
-      cir.intersection(l, &pp[0], &pp[1]);
-
-      for(int i=0;i<2;++i){
-        if(pp[i] == NULL) continue;
-        double d(this->distance(*pp[i]));
-        if(minD > d){
-          minD = d;
-          closestP = *pp[i];
-        }
-      }
-      for(int i=0;i<2;++i)
-        delete pp[i];
     }
 
     onCircle = closestP;
-  } // end if(T.distance(cir.P()) < 1e-8)
-  else{
-    Point3d *pp[8];
-    Line3d l[4];
-    l[0] = (*(Line3d *)(toPlane().intersection(cir.toPlane())));
-    cir.intersection(l[0], pro, &pp[0], &pp[1]);
-    l[1] = Line3d(cir.P(), l[0].direction().cross(cir.normal()));
-    cir.intersection(l[1], &pp[2], &pp[3]);
-    l[2] = Line3d(cir.P(), Vector(pro-cir.P()));
-    cir.intersection(l[2], &pp[4], &pp[5]);
-    l[3] = Line3d(cir.P(), l[2].direction().cross(cir.normal()));
-    cir.intersection(l[3], &pp[6], &pp[7]);
+  }
 
-    Point3d closestP;
-    double minD(std::numeric_limits<float>::max());
-    for(int i=0;i<8;++i){
-      if(pp[i] == NULL) continue;
-      double d(this->distance(*pp[i]));
-      //if(verbose)
-      //fprintf(g_fptr, "intersection %d  %f %f %f\n",
-      //	i, pp[i]->X(), pp[i]->Y(), pp[i]->Z());
-      if(minD > d){
-        minD = d;
-        closestP = *pp[i];
+  onTriangle = this->nearPt(onCircle);
+
+  tri_p = new Point3d(onTriangle);
+  cir_p = new Point3d(onCircle);
+}
+
+Point3d* Triangle3d::separation_circle( Circle3d &cir ) const {
+
+  Point3d near(this->nearPt(cir.P()));
+  Point3d onCircle;
+
+  Point3d pro(cir.toPlane().projection(near));
+  if(toPlane().isParallel(cir.toPlane())){
+    Point3d pp1, pp2;
+    Line3d l(cir.P(), Vector(pro-cir.P()));
+    cir.intersection(l, pp1, pp2);
+
+    if(pp1.distance(pro) < pp2.distance(pro))
+      onCircle = pp1;
+    else
+      onCircle = pp2;
+  }
+  else{
+    Point3d pp[4];
+    double dd[4];
+    Line3d l1(*(Line3d *)(toPlane().intersection(cir.toPlane())));
+    Line3d l2(cir.P(), Vector(pro-cir.P()));
+    cir.intersection(l1, pro, pp[0], pp[1]);
+    cir.intersection(l2, pp[2], pp[3]);
+
+    Point3d closestP(pp[0]);
+    double minD(this->distance(pp[0]));
+    if(verbose)
+    fprintf(g_fptr, "pp 0 (%f, %f, %f) dist %f\n", pp[0].X(), pp[0].Y(), pp[0].Z(), minD);
+    for(int i=1;i<4;++i){
+      dd[i] = this->distance(pp[i]);
+      if(verbose)
+      fprintf(g_fptr, "pp i (%f, %f, %f) dist %f\n", pp[0].X(), pp[0].Y(), pp[0].Z(), dd[i]);
+      if(minD > dd[i]){
+        minD = dd[i];
+        closestP = pp[i];
       }
     }
-    for(int i=0;i<8;++i)
-      delete pp[i];
 
     onCircle = closestP;
   }
@@ -790,10 +738,53 @@ Point3d* Triangle3d::separation_circle( Circle3d &cir ) const {
 }
 
 double Triangle3d::separation_circleL( Circle3d &cir ) const {
-  Point3d onCircle(*(this->separation_circle(cir)));
-  Point3d onTriangle(this->nearPt(onCircle));
 
-  if(verbose && g_p == Point3d(260, 196, 124)){
+  Point3d near(this->nearPt(cir.P()));
+  Point3d onCircle;
+  Point3d onTriangle;
+
+  Point3d pro(cir.toPlane().projection(near));
+  if(verbose)
+  fprintf(g_fptr, "near (%f, %f, %f) pro (%f, %f, %f)\n", near.X(), near.Y(), near.Z(), pro.X(), pro.Y(), pro.Z());
+
+  if(toPlane().isParallel(cir.toPlane())){
+    Point3d pp1, pp2;
+    Line3d l(cir.P(), Vector(pro-cir.P()));
+    cir.intersection(l, pp1, pp2);
+
+    if(pp1.distance(pro) < pp2.distance(pro))
+      onCircle = pp1;
+    else
+      onCircle = pp2;
+  }
+  else{
+    Point3d pp[4];
+    double dd[4];
+    Line3d l1(*(Line3d *)(toPlane().intersection(cir.toPlane())));
+    Line3d l2(cir.P(), Vector(pro-cir.P()));
+    cir.intersection(l1, pro, pp[0], pp[1]);
+    cir.intersection(l2, pp[2], pp[3]);
+
+    Point3d closestP(pp[0]);
+    double minD(this->distance(pp[0]));
+    if(verbose)
+    fprintf(g_fptr, "pp 0 (%f, %f, %f) dist %f\n", pp[0].X(), pp[0].Y(), pp[0].Z(), minD);
+    for(int i=1;i<4;++i){
+      dd[i] = this->distance(pp[i]);
+      if(verbose)
+      fprintf(g_fptr, "pp i (%f, %f, %f) dist %f\n", i, pp[i].X(), pp[i].Y(), pp[i].Z(), dd[i]);
+      if(minD > dd[i]){
+        minD = dd[i];
+        closestP = pp[i];
+      }
+    }
+
+    onCircle = closestP;
+  }
+
+  onTriangle = this->nearPt(onCircle);
+
+  if(verbose){
     fprintf(g_fptr, "on cir (%f, %f, %f)\n", onCircle.X(), onCircle.Y(), onCircle.Z());
     fprintf(g_fptr, "on tri (%f, %f, %f)\n", onTriangle.X(), onTriangle.Y(), onTriangle.Z());
   }

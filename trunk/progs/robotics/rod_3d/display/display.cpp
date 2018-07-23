@@ -264,7 +264,7 @@ void Display::initializeGL() {
 
   GLfloat light0_ambient[] = {0.0, 0.0, 0.0};
   GLfloat light0_diffuse[] = {1.0, 1.0, 1.0};
-  GLfloat light0_position[] = {512, 512, -512, 0.0f};
+  GLfloat light0_position[] = {512, 512, 512, 0.0f};
   GLfloat light0_specular[] = {1.0, 1.0, 1.0};
 
   glEnable(GL_LIGHTING);
@@ -280,7 +280,7 @@ void Display::initializeGL() {
   glEnable(GL_DEPTH_TEST);
   // glDepthFunc(GL_EQUAL);
 
-  eye_vector.set(at.X() - eye.X(), at.Y() - eye.Y(), at.Z() - eye.Z());
+  eye_vector.set(eye.X() - at.X(), eye.Y() - at.Y(), eye.Z() - at.Z());
   resetRotationMatrix();
   obj_pos = eye;
 }
@@ -572,9 +572,7 @@ void Display::drawAxisBoundingBox(double length) {
   glVertex3f(0, 0, 0);
   glVertex3f(0, 0, length);
   glEnd();
-  glEnable(GL_LIGHTING);
 
-  glDisable(GL_LIGHTING);
   glPushMatrix();
   glTranslated(256, 256, 256);
   drawCube(sss->root, 512, false, true);
@@ -586,16 +584,16 @@ void Display::drawAxisBoundingBox(double length) {
  * DRAW Edge
  */
 void Display::drawObstacles(ConfBox3d* box, int transparency) {
-  glEnable(GL_BLEND);
-  glDisable(GL_DEPTH_TEST);
-  // glDisable(GL_LIGHTING);
+  // glEnable(GL_BLEND);
+  // glDisable(GL_DEPTH_TEST);
+  glDisable(GL_LIGHTING);
   glLineWidth(3.0);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   for (const auto& wall : box->walls) {
     if (strcmp(wall->name().c_str(), "Bound") == 0) continue;
     Vector n(wall->triangle().normal());
     n.normalize();
-    glColor4f(1.0, 1.0, 1.0, transparency / 100.0);
+    glColor4f(0.5, 0.5, 0.5, transparency / 100.0);
 
     glBegin(GL_TRIANGLES);
     glNormal3d(n.X(), n.Y(), n.Z());
@@ -608,8 +606,8 @@ void Display::drawObstacles(ConfBox3d* box, int transparency) {
     glEnd();
   }
   glLineWidth(1.0);
-  // glEnable(GL_LIGHTING);
-  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_LIGHTING);
+  // glEnable(GL_DEPTH_TEST);
 }
 
 /*
@@ -618,7 +616,6 @@ void Display::drawObstacles(ConfBox3d* box, int transparency) {
 void Display::drawCube(ConfBox3d* box, double length, bool show_box,
                        bool sho_box_boundary) {
   if (show_box) {
-    glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -705,14 +702,10 @@ void Display::drawCube(ConfBox3d* box, double length, bool show_box,
       glVertex3f(length / 2, length / 2, -length / 2);
       glEnd();
     }
-
-    glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
   }
   if (sho_box_boundary) {
     glColor3f(0, 0, 0);
     glLineWidth(1);
-    glDisable(GL_DEPTH_TEST);
     // front
     glBegin(GL_LINE_LOOP);
     glVertex3f(length / 2, -length / 2, length / 2);
@@ -755,7 +748,6 @@ void Display::drawCube(ConfBox3d* box, double length, bool show_box,
     glVertex3f(-length / 2, -length / 2, -length / 2);
     glVertex3f(-length / 2, length / 2, -length / 2);
     glEnd();
-    glEnable(GL_DEPTH_TEST);
   }
 }
 
@@ -763,6 +755,8 @@ void Display::drawCube(ConfBox3d* box, double length, bool show_box,
  * DRAW Quads
  */
 void Display::drawOcts(ConfBox3d* box, double epsilon) {
+  glDisable(GL_LIGHTING);
+  glDisable(GL_DEPTH_TEST);
   switch (box->status) {
     case FREE:
       glLineWidth(1);
@@ -789,15 +783,13 @@ void Display::drawOcts(ConfBox3d* box, double epsilon) {
   }
 
   if (box->status == FREE) {
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
     glPushMatrix();
     glTranslated(box->center.X(), box->center.Y(), box->center.Z());
     drawCube(box, box->width, show_box, show_box_boundary);
     glPopMatrix();
-    glEnable(GL_LIGHTING);
-    glEnable(GL_DEPTH_TEST);
   }
+  glEnable(GL_LIGHTING);
+  glEnable(GL_DEPTH_TEST);
 }
 
 /*
@@ -819,7 +811,6 @@ void Display::drawTree(ConfBox3d* box) {
  * DRAW PATH
  */
 void Display::drawPath(std::vector<ConfBox3d*>& path) {
-  // glDisable(GL_DEPTH_TEST);
   glDisable(GL_LIGHTING);
   glPushMatrix();
   glColor3f(0, 1, 1);
@@ -831,7 +822,6 @@ void Display::drawPath(std::vector<ConfBox3d*>& path) {
   glEnd();
   glPopMatrix();
   glEnable(GL_LIGHTING);
-  // glEnable(GL_DEPTH_TEST);
 }
 
 /*
@@ -872,7 +862,6 @@ void Display::rod(double length, double x, double y, double z,
                   float rot_mat[16], double r = 1, double g = 1, double b = 1,
                   double a = 1) {
   // rot_mat[3] = x; rot_mat[7] = y; rot_mat[11] = z;
-  glDisable(GL_LIGHTING);
 
   glLineWidth(2.0);
   glPushMatrix();
@@ -885,11 +874,7 @@ void Display::rod(double length, double x, double y, double z,
   glEnd();
   glPopMatrix();
 
-  glDisable(GL_DEPTH_TEST);
-  filledSphere(2.0, x, y, z, 1, 1, 0);
-  glEnable(GL_DEPTH_TEST);
-
-  glEnable(GL_LIGHTING);
+  // filledSphere(2.0, x, y, z, 1, 1, 0);
 }
 
 void Display::drawPoly() {

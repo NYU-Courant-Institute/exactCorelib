@@ -104,7 +104,6 @@ public:
     //  1  if coincident
     //  0  if intersect in a point.  In this case, the
     //		intersection point is assigned to p if this is available.
-  //bool intersects(const Triangle3d& T ) const;
 
   GeomObj* intersection(const Line3d &l) const;
 

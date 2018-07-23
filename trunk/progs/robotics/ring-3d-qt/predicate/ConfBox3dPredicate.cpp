@@ -3,8 +3,6 @@
 extern FILE* g_fptr;
 extern bool verbose;
 
-Point3d g_p;
-
 bool inBound(double innerBound, double val, double outerBound){
   return (innerBound-1e-8 <= val && val <= outerBound+1e-8);
 }
@@ -13,12 +11,6 @@ bool inBound(double innerBound, double val, double outerBound){
 // b is its parent
 Status ConfBox3dPredicate::classification(ConfBox3d* b, Circle3d cir) {
 
-  //if(verbose)
-  //fprintf(g_fptr, "\n\nclassify center (%f, %f, %f) normal (%f, %f, %f)  %f\n",
-  //        cir.P().X(), cir.P().Y(), cir.P().Z(),
-  //        cir.normal().X(), cir.normal().Y(), cir.normal().Z(),
-  //        cir.R());
-
   Point3d closestP(cir.P());
 
   if(cir.R() > 0){
@@ -26,37 +18,17 @@ Status ConfBox3dPredicate::classification(ConfBox3d* b, Circle3d cir) {
     for (list<Wall*>::iterator iterW = b->Walls.begin(); iterW != b->Walls.end(); ++iterW) {
       Wall* w = (*iterW);
 
-      Point3d A = w->a->p;
-      Point3d B = w->b->p;
-      Point3d C = w->c->p;
-      if(verbose)
-      fprintf(g_fptr, "wall (%f %f %f) (%f %f %f) (%f %f %f)\n"
-              , A.X(), A.Y(), A.Z()
-              , B.X(), B.Y(), B.Z()
-              , C.X(), C.Y(), C.Z());
-
       Point3d* p_ = w->tri.separation_circle(cir);
       double dist(w->tri.separation_circleL(cir));
-
-      if(verbose)
-      fprintf(g_fptr, "check wall\n");
 
       if(p_ != NULL && minDist > dist){
         closestP = *p_;
         minDist = dist;
-        if(verbose)
-        fprintf(g_fptr, "near wall (%f, %f, %f) %f\n", p_->X(), p_->Y(), p_->Z(), minDist);
       }
     }
 
     for (list<Edge*>::iterator iterE = b->Edges.begin(); iterE != b->Edges.end(); ++iterE) {
       Edge *e = *iterE;
-
-      if(verbose)
-      fprintf(g_fptr, "edge src(%f %f %f) dst(%f %f %f) convex %d\n"
-              , e->src->p.X(), e->src->p.Y(), e->src->p.Z()
-              , e->dst->p.X(), e->dst->p.Y(), e->dst->p.Z()
-              , e->convexEdge);
 
       Point3d* p_ = e->seg.separation_circle(cir);
       double dist(e->seg.separation_circleL(cir));
@@ -64,17 +36,11 @@ Status ConfBox3dPredicate::classification(ConfBox3d* b, Circle3d cir) {
       if(p_ != NULL && minDist > dist){
         closestP = *p_;
         minDist = dist;
-        if(verbose)
-        fprintf(g_fptr, "near edge (%f, %f, %f) %f\n", p_->X(), p_->Y(), p_->Z(), minDist);
       }
     }
 
     for (list<Corner*>::iterator iterC = b->Corners.begin(); iterC != b->Corners.end(); ++iterC) {
       Corner* c = (*iterC);
-
-      if(verbose)
-      fprintf(g_fptr, "corner (%f %f %f)\n"
-              , c->p.X(), c->p.Y(), c->p.Z());
 
       Point3d* p_ = c->p.separation_circle(cir);
       double dist(c->p.separation_circleL(cir));
@@ -82,16 +48,9 @@ Status ConfBox3dPredicate::classification(ConfBox3d* b, Circle3d cir) {
       if(p_ != NULL && minDist > dist){
         closestP = *p_;
         minDist = dist;
-        if(verbose)
-        fprintf(g_fptr, "near corner (%f, %f, %f) %f\n", p_->X(), p_->Y(), p_->Z(), minDist);
       }
     }
   }
-
-
-  if(verbose)
-  fprintf(g_fptr, "close point (%f, %f, %f)\n"
-          , closestP.X(), closestP.Y(), closestP.Z());
 
   // should use Obstacle as a parent class
   // and need one copy to record the min distance and the corresponding feature
@@ -99,23 +58,11 @@ Status ConfBox3dPredicate::classification(ConfBox3d* b, Circle3d cir) {
   double minDistW = std::numeric_limits<float>::max();
   for (list<Wall*>::iterator iterW = b->Walls.begin(); iterW != b->Walls.end(); ++iterW) {
     Wall* w = (*iterW);
-
-    Point3d A = w->a->p;
-    Point3d B = w->b->p;
-    Point3d C = w->c->p;
-    if(verbose)
-    fprintf(g_fptr, "wall (%f %f %f) (%f %f %f) (%f %f %f)\n"
-            , A.X(), A.Y(), A.Z()
-            , B.X(), B.Y(), B.Z()
-            , C.X(), C.Y(), C.Z());
-
     double dist(w->tri.distance(closestP));
 
     if (dist < minDistW) {
       minDistW = dist;
       nearestWall = w;
-      if(verbose)
-      fprintf(g_fptr, "min wall %f\n", minDistW);
     }
   }
 
@@ -123,20 +70,11 @@ Status ConfBox3dPredicate::classification(ConfBox3d* b, Circle3d cir) {
   double minDistE = std::numeric_limits<float>::max();
   for (list<Edge*>::iterator iterE = b->Edges.begin(); iterE != b->Edges.end(); ++iterE) {
     Edge *e = *iterE;
-
-    if(verbose)
-    fprintf(g_fptr, "edge src(%f %f %f) dst(%f %f %f) convex %d\n"
-            , e->src->p.X(), e->src->p.Y(), e->src->p.Z()
-            , e->dst->p.X(), e->dst->p.Y(), e->dst->p.Z()
-            , e->convexEdge);
-
     double dist(e->seg.distance(closestP));
 
     if (dist < minDistE) {
       minDistE = dist;
       nearestEdge = e;
-      if(verbose)
-      fprintf(g_fptr, "min edge %f\n", minDistE);
     }
   }
 
@@ -144,17 +82,11 @@ Status ConfBox3dPredicate::classification(ConfBox3d* b, Circle3d cir) {
   double minDistC = std::numeric_limits<float>::max();
   for (list<Corner*>::iterator iterC = b->Corners.begin(); iterC != b->Corners.end(); ++iterC) {
     Corner* c = *iterC;
-
-    if(verbose)
-    fprintf(g_fptr, "corner (%f %f %f)\n"
-            , c->p.X(), c->p.Y(), c->p.Z());
-
     double dist(c->p.distance(closestP));
 
     if (dist < minDistC) {
       minDistC = dist;
       nearestCorner = c;
-      if(verbose) fprintf(g_fptr, "min corner %f\n", minDistC);
     }
   }
 
@@ -210,60 +142,30 @@ Status ConfBox3dPredicate::classification(ConfBox3d* b, Circle3d cir) {
   return isFree ? FREE : STUCK;
 }
 
-bool testAnnulus(Point3d P, Plane3d top, Plane3d bot, double innerDomain, double outerDomain, Point3d mB){
-  bool outsideTop(true), outsideBot(true);
-  if(top.apply(P) <= 0){
-    outsideTop = false;
-  }
-  if(bot.apply(P) <= 0){
-    outsideBot = false;
+bool testPolytope(Segment3d seg, Plane3d top, Plane3d bot, double innerDomain, double outerDomain, Point3d mB){
+  if(top.apply(seg.startPt())*bot.apply(seg.startPt()) > 0 &&
+     top.apply(seg.stopPt())*bot.apply(seg.stopPt()) > 0){
+    return false;
   }
 
-  if(!outsideTop && !outsideBot){
-    Circle3d circleIn(mB, innerDomain, top.normal());
-    Circle3d circleOut(mB, outerDomain, top.normal());
-
-    double dist = P.separation_circleL(circleIn)+P.separation_circleL(circleOut);
-    return inBound(0, dist, outerDomain-innerDomain);
+  Circle3d cir(mB, innerDomain, top.normal());
+  Point3d *seg_p = NULL, *cir_p = NULL;
+  seg.separation_circle(cir, seg_p, cir_p);
+  if(seg_p != NULL && cir_p != NULL){
+    double h = Plane3d(mB, top.normal()).distance(*seg_p);
+    double d = seg_p->distance(*cir_p);
+    double dist = sqrt((innerDomain+sqrt(d*d-h*h))*(innerDomain+sqrt(d*d-h*h))+h*h);
+    return inBound(innerDomain, dist, outerDomain);
   }
   return false;
 }
 
-bool testAnnulus(Segment3d S, Plane3d top, Plane3d bot, double innerDomain, double outerDomain, Point3d mB){
-  bool outsideTop(true), outsideBot(true);
-  if(top.apply(S.startPt()) <= 0){
-    outsideTop = false;
-  }
-  if(bot.apply(S.startPt()) <= 0){
-    outsideBot = false;
-  }
-  if(top.apply(S.stopPt()) <= 0){
-    outsideTop = false;
-  }
-  if(bot.apply(S.stopPt()) <= 0){
-    outsideBot = false;
-  }
-
-  if(!outsideTop && !outsideBot){
-    Circle3d circleIn(mB, innerDomain, top.normal());
-    Circle3d circleOut(mB, outerDomain, top.normal());
-
-    double dist(S.separation_circleL(circleIn)+S.separation_circleL(circleOut));
-    return inBound(0, dist, outerDomain-innerDomain);
-  }
-  return false;
-}
-
-bool testAnnulus(Triangle3d T, Plane3d top, Plane3d bot, double innerDomain, double outerDomain, Point3d mB){
+bool testPolytope(Triangle3d T, Plane3d top, Plane3d bot, double innerDomain, double outerDomain, Point3d mB){
   deque<Point3d> poly;
   poly.push_back(T.V1()); poly.push_back(T.V2()); poly.push_back(T.V3());
   Plane3d* H[2];
   H[0] = new Plane3d(top);
-  if(verbose)
-  fprintf(g_fptr, "top normal (%f, %f, %f)\n", H[0]->normal().X(), H[0]->normal().Y(), H[0]->normal().Z());
   H[1] = new Plane3d(bot);
-  if(verbose)
-  fprintf(g_fptr, "bot normal (%f, %f, %f)\n", H[1]->normal().X(), H[1]->normal().Y(), H[1]->normal().Z());
   for(int i=0;i<2;++i){
     // There is an intersection
     if(H[i]->apply(T.V1())*H[i]->apply(T.V2()) < 0 ||
@@ -283,7 +185,6 @@ bool testAnnulus(Triangle3d T, Plane3d top, Plane3d bot, double innerDomain, dou
           if(intersection != NULL && intersection->dim() == 0 &&
              (seg.contains(*((Point3d*)intersection)) || seg.distance(*((Point3d*)intersection)) < 1e-8)){
             pp.push_back(*((Point3d*)intersection));
-            //Point3d p = *((Point3d*)intersection);
           }
         }
         poly.pop_back();
@@ -364,25 +265,7 @@ bool testAnnulus(Triangle3d T, Plane3d top, Plane3d bot, double innerDomain, dou
           poly.push_back(l[j]);
         }
       }
-
-      for(unsigned j=0;j<poly.size();++j){
-        Point3d A = poly[j];
-
-        if(verbose)
-          fprintf(g_fptr, "iter %d poly (%f, %f, %f)\n"
-                  , i
-                  , A.X(), A.Y(), A.Z());
-      }
     }
-  }
-
-  if(verbose && mB == Point3d(260, 196, 124)) fprintf(g_fptr, "poly pt %d\n", poly.size());
-  for(unsigned j=0;j<poly.size();++j){
-    Point3d A = poly[j];
-
-    if(verbose && mB == Point3d(260, 196, 124))
-      fprintf(g_fptr, "poly (%f, %f, %f)\n"
-              , A.X(), A.Y(), A.Z());
   }
 
   if(poly.size() > 0){
@@ -407,12 +290,6 @@ bool testAnnulus(Triangle3d T, Plane3d top, Plane3d bot, double innerDomain, dou
           Triangle3d T(poly[0], poly[1], poly[2]);
           T.normalize();
           double dist = T.separation_circleL(circleIn)+T.separation_circleL(circleOut);
-          if(verbose && mB == Point3d(260, 196, 124))
-          fprintf(g_fptr, "T1 in %f out %f total %f  %f\n",
-                  T.separation_circleL(circleIn),
-                  T.separation_circleL(circleOut),
-                  dist,
-                  outerDomain-innerDomain);
           if(inBound(0, dist, outerDomain-innerDomain))
             return true;
         }
@@ -420,12 +297,6 @@ bool testAnnulus(Triangle3d T, Plane3d top, Plane3d bot, double innerDomain, dou
           Triangle3d T(poly[0], poly[2], poly[3]);
           T.normalize();
           double dist = T.separation_circleL(circleIn)+T.separation_circleL(circleOut);
-          if(verbose && mB == Point3d(260, 196, 124))
-          fprintf(g_fptr, "T2 in %f out %f total %f  %f\n",
-                  T.separation_circleL(circleIn),
-                  T.separation_circleL(circleOut),
-                  dist,
-                  outerDomain-innerDomain);
           if(inBound(0, dist, outerDomain-innerDomain))
             return true;
         }
@@ -434,12 +305,6 @@ bool testAnnulus(Triangle3d T, Plane3d top, Plane3d bot, double innerDomain, dou
         Triangle3d T(poly[0], poly[1], poly[2]);
         T.normalize();
         double dist = T.separation_circleL(circleIn)+T.separation_circleL(circleOut);
-        if(verbose && mB == Point3d(260, 196, 124))
-        fprintf(g_fptr, "T in %f out %f total %f  %f\n",
-                T.separation_circleL(circleIn),
-                T.separation_circleL(circleOut),
-                dist,
-                outerDomain-innerDomain);
         if(inBound(0, dist, outerDomain-innerDomain))
           return true;
       }
@@ -467,18 +332,8 @@ void ConfBox3dPredicate::checkCollisionDetectionFeatureSet(ConfBox3d* b) {
   double innerDomain = (ConfBox3d::r0-b->rB > 0)?(ConfBox3d::r0-b->rB):0;
   double outerDomain = ConfBox3d::r0+b->rB;
 
-  g_p = b->mB;
-
   // Translational and ratational box
   if(b->rot_width != -2){
-
-    if(verbose && b->mB == Point3d(260, 196, 124) && b->rot_mB == Point3d(0,0,-1))
-      fprintf(g_fptr, "\n\ncheck Bt(%f, %f, %f) %f, Br(%f, %f, %f) %f %d\n",
-              b->mB.X(), b->mB.Y(), b->mB.Z(), b->width,
-              b->rot_mB.X(), b->rot_mB.Y(), b->rot_mB.Z(), b->rot_width,
-              b->status);
-
-
     // Do PI 1 intersection
     // 0) find the theta
     // 1) a top ring and a bot ring
@@ -503,14 +358,20 @@ void ConfBox3dPredicate::checkCollisionDetectionFeatureSet(ConfBox3d* b) {
     Plane3d top(topCircle.toPlane());
     Plane3d bot(botCircle.toPlane());
 
-    if(verbose && b->mB == Point3d(260, 196, 124) && b->rot_mB == Point3d(0,0,-1))
-      fprintf(g_fptr, "corner %d\n", b->Corners.size());
     for (list<Corner*>::iterator it = b->Corners.begin(); it != b->Corners.end();) {
       Corner* c = *it;
 
+      Circle3d cir(b->mB, innerDomain, top.normal());
       bool intersected(topCircle.do_intersect(c->p, b->rB) ||
-                       botCircle.do_intersect(c->p, b->rB) ||
-                       testAnnulus(c->p, top ,bot, innerDomain, outerDomain, b->mB));
+                       botCircle.do_intersect(c->p, b->rB));
+      Point3d P(c->p);
+      Point3d* p = P.separation_circle(cir);
+      if(p != NULL){
+        double h = Plane3d(b->mB, top.normal()).distance(P);
+        double d = P.distance(*p);
+        double dist = sqrt((innerDomain+sqrt(d*d-h*h))*(innerDomain+sqrt(d*d-h*h))+h*h);
+        intersected |= inBound(innerDomain, dist, outerDomain);
+      }
 
       if(intersected){
         b->status = MIXED;
@@ -520,48 +381,44 @@ void ConfBox3dPredicate::checkCollisionDetectionFeatureSet(ConfBox3d* b) {
         it = b->Corners.erase(it);
       }
     }
-    if(verbose && b->mB == Point3d(260, 196, 124) && b->rot_mB == Point3d(0,0,-1))
-      fprintf(g_fptr, "left corner %d\n", b->Corners.size());
 
-    if(verbose && b->mB == Point3d(260, 196, 124) && b->rot_mB == Point3d(0,0,-1))
-      fprintf(g_fptr, "edge %d\n", b->Edges.size());
     for (list<Edge*>::iterator it = b->Edges.begin(); it != b->Edges.end();) {
       Edge* e = *it;
 
+      Circle3d cir(b->mB, innerDomain, top.normal());
       bool intersected(false);
 
       if(!intersected){
         intersected |= topCircle.do_intersect(e->seg.startPt(), b->rB) ||
-                       botCircle.do_intersect(e->seg.startPt(), b->rB) ||
-                       testAnnulus(e->seg.startPt(), top, bot, innerDomain, outerDomain, b->mB);
+                       botCircle.do_intersect(e->seg.startPt(), b->rB);
+        Point3d P(e->seg.startPt());
+        Point3d* p = P.separation_circle(cir);
+        if(p != NULL){
+          double h = Plane3d(b->mB, top.normal()).distance(P);
+          double d = P.distance(*p);
+          double dist = sqrt((innerDomain+sqrt(d*d-h*h))*(innerDomain+sqrt(d*d-h*h))+h*h);
+          intersected |= inBound(innerDomain, dist, outerDomain);
+        }
       }
       if(!intersected){
         intersected |= topCircle.do_intersect(e->seg.stopPt(), b->rB) ||
-                       botCircle.do_intersect(e->seg.stopPt(), b->rB) ||
-                       testAnnulus(e->seg.stopPt(), top, bot, innerDomain, outerDomain, b->mB);
+                       botCircle.do_intersect(e->seg.stopPt(), b->rB);
+        Point3d P(e->seg.startPt());
+        Point3d* p = P.separation_circle(cir);
+        if(p != NULL){
+          double h = Plane3d(b->mB, top.normal()).distance(P);
+          double d = P.distance(*p);
+          double dist = sqrt((innerDomain+sqrt(d*d-h*h))*(innerDomain+sqrt(d*d-h*h))+h*h);
+          intersected |= inBound(innerDomain, dist, outerDomain);
+        }
       }
-
 
       if(!intersected){
         // annulus test
         intersected |= topCircle.do_intersect(e->seg, b->rB) ||
                        botCircle.do_intersect(e->seg, b->rB) ||
-                       testAnnulus(e->seg, top, bot, innerDomain, outerDomain, b->mB);
-
-        if(verbose && b->mB == Point3d(260, 196, 124) && b->rot_mB == Point3d(0,0,-1))
-        fprintf(g_fptr, "%d %d %d\n",
-                topCircle.do_intersect(e->seg, b->rB),
-                botCircle.do_intersect(e->seg, b->rB),
-                testAnnulus(e->seg, top, bot, innerDomain, outerDomain, b->mB));
-
+                       testPolytope(e->seg, top, bot, innerDomain, outerDomain, b->mB);
       }
-
-      if(verbose && b->mB == Point3d(260, 196, 124) && b->rot_mB == Point3d(0,0,-1))
-        fprintf(g_fptr, "edge src(%f %f %f) dst(%f %f %f)  %d\n"
-                , e->src->p.X(), e->src->p.Y(), e->src->p.Z()
-                , e->dst->p.X(), e->dst->p.Y(), e->dst->p.Z()
-                , intersected);
-
 
       if(intersected){
         b->status = MIXED;
@@ -571,77 +428,73 @@ void ConfBox3dPredicate::checkCollisionDetectionFeatureSet(ConfBox3d* b) {
         it = b->Edges.erase(it);
       }
     }
-    if(verbose && b->mB == Point3d(260, 196, 124) && b->rot_mB == Point3d(0,0,-1))
-      fprintf(g_fptr, "left edge %d\n", b->Edges.size());
 
-    if(verbose && b->mB == Point3d(260, 196, 124) && b->rot_mB == Point3d(0,0,-1))
-      fprintf(g_fptr, "wall %d\n", b->Walls.size());
     for (list<Wall*>::iterator it = b->Walls.begin(); it != b->Walls.end();) {
       Wall* w = *it;
 
-      Point3d A = w->a->p;
-      Point3d B = w->b->p;
-      Point3d C = w->c->p;
-
-      if(verbose && b->mB == Point3d(260, 196, 124) && b->rot_mB == Point3d(0,0,-1))
-        fprintf(g_fptr, "wall (%f %f %f) (%f %f %f) (%f %f %f)\n"
-                , A.X(), A.Y(), A.Z()
-                , B.X(), B.Y(), B.Z()
-                , C.X(), C.Y(), C.Z());
-
+      Circle3d cir(b->mB, innerDomain, top.normal());
       bool intersected(false);
 
       if(!intersected){
         intersected |= topCircle.do_intersect(w->a->p, b->rB) ||
-                       botCircle.do_intersect(w->a->p, b->rB) ||
-                       testAnnulus(w->a->p, top, bot, innerDomain, outerDomain, b->mB);
+                       botCircle.do_intersect(w->a->p, b->rB);
+        Point3d P(w->a->p);
+        Point3d* p = P.separation_circle(cir);
+        if(p != NULL){
+          double h = Plane3d(b->mB, top.normal()).distance(P);
+          double d = P.distance(*p);
+          double dist = sqrt((innerDomain+sqrt(d*d-h*h))*(innerDomain+sqrt(d*d-h*h))+h*h);
+          intersected |= inBound(innerDomain, dist, outerDomain);
+        }
       }
       if(!intersected){
         intersected |= topCircle.do_intersect(w->b->p, b->rB) ||
-                       botCircle.do_intersect(w->b->p, b->rB) ||
-                       testAnnulus(w->b->p, top, bot, innerDomain, outerDomain, b->mB);
+                       botCircle.do_intersect(w->b->p, b->rB);
+        Point3d P(w->b->p);
+        Point3d* p = P.separation_circle(cir);
+        if(p != NULL){
+          double h = Plane3d(b->mB, top.normal()).distance(P);
+          double d = P.distance(*p);
+          double dist = sqrt((innerDomain+sqrt(d*d-h*h))*(innerDomain+sqrt(d*d-h*h))+h*h);
+          intersected |= inBound(innerDomain, dist, outerDomain);
+        }
       }
       if(!intersected){
         intersected |= topCircle.do_intersect(w->c->p, b->rB) ||
-                       botCircle.do_intersect(w->c->p, b->rB) ||
-                       testAnnulus(w->c->p, top, bot, innerDomain, outerDomain, b->mB);
+                       botCircle.do_intersect(w->c->p, b->rB);
+        Point3d P(w->c->p);
+        Point3d* p = P.separation_circle(cir);
+        if(p != NULL){
+          double h = Plane3d(b->mB, top.normal()).distance(P);
+          double d = P.distance(*p);
+          double dist = sqrt((innerDomain+sqrt(d*d-h*h))*(innerDomain+sqrt(d*d-h*h))+h*h);
+          intersected |= inBound(innerDomain, dist, outerDomain);
+        }
       }
-
-      if(verbose && b->mB == Point3d(260, 196, 124) && b->rot_mB == Point3d(0,0,-1))
-        fprintf(g_fptr, "p test %d\n", intersected);
 
       if(!intersected){
         Segment3d ab(w->a->p, w->b->p);
         intersected |= topCircle.do_intersect(ab, b->rB) ||
                        botCircle.do_intersect(ab, b->rB)||
-                       testAnnulus(ab, top, bot, innerDomain, outerDomain, b->mB);
+                       testPolytope(ab, top, bot, innerDomain, outerDomain, b->mB);
         Segment3d bc(w->b->p, w->c->p);
         intersected |= topCircle.do_intersect(bc, b->rB) ||
                        botCircle.do_intersect(bc, b->rB) ||
-                       testAnnulus(bc, top, bot, innerDomain, outerDomain, b->mB);
+                       testPolytope(bc, top, bot, innerDomain, outerDomain, b->mB);
         Segment3d ca(w->c->p, w->a->p);
         intersected |= topCircle.do_intersect(ca, b->rB) ||
                        botCircle.do_intersect(ca, b->rB) ||
-                       testAnnulus(ca, top, bot, innerDomain, outerDomain, b->mB);
+                       testPolytope(ca, top, bot, innerDomain, outerDomain, b->mB);
       }
-
-      if(verbose && b->mB == Point3d(260, 196, 124) && b->rot_mB == Point3d(0,0,-1))
-        fprintf(g_fptr, "s test %d\n", intersected);
 
       if(!intersected){
         intersected |= topCircle.do_intersect(w->tri, b->rB) ||
                        botCircle.do_intersect(w->tri, b->rB);
       }
 
-      if(verbose && b->mB == Point3d(260, 196, 124) && b->rot_mB == Point3d(0,0,-1))
-        fprintf(g_fptr, "t test %d\n", intersected);
-
       if(!intersected){
-        intersected = testAnnulus(w->tri, top, bot, innerDomain, outerDomain, b->mB);
+        intersected = testPolytope(w->tri, top, bot, innerDomain, outerDomain, b->mB);
       }
-
-      if(verbose && b->mB == Point3d(260, 196, 124) && b->rot_mB == Point3d(0,0,-1))
-        fprintf(g_fptr, "poly test %d\n", intersected);
 
       if(intersected){
         b->status = MIXED;
@@ -651,20 +504,9 @@ void ConfBox3dPredicate::checkCollisionDetectionFeatureSet(ConfBox3d* b) {
         it = b->Walls.erase(it);
       }
     }
-
-    if(verbose && b->mB == Point3d(260, 196, 124) && b->rot_mB == Point3d(0,0,-1))
-      fprintf(g_fptr, "left wall %d\n", b->Walls.size());
   }
   // Translational box only
   else{
-
-    if(verbose)
-      fprintf(g_fptr, "\n\ncheck Bt (%f, %f, %f) %f %d\n",
-              b->mB.X(), b->mB.Y(), b->mB.Z(), b->width,
-              b->status);
-
-    if(verbose)
-      fprintf(g_fptr, "Bt: corner size %d\n", b->Corners.size());
     for (list<Corner*>::iterator it = b->Corners.begin(); it != b->Corners.end();) {
       Corner* c = *it;
       double distCorner = c->p.distance(b->mB);
@@ -677,11 +519,7 @@ void ConfBox3dPredicate::checkCollisionDetectionFeatureSet(ConfBox3d* b) {
         it = b->Corners.erase(it);
       }
     }
-    if(verbose)
-      fprintf(g_fptr, "Bt: left corner %d\n", b->Corners.size());
 
-    if(verbose)
-      fprintf(g_fptr, "Bt: edge size %d\n", b->Edges.size());
     for (list<Edge*>::iterator it = b->Edges.begin(); it != b->Edges.end();) {
       Edge* e = *it;
       double distEdge = e->seg.distance(b->mB);
@@ -695,11 +533,6 @@ void ConfBox3dPredicate::checkCollisionDetectionFeatureSet(ConfBox3d* b) {
       }
     }
 
-    if(verbose)
-      fprintf(g_fptr, "Bt: left edge %d\n", b->Edges.size());
-
-    if(verbose)
-      fprintf(g_fptr, "Bt: wall size %d\n", b->Walls.size());
     for (list<Wall*>::iterator it = b->Walls.begin(); it != b->Walls.end();) {
       Wall* w = *it;
       double distWall = w->tri.distance(b->mB);
@@ -712,8 +545,6 @@ void ConfBox3dPredicate::checkCollisionDetectionFeatureSet(ConfBox3d* b) {
         it = b->Walls.erase(it);
       }
     }
-    if(verbose)
-      fprintf(g_fptr, "Bt: left edge %d\n", b->Walls.size());
   }
 
   if (b->Corners.empty() && b->Edges.empty() && b->Walls.empty()) {
@@ -722,9 +553,6 @@ void ConfBox3dPredicate::checkCollisionDetectionFeatureSet(ConfBox3d* b) {
     }
     else {
       b->status = classification(b->parent, b->ring);
-
-      if(verbose)
-        fprintf(g_fptr, "status %d\n", b->status);
     }
   }
 }
@@ -732,7 +560,7 @@ void ConfBox3dPredicate::checkCollisionDetectionFeatureSet(ConfBox3d* b) {
 
 // Sep(mB, f) <= 2rB + clearance(mB)
 void ConfBox3dPredicate::checkVoronoiFeatureSet(ConfBox3d *b){
-  double sep = 2*b->rB+findClearance(b, b->ring);
+  double sep = 2*b->rB+findCleanrance(b, b->ring);
 
   if(b->vorCorners.size()){
     for(list<Corner*>::iterator it = b->vorCorners.begin(); it != b->vorCorners.end();){
@@ -778,7 +606,7 @@ void ConfBox3dPredicate::checkVoronoiFeatureSet(ConfBox3d *b){
 } // checkVoronoiFeatureSet
 
 //find the nearest feature of ring, and return the distance
-double ConfBox3dPredicate::findClearance(ConfBox3d *b, Circle3d cir){
+double ConfBox3dPredicate::findCleanrance(ConfBox3d *b, Circle3d cir){
 
   double mindistW = std::numeric_limits<double>::max();
   Wall* nearestWall = NULL;
@@ -817,10 +645,10 @@ double ConfBox3dPredicate::findClearance(ConfBox3d *b, Circle3d cir){
   if(clearance > mindistE) clearance = mindistE;
   if(clearance > mindistC) clearance = mindistC;
   return clearance;
-} // findClearance
+} // findCleanrance
 
 //find the nearest voronoi feature of mB and record the nearest feature
-void ConfBox3dPredicate::findClearance2(ConfBox3d *b, Circle3d cir){
+void ConfBox3dPredicate::findCleanrance2(ConfBox3d *b, Circle3d cir){
 
   double mindistW = std::numeric_limits<double>::max();
   b->nearestW = NULL;
@@ -854,4 +682,4 @@ void ConfBox3dPredicate::findClearance2(ConfBox3d *b, Circle3d cir){
       b->nearestC = c;
     }
   }
-} // findClearance2
+} // findCleanrance2

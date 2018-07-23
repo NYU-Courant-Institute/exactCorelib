@@ -232,6 +232,11 @@ void parseCfgFile() {
       animation_speed = atoi(sptr);
     }
 
+    if (strcmp(sptr, "transparency") == 0) {
+      sptr = strtok(nullptr, "=: \t");
+      transparency = atof(sptr);
+    }
+
     if (strcmp(sptr, "verbose") == 0) {
       sptr = strtok(nullptr, "=: \t");
       verbose = atoi(sptr);
@@ -539,12 +544,12 @@ void parseConfigFile(ConfBox3d* b) {
     edge->setConvexity(edge->isConvex());
   }
 
-  FILE* f = fopen("env_rand100.raw", "w");
+  FILE* f = fopen("env_posts_nobound.raw", "w");
   for (const auto& wall : b->walls) {
     fprintf(f, "1 1 1 %f %f %f %f %f %f %f %f %f\n", wall->a->point().X(),
-            wall->a->point().Y(), wall->a->point().Z(), wall->b->point().X(),
-            wall->b->point().Y(), wall->b->point().Z(), wall->c->point().X(),
-            wall->c->point().Y(), wall->c->point().Z());
+            wall->a->point().Y(), wall->a->point().Z(), wall->c->point().X(),
+            wall->c->point().Y(), wall->c->point().Z(), wall->b->point().X(),
+            wall->b->point().Y(), wall->b->point().Z());
   }
   fclose(f);
 }

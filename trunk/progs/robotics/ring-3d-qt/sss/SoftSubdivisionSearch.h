@@ -32,7 +32,7 @@ class SoftSubdivisionSearch {
   int ct;
   BoxQueue* PQ;
   vector<ConfBox3d*> toReset;
-  // TODO: change this to use a ConfBox
+
   Point3d start;
   Point3d goal;
   Point3d startRot;
@@ -49,8 +49,6 @@ class SoftSubdivisionSearch {
   ConfBox3d* findEnclosingFreeBox(Point3d p, Point3d pRot);
 
   void unionAdjacent(ConfBox3d* b);
-
-  vector<ConfBox3d*> getCanonicalPath(ConfBox3d* boxA, ConfBox3d* boxB);
 
   // find path using simple heuristic:
   // use distance to goal as key in PQ, see dijkstraQueue

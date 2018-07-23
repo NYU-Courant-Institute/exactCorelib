@@ -1009,7 +1009,7 @@ Poly "poly99" + 0 0 0 * 1 1 1
 0 p396 p398 p399
 
 
-Poly "Bound" + -80 -80 -80 * 592 592 592
+Poly "Bound" + 0 0 0 * 512 512 512
 0 a c b
 0 d c a
 0 d g c

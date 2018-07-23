@@ -28,7 +28,7 @@ PutPoly cube + 300 100 300 * 40 200 40
 PutPoly cube + 340 300 300 * 100 40 40
 
 PutPoly cube + 180 200 100 * 40 100 40
-PutPoly cube + 180 300 140 * 40 40 120
+PutPoly cube + 180 300 140 * 40 40 100
 
 
 Poly "Bound" + 0 0 0 * 512 512 512

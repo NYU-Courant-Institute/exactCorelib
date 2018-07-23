@@ -30,39 +30,39 @@ SoftSubdivisionSearch::SoftSubdivisionSearch(ConfBox3d* root, double e, int sear
   this->goalRot = goalRot;
 
   switch (searchType) {
-  case RANDOM:
-    PQ = new RandQueue();
-    break;
-  case BFS:
-    PQ = new SeqQueue();
-    break;
-  case GREEDY:
-    PQ = new DijkstraQueue<DistCmp>();
-    break;
-  case BIGREEDY:
-    PQ = new DijkstraQueue<BiDistCmp>();
-    break;
-  case GREEDY_SIZE:
-    PQ = new DijkstraQueue<DistSizeCmp>();
-    break;
-  case BIGREEDY_SIZE:
-    PQ = new DijkstraQueue<BiDistSizeCmp>();
-    break;
-  case VORONOI:
-    PQ = new DijkstraQueue<VorCmp>();
-    break;
-  case BIVORONOI:
-    PQ = new DijkstraQueue<BiVorCmp>();
-    break;
-  default:
-    std::cerr << "Wrong searchType" << std::endl;
-    exit(1);
+    case RANDOM:
+      PQ = new RandQueue();
+      break;
+    case BFS:
+      PQ = new SeqQueue();
+      break;
+    case GREEDY:
+      PQ = new DijkstraQueue<DistCmp>();
+      break;
+    case BIGREEDY:
+      PQ = new DijkstraQueue<BiDistCmp>();
+      break;
+    case GREEDY_SIZE:
+      PQ = new DijkstraQueue<DistSizeCmp>();
+      break;
+    case BIGREEDY_SIZE:
+      PQ = new DijkstraQueue<BiDistSizeCmp>();
+      break;
+    case VORONOI:
+      PQ = new DijkstraQueue<VorCmp>();
+      break;
+    case BIVORONOI:
+      PQ = new DijkstraQueue<BiVorCmp>();
+      break;
+    default:
+      std::cerr << "Wrong searchType" << std::endl;
+      exit(1);
   }
 
   predicate = new ConfBox3dPredicate();
   if(searchType == VORONOI || searchType == BIVORONOI){
     predicate->checkVoronoiFeatureSet(pRoot);
-    predicate->findClearance2(pRoot, pRoot->ring);
+    predicate->findCleanrance2(pRoot, pRoot->ring);
   }
 
   predicate->checkCollisionDetectionFeatureSet(pRoot);
@@ -102,7 +102,7 @@ bool SoftSubdivisionSearch::expand(ConfBox3d* b) {
     for (int i = 0; i < b->children.size(); ++i) {
       if(searchType == VORONOI || searchType == BIVORONOI){
         predicate->checkVoronoiFeatureSet(b->children[i]);
-        predicate->findClearance2(b->children[i], b->children[i]->ring);
+        predicate->findCleanrance2(b->children[i], b->children[i]->ring);
       }
 
       predicate->checkCollisionDetectionFeatureSet(b->children[i]);
@@ -157,22 +157,6 @@ bool SoftSubdivisionSearch::findPath(ConfBox3d* boxA, ConfBox3d* boxB, int& ct) 
       dijQ2.push(boxB);
     }
 
-    if(verbose){
-      fprintf(g_fptr, "box A (%f, %f, %f) %f\n",
-              boxA->mB.X(), boxA->mB.Y(), boxA->mB.Z(), boxA->width);
-      if(boxA->rot_width != -2){
-        fprintf(g_fptr, "    rot (%f, %f, %f) %f\n",
-                boxA->rot_mB.X(), boxA->rot_mB.Y(), boxA->rot_mB.Z(), boxA->rot_width);
-      }
-      fprintf(g_fptr, "box B (%f, %f, %f) %f\n",
-              boxB->mB.X(), boxB->mB.Y(), boxB->mB.Z(), boxB->width);
-      if(boxB->rot_width != -2){
-        fprintf(g_fptr, "    rot (%f, %f, %f) %f\n",
-                boxB->rot_mB.X(), boxB->rot_mB.Y(), boxB->rot_mB.Z(), boxB->rot_width);
-      }
-      fprintf(g_fptr, "\n");
-    }
-
     bool alter = true;
 
     while (!pSets->isConnect(boxA, boxB) && !dijQ.empty()) {
@@ -190,84 +174,45 @@ bool SoftSubdivisionSearch::findPath(ConfBox3d* boxA, ConfBox3d* boxB, int& ct) 
           current = dijQ.extract();
         }
 
-        if(verbose){
-          fprintf(g_fptr, "extract Bt (%f, %f, %f) %f",
-                  current->mB.X(), current->mB.Y(), current->mB.Z(),
-                  current->width);
-          if(current->rot_width != -2){
-            fprintf(g_fptr, " Br (%f, %f, %f) %f",
-                    current->rot_mB.X(), current->rot_mB.Y(), current->rot_mB.Z(),
-                    current->rot_width);
-          }
-          fprintf(g_fptr, "\n");
-          fprintf(g_fptr, "extract status %d\n\n", current->status);
-        }
-
         // if current is MIXED, try expand it and push the children that is
         // ACTUALLY neighbors of the source set (set containing start) into the dijQ again
         if (current->status == MIXED) {
             if (expand(current)) {
                 ++ct;
                 for (unsigned i = 0; i < current->children.size(); ++i) {
-                  if(current->children[i]->inQueue) continue;
-                  if(verbose){
-                    fprintf(g_fptr, "children Bt (%f, %f, %f) %f",
-                            current->children[i]->mB.X(), current->children[i]->mB.Y(), current->children[i]->mB.Z(),
-                            current->children[i]->width);
-                    if(current->children[i]->rot_width != -2){
-                      fprintf(g_fptr, " Br (%f, %f, %f) %f",
-                              current->children[i]->rot_mB.X(), current->children[i]->rot_mB.Y(), current->children[i]->rot_mB.Z(),
-                              current->children[i]->rot_width);
-                    }
-                    fprintf(g_fptr, "\n");
-                    fprintf(g_fptr, "children status %d neighbor size %d\n", current->children[i]->status, current->children[i]->neighbors.size());
-                  }
-                  // go through neighbors of each child to see if it's in source set
-                  // if yes, this child go into the dijQ
-                  bool isNeighborOfSourceSet = false;
-                  for (unsigned j = 0; j < current->children[i]->neighbors.size() && !isNeighborOfSourceSet; ++j) {
-                      ConfBox3d* neighbor = current->children[i]->neighbors[j];
-                      if(verbose){
-                        fprintf(g_fptr, "children neighbor status %d\n", neighbor->status);
-                        fprintf(g_fptr, "children neighbor Bt (%f, %f, %f) %f",
-                                neighbor->mB.X(), neighbor->mB.Y(), neighbor->mB.Z(),
-                                neighbor->width);
-                        if(neighbor->rot_width != -2){
-                          fprintf(g_fptr, " Br (%f, %f, %f) %f",
-                                  neighbor->rot_mB.X(), neighbor->rot_mB.Y(), neighbor->rot_mB.Z(),
-                                  neighbor->rot_width);
+                    if(current->children[i]->inQueue) continue;
+
+                    // go through neighbors of each child to see if it's in source set
+                    // if yes, this child go into the dijQ
+                    bool isNeighborOfSourceSet = false;
+                    for (unsigned j = 0; j < current->children[i]->neighbors.size() && !isNeighborOfSourceSet; ++j) {
+                        ConfBox3d* n = current->children[i]->neighbors[j];
+                        if (n->dist2Source == 0) {
+                            isNeighborOfSourceSet = true;
+                            break;
                         }
-                        fprintf(g_fptr, "\n");
-                      }
+                    }
 
-                      if (neighbor->dist2Source == 0) {
-                          isNeighborOfSourceSet = true;
-                          break;
-                      }
-                  }
+                    if (isNeighborOfSourceSet) {
+                        switch (current->children[i]->getStatus()) {
+                        //if it's FREE, also insert to source set
+                        case FREE:
+                            //current->children[i]->dist2Source = 0;
+                        case MIXED:
+                            current->children[i]->inQueue = true;
+                            current->children[i]->bidirection = current->bidirection;
 
-                  if (isNeighborOfSourceSet) {
-                      switch (current->children[i]->getStatus()) {
-                      //if it's FREE, also insert to source set
-                      case FREE:
-                      case MIXED:
-                          if(verbose)
-                          fprintf(g_fptr, "put in queue\n");
-
-                          current->children[i]->inQueue = true;
-                          current->children[i]->bidirection = current->bidirection;
-
-                          if(alter) dijQ.push(current->children[i]);
-                          else      dijQ2.push(current->children[i]);
-                          break;
-                      case STUCK:
-                          //cerr << "inside FindPath: STUCK case not treated" << endl;
-                          break;
-                      case UNKNOWN:
-                          //cerr << "inside FindPath: UNKNOWN case not treated" << endl;
-                          break;
-                      }
-                  }
+                            if(alter) dijQ.push(current->children[i]);
+                            else      dijQ2.push(current->children[i]);
+                            break;
+                        case STUCK:
+                            //cerr << "inside FindPath: STUCK case not treated" << endl;
+                            break;
+                        case UNKNOWN:
+                            //cerr << "inside FindPath: UNKNOWN case not treated" << endl;
+                            break;
+                        }
+                    }
                 }
             }
         } //end if (current->status == MIXED)
@@ -279,102 +224,22 @@ bool SoftSubdivisionSearch::findPath(ConfBox3d* boxA, ConfBox3d* boxB, int& ct) 
         }
 
         if (current->status == FREE) {
-          if(verbose){
-            fprintf(g_fptr, "find path current Bt (%f, %f, %f) %f",
-                    current->mB.X(), current->mB.Y(), current->mB.Z(),
-                    current->width);
-            if(current->rot_width != -2){
-              fprintf(g_fptr, " Br (%f, %f, %f) %f",
-                      current->rot_mB.X(), current->rot_mB.Y(), current->rot_mB.Z(),
-                      current->rot_width);
-            }
-            fprintf(g_fptr, "\n");
-            fprintf(g_fptr, "find path currnet status %d leaf %d neighbor size %d\n", current->status, current->isLeaf(), current->neighbors.size());
-          }
-
-          current->dist2Source = 0;
-          // if current is not MIXED, then must be FREE
-          // go through it's neighbors and add FREE and MIXED ones to dijQ
-          // also add FREE ones to source set
-          for (unsigned i = 0; i < current->neighbors.size(); ++i) {
-            ConfBox3d* neighbor = current->neighbors[i];
-
-            if(verbose){
-              fprintf(g_fptr, "find path current neighbor Bt (%f, %f, %f) %f",
-                      neighbor->mB.X(), neighbor->mB.Y(), neighbor->mB.Z(),
-                      neighbor->width);
-              if(neighbor->rot_width != -2){
-                fprintf(g_fptr, " Br (%f, %f, %f) %f",
-                        neighbor->rot_mB.X(), neighbor->rot_mB.Y(), neighbor->rot_mB.Z(),
-                        neighbor->rot_width);
-              }
-              fprintf(g_fptr, "\n");
-              fprintf(g_fptr, "find path current neighbor status %d leaf %d\n", neighbor->status, neighbor->isLeaf());
-            }
-
-
-            if(!neighbor->inQueue && neighbor->dist2Source == -1) {
-              if(neighbor->status == FREE){
-                if(verbose)
-                fprintf(g_fptr, "put in queue  FREE 2\n");
-
-
-                neighbor->inQueue = true;
-                neighbor->bidirection = current->bidirection;
-                if(alter) dijQ.push(neighbor);
-                else      dijQ2.push(neighbor);
-              }
-              else if(neighbor->status == MIXED){
-                if(neighbor->isLeaf()){
-                  if(verbose)
-                  fprintf(g_fptr, "put in queue  MIXED 2\n");
+            current->dist2Source = 0;
+            // if current is not MIXED, then must be FREE
+            // go through it's neighbors and add FREE and MIXED ones to dijQ
+            // also add FREE ones to source set
+            for (unsigned i = 0; i < current->neighbors.size(); ++i) {
+                ConfBox3d* neighbor = current->neighbors[i];
+                if(!neighbor->inQueue && neighbor->dist2Source == -1 &&
+                   (neighbor->status == FREE || neighbor->status == MIXED)) {
+                  //if(neighbor->status == FREE) neighbor->dist2Source = 0;
 
                   neighbor->inQueue = true;
                   neighbor->bidirection = current->bidirection;
                   if(alter) dijQ.push(neighbor);
                   else      dijQ2.push(neighbor);
-
                 }
-                else{
-                  BoxQueue* pq = new SeqQueue();
-                  pq->push(neighbor);
-
-                  while(!pq->empty()){
-                    ConfBox3d* expanded = pq->extract();
-
-                    for(unsigned k=0;k<expanded->children.size();++k){
-
-                      if(verbose){
-                        fprintf(g_fptr, "expanded Bt (%f, %f, %f)",
-                                expanded->children[k]->mB.X(), expanded->children[k]->mB.Y(), expanded->children[k]->mB.Z());
-                        if(expanded->children[k]->rot_width != -2)
-                          fprintf(g_fptr, " Br (%f, %f, %f)",
-                                  expanded->children[k]->rot_mB.X(), expanded->children[k]->rot_mB.Y(), expanded->children[k]->rot_mB.Z());
-                        fprintf(g_fptr, " status %d leaf %d\n", expanded->children[k]->status, expanded->children[k]->isLeaf());
-                      }
-
-                      if(expanded->children[k]->isLeaf()){
-                        if(current->isNeighbor(expanded->children[k])){
-                          if(verbose)
-                          fprintf(g_fptr, "put in queue 666\n");
-
-                          expanded->children[k]->inQueue = true;
-                          expanded->children[k]->bidirection = current->bidirection;
-
-                          if(alter) dijQ.push(expanded->children[k]);
-                          else      dijQ2.push(expanded->children[k]);
-                        }
-                      }
-                      else{
-                        if(current->isAdjacent(expanded->children[k]))
-                          pq->push(expanded->children[k]);
-                      }
-                    }
-                  }
-                }
-              }
             }
-          }
         } //end if (current->status == FREE)
 
         if(searchType == BIGREEDY || searchType == BIGREEDY_SIZE || searchType == BIVORONOI) alter = !alter;
@@ -421,6 +286,7 @@ ConfBox3d* SoftSubdivisionSearch::findVorBox(ConfBox3d* freeBox, int& ct) {
                         case FREE:
                         case MIXED:
                             current->children[i]->inVorQueue = true;
+                            current->children[i]->bidirection = current->bidirection;
                             dijQ.push(current->children[i]);
                             break;
                         case STUCK:
@@ -451,6 +317,7 @@ ConfBox3d* SoftSubdivisionSearch::findVorBox(ConfBox3d* freeBox, int& ct) {
                 if(!neighbor->inVorQueue && neighbor->dist2Source == -1 &&
                    (neighbor->status == FREE || neighbor->status == MIXED)) {
                   neighbor->inVorQueue = true;
+                  neighbor->bidirection = current->bidirection;
                   dijQ.push(neighbor);
                 }
             }

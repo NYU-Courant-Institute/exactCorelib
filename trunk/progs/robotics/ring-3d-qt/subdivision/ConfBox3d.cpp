@@ -1,5 +1,4 @@
 #include "subdivision/ConfBox3d.h"
-#include "strategy/PriorityQueue.h"
 
 extern FILE *g_fptr;
 extern bool verbose;
@@ -17,7 +16,7 @@ ConfBox3d::ConfBox3d(Point3d pp, double ww):
   inSource(false), distDij(-1){
   box = new Box3d(pp, ww);
   rot_mB.set(0,0,0);
-  rot_width = -2;
+  rot_x_width = rot_y_width = rot_z_width = rot_width = -2;
   boxIdCounter++;
   boxId = boxIdCounter;
   rB = (ww * sqrt(3))/2;
@@ -62,22 +61,7 @@ bool ConfBox3d::getRot(float rot[3]) {
   return true;
 }
 
-// have bug ......
 ConfBox3d* ConfBox3d::getBox(Point3d pp, Point3d rot_pp) {
-
-
-//  fprintf(g_fptr, "get box (%f, %f, %f) (%f, %f, %f)\n",
-//          pp.X(), pp.Y(), pp.Z(),
-//          rot_pp.X(), rot_pp.Y(), rot_pp.Z());
-
-//  fprintf(g_fptr, "is leaf %d\n", isLeaf());
-//  fprintf(g_fptr, "box (%f, %f, %f) %f %d\n",
-//          box->origin->X(), box->origin->Y(), box->origin->Z(), box->width, box->containsPoint(pp));
-//  if(rot_width != -2){
-//    fprintf(g_fptr, "rot (%f, %f, %f) %f %d\n",
-//            rot->origin->X(), rot->origin->Y(), rot->origin->Z(), rot->width, rot->containsPoint(rot_pp));
-//  }
-
   if (isLeaf()) {
     bool containsPoint = box->containsPoint(pp) && (!rot || rot->containsPoint(rot_pp));
     return containsPoint ? this : 0;
@@ -137,6 +121,24 @@ bool ConfBox3d::rotIsOverlapped(ConfBox3d* other){
   return !rot || rot->isOverlap(other->rot);
 }
 
+bool ConfBox3d::sameDirectionAdjacent(Box3d* b, Rot3dSide* r) {
+
+  double ori = (*rot->orientation) * (*(r->orientation));
+  // must be same orientation
+  if (ori == 1) {
+    bool adj;
+    if(abs(rot->orientation->X()) == 1)
+      adj = box->isSameDirectionAdjacent(b, 1);
+    else if(abs(rot->orientation->Y()) == 1)
+      adj = box->isSameDirectionAdjacent(b, 2);
+    else
+      adj = box->isSameDirectionAdjacent(b, 3);
+
+    return adj && rot->contains(r);
+  }
+  else return false;
+}
+
 // When any of the boxes does not have restrictions on the rotational degrees of freedom, just compare their translation boxes;
 // Otherwise, one of the components should be the same and the other adjacent
 bool ConfBox3d::isNeighbor(ConfBox3d* other) {
@@ -145,17 +147,8 @@ bool ConfBox3d::isNeighbor(ConfBox3d* other) {
   }
   else {
     return (rot->isIdentical(other->rot) && box->isAdjacent(other->box)) ||
-           (rot->isOverlap(other->rot) && box->isAdjacent(other->box)) ||
+           (other->rot->contains(rot) && box->isAdjacent(other->box)) ||
            (rot->isAdjacent(other->rot) && box->isIdentical(other->box));
-  }
-}
-
-bool ConfBox3d::isAdjacent(ConfBox3d* other){
-  if (rot == NULL || other->rot == NULL) {
-    return box->isAdjacent(other->box);
-  }
-  else {
-    return (box->isAdjacent(other->box)) && rot->isAdjacent(other->rot);
   }
 }
 
@@ -166,6 +159,8 @@ bool ConfBox3d::split(double epsilon) {
     return false;
   }
 
+  //fprintf(g_fptr, "split\n");
+
   if (box->split(epsilon)) {
     // Can still subdivide the translational component
     vector<Box3d*> box3dChildren = box->children;
@@ -175,6 +170,9 @@ bool ConfBox3d::split(double epsilon) {
     }
   }
   else if (!rot) {
+
+    //fprintf(g_fptr, "split face\n");
+
     // Need to subdivide into six sides
     for (int i = 0; i < 3; i++) {
       for (int j = -1; j < 3; j += 2) {
@@ -225,101 +223,19 @@ bool ConfBox3d::split(double epsilon) {
   }
 
 
-  for (unsigned i = 0; i < children.size(); ++i) {
-    for (unsigned j = i + 1; j < children.size(); ++j) {
-
-      if(verbose){
-        fprintf(g_fptr, "children 1 children neighbor (%f, %f, %f) %f",
-                children[i]->mB.X(), children[i]->mB.Y(), children[i]->mB.Z(), children[i]->width);
-        if(children[i]->rot_width != -2)
-          fprintf(g_fptr, " Br (%f, %f, %f) %f",
-                  children[i]->rot_mB.X(), children[i]->rot_mB.Y(), children[i]->rot_mB.Z(), children[i]->rot_width);
-        fprintf(g_fptr, "\n");
-
-        fprintf(g_fptr, "children children 2 neighbor (%f, %f, %f) %f",
-              children[j]->mB.X(), children[j]->mB.Y(), children[j]->mB.Z(), children[j]->width);
-        if(children[j]->rot_width != -2)
-          fprintf(g_fptr, " Br (%f, %f, %f) %f",
-                children[j]->rot_mB.X(), children[j]->rot_mB.Y(), children[j]->rot_mB.Z(), children[j]->rot_width);
-        fprintf(g_fptr, "\n");
-      }
-
+  for (int i = 0; i < children.size(); i++) {
+    for (int j = i + 1; j < children.size(); j++) {
       if (children[i]->isNeighbor(children[j])) {
-        if(verbose)
-        fprintf(g_fptr, "is neighbor\n");
-
         children[i]->neighbors.push_back(children[j]);
         children[j]->neighbors.push_back(children[i]);
       }
     }
   }
-  for (unsigned i = 0; i < children.size(); ++i) {
-    for (unsigned j = 0; j < neighbors.size(); ++j) {
-
-      if(neighbors[j]->isLeaf()){
-
-        if(verbose){
-          fprintf(g_fptr, "children 1 neighbor neighbor (%f, %f, %f) %f",
-                  children[i]->mB.X(), children[i]->mB.Y(), children[i]->mB.Z(), children[i]->width);
-          if(children[i]->rot_width != -2)
-            fprintf(g_fptr, " Br (%f, %f, %f) %f",
-                    children[i]->rot_mB.X(), children[i]->rot_mB.Y(), children[i]->rot_mB.Z(), children[i]->rot_width);
-          fprintf(g_fptr, "\n");
-
-          fprintf(g_fptr, "children neighbor 2 neighbor (%f, %f, %f) %f",
-                neighbors[j]->mB.X(), neighbors[j]->mB.Y(), neighbors[j]->mB.Z(), neighbors[j]->width);
-          if(neighbors[j]->rot_width != -2)
-            fprintf(g_fptr, " Br (%f, %f, %f) %f",
-                  neighbors[j]->rot_mB.X(), neighbors[j]->rot_mB.Y(), neighbors[j]->rot_mB.Z(), neighbors[j]->rot_width);
-          fprintf(g_fptr, "\n");
-        }
-
-        if (children[i]->isNeighbor(neighbors[j])) {
-          if(verbose)
-          fprintf(g_fptr, "is neighbor\n");
-
-          children[i]->neighbors.push_back(neighbors[j]);
-          neighbors[j]->neighbors.push_back(children[i]);
-        }
-      }
-      else{
-        BoxQueue* PQ = new SeqQueue();
-        PQ->push(neighbors[j]);
-        while(!PQ->empty()){
-          ConfBox3d* current = PQ->extract();
-          for(unsigned k=0;k<current->children.size();++k){
-            if(current->children[k]->isLeaf()){
-
-              if(verbose){
-                fprintf(g_fptr, "children 3 neighbor neighbor (%f, %f, %f) %f",
-                        children[i]->mB.X(), children[i]->mB.Y(), children[i]->mB.Z(), children[i]->width);
-                if(children[i]->rot_width != -2)
-                  fprintf(g_fptr, " Br (%f, %f, %f) %f",
-                          children[i]->rot_mB.X(), children[i]->rot_mB.Y(), children[i]->rot_mB.Z(), children[i]->rot_width);
-                fprintf(g_fptr, "\n");
-
-                fprintf(g_fptr, "children neighbor 4 neighbor (%f, %f, %f) %f",
-                      current->children[k]->mB.X(), current->children[k]->mB.Y(), current->children[k]->mB.Z(), current->children[k]->width);
-                if(current->children[k]->rot_width != -2)
-                  fprintf(g_fptr, " Br (%f, %f, %f) %f",
-                        current->children[k]->rot_mB.X(), current->children[k]->rot_mB.Y(), current->children[k]->rot_mB.Z(), current->children[k]->rot_width);
-                fprintf(g_fptr, "\n");
-              }
-
-              if(children[i]->isNeighbor(current->children[k])){
-                if(verbose)
-                fprintf(g_fptr, "is neighbor\n");
-
-                children[i]->neighbors.push_back(current->children[k]);
-                current->children[k]->neighbors.push_back(children[i]);
-              }
-            }
-            else{
-              if(children[i]->isAdjacent(current->children[k]))
-                PQ->push(current->children[k]);
-            }
-          }
-        }
+  for (int i = 0; i < children.size(); i++) {
+    for (int j = 0; j < neighbors.size(); j++) {
+      if (children[i]->isNeighbor(neighbors[j])) {
+        children[i]->neighbors.push_back(neighbors[j]);
+        neighbors[j]->neighbors.push_back(children[i]);
       }
     }
   }

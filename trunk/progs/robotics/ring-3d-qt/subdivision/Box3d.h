@@ -44,6 +44,18 @@ class Box3d {
     return intervalContains(x, xx, w, ww) && intervalContains(y, yy, w, ww);
   }
 
+  bool isSameDirectionAdjacent(Box3d* other, int idx){
+    double dx = abs(other->origin->X() - origin->X());
+    double dy = abs(other->origin->Y() - origin->Y());
+    double dz = abs(other->origin->Z() - origin->Z());
+    double sw = width / 2 + other->width / 2;
+    bool adj =
+      (idx == 1 && approxEqual(dx, sw) && includeFace(origin->Y(), origin->Z(), width, other->origin->Y(), other->origin->Z(), other->width)) ||
+      (idx == 2 && approxEqual(dy, sw) && includeFace(origin->X(), origin->Z(), width, other->origin->X(), other->origin->Z(), other->width)) ||
+      (idx == 3 && approxEqual(dz, sw) && includeFace(origin->X(), origin->Y(), width, other->origin->X(), other->origin->Y(), other->width));
+    return adj;
+  }
+
   bool isAdjacent(Box3d* other) {
     double dx = abs(other->origin->X() - origin->X());
     double dy = abs(other->origin->Y() - origin->Y());
@@ -64,7 +76,9 @@ class Box3d {
   }
 
   bool split(double epsilon) {
+    //fprintf(g_fptr, "split Bt\n");
     if (width < epsilon) {
+      //fprintf(g_fptr, "QQQ\n");
       return false;
     }
     children.clear();

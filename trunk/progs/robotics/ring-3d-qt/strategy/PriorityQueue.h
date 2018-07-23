@@ -25,26 +25,6 @@ extern Point3d goal;
 extern Point3d startRot;
 extern Point3d goalRot;
 
-extern double R;
-
-static double rotL(Point3d ra, Point3d rb){
-
-  Point3d tmp(Rot3dSide::cube2sphere(ra));
-  Vector a(tmp.X(), tmp.Y(), tmp.Z());
-  tmp = Rot3dSide::cube2sphere(rb);
-  Vector b(tmp.X(), tmp.Y(), tmp.Z());
-  double radian = acos(a*b);
-  assert(a.norm() > 0);
-  assert(b.norm() > 0);
-
-  if(floor(ra.X())*floor(rb.X())+
-     floor(ra.Y())*floor(rb.Y())+
-     floor(ra.Z())*floor(rb.Z()) < 0) radian = M_PI-radian;
-  if(radian < 0) radian = 0;
-
-  return radian*R;
-}
-
 class PathCmp {
  public:
   bool operator()(ConfBox3d* a, ConfBox3d* b) {
@@ -72,21 +52,31 @@ class DistCmp
 {
 public:
   bool operator() (const ConfBox3d* a, const ConfBox3d* b){
-    double distA = a->mB.distance(goal);
-    double distB = b->mB.distance(goal);
+    double distDiff = a->mB.distance(goal)-b->mB.distance(goal);
+    return distDiff > 0;
+
 
     if(a->rot_width != -2 && b->rot_width != -2){
-      distA += rotL(a->rot_mB, goalRot);
-      distB += rotL(b->rot_mB, goalRot);
-    }
-    else if(a->rot_width == -2 && b->rot_width != -2){
-      distB += rotL(b->rot_mB, goalRot);
-    }
-    else if(a->rot_width != -2 && b->rot_width == -2){
-      distA += rotL(a->rot_mB, goalRot);
-    }
+//      if(abs(distDiff) > 0) return distDiff;
+//      else{
+//        double dirA = Vector(a->rot_mB.X(), a->rot_mB.Y(), a->rot_mB.Z())*Vector(goalRot.X(), goalRot.Y(), goalRot.Z());
+//        double dirB = Vector(b->rot_mB.X(), b->rot_mB.Y(), b->rot_mB.Z())*Vector(goalRot.X(), goalRot.Y(), goalRot.Z());
+//        return dirA < dirB;
+//      }
 
-    return distA-distB > 0;
+      //use depth for now
+      if (a->depth > b->depth) {
+        return true;
+      }
+      //if same depth, expand box created earlier first
+      if (a->depth == b->depth) {
+        return a->boxId > b->boxId;
+      }
+      return false;
+    }
+    else if(a->rot_width != -2) return true;
+    else if(b->rot_width != -2) return false;
+    else                        return distDiff > 0;
   }
 };
 
@@ -95,41 +85,14 @@ class BiDistCmp
 {
 public:
   bool operator() (const ConfBox3d* a, const ConfBox3d* b){
-    Point3d pa, pb, pa_rot, pb_rot;
-    if(a->bidirection > 0){
-      pa = goal;
-      pa_rot = goalRot;
-    }
-    else{
-      pa = start;
-      pa_rot = startRot;
-    }
-    if(b->bidirection > 0){
-      pb = goal;
-      pb_rot = goalRot;
-    }
-    else{
-      pb = start;
-      pb_rot = startRot;
-    }
+    Point3d pa, pb;
+    if(a->bidirection > 0) pa = goal;
+    else                   pa = start;
+    if(b->bidirection > 0) pb = goal;
+    else                   pb = start;
 
-
-    double distA = a->mB.distance(pa);
-    double distB = b->mB.distance(pb);
-
-
-    if(a->rot_width != -2 && b->rot_width != -2){
-      distA += rotL(a->rot_mB, pa_rot);
-      distB += rotL(b->rot_mB, pb_rot);
-    }
-    else if(a->rot_width == -2 && b->rot_width != -2){
-      distB += rotL(b->rot_mB, pb_rot);
-    }
-    else if(a->rot_width != -2 && b->rot_width == -2){
-      distA += rotL(a->rot_mB, pa_rot);
-    }
-
-    return distA-distB > 0;
+    double distDiff = a->mB.distance(pa)-b->mB.distance(pb);
+    return distDiff > 0;
   }
 };
 
@@ -139,21 +102,8 @@ class DistSizeCmp
 {
 public:
   bool operator() (const ConfBox3d* a, const ConfBox3d* b){
-    double distA = a->mB.distance(goal);
-    double distB = b->mB.distance(goal);
-
-    if(a->rot_width != -2 && b->rot_width != -2){
-      distA += rotL(a->rot_mB, goalRot);
-      distB += rotL(b->rot_mB, goalRot);
-    }
-    else if(a->rot_width == -2 && b->rot_width != -2){
-      distB += rotL(b->rot_mB, goalRot);
-    }
-    else if(a->rot_width != -2 && b->rot_width == -2){
-      distA += rotL(a->rot_mB, goalRot);
-    }
-
-    return distA*a->depth-distB*b->depth > 0;
+    double distDiff = a->mB.distance(goal)*a->depth-b->mB.distance(goal)*b->depth;
+    return distDiff > 0;
   }
 };
 
@@ -162,41 +112,14 @@ class BiDistSizeCmp
 {
 public:
   bool operator() (const ConfBox3d* a, const ConfBox3d* b){
-    Point3d pa, pb, pa_rot, pb_rot;
-    if(a->bidirection > 0){
-      pa = goal;
-      pa_rot = goalRot;
-    }
-    else{
-      pa = start;
-      pa_rot = startRot;
-    }
-    if(b->bidirection > 0){
-      pb = goal;
-      pb_rot = goalRot;
-    }
-    else{
-      pb = start;
-      pb_rot = startRot;
-    }
+    Point3d pa, pb;
+    if(a->bidirection > 0) pa = goal;
+    else                   pa = start;
+    if(b->bidirection > 0) pb = goal;
+    else                   pb = start;
 
-
-    double distA = a->mB.distance(pa);
-    double distB = b->mB.distance(pb);
-
-
-    if(a->rot_width != -2 && b->rot_width != -2){
-      distA += rotL(a->rot_mB, pa_rot);
-      distB += rotL(b->rot_mB, pb_rot);
-    }
-    else if(a->rot_width == -2 && b->rot_width != -2){
-      distB += rotL(b->rot_mB, pb_rot);
-    }
-    else if(a->rot_width != -2 && b->rot_width == -2){
-      distA += rotL(a->rot_mB, pa_rot);
-    }
-
-    return distA*a->depth-distB*b->depth > 0;
+    double distDiff = a->mB.distance(pa)*a->depth-b->mB.distance(pb)*b->depth;
+    return distDiff > 0;
   }
 };
 
@@ -204,24 +127,21 @@ public:
 class VorCmp {
 public:
   bool operator()(const ConfBox3d* a, const ConfBox3d* b) {
-    double distA = a->mB.distance(goal);
-    double distB = b->mB.distance(goal);
-
-    if(a->rot_width != -2 && b->rot_width != -2){
-      distA += rotL(a->rot_mB, goalRot);
-      distB += rotL(b->rot_mB, goalRot);
-    }
-    else if(a->rot_width == -2 && b->rot_width != -2){
-      distB += rotL(b->rot_mB, goalRot);
-    }
-    else if(a->rot_width != -2 && b->rot_width == -2){
-      distA += rotL(a->rot_mB, goalRot);
-    }
-
+    double dista = a->mB.distance(goal);
+    double distb = b->mB.distance(goal);
     double a_v = a->vorCorners.size() + a->vorEdges.size() + a->vorWalls.size();
     double b_v = b->vorCorners.size() + b->vorEdges.size() + b->vorWalls.size();
 
-    return distA/a_v > distB/b_v;
+//    if(a_v == 2 && b_v == 2)
+//      return dista > distb;
+//    else if(a_v == 2)
+//      return false;
+//    else if(b_v == 2)
+//      return true;
+//    else
+//      return a_v > b_v;
+
+    return dista/a_v > distb/b_v;
     //return dista*dista/a_v > distb*distb/b_v;
     //return pow(dista, a_v) > pow(distb, b_v);
     //return dista/(a_v*a_v) > distb/(b_v*b_v);
@@ -238,38 +158,14 @@ class BiVorCmp {
 public:
   bool operator()(const ConfBox3d* a, const ConfBox3d* b) {
 
-    Point3d pa, pb, pa_rot, pb_rot;
-    if(a->bidirection > 0){
-      pa = goal;
-      pa_rot = goalRot;
-    }
-    else{
-      pa = start;
-      pa_rot = startRot;
-    }
-    if(b->bidirection > 0){
-      pb = goal;
-      pb_rot = goalRot;
-    }
-    else{
-      pb = start;
-      pb_rot = startRot;
-    }
+    Point3d pa, pb;
+    if(a->bidirection > 0) pa = goal;
+    else                   pa = start;
+    if(b->bidirection > 0) pb = goal;
+    else                   pb = start;
 
-    double distA = a->mB.distance(pa);
-    double distB = b->mB.distance(pb);
-
-    if(a->rot_width != -2 && b->rot_width != -2){
-      distA += rotL(a->rot_mB, pa_rot);
-      distB += rotL(b->rot_mB, pb_rot);
-    }
-    else if(a->rot_width == -2 && b->rot_width != -2){
-      distB += rotL(b->rot_mB, pb_rot);
-    }
-    else if(a->rot_width != -2 && b->rot_width == -2){
-      distA += rotL(a->rot_mB, pa_rot);
-    }
-
+    double dista = a->mB.distance(pa);
+    double distb = b->mB.distance(pb);
     double a_v = a->vorCorners.size() + a->vorEdges.size() + a->vorWalls.size();
     double b_v = b->vorCorners.size() + b->vorEdges.size() + b->vorWalls.size();
 
@@ -282,7 +178,7 @@ public:
     //    else
     //      return a_v > b_v;
 
-    return distA/a_v > distB/b_v;
+    return dista/a_v > distb/b_v;
   }
 };
 

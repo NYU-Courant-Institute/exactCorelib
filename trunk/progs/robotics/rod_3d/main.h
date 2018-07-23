@@ -38,7 +38,7 @@ MainWindow *window;
 FILE *debug_ptr;
 
 // File
-std::string cfg_name("WAFR18_rand100.cfg");
+std::string cfg_name("WAFR18_rand40_2.cfg");
 std::vector<std::string> cfg_name_list;
 int num_cfg = 0;
 std::string working_dir;
@@ -67,8 +67,8 @@ std::vector<double> map_translation = {0, 0,
                                        0};  // translation of input environment
 
 // camera setting
-Point3d eye(0, 256, 1280);
-Point3d at(0, 256, 0);
+Point3d eye(512, 512, 512);
+Point3d at(0, 0, 0);
 Vector up(0, 1, 0);
 Vector eye_vector(0, 0, 0);
 

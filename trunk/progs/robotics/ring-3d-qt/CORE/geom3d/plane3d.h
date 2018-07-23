@@ -81,8 +81,8 @@ public:
   double displacement() const { return d; }
   const Vector& normal() const { return n; }
   void normalize() {
-    double nn(n.norm());
-    n.set(n.X()/nn, n.Y()/nn, n.Z()/nn);
+    d = d/n.norm();
+    n.set(n.X()/n.norm(), n.Y()/n.norm(), n.Z()/n.norm());
   }
 
 
@@ -116,8 +116,6 @@ public:
   double distance( const Point3d& p ) const;
   double distance( const Line3d& l ) const;
   double distance( const Segment3d& s ) const;
-
-  double between( Plane3d pl, Point3d p, double r );
 
    /** intersect predicates
     * later implementation may return like this:

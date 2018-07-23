@@ -60,10 +60,7 @@ class Rot3d {
 
   static void rot2mat(double x, double y, double z, float mat[16]) {
     // 1. Normalize
-    float norm = sqrt(x * x + y * y + z * z);
-    x /= norm;
-    y /= norm;
-    z /= norm;
+    cube2sphere(x, y, z);
 
     // 2. Cross Product with North Pole
     float qx = -z;

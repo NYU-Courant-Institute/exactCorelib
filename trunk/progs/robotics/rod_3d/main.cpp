@@ -97,10 +97,16 @@ void run() {
          << sss->free_count + sss->stuck_count + sss->mix_count << "\n\n";
 }
 
-void pwdWorkingDir() {
+void pwdWorkingDir(std::string argv) {
   bool found_dir = false;
-  std::string folder_name =
-      "/" + QCoreApplication::applicationName().toStdString() + "/";
+  int idx = 0;
+  for (int i = argv.size() - 1; i >= 0; --i) {
+    if (argv[i] == '/') {
+      idx = i + 1;
+      break;
+    }
+  }
+  std::string folder_name = "/" + argv.substr(idx, argv.size()) + "/";
   working_dir = QDir::currentPath().toStdString();
 
   // Test if the build directory is rod_3d. If so,
@@ -140,7 +146,7 @@ void pwdWorkingDir() {
 }
 
 int main(int argc, char* argv[]) {
-  pwdWorkingDir();
+  pwdWorkingDir(std::string(argv[0]));
 
   if (argc > 1) start.setX(atof(argv[2]));        // start x
   if (argc > 2) start.setY(atof(argv[3]));        // start y
@@ -184,7 +190,7 @@ int main(int argc, char* argv[]) {
   if (argc > 30) transparency = atoi(argv[30]);
   if (argc > 31) frame_rate = atoi(argv[31]);
 
-  debug_ptr = fopen("debug2.txt", "w");
+  debug_ptr = fopen("debug.txt", "w");
 
   // Allow creation of Qt GUI
   QApplication app(argc, argv);

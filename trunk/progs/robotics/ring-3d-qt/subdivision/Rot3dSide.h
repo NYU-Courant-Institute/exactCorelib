@@ -210,18 +210,15 @@ class Rot3dSide {
       if (abs(x) == 1) {
         return
           (approxEqual(abs(y - yy), width/2 + other->width/2) && intervalOverlap(z, zz, w, ww)) ||
-          (approxEqual(abs(z - zz), width/2 + other->width/2) && intervalOverlap(y, yy, w, ww)) ||
-          (intervalOverlap(z, zz, w, ww) && intervalOverlap(y, yy, w, ww));
+          (approxEqual(abs(z - zz), width/2 + other->width/2) && intervalOverlap(y, yy, w, ww));
       } else if (abs(y) == 1) {
         return
           (approxEqual(abs(x - xx), width/2 + other->width/2) && intervalOverlap(z, zz, w, ww)) ||
-          (approxEqual(abs(z - zz), width/2 + other->width/2) && intervalOverlap(x, xx, w, ww)) ||
-          (intervalOverlap(z, zz, w, ww) && intervalOverlap(x, xx, w, ww));
+          (approxEqual(abs(z - zz), width/2 + other->width/2) && intervalOverlap(x, xx, w, ww));
       } else {
         return
           (approxEqual(abs(x - xx), width/2 + other->width/2) && intervalOverlap(y, yy, w, ww)) ||
-          (approxEqual(abs(y - yy), width/2 + other->width/2) && intervalOverlap(x, xx, w, ww)) ||
-          (intervalOverlap(x, xx, w, ww) && intervalOverlap(y, yy, w, ww));
+          (approxEqual(abs(y - yy), width/2 + other->width/2) && intervalOverlap(x, xx, w, ww));
       }
     } else {
       double ori_a[3] = {origin->X(), origin->Y(), origin->Z()};
@@ -306,7 +303,9 @@ class Rot3dSide {
   }
 
   bool split(double epsilon) {
+    //fprintf(g_fptr, "split Br\n");
     if (width < epsilon) {
+      //fprintf(g_fptr, "GGG\n");
       return false;
     }
     children.clear();
