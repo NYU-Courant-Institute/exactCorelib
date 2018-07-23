@@ -1,3 +1,1 @@
-2posts_1.cfg
-2posts_2.cfg
-2post2_3.cfg
+ring_posts_2.cfg

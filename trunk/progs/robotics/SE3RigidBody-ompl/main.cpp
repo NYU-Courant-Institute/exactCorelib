@@ -8,14 +8,23 @@
 #include <Qdir>
 
 #include <ompl/geometric/SimpleSetup.h>
+#include <ompl/geometric/planners/fmt/BFMT.h>
+#include <ompl/geometric/planners/kpiece/LBKPIECE1.h>
+#include <ompl/geometric/planners/pdst/PDST.h>
 #include <ompl/geometric/planners/prm/LazyPRM.h>
 #include <ompl/geometric/planners/prm/PRM.h>
+#include <ompl/geometric/planners/prm/SPARS.h>
 #include <ompl/geometric/planners/rrt/LazyRRT.h>
 #include <ompl/geometric/planners/rrt/RRT.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include <ompl/geometric/planners/stride/STRIDE.h>
 #include <omplapp/apps/SE3RigidBodyPlanning.h>
 #include <omplapp/config.h>
+
+enum { PRM = 0, LAZYPRM, RRT, LAZYRRT, RRTCONNECT, PDST, BFMT, LBKPIECE };
+std::vector<std::string> planner_name({"PRM", "LAZYPRM", "RRT", "LAZYRRT",
+                                       "RRTCONNECT", "PDST", "BFMT",
+                                       "LBKPIECE"});
 
 using namespace ompl;
 
@@ -30,6 +39,7 @@ struct Quaterniond {
 struct CFG {
   double tx, ty, tz;  // translation
   double rx, ry, rz;  // rotation
+  double ax, ay, az, angle;
   Quaterniond quaternion;
 };
 
@@ -129,9 +139,10 @@ int main(int argc, char** argv) {
 
         fptr_experiement_data.open(std::string(cfg_name + "_exp.txt"),
                                    std::ofstream::app);
-        for (int i = 0; i < 5; ++i)  // planner idx
+        for (int i = 0; i < 8; ++i)  // planner idx
         {
-          // run(i);
+          fprintf(stderr, "running planner %s\n", planner_name[i].c_str());
+          run(i);
         }
         fptr_experiement_data.close();
         fptr_cfg.close();
@@ -151,10 +162,9 @@ void cube2sphere(double& rx, double& ry, double& rz) {
   rz = zz * sqrt(1.0 - xx * xx * 0.5 - yy * yy * 0.5 + xx * xx * yy * yy / 3.0);
 }
 
+// Yaw, Pitch, Roll => Heading, Pitch, Bank
 Quaterniond toQuaternion(double x, double y, double z) {
-  // 1. Normalize
   cube2sphere(x, y, z);
-
   // 2. Cross Product with North Pole
   float qx = -z;
   float qy = 0;
@@ -171,55 +181,37 @@ Quaterniond toQuaternion(double x, double y, double z) {
 
   // 3. Angle with North Pole
   float theta = acos(y);
-
-  // 4. Get Quaternion
   Quaterniond q;
+  // 4. Get Quaternion
   float c = cos(theta / 2);
   float s = sin(theta / 2);
-  double w = q.w = c;
-  x = q.x = s * qx;
-  y = q.y = s * qy;
-  z = q.z = s * qz;
-  fprintf(stderr, "xyzw %f %f %f %f  norm %f\n", q.x, q.y, q.z, q.w, qnorm);
-  // roll (x-axis rotation)
-  double sinr = +2.0 * (q.w * q.x + q.y * q.z);
-  double cosr = +1.0 - 2.0 * (q.x * q.x + q.y * q.y);
-  double roll = atan2(sinr, cosr);
-
-  // pitch (y-axis rotation)
-  double sinp = +2.0 * (q.w * q.y - q.z * q.x);
-  double pitch = asin(sinp);
-
-  // yaw (z-axis rotation)
-  double siny = +2.0 * (q.w * q.z + q.x * q.y);
-  double cosy = +1.0 - 2.0 * (q.y * q.y + q.z * q.z);
-  double yaw = atan2(siny, cosy);
-
-  fprintf(stderr, "r p y %f %f %f\n", roll * 180.0 / M_PI, pitch * 180.0 / M_PI,
-          yaw * 180.0 / M_PI);
+  float w = c;
+  q.w = w;
+  q.x = x = s * qx;
+  q.y = y = s * qy;
+  q.z = z = s * qz;
 
   return q;
 }
 
+// OMPL robot center is at the middle of the rod
 void adjust_OMPL_translation_input(double& tx, double& ty, double& tz,
                                    double rx, double ry, double rz) {
   cube2sphere(rx, ry, rz);
-
+  bool is_num = false;
   std::string num = "";
   for (unsigned i = 0; i < robot.size(); ++i) {
-    if (robot[i] == '.') {
+    if (is_num && robot[i] == '.') {
       break;
     }
-    num.append(1, robot[i]);
+    if (robot[i] >= '0' && robot[i] <= '9') is_num = true;
+    if (is_num) num.append(1, robot[i]);
   }
   double rod_length = atof(num.c_str()) * 0.5;
 
-  double norm = sqrt(rx * rx + ry * ry + rz * rz);
-  if (norm != 0) {
-    tx += rx / norm * rod_length;
-    ty += ry / norm * rod_length;
-    tz += rz / norm * rod_length;
-  }
+  tx += rx * rod_length;
+  ty += ry * rod_length;
+  tz += rz * rod_length;
 }
 
 void parseExampleFile() {
@@ -233,7 +225,6 @@ void parseExampleFile() {
     if (sptr == nullptr || strcmp(sptr, "#") == 0) {
       continue;
     }
-    fprintf(stderr, "%s\n", sptr);
 
     // start configuration
     if (strcmp(sptr, "start.x") == 0) {
@@ -248,17 +239,33 @@ void parseExampleFile() {
       sptr = strtok(NULL, "=: \t");
       start.tz = atof(sptr);
     }
-    if (strcmp(sptr, "start.rx") == 0) {
+    if (strcmp(sptr, "start_rotation_x") == 0) {
       sptr = strtok(NULL, "=: \t");
       start.rx = atof(sptr);
     }
-    if (strcmp(sptr, "start.ry") == 0) {
+    if (strcmp(sptr, "start_rotation_y") == 0) {
       sptr = strtok(NULL, "=: \t");
       start.ry = atof(sptr);
     }
-    if (strcmp(sptr, "start.rz") == 0) {
+    if (strcmp(sptr, "start_rotation_z") == 0) {
       sptr = strtok(NULL, "=: \t");
       start.rz = atof(sptr);
+    }
+    if (strcmp(sptr, "start.axis.x") == 0) {
+      sptr = strtok(NULL, "=: \t");
+      start.ax = atof(sptr);
+    }
+    if (strcmp(sptr, "start.axis.y") == 0) {
+      sptr = strtok(NULL, "=: \t");
+      start.ay = atof(sptr);
+    }
+    if (strcmp(sptr, "start.axis.z") == 0) {
+      sptr = strtok(NULL, "=: \t");
+      start.az = atof(sptr);
+    }
+    if (strcmp(sptr, "start.theta") == 0) {
+      sptr = strtok(NULL, "=: \t");
+      start.angle = atof(sptr);
     }
 
     // goal configuration
@@ -274,17 +281,33 @@ void parseExampleFile() {
       sptr = strtok(NULL, "=: \t");
       goal.tz = atof(sptr);
     }
-    if (strcmp(sptr, "goal.rx") == 0) {
+    if (strcmp(sptr, "goal_rotation_x") == 0) {
       sptr = strtok(NULL, "=: \t");
       goal.rx = atof(sptr);
     }
-    if (strcmp(sptr, "goal.ry") == 0) {
+    if (strcmp(sptr, "goal_rotation_y") == 0) {
       sptr = strtok(NULL, "=: \t");
       goal.ry = atof(sptr);
     }
-    if (strcmp(sptr, "goal.rz") == 0) {
+    if (strcmp(sptr, "goal_rotation_z") == 0) {
       sptr = strtok(NULL, "=: \t");
       goal.rz = atof(sptr);
+    }
+    if (strcmp(sptr, "goal.axis.x") == 0) {
+      sptr = strtok(NULL, "=: \t");
+      goal.ax = atof(sptr);
+    }
+    if (strcmp(sptr, "goal.axis.y") == 0) {
+      sptr = strtok(NULL, "=: \t");
+      goal.ay = atof(sptr);
+    }
+    if (strcmp(sptr, "goal.axis.z") == 0) {
+      sptr = strtok(NULL, "=: \t");
+      goal.az = atof(sptr);
+    }
+    if (strcmp(sptr, "goal.theta") == 0) {
+      sptr = strtok(NULL, "=: \t");
+      goal.angle = atof(sptr);
     }
 
     if (strcmp(sptr, "robot") == 0) {
@@ -307,24 +330,26 @@ void parseExampleFile() {
       run_count = atoi(sptr);
     }
   }
-  adjust_OMPL_translation_input(start.tx, start.ty, start.tz, start.rx,
-                                start.ry, start.rz);
+  // ring no need adjust
+  // adjust_OMPL_translation_input(start.tx, start.ty, start.tz, start.rx,
+  //                              start.ry, start.rz);
   start.quaternion = toQuaternion(start.rx, start.ry, start.rz);
-  double qw2 = sqrt(1.0 - start.quaternion.w * start.quaternion.w);
-  if (qw2 == 0) qw2 = 1;
-  fprintf(stderr, "start translation %f %f %f\n", start.tx, start.ty, start.tz);
-  fprintf(stderr, "start rotation %f %f %f %f\n", start.quaternion.x / qw2,
-          start.quaternion.y / qw2, start.quaternion.z / qw2,
-          2.0 * acos(start.quaternion.w));
-  adjust_OMPL_translation_input(goal.tx, goal.ty, goal.tz, goal.rx, goal.ry,
-                                goal.rz);
+  // double qw2 = sqrt(1.0 - start.quaternion.w * start.quaternion.w);
+  //  if (qw2 == 0) qw2 = 1;
+  //  fprintf(stderr, "start translation %f %f %f\n", start.tx, start.ty,
+  //  start.tz); fprintf(stderr, "start rotation %f %f %f %f\n",
+  //  start.quaternion.x / qw2,
+  //          start.quaternion.y / qw2, start.quaternion.z / qw2,
+  //          2.0 * acos(start.quaternion.w));
+  // adjust_OMPL_translation_input(goal.tx, goal.ty, goal.tz, goal.rx, goal.ry,
+  //                              goal.rz);
   goal.quaternion = toQuaternion(goal.rx, goal.ry, goal.rz);
-  qw2 = sqrt(1.0 - goal.quaternion.w * goal.quaternion.w);
-  if (qw2 == 0) qw2 = 1;
-  fprintf(stderr, "goal translation %f %f %f\n", goal.tx, goal.ty, goal.tz);
-  fprintf(stderr, "goal rotation %f %f %f %f\n", goal.quaternion.x / qw2,
-          goal.quaternion.y / qw2, goal.quaternion.z / qw2,
-          2.0 * acos(goal.quaternion.w));
+  //  qw2 = sqrt(1.0 - goal.quaternion.w * goal.quaternion.w);
+  //  if (qw2 == 0) qw2 = 1;
+  //  fprintf(stderr, "goal translation %f %f %f\n", goal.tx, goal.ty, goal.tz);
+  //  fprintf(stderr, "goal rotation %f %f %f %f\n", goal.quaternion.x / qw2,
+  //          goal.quaternion.y / qw2, goal.quaternion.z / qw2,
+  //          2.0 * acos(goal.quaternion.w));
 }
 
 void run(const int planner_idx) {
@@ -334,24 +359,20 @@ void run(const int planner_idx) {
   // load the robot and the environment
   setup.setRobotMesh(std::string(working_dir + robot).c_str());
   setup.setEnvironmentMesh(std::string(working_dir + world).c_str());
-
+  run_count = 5;
   struct Data experiment(run_count, 0, 0, 0, 0);
   for (int i = 0; i < run_count; ++i) {
     // define starting state
     base::ScopedState<base::SE3StateSpace> m_start(setup.getSpaceInformation());
     m_start->setXYZ(start.tx, start.ty, start.tz);
     double qw2 = sqrt(1.0 - start.quaternion.w * start.quaternion.w);
-    m_start->rotation().setAxisAngle(
-        start.quaternion.x / qw2, start.quaternion.y / qw2,
-        start.quaternion.z / qw2, 2.0 * acos(start.quaternion.w));
+    m_start->rotation().setAxisAngle(start.ax, start.ay, start.az, start.angle);
 
     // define goal state
     base::ScopedState<base::SE3StateSpace> m_goal(m_start);
     m_goal->setXYZ(goal.tx, goal.ty, goal.tz);
     qw2 = sqrt(1.0 - goal.quaternion.w * goal.quaternion.w);
-    m_goal->rotation().setAxisAngle(
-        goal.quaternion.x / qw2, goal.quaternion.y / qw2,
-        goal.quaternion.z / qw2, 2.0 * acos(goal.quaternion.w));
+    m_goal->rotation().setAxisAngle(goal.ax, goal.ay, goal.az, goal.angle);
 
     // set the start & goal states
     setup.setStartAndGoalStates(m_start, m_goal);
@@ -388,6 +409,23 @@ void run(const int planner_idx) {
       rrtconnect->setRange(0.5);
       ompl::base::PlannerPtr target_planner_ptr(rrtconnect);
       setup.setPlanner(target_planner_ptr);
+    } else if (planner_idx == 5) {
+      fptr_experiement_data << "planner: path-directed subdivision tree\n";
+      ompl::geometric::PDST* pdst = new ompl::geometric::PDST(si_ptr);
+      ompl::base::PlannerPtr target_planner_ptr(pdst);
+      setup.setPlanner(target_planner_ptr);
+    } else if (planner_idx == 6) {
+      fptr_experiement_data << "planner: bidirectional asymptotically optima "
+                            << "fast marching tree\n";
+      ompl::geometric::BFMT* bfmt = new ompl::geometric::BFMT(si_ptr);
+      ompl::base::PlannerPtr target_planner_ptr(bfmt);
+      setup.setPlanner(target_planner_ptr);
+    } else if (planner_idx == 7) {
+      fptr_experiement_data << "planner: lazy bi-directional KPIECE\n";
+      ompl::geometric::LBKPIECE1* LBKPIECE =
+          new ompl::geometric::LBKPIECE1(si_ptr);
+      ompl::base::PlannerPtr target_planner_ptr(LBKPIECE);
+      setup.setPlanner(target_planner_ptr);
     }
 
     // Jul. 16 Tom
@@ -397,14 +435,14 @@ void run(const int planner_idx) {
     //}
 
     // Jul. 20 Tom
-    bool solved = setup.solve(time_limit);
+    bool solved = setup.solve(300);
     if (solved && setup.haveExactSolutionPath()) {
       // if(solved && setup.haveSolutionPath()){
       ++experiment.success_rate;
     }
 
-    experiment.total_time += setup.getLastPlanComputationTime() * 1000.0f;
-    experiment.t.push_back(setup.getLastPlanComputationTime() * 1000.0f);
+    experiment.total_time += setup.getLastPlanComputationTime();
+    experiment.t.push_back(setup.getLastPlanComputationTime());
     if (experiment.t.size() == 1) {
       experiment.best_time = experiment.t.back();
     } else {

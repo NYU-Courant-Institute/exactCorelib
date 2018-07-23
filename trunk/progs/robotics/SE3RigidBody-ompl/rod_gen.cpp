@@ -7,16 +7,17 @@
 int main(int argc, char* argv[]){
 	char filename[50];
 	double length = atoi(argv[1]);
-	sprintf(filename, "rod_%d.raw", static_cast<int>(length));
+	sprintf(filename, "rod_z_%d.raw", static_cast<int>(length));
 	FILE* fptr = fopen(filename, "w");
 
 	// pillar
+	double z = 0;
 	std::vector<double> ax, ay, az;
 	std::vector<double> bx, by, bz;
 	for (unsigned i=0;i<=360;++i) {
 		double angle = i;
 		angle = angle/180.0*M_PI;
-		double x = 1.0-cos(angle), y = sin(angle), z = 0;
+		double x = cos(angle), y = sin(angle);
 		ax.push_back(x);
 		ay.push_back(y);
 		az.push_back(z);
@@ -24,16 +25,27 @@ int main(int argc, char* argv[]){
 		by.push_back(y);
 		bz.push_back(z+length);
 	}
-	// red color
+	// for(unsigned i=0;i<ax.size()-1;++i){
+	// 	fprintf(fptr, "1 0 0 %f %f %f %f %f %f %f %f %f\n", 
+	// 		ax[i], 0, 0,
+	// 		ax[i], ay[i], az[i], 
+	// 		ax[i+1], ay[i+1], az[i+1]);
+	// }
+	// for(unsigned i=0;i<ax.size()-1;++i){
+	// 	fprintf(fptr, "1 0 0 %f %f %f %f %f %f %f %f %f\n", 
+	// 		bx[i], 0, 0, 
+	// 		bx[i], by[i], bz[i], 
+	// 		bx[i+1], by[i+1], bz[i+1]);
+	// }
 	for(unsigned i=0;i<ax.size()-1;++i){
-		fprintf(fptr, "1 0 0 %f %f %f %f %f %f %f %f %f\n", 0.0, 0.0, 0.0, ax[i], ay[i], 0.0, ax[i+1], ay[i+1], 0.0);
-	}
-	for(unsigned i=0;i<ax.size()-1;++i){
-		fprintf(fptr, "1 0 0 %f %f %f %f %f %f %f %f %f\n", 0.0, 0.0, 0.0, bx[i], by[i], length, bx[i+1], by[i+1], length);
-	}
-	for(unsigned i=0;i<ax.size()-1;++i){
-		fprintf(fptr, "1 0 0 %f %f %f %f %f %f %f %f %f\n", ax[i], ay[i], 0.0, ax[i+1], ay[i+1], 0.0, bx[i], by[i], length);
-		fprintf(fptr, "1 0 0 %f %f %f %f %f %f %f %f %f\n", ax[i+1], ay[i+1], 0.0, bx[i], by[i], length, bx[i+1], by[i+1], length);
+		fprintf(fptr, "1 0 0 %f %f %f %f %f %f %f %f %f\n", 
+			ax[i], ay[i], az[i], 
+			ax[i+1], ay[i+1], az[i+1], 
+			bx[i], by[i], bz[i]);
+		fprintf(fptr, "1 0 0 %f %f %f %f %f %f %f %f %f\n", 
+			ax[i+1], ay[i+1], az[i+1], 
+			bx[i+1], by[i+1], bz[i+1], 
+			bx[i], by[i], bz[i]);
 	}
 
 	fclose(fptr);
