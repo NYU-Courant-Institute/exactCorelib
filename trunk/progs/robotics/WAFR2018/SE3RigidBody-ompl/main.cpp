@@ -335,6 +335,7 @@ void parseExampleFile() {
   //                              start.ry, start.rz);
   start.quaternion = toQuaternion(start.rx, start.ry, start.rz);
   // double qw2 = sqrt(1.0 - start.quaternion.w * start.quaternion.w);
+  // CHEE: the next line is dangerously non-robust:
   //  if (qw2 == 0) qw2 = 1;
   //  fprintf(stderr, "start translation %f %f %f\n", start.tx, start.ty,
   //  start.tz); fprintf(stderr, "start rotation %f %f %f %f\n",
