@@ -138,10 +138,10 @@ int MKTest(const Box *box) const {
 	
 	NT j00, j01, j10, j11;
 		// evaluate at center of the box
-	j00 = jacobian_(0, 0).eval<NT>(x_mid, y_mid);
-	j01 = jacobian_(0, 1).eval<NT>(x_mid, y_mid);
-	j10 = jacobian_(1, 0).eval<NT>(x_mid, y_mid);
-	j11 = jacobian_(1, 1).eval<NT>(x_mid, y_mid);
+	j00 = jacobian_(0, 0).template eval<NT>(x_mid, y_mid);
+	j01 = jacobian_(0, 1).template eval<NT>(x_mid, y_mid);
+	j10 = jacobian_(1, 0).template eval<NT>(x_mid, y_mid);
+	j11 = jacobian_(1, 1).template eval<NT>(x_mid, y_mid);
 //	std::cout<<"Evaluated jacobian at midpoint " << std::endl;
 	//NT det = j00*j11 - j01*j10;
 
@@ -306,10 +306,10 @@ int MKTest(const Box *box) const {
     // keep things handy
     MatrixT<NT> &temp = *output;
     // evaluate at center of the box
-    temp(0, 0) = jacobian_(0, 0).eval<NT>(x_mid, y_mid);
-    temp(0, 1) = jacobian_(0, 1).eval<NT>(x_mid, y_mid);
-    temp(1, 0) = jacobian_(1, 0).eval<NT>(x_mid, y_mid);
-    temp(1, 1) = jacobian_(1, 1).eval<NT>(x_mid, y_mid);
+    temp(0, 0) = jacobian_(0, 0).template eval<NT>(x_mid, y_mid);
+    temp(0, 1) = jacobian_(0, 1).template eval<NT>(x_mid, y_mid);
+    temp(1, 0) = jacobian_(1, 0).template eval<NT>(x_mid, y_mid);
+    temp(1, 1) = jacobian_(1, 1).template eval<NT>(x_mid, y_mid);
     NT det = temp(0, 0)*temp(1, 1) - temp(0, 1)*temp(1, 0);
     if(det > 0) 
       return 1;
