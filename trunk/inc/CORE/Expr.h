@@ -506,7 +506,8 @@ public:
   friend std::ostream& operator<<(std::ostream& os, const ExprT& x) {
     ExprT* p = const_cast<ExprT*>(&x);
     if (p->sign()) os << p->approx(defRelPrec,defAbsPrec);
-    else os << "0"; return os;
+    else os << "0";
+    return os;
   }
   std::string toString() {
     ExprT* p = const_cast<ExprT*>(this);

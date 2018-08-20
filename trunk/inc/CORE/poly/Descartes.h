@@ -264,7 +264,11 @@ inline void isolateRoots(Polynomial<T>& P, BFVecInterval& v)
     v.push_back(std::make_pair(0,0));
   
   for (BFVecInterval::const_iterator it = vPos.begin(); it != vPos.end(); ++it)
+  //Chee Aug20'18: fixed
+  //  "misleading indentation" (needed for latest g++ compiler)
+  {
     v.push_back(*it);
+  }
 
     delete[] temp1;
 }
