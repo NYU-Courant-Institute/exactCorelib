@@ -37,7 +37,7 @@ public:
 
   // This is the C0 predicate.
   const SignCondition Exclude(const Box &b) const {
-    return curve_.eval<Interval>(*(b.getX()), *(b.getY())).sign();
+    return curve_.eval<Interval >(*(b.getX()), *(b.getY())).sign();
   }
 
   // add the Max_Size and Min_Size criterion.

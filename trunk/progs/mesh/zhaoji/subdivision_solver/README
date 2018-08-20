@@ -34,7 +34,7 @@ For Refinement:
 			MUST change of CORE
 			MUST change of CORE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-*1. (DONE!)
+*1.
 	It seems for new version C++11, the template methods defined 
 in class should use template notation if methods was used. Thus in file 
 

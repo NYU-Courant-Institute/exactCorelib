@@ -16,6 +16,7 @@ xmax =  10
 ymin = -10
 ymax =  10
 fxy  =  "y - (x-1)^2 - 1"
+fxy  =  "(y^3 - (x-1)^2 - 1)(xy-3x^2)"
 gxy  =  "x^2 + y^2 - 4"
 minsize = 0.00001
 maxsize = 0.01
@@ -29,7 +30,10 @@ TARGETS = mk
 all: $(TARGETS)
 
 test: $(TARGETS)
-	./mk -f ${fxy} -g ${gxy} -x ${xmin} -X ${xmax} -y ${ymin} -Y ${ymax} -m ${minsize}
+	./mk -f ${fxy} -g ${gxy} \
+	    -x ${xmin} -X ${xmax} \
+	    -y ${ymin} -Y ${ymax} \
+	    -m ${minsize}
 
 moretest: $(TARGETS)
 # nothing to do

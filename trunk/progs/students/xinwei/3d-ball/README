@@ -35,7 +35,8 @@ COMMENTS ON CODE:
 		    ${xEnd} ${yEnd} ${zEnd} \
 		    &
 	where	
-		filename = directory name (e.g., cmpr or cmpr5) with 3 files called
+		filename = directory name (e.g., cmpr or cmpr5) with 3 files
+			called
 				obstacles.txt, spacecfg.txt, sphereloc.txt
 			describing the obstacles, start and goal config,
 			radius of sphere, epsilon, etc.
@@ -48,8 +49,8 @@ COMMENTS ON CODE:
 		
 	E.g., in cmpr,
 		obstacles.txt:
-			description of the obstacles given by a list of triangles
-			in this case, a tetrahedron
+			description of the obstacles given by a list of
+			triangles; in this case, a tetrahedron
 		sphereloc.txt has
 			3		(robot radius)
 			-20 -20 -20	(start cfg)
@@ -57,8 +58,5 @@ COMMENTS ON CODE:
 		spacecfg.txt has
 			epsilon=2	(epsilon parameter)
 			maxRadius=50	(space radius, i.e., ROI radius)
-	
-
-
 			
 ============================================================
