@@ -97,7 +97,8 @@ int main(int argc, char **argv) {
 
   // use DT for arithmetics
   typedef IntervalT<DT> IntervalDT;
-  typedef IntervalT<NT> IntervalNT;
+  // Removed the next line, to avoid "Not used" warning:  
+  // typedef IntervalT<NT> IntervalNT;
   typedef BoxT<DT> Box;
   typedef BiPoly<DT> poly;
 

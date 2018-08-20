@@ -95,10 +95,10 @@ public:
    const IntervalNT &x_range = box->x_range;
    const IntervalNT &y_range = box->y_range;
 	// Becomes slower if we switch from eval to eval3 
-   IntervalNT a = jacobian_(0, 0).eval<IntervalDT>(x_range, y_range);
-   IntervalNT b = jacobian_(0, 1).eval<IntervalDT>(x_range, y_range);
-   IntervalNT c = jacobian_(1, 0).eval<IntervalDT>(x_range, y_range);
-   IntervalNT d = jacobian_(1, 1).eval<IntervalDT>(x_range, y_range);
+   IntervalNT a = jacobian_(0, 0).template eval<IntervalDT>(x_range, y_range);
+   IntervalNT b = jacobian_(0, 1).template eval<IntervalDT>(x_range, y_range);
+   IntervalNT c = jacobian_(1, 0).template eval<IntervalDT>(x_range, y_range);
+   IntervalNT d = jacobian_(1, 1).template eval<IntervalDT>(x_range, y_range);
    IntervalNT det = a*d - b*c;
    if(det.zero())
      return false;
@@ -120,11 +120,12 @@ int MKTest(const Box *box) const {
 	
 	NT j00, j01, j10, j11;
 		// evaluate at center of the box
-	j00 = jacobian_(0, 0).eval<NT>(x_mid, y_mid);
-	j01 = jacobian_(0, 1).eval<NT>(x_mid, y_mid);
-	j10 = jacobian_(1, 0).eval<NT>(x_mid, y_mid);
-	j11 = jacobian_(1, 1).eval<NT>(x_mid, y_mid);
-	NT det = j00*j11 - j01*j10;
+	j00 = jacobian_(0, 0).template eval<NT>(x_mid, y_mid);
+	j01 = jacobian_(0, 1).template eval<NT>(x_mid, y_mid);
+	j10 = jacobian_(1, 0).template eval<NT>(x_mid, y_mid);
+	j11 = jacobian_(1, 1).template eval<NT>(x_mid, y_mid);
+	// Removed next line to avoid "not used" warning:
+	// NT det = j00*j11 - j01*j10;
 	// if det = 0, fail
 //	out << "Inside MK-test sign of det at center = "<< sign(det)<< std::endl;
 //	if(det == 0) {// This cannot be possible since Jacobian test passed
@@ -236,10 +237,10 @@ int MKTest(const Box *box) const {
     // keep things handy
     MatrixT<NT> &temp = *output;
     // evaluate at center of the box
-    temp(0, 0) = jacobian_(0, 0).eval<NT>(x_mid, y_mid);
-    temp(0, 1) = jacobian_(0, 1).eval<NT>(x_mid, y_mid);
-    temp(1, 0) = jacobian_(1, 0).eval<NT>(x_mid, y_mid);
-    temp(1, 1) = jacobian_(1, 1).eval<NT>(x_mid, y_mid);
+    temp(0, 0) = jacobian_(0, 0).template eval<NT>(x_mid, y_mid);
+    temp(0, 1) = jacobian_(0, 1).template eval<NT>(x_mid, y_mid);
+    temp(1, 0) = jacobian_(1, 0).template eval<NT>(x_mid, y_mid);
+    temp(1, 1) = jacobian_(1, 1).template eval<NT>(x_mid, y_mid);
     NT det = temp(0, 0)*temp(1, 1) - temp(0, 1)*temp(1, 0);
     if(det > 0) 
       return 1;
