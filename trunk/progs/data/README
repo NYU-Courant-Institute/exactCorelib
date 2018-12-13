@@ -8,10 +8,13 @@ Contents of this directory:
 	frisco:
 		this directory contains the "FRISCO Test Suite"
 		comprising 165 polynomials from Bini and Fiorentino.  It 
-		accompanies their well-known MPSolve software for root isolation:
+		accompanies their well-known MPSolve software for root
+		isolation:
 		    http://www.dm.unipi.it/cluster-pages/mpsolve/.
 	FriscoFormat:
 		Description of the Frisco File format
+	friscoFilter.sh:
+		Irena Voiculescu's shell script
 	Collection:
 		Each file is a list of frisco files of a certain characteristic.
 		E.g., all real polynomials with integer coefficients
@@ -21,7 +24,8 @@ Contents of this directory:
 	specialpolynomials:
 		They include polynomials with double or triple roots,
 		polynomials with integer or rational roots only,
-		well-known polynomials like golden ratio, or n-th roots of unity.
+		well-known polynomials like golden ratio, or n-th roots
+		of unity.
 
 Chee Yap (June 2012)
 Since Core 2.1

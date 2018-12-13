@@ -16,6 +16,7 @@ p= tCoreAux
 p= tSqrt
 p= tBigFloat
 p= zhaoji
+p= tNancy18
 
 LEV= 3
 TARGETS=${p}
@@ -93,7 +94,26 @@ tcoreaux: tCoreAux.o
 
 tSqrt: tSqrt.o
 
+# 2017
 zhaoji: zhaoji.o
+
+# 2018 Nov, find min of |a.sq(b)-aa.sq(bb)|,   a's<M, b's<N
+tNancy18: tNancy18.o
+
+prec=30
+a=4
+b=3
+aa=5
+bb=2
+M=20
+N=20
+
+t-Nancy18: tNancy18
+	./tNancy18 ${prec} \
+		   ${a}  ${b} \
+		   ${aa}  ${bb} \
+		   ${M}  ${N} 
+
 
 #=================================================
 # Rules

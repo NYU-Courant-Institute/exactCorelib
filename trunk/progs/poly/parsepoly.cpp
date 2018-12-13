@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 {
 
   //Fundamental test cases
-  string s1 = "";//Emtpy string should be zero
+  string s1 = "";//Empty string should be zero
   //basic terms
   string s2 = "x";
   string s3 = "x^23";

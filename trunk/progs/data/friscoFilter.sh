@@ -9,6 +9,12 @@
 #  real or complex  [r|c]
 #  integer or float or rational coefficients [i|f|q]
 #
+# Usage:
+#	> friscoFilter.sh [r|c] [i|f|q]		-- takes 2 arguments
+#	> friscoFilter.sh 			-- defaults to "r" and "i"
+#
+#   and it will list all the polynomials in the frisco database
+#   with these characteristics
 #
 # Irina Voiculescu
 # 13 June 2012, NYU
