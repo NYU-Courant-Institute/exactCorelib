@@ -4,8 +4,8 @@ We keep various versions of the Core Library here:
 
 E.g., If VAR=Debug when you "make core", you will get the library
 	libcore++Debug.a  
-for the static library.  If VAR=Opt, you get libcore++Opt.a, etc.
-
+for the static library.  If VAR=Opt, you get
+	libcore++Opt.a, etc.
 
 For the Core Extensions, we always make 3 levels of the library:
 E.g., if VAR=NoOpt when you "make corex", you will get the library
