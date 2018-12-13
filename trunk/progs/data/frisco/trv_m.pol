@@ -2,6 +2,7 @@
 ! Polynomial obtained by means of a symbolic preprocessing of a 
 ! multivariate polynomial system provided by C. Traverso.
 ! Multiple root
+! REMARK: this polynomial is essentially dense despite being "sri"
 sri
 0
 24
