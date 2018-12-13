@@ -219,10 +219,12 @@ int getterm(std::string & s, Polynomial<NT> & P){
 	
 	return ind;
 	}
+//@}
+
 
 // Dec2018: made getpoly() "public" so that
 //    the program "progs/poly/parsepoly.cpp" can compile.
-{ public:
+public:
 Polynomial<NT> getpoly(std::string & s){
 	//Remove white spaces from the string
 	size_t cnt=s.find(' ',0);
@@ -275,10 +277,8 @@ Polynomial<NT> getpoly(std::string & s){
 		else
 			std::cerr << "ERROR IN PARSING POLY! " << std::endl;
 	}
-	
 	    return (P);
-	  }
-}%
+	}
 
 //This is the main function to call to construct
 //	a polynomial from a string:
@@ -292,13 +292,11 @@ void constructFromString(std::string & s, char myX) {
 		loc = s.find(myX, loc+1);
 	      }
 	    }
-	
 	    //coeff = NULL;
 	    //  Did this to ape the constructor from polynomial above
 	    *this = getpoly(s);
 	  }
 
-  //@}
   
 public:
   typedef std::vector<NT> VecNT;
