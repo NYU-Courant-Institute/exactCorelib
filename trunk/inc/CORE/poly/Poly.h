@@ -213,14 +213,16 @@ int getterm(std::string & s, Polynomial<NT> & P){
 	}
 	
 	Polynomial<NT> R;
-	ind = oind + getbasicterm(t, R);//Because the second term is the offset in
-	//t
+	ind = oind + getbasicterm(t, R);//since the 2nd term is the offset in t
 	P *= R;
 	}
 	
 	return ind;
 	}
 
+// Dec2018: made getpoly() "public" so that
+//    the program "progs/poly/parsepoly.cpp" can compile.
+{ public:
 Polynomial<NT> getpoly(std::string & s){
 	//Remove white spaces from the string
 	size_t cnt=s.find(' ',0);
@@ -276,6 +278,7 @@ Polynomial<NT> getpoly(std::string & s){
 	
 	    return (P);
 	  }
+}%
 
 //This is the main function to call to construct
 //	a polynomial from a string:
@@ -290,7 +293,8 @@ void constructFromString(std::string & s, char myX) {
 	      }
 	    }
 	
-	    //coeff = NULL;//Did this to ape the constructor from polynomial above
+	    //coeff = NULL;
+	    //  Did this to ape the constructor from polynomial above
 	    *this = getpoly(s);
 	  }
 
@@ -336,7 +340,7 @@ public:
   }
   //@}
 
-  /// \name help functions
+  /// \name helper functions
   //@{
   /// return coeff (const)
   const NT* coeff() const { return base_cls::coeff(); }
@@ -1084,7 +1088,8 @@ IntervalT<T> evalH(const IntervalT<T> & x) const {	// interval evaluation
 ///type as the coefficients.
 // Slope form based interval evaluation scheme.
 // Drawback: This is not inclusion monotone, i.e., if interval I is a included
-// in another interval J, then evalSlopeForm(I) is not necessarily included in evalSlopeForm(J). See Stahl's thesis.
+// in another interval J, then evalSlopeForm(I) is not necessarily included
+// in evalSlopeForm(J). See Stahl's thesis.
 // REMARK: this is a misnomer -- it should be called the "Slope Form"
 //          See Stahl's thesis, p.72.
 //          The Centered Form is called Taylor Form in Stahl.
@@ -1098,7 +1103,8 @@ IntervalT<T> evalSlopeForm(const IntervalT<T> & x) const {	// interval evaluatio
 		return IntervalT<T>(coeff()[0]);
 	T xmid = x.mid();
 	
-	// tmp is the quotient obtained by dividing the polynomial (*this) by (x-xmid).
+	// tmp is the quotient obtained by dividing the polynomial (*this) by
+	// (x-xmid).
 	// (*this) = (*this).eval(xmid) + (x-xmid)*tmp.
 	Polynomial<T> tmp(deg-1);
 	tmp.coeff()[deg-1] = (*this).coeff()[deg];
@@ -1106,10 +1112,11 @@ IntervalT<T> evalSlopeForm(const IntervalT<T> & x) const {	// interval evaluatio
 		tmp.coeff()[i-1] = (*this).coeff()[i]+xmid*tmp.coeff()[i];
 	}
 
-	T fmid = (*this).coeff()[0] + xmid*tmp.coeff()[0];// val is (*this) evaluated at xmid
-	
+	T fmid = (*this).coeff()[0] + xmid*tmp.coeff()[0];// val is (*this)
+					// evaluated at xmid
 	IntervalT<T> val =
-	    IntervalT<T>(fmid)+(x-IntervalT<T>(xmid))*tmp.template eval<IntervalT<T> >(x);
+	    IntervalT<T>(fmid)+(x-IntervalT<T>(xmid))*tmp.template
+	    	eval<IntervalT<T> >(x);
 	
 	return val;
 		
