@@ -1,0 +1,53 @@
+
+2018: Direct installation from Github
+	To get the latest version using git (in subfolder "MPSolve") do:
+		> git clone git://github.com/robol/MPSolve.git
+		> cd MPSolve
+		> [...use apt-cyg to install autoconf, automake, libtool]
+		> ./autogen.sh
+		> ./configure
+		> [found that I did not have "doxygen", so install with apt-cyg]
+	<<<-----------------------------------------------
+MPSolve configuration:
+        Source location:        .
+        Pthread CFLAGS:
+        C compiler:             gcc
+        CFLAGS:                 -D_REENTRANT -Wall -DMPS_USE_BUILTIN_COMPLEX  -DNICE_DEBUG -fcx-limited-range -fno-math-errno -fomit-frame-pointer -D_MPS_PRIVATE
+        LDFLAGS:                  -mwindows -no-undefined -Wl,--export-all-symbols -Wl,--output-def,.libs/libmps-3.dll.def
+        Additional CFLAGS:      -g -O2 -D__WINDOWS
+        Debug enabled:          yes
+        Check enabled:          yes
+        Octave module:          no
+        MATLAB (tm) module:     no
+        Graphical UI:           no
+        Python module:          no
+	>>>-----------------------------------------------
+		> make
+	<<<-----------------------------------------------
+	ERROR 2 -- did not have YACC.
+	So I installed the Berkeley yacc ("byacc") (since there is no "yacc")
+	But would not work?
+	make failed again, and so I re-do ./configure again.
+	This time, "make" found and used "byacc"!
+	BUT, get LOTS of "warning: implicit declaration of function '_fileno' "
+		REASON: If you did not pre-declare a function XXX before first
+		use of XXX, it will assume that XXX returns an int.  
+		Apparently, if we use C11 or newer compilers, this would go
+		away.
+	Finally, ERROR 2 again -- seems to be because I am missing "flex"
+	although flex seem to only cause a "warning"...
+	So, here we go again:
+	>>>-----------------------------------------------
+		> apt-cyg install byacc
+		> apt-cyg install flex
+		> ./configure
+		> make (AGAIN)
+	<<<-----------------------------------------------
+	All the "warning: implicit declaration of function '_fileno' "
+	remains.  Still error!!!  So we never got to the next step
+	which is to "make install":
+	>>>-----------------------------------------------
+		> [sudo] make install
+	<<<-----------------------------------------------
+	>>>-----------------------------------------------
+	
