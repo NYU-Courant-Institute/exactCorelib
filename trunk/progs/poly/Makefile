@@ -49,8 +49,13 @@ p=readpoly
 
 TARGETS= tNewton tSturm tDescartes tSturmBF tDescartes tDescartesBF tPolyALL
 
-MORE_TARGETS = tPolyALL tSturmLon tSturmRat tSturmExp tSturmInt\
-    tWilk20 tWilk20deriv tKameny4 tGCD tRootOf wein tDescartesLon tDescartesRat tDescartesExp tDescartesInt
+# Dec'2018, Chee: removed from MORE_TARGETS the following:
+#		tSturmLon, tSturmInt, tDescartesLon, tDescartesInt
+#	because ToBigFloat2(ht) is not yet defined for these types.
+MORE_TARGETS = tPolyALL \
+    tSturmRat tSturmExp \
+    tWilk20 tWilk20deriv tKameny4 tGCD tRootOf wein \
+    tDescartesRat tDescartesExp
 
 OTHER_TARGETS = solve pisot parsepoly
 

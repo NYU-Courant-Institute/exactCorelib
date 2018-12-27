@@ -5,6 +5,10 @@
    Author:  Vikram Sharma
    Date:    Oct. 1 2004
 
+   Dec'2018:
+   	getpoly() is found in inc/CORE/poly/Poly.h.
+	We need to make it public to compile this code.
+
    Since Core Library  Version 1.7
    $Id: parsepoly.cpp,v 1.1 2006/03/07 04:51:25 exact Exp $
  ************************************** */
@@ -66,7 +70,7 @@ int main(int argc, char* argv[])
   CC.dump("Polynomial is");
   cout << endl;cout << endl;
   CC = CC.getpoly(s3);
-  cout <<" String is" << s3 << endl;
+  cout <<" String is " << s3 << endl;
   CC.dump("Polynomial is");
   cout << endl;cout << endl;
   CC = CC.getpoly(s4);
