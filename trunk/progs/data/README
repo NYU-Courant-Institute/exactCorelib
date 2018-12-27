@@ -11,6 +11,8 @@ Contents of this directory:
 		accompanies their well-known MPSolve software for root
 		isolation:
 		    http://www.dm.unipi.it/cluster-pages/mpsolve/.
+	friscore:
+		version of frisco suite in Core Format.
 	FriscoFormat:
 		Description of the Frisco File format
 	friscoFilter.sh:

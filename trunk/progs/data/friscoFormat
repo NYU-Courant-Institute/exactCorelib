@@ -1,7 +1,7 @@
 File: FriscoFormat:
 
 The following describes the file format for polynomials
-in the FRISCO Test Suite.  It is edited from Bini and Fiorentino:
+in the FRISCO Test Suite.  This is edited from Bini and Fiorentino:
 
 A. FILE FORMAT
 	Each file is an ASCII text file and contains one polynomial.
@@ -13,7 +13,7 @@ A. FILE FORMAT
 	E.g.,
 	  ! This is the Wilkinson polynomial of degree n
 	  ! defined by p(x)=(x-1)(x-2)...(x-n)
-
+	
 	CHECK: Comment lines can be interspersed throughout the file.
 
   A.1. The first line contains 3 characters "abc".  It 
@@ -50,8 +50,8 @@ A. FILE FORMAT
 
 B. EXAMPLES
 
-	The polynomial x4 + 2 x + 5 can be coded as follows
-	(extra spaces are ignored) in two forms:
+	The polynomial x^4 + 2 x + 5 can be coded as follows
+	(extra spaces or tabs are ignored) in two forms:
 	
 	! p(x)=x^4+2x+5 in sparse form
 	dri
@@ -75,7 +75,7 @@ B. EXAMPLES
 	4
 	1
 
-	Clearly, polynomials like x500 + 1 are more easily written
+	Clearly, polynomials like x^500 + 1 are more easily written
 	in their sparse form as follows:
 
 	! p(x)=x^500+1
