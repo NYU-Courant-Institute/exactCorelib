@@ -96,8 +96,8 @@ typedef Polynomial<NT> Poly;
                                 << it->second << "]" << std::endl;
     }
   }//sturmtest
-void processCommandLine(int argc, char ** argv ) {
 
+void processCommandLine(int argc, char ** argv ) {
     // SET INTERNAL PRECISION
     if (argc >= 2) {
   	setDefaultRelPrecision(atoi(argv[1]));	// if user specifies precision
@@ -110,15 +110,17 @@ void processCommandLine(int argc, char ** argv ) {
 					// is at most 2^{-prec}
   
     // SET OUTPUT PRECISION
-    std::cout.setf(std::ios::scientific, std::ios::floatfield);  // choose scientific notation
+    std::cout.setf(std::ios::scientific, std::ios::floatfield); // choose
+    					// scientific notation
     std::cout.precision(11); 		// default Print Digits = 11
     
-    std::cout << "------------------------------------------------------------\n";
+    std::cout << "-------------------------------------------------------\n";
     std::cout << "Relative Precision is " << defRelPrec << std::endl;
     std::cout << "Print Digits is " << std::cout.precision() << std::endl;
-    std::cout << "Iteration Stops when delta < " << BigFloat::exp2(prec) << std::endl;
+    std::cout << "Iteration Stops if delta < "
+			<< BigFloat::exp2(prec) << std::endl;
     //  std::cout << setprecision(defPrtDgt.asLong()); // already set above.
-    std::cout << "------------------------------------------------------------\n";
+    std::cout << "-------------------------------------------------------\n";
 
 }
 

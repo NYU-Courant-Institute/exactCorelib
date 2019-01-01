@@ -46,6 +46,7 @@ p=tRootOf
 p=tPseudo
 p=tGCD
 p=readpoly
+p=readFile
 
 TARGETS= tNewton tSturm tDescartes tSturmBF tDescartes tDescartesBF tPolyALL
 
@@ -278,6 +279,8 @@ tKameny4: tKameny4.o
 tPseudo: tPseudo.o
 
 parsepoly: parsepoly.o
+
+fileReader: fileReader.h fileReader.cpp fileReader.o
 
 t:	t.o
 

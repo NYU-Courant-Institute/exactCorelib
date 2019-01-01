@@ -22,7 +22,6 @@ typedef BigInt	NT;
 typedef Polynomial<NT>			PolyNT;
 typedef std::vector<NT>			VecNT;
 
-
 // =========================================================
 // MAIN
 // =========================================================
