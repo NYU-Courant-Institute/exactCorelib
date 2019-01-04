@@ -100,7 +100,7 @@ bool Polygon3d::removePoint( const Point3d& p ){
   if( *(pNode->p) == p ) // move list head 
     headN = pNode->next;
 
-    for( int i=0; i<size; i++ ) {
+  for( int i=0; i<size; i++ ) {
       if( *(pNode->p) == p )  {
         pNode->prev->next = pNode->next;
         pNode->next->prev = pNode->prev;
