@@ -2,7 +2,7 @@
 #include<stack>
 #include "CORE/CORE.h"
 #include "readpoly.h"
-#include"localDescartes.h"
+// #include "localDescartes.h"
 
 typedef BigInt NT;
 typedef Polynomial<NT> Poly;

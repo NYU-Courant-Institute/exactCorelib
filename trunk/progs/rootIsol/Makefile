@@ -14,11 +14,14 @@ TARGETS= testSturm
 TARGETS= tDescartes 
 TARGETS= tRootIsol 
 
+MORETARGETS= testSturm tDescartes tRootIsol
+
 all: $(TARGETS)
 
 test: $(TARGETS)
 	./tRobust.sh
-moretest:
+
+moretest: $(MORETARGETS)
 
 eval: tEval
 	./tEval
@@ -74,8 +77,9 @@ clean:
 #=================================================
 # Remove executable files
 #=================================================
-EXEPROGS=$(TARGETS:=$(EXETYPE))
+ALL=$(TARGETS) $(MORETARGETS)
+EXEPROGS=$(ALL:=$(EXETYPE))
 
-veryclean: clean
+vclean veryclean: clean
 	-@test -z "$(EXEPROGS)" || rm -f $(EXEPROGS)
 

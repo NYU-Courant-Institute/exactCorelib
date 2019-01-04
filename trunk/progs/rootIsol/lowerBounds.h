@@ -17,6 +17,7 @@
  * is what we implement.
  *
  * This is the bottleneck: computing the root(.,.) is very slow.
+ * 	Jan'19, Chee: root(...) is in Expr.h
  * ***************************************************/
 
 template<typename NT>
@@ -28,8 +29,10 @@ BigFloat upperbound1(const Polynomial<NT> & P)
 	
 	  for(int i=1; i <=n; i++){
 	    if(sign(P.coeff()[n-i]) < 0)
+//Jan'18, Chee: compile error in next line ("invalid use of void expr")!
 	      max=core_max(max, 
-		 root((core_abs(BigFloat2(P.coeff()[n-i]))/core_abs(BigFloat2(P.coeff()[n]))).makeCeilExact(), i).makeCeilExact());
+		 root((core_abs(BigFloat2(P.coeff()[n-i]))/
+      core_abs(BigFloat2(P.coeff()[n]))).makeCeilExact(), i).makeCeilExact());
 	    //cout <<"max after " << i << " iteration is "<< max << endl;
 	    //cout <<"Taking radical of "
 	    // <<core_abs(BigFloat(P.coeff()[n-i]))/core_abs(BigFloat(P.coeff()[n]))

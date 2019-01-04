@@ -20,6 +20,10 @@ typedef std::vector<BRInterval> BRVecInterval;
 /**********DATA STRUCTURES******************************/
 /*******************************************************/
 
+// Template parameters:
+// 	RT= number type for endpoints of interval
+// 	T = number type for coefficients of polynomial
+
 // Stores the interval endpoints and a polynomial (can be in either basis)
 template < typename RT, typename T >
 struct SubDivData 
@@ -122,7 +126,7 @@ inline bool operator <(const std::pair<T, T>& I, const std::pair<T, T>& J){
 }
 
 // Checking if the sign variations are 0, 1, or greater than one.
-// Deg should be the true degree, otherwise me may return an incorrect answer.
+// Deg should be the true degree, otherwise we may return an incorrect answer.
 template <typename T>
 int signVar(T* coeff, int deg){
   int num=0;
@@ -164,8 +168,8 @@ int signVariation(Polynomial<NT>& P)
 
 
 /*
-// Taylor shift by one on the polynomial represented by coeff; output is in shifted
-// Deg should be the true degree, otherwise me may return an incorrect answer.
+// Taylor shift by one on polynomial represented by coeff; output is in shifted
+// Deg should be the true degree, otherwise we may return an incorrect answer.
 template <typename T>
 void shift(T* coeff, int deg, T* shifted){
   //This is the ascending coefficient method suggested by
@@ -183,8 +187,8 @@ void shift(T* coeff, int deg, T* shifted){
 }
 */
 // Scale the variable by 2 of the polynomial represented by coeff; 
-// output is in halved.
-// Deg should be the true degree, otherwise me may return an incorrect answer
+// output is halved.
+// Deg should be the true degree, otherwise we may return an incorrect answer
 template <typename T>
 void half(const T* coeff, int deg, T* halved){
   for(int i=0; i<= deg; i++)
@@ -192,7 +196,7 @@ void half(const T* coeff, int deg, T* halved){
 }
 
 // Scale by a positive power of two.
-// Deg should be the true degree, otherwise me may return an incorrect answer
+// Deg should be the true degree, otherwise we may return an incorrect answer
 template <typename T1, typename T2>
 void scale(T1* coeff, int deg, T2 k, T2* scaled){
   for(int i=0; i<= deg; i++)
@@ -206,7 +210,7 @@ void scale(T1* coeff, int deg, T2 k, T2* scaled){
 //coefficients of P we need introduce another typename to resolve this.
 //We assume that T2 is more general than T1 so that the conversion from
 // the latter to the former can take place without error.
-// Deg should be the true degree, otherwise me may return an incorrect answer
+// Deg should be the true degree, otherwise we may return an incorrect answer
 template <typename T1, typename T2>
 void contract(T1* coeff, int deg, T2 lambda, T2* contracted){
   T2 pow=1;
@@ -220,7 +224,7 @@ void contract(T1* coeff, int deg, T2 lambda, T2* contracted){
 
 //Computes the Taylor shift by a constant lambda. Confer the comments
 //for contract above..
-// Deg should be the true degree, otherwise me may return an incorrect answer
+// Deg should be the true degree, otherwise we may return an incorrect answer
 template <typename T1, typename T2>
 void shift(T1* coeff, int deg, T2 lambda, T2* shifted){
 
@@ -242,7 +246,7 @@ void shift(T1* coeff, int deg, T2 lambda, T2* shifted){
 //The advantage of this method is that it computes the coefficient of x^i
 //in n-i steps. Thus we can check for sign variation as we compute
 //the coefficients.
-// Deg should be the true degree, otherwise me may return an incorrect answer
+// Deg should be the true degree, otherwise we may return an incorrect answer
 template <typename T>
 int shiftAndSigncount(T* coeff, int deg){
 
@@ -319,7 +323,7 @@ void deCasteljau(const std::vector<T>& upSlv, const std::vector<T>& lowSlv,
 // Perform deCasteljau's algorithm on P at the point u in [a,b].
 // The Bernstein coefficients w.r.t. [a,u] are in PL and w.r.t. [u,b] in PR. 
 // This is the NON fraction-free variant.
-// Deg should be the true degree, otherwise me may return an incorrect answer.
+// Deg should be the true degree, otherwise we may return an incorrect answer.
 // isExactArith = true means increase the precision of the BigFloat2 arithmetic;
 // isExactArith = false means do BigFlaot2 arithmetic with fixed precision prec.
 template <typename Vec, typename T2, typename PT>
@@ -391,7 +395,7 @@ template <typename Vec, typename T2, typename PT>
 // coefficients in PR. This is the fraction-free variant, i.e., 
 // we compute the Bernstein coefficients of (den)^n P(X), n = deg,
 // and hence avoid the appearance of fractions in our algorithm.
-// Deg should be the true degree, otherwise me may return an incorrect answer
+// Deg should be the true degree, otherwise we may return an incorrect answer
 template <typename T1>
 void deCasteljau (const T1* P, T1* PL, 
 		  T1* PR, int deg,  BigInt num, BigInt den){
@@ -419,7 +423,7 @@ void deCasteljau (const T1* P, T1* PL,
 
 
 // Performs subdivision at lambda on SD and stores the output in SDL and SDR.
-// Deg should be the true degree of SD.P, otherwise me may return an incorrect answer
+// Deg should be the true degree of SD.P, otherwise we may return an incorrect answer
 template <typename RT, typename T>
 void subdivide (const SubDivData<RT, T>& SD, SubDivData<RT, T>& SDL, 
 		SubDivData<RT, T>& SDR, int deg, BigInt num =1, BigInt den=2){
@@ -433,7 +437,7 @@ void subdivide (const SubDivData<RT, T>& SD, SubDivData<RT, T>& SDL,
 // This method is used for the power basis variant of the Descartes method.
 // Performs subdivision on SD and stores the output in SDL and SDR.
 // The inputs represent polynomials in power basis.
-// Deg should be the true degree of SD.P, otherwise me may return an incorrect answer
+// Deg should be the true degree of SD.P, otherwise we may return an incorrect answer
 template <typename RT, typename T>
 void subdividePow(const SubDivData<RT, T>& SD, SubDivData<RT, T>& SDL, 
 		SubDivData<RT, T>& SDR, int deg){
@@ -454,7 +458,7 @@ void subdividePow(const SubDivData<RT, T>& SD, SubDivData<RT, T>& SDL,
 // We also pass the pointer to the function we want to use for computing
 // lower bounds. The bool value tells us whether we constructed the left child
 // or not.
-// Deg should be the true degree of SD.P, otherwise me may return an incorrect answer
+// Deg should be the true degree of SD.P, otherwise we may return an incorrect answer
 template <typename RT, typename T>
 bool subdivide(const CFDivData<RT, T>& SD, CFDivData<RT, T>& SDL, 
 	       CFDivData<RT, T>& SDR, int deg, 

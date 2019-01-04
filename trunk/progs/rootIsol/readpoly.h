@@ -1,13 +1,17 @@
+/* file: readpoly.h
+ *
+ * THIS HAS BEEN INCORPORATED INTO CORE LIB:
+ *   it reads polynomials as string as well as Frisco format
+ *   Originally in ${CORE}/progs/rootIsol/
+ *
+ * *****************************************/
+
 #define CORE_LEVEL 4
 #include <CORE/CORE.h>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include<vector>
-
-/* THIS HAS BEEN INCORPORATED INTO CORE LIB:
- * it reads polynomials as string as well as Frisco format
- * */
 
 
 //const double LOG2_10 = log(10.0) / log(2.0);
