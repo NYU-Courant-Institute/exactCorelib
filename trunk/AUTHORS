@@ -5,7 +5,7 @@ Authors of Core Library
 It is sometimes difficult to associate authors with a particular
 source file, because the files evolve and gets split up or merged
 over time.   The year that an author worked on Core Library can
-be correlated with the version of Core Library
+be roughly correlated with the version of Core Library.
 
 ==================================================
 Chee Yap	Designer/Author of Real/Expr (1993), Core Library 1 (1998),
@@ -32,7 +32,8 @@ Sylvain Pion	Author of Filters (2002), CGAL Interface (2002),
 Vikram Sharma	Author of Newton package (2003), Root Isolation (2003),
 		Curves (2004)
 Herve Bronnimann Author of Core Library 2 (2006)
-Jihun Yu	Author of Core Library 2 (2006-2010)
+Jihun Yu	Author of Core Library 2 (2006-2011)
+		Auther/Designer of BigFloat2 and Policies.h.
 Philip Davidson	Author of algebraicNum class, and contributions
 		to polynomial class (2006)
 Long Lin	Author of Mesh code (Cxy, etc) (2008)
