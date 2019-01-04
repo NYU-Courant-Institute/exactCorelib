@@ -374,13 +374,13 @@ public:
   template<class NT>
   friend ExprT radical(const ExprT& e, const NT& n, unsigned long k) {
     assert(n>=0 && k>=1);
-    /*  This code is slower because root calls MPFR
+    /*  The following code is slower because root calls MPFR
      *  while this code uses our own Newton iteration.
-    if (n==0 || n == 1 || k ==1) return n;
-    Polynomial<NT> Q(k);
-    Q.setCoeff(0, -n);
-    Q.setCoeff(k, 1);
-    return rootOf(Q);
+	    if (n==0 || n == 1 || k ==1) return n;
+	    Polynomial<NT> Q(k);
+	    Q.setCoeff(0, -n);
+	    Q.setCoeff(k, 1);
+	    return rootOf(Q);
     */
     return root(ExprT(n),k);
   }

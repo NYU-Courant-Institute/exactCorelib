@@ -109,7 +109,8 @@ int getnumber(const char* c, int start, unsigned int len,
 	    temp[j]=c[j+start];j++;
 	  }
 	  temp[j] = '\0';
-	  // Jihun, 2010. This does not work for NT to be machine numbertype such as INT, LONG
+	  // Jihun, 2010. This does not work for NT to be machine numbertype
+	  // such as INT, LONG
 	//  NT cf = NT(temp);
 	  NT cf; strToNT<NT>(temp,cf);
 	
@@ -222,15 +223,16 @@ int getterm(std::string & s, Polynomial<NT> & P){
 //@}
 
 
-// Dec2018: made getpoly() "public" so that
+// Dec2018, Chee: made getpoly() "public" so that
 //    the program "progs/poly/parsepoly.cpp" can compile.
+//    Also, remove '\t' as well as ' '.
 public:
 Polynomial<NT> getpoly(std::string & s){
 	//Remove white spaces from the string
-	size_t cnt=s.find(' ',0);
+	size_t cnt=s.find_first_of(" \t",0);	// remove space or tabs
 	while(cnt != std::string::npos){
 		s.erase(cnt, 1);
-		cnt = s.find(' ', cnt);
+		cnt = s.find_first_of(" \t", cnt);
 	}
 
 	size_t len = s.length();

@@ -454,11 +454,13 @@ public:
   // { return _cbrt<FixedArithmeticPolicy, T>(x, prec); }
 
   /// k-th root for <tt>BigFloat2</tt>
-  bool root(const BigFloat2& x, unsigned long k, prec_t prec = getDefaultBFradicalPrec())
+  bool root(const BigFloat2& x,
+	  unsigned long k, prec_t prec = getDefaultBFradicalPrec())
   { return _root_f<FixedArithmeticPolicy>(x, k, prec); }
   // /// k-th root for <tt>T</tt>
   // template <typename T> 
-  // bool root(const T& x, unsigned long k, prec_t prec = getDefaultBFradicalPrec())
+  // bool root(const T& x,
+  // 	unsigned long k, prec_t prec = getDefaultBFradicalPrec())
   // { return _root<FixedArithmeticPolicy, T>(x, k, prec); }
 
   /// sine for <tt>BigFloat2</tt>
@@ -675,9 +677,9 @@ public:
   // Here is the fudged code, and it only depends on MPFR giving us
   // a value that is within the specified precision, regardless of rounding!
 	  m_l.pi(prec+1, GMP_RNDD);
-	  m_l.nextbelow(); // use nice builtin function to get previous BigFloat value
+	  m_l.nextbelow(); // use nice builtin function to get previous BF value
 	  m_r.pi(prec+1, GMP_RNDU);
-	  m_r.nextabove(); // use nice builtin function to get next BigFloat value
+	  m_r.nextabove(); // use nice builtin function to get next BF value
 	  set_exact(false);
     return false;
   }
@@ -1170,17 +1172,20 @@ private:
 inline BigFloat2 operator+(const BigFloat2& x, const BigFloat2& y)
 { BigFloat2 r; r.add(x, y); return r; }
 /// BigFloat2 + T
-//template <typename T> inline BigFloat2 operator+(const BigFloat2& x, const T& y)
+//template <typename T> inline BigFloat2 operator+(const BigFloat2& x,
+//		const T& y)
 //{ BigFloat2 r; r.add(x, y); return r; }
 /// T + BigFloat2
-//template <typename T> inline BigFloat2 operator+(const T& x, const BigFloat2& y)
+//template <typename T> inline BigFloat2 operator+(const T& x,
+//		const BigFloat2& y)
 //{ BigFloat2 r; r.add(x, y); return r; }
 
 /// BigFloat2 - BigFloat2
 inline BigFloat2 operator-(const BigFloat2& x, const BigFloat2& y)
 { BigFloat2 r; r.sub(x, y); return r; }
 
-#ifndef AF_DONT_DEFINE_MINUS_FOR_BIGFLOAT_T // AF: the following templates lead to mismatches
+#ifndef AF_DONT_DEFINE_MINUS_FOR_BIGFLOAT_T
+			// AF: the following templates lead to mismatches
 /// BigFloat2 - T
 template <typename T> inline BigFloat2 operator-(const BigFloat2& x, const T& y)
 { BigFloat2 r; r.sub(x, y); return r; }
@@ -1225,16 +1230,20 @@ inline std::ostream& operator<<(std::ostream& os, const BigFloat2& x)
 /// \addtogroup BigFloat2GlobalFunctions
 //@{
 /// square root
-inline BigFloat2 sqrt(const BigFloat2& x, prec_t prec = getDefaultBFradicalPrec())
+inline BigFloat2 sqrt(const BigFloat2& x,
+	prec_t prec = getDefaultBFradicalPrec())
 { BigFloat2 r; r.sqrt(x, prec); return r; }
 /// cubic root
-inline BigFloat2 cbrt(const BigFloat2& x, prec_t prec = getDefaultBFradicalPrec())
+inline BigFloat2 cbrt(const BigFloat2& x,
+	prec_t prec = getDefaultBFradicalPrec())
 { BigFloat2 r; r.cbrt(x, prec); return r; }
 /// k-th root
-inline BigFloat2 root(const BigFloat2& x, unsigned long k, prec_t prec = getDefaultBFradicalPrec())
+inline BigFloat2 root(const BigFloat2& x,
+	unsigned long k, prec_t prec = getDefaultBFradicalPrec())
 { BigFloat2 r; r.root(x, k, prec); return r; }
 //@}
 
+/********************* INLINE FUNCTIONS *********************/
 // include inline functions (private)
 #include <CORE/BigFloat2.inl>
 inline int sign(const BigFloat2& x) 

@@ -263,7 +263,8 @@ README FILE: TABLE OF CONTENTS
 
         This test simply computes 12345 * 67890 = 838102050,
         and 111111111 * 111111111 = 12,345,678,987,654,321.
-        If you pass the test, you may go to STAGE 2.
+
+        If you pass the test, skip this stage and go to STAGE 2.
 
         c) YOU HAVE AN INSTALLED GMP BUT CORE COULD NOT FIND IT:
         Assuming you have a properly installed GMP in some directory, say
@@ -335,7 +336,7 @@ README FILE: TABLE OF CONTENTS
                 > make testmpfr
 
         If your screen shows the answer 8.3810205000e8 and 3.1415929208,
-        you have passed the test and may go to STAGE 3.
+        you have passed the test -- then skip this stage and go to STAGE 3.
 
         b) You have installed MPFR, but it could not be found 
         by the compiler in a).  Suppose your MPFR is installed in
@@ -393,7 +394,8 @@ README FILE: TABLE OF CONTENTS
 
             > cd ${CORE_PATH}
             > make eighth     -- equivalent to "make test".  Screen output is
-                                placed in the file ${CORE_PATH}/tmp/DIAG_TEST_DEMO
+                                 placed in the file 
+                                    ${CORE_PATH}/tmp/DIAG_TEST_DEMO
 
         This tests all the previously compiled programs 
         in ${CORE_PATH}/progs.  Many of the programs are self-validating:
