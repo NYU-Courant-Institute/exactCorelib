@@ -34,7 +34,7 @@
 #define CORE_END_NAMESPACE      };
 #define CORE_NS                 CORE
 
-// diable old names
+// disable old names
 //#define CORE_DISABLE_OLDNAMES
 
 // disable reference counting

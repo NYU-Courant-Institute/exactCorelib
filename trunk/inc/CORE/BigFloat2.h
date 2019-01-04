@@ -57,13 +57,17 @@ public:
   BigFloat2() : m_l(0), m_exact(true)
   {}
   /// copy constructor
-  BigFloat2(const BigFloat2& r) : m_l(r.m_l), m_r(r.m_r), m_exact(r.m_exact)
+  BigFloat2(const BigFloat2& r)
+      : m_l(r.m_l), m_r(r.m_r), m_exact(r.m_exact)
   {}
-  explicit BigFloat2(const double l, const double r) : m_l(l), m_r(r), m_exact(false) {}
+  explicit BigFloat2(const double l, const double r)
+      : m_l(l), m_r(r), m_exact(false) {}
   /// constructor from two BigFloat
-  explicit BigFloat2(const BigFloat& l, const BigFloat& r) : m_l(l),m_r(r),m_exact(false) {}
+  explicit BigFloat2(const BigFloat& l, const BigFloat& r)
+      : m_l(l),m_r(r),m_exact(false) {}
   /// constructor for <tt>int</tt> 
-  explicit BigFloat2(const int v) : m_l(v), m_exact(true) {}
+  explicit BigFloat2(const int v)
+      : m_l(v), m_exact(true) {}
   /// constructor for <tt>unsigned int</tt> 
   explicit BigFloat2(const unsigned int v) : m_l(v), m_exact(true) {}
   /// constructor for <tt>long</tt> 
@@ -78,7 +82,8 @@ public:
   explicit BigFloat2(const BigFloat& v) : m_l(v), m_exact(true) {}
 #ifndef CORE_LEVEL_1_NO_WRAPPERS
   /// constructor for <tt>DoulbeWrapper</tt> 
-  explicit BigFloat2(const DoubleWrapper& v) : m_l(v.doubleValue()), m_exact(true) {}
+  explicit BigFloat2(const DoubleWrapper& v)
+      : m_l(v.doubleValue()), m_exact(true) {}
 #endif
   /// generic constructor for <tt>T</TT>
 //  template <typename T> BigFloat2(const T& v) : m_l(v), m_exact(true) {}
@@ -135,7 +140,8 @@ public:
   //@{
   /// return current precision
   prec_t get_prec() const 
-  { return is_exact()?m_l.get_prec():(std::max)(m_l.get_prec(),m_r.get_prec()); }
+  { return is_exact()
+      ? m_l.get_prec() : (std::max)(m_l.get_prec(),m_r.get_prec()); }
   /// set current precision
   void set_prec(prec_t prec)
   { m_l.set_prec(prec); if (!is_exact()) m_r.set_prec(prec); }
@@ -170,7 +176,7 @@ public:
   //@}
 
 
-  /// \name assignment functions (raw version)
+  /// \name assignment functions (raw version, indicated by "r_") 
   //@{
   /// assignment function for <tt>BigFloat2</tt>
   bool r_set(const BigFloat2& x)
@@ -443,14 +449,16 @@ public:
   bool sqrt(const BigFloat2& x, prec_t prec = getDefaultBFradicalPrec())
   { return _sqrt_f<FixedArithmeticPolicy>(x, prec); }
   /// square root for <tt>T</tt>
-  template <typename T> bool sqrt(const T& x, prec_t prec = getDefaultBFradicalPrec())
+  template <typename T> bool sqrt(const T& x,
+	  prec_t prec = getDefaultBFradicalPrec())
   { return _sqrt<FixedArithmeticPolicy, T>(x, prec); }
 
   /// cubic root for <tt>BigFloat2</tt>
   bool cbrt(const BigFloat2& x, prec_t prec = getDefaultBFradicalPrec())
   { return _cbrt_f<FixedArithmeticPolicy>(x, prec); }
   // /// cubic root for <tt>T</tt>
-  // template <typename T> bool cbrt(const T& x, prec_t prec = getDefaultBFradicalPrec())
+  // template <typename T> bool cbrt(const T& x,
+  // 		prec_t prec = getDefaultBFradicalPrec())
   // { return _cbrt<FixedArithmeticPolicy, T>(x, prec); }
 
   /// k-th root for <tt>BigFloat2</tt>
@@ -597,7 +605,8 @@ public:
   { return _mul<FixedArithmeticPolicy, T>(x, y, prec); }
 
   /// division for <tt>BigFloat2/BigFloat2</tt>
-  bool div(const BigFloat2& x, const BigFloat2& y, prec_t prec = getDefaultBFdivPrec())
+  bool div(const BigFloat2& x,
+	  const BigFloat2& y, prec_t prec = getDefaultBFdivPrec())
   { return _div_f<FixedArithmeticPolicy>(x, y, prec); }
   /// division for <tt>BigFloat2/T</tt>
   template <typename T> 
@@ -746,7 +755,8 @@ std::cerr << "bf=" << bf
 	<< "errDigits=" << errDigits
 	<< std::endl;
 
-    if (errDigits > log_10(bf,100,GMP_RNDU).intValue()) { // the error is larger than the magnitude of center value
+    if (errDigits > log_10(bf,100,GMP_RNDU).intValue())
+    	{ // the error is larger than the magnitude of center value
       std::ostringstream oss;
       oss << "0+/-10e" << -errDigits;
       return oss.str();
@@ -788,7 +798,8 @@ std::cerr << "bf=" << bf
         // COMMENT: A BigFloat say 0.1234 has an implicit error of 0.0001.
 	//          So we say 0.1234 is an "implicit error representation"
 	//          of the BigFloat2 [0.1233,0.1235].
-	//          However, this concept is an I/O issue and should not concern us here.
+	//          However, this concept is an I/O issue
+	//          and should not concern us here.
       return result;
     }
   }

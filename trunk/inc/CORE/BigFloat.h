@@ -46,16 +46,16 @@
 
 // Invert a round mode
 #define INVERT_RND(rnd) \
-((rnd == GMP_RNDU) ? GMP_RNDD : ((rnd == GMP_RNDD) ? GMP_RNDU : rnd))
+  ((rnd == GMP_RNDU) ? GMP_RNDD : ((rnd == GMP_RNDD) ? GMP_RNDU : rnd))
 // Invert sign
 inline void invert_sgn(mpfr_ptr x)
-{ MPFR_SIGN(x) = -MPFR_SIGN(x); }
+  { MPFR_SIGN(x) = -MPFR_SIGN(x); }
 
 /* subtraction */
 inline int mpfr_z_sub(mpfr_ptr z, mpz_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
-{ int r = -mpfr_sub_z(z, y, x, INVERT_RND(rnd)); invert_sgn(z); return r; }
+  { int r = -mpfr_sub_z(z, y, x, INVERT_RND(rnd)); invert_sgn(z); return r; }
 inline int mpfr_q_sub(mpfr_ptr z, mpq_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
-{ int r = -mpfr_sub_q(z, y, x, INVERT_RND(rnd)); invert_sgn(z); return r; }
+  { int r = -mpfr_sub_q(z, y, x, INVERT_RND(rnd)); invert_sgn(z); return r; }
 
 /* remove trailing zeros (by limbs) */
 void mpfr_remove_trailing_zeros(mpfr_t x);
