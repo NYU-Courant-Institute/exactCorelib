@@ -1,6 +1,8 @@
 /*
   A collection of essential tools and data structures for performing root 
   isolation using subdivision methods.
+
+  Author: Jihun 2010
  */
 #ifndef __ROOTISOLATIONTOOLS_H__
 #define __ROOTISOLATIONTOOLS_H__
@@ -20,7 +22,7 @@ typedef std::vector<BRInterval> BRVecInterval;
 /**********DATA STRUCTURES******************************/
 /*******************************************************/
 
-// Template parameters:
+// Template parameters
 // 	RT= number type for endpoints of interval
 // 	T = number type for coefficients of polynomial
 
@@ -760,7 +762,8 @@ void initializeSleeve(Polynomial<T> &P, int deg, RT a, RT b, unsigned int s,
   }while(!suffprec);
 
   //  mpfr_set_default_prec(oldp);
-  //  cout <<"Exiting initializesleeve: Width is " << slv[0].abs_diam().uMSB() << " Desired is "<< (2-EPS) << endl;
+  //  cout <<"Exiting initializesleeve: Width is "
+  //       << slv[0].abs_diam().uMSB() << " Desired is "<< (2-EPS) << endl;
 }
 
 // All arithmetic is BigFloat2 arithmetic
@@ -771,6 +774,7 @@ void monomialToBezier(Polynomial<T> &P, int deg, RT a, RT b, int s,
   Polynomial<BigFloat2> PP(P);
   BigFloat2 A(a, p), B(b, p);
 
+  // Jan'19, Chee: Error since != is not defined for BigFloat2...
   if(A != BigFloat2(0)) 
     shift(PP.coeff(), deg, A);
 
@@ -792,13 +796,13 @@ void monomialToBezier(Polynomial<T> &P, int deg, RT a, RT b, int s,
 
 
 // All arithmetic is BigFloat2 arithmetic. We know the Bernstein coefficients
-// of P on the unit interval, and we want to compute its Berstein coefficients on
-// [a,b]. We are using the auto version of BigFloat2 arithmetic, i.e., the precision
-// of the interval endpoints is increased automoatically. This isn't much because
+// of P on the unit interval, but we want its Berstein coefficients on
+// [a,b]. We use the auto version of BigFloat2 arithmetic, i.e., the precision
+// of the interval endpoints is increased automatically. This isn't much because
 // the increase is by logarithm of the degree, as we do only O(n^2) operations.
 template <typename T, typename RT, typename T2, typename PT>
-  void bezierToBezier(Polynomial<T> &P, int deg, RT a, RT b, T2& bz, bool isExactArith, 
-		      PT prec){
+  void bezierToBezier(Polynomial<T> &P,
+	  int deg, RT a, RT b, T2& bz, bool isExactArith, PT prec){
   //  cout<<"Inside bezierToBezier"<<endl;
 
   BigFloat2 A(a, prec), B(b, prec), One(1, prec), Zero(0, prec);
@@ -809,8 +813,7 @@ template <typename T, typename RT, typename T2, typename PT>
   for(int i=0; i<=deg; i++)
     bz[i] = BigFloat2(P.coeff()[i], prec);
 
-
-  //  cout << " Precision before deCasltejau "<< bz[0].get_prec() << endl;  
+  //  cout << " Precision before deCasteljau "<< bz[0].get_prec() << endl;  
   // First subdivide [0,1] at A if it's not zero
   if(A != Zero ){
     //    cout<<"Subdividing at "<< A << endl;

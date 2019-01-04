@@ -1,10 +1,6 @@
-#ifndef __LOWERBOUNDS_H__
-#define __LOWERBOUNDS_H__
-
-#define CORE_LEVEL 4
-#include <CORE/CORE.h>
-
 /***************************************************
+ * file: lowerBounds.h
+ *
  * Compute an upper bound on the roots of the polynomial that is supposedly
  * the closest to being the best bound amongst all bounds that depend 
  * only upon the absolute value of the coefficients. Confer van der Sluis;
@@ -16,9 +12,19 @@
  * the negative coefficients of the polynomial in the radicals above and this
  * is what we implement.
  *
- * This is the bottleneck: computing the root(.,.) is very slow.
- * 	Jan'19, Chee: root(...) is in Expr.h
+ * Author: Jihun 2010
+ *
+ * REMARKS: bottleneck is that computing the root(.,.) is very slow.
+ * 	Jan'19, Chee:
+ * 	Note that root(x,k) gives the k-th root of x (see Expr.h).
+ * 	I think speed is no longer an issue since we invoke MPFR's root.
  * ***************************************************/
+
+#ifndef __LOWERBOUNDS_H__
+#define __LOWERBOUNDS_H__
+
+#define CORE_LEVEL 4
+#include <CORE/CORE.h>
 
 template<typename NT>
 BigFloat upperbound1(const Polynomial<NT> & P)
@@ -28,16 +34,30 @@ BigFloat upperbound1(const Polynomial<NT> & P)
 	  //  cout << endl <<" Inside upper bound " << endl;  
 	
 	  for(int i=1; i <=n; i++){
-	    if(sign(P.coeff()[n-i]) < 0)
-//Jan'18, Chee: compile error in next line ("invalid use of void expr")!
-	      max=core_max(max, 
+	    if(sign(P.coeff()[n-i]) < 0) {
+	       BigFloat2 cc;
+/* Jan'18, Chee:
+ * 	The following expression causes the compile error
+ * 		"invalid use of void expr"
+ *
+      max=core_max(max, 
 		 root((core_abs(BigFloat2(P.coeff()[n-i]))/
       core_abs(BigFloat2(P.coeff()[n]))).makeCeilExact(), i).makeCeilExact());
+
+ *    So we break this up into smaller parts:
+ */
+		cc = core_abs(BigFloat2(P.coeff()[n-i]))
+			/ core_abs(BigFloat2(P.coeff()[n]));
+		cc = cc.makeCeilExact();
+		cc = root(cc, i).makeCeilExact();
+		max = core_max(max, cc);
+	    }//if
 	    //cout <<"max after " << i << " iteration is "<< max << endl;
 	    //cout <<"Taking radical of "
-	    // <<core_abs(BigFloat(P.coeff()[n-i]))/core_abs(BigFloat(P.coeff()[n]))
-	    // <<endl;
-	  }
+	    //     << core_abs(BigFloat(P.coeff()[n-i]))
+	    // 		/ core_abs(BigFloat(P.coeff()[n]))
+	    // 	   <<endl;
+	  }//for
 	  return 2*BigFloat(max.get_max());
 	}
 /***************************************************
@@ -188,14 +208,14 @@ BigInt HongLowerBound( const Polynomial<NT> & P)
 	    cout<<"Constant coefficient is zero."<<endl;
 	  //  std::cout << "P[0]= " << P.coeff()[0] << std::endl;
 	  for(int i= deg; i > 0; i--){
-	    //    std::cout << "P["<< i << "]" << " = " << P.coeff()[i] << std::endl;
+	    //    std::cout<< "P["<< i<< "]"<< " = "<< P.coeff()[i]<< std::endl;
 	    if(sign(P.coeff()[i]) * s < 0){
 	      for(int k=i-1; k >= 0; k--){
 		if(sign(P.coeff()[k]) * s > 0){
 		  //	  cout<<"Sign different"<<endl;
 		  temp = floorLg( P.coeff()[i] )  - floorLg( P.coeff()[k] ) -1;
 		  q = temp /(i-k);
-		  //	  cout<<"temp = "<<temp << " q= "<< q << " (i-k)= "<< i-k<<endl;
+		  // cout<<"temp = "<<temp<< " q= "<<q<< " (i-k)= "<< i-k<<endl;
 		  if(!localBoundSet || lB > q + 2){
 		    localBoundSet = true;
 		    lB = q+2;
@@ -209,7 +229,7 @@ BigInt HongLowerBound( const Polynomial<NT> & P)
 		gB = lB;
 	      }
 	    }
-	    //    std::cout << "Cout gb after " << i << " loop = "<< gB << std::endl;
+	    //std::cout <<"Cout gb after " << i <<" loop = "<< gB << std::endl;
 	  }
 	  if ( gB+1 <= 0 ) return BigInt(1)<< core_abs(gB+1);
 	  return 0;
