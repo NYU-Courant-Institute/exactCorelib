@@ -10,7 +10,8 @@
 CORE_BEGIN_NAMESPACE
 typedef long extLong;
 
-///Various forms of evaluation. Some specific to the type of the point of evaluation.
+/// Various forms of evaluation.
+/// Some specific to the type of the evaluation point
 //{@
 
 /// Evaluation Function (generic version, always returns the exact value).
