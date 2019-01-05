@@ -177,6 +177,8 @@ template <typename NT> void TestArithmetic() {
   Interval x_8 = x_2 * x_3;
   assert(x_8.getL() == 10);
   assert(x_8.getR() == 12);
+  
+  x_7 = x_8;	// hack: to avoid warning that x_8 is not used;
 
   // Multiplication by thin and thick zeroes.
   // NOTE(narayan) :  Multiplication by a thin zero tends to be a bit
@@ -191,6 +193,7 @@ template <typename NT> void TestArithmetic() {
   Interval x_10 = x_7 * zero;
   assert(x_10.getL() == 0);
   assert(x_10.getR() == 0);
+  x_8 = x_10;	// hack: to avoid warning that x_10 is not used;
 
   // Division.
   Interval x_11 = num / one;
@@ -204,10 +207,12 @@ template <typename NT> void TestArithmetic() {
   Interval x_12 = zero / one;
   assert(x_12.getL() == zero.getL());
   assert(x_12.getR() == zero.getR());
+  x_10 = x_12;	// hack: to avoid warning that x_12 is not used;
 
   Interval x_13 = num / den;
   assert(x_13.getL() == 2);
   assert(x_13.getR() == 8);
+  x_12 = x_13;	// hack: to avoid warning that x_13 is not used;
 }
 
 // NOTE(narayan) :
@@ -224,6 +229,7 @@ template <typename NT> void TestEquality() {
   assert(zero != one);
   Interval zero_2 = zero + one;
   assert(zero != zero_2);
+  zero_2 = zero_2+zero_2 ; // hack: to avoid warning that zero_2 is not used;
 }
 // Tests for intersect,
 template <typename NT> void TestAdditional() {
@@ -265,12 +271,14 @@ template <typename NT> void TestAdditional() {
   Interval x_r = Intersect(i_2, infinity);
   assert(x == x_r);
   assert(x_r == i_2);
+  x_r = x;	// hack: to avoid warning that RHS is not used;
 
   Interval s_1 = Intersect(i_5, i_1);
   Interval s_2 = Intersect(i_1, i_5);
   assert(s_1 == s_2);
   assert(s_1.getL() == -10);
   assert(s_1.getR() == -8);
+  s_1 = s_2+s_1 ; // hack: to avoid warning that RHS is not used;
 }
 
 // I/O tests:
