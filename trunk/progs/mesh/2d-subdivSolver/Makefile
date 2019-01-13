@@ -22,7 +22,7 @@ default: ${p}
 
 main = main
 
-DEPENDENCES =  main.cpp src.h ../arrangements-gui-copy/mk-inl.h gs-inl.h
+DEPENDENCES =  main.cpp src.h mk-inl.h gs-inl.h
 
 #=================================================
 # variables
