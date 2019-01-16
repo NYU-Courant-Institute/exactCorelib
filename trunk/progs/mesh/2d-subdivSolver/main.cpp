@@ -81,6 +81,8 @@ int main(int argc, const char *argv[]){
     cout << endl;
     cout << stats_gs << endl;
 #endif
+
+//	system("pause");
     return 0;
 }
 

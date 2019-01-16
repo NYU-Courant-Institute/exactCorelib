@@ -260,7 +260,7 @@ template <class NT>
 int BiPoly<NT>::getnumber(const char* c, int start, unsigned int len,
 			  BiPoly<NT> & P){
   int j=0;
-  char *temp = new char[len];
+  char *temp = new char[len+1];
   while(is_float_or_rational(c[j+start])){
     temp[j]=c[j+start];   j++;
   }
@@ -834,12 +834,12 @@ Polynomial<NT> BiPoly<NT>::fixX( const NT &x ) {
 	int d = getTrueYdegree();
 	if(d == -1)
 		return Polynomial<NT>();
-		
-	NT c[d+1];
+	NT *c = new NT[d+1];
 	for (int i =d; i >=0; i--) {
 		c[i] = coeffX[i].eval(x);
 	}
 	Polynomial<NT> P(d, c);
+    delete [] c;
 	return P;
 
 }

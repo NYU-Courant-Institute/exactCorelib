@@ -1133,7 +1133,7 @@ IntervalT<T> evalSlopeForm(const IntervalT<T> & x) const {	// interval evaluatio
 		T xmid = x.mid();
 
 		// Compute the Taylor coefficients at xmid
-		T shifted[deg+1];
+		T *shifted = new T[deg+1];
 		for(int i=0; i<= deg ; i++)
 			shifted[i] = coeff()[i];
 		
@@ -1153,7 +1153,9 @@ IntervalT<T> evalSlopeForm(const IntervalT<T> & x) const {	// interval evaluatio
 			val += abs(shifted[i]); 	
 		}
 		val*=w;
-		return IntervalT<T>(shifted[0]-val, shifted[0]+val);		
+        IntervalT<T> result(shifted[0]-val, shifted[0]+val);		
+        delete [] shifted;
+		return result;
 	}		
 	
 template<typename T>

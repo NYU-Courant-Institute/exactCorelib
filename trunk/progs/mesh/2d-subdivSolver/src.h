@@ -55,6 +55,7 @@ ostream& operator<< (ostream& out, Stats & stats)
     out << "Average timing per MK test: " 
         << (double)stats.MK_timing/stats.MK_count/CLOCKS_PER_SEC
         << " seconds " << endl;
+    return out;
 }
 
 struct Stats_gs
@@ -79,6 +80,7 @@ ostream& operator<< (ostream& out, Stats_gs& stats_gs)
         << endl;
     out << "Number of box containing a root: " << stats_gs.unique_count
         << endl;
+    return out;
 }
 
 
