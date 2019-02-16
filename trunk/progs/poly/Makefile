@@ -56,7 +56,8 @@ TARGETS= tNewton tSturm tDescartes tSturmBF tDescartes tDescartesBF tPolyALL
 MORE_TARGETS = tPolyALL \
     tSturmRat tSturmExp \
     tWilk20 tWilk20deriv tKameny4 tGCD tRootOf wein \
-    tDescartesRat tDescartesExp
+    tDescartesRat tDescartesExp \
+    fileReader readPoly parsepoly
 
 OTHER_TARGETS = solve pisot parsepoly
 
@@ -281,6 +282,8 @@ tPseudo: tPseudo.o
 parsepoly: parsepoly.o
 
 fileReader: fileReader.h fileReader.cpp fileReader.o
+
+readPoly: readPoly.h readPoly.cpp readPoly.o
 
 t:	t.o
 

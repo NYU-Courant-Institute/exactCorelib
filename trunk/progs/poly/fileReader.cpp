@@ -1,42 +1,25 @@
 /* file: fileReader.cpp
- * 	COMMENT: MUST rewrite this code so that it behaves like
- * 	"std::strtok" that has state info, that keeps delivering new
- * 	lines until NULL is returned.
  *
- * 	In fileProcessor.cpp, we used "strtok" to process line-based text files:
- * 		-- ignoring initial white space
- * 		-- ignoring terminal white space
- * 		-- replacing multiple white spaces to one space
- * 		-- ignoring "#" token and rest of line
+ * This tests the class fileReader defined in fileReader.h.
+ * Basically, the idea is to process any input text file
+ * and output a sequence of tokens.  The input file consists of
+ * lines with two special characters:  
  *
- * 		CAREFUL:
- * 		This "#" MUST be a separate token!
- * 		E.g., "abc# xyz" and "abc #xyz" and "abc#xyz" do not count.
- * 	
- * 	Now, we extend the processor with:
- * 		-- removing the token "\\" of one charactor, provided it is 
- * 			the last token in the current line, and join
- * 			the following line to the current.
- * 		CAREFUL:
- * 		This "\\" MUST be a separate token.
- * 		E.g., "abc\\" does not count because "\\" is not separate.
- * 		E.g., "abc \\ xyz" does not count as "\\" is not the last token
+ * 	comment char ('#')	-- ignore rest of line
+ * 	continuation char ('\')	-- ignore rest of line AND join to next line
+ * 
+ * After processing for '#' and '\', we remove any initial
+ * or terminal white spaces (' ' or '\t').
+ * Then replace any contiguous sequence of one or more
+ * white spaces (' ' or '\t') by a single space (' ').
  *
- * 	It will take an input file "example.txt"
- * 	and produce a cleaned up output file, "example-clean.txt".
+ * What results is a sequence of lines, consisting of tokens
+ * separated by a single white space.
  *
  * 	USAGE:
  * 		> fileReader
  *
- * 	KNOWN (SMALL) BUG:
- * 		If the last token is not "\\", we output an empty last line.
- * 		Otherwise, we do not output any empty last line.
- *
- * REFERENCES:
- * 	For file I/O, see fileStreamIO.cpp (this directory).
- * 	For strtok, see strtok.cpp (this directory).
- *
- * 	Author: Chee Yap (April 2012)
+ * 	Author: Chee Yap (April 2012, Dec 2018)
  *
  * ***************************************************/
 

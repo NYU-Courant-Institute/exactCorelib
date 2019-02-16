@@ -1,6 +1,7 @@
 /*
-  File contains the code for real root isolation based upon the continued fraction
-  algorithm. This is the scaled version of Akritas' algorithm.
+  File contains the code for real root isolation based upon
+  the continued fraction algorithm. 
+  This is the scaled version of Akritas' algorithm.
  */
 #ifndef __CONTFRAC_H__
 #define __CONTFRAC_H__
@@ -104,7 +105,8 @@ void isolateRoots(const Polynomial<T>& P, std::vector<FT>& v){
   BigInt CB=CauchyUpperBound(P).get_z(GMP_RNDU);
   //  cout << "Cauchy's bound is " << CB << endl;
   BigInt one(1), zero(0), mone(-1);
-  CFDivData<BigInt, T> SD = CFDivData<BigInt, T>(one, zero, zero, one, signVariation(Q), Q);
+  CFDivData<BigInt, T> SD =
+      CFDivData<BigInt, T>(one, zero, zero, one, signVariation(Q), Q);
 
   isolateRoots(SD, v, CB, deg ); //Isolate the positive roots of P.
 
@@ -139,7 +141,8 @@ void test(const Polynomial<NT>& P, int n=10) {
   std::cout << "Size of recursion tree = " << COUNTER/n;
   std::cout << " #roots = " << v.size()/n;
   std::cout<<" Time " << t1.getSeconds()/n <<endl;
-  //  std::cout<<" Time per evaluation " << t1.getSeconds()/(COUNTER) <<std::endl;
+  //  std::cout<<" Time per evaluation "
+  //           << t1.getSeconds()/(COUNTER) <<std::endl;
 }
 
 } // end namespace ContFrac

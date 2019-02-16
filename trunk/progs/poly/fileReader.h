@@ -1,4 +1,9 @@
+#ifndef CORE_FILE_READER_H
+#define CORE_FILE_READER_H
+
+
 /* file: fileReader.h
+ *
  * 	The "fileReader" class is used to convert 
  * 		a sequence of "inputLines" into a sequence of "outputLines".
  * 	Special chars are those in this string:   " \t\n:#\\"
@@ -53,7 +58,7 @@
  * 	Likewise, a "fileReader" instance will keep delivering
  *	the next "outputLine" of tokens.  
  *
- *	See fileReader.cpp that illustrates the use of fileReader.h.
+ *	See fileReader.cpp for example of how to use fileReader.h.
  * 		We provide a method to create a sample input file "example.txt"
  * 		and a method to validate the result of processing "example.txt".
  *
@@ -361,3 +366,4 @@ private:
     ifile.close();
   }// sample
 
+#endif /* CORE_FILE_READER_H */

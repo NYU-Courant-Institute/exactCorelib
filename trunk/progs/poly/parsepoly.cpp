@@ -7,7 +7,7 @@
 
    Dec'2018:
    	getpoly() is found in inc/CORE/poly/Poly.h.
-	We need to make it public to compile this code.
+	We needed to make it public to compile this code.
 
    Since Core Library  Version 1.7
    $Id: parsepoly.cpp,v 1.1 2006/03/07 04:51:25 exact Exp $
