@@ -236,7 +236,33 @@ void parseCfgFile() {
       sptr = strtok(nullptr, "=: \t");
       verbose = atoi(sptr);
     }
-  }
+
+	//Yong/Chee Jul'19:
+	if (strcmp(sptr, "eye_x") == 0) {
+		sptr = strtok(nullptr, "=: \t");
+		eye.setX(atof(sptr));
+	}
+	if (strcmp(sptr, "eye_y") == 0) {
+		sptr = strtok(nullptr, "=: \t");
+		eye.setY(atof(sptr));
+	}
+	if (strcmp(sptr, "eye_z") == 0) {
+		sptr = strtok(nullptr, "=: \t");
+		eye.setZ(atof(sptr));
+	}
+	if (strcmp(sptr, "lookAt_x") == 0) {
+		sptr = strtok(nullptr, "=: \t");
+		at.setX(atof(sptr));
+	}
+	if (strcmp(sptr, "lookAt_y") == 0) {
+		sptr = strtok(nullptr, "=: \t");
+		at.setY(atof(sptr));
+	}
+	if (strcmp(sptr, "lookAt_z") == 0) {
+		sptr = strtok(nullptr, "=: \t");
+		at.setZ(atof(sptr));
+	}
+  }//while
   fclose(fptr);
 }
 
