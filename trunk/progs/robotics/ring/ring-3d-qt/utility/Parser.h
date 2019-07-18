@@ -79,7 +79,7 @@ void parseVertices(vector<Point3d>& pts, ifstream& ifs) {
 
 void parseCfgList() {
   char sptr[200];
-  string cfgDir = workingDir + "/" + inputDir;
+  string cfgDir = workingDir + "/" + inputDir + "/cfg";
   QDir tmpDir(cfgDir.c_str());
   QStringList fileList = tmpDir.entryList();
   while (!fileList.empty()) {
@@ -268,7 +268,7 @@ void parseCfgFile() {
 
 void parseConfigFile(ConfBox3d* b) {
   stringstream ss;
-  ss << inputDir << "/" << fileName;  // create full file name
+  ss << inputDir << "/env/" << fileName;  // create full file name
   string s = ss.str();
   FILE* fptr = fopen(s.c_str(), "r");
   if (fptr == NULL) return;

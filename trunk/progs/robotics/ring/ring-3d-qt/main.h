@@ -30,11 +30,11 @@ FILE *g_fptr = NULL;
 #define mw_out (*window)
 MainWindow *window;
 
-string cfgName("WAFR18_rand100_2.cfg");
+string cfgName("cube_wall-a.cfg");
 char cfgNameList[200][200];
 int numCfg = 0;
 string workingDir;
-string inputDir("inputs/WAFR18");  // Path for input files
+string inputDir("inputs/");  // Path for input files
 string fileName("empty.txt");      // Input file name
 string defaultFilePath("inputs/empty.txt");
 
