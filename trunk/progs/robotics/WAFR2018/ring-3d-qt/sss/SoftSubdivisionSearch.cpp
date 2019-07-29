@@ -250,7 +250,7 @@ bool SoftSubdivisionSearch::findPath(ConfBox3d* boxA, ConfBox3d* boxB, int& ct) 
       return !dijQ.empty();
     else
       return !dijQ.empty() && !dijQ2.empty();
-}
+}//findPath
 
 template<typename Cmp>
 ConfBox3d* SoftSubdivisionSearch::findVorBox(ConfBox3d* freeBox, int& ct) {
