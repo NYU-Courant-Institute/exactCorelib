@@ -43,9 +43,16 @@ bool Wall::insideWall(Point3d p){
   return (tri.distance(p) <= 1e-8);
 }
 
+// This returns true if the point q is on the same same side as
+// the wall indicated by its normal n:
+//    i.e., if a is a corner (??) in the interior of the wall,
+//    		then <q-a, n> >=0.
+//
 bool Wall::sameSide(Point3d q) {
 
   Vector qa = Vector(q-a->p);
+
+  // Aug'19: Yong found a bug here:
   return (qa*tri.normal() >= 0);
 
   double a0[3] = {a->p.X(), a->p.Y(), a->p.Z()};
