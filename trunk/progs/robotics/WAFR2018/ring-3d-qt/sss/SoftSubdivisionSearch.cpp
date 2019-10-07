@@ -10,7 +10,9 @@ void printConfBoxes() {
     ConfBox3d* b = ConfBox3d::boxes[i];
     cout << "===================" << endl;
     cout << "Box " << b->boxId << ":" << endl;
-    cout << b->mB.X() << "\t" << b->mB.Y() << "\t" << b->mB.Z() << "\t" << b->width << "\t" << enumNames[b->status] << endl;
+    cout << b->mB.X() << "\t" << b->mB.Y() << "\t" << b->mB.Z()
+			<< "\t" << b->width
+			<< "\t" << enumNames[b->status] << endl;
     for (int i = 0; i < b->neighbors.size(); i++) {
       cout << b->neighbors[i]->boxId << "\t";
     }
@@ -20,10 +22,13 @@ void printConfBoxes() {
 }
 
 // TODO: Let the constructor accept start and goal as configurations of the robot
-SoftSubdivisionSearch::SoftSubdivisionSearch(ConfBox3d* root, double e, int searchType, Point3d start, Point3d goal, Point3d startRot, Point3d goalRot):
-  epsilon(e), searchType(searchType), ct(0), pRoot(root),
-  freeCount(0), stuckCount(0), mixCount(0), mixSmallCount(0) {
-
+SoftSubdivisionSearch::SoftSubdivisionSearch(
+		ConfBox3d* root, double e, int searchType,
+		Point3d start, Point3d goal,
+		Point3d startRot, Point3d goalRot):
+  			epsilon(e), searchType(searchType), ct(0),
+			pRoot(root), freeCount(0), stuckCount(0),
+			mixCount(0), mixSmallCount(0) {
   this->start = start;
   this->goal = goal;
   this->startRot = startRot;

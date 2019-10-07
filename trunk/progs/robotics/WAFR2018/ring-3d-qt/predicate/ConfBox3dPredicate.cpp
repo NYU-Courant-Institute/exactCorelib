@@ -15,7 +15,8 @@ Status ConfBox3dPredicate::classification(ConfBox3d* b, Circle3d cir) {
 
   if(cir.R() > 0){
     double minDist = std::numeric_limits<float>::max();
-    for (list<Wall*>::iterator iterW = b->Walls.begin(); iterW != b->Walls.end(); ++iterW) {
+    for (list<Wall*>::iterator iterW = b->Walls.begin();
+			iterW != b->Walls.end(); ++iterW) {
       Wall* w = (*iterW);
 
       Point3d* p_ = w->tri.separation_circle(cir);
@@ -27,7 +28,8 @@ Status ConfBox3dPredicate::classification(ConfBox3d* b, Circle3d cir) {
       }
     }
 
-    for (list<Edge*>::iterator iterE = b->Edges.begin(); iterE != b->Edges.end(); ++iterE) {
+    for (list<Edge*>::iterator iterE = b->Edges.begin();
+			iterE != b->Edges.end(); ++iterE) {
       Edge *e = *iterE;
 
       Point3d* p_ = e->seg.separation_circle(cir);
@@ -39,7 +41,8 @@ Status ConfBox3dPredicate::classification(ConfBox3d* b, Circle3d cir) {
       }
     }
 
-    for (list<Corner*>::iterator iterC = b->Corners.begin(); iterC != b->Corners.end(); ++iterC) {
+    for (list<Corner*>::iterator iterC = b->Corners.begin();
+			iterC != b->Corners.end(); ++iterC) {
       Corner* c = (*iterC);
 
       Point3d* p_ = c->p.separation_circle(cir);
@@ -53,10 +56,12 @@ Status ConfBox3dPredicate::classification(ConfBox3d* b, Circle3d cir) {
   }
 
   // should use Obstacle as a parent class
-  // and need one copy to record the min distance and the corresponding feature
+  // and need one copy to record the min distance
+  // and the corresponding feature
   Wall* nearestWall = NULL;
   double minDistW = std::numeric_limits<float>::max();
-  for (list<Wall*>::iterator iterW = b->Walls.begin(); iterW != b->Walls.end(); ++iterW) {
+  for (list<Wall*>::iterator iterW = b->Walls.begin();
+		  iterW != b->Walls.end(); ++iterW) {
     Wall* w = (*iterW);
     double dist(w->tri.distance(closestP));
 
