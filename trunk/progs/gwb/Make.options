@@ -8,7 +8,6 @@ ifndef CORE_PATH
 endif
 
 
-
 include $(CORE_PATH)/Make.config
 #CXXFLAGS =  -Wall  -mno-cygwin -DCYGWIN
 ifeq ($(PLATFORM), mac)
@@ -16,7 +15,6 @@ ifeq ($(PLATFORM), mac)
    # and built. This can be done using Macports. Change the
    # mesaVersion variable as appropriate.
    MESA_VERSION=7.8.1_1+hw_render
-   MESA_VERSION=7.4.3_0+hw_render
    MESA_PATH=/opt/local/var/macports/software/mesa/$(MESA_VERSION)
    MESA_INC_PATH=$(MESA_PATH)/opt/local/include
    MESA_INC_PATH=/opt/local/include
@@ -36,11 +34,14 @@ ifeq ($(PLATFORM), mac)
 	 -lGLEW -lglui \
 	 -framework OpenGL -framework GLUT  
 else
+   GLEW_PATH=/home/Chee/usr/glew-2.1.0/include/GL/
 CORE_INC=-I. -I../ceval/third_party -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
 	 -I$(CORE_PATH)/gmp/include -I/usr/include/
 CORE_INC=-I. -I../../third_party -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
 	 -I$(CORE_PATH)/gmp/include -I/usr/include/
-CORE_LIB=-L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib -L$(CORE_PATH)/gmp/lib\
+CORE_LIB=-L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib \
+	-L$(CORE_PATH)/gmp/lib \
+	-L$(GLEW_PATH) \
 	 -lcore++$(VAR) -lmpfr -lgmp  -lglut -lGLU -lGL -lglew
 #lmpfr -lgmp -lm -lglut32 -lglu32 -lopengl32
 endif
