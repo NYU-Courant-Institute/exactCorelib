@@ -2,16 +2,16 @@
 #########################################
 # 
 #  The main (default) target there is to lock certain files:
-#	Makefiles, Make.config 
-#	t.cpp, tt.cpp 
+#			Makefiles, Make.config 
+#			t.cpp, tt.cpp 
 #  so that super-users  may freely
 #  modifly these files without accidentally
 #  committing these programs.
 #	
 #  (1) This file is to be run from the Exact Account
-#  	inside a Linux machine.
+#  				inside a Linux machine.
 #  (2) You can see what locks are held by whom by typing
-#		>> svn status -u
+#					>> svn status -u
 #
 #  --Chee Yap
 #    Jan 2017
@@ -37,11 +37,15 @@ funlock forcedunlock:
 	cd trunk; svn unlock --force Makefile Make.config 
 	cd trunk/progs; svn unlock --force Makefile Make.options Make.rules 
 
-########## COMMIT:
-commit:
+########## COMMIT:	commitexact should be called from unix/exact acct:
+########## COMMIT:	commit 		should be called from surface pro or bk:
+commitexact:
 	make unlock; \
-			svn -m"Makefile commit from corelib2" commit; \
-			make lock;
+		svn -m"Makefile commit from corelib2" commit; \
+		make lock;
+
+commit:
+		svn -m"Makefile commit from corelib2" commit; \
 
 #########################################
 # END
