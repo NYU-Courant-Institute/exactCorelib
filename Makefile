@@ -37,6 +37,12 @@ funlock forcedunlock:
 	cd trunk; svn unlock --force Makefile Make.config 
 	cd trunk/progs; svn unlock --force Makefile Make.options Make.rules 
 
+########## COMMIT:
+commit:
+	make unlock; \
+			svn -m"Makefile commit from corelib2" commit; \
+			make lock;
+
 #########################################
 # END
 #########################################
