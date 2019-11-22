@@ -121,7 +121,7 @@ README FILE: TABLE OF CONTENTS
        ANNOUNCEMENT  Release announcement
        AUTHORS       Authors of Core Library
        Makefile      Makefile for the whole library
-       Make.config   Compiler flags (this file is inherited by other Makefiles)
+       Make.config   Compiler flags (other Makefiles include this)
        FAQs          Frequently asked questions
        LICENSE.QPL   The Q Public License 
 
@@ -130,26 +130,26 @@ README FILE: TABLE OF CONTENTS
        lib/          The compiled library is found here.
        progs/        Sample programs that use Core Library.
        src/          Source code for the Core Library.
-       tmp/          Temporary files (e.g., installation diagnostic messages)
+       tmp/          Temporary files (e.g., installation diagnostics)
 
        python/       Python interface to Core Library.
        win32/        Windows related files (can be deleted for unix-base)
        bin/          executable programs (mostly for development currently)
        cmake/        directory for CMake builds and modules
-       builds/       directory for building gmp and mpfr (it is possible
-                         to delete this directory if you don't need it later)
+       builds/       directory for building gmp and mpfr (it is OK to
+                         delete this directory if you don't need it later)
        gmp/          gmp installation directory (may be a link).  This
                          directory may be missing if you have your own gmp.
                          From the SVN repository, you can link to ../gmp.
-       mpfr/         mpfr installation directory (may be a link).  This
-                         directory may be missing if you have your own mpfr.
+       mpfr/         mpfr installation directory (may be a link).  Omit
+                         this directory if you have your own mpfr.
                          From the SVN repository, you can link to ../gmp.
 
    The full distribution has these additional files and directories:
 
        doc/            Core Library Documentation  
        builds/gmp-xxx.tar.gz  GNU's gmp distribution (version xxx)
-       builds/gmp-xxx/        GNU's gmp directory for unpacking and compiling
+       builds/gmp-xxx/        GNU's gmp directory to unpack & compile
                        (can be deleted after installing gmp)
        builds/mpfr-xxx.tar.gz  mpfr distribution (version xxx)
        builds/mpfr-xxx/        mpfr directory for unpacking and compiling
@@ -173,7 +173,7 @@ README FILE: TABLE OF CONTENTS
         (III) You can share files between Windows and Cygwin; 
         (IV) There is a convenient setup.exe utility that allows you to
                 install / update / re-install / uninstall 
-        any component in a large suite of Unix tools and utilities, directly 
+        any component in a large suite of Unix tools & utilities, directly 
         from the web.  You can download Cygwin at
 
                 http://www.cygwin.com.  
@@ -210,8 +210,8 @@ README FILE: TABLE OF CONTENTS
                 STAGE 2 -- mpfr installation
                 STAGE 3 -- create the core library, extensions, samples
                 STAGE 4 -- run tests and timings
-        The screen output from the individual steps in these stages
-        are stored in the files ${CORE_PATH}/tmp/DIAG_* for your diagnostics.
+        The screen output from the individual steps in these stages are
+        stored in the files ${CORE_PATH}/tmp/DIAG_* for your diagnostics.
 
         But before any of these steps, you MUST choose your PLATFORM.
         PLATFORM is a combination of OS plus compiler.
@@ -225,11 +225,11 @@ README FILE: TABLE OF CONTENTS
                                 variable, the PLATFORM variable.
   
         To see what your current (default) options are, do:
-            > make options   -- this will show the various global settings
-                             -- e.g. PLATFORM=gnu, LINKAGE=static, VAR=, etc.
+            > make options   --this will show the various global settings
+                             --e.g. PLATFORM=gnu, LINKAGE=static, VAR=,etc.
 
    3.4) STAGE 1: INSTALLING GMP 
-        a) PRELIMINARY STEP:   For most Unix-like OS (e.g., Solaris, Linux),
+        a) PRELIMINARY STEP:   For Unix-like OS (e.g., Solaris, Linux),
         gmp will automatically build BOTH a static and a dynamic library.  
         In this case, most compilers will link to the dynamic gmp library.
         Therefore, you need to add the path of your dynamic gmp library to
@@ -237,15 +237,15 @@ README FILE: TABLE OF CONTENTS
         
         E.g., in csh/tcsh,
         
-         > setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${your_gmp_install_dir}/lib
+         > setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${your_gmp_dir}/lib
                
         E.g., in bash,
         
-         > export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${your_gmp_install_dir}/lib
+         > export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${your_gmp_dir}/lib
 
-        For instance, ${your_gmp_install_dir} might be /usr/local.
+        For instance, ${your_gmp_dir} might be /usr/local.
         If you are installing gmp using option d) below, we suggest
-        letting ${your_gmp_install_dir}=${CORE_PATH}/gmp.
+        letting ${your_gmp_dir}=${CORE_PATH}/gmp.
 
         NOW we are ready to proceed with installing gmp.
         Choose one of the following three situations that apply to you:
@@ -268,20 +268,20 @@ README FILE: TABLE OF CONTENTS
 
         c) YOU HAVE AN INSTALLED GMP BUT CORE COULD NOT FIND IT:
         Assuming you have a properly installed GMP in some directory, say
-                ${your_gmp_install_dir}
+                ${your_gmp_dir}
         which was not found by the above "testgmp".  
         For instance, for the MacOS, you might have your gmp (and mpfr)
         under /opt/local/lib/libgmp*  and /opt/local/include/gmp*.
-        In that case, your_gmp_install_dir=/opt/local.
+        In that case, your_gmp_dir=/opt/local.
 
-        Typically, you will find under ${your_gmp_install_dir} several
+        Typically, you will find under ${your_gmp_dir} several
         subdirectories, including the following:
                 lib    include     share
         Then you can make a symbolic link from ${CORE_PATH}/gmp
         using the following command:
 
             > cd ${CORE_PATH}
-            > ln -s ${your_gmp_install_dir} gmp
+            > ln -s ${your_gmp_dir} gmp
             > make testgmp
 
         If you pass this test, you can go to STAGE 2.
@@ -289,7 +289,7 @@ README FILE: TABLE OF CONTENTS
         E.g., The default gmp installation will install the
         header file and library files in /usr/local/include
         and /usr/local/lib (respectively).  Hence, in this case,
-        ${your_gmp_install_dir}=/usr/local.
+        ${your_gmp_dir}=/usr/local.
 
         E.g., You had successfully installed an older version of Corelib
         in ${OLD_CORE_PATH}.  Say gmp and mpfr are in these
@@ -340,31 +340,31 @@ README FILE: TABLE OF CONTENTS
 
         b) You have installed MPFR, but it could not be found 
         by the compiler in a).  Suppose your MPFR is installed in
-        the directory called ${your_mpfr_install_dir}.  
-        This might be the same directory as ${your_gmp_install_dir}.
+        the directory called ${your_mpfr_dir}.  
+        This might be the same directory as ${your_gmp_dir}.
         For instance, you expect to find the file mpfr.h in 
-        ${your_mpfr_install_dir}/include.  In this case, we could make a 
+        ${your_mpfr_dir}/include.  In this case, we could make a 
         symbolic link from ${CORE_PATH}/mpfr using the following command:
 
             > cd ${CORE_PATH}
-            > ln -s ${your_mpfr_install_dir} mpfr
+            > ln -s ${your_mpfr_dir} mpfr
             > make testmpfr
 
         If you pass this test, you can go to STAGE 3.
 
         c) If you do not have MPFR, we will install MPFR as follows:
 
-            > make fourth    -- configures mpfr (same as "make config-mpfr")
+            > make fourth    -- configures mpfr (or "make config-mpfr")
                              -- screen output is placed in the file
                                 ${CORE_PATH}/tmp/DIAG_CONFIG_MPFR
-            > make fifth     -- builds mpfr library (same as "make build-mpfr")
-                             -- screen output is placed
-                                in the file ${CORE_PATH}/tmp/DIAG_BUILD_MPFR
+            > make fifth     -- builds mpfr library (or "make build-mpfr")
+                             -- screen output is placed in the
+                                file ${CORE_PATH}/tmp/DIAG_BUILD_MPFR
             > make sixth     -- installs mpfr (same as "make install-mpfr")
-                             -- screen output is placed
-                                in the file ${CORE_PATH}/tmp/DIAG_INSTALL_MPFR
+                             -- screen output is placed in the
+                                file ${CORE_PATH}/tmp/DIAG_INSTALL_MPFR
             > make testmpfr  -- you must pass this test to continue.
-                                Output in file ${CORE_PATH}/tmp/DIAG_TEST_MPFR
+                                Output in ${CORE_PATH}/tmp/DIAG_TEST_MPFR
 
    3.6) STAGE 3: BUILD CORE LIBRARY.
         Now that gmp and mpfr are properly installed, you are ready to 
@@ -393,20 +393,20 @@ README FILE: TABLE OF CONTENTS
         (see 3.10(4) below).
 
             > cd ${CORE_PATH}
-            > make eighth     -- equivalent to "make test".  Screen output is
+            > make eighth     -- or, "make test".  Screen output is
                                  placed in the file 
                                     ${CORE_PATH}/tmp/DIAG_TEST_DEMO
 
         This tests all the previously compiled programs 
         in ${CORE_PATH}/progs.  Many of the programs are self-validating:
         if an unexpected value is computed, it will output "ERROR!"
-        instead of "CORRECT!".  Sometimes, the output says "INCORRECT!" but this
+        instead of "CORRECT!".  But an "INCORRECT!" output
         is not considered an error (e.g., with Level I accuracy, this
         is expected).  You can browse the output in the DIAG_TEST_DEMO file
         (search for the word "ERROR" to catch obvious errors).
         You can also time it:
 
-            > make ninth       -- equivalent to "make time"; it uses the "time"
+            > make ninth       -- or "make time"; it uses the "time"
                                   utility to measure the time "make test" 
                                -- screen output is placed in 
                                   the file ${CORE_PATH}/tmp/DIAG_TIME
@@ -416,7 +416,7 @@ README FILE: TABLE OF CONTENTS
         In the ideal case, you only have to insert the preamble:
 
              #ifndef CORE_LEVEL
-             #   define CORE_LEVEL N   // N=1,2,3.  Defaults to N=3 if omitted
+             #   define CORE_LEVEL N   // N=1,2,3.  Default is N=3 
              #endif
              #include "CORE/CORE.h"  
 
@@ -496,25 +496,25 @@ README FILE: TABLE OF CONTENTS
         is same as on Unix platform as described above. 
         But if you use Visual C++ instead, then follow these steps.
 
-          -- Download the file core-X.Y.Z_full.tgz (for version X.Y.Z) from our
+          -- Download file core-X.Y.Z_full.tgz (for version X.Y.Z) from our
              website. (We recommend the Full Distribution since it contains
              gmp already and you cannot easily link to pre-installed gmp)
           -- Unpack it into some directory ${CORE_PATH}. 
-          -- Unpack ${CORE_PATH}\gmp-xxx.tar.gz into ${CORE_PATH}\win32: this
-             creates a subdirectory ${CORE_PATH}\win32\gmp-xxx. Rename this
+          -- Unpack ${CORE_PATH}\gmp-xxx.tar.gz into ${CORE_PATH}\win32 to
+             create a subdirectory ${CORE_PATH}\win32\gmp-xxx. Rename this
              to plain ${CORE_PATH}\win32\gmp.
           -- Install gmp patches
                 
                 c:\>cd ${CORE_PATH}\win32\patches
                 c:\>patch xxx      // where "xxx" is the gmp version;
-                                   // (xxx = "3.1.1", "4.0.1", "4.1-static",
+                                   // (xxx = "3.1.1", "4.0.1","4.1-static",
                                    //  and  "4.1-dynamic" available)
                                    // for GMP 4.1.2, you still can choose
                                    // "4.1-static" or "4.1-dynamic".
 
           -- Open a "Command Prompt" window and run "vcvars32.bat" to setup
              Visual C++ command line environment. File vcvars32.bat is
-             automatically created by your Visual C++.  E.g., sometimes it is
+             automatically created by your Visual C++.  E.g., it may be
              found in C:\"Microsoft Visual Studio"\vc98\Bin.
 
           -- Compile gmp and the Core Library: 
@@ -531,7 +531,7 @@ README FILE: TABLE OF CONTENTS
                 c:\>set PATH=%PATH%;${CORE_PATH}\win32\lib
                 c:\>nmake test
       
-          -- Alternatively, use Visual Studio IDE to compile the Core Library
+          -- Alternatively, use Visual Studio IDE to compile Core Library
              and Core Extensions.  E.g., to compile Core Library, open the 
              project file "core.dsw" under ${CORE_PATH}\win32\corelib, and 
              compile.  To compile Core Extensions, open the project file "
@@ -541,9 +541,9 @@ README FILE: TABLE OF CONTENTS
         If you want to create your own Visual C++ project file, do the
         following steps:
  
-          -- add "${CORE_PATH}\inc", "${CORE_PATH}\win32\gmp" to "Include Path".
-          -- add "${CORE_PATH}\win32\lib" in "Lib Path".
-          -- Enable "Run-Time Type Information" in your project settings. 
+          --add "${CORE_PATH}\inc", "${CORE_PATH}\win32\gmp" to IncludePath
+          --add "${CORE_PATH}\win32\lib" in "Lib Path".
+          --Enable "Run-Time Type Information" in your project settings. 
 
         (4) SHARED OR STATIC LIBRARY LINKAGE:
         In Make.config, you can set the LINKAGE variable to "shared" or
@@ -570,33 +570,33 @@ README FILE: TABLE OF CONTENTS
         Sometimes you may want to recompile the Core Library (perhaps after
         changing a file in ${CORE_PATH}/src or $(CORE_PATH)/inc).  
         The simplest is to go into ${CORE_PATH}/src and type
-        "make clean; make".  This will automatically
-        update the files libcore++.a and/or libcore++.so in ${CORE_PATH}/lib. 
+        "make clean; make".  This will automatically update
+        the files libcore++.a and/or libcore++.so in ${CORE_PATH}/lib. 
         But for experimental purposes, we may want to keep two or more
         versions of libcore++.a around.  In this case, we suggest using the
         VAR variable described next.
 
         (6) DEBUGGING AND OTHER VERSIONS OF CORE LIBRARY: 
         It may be useful to have different compiled versions of the Core 
-        Library around.  For this, you must edit file ${CORE_PATH}/Make.config.
+        Library around.  For this, edit file ${CORE_PATH}/Make.config.
         This file defines the compilation flags, depending on the platform.
         There are two main variables to set: VAR and PLATFORM.
 
         VAR indicates the "variant" of the library you want to compile.
-        The Makefile creates the library file "libcore++$(VAR).a", which will be
+        The Makefile creates the library file "libcore++$(VAR).a" to be
         placed in ${CORE_PATH}/lib/.  Since the default value of VAR is
         the empty string, the default library is the plain "libcore++.a".
 
         Here are two useful variants, Debug variant and NoOpt variant:
 
         (a) VAR=Debug: you need this variant to run the GNU debugger, gdb.
-           If you set VAR=Debug in Make.config, and then re-do STAGE 3 above
+           If you set VAR=Debug in Make.config, and re-do STAGE 3 above
            (STAGES 1 and 2 are still fine), you will create the debugging
-           variant of the library, namely "libcore++Debug.a".  The other stages
+           variant of the library, namely "libcore++Debug.a".  Other stages
            will similarly create the Debug variants, e.g., Debug versions
            Core Extension libraries, sample programs, etc.
         (b) VAR=NoOpt: this version turns off all compiler optimizations.
-           Try this if you find mysterious bugs, and want to rule out possible
+           Try this if you find mysterious bugs, and to rule out possible
            errors caused by aggressive compiler optimizations.
 
         PLATFORM is used to define various variables that are platform-
@@ -617,7 +617,7 @@ README FILE: TABLE OF CONTENTS
   3.12) HOUSEKEEPING AND UNINSTALL
         To uninstall the library, simple delete all the files under
         ${CORE_PATH} (i.e., we do not put files anywhere).  If gmp and
-        mpfr are installed under ${CORE_PATH} you may want to move them first.
+        mpfr are installed under ${CORE_PATH} you may remove them first.
         
         In every directory, we have a Makefile with two targets called
         "clean" and "veryclean".  If you want to save space, you can type
@@ -637,18 +637,19 @@ README FILE: TABLE OF CONTENTS
    -- templated linearAlgebra extension
    -- templated interval class 
    -- templated complex number class 
-   -- much improved curve subdivision algorithm (Cxy), and
-      related subdivision code for complex root isolation and interval Newton.
+   -- much improved curve subdivision algorithm (Cxy), and related
+      subdivision code for complex root isolation and interval Newton.
    -- various bug fixes, including root bound overflow bug and
       printout of garbage digits but.
    -- Willi Mann provided a patch to allow the default constructor for
       Expr to use a static object.  If you have functions that have local
-      Expr variables, this can greatly improve speed (30% improvement in Mann's
+      Expr variables, this can greatly improve speed (30% speedup in Mann's
       application in the FIST software of Martin Held for triangulation.)
    -- Acknowledgments:  Thanks for feedback and bug reports from
           Sven Kohler, Michael Haag, Volmar Klatt, Martin Held,
           Willi Mann, Narayan Kamath.   Nararan contributed the interval
-          class, complex number class, and improvements in subdivision algorithms.
+		  class, complex number class, and improvements in subdivision
+		  algorithms.
 
    NEW in Version 2.0:
    -- Complete redesign of Core Library, based on Zilin's PhD thesis.
@@ -677,7 +678,7 @@ README FILE: TABLE OF CONTENTS
    -- Miscellaneous:
           * Versioning of Core Library is now Core-X.Y.Z (starting with
             X.Y.Z = 2.0.0).  Previously it was "Core_v1.7.0").
-          * Upgraded Core Library to be compatible with the latest gmp 4.1.4.
+          * Upgraded Core Library to be compatible with latest gmp 4.1.4.
    -- Acknowledgments:  Thanks for feedback and bug reports from
             Daniel Russell, Ron Wein, Andreas Fabri, Sylvain Pion.
             
@@ -697,7 +698,7 @@ README FILE: TABLE OF CONTENTS
           NT=BigFloat and NT=Expr (e.g., rootbounds).
         * Sturm<NT> can now work with NT=BigFloat
         * To support the above, various new methods are added to the
-          BigInt, BigRat, BigFloat and Real classes (isDivisible, gcd, etc).
+          BigInt, BigRat, BigFloat, Real classes (isDivisible, gcd, etc).
         * Polynomials now accept string inputs. 
             E.g., Polynomial<BigInt> p = "x^3 - 2x^2 + 17x - 4";
    -- Compatibility with gmp 4.1, and gcc 3.3
@@ -718,7 +719,7 @@ README FILE: TABLE OF CONTENTS
       We wrote wrappers around gmp's C function library.
       We also tested the possibility of using gmp's C++ classes (since
       gmp 4.1) which are template based.  CORE's interface are not fully
-      compatible with gmp since since we have exact algebraic representation
+      compatible with gmp since we have exact algebraic representation
       and precision bounds.
       We compared three versions of Core Library:
            (A) -- old code: version 1.6
@@ -756,7 +757,7 @@ README FILE: TABLE OF CONTENTS
             This factor of 4 is essentially the best possible (see
             CORE_PATH/progs/testIO/testSqrt.cpp).
           * fixed Expr::degreeBound().  Previously it always returned 1 at
-            leaves.  But with algebraic numbers, it must return d_e()).  This
+            leaves.  With algebraic numbers, it must return d_e()).  This
             has dramatic improvement in speed. Ron Wein's program for
             intersecting two ellipses used to take overnight, but now take
             0.4 sec.
@@ -811,7 +812,7 @@ README FILE: TABLE OF CONTENTS
        -- development of Core Extensions (geometry, algebra, meshes, etc)
        -- graphical support and interface
        -- File I/O of Core Objects (e.g., expressions)
-       -- CORE versions of "printf" and "scanf" (this will reduce the fuss to
+       -- CORE versions of "printf" and "scanf" (this reduces the fuss to
                 CORE-ize a standard C program).
        -- the exponent of a bigFloat number is represented by 
              a machine long.  This should not be a problem in practice.  An
@@ -822,13 +823,13 @@ README FILE: TABLE OF CONTENTS
        -- To report a bug, please send email to exact@cs.nyu.edu, with as
              much details as possible (including your platform/compiler).
        -- Let r = 54.  Suppose you convert a rational p/q to a BigFloat bf 
-             using r bits of relative precision.  Next convert bf to a machine
-             double md,
+			 using r bits of relative precision.  Next convert bf to a
+			 machine double md,
                        double md = (double)bf;
-             This md should be equal to rounding "p/q" to the nearest machine
-             double.  Turns out (Core 1.4) this may not be true!  
-             But if r=59, our tests indicated that md does equal the machine
-             rounding of p/q.  This bug is not too serious since,
+			 This md should be equal to rounding "p/q" to the nearest
+			 machine double.  Turns out (Core 1.4) this may not be true!  
+			 But if r=59, our tests indicated that md does equal the
+			 machine rounding of p/q.  This bug is not too serious since,
              for any particular inputs, it can be removed by increasing r.
              Tests suggest that r=59 is sufficient for
              all p/q.  See ${CORE_PATH}/src/test/ for details.
@@ -863,11 +864,12 @@ README FILE: TABLE OF CONTENTS
         faster than its predecessor because of new improved root 
         bounds and adoption of LiDIA/CLN's bignumber as default kernel.
    Version 1.4 (Aug 2001) moved from LiDIA/CLN to gmp as the main kernel.
-        Incremental square roots, improved precision-sensitivity algorithms,
-        simple floating point filters, hypergeometry package.  
-   Version 1.5 (Aug 2002) improvements in speed and root bounds (k-ary bounds),
-        CGAL compatibility changes, file I/O for large mathematical constants
-        (BigInt, BigFloat, BigRat), improved hypergeometric package,
+		Incremental square roots, improved precision-sensitivity
+		algorithms, simple floating point filters, hypergeometry package.  
+   Version 1.5 (Aug 2002) improvements in speed and root bounds (k-ary
+		bounds), CGAL compatibility changes, file I/O for large
+		mathematical constants (BigInt, BigFloat, BigRat),
+		improved hypergeometric package,
    Version 1.6 (June 2003) introduced arbitrary
         real algebraic numbers in Expr's, incorporated Polynomial and Sturm
         classes into Core Library.  CORE is now distributed with CGAL,
@@ -878,8 +880,8 @@ README FILE: TABLE OF CONTENTS
    Version 2.0 (Jun 2006) complete redesign of Core Library (templated
         Expr class taking parameters for Filter class, Rootbound class
         and BigFloat class), incorporation of transcendental functions into
-        Expr, Redesigned BigFloat (split off another class called BigFloat2),
-        general speed improvement 2-10 times.
+		Expr, Redesigned BigFloat (split off another class called
+		BigFloat2), general speed improvement 2-10 times.
    Version 2.1 (Jul 2010) 
         -- introduce anary nodes for sum and product
         -- DoubleWrapper for machine double in Level 1
