@@ -14,4 +14,13 @@ we have in this folder,
 	trunk		-- corelib2
 	mpsolve
 
+1. How to install gmp:
+	-- download tar file from gmplib.org
+		Then do ./configure, make, make install.
+	-- put a link from $COREPATH/gmp to this gmp.
+2. How to install mpfr:
+	-- download tar file from mpfr.org
+		Then do ./configure, make
+	-- put a link from $COREPATH/mpfr to this mpfr.
+
 
