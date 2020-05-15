@@ -42,7 +42,8 @@ BigFloat upperbound1(const Polynomial<NT> & P)
  *
       max=core_max(max, 
 		 root((core_abs(BigFloat2(P.coeff()[n-i]))/
-      core_abs(BigFloat2(P.coeff()[n]))).makeCeilExact(), i).makeCeilExact());
+      core_abs(BigFloat2(P.coeff()[n]))).makeCeilExact(),
+	  							i).makeCeilExact());
 
  *    So we break this up into smaller parts:
  */
