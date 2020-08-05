@@ -151,8 +151,8 @@ all makeall:  extra moreprogs
 #       -- use CCLUSTERVERSION=trunk for the latest
 #       -- change gmp, mpfr, flint and arb path to fit your settings 
 #       -- If you want to make development for Ccluster,
-#       -- either chekout git repository or use CCLUSTERVERSION=trunk
-#       -- otherwise your changes will not be taken into account
+#          either chekout git repository or use CCLUSTERVERSION=trunk
+#          otherwise you may loose your edits.
 ###################################################################
 # CCLUSTERVERSION=trunk 
 CCLUSTERURL=https://github.com/rimbach/Ccluster.git
