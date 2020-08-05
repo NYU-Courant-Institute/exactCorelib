@@ -144,13 +144,20 @@ extratest:
 
 all makeall:  extra moreprogs
 
-############################################################
+##################################################################
 # Ccluster
-#	-- download
-############################################################
+#	-- download from github
+#       -- change CCLUSTERVERSION to have a more recent version
+#       -- use CCLUSTERVERSION=trunk for the latest
+#       -- change gmp, mpfr, flint and arb path to fit your settings 
+#       -- If you want to make development for Ccluster,
+#       -- either chekout git repository or use CCLUSTERVERSION=trunk
+#       -- otherwise your changes will not be taken into account
+###################################################################
 # CCLUSTERVERSION=trunk 
 CCLUSTERURL=https://github.com/rimbach/Ccluster.git
-CCLUSTERVERSION=tags/v1.1.0
+CCLUSTERVERSION=tag/v1.1.2
+
 downloadCcluster: 
 	svn co ${CCLUSTERURL}/${CCLUSTERVERSION} Ccluster
 	
@@ -164,6 +171,12 @@ buildCcluster: downloadCcluster
 	&& make test\
 	&& cd ..
 
+updateCcluster: 
+	svn co ${CCLUSTERURL}/${CCLUSTERVERSION} Ccluster
+	
+cleanCcluster: 
+	rm -rf Ccluster
+	
 ############################################################
 # Housekeeping
 ############################################################
