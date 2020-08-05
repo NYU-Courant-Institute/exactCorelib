@@ -145,6 +145,26 @@ extratest:
 all makeall:  extra moreprogs
 
 ############################################################
+# Ccluster
+#	-- download
+############################################################
+# CCLUSTERVERSION=trunk 
+CCLUSTERURL=https://github.com/rimbach/Ccluster.git
+CCLUSTERVERSION=tags/v1.1.0
+downloadCcluster: 
+	svn co ${CCLUSTERURL}/${CCLUSTERVERSION} Ccluster
+	
+buildCcluster: downloadCcluster
+	cd Ccluster &&\
+	./configure --with-gmp="/usr/local"\
+	            --with-mpfr="/usr/local"\
+	            --with-flint="/usr/local"\
+	            --with-arb="/usr/local"\
+	&& make\
+	&& make test\
+	&& cd ..
+
+############################################################
 # Housekeeping
 ############################################################
 clean: cleanbasic
