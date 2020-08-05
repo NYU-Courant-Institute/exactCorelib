@@ -156,7 +156,7 @@ all makeall:  extra moreprogs
 ###################################################################
 # CCLUSTERVERSION=trunk 
 CCLUSTERURL=https://github.com/rimbach/Ccluster.git
-CCLUSTERVERSION=tag/v1.1.2
+CCLUSTERVERSION=tags/v1.1.3
 
 downloadCcluster: 
 	svn co ${CCLUSTERURL}/${CCLUSTERVERSION} Ccluster
