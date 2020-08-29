@@ -32,6 +32,7 @@ class PathCmp {
   }
 };
 
+// Template for comparing priority of two boxes a, b:
 class PQCmp {
  public:
   bool operator() (const ConfBox3d* a, const ConfBox3d* b) {
@@ -312,6 +313,8 @@ class RandQueue : public BoxQueue
   }
 };
 
+// THIS IS THE KEY PREDICATE!
+//
 template<typename Cmp>
 class DijkstraQueue : public BoxQueue
 {
@@ -322,14 +325,21 @@ class DijkstraQueue : public BoxQueue
   DijkstraQueue(){}
 
 
+  // This is the main application of the VORONOI heuristic:
+  //
   void push(ConfBox3d* b) {
     distHeap<Cmp>::insert(bv, b);
 
     if(searchType != VORONOI && searchType != BIVORONOI)
       distHeap<Cmp>::insert(bv, b);
     else{
-      if(moveAway || (b->vorCorners.size()+b->vorEdges.size()+b->vorWalls.size() > 2)){
-        distHeap<Cmp>::insert(bv, b);
+		// The number of features must be at least 3 in order for
+		// the box to be on the Voronoi edge:
+		// The "moveAway" flag is true iff you want to get away
+		// from the Voronoi edge.
+      if(moveAway ||
+		(b->vorCorners.size()+b->vorEdges.size()+b->vorWalls.size() > 2)){
+        	distHeap<Cmp>::insert(bv, b);
       }
     }
   }

@@ -132,7 +132,8 @@ void SoftSubdivisionSearch::unionAdjacent(ConfBox3d* b) {
   }
 }
 
-ConfBox3d* SoftSubdivisionSearch::findEnclosingFreeBox(Point3d p, Point3d pRot) {
+ConfBox3d* SoftSubdivisionSearch::findEnclosingFreeBox(
+		Point3d p, Point3d pRot) {
   ConfBox3d* box = pRoot->getBox(p, pRot);
   while (box && !(box)->isFree()) {
     if (!expand(box)) {
@@ -145,14 +146,16 @@ ConfBox3d* SoftSubdivisionSearch::findEnclosingFreeBox(Point3d p, Point3d pRot) 
 }
 
 template<typename Cmp>
-bool SoftSubdivisionSearch::findPath(ConfBox3d* boxA, ConfBox3d* boxB, int& ct) {
+bool SoftSubdivisionSearch::findPath(
+		ConfBox3d* boxA, ConfBox3d* boxB, int& ct) {
 
     boxA->dist2Source = 0;
     DijkstraQueue<Cmp> dijQ;
     dijQ.push(boxA);
 
     DijkstraQueue<Cmp> dijQ2;
-    if(searchType == BIGREEDY || searchType == BIGREEDY_SIZE || searchType == BIVORONOI){
+    if(searchType == BIGREEDY || searchType == BIGREEDY_SIZE
+			|| searchType == BIVORONOI){
       boxB->dist2Source = 0;
       dijQ2.push(boxB);
     }
@@ -163,7 +166,8 @@ bool SoftSubdivisionSearch::findPath(ConfBox3d* boxA, ConfBox3d* boxB, int& ct) 
 
         ConfBox3d* current;
 
-        if(searchType == BIGREEDY || searchType == BIGREEDY_SIZE || searchType == BIVORONOI){
+        if(searchType == BIGREEDY || searchType == BIGREEDY_SIZE
+				|| searchType == BIVORONOI){
           if(dijQ.empty() || dijQ2.empty()){
             break;
           }
@@ -413,6 +417,7 @@ vector<ConfBox3d*> SoftSubdivisionSearch::softSubdivisionSearch() {
     bool noPath = !findPath<VorCmp>(boxA, boxB, ct);
     if(noPath) return path;
   }
+  // THIS IS THE MAIN STRATEGY!
   else if(searchType == BIVORONOI){
     bool noPath = !findPath<BiVorCmp>(boxA, boxB, ct);
     if(noPath) return path;
