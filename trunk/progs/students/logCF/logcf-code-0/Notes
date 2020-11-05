@@ -1,0 +1,11 @@
+Notes:
+
+Nov2020: I tried to "make" this software
+	(1) Found that include file <execinfo.h> was missing.
+		Learned that this file is missing from some installations
+			(and presumably my SurfPro/Cygwin).
+		Got a copy from web and put under "include".  Solved.
+	(2) Make has many errors of this form:
+			ISO C does not support ‘__PRETTY_FUNCTION__’ predefined \
+				identifier [-Wpedantic] 
+		Not sure how to fix.
