@@ -1,0 +1,24 @@
+Files
+
+Collating ORDER of THESE FILES:
+1. SSS.m		-- overall program
+
+2. Box1.m		--
+3. Box2.m		--
+4. BoxType.m	--
+
+5. Geom2d.m	--
+
+	Note sure the diff between these two, but I think
+	Idx.m is stable and Indicator.m is work in progress.
+6. Idx.m		--
+6b. Indicator.m	--
+		
+
+7. Subdiv1.m	--
+8. Subdiv2.m	--
+9. UnionFind.m	--
+
+10. Environment.m	--
+11. env0.{txt, png}	--
+12. env1.{txt, png}	--

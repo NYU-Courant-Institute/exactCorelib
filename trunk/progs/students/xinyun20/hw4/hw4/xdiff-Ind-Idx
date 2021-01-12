@@ -1,0 +1,355 @@
+1a2
+> 	Introduction:
+8c9
+< 	It provides an "algebra" of indicators, which amounts
+---
+> 	It provides an "algebra" of indices, which amounts
+14c15,16
+< 	Indicator for directions (N, S, E, W)
+---
+> 	Indices for directions (N, S, E, W)
+> 				i.e., (23, 21, 32, 12)
+15a18
+> 				i.e., (33, 13, 31, 11)
+18c21
+< 		NOTE: the indicators are pairs of signs,
+---
+> 		NOTE: the indices are pairs of signs,
+20,21c23
+< 
+< 			However, in Matlab, we need to convert
+---
+> 			But in Matlab, we need to convert
+23,26c25,28
+< 			which is called the code.
+< 	
+< 		E.g.,  [0,+1] is a direction indicator with code 23
+< 		E.g.,  [+1,-1] is a child indicator with code 31
+---
+> 			called its "code".
+> 
+> 			E.g.,  [0,+1] is a direction index with code 23
+> 			E.g.,  [+1,-1] is a child index with code 31
+29,30c31,32
+< 	HOW TO USE:
+< 		0.  You can use this to get "enum types"
+---
+> 	HOW TO USE THIS CLASS:
+> 		1.  You can use this to get "enum types"
+32,78c34,76
+< 			>> direction1 = Indicator.N
+< 			>> direction2 = Indicator.W
+< 			>> child1 = Indicator.NE
+< 			>> child2 = Indicator.SE
+< 
+< 			Morever, all the arguments (except for the obvious
+< 			method "code(..)") are passed as codes, i.e.,
+< 			their int32 values, not as a pair of signs.
+< 
+< 		1.  Methods "children()" and "dirs()"
+< 			returns the array [NE, NW, SW, SE]
+< 			and [N, W, S, E] respectively.
+< 			Useful for iterations!
+< 
+< 		2.  Methods "code(ii)" and "indic(cc)" will
+< 			convert between codes and indicators
+< 
+< 		3.  Method "compatible(dir,chil)" is true if
+< 				they agree on their non-zero components.
+< 
+< 				E.g.,	compatible(N, NE) is true
+< 					compatible(E, NE) is true
+< 					compatible(W, NE) is false
+< 					compatible(S, NE) is false
+< 
+< 		4.  Method "opp(dir)" returns the opposite direction
+< 				e.g., opp(N) = S;  opp(S) = N; opp(E) = W;
+< 
+< 		    Overloaded Method "opp(dir,chil)"
+< 		    	(where compatible(dir,chil)=true)
+< 			This returns a child indicator that is
+< 				the opposite only in terms of "dir".
+< 			
+< 				e.g.,	opp(N,NE) = SE
+< 					opp(E,NE) = NW
+< 
+< 		5.  Method "siblingNbr(chil)" returns two neigbors
+< 				who are siblings of a chil-box
+< 				e.g., B.child(NE) = [NW, SE]
+< 				      B.child(SE) = [NE, SW]
+< 		6.  Method "cousinNbr(child" returns two directions
+< 				of cousin of a chil-box
+< 				e.g., B.child(NE) = [N, E]
+< 				      B.child(SE) = [S, E]
+< 		These *Nbr methods can be used
+< 			-- to update the principal neighbors of a box
+< 			-- to get all neigbors of a box in a given direction
+---
+> 			>> direction1 = Idx.N
+> 			>> direction2 = Idx.W >> child1 = Idx.NE
+> 			>> child2 = Idx.SE
+> 
+> 		2.  Methods "code(ii)" and "ind(cc)" will
+> 			convert between a code cc and index ii.
+> 		    Also "quad(cc)" returns the corresponding
+> 			quadrant (1,2,3,4) of a child index.
+> 				E.g., code(31) = SE
+> 				E.g., code(32) = E
+> 				E.g., ind(SE) = 31
+> 				E.g., ind(E) = 32
+> 				E.g., quad(NE) = 1
+> 
+> 		3.  Methods dirs() and children() returns an array
+> 			of directions (N,S,E,W) or
+> 			of child indices (NE, NW, SW, SE).
+> 			This is useful for interations.
+> 
+> 		4.  Method "opp(dir)" returns the opposite direction.
+> 				E.g., opp(N) = S.
+> 
+> 		5.  Method "adj(dir)" returns a pair of child that are
+> 				adjacent in direction dir.
+> 				E.g., adj(N) = [SE, SW].
+> 
+> 		6.  Method "nbr(chil, dir)" returns a child index
+> 			that can be used for maintaining
+> 			principal neighbors.
+> 				E.g., nbr(NE,N) = SE.
+> 				E.g., nbr(NE,S) = SE.
+> 				E.g., nbr(NE,E) = NW.
+> 				E.g., nbr(NE,W) = NW.
+> 
+> 		7.  Method "str(ind)" will return the string
+> 				corresponding to the index ind.
+> 				E.g., str(33) = 'NE'.
+> 
+> 		NOTE:
+> 		   (a) We use "chil" instead of "child" because the class
+> 			Box1 has a property called "child".
+> 		   (b) We generally use the code (int32) rather
+> 		   	than the index for arguments and return values.
+84c82
+< classdef Indicator < int32
+---
+> classdef Idx < int32
+102c100
+< 		%	returns an array of the direction indicators
+---
+> 		%	returns an array of the direction indices
+105,108c103,106
+< 			d (1) = Indicator.N;
+< 			d (2) = Indicator.W;
+< 			d (3) = Indicator.S;
+< 			d (4) = Indicator.E;
+---
+> 			d (1) = Idx.N;
+> 			d (2) = Idx.W;
+> 			d (3) = Idx.S;
+> 			d (4) = Idx.E;
+112c110
+< 		%	returns an array of the children indicators.
+---
+> 		%	returns an array of the children indices.
+115,118c113,133
+< 			d (1) = Indicator.NE;
+< 			d (2) = Indicator.NW;
+< 			d (3) = Indicator.SW;
+< 			d (4) = Indicator.SE;
+---
+> 			d (1) = Idx.NE;
+> 			d (2) = Idx.NW;
+> 			d (3) = Idx.SW;
+> 			d (4) = Idx.SE;
+> 		end
+> 	
+> 		% quad(c)
+> 		% 	-- converts a code c into the quadrant number
+> 		%	e.g., quad(NE) returns 1
+> 		%	e.g., quad(SW) returns 3
+> 		function i = quad(c)
+> 			switch c
+> 			case 33  % NE
+> 			    i=1; 
+> 			case 13  % NW
+> 			    i=2;
+> 			case 11  % SW
+> 			    i=3; 
+> 			case 31  % SE
+> 			    i=4;
+> 			end
+121c136
+< 		% indic(c)
+---
+> 		% ind(c)
+123,124c138,139
+< 		%	e.g., indic(12) returns [-1,+1] (=NW)
+< 		function ind = indic(c)
+---
+> 		%	e.g., ind(12) returns [-1,+1] (=NW)
+> 		function ind = ind(c)
+131c146
+< 		% 	-- converts an indicator "ind" to a code c
+---
+> 		% 	-- converts an index "ind" to a code c
+144,152d158
+< 		% compatible(dir,chil)
+< 		% 	-- returns true iff "dir" and "chil" agrees
+< 		%		in their non-zero components.
+< 		function flag = compatible(dir, chil)
+< 			dd = indic(dir);
+< 			cc = indic(chil);
+< 			return cc(dd ~= 0) == dd( dd ~= 0);
+< 	        end
+< 
+154,183c160,196
+< 		%	returns the opposite direction
+< 		%		e.g., opp(code(21)) returns 23
+< 		%		e.g., opp(N) is S, opp(S) is N.
+< 		function cod = opp(dir)
+< 			    ind = Indicator.indic(c);
+< 			    cod = Indicator.code(-ind);
+< 		    end
+< 
+< 		% nbr(dir, chil)
+< 		%	-- we are overloading so that chil is optional!
+< 		%	-- If chil is omitted,
+< 		%		nbr(dir) returns a pair of child indicators
+< 		%			which are incompatible with dir
+< 		%				e.g., nbr(E)=[NW, SW]
+< 		%				e.g., nbr(N)=[SW, SE]
+< 		%	-- If chil is given,
+< 		%		nbr(dir,chil) returns a single child indicator
+< 		%		(dir,chil) is compatible, i.e., cousins
+< 		%				e.g., nbr(E,NE)=NW
+< 		%				e.g., nbr(N,NE)=SE
+< 		%			THUS: nbr(dir,chil) disagrees with chil
+< 		%				in dir, and agrees with chil
+< 		%				in dir' (transpose)
+< 		%		(dir,chil) is not compatible, i.e., siblings
+< 		%				e.g., nbr(W,NE)=NW
+< 		%				e.g., nbr(S,NE)=SE
+< 		%			THUS: nbr(dir,chil) disagrees with chil
+< 		%				in dir, and agrees with chil
+< 		%				in dir' (transpose)
+< 		%			
+---
+> 		%	-- transforms direction "dir" to its opposite direction
+> 		%		e.g., opp(N) returns S
+> 		%		e.g., opp(S) returns N
+> 		%		e.g., opp(E) returns W
+> 		%	-- Actually, it also works for child indices!
+> 		%		e.g., opp(NE) returns SW
+> 		%		e.g., opp(SW) returns NE
+> 		function dd = opp(dir)
+> 			ii = Idx.ind(dir);
+> 			dd = Idx.code(-ii);
+> 		    end
+> 
+> 		% adj(dir)
+> 		%	-- returns a pair of siblings that are adjacent
+> 		%		in the direction "dir"
+> 		%	e.g., add(W) returns [NE SE]
+> 		%	e.g., add(S) returns [NE NW]
+> 		function pair = adj(dir)
+> 			ii = - Idx.ind(dir);	% negation of dir
+> 			i1 = ii;
+> 			i2 = ii;
+> 			i1(ii == 0) = int32(1);
+> 			i2(ii == 0) = int32(-1);
+> 			pair = [Idx.code(i1), Idx.code(i2)];
+> 		    end
+> 	
+> 		% nbr(chil,dir)
+> 		%	-- returns a child index such that
+> 		%		the principal nbr of chil can point to!
+> 		%
+> 		% 	HOW TO USE "nbr"?  There are 2 cases
+> 		%
+> 		%	  CASE 1: compatible(chil,dir) is true
+> 		%		-- E.g., nbr(NE, N) returns SE
+> 		%			This means 
+> 		%		  box.child(NE).N = (box.N).child(SE)
+> 		%		-- thus the principal nbr is a "cousin"
+185,189c198,233
+< 		function c = nbr(dir,chil)
+< 		%...incomplete
+< 			dd = Indicator.indic(dir);
+< 			if nargin<2
+< 			    %...
+---
+> 		%	  CASE 2: compatible(chil,dir) is false
+> 		%	-- E.g., nbr(NE, W) = NW
+> 		%			means that
+> 		%		box.child(NE).W =box.child(NW)
+> 		%		-- thus the principal nbr is a "sibling"
+> 		%
+> 		%	REMARK: these 2 cases are arise ONLY in applications
+> 		%		to the problem of maintaining principle
+> 		%		nbrs.  Our code here makes no distinction!
+> 		function c = nbr(chil, dir)
+> 			dd = Idx.ind(dir);
+> 			cc = Idx.ind(chil);
+> 			cc(dd ~= 0) = - cc(dd ~= 0);	% flip the sign!
+> 			c = Idx.code(cc);
+> 		end
+> 
+> 		% str(ind) -- returns a string
+> 		%	str(33)='N'
+> 		function s = str(ind)
+> 			switch ind
+> 			    case 33
+> 				s = 'NE';
+> 			    case 13
+> 				s = 'NW';
+> 			    case 31
+> 				s = 'SE';
+> 			    case 11
+> 				s = 'SW';
+> 			    case 23
+> 				s = 'N';
+> 			    case 21
+> 				s = 'S';
+> 			    case 32
+> 				s = 'E';
+> 			    case 12
+> 				s = 'W';
+191,215c235
+< 			cc = Indicator.indic(chil);
+< 		    end
+< 	
+< 		% siblingNbr(chil)
+< 		%	-- returns an array of the two children indicators 
+< 		%		that are the sibling neigbhors of child.
+< 		%	e.g., siblingNbr(NE) returns [NW, SE] = [13 31]
+< 		function ccc = siblingNbr(chil)
+< 			ind = Indicator.indic(chil);
+< 			ccc(1) = Indicator.code2(-ind(1), ind(2));
+< 			ccc(2) = Indicator.code2(ind(1), -ind(2));
+< 		    end
+< 	
+< 		% cousinNbr(dir)
+< 		%	-- returns an array of the two children indicators 
+< 		%	   that are the cousin neigbors in direction "dir"
+< 		%	e.g., cousinNbr(E) returns [NW, SW] = [13 11]
+< 		function ccc = cousinNbr(dir)
+< 			a = - Indicator.indic(dir);
+< 			a ( a == 0)  = 1;
+< 			b = - Indicator.indic(dir);
+< 			b ( b == 0)  = -1;
+< 			ccc(1) = Indicator.code(a);
+< 			ccc(2) = Indicator.code(b);
+< 		    end
+---
+> 		end
+221c241,249
+< 		% to be implemented
+---
+> 			disp(['Testing nbr(chil, dir):']);
+> 			for c = Idx.children()
+> 			    for d = Idx.dirs()
+> 				disp(['nbr(', Idx.str(c), ', '...
+> 				          Idx.str(d), ')=',...
+> 				          Idx.str(Idx.nbr(c,d))...
+> 						]);
+> 			    end
+> 			end
