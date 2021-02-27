@@ -26,8 +26,8 @@ class ConfBox3dPredicate {
   void checkCollisionFeatureSet(ConfBox3d* box, ConfBox3d* parent);
   void checkVoronoiFeatureSet(ConfBox3d* box, ConfBox3d* parent);
 
-  double findCleanrance(ConfBox3d* box, Segment3d& rod);
-  void findVorCleanrance(ConfBox3d* box, Segment3d& rod);
+  double findClearance(ConfBox3d* box, Segment3d& rod);
+  void findVorClearance(ConfBox3d* box, Segment3d& rod);
 };
 
 #endif  // CONFIGURATION_BOX3D_PREDICATE_H

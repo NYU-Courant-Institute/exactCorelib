@@ -29,11 +29,12 @@ void printConfBoxes() {
 
 // TODO: Let the constructor accept start and goal as configurations of the
 // robot
-SoftSubdivisionSearch::SoftSubdivisionSearch(ConfBox3d* root, double epsilon,
-                                             int search_type, Point3d start,
-                                             Point3d goal,
-                                             Point3d start_rotation,
-                                             Point3d goal_rotation)
+SoftSubdivisionSearch::SoftSubdivisionSearch(ConfBox3d* root,
+									double epsilon,
+                                    int search_type, Point3d start,
+                                    Point3d goal,
+                                    Point3d start_rotation,
+                                    Point3d goal_rotation)
     : epsilon_(epsilon),
       search_type_(search_type),
       ct_(0),
@@ -80,7 +81,7 @@ SoftSubdivisionSearch::SoftSubdivisionSearch(ConfBox3d* root, double epsilon,
   if ((search_type_ == VORONOI || search_type_ == BIVORONOI) &&
       (!root->vor_corners.empty() || !root->vor_edges.empty() ||
        !root->vor_walls.empty())) {
-    predicate_->findVorCleanrance(root, root->rod);
+    predicate_->findVorClearance(root, root->rod);
   }
 
   if (!root->corners.empty() || !root->edges.empty() || !root->walls.empty()) {
@@ -119,7 +120,7 @@ bool SoftSubdivisionSearch::expand(ConfBox3d* box) {
     for (const auto& child : box->children) {
       if (search_type_ == VORONOI || search_type_ == BIVORONOI) {
         predicate_->checkVoronoiFeatureSet(child, box);
-        predicate_->findVorCleanrance(child, child->rod);
+        predicate_o>findVorClearance(child, child->rod);
       }
       predicate_->checkCollisionFeatureSet(child, box);
       insertNode(child);

@@ -61,8 +61,8 @@ class SoftSubdivisionSearch {
   int mix_count;
 
   SoftSubdivisionSearch(ConfBox3d* root, double e, int search_type,
-                        Point3d start, Point3d goal, Point3d start_rotation,
-                        Point3d goal_rotation);
+                       Point3d start, Point3d goal, Point3d start_rotation,
+                       Point3d goal_rotation);
 
   int getNumSubdivisions() { return ct_; }
 

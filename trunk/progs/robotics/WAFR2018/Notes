@@ -1,0 +1,16 @@
+Notes:
+These files were updated for SoCG 2019
+
+Tom Hsu (Feb2021):
+	Please find the key components of Voronoi heuristic
+		in the following files under rod_3d:
+	1. sss/soft_subdivision_search.cpp:
+				main body - SoftSubdivisionSearch
+	2. predicate/configuration_box3d_predicate.cpp:
+				key - checkVoronoiFeatureSet and findVorCleanrance
+	3. strategy/box_priority_queue.h
+				search method
+	4. subdivision/configuration_box3d.h:
+				data structure
+
+

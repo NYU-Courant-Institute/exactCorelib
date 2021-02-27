@@ -1,5 +1,5 @@
 /*
- * box_priority_queue.h
+ * file:  strategy/box_priority_queue.h
  *
  * Created on: July 1, 2018
  * Author: Ching-Hsiang Hsu (chhsu@nyu.edu)
@@ -83,7 +83,11 @@ class PQCmp {
   }
 };
 
-// won't work with std pq, as this comparison is not transitional!
+// won't work with std pq, as this comparison is not transitive!
+//
+// DistCmnp(box a, box b) returns true iff distA > distB
+// 		In otherwords,
+// 				true return means box b has higher priority.
 class DistCmp {
  public:
   bool operator()(const ConfBox3d* a, const ConfBox3d* b) {
@@ -99,11 +103,12 @@ class DistCmp {
       distA += rotationLength(a->rotation_center, goal_rotation);
     }
 
-    return distA - distB > 0;
+    return distA > distB;
   }
 };
 
 // won't work with std pq, as this comparison is not transitional!
+//
 class BiDistCmp {
  public:
   bool operator()(const ConfBox3d* a, const ConfBox3d* b) {
@@ -140,6 +145,8 @@ class BiDistCmp {
 };
 
 // won't work with std pq, as this comparison is not transitional!
+// 				(do we mean "transitive"?)
+//
 class DistSizeCmp {
  public:
   bool operator()(const ConfBox3d* a, const ConfBox3d* b) {
@@ -195,7 +202,24 @@ class BiDistSizeCmp {
   }
 };
 
-// won't work with std pq, as this comparison is not transitional!
+// What does this comment mean?
+// 		won't work with std pq, as this comparison is not transitional!
+//
+// Tom:  this is the outline of our proposed Voronoi Heuristic
+// 		(We assume you can put this into your Dijkstra Queue)
+//
+// VorCmp(box a, box b):
+// 	If box a has higher priority than box b, then return FALSE;
+// 	Else return TRUE
+//		(1) If a_v and b_v are both >=5,
+//					then the smaller _v value has higher priority.
+//		(2) If a_v and b_v are both <5,
+//					then the larger _v value has higher priority.
+//		(3) Else the larger _v value has higher priority.
+//	To break ties when _v values are the same:
+//		Compare distA and distB, and
+//			the smaller dist value has higher priority.
+//
 class VorCmp {
  public:
   bool operator()(const ConfBox3d* a, const ConfBox3d* b) {

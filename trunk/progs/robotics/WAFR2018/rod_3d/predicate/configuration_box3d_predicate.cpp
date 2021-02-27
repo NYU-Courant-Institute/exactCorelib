@@ -13,8 +13,9 @@ extern double EPS;
 extern FILE* debug_ptr;
 extern bool verbose;
 
-// Find the nearest feature to the rod, and check the feature's convexity based
+// Find nearest feature to the rod, and check the feature's convexity based
 // on the closest point on the rod
+// Returns either FREE or STUCK only!
 Status ConfBox3dPredicate::classification(ConfBox3d* parent,
                                           Point3d& closest_point) {
   if (verbose) fprintf(debug_ptr, "classification\n");
@@ -205,7 +206,7 @@ Status ConfBox3dPredicate::classification(ConfBox3d* parent,
   }
 
   return is_free ? FREE : STUCK;
-}
+}//classification
 
 // TODO: remove adding feature in split (insert)
 void ConfBox3dPredicate::checkCollisionFeatureSet(ConfBox3d* box,
@@ -214,7 +215,7 @@ void ConfBox3dPredicate::checkCollisionFeatureSet(ConfBox3d* box,
 
   double outer_distance = ConfBox3d::rod_length + box->rB;
 
-  // Translational and ratational box
+  // Translational and rotational box
   if (box->rotation_width != -2) {
     // CHECK: the creation of (intersection of ball and cone)
     // Do PI 1 intersection
@@ -393,7 +394,7 @@ void ConfBox3dPredicate::checkCollisionFeatureSet(ConfBox3d* box,
 // Sep(center, f) <= 2rB + clearance(center)
 void ConfBox3dPredicate::checkVoronoiFeatureSet(ConfBox3d* box,
                                                 ConfBox3d* parent) {
-  double separation = 2 * box->rB + findCleanrance(box, box->rod);
+  double separation = 2 * box->rB + findClearance(box, box->rod);
 
   for (const auto& corner : parent->vor_corners) {
     if (corner->point().distance(box->center) <= separation) {
@@ -415,7 +416,7 @@ void ConfBox3dPredicate::checkVoronoiFeatureSet(ConfBox3d* box,
 }  // checkVoronoiFeatureSet
 
 // find the nearest feature of rod, and return the distance
-double ConfBox3dPredicate::findCleanrance(ConfBox3d* box, Segment3d& rod) {
+double ConfBox3dPredicate::findClearance(ConfBox3d* box, Segment3d& rod) {
   double clearance = std::numeric_limits<double>::max();
   for (const auto& wall : box->walls) {
     double dist = wall->triangle().separation(rod);
@@ -439,10 +440,10 @@ double ConfBox3dPredicate::findCleanrance(ConfBox3d* box, Segment3d& rod) {
   }
 
   return clearance;
-}  // findCleanrance
+}  // findClearance
 
-// find the nearest voronoi feature of center and record the nearest feature
-void ConfBox3dPredicate::findVorCleanrance(ConfBox3d* box, Segment3d& rod) {
+// find nearest voronoi feature of center and record the nearest feature
+void ConfBox3dPredicate::findVorClearance(ConfBox3d* box, Segment3d& rod) {
   // use corners or vor_corners
   double mindistC = std::numeric_limits<double>::max();
   box->nearest_corner = nullptr;
@@ -473,4 +474,4 @@ void ConfBox3dPredicate::findVorCleanrance(ConfBox3d* box, Segment3d& rod) {
       box->nearest_wall = vor_wall;
     }
   }
-}  // findVorCleanrance
+}  // findVorClearance
