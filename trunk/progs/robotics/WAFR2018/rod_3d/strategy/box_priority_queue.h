@@ -4,6 +4,8 @@
  * Created on: July 1, 2018
  * Author: Ching-Hsiang Hsu (chhsu@nyu.edu)
  *
+ * Feb2021: re-implement VorCmp for the Voronoi heuristic
+ *
  * Copyright (c) 2015-2018 Ching-Hsiang Hsu
  */
 
