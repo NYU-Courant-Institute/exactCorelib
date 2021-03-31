@@ -1,0 +1,37 @@
+README
+
+March 2021:
+	This folder contains all the code and data reported in our paper,
+	
+	"Novel Range Functions via Taylor Expansions and Recursive
+		Lagrange Interpolation with Application to Real Root Isolation"
+			by
+		K.Hormann, L.Kania and C.Yap
+	
+	*A subfolder "data" contains of a suite of 16 real polynomials
+			(chebyshev, hermite, wilkinson, sparse)
+		of various degrees.  These are square-free polynomials.
+	* We implemented the EVAL algorithm for isolating the
+		real roots of a polynomial f(x) in a given interval [a,b].
+	* There are 8 versions of EVAL, depending of the type of range
+			function used to evaluate f(x) and f'(x).
+		4 versions are based on Taylor forms
+		4 versions are based on our new Recursive Lagrange forms
+	* We have 3 experiments, producing 3 tables.
+		Each table has 8 columns (for the 8 EVAL versions)
+			and 16 rows (for the 16 polynomials).
+		 Table1: shows the sizes of the subdivision trees
+		 Table2: shows the average running time when the 
+				arithmetic uses 1024-bit machine floating point 
+		 Table3: shows the average running time when the
+				arithmetic uses multi-precision rational numbers
+		REMARK: we do not have two versions of Table1 because
+		the tree sizes are little affected by the arithmetic used.
+	* We have a Makefile with the targets:
+			table1, table2, table3
+		to automatically produce these tables.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Feedback or comments? 
+Please send us a note:
+	yap@cs.nyu.edu or kai.hormann@usi.ch.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
