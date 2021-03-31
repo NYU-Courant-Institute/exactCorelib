@@ -1,0 +1,152 @@
+ifdef $(DLPATH)
+  $(DLPATH):=$($(DLPATH)):$(DLPATH_ADD)
+else
+  $(DLPATH):=$(DLPATH_ADD)
+endif
+
+LIBDIR=lib
+
+QUIET_CC  = @echo '   ' CC  ' ' $@;
+# QUIET_CXX = @echo '   ' CXX ' ' $@;
+QUIET_AR  = @echo '   ' AR  ' ' $@;
+
+AT=@
+
+SRC_PATH = ./src
+INC_PATH = ./src
+
+BUILD_DIRS = $(SRC_PATH)\
+	     $(SRC_PATH)/base\
+	     $(SRC_PATH)/numbers\
+	     $(SRC_PATH)/polynomials\
+	     $(SRC_PATH)/tstar\
+	     $(SRC_PATH)/caches\
+	     $(SRC_PATH)/geometry\
+	     $(SRC_PATH)/lists\
+	     $(SRC_PATH)/metadatas\
+	     $(SRC_PATH)/newton\
+	     $(SRC_PATH)/ccluster\
+	     $(SRC_PATH)/doubApp
+
+TEMPLATE_DIRS = 
+
+SOURCES = 
+LIB_SOURCES = $(wildcard $(patsubst %, %/*.c, $(BUILD_DIRS)))  $(patsubst %, %/*.c, $(TEMPLATE_DIRS))
+LIB_HEADERS = $(foreach x, $(BUILD_DIRS), $(wildcard $(x)/*.h))
+# OBJS =        $(patsubst %.c, build/%.o, $(LIB_SOURCES))
+# LIB_OBJS =    $(patsubst %, build/%/*.o, $(BUILD_DIRS))
+LIB_OBJS=$(LIB_SOURCES:%.c=%.o)
+# LIB_OBJS =    $(patsubst %, build/%/*.o, $(LIB_SOURCES))
+
+# LOBJS = $(patsubst %.c, build/%.lo, $(LIB_SOURCES))
+LIB_LOBJS=$(LIB_SOURCES:%.c=%.lo)
+# LIB_LOBJS = $(patsubst %, build/%/*.lo, $(BUILD_DIRS))
+# LIB_LOBJS = $(patsubst %, build/%/*.lo, $(LIB_SOURCES))
+
+BENCHS_DIR = ./benchs
+BENCHS_SOURCES = $(wildcard $(patsubst %, %/*.c, $(BENCHS_DIR)))
+BENCHS_HEADERS = $(wildcard $(patsubst %, %/*.h, $(BENCHS_DIR)))
+BENCHS_OBJS = $(BENCHS_SOURCES:%.c=%.o)
+BENCHS_EXE = $(BENCHS_SOURCES:%.c=%)
+
+export
+
+
+all: library
+
+quiet: library
+
+verbose:
+# 	$(MAKE) AT= QUIET_CC= QUIET_CXX= QUIET_AR=
+	$(MAKE) AT= QUIET_CC= QUIET_AR=
+
+clean: 
+	@echo "Cleaning all"
+	rm -rf $(LIB_OBJS) $(LIB_LOBJS) libccluster.a $(CCLUSTER_LIB) \
+	$(CCLUSTER_LIBNAME) $(CCLUSTER_LIBNAME).$(CCLUSTER_MAJOR) 
+	rm -rf build
+# 	$(wildcard $(CCLUSTER_LIBNAME)*)
+
+distclean: clean benchsclean testclean
+	rm -f Makefile
+	rm -f test/Makefile
+	
+$(CCLUSTER_LIB): $(LIB_LOBJS) $(LIB_SOURCES) $(LIB_HEADERS)
+	@echo "Building $@"
+	$(CC) $(CFLAGS) -o $@ -shared $(LIB_LOBJS) $(LIBS2) ;
+	ln -sf "$(CCLUSTER_LIB)" "$(CCLUSTER_LIBNAME)"; \
+	ln -sf "$(CCLUSTER_LIB)" "$(CCLUSTER_LIBNAME).$(CCLUSTER_MAJOR)"; \
+
+libccluster.a: $(LIB_OBJS) $(LIB_SOURCES) $(LIB_HEADERS)
+	$(AR) rcs libccluster.a $(LIB_OBJS)
+	
+# build/%.lo: %.c $(HEADERS) | build
+# 	$(QUIET_CC) $(CC) $(PIC_FLAG) $(CFLAGS) $(INCS) -I$(INC_PATH) -c $< -o $@;
+# 
+# build/%.o: %.c $(HEADERS) | build
+# 	$(QUIET_CC) $(CC) $(CFLAGS) $(INCS) -I$(INC_PATH) -c $< -o $@;
+
+%.lo : %.c $(HEADERS)
+# 	@echo "Building $@"
+	$(QUIET_CC) $(CC) $(PIC_FLAG) $(DFLAGS) $(CFLAGS) $(INCS) -c $< -o $@;
+	
+%.o : %.c $(HEADERS)
+# 	@echo "Building $@"
+	$(QUIET_CC) $(CC) $(DFLAGS) $(CFLAGS) $(INCS) -c $< -o $@;
+
+library:
+	$(eval HEADERS=$(LIB_HEADERS))
+	$(AT)if [ "$(CCLUSTER_SHARED)" -eq "1" ]; then \
+		$(MAKE) shared; \
+	fi
+	$(AT)if [ "$(CCLUSTER_STATIC)" -eq "1" ]; then \
+		$(MAKE) static; \
+	fi
+
+shared: $(CCLUSTER_LIB)
+
+static: libccluster.a
+	
+install: library
+	mkdir -p $(DESTDIR)$(PREFIX)/$(LIBDIR)
+	mkdir -p $(DESTDIR)$(PREFIX)/include
+	$(AT)if [ "$(CCLUSTER_SHARED)" -eq "1" ]; then \
+		cp $(CCLUSTER_LIB) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"; \
+		cp -a $(shell ls $(CCLUSTER_LIBNAME)*) "$(DESTDIR)$(PREFIX)/$(LIBDIR)"; \
+	fi
+	$(AT)if [ "$(CCLUSTER_STATIC)" -eq "1" ]; then \
+		cp libccluster.a $(DESTDIR)$(PREFIX)/$(LIBDIR); \
+	fi
+	cp $(LIB_HEADERS) $(DESTDIR)$(PREFIX)/include
+# 	$(AT)if [ ! -z $(EXT_HEADERS) ]; then \
+# 		cp $(EXT_HEADERS) $(DESTDIR)$(PREFIX)/include; \
+# 	fi
+
+compbenchs: library comptest
+	cd benchs && make build && cd ..
+	
+comptest: library
+	cd test && make build && cd ..
+	
+test: comptest
+	cd test && make tM1 && cd ..
+	
+benchICMS: compbenchs
+	cd benchs && make tableICMS && cd ..
+	
+testclean: 
+	cd test && make clean && cd ..
+	
+benchsclean: 
+	cd benchs && make clean && make cleanBenchs && cd ..
+	
+print-%:
+	@echo '$*=$($*)'
+	
+# print: 
+# 	@echo "BUILD_DIRS:  " $(BUILD_DIRS)
+# 	@echo "LIB_SOURCES: " $(LIB_SOURCES)
+# 	@echo "HEADERS:     " $(HEADERS)
+# 	@echo "OBJS:        " $(OBJS)
+# 	@echo "LIB_OBJS:    " $(LIB_OBJS)
+# 	@echo "LIB_OBJS:    " $(LIB_OBJS)

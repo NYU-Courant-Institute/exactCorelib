@@ -1,0 +1,29 @@
+README
+
+This folder contains implementations, data and experiments
+of our root clustering algorithms and extensions:
+
+(1) Ccluster:
+	This is the first implementation of a near-optimal
+	complex root isolation algorithm.
+
+	This work is described in
+	  "Implementation of a Near-Optimal Complex Root Clustering Algorithm",
+			Rémi Imbach, Victor Pan and Chee Yap.
+			Proc. 6th ICMS. July 24-27, 2018.
+	The clustering algorithm was described in two papers:
+ 	  ** "Complexity Analysis of Root Clustering for a Complex Polynomial"
+			R.Becker, M.Sagraloff, V.Sharma, J.Xu and C.Yap
+			Proc. 41st ISSAC. July 19-22, 2016.
+		  Juan Xu won the Distinguised Female Student Award for this work.
+	  ** "A Simple Near-Optimal Subdivision Algorithm for Complex Root
+	  		Isolation based on Pellet Test and Newton Iteration"
+			R.Becker, M.Sagraloff, V.Sharma and C.Yap
+			J.Symbolic Computation Vol.86, pp.51-96, 2018.
+(2) Triangular:
+	This work extends the Ccluster implementation of
+	solving a Triangular System of Polynomial Equations.
+	  "Effective Subdivision Algorithm for Isolating Zeros of Real
+	  	Systems of Equations, with Complexity Analysis",
+			Rémi Imbach and Marc Pouget and Chee Yap.
+			21st CASC, Moscow, 2019.
