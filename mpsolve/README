@@ -1,4 +1,3 @@
-
 2018: Direct installation from Github
 	To get the latest version using git (in subfolder "MPSolve") do:
 		> git clone git://github.com/robol/MPSolve.git

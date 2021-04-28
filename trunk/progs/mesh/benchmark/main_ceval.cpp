@@ -3,7 +3,7 @@
 
    Description: 
 		This program is a GLUT based visualization of the CEVAL Algorithm
-		of Sagralloff and Yap.
+		of Sagraloff and Yap.
 
 		The actual implementation of CEVAL is found in
 		        progs/mesh/ceval/ceval.cpp
@@ -18,31 +18,35 @@
 
 		> ./main_ceval --d --r --p ./data/nroots20.pol
 
-		The flag --poly gives a file name containing a polynomial in frisco format
-		The flag --display is a switch to turn on the display of subdivision boxes
+		The flag --poly gives a file name containing a polynomial in
+		frisco format
+		The flag --display is a switch to turn on the display of
+		subdivision boxes
 		The flag --use_root_bounds is a switch to automatically
 			determining a bounding box containing all complex roots.
 			Otherwise, you may give explicit specification of the box using
-
 				--x_min, --y_min, --x_max, --y_max.
 			or
 				--x, --y, --c, --u
-		
 		We use the TCLAP package to process command line arguments.
 		Each of these flags have default values.
 		To learn more, type:
 
-		> ./main_ceval --help
+			> ./main_ceval --help
 
 	TCLAP::ValueArg<string> poly("p", "poly", "Input polynomial file name",
 		false, "", "string");
-	TCLAP::ValueArg<string> x_min("x", "x_min", "Minimum x range (default -2)",
+	TCLAP::ValueArg<string> x_min("x", "x_min",
+		"Minimum x range (default -2)",
 		false, "-2", "string");
-	TCLAP::ValueArg<string> x_max("c", "x_max", "Maximum x range (default 2)",
+	TCLAP::ValueArg<string> x_max("c", "x_max",
+		"Maximum x range (default 2)",
 		false, "2", "string");
-	TCLAP::ValueArg<string> y_min("y", "y_min", "Minimum y range (default -0.05)",
+	TCLAP::ValueArg<string> y_min("y", "y_min",
+		"Minimum y range (default -0.05)",
 		false, "-0.05", "string");
-	TCLAP::ValueArg<string> y_max("u", "y_max", "Maximum y range (default 0.05)",
+	TCLAP::ValueArg<string> y_max("u", "y_max",
+		"Maximum y range (default 0.05)",
 		false, "0.05", "string");
 	TCLAP::ValueArg<string> min_box_size("m", "min_box_size",
 		"Minimum box size (default 0.00001)",
@@ -53,7 +57,8 @@
 	TCLAP::ValueArg<unsigned int> rand_degree("g", "degree",
 		"Degree of random poly (default 10)",
 		false, 10, "unsigned int");
-	TCLAP::ValueArg<unsigned int> rand_seed("f", "seed", "Seed (default 10)",
+	TCLAP::ValueArg<unsigned int> rand_seed("f", "seed",
+		"Seed (default 10)",
 		false, 10, "unsigned int");
 	TCLAP::SwitchArg use_rb("r", "use_root_bounds",
 		"Use Cauchy Bounds", false);
@@ -64,14 +69,12 @@
 	TCLAP::SwitchArg random_poly("a", "random",
 		"Use a random polynomial", false);
 
-
    Author:  Narayan Kamath
    Date:    2010
 
    Since Core Library  Version 2.1
    $Id: CXY.cpp,v 1.3 2010/06/10 16:51:46 exact Exp $
  ************************************** */
-
 #include <list>
 
 #include "tclap/CmdLine.h"

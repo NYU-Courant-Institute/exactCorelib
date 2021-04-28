@@ -51,8 +51,23 @@ COREX_LIB_LEVEL1=-lcorex++$(VAR)_level1
 
 # This works for GCC 3.x, but not for 2.9x, so I removed it
 # The user have to set LD_LIBRARY_PATH environment variable.
+# ifeq (${LINKAGE}, shared)
+# 	LDFLAGS+=-R${CORE_PATH}/lib -R${CORE_PATH}/gmp/lib \
+# 	-R${CORE_PATH}/mpfr/lib
+#
+# Apr'21: Above -R flag is a problem for my g++ (GCC) 7.4.0
+#	on my Cygwin. ("not an option").  Seems to be a known issue.
+#			Try to remove "-R"? Nope...
+#			Try "-r"? Nope...
+#		This site 
+#	https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_node/ld_3.html 
+#	said that "-R filename" is equivalent to "--just-symbols=filename".
+#	Also, if filename is a folder name, then it is equivalent to
+#	the "-rpath foldername"  (also try "-rpath-link DIR")
+#		Nope,Nope,Nope,Nope...
 ifeq (${LINKAGE}, shared)
-	LDFLAGS+=-R${CORE_PATH}/lib -R${CORE_PATH}/gmp/lib \
-	-R${CORE_PATH}/mpfr/lib
+	LDFLAGS+=-rpath-link ${CORE_PATH}/lib \
+	-rpath-link ${CORE_PATH}/gmp/lib \
+	-rpath-link ${CORE_PATH}/mpfr/lib
 endif
 

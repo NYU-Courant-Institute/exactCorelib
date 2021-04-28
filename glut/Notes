@@ -1,0 +1,21 @@
+Notes
+24apr21: in work with Kai Hormann.
+	-- We had to rebut the reviewers of ISSAC 2021.
+	-- I needed to find polynomials that has complex roots
+		to test our EVAL program (request of reviewer vdH).
+	-- To find out which polynomials have complex roots, decided
+		to compile my CEVAL program under core/prog/mesh.
+	-- CEVAL needed usr/local/GL/
+			(?openGL) which I seem not to have
+	-- so I tried to install freeglut
+			1. downloaded freeglut-3.2.1.tar.gz
+					in prog/cpp/graphics/opengl
+				But it needed CMAKE:
+				2. download cmake-3.20.1
+						in prog/make/cmake/
+					ERROR in installation.
+					Gave up.
+	-- Next, I went to SurfPro (Bk1).
+		There I found /usr/include/GL.
+			Created GL.zip and copied it to SurfPro.
+	-- WAIT: I already had GL.zip (I looked in wrong place, in /usr/local)
