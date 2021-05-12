@@ -22,5 +22,9 @@ we have in this folder,
 	-- download tar file from mpfr.org
 		Then do ./configure, make
 	-- put a link from $COREPATH/mpfr to this mpfr.
-
-
+3. May2021: I asked andy to remove need to have an account
+	("guest") with password ("guest") to browse our trunk folder.
+	I now can directly provide links on my webpages to 
+		http://subversive.cims.nyu.edu/exact/corelib2/trunk/
+	(or any subfolders) from my papers page!
+	VERY convenient...
