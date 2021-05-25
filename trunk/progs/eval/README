@@ -1,11 +1,16 @@
-README
+README for eval folder
 
-"TaylorLagrange" folder:
-	this contains the code and data used in our paper,
+May2021: The subfolder
+			"TaylorLagrange"
+	contains the code and data used in our ISSAC 2021 paper,
+
 		"Novel Range Functions via Taylor Expansions and Recursive
 		 Lagrange Interpolation with Application to Real Root Isolation"
 			by
-		K.Hormann, L.Kania and C.Yap
-	(Jan 2021)
+		K.Hormann, L.Kania and C.Yap.
+	
+	You should be able to reproduce our results using
+	the Makefile targets.
+
 
 
