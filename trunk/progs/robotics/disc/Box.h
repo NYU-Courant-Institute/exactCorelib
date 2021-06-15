@@ -111,8 +111,10 @@ public:
 			}
 
 			// Chee & Tom: Feb 2016 Put this mixed decision afterwards
-			// if this is greater than the outer domain or not in zone, erase it 
-			if( c->distance(this->x, this->y) > outerDomain || !c->intersectZone(this) ) {
+			// if this is greater than the outer domain or not in zone,
+			// erase it 
+			if( c->distance(this->x, this->y) > outerDomain
+					|| !c->intersectZone(this) ) {
 				it = corners.erase(it);
 			}
 			else {
