@@ -1,4 +1,4 @@
-//==============================================================================
+//====================================================================
 // Display.cpp
 // =================
 // This class is the widget on ControlWindow that renders the scene.
@@ -9,7 +9,7 @@
 // CREATED: 2015-08-02
 //
 // Copyright (c) 2015 Bryant Curto
-//==============================================================================
+//====================================================================
 
 // Header
 #include "Display.h"
@@ -22,7 +22,6 @@
 
 //Sleeping Library
 #include <unistd.h>
-
 
 // Global Variables in disc.cpp
 extern QuadTree* QT;
@@ -42,8 +41,6 @@ extern bool noPath;
 extern bool hideBoxBoundary;
 
 
-
-
 // Global Variables in ControlWindow.cpp
 extern RenderType stepRenderType;
 extern long varSteps;
@@ -58,7 +55,6 @@ static std::vector<double>  lines;
 static std::vector<double>  quads;
 static std::vector<double>  quadOutlines;
 static std::vector<double>  pathLineVertices;
-
 
 vector<Box*> PATH;
 int inc(0);
@@ -138,7 +134,6 @@ void Display::initializeGL() {
  * Regenerates (if necessary) and draws scene to
  * dispaly screen.
  */
-
 
 void Display::paintGL() {
     if (!drawable) return;
@@ -283,7 +278,6 @@ void Display::resizeGL(int width, int height) {
 void Display::setControlWindow(ControlWindow* cw) {
     controlWin = cw;
 }
-
 
 //===========================================================//
 //======          Functions to Generate Shapes         ======//
@@ -720,7 +714,6 @@ void Display::genFilledCircle(double radius, double x, double y, float red, floa
     filledCircles.push_back(y);
     setVertexColor(filledCircles, red, green, blue);
 }
-
 
 //===========================================================//
 //======            Functions to Draw Shapes           ======//

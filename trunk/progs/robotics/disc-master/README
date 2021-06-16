@@ -31,7 +31,6 @@ Directories:
 ============================================================
 
 OVERVIEW:
-
 	This is the simplest example of our technique of using soft predicates
 	for resolution-exact algorithms for motion planning.
 
@@ -48,8 +47,8 @@ OVERVIEW:
 
 		FREE, STUCK or MIXED.
 
-	The predicate is "conservative" in the sense FREE or STUCK classifications
-	are correct (i.e., really free and really stuck).
+	The predicate is "conservative" in the sense FREE or STUCK
+	classifications are correct (i.e., really free and really stuck).
 	In the limit, as boxes converges to a free or stuck point, this 
 	classification will converge to the correct value.
 

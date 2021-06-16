@@ -7,18 +7,20 @@ Description:
 	This directory has various subdirectoris containing algorithms
 	for robotics, especially motion planning.
 
-	(1) Subdirectory 2d-disc:
+	(1) Subdirectories for disc robot:
 	This implements the SSS algorithm for moving a disc amidst polygonal
 	obstacles, using the soft-predicated described in the
 	paper "Numerical Subdivision Methods in Motion Planning" by
 	Y.-J.Chiang and C.Yap (2011).
+		There are several versions (chronological order):
+			2d-disc, disc, disc-master, disc-qt, disc-qt_vor.
 
 	(2) Subdirectory triangle:
 	This implements the SSS algorithm for moving a disc amidst polygonal
 	obstacles, using the soft-predicated described in the
 	paper "On Soft Predicates in Subdivision Motion Planning"
 	by C.Wang, Y.-J. Chiang and C.~Yap, SoCG 2013, Rio de Janeiro.
-        To appear CGTA, Special Issue for SoCG'13.
+    Journal Version: CGTA, Special Issue for SoCG'13.
 
 	(3) Subdirectory 2-links:
 	This implements the SSS algorithm for a 2-link robot using the T/R
@@ -40,11 +42,9 @@ Description:
 	from New York State in the 2013 Siemens Math, Science and Technology
 	Competition (one of 100 students nationwide).  
 
-	(6) Subdirectory ball:
-	This is the work of Surin Ahn, a high school student at Mamaroneck
-	Union Free School, supervised by Chee Yap.  She was a Regional Finalist
-	from New York State in the 2013 Siemens Math, Science and Technology
-	Competition (one of 100 students nationwide).  
+	(6) Subdirectory rod and ring:
+	This is the work of Tom Hsu (with Yi-Jen and Chee), appeared
+	in SoCG 2019. 
 
 Author:
 	2012: Disc/Triangle: Y.-J.Chiang, C.Yap, C.Wang 
@@ -54,7 +54,8 @@ Author:
 	2015: Qt versions of disc: Brian Curto
 	2015: Qt versions of 2-link: John Ryan
 	2016: Qt version of triangle: Tom Hsu
-	2016: Qt version of Rod: Tom Hsu and C.Yap
+	2016-19: Qt version of Rod: Tom Hsu and C.Yap.
+	2019: Qt version of Ring: Tom Hsu, C.Yap, Yi-Jen.
 
 $Id: README $
 ============================================================

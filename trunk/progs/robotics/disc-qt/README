@@ -31,7 +31,6 @@ Directories:
 ============================================================
 
 OVERVIEW:
-
 	This is the simplest example of our technique of using soft predicates
 	for resolution-exact algorithms for motion planning.
 
@@ -74,7 +73,12 @@ OVERVIEW:
 	--Chee Yap, Cong Wang, Yi-Jen Chiang
 	April 2012.
 
-UPDATES:
+HISTORY:
+	This folder (robotics/disc-qt)
+	was started by Brian Curto (Summer 2015) to port Cong's GLUT/GLUI
+	code to Qt.  It was continued by John Ryan and Tom Hsu (Summer
+	2016).  It is now superceded by Tom Hsu's code in disc-qt_vor. 
+		--Chee (June 2021).
 ============================================================
 July 17-20, 2013: our paper describing this work appeared at the
 	ACM Symposium on Computational Geometry in Rio de Janeiro, Brazil.

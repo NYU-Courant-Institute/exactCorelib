@@ -10,7 +10,6 @@
 //Sleeping Library
 #include <unistd.h>
 
-
 // Global Variables in triangle-qt.cpp
 extern QuadTree* QT;
 extern std::string fileName;
@@ -33,9 +32,10 @@ extern bool showTrace;
 extern bool showFilledObstacles;
 
 // usleep((99-animationSpeed)*animationSpeedScale);
-extern int animationSpeed;         // control the speed on the slider
-extern int animationSpeedScale;    // the scale is used when we are not rendering the boxes
-extern int animationSpeedScaleBox; // the scaleBox is for rendering the boxes simultaneously
+extern int animationSpeed;       // control the speed on the slider
+extern int animationSpeedScale;  // scale is used when not rendering boxes
+extern int animationSpeedScaleBox; // scaleBox is for rendering boxes
+								 // simultaneously
 
 extern vector<Box*> PATH;
 extern vector<Polygon2d> polygons;
@@ -65,12 +65,7 @@ unsigned int inc(0);
 unsigned int renderSteps(1);
 bool step(false);
 
-
-
-
-
-
-/*
+/*****************************************
  * CONSTRUCTOR
  *
  * Define data members
@@ -79,7 +74,7 @@ Display::Display(QWidget* parent):
     QOpenGLWidget(parent)
 {}
 
-/*
+/*****************************************
  * DESTRUCTOR
  *
  * Destroy shader program
@@ -87,7 +82,7 @@ Display::Display(QWidget* parent):
 Display::~Display()
 {}
 
-/*
+/*****************************************
  * INITIALIZE GL
  *
  * Called once to prepare display window for
@@ -113,7 +108,6 @@ void Display::paintGL() {
     glFlush();
 }
 
-
 /*
  * RESIZE GL
  *
@@ -131,14 +125,12 @@ void Display::resizeGL(int width, int height) {
 }
 
 void Display::renderScene() {
-
   if(!hideBox){
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     putBoxes();
     glDisable(GL_BLEND);
   }
-
 
   drawObstacles();
 
@@ -164,7 +156,7 @@ void Display::renderScene() {
         drawRobot(PATH.at(PATH.size()-1-inc), clr_robot);
       }
       else {
-        if(inc < PATH.size()){            //each regen, draw robot at next step in path
+        if(inc < PATH.size()){//each regen, draw robot at next step in path
           Box* cur = PATH.at(PATH.size()-1-inc++);
           drawRobot(cur, clr_robot);
         }
@@ -200,13 +192,15 @@ void Display::renderScene() {
 void Display::putBoxes(){
   Box* tmp;
   if(step){
-    for(unsigned int i=0;  i<Box::pAllLeaf->size()&&i<expansions.at(renderSteps);i++){
+    for(unsigned int i=0;
+			i<Box::pAllLeaf->size()&&i<expansions.at(renderSteps);i++){
       tmp=Box::pAllLeaf->at(i);
       drawBoxes(tmp,epsilon);
       numQuads++;
     }
-  }//NOTE: This draws ALL quads, including non leaves - this is overkill, and wastes time and space.
-  //Can we do this better?
+  }//NOTE: This draws ALL quads, including non leaves - this is overkill,
+  // and wastes time and space.
+  // Can we do this better?
   else{
     for(unsigned int i=0;i<Box::pAllLeaf->size();i++){
       tmp = Box::pAllLeaf->at(i);
@@ -232,7 +226,8 @@ void Display::drawBoxes(Box* b, double epsilon) {
             clr_box = clr_STUCK;
             break;
         case MIXED: //color is yellow (if box is epsilon-large)
-            if (b->height < epsilon || b->width < epsilon) { // color is gray (if box is epsilon-small)
+            if (b->height < epsilon || b->width < epsilon) {
+					// color is gray (if box is epsilon-small)
                 clr_box = clr_EPS;
             }
             break;
@@ -241,13 +236,17 @@ void Display::drawBoxes(Box* b, double epsilon) {
         break;
     }
     // 1st Corner: lower left
-    Point2d lower_left  = Point2d(b->mB.X() - b->width / 2, b->mB.Y() - b->height / 2);
+    Point2d lower_left  = Point2d(b->mB.X() - b->width / 2,
+				b->mB.Y() - b->height / 2);
     // 2nd Corner: lower right
-    Point2d lower_right = Point2d(b->mB.X() + b->width / 2, b->mB.Y() - b->height / 2);
+    Point2d lower_right = Point2d(b->mB.X() + b->width / 2,
+				b->mB.Y() - b->height / 2);
     // 3rd Corner: upper right
-    Point2d upper_right = Point2d(b->mB.X() + b->width / 2, b->mB.Y() + b->height / 2);
+    Point2d upper_right = Point2d(b->mB.X() + b->width / 2,
+				b->mB.Y() + b->height / 2);
     // 4th Corner: upper left
-    Point2d upper_left  = Point2d(b->mB.X() - b->width / 2, b->mB.Y() + b->height / 2);
+    Point2d upper_left  = Point2d(b->mB.X() - b->width / 2,
+				b->mB.Y() + b->height / 2);
 
     glColor4fv(clr_box.rgba);
     glBegin(GL_POLYGON);
@@ -279,7 +278,8 @@ void Display::drawBoxes(Box* b, double epsilon) {
 void Display::drawObstacles() {
     Box* b = QT->pRoot;
     glLineWidth(3.0);
-    for (list<Wall*>::iterator iter = b->walls.begin(); iter != b->walls.end(); ++iter) {
+    for (list<Wall*>::iterator iter = b->walls.begin();
+				iter != b->walls.end(); ++iter) {
         Wall* w = *iter;
         glColor4fv(clr_obstacle.rgba);
         glBegin(GL_LINE_STRIP);
@@ -318,7 +318,8 @@ void Display::drawObstacles() {
         }
         else{
             for(unsigned tri=0;tri<triangles.size();++tri){
-                drawTriangle(triangles[tri], Color(0.6,0.6,0.6), true, false);
+                drawTriangle(triangles[tri],
+						Color(0.6,0.6,0.6), true, false);
             }
         }
     }
@@ -347,7 +348,8 @@ void Display::drawRobot(Box* b, Color c){
     //All triangles fan out starting with this point
     glVertex2f(b->mB.X(), b->mB.Y());
     for(int i=0; i<=361; ++i){
-      glVertex2f(b->mB.X()+R0*cos(i*M_PI/180.0f), b->mB.Y()+R0*sin(i*M_PI/180.0f));
+      glVertex2f(b->mB.X()+R0*cos(i*M_PI/180.0f),
+			  b->mB.Y()+R0*sin(i*M_PI/180.0f));
     }
   glEnd();
 }
@@ -364,7 +366,8 @@ void Display::drawRobot(Point2d p, Color c){
   glEnd();
 }
 
-void Display::drawTriangle(Triangle2d t, Color clr, bool draw_solid, bool draw_outline) {
+void Display::drawTriangle(Triangle2d t,
+		Color clr, bool draw_solid, bool draw_outline) {
     if (draw_solid) {
         glColor4fv(clr.rgba);
         glBegin(GL_TRIANGLES);
@@ -385,7 +388,6 @@ void Display::drawTriangle(Triangle2d t, Color clr, bool draw_solid, bool draw_o
         glLineWidth(1.0);
     }
 }
-
 
 /*
  * DRAW Cube
@@ -414,4 +416,4 @@ void Display::drawCube(double length) {
         glVertex3f(length,-length,length);
     glEnd();
 }
-
+// END: =============================================

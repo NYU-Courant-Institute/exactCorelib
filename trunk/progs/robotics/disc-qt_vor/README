@@ -1,5 +1,5 @@
 ============================================================
-README file for $(CORELIB)/progs/robotics/disc
+README file for $(CORELIB)/progs/robotics/disc-qt_vor
 Since Core Library Version 2.2.
 	$Id: $
 ============================================================
@@ -8,30 +8,29 @@ Files in this directory:
 	Makefile		  -- used by Qt Creator for building
 	disc.cpp		  -- main program
 	Box.{h,cpp}		  -- box functions
-	QuadTree.{h,cpp}	  -- quad tree data structure
-	Corner.{h,cpp}		  -- corner features
-	Wall.{h,cpp}		  -- wall features
-	PriorityQueue.h		  -- priority queue for search strategy
+	QuadTree.{h,cpp}  -- quad tree data structure
+	Corner.{h,cpp}	  -- corner features
+	Wall.{h,cpp}	  -- wall features
+	PriorityQueue.h	  -- priority queue for search strategy
 	UnionFind.h		  -- UnionFind for quick detection of path
 	Graph.h			  -- graph searching based on Dijkstra and A-star
 	ControlWindow.{h, cpp}    -- GUI window
-	Display.{h, cpp}	  -- OpenGL widget: renders scene
-	shader.{h, cpp}		  -- construct OpenGL shader program
+	Display.{h, cpp}  -- OpenGL widget: renders scene
+	shader.{h, cpp}	  -- construct OpenGL shader program
 	ShaderException.{h, cpp}  -- exception class for shader class
 	
 	simple.vert		  -- source code for OpenGL vertex shader
 	simple.frag		  -- source code for OpenGL fragment shader
-	envGenerator.py		  -- Python script to generate large environments
+	envGenerator.py	  -- Python script to generate large environments
 
     Qt Creator Files
 	disc.pro		  -- disc program, specifies info about program
-	ControlWindow.ui	  -- specifies widgets on GUI window	
+	ControlWindow.ui  -- specifies widgets on GUI window	
 Directories:
 	inputs			  -- various sample input environment
 ============================================================
 
 OVERVIEW:
-
 	This is the simplest example of our technique of using soft predicates
 	for resolution-exact algorithms for motion planning.
 
@@ -42,14 +41,16 @@ OVERVIEW:
 	Implementation is also very easy to do "exactly".   
 	Currently, we do not find the need to use arbitrary precision
 	computation, but this is easy to do in Core Library.
+	This version (disc-qt_vor) attempts to implement a correct
+		Vor Heuristic, and also started to do arbitrary precision.
 
 	The idea of Soft Predicate is that we classify boxes
 	in configuration space as
 
 		FREE, STUCK or MIXED.
 
-	The predicate is "conservative" in the sense FREE or STUCK classifications
-	are correct (i.e., really free and really stuck).
+	The predicate is "conservative" in the sense FREE or STUCK
+	classifications are correct (i.e., really free and really stuck).
 	In the limit, as boxes converges to a free or stuck point, this 
 	classification will converge to the correct value.
 
@@ -71,16 +72,44 @@ OVERVIEW:
 	
 	Comparison with PRM methods are planned.
 
-	--Chee Yap, Cong Wang, Yi-Jen Chiang
-	April 2012.
-
-UPDATES:
+CODE HISTORY:
+	April 2012: Original C++/GLUT/GLUI code by Cong Wang in
+		robotics/2d-disc/ and robotics/disc/, in 
+		collaboration with Chee Yap, Yi-Jen Chiang
+	Summer 2015: Undergraduate Brian Curto transplanted the C++ code
+		into Qt.  See robotics/disc-qt.  Supervised by Chee Yap
+	Summer 2016: Undergraduate John Ryan and Tom Hsu
+		further developed Curto's Qt code.  Supervised by Chee Yap
+	2016: This folder robotics/disc-qt_vor is started by 
+		Tom Hsu (with Chee Yap) to develop the code in robotics/disc-qt:
+		What is new:
+		(1) Reorganize files into subfolders.
+		(2) Started to integrate code into Core Library
+		by using its geom2d library. E.g., use
+		geom2d::Point2d instead of (x,y). 
+		(3) Begin to incorporate exact computation from CORE library
+		Levels 2 and 3 (incomplete).
+		(4) Begin to give a correct implementation of Voronoi heuristic
+		(incomplete).
 ============================================================
-July 17-20, 2013: our paper describing this work appeared at the
+Relevant Publications:
+July 17-20, 2013: 
+	"On Soft Predicates in Subdivision Motion Planning"
+    by Cong Wang and Yi-Jen Chiang and Chee Yap.
 	ACM Symposium on Computational Geometry in Rio de Janeiro, Brazil.
-	Appeared in Special Issue of CGTA journal.
-July 27, 2013: the paper describing SSS in a general setting won the
-	Best Paper Award at "Robotics Challenge and Vision Workshop" at
-	the Robotics Science and Systems Conference in Berlin, Germany.
-	This award is sponsored by  Computing Community Consortium (CCC).
+		Journal Version: Comput. Geometry: Theory and Appl. (special
+		issue for SoCG 2013) Vol.48, No.8, pp.589--605, 2015.
+July 27, 2013:
+	"Soft Subdivision Search in Motion Planning" by C.Yap.
+	Proc. 1st Workshop on Robotics Challenge and Vision (RCV 2013).
+    Editors: A. Aladren et al., In arXiv:1402.3213.
+    Part of Robotics Science and Systems Conf. (RSS 2013), Berlin.
+		This paper won the Best Paper Award at the Workshop, which was
+		sponsored by  Computing Community Consortium (CCC).
+June 14-18, 2016:
+	"Path Planning for Simple Robots using Soft Subdivision Search"
+    by C.-H. Hsu and John P. Ryan and Chee Yap.
+		Video Review in Multimedia Exposition.
+	    In Proc. of the 32nd SoCG 2016, pp.68:1--68:5.
+			Boston, MA. June 14-18, 2016.
 ============================================================
