@@ -72,16 +72,19 @@ OVERVIEW:
 	
 	Comparison with PRM methods are planned.
 
+
 CODE HISTORY:
-	April 2012: Original C++/GLUT/GLUI code by Cong Wang in
-		robotics/2d-disc/ and robotics/disc/, in 
-		collaboration with Chee Yap, Yi-Jen Chiang
-	Summer 2015: Undergraduate Brian Curto transplanted the C++ code
-		into Qt.  See robotics/disc-qt.  Supervised by Chee Yap
-	Summer 2016: Undergraduate John Ryan and Tom Hsu
-		further developed Curto's Qt code.  Supervised by Chee Yap
-	2016: This folder robotics/disc-qt_vor is started by 
-		Tom Hsu (with Chee Yap) to develop the code in robotics/disc-qt:
+	April 2012: Original C++/GLUT/GLUI code by Cong Wang
+		(see robotics/2d-disc/ and robotics/disc/)
+		in collaboration with Chee Yap, Yi-Jen Chiang.
+	Summer 2015: Undergraduate Brian Curto ported Wang's disc
+		code into Qt.  (Simultaneously, undergrad John Ryan ported the
+		Zhongdi's 2-link code into Qt.)  Supervised by Chee Yap
+		with department summer grant.
+	Summer 2016: Tom Hsu and John Ryan further developed Curto's
+		Qt disc code.  With C.Yap, we produce a video and short paper
+		for SoCG 2016 Video Review.
+	2016: Tom Hsu and Chee Yap reorganized Curto/Ryan's code.
 		What is new:
 		(1) Reorganize files into subfolders.
 		(2) Started to integrate code into Core Library
@@ -91,6 +94,8 @@ CODE HISTORY:
 		Levels 2 and 3 (incomplete).
 		(4) Begin to give a correct implementation of Voronoi heuristic
 		(incomplete).
+	2021: Yuhao Tang revisits this disc-qt_vor work, supervised by
+		Chee and Yijen.
 ============================================================
 Relevant Publications:
 July 17-20, 2013: 
