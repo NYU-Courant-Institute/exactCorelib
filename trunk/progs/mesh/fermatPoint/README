@@ -1,0 +1,20 @@
+README for mesh/fermatPoint folder
+
+	Please try create a Makefile to automate your work
+		(it also serves to document the actions needed to
+		compile and run your programs)
+	
+	Please use command line arguments in your main program
+		(as many as you like, and they can be incrementally added).
+		The Makefile should have a variable 
+		for each of the command line arguments,
+		with reasonable default values.
+	
+	Create targets for basic examples (eg1, eg2, etc). 
+
+	There are several Makefile styles used in Core Library:
+		you can copy from one of the other folders
+
+	Feel free to ask me.
+	--Chee Yap, July 2021
+
