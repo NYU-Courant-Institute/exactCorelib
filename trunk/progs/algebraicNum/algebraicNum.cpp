@@ -11,7 +11,11 @@
       algebra   : demonstrates addition, subtraction, multiplication, division, comparison
                   of two algebraic integers
 
-
+	Nov2021: Qinchen Yang (and Chee) fix some
+		bugs here (partly due to stricter compilers and duplicate
+		copies of "composeHorner(), composeNaive()" which are found
+		locally in composePoly.h, despite the fact that the same code has
+		migrated into inc/CORE/poly/{Poly.h,Curves.h}.
  ************************************** */
 
 #ifndef CORE_LEVEL
