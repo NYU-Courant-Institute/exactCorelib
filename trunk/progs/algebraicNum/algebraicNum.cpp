@@ -184,7 +184,7 @@ int main(int argc, char* argv[])
      BigFloat2 il,ir;
      BigFloat m = split( I , il, ir );
 
-     cerr << "I: center "; ivlf( cerr, m ) << endl;
+     cerr << "I: center "; ivlf( cerr, BigFloat2(m) ) << endl;
      cerr << "split I, left: "; ivlf( cerr, il ) << endl; 
      cerr << "split I,right: "; ivlf( cerr, ir ) << endl; 
      
@@ -300,8 +300,8 @@ int main(int argc, char* argv[])
        else if ( t == 4 ) { // 1(1,1)
 	 if ( argc > 6 ) reps = atoi(argv[6]);
 	 PolyNT f = PolyNT( argv[3] );
-	 BiPolyNT a = PolyNT( argv[4] );
-	 BiPolyNT b = PolyNT( argv[5] );
+	 BiPolyNT a = BiPolyNT(PolyNT( argv[4] ));
+	 BiPolyNT b = BiPolyNT(PolyNT( argv[5] ));
 	 BiPolyNT res;
 	 for ( int u = 0 ; u < reps; u++ ) res = composeBinary ( f, a, b ); 
 	 //showBiPoly(res);

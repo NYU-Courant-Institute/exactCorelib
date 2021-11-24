@@ -3,7 +3,6 @@
 
 //Algebraic Number Class
 
-#include "composeBiPoly.h"
 #include "descartes.h"
 
 

@@ -6,11 +6,11 @@
      
      Author : Philip Davidson
 
+	Nov2021: Qinchen Yang (slight debug)
 ********************/
 
 
 #include "CORE/poly/Poly.h"
-#include "composePoly.h"
 
 //temp
 typedef BigRat     Rational;
@@ -33,7 +33,7 @@ Rational rightRat( const IntervalType& I ) {
 IntervalValue midPointI( const IntervalType& I ) { 
   if ( I.is_exact() ) return I.getLeft();
   IntervalValue m = ( I.getLeft() + I.getRight() );
-  m.div_2exp(m, 1); 
+  m=m.div2(); // Qinchen, 23nov,2021.
   return m;
 }
 
