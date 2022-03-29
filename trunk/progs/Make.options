@@ -13,8 +13,8 @@ include $(CORE_PATH)/Make.config
 
 CORE_INC=-I. -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
 	 -I$(CORE_PATH)/gmp/include
-CORE_LIB=-L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib -L$(CORE_PATH)/gmp/lib \
-	 -lcore++$(VAR) -lmpfr -lgmp
+CORE_LIB=-L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib \
+	-L$(CORE_PATH)/gmp/lib -lcore++$(VAR) -lmpfr -lgmp
 
 COREX_LIB_LEVEL=-lcoreex++$(VAR)_level
 

@@ -1,0 +1,5 @@
+Notes
+mar'22: to compile Kai's CoreLib_EVAL.zip code, I need
+		gmpxx.h
+	So I copy and past from internet.
+	
