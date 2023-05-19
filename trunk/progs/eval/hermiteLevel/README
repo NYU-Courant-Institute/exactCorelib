@@ -1,0 +1,58 @@
+README for progs/eval/hermiteLevel
+
+May 2023:
+	This folder contains all the code and data reported in our paper,
+		"Range Functions of Any Convergence Order and
+					their Amortized Complexity Analysis"
+		by
+		Kai Hormann, Chee Yap and Ya Shi Zhang
+		 (this paper appeared in Springer LNCS, as proceedings of the
+			Computer Algebra in Scientific Computing (25th CASC) in
+			Havana, Cuba, 28 Aug-1 Sep, 2023)
+	
+	*A subfolder "data" contains of a suite of real polynomials
+			(chebyshev, hermite, mignotte, wilkinson, sparse)
+		of various degrees.  These are square-free polynomials.
+	* We implemented the EVAL algorithm for isolating the
+		real roots of a polynomial f(x) in a given interval [a,b].
+	* There are 12 versions of EVAL, depending of the type of range
+			function used to evaluate f(x) and f'(x):
+
+		 evalH4			-- Hermite order 4
+		 evalH4cheap	-- cheap version of Hermite order 4
+		 evalH4ncheap	-- non-maximal level of cheap Hermite order 4
+		 evalL3			-- Lagrange order 3
+		 evalL3cheap 	-- cheap version of Lagrange order 3
+		 evalL3ncheap 	-- non-maximal level of cheap Lagrange order 3
+		 evalL4			-- Lagrange order 4
+		 evalL4cheap	-- non-maximal level of cheap Lagrange order 4
+		 EvalT2			-- Taylor order 2
+		 evalT2min 		-- minimal level Taylor order 2
+		 evalT3			-- Taylor order 3
+		 evalT4		 	-- Taylor order 4
+	* We have 5 experiments, producing 3 tables and 2 figures
+		 Table1: shows the sizes of the subdivision trees for various
+		 			EVAL methods
+		 Table2: shows the average running time when the 
+				arithmetic uses 1024-bit machine floating point 
+		 Table3: shows the average running time when the
+				arithmetic uses multi-precision rational numbers
+		 Figure1: shows the speedup ratio of cheap Hermite order 4
+					against cheap Lagrange order 3 for different families
+					of polynomial (of various degrees on x-axis)
+				[Figure1b is a smoothed version of Figure1a]
+		 Figure2: shows the speedup ratio of non-maximal level cheap
+		 		Lagrange order 3 against the maximal level.
+				The level varies along the x-axis. 
+				Figure2a and 2b uses polynomials of degrees of 125 and
+				250 (respectively).
+					The same experiment is repeated with
+		 		cheap Lagrange order 3 method in Figure2c and 2d. 
+	* We have a Makefile with the targets:
+			table1, table2, table3, figure1 and figure2
+		to automatically produce these tables and figures.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Feedback or comments? 
+Please send us a note:
+	yap@cs.nyu.edu or kai.hormann@usi.ch.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

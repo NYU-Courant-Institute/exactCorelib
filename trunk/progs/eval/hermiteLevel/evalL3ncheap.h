@@ -1,0 +1,204 @@
+//////////////////////////////////////////////////////////////////
+//
+// evalL3ncheap.h
+//		-- root search class, based on EVAL and recursive Lagrange interpolation
+//       up to level lev (default 3) using recursive Lagrange forms with cubic and quadratic convergence
+//       for f and f' and estimating of the range of the recursive Lagrange interpolants
+//       h_j with the centered form
+//
+//////////////////////////////////////////////////////////////////
+
+#ifndef __CORE_EVALL3NCHEAP_H__
+#define __CORE_EVALL3NCHEAP_H__
+
+#include "evalLagrange.h"
+#include "exactRange.h"
+
+class evalL3ncheap : public evalLagrange {
+public:
+  int lev;                      // level of convergence
+  real d00, d01, d02;           // coefficients of h_0(x)
+  real T;                       // remainder estimate T_{3,lev}
+
+  //////////////////////////////////////////////////////////////
+  //
+  // CONSTRUCTORS
+  //
+  evalL3ncheap(vector<real> v, interval I, int lev): evalLagrange(v,I) {
+    name = "evalL'3n";
+    this->lev = min(lev, N+1);
+  }
+  evalL3ncheap(vector<real> v, interval I): evalLagrange(v,I) {
+    name = "evalL'3n";
+    this->lev = min(15, N+1);
+  }
+  evalL3ncheap(int lev): evalLagrange() {
+    name = "evalL'3n";
+    this->lev = min(lev, N+1);
+   }
+  evalL3ncheap(): evalLagrange() {name = "evalL'3n"; this->lev = min(N+1,15); }
+
+  //////////////////////////////////////////////////////////////
+  //
+  // compute all values f^{(3j)}(m) for j=0,1,...,lev-1
+  //
+  void compute_derivatives_here(vector<real>& d, real m) {
+    vector<real> cc = f.c; // copy coefficients of f
+
+    d.resize(lev);
+
+    for (int k=0, idx=0; idx<=lev-1; k+=3, idx++) {
+      // cc[k..n] are the coefficients of f^{(k)}
+      real sum = 0;                // sum = Horner val of f^{(k)}(m)
+      for (int i=f.n; i>=k; i--) {
+        sum = sum * m + cc[i];
+        cc[i] *= (i-k) * (i-k-1) * (i-k-2); // update cc
+      }
+      d[idx] = sum;
+    }
+  }
+
+  //////////////////////////////////////////////////////////////
+  //
+  // estimate the range of f over I using recursive Lagrange forms with cubic convergence
+  // up to convergence level k
+  //
+  interval get_f(interval& I) {
+    // ! Change compute_derivatives so it only calculates the needed data
+    // compute derivative values at a, unless inherited from mother interval
+    //
+    if (I.a_data < 0) {
+      vector<real> da;
+      compute_derivatives_here(da, I.a);
+      data.push_back(da);
+      I.a_data = data.size()-1;
+    }
+
+    //
+    // compute derivative values at b, unless inherited from mother interval
+    //
+    if (I.b_data < 0) {
+      vector<real> db;
+      compute_derivatives_here(db, I.b);
+      data.push_back(db);
+      I.b_data = data.size()-1;
+    }
+
+    //
+    // compute derivative values at m
+    //
+    vector<real> dm;
+    compute_derivatives_here(dm, I.m());
+    data.push_back(dm);
+    I.m_data = data.size()-1;
+
+    real r = I.r();
+
+    //
+    // we split f(x) into
+    //
+    //  - the exact part        h_0(x) = d_{0,0} + d_{0,1} (x-m) + d_{0,2} (x-m)^2,
+    //
+    //                   where  d_{0,0} = f(m),
+    //                          d_{0,1} = (f(b)-f(a)) / (2r),
+    //                          d_{0,2} = (f(b)-2f(m)+f(a)) / (2r^2),         and
+    //
+    //  - the remainder part    R_{h_0} (x) = f(x) - h_0(x),
+    //
+    //                   whose range is approximated with iterative Lagrange interpolation
+    //                   up to convergence level lev
+    //
+
+    //
+    // get exact range of h_0
+    //
+    real fa = (data[I.a_data])[0];    // f(a)
+    real fm = (data[I.m_data])[0];    // f(m)
+    real fb = (data[I.b_data])[0];    // f(b)
+
+    d00 = fm;
+    d01 = (fb-fa)/(2*r);
+    d02 = (fb-2*fm+fa)/(2*r*r);
+
+    interval h0I = quadraticRange( d00,d01,d02, r );
+
+    //
+    // an estimate for the range of the remainder part is
+    //
+    //    []R_{h_0}(I) = [-1,1] T'_{3,lev},
+    //
+    // where T'_{3,lev} = \sum_{j=1}^{d/3} |[]h_j(I)| \Omega_3^j
+    // and the range of h_j is estimated with the centered form evaluation
+    //
+    // compute T'_{3,lev} using Horner summation
+    //
+    real Omega3 = sqrt((real)3)/27 * r*r*r;
+    // 
+    // compute f^(3*lev)(I) directly 
+    // by computing coefficients of f^(3*lev)
+    // then using direct evaluation
+    //
+    interval tail_estimate = f.evalDiff(I, 3*lev);
+    T = Omega3 * max(fabs(tail_estimate.a), fabs(tail_estimate.b));                                                  
+
+    for (int j=lev-1; j>=1; j--) {
+      //
+      // recall that  h_j(x) = d_{j,0} + d_{j,1} (x-m) + d_{j,2} (x-m)^2,
+      //
+      //                   where  d_{j,0} = f^(3j)(m),
+      //                          d_{j,1} = (f^(3j)(b)-f^(3j)(a)) / (2r),
+      //                          d_{j,2} = (f^(3j)(b)-2f^(3j)(m)+f^(3j)(a)) / (2r^2)
+      //
+      real dfa = (data[I.a_data])[j];    // f^(3j) (a)
+      real dfm = (data[I.m_data])[j];    // f^(3j) (m)
+      real dfb = (data[I.b_data])[j];    // f^(3j) (b)
+
+      real dj0 = dfm;
+      real dj1 = (dfb-dfa)/(2*r);
+      real dj2 = (dfb-2*dfm+dfa)/(2*r*r);
+
+      //
+      // add |[]h_j(I)| = |d_{j,0}| + r|d_{j,1}| + r^2|d_{j,2}| to current T and multiply with \Omega_3
+      //
+      T = ( T + (fabs(dj2)*r+fabs(dj1))*r+fabs(dj0) ) * Omega3;
+    }
+
+    //
+    // return h_0(I) + [-1,1] T'_{3,lev}
+    //
+    h0I.a -= T;
+    h0I.b += T;
+
+    return( h0I );
+  }
+
+  //////////////////////////////////////////////////////////////
+  //
+  // estimate the range of f' over I using recursive Lagrange forms with quadratic convergence
+  //
+  //
+  // NOTE: this routine assumes that "get_f(I)" has been called before
+  //       so that the coefficients d_{0,*} of h_0(x) and the remainder
+  //       size T'_{3,lev} are already available
+  //
+  interval get_df(interval& I) {
+    real r = I.r();
+
+    //
+    // get the exact range of h_0'(x) = d_{0,1} + 2 d_{0,2} (x-m)
+    //
+    interval h0I = linearRange(d01,2*d02,r);
+
+    //
+    // return h_0'(I) + 3*sqrt(3)/r [-1,1] T'_{3,lev}
+    //
+    T = 3*sqrt((real)3) * T / r;
+    h0I.a -= T;
+    h0I.b += T;
+
+    return ( h0I );
+  }
+}; // evalL33cheap class
+//
+//////////////////////////////////////////////////////////////////
+#endif

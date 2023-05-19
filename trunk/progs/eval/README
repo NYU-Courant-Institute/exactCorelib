@@ -12,5 +12,15 @@ May2021: The subfolder
 	You should be able to reproduce our results using
 	the Makefile targets.
 
+May2023:  The subfolder
+			"hermiteLevel"
+	contains the code and data used in our 2023 CASC paper,
 
+		"Range Functions of Any Convergence Order and
+					their Amortized Complexity Analysis"
+		by
+		Kai Hormann, Chee Yap and Ya Shi Zhang
+
+	You should be able to reproduce our results using
+	the Makefile targets.
 
