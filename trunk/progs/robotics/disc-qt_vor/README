@@ -6,7 +6,7 @@ Since Core Library Version 2.2.
 Files in this directory:
 	README			  -- this file
 	Makefile		  -- used by Qt Creator for building
-	disc.cpp		  -- main program
+	disc-qt.cpp		  -- main program
 	Box.{h,cpp}		  -- box functions
 	QuadTree.{h,cpp}  -- quad tree data structure
 	Corner.{h,cpp}	  -- corner features
@@ -24,7 +24,7 @@ Files in this directory:
 	envGenerator.py	  -- Python script to generate large environments
 
     Qt Creator Files
-	disc.pro		  -- disc program, specifies info about program
+	disc-qt.pro		  -- disc program, specifies info about program
 	ControlWindow.ui  -- specifies widgets on GUI window	
 Directories:
 	inputs			  -- various sample input environment
