@@ -96,6 +96,9 @@ CODE HISTORY:
 		(incomplete).
 	2021: Yuhao Tang revisits this disc-qt_vor work, supervised by
 		Chee and Yijen.
+	2023: Carlos TianXing Fan, summer intern from Peking University,
+		updated the work of Yuhao Tang for Qt, in preparation for extensions
+		to new shortest path work and 6DOF work.
 ============================================================
 Relevant Publications:
 July 17-20, 2013: 
