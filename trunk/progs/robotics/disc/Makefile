@@ -64,6 +64,7 @@ include ../Make.options
 #=================================================
 # User variables (you can change them in the command line)
 #=================================================
+disc = disc			# name of the main program
 interactive = 0		# 0=interactive, >0 is non-interactive
 
 startX = 10		# start configuration
@@ -117,7 +118,7 @@ all: $(TARGETS)
 #       non-interactive mode (i.e., the first argument to "disc" is "1").
 #
 test: $(TARGETS)
-	./disc 1 \
+	./$(disc) 1 \
 		$(startX) $(startY)  $(goalX) $(goalY) \
 		$(epsilon)  $(radius)  input.txt  $(boxWidth) $(boxHt) \
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
@@ -129,10 +130,10 @@ testall: $(TARGETS)
 	make egb interactive=1
 
 testa: $(TARGETS)
-	./disc 1
+	./$(disc) 1
 
 testb: $(TARGETS)
-	./disc 1 \
+	./$(disc) 1 \
 		$(startX) $(startY)  $(goalX) $(goalY) \
 		$(epsilon)  $(radius)  input2.txt  $(boxWidth) $(boxHt) \
        		$(windowPosX) $(windowPosY) $(Qtype) $(seed) $(inputDir) \
@@ -173,7 +174,7 @@ eg:	disc
 	@echo "Target 'eg':  runs disc with the default options of Makefile"
 	@echo "--  You can all of them in you 'make' command line, e.g.,"
 	@echo "--      > make eg radius=60 goalX=111 goalY=450 startY=200 startX=20"
-	./disc $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
+	./$(disc) $(interactive) $(startX) $(startY)  $(goalX) $(goalY) \
 		$(epsilon) $(radius) $(fileName) \
 		$(boxWidth) $(boxHt) $(windowPosX) $(windowPosY) \
 		$(Qtype) $(seed)  $(inputDir) \
@@ -187,7 +188,7 @@ eg:	disc
 #
 ega:	disc
 	@echo "Target 'ega':  runs disc with default compiled options"
-	./disc $(interactive) \
+	./$(disc) $(interactive) \
 	    &
 
 # run with default Makefile options:

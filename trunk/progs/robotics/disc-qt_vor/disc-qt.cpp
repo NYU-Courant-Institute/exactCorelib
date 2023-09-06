@@ -238,7 +238,8 @@ Box* findVoronoiBox(Box* freeBox, QuadTree* QT){
   while(!dijQ.empty()){
     Box* current = dijQ.extract();
     // if current is MIXED, try expand it and push the children that is
-    // ACTUALLY neighbors of the source set (set containing alpha) into the dijQ again
+	// ACTUALLY neighbors of the source set (set containing alpha) into
+	// the dijQ again
     if(current->status == MIXED){
       if(QT->expand(current)){
         for(int i=0; i<4; ++i){
@@ -307,9 +308,9 @@ Box* findVoronoiBox(Box* freeBox, QuadTree* QT){
 
 // MAIN PROGRAM: ========================================
 int main(int argc, char* argv[]){
-  // We want the current working directory to be .../disc, (.../disc-master)
+  // The current working directory should be .../disc, (.../disc-master)
   // so that it can access necessary files
-  // The current working directory will be correctly set as long as the name of the
+  // The current working directory will be OK as long as the name of the
   // folder is /disc or /disc-master
   workingDir = QDir::currentPath().toStdString();
   bool foundFiles = false;
@@ -346,7 +347,7 @@ int main(int argc, char* argv[]){
     (indexOfDesiredDir = workingDir.rfind("/build-disc-qt-")) != std::string::npos) {
     QDir dir(workingDir.substr(0, indexOfDesiredDir).c_str());
 
-    if(dir.exists("disc-qt/disc-qt.pro")) {                  // Test if /disc exists
+    if(dir.exists("disc-qt/disc-qt.pro")) {     // Test if /disc exists
       workingDir = workingDir.substr(0, indexOfDesiredDir) + "/disc-qt";
 
       // Set current working directory to disc
@@ -354,7 +355,7 @@ int main(int argc, char* argv[]){
 
       foundFiles = true;
     }
-    else if(dir.exists("disc-qt/disc-qt.pro")) {  // Test if /disc-master exists
+    else if(dir.exists("disc-qt/disc-qt.pro")) { // Test if /disc-master exists
       workingDir = workingDir.substr(0, indexOfDesiredDir) + "/disc-qt";
 
       // Set current working directory to disc
@@ -394,18 +395,18 @@ int main(int argc, char* argv[]){
   if (argc > 17) deltaY  = atof(argv[17]);	// y-translation of input file
   if (argc > 18) scale   = atof(argv[18]);		// scaling of input file
 
-  // cout << "before interactive, Qtype= " << SearchType << "\n";
+  cout << "before interactive, Qtype= " << SearchType << "\n";
 
-//  if (!interactive) {
-//    cout << "Non Interactive Run of Disc Robot\n";
-//    run();
+  if (!interactive) {
+    cout << "Non Interactive Run of Disc Robot\n";
+    run();
 
-//    if (noPath)
-//      cout << "No Path Found!\n";
-//    else
-//      cout << "Path was Found!\n";
-//    return 0;
-//  }
+    if (noPath)
+      cout << "No Path Found!\n";
+    else
+      cout << "Path was Found!\n";
+    return 0;
+  }
 
 
   // Otherwise, set up Qt and display
