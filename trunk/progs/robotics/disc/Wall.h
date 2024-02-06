@@ -26,5 +26,5 @@ public:
 
 	bool isRight(double x, double y);
 	bool inter;
-
+	bool intersectZone();
 };

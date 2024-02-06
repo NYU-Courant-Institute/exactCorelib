@@ -42,3 +42,13 @@ bool Wall::isRight(double x, double y)
 	double y2 = dst->y;
 	return (x2-x1)*(y-y1) - (y2-y1)*(x-x1) < 0;
 }
+
+bool Wall::intersectZone()
+{
+	return true;  // Chee, feb2024: this SHOULD be implemented to improve
+				// the intersection test.  The zone of a wall
+				// is half-strip bounded by the wall and by
+				// the two rays emanating from the wall corners,
+				// and perpendicular to walls.
+				// Eric, please talk to me about implementing this.
+}

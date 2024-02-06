@@ -10,5 +10,9 @@ bool Corner::isConvex()
 
 bool Corner::intersectZone()
 {
-	return true;
+	return true;  // Chee, feb2024: this SHOULD be implemented to improve
+				// the intersection test.  The zone of a corner
+				// is the wedge emanating from the corner
+				// bounded by rays parallel to the 2 incident walls.
+				// Eric, please talk to me about implementing this.
 }
