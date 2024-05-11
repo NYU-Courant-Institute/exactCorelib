@@ -1,0 +1,26 @@
+The ROS Disc Project (2024)
+
+This project was undertaken by Eric Lin (class of 2024)
+and Helios Hu (class of 2025), with Professor Yap
+in the Spring of 2024.  Eric and Helios teamed up to
+work together and made great progress (Jan-Apr).
+
+We wanted to port the C++ disc program (the first SSS algorithm,
+from 2013) to the ROS framework, to give us an online demo that
+is accessible by any browser.  The ROS platform was based on Windows
+(it seems that the MacOS version of ROS is substandard).
+The original C++ disc code is
+available from the Core Library https://cs.nyu.edu/exact/.
+
+Their work is found in github:
+
+https://github.com/exl7954/disc-path-gui
+
+We plan to install a server for this 
+See the screenshot in this folder of the GUI interface.
+
+--Chee
+19 Apr 2024
+
+
+

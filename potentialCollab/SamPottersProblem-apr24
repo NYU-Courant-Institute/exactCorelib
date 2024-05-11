@@ -1,0 +1,52 @@
+From Sam's Email, Apr24:
+	To that end, I have a self-contained problem I thought I would float
+	by you. If you don't have time for this, please just let me know.
+	
+	Here it is: say you're interested in contouring a smooth level set
+	phi(x, y) = 0. We lay down a regular, square background mesh on a
+	region fully containing the level set. To start the contouring
+	process, we pick a vertex from this background mesh, and ask whether
+	the vertex lies on the level set. Later, we wll consider each edge
+	incident on that vertex, approximate phi's restriction to that edge
+	with a Chebyshev series, and solve an eigenvalue problem to find all
+	real roots of that Chebyshev series to find where it cuts each edge.
+	
+	If the vertex is cut by the level set, then the four incident edges
+	are likely all cut in approximately the same place. The vagaries of
+	floating point arithmetic seem to indicate that we could find between
+	0 and 5 cuts when the level set "truly" cuts the vertex.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Initial Answer:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	This can be solved quite robustly and with topological guarantees
+	(modulo checking if phi(x,y)=0 is exact at grid points).
+
+	I have written several papers about this:
+
+Papers can be downloaded from
+	https://cs.nyu.edu/~exact/papers/
+(1) Adaptive Isotopic Approximation of Nonsingular Curves: the
+		Parametrizability and Nonlocal Isotopy Approach
+	Long Lin and Chee K. Yap
+		Discrete & Comp.Geometry Vol.45, No.4, pp.760-795, 2011.
+		(Special Issue of 25th ACM Symp. Computational Geometry (SoCG),
+		in Aarhus, Denmark, Jun 8--10, 2009.
+		Click here for [ Code and Experimental Results]
+
+(2) Non-Local Isotopic Approximation of Nonsingular Surfaces
+		Long Lin, Chee Yap, and Jihun Yu
+	Computer-Aided Design Vol. 45, No. 2, pages 451--462, 2013.
+	Proc.Symp. on Solid and Physical Modeling (SPM). University of
+	Burgundy, Dijon, France. Oct 29-31, 2012.
+
+
+(3) Complete Subdivision Algorithms, II: Isotopic Meshing of Singular
+		Algebraic Curves     [ Full Version]
+	M. Burr, S.W. Choi, B. Galehouse, C. Yap
+		Proc. Intl. Symp. on Symbolic & Algebraic Computation (ISSAC
+		2008), pp.87--94.  Hagenberg, Austria, Jul 20-23, 2008.
+	J. Symbolic Computation (Special Issue), Vol.47, No.2, pp.131-152 (2012).
+
+

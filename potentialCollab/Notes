@@ -1,5 +1,76 @@
 Potential Collaborators on Core
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Sam Potter, April 2024, former Courant Instructor of Greengard
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	A problem with an EGC solution?
+	Sam Potter <sam@coreform.com>
+	Apr 18, 2024, 4:24 PM (7 days ago)
+	Dear Prof. Yap,
+	
+	(Sorry about the long email---no rush in responding to this...)
+	
+	I work as a research scientist at Coreform, LLC, a company that
+	specializes in finite elements and isogeometric analysis, but in reality
+	does quite a lot of work in meshing and geometry. Actually, I was at
+	CIMS the past few years working with Leslie Greengard as a CI, but have
+	since left academia for industry...
+	
+	I was somewhat aware of your group's work while I was at NYU, and since
+	starting at Coreform I've come across many, many problems that seem like
+	a good fit for your EGC paradigm. Right now we do our best with epsilon
+	hacking and twiddling, but there is only so far you can go with this.
+	
+	I'm interested in assessing whether EGC is in a state where it can be
+	deployed by practicioners on an ad hoc/daily basis (i.e., is it worth
+	our time to develop some expertise in it, or is it too abtruse and not
+	ready for "prime time"). Rather than read many papers that are outside
+	my field, I thought I would go to the source...
+	
+	To that end, I have a self-contained problem I thought I would float by
+	you. If you don't have time for this, please just let me know.
+	
+	Here it is: say you're interested in contouring a smooth level set
+	phi(x, y) = 0. We lay down a regular, square background mesh on a region
+	fully containing the level set. To start the contouring process, we pick
+	a vertex from this background mesh, and ask whether the vertex lies on
+	the level set. Later, we wll consider each edge incident on that vertex,
+	approximate phi's restriction to that edge with a Chebyshev series, and
+	solve an eigenvalue problem to find all real roots of that Chebyshev
+	series to find where it cuts each edge.
+	
+	If the vertex is cut by the level set, then the four incident edges are
+	likely all cut in approximately the same place. The vagaries of floating
+	point arithmetic seem to indicate that we could find between 0 and 5
+	cuts when the level set "truly" cuts the vertex.
+		Is approaching this tangle more robustly doable with EGA?
+		Thanks very much for your time. Any insight into this problem will be
+	greatly appreciated.
+		Regards, Sam Potter
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	Chee Yap Apr 20, 2024, 11:55 AM (5 days ago)
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		Hi Sam, Thanks for reaching out. I would love to talk to you about
+		your problem to see if EGC techniques can help. Let us do a zoom
+		sometime next week? Wed-Fri
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	Sam Potter Apr 22, 2024, 1:13 PM (3 days ago)
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		Hi Chee,
+		Great. I'm generally available between 9AM and 5PM. Thursday or
+		Friday better than Wednesday for me. Please propose a time that's
+		convenient for you.
+		Best, Sam
+			p.s. Sorry: 9AM-5PM pacific time
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	Chee Yap Apr 25, 11:23 AM (4 minutes ago)
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		Hi Sam, we can use my zoom
+			https://nyu.zoom.us/my/yapzoom/
+		How about 7pm today (Thursday).
+		It would be 3pm your time.
+		Please confirm (you can also call my cell 646 299 3521).
+			Best, Chee
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Jean-Michel Muller at ENS-Lyon, visited Jan 2019
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -72,3 +143,6 @@ Clifford Yapp (contacted me in May 2017 about CoreLib license)
 			Survivability/Lethality Analysis Directorate, ARL
 		This is a "declassified document" released by Clifford Yapp,
 		so he seems to be the lead author.
+
+
+

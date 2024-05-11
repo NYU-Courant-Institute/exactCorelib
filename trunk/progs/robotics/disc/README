@@ -76,7 +76,10 @@ July 27, 2013: the paper describing SSS in a general setting won the
 March, 2015: In Chee's robot motion planning class at NYU,
 	students ported this to Visual Studio and Linux.
 	Also implemented a Voronoi Heuristic [Not successful]
-June, 2021: Yuhao will adapt this case for Voronoi Heuristic
-	Project with Chee/YiJen.
+June, 2021: Yuhao will adapt this case for Voronoi Heuristic.  Incomplete
+	project with Chee/YiJen.
+Jan, 2024: Eric Lin and Helios Hu adapted this online interactive demo
+	based on the ROS platform, using React and Java script with
+	JSON files.  Project with Chee/Zhaoqi.
 ============================================================
 
