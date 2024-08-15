@@ -123,6 +123,8 @@ TARGETS = main
 
 OBJ_FILES = ConfBox3d.o Corner.o Edge.o SoftSubdivisionSearch.o Wall.o fileProcessor.o Timer.o Path.o ConfBox3dPredicate.o
 
+fileProcessor: fileProcessor.o
+
 all: $(TARGETS)
 
 # note: this target is the standard target that Core Library uses
@@ -389,6 +391,15 @@ moretest: $(TARGETS)
 # nothing to do
 
 main: $(OBJ_FILES) main.o
+
+#=================================================
+# Processing environment
+#=================================================
+f=input11
+
+process:
+	cp inputs/$(f).txt output-tmp.txt
+	python input_interpreter.py
 
 #=================================================
 # Temp

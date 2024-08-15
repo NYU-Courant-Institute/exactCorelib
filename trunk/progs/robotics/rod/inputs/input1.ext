@@ -1,6 +1,7 @@
 # file: input1.txt
 # This is a tetrahedron obstacle
-# 	It is in the "basic format".
+# 	It is in the "extended format"
+#		(because the "Poly" lines begins with "0")
 
 # four vertices:
 Points

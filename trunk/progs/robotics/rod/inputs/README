@@ -1,0 +1,17 @@
+README FILE
+
+The files here are in the "extended format"
+and they need to be converted to the "basic format".
+
+First use fileProcessor to clean each file (getting rid of white spaces
+and comments).  The clean file will be named "output-tmp.txt".
+Then call the input_interpreter to convert "output-tmp.txt" to
+the file "output-tmp-py.txt".  You can now rename it back to
+original-first-name.ext.
+
+Files with last name "ext" is in extended format.
+When converted to basic format. change the last name to "txt".
+
+
+
+
