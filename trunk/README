@@ -230,7 +230,7 @@ README FILE: TABLE OF CONTENTS
 
    3.4) STAGE 1: INSTALLING GMP 
         a) PRELIMINARY STEP:   For Unix-like OS (e.g., Solaris, Linux),
-        gmp will automatically build BOTH a static and a dynamic library.  
+        gmp will automatically build BOTH a static and a dynamic library.
         In this case, most compilers will link to the dynamic gmp library.
         Therefore, you need to add the path of your dynamic gmp library to
         the environmental variable LD_LIBRARY_PATH.
@@ -306,10 +306,10 @@ README FILE: TABLE OF CONTENTS
                              -- it uses the configuration program in gmp
                              -- it searches for system information
                                 (compiler, CPU, files, etc).
-                             -- screen output from this process is placed 
+                             -- screen output from this process is placed
                                 in the file ${CORE_PATH}/tmp/DIAG_CONFIG_GMP.
-                                (E.g., if you do not have m4, the error will
-                                be detected here.)
+								(E.g., if you do not have m4 macro
+								processor, the error will be detected here)
             > make second    -- this is equivalent to "make build-gmp"
                              -- this compiles gmp (takes a while!)
                              -- screen output from this process is placed
@@ -317,7 +317,8 @@ README FILE: TABLE OF CONTENTS
             > make third     -- installs gmp (same as "make install-gmp")
                              -- screen output from this process is placed
                                 in the file ${CORE_PATH}/tmp/DIAG_INSTALL_GMP
-                                (at this point, you can go to the gmp directory
+                                (at this point, you can 
+								o to the gmp directory
                                 and do a "make check" for extra assurance)
             > make testgmp   -- you must pass this test to continue.
                                 output in file ${CORE_PATH}/tmp/DIAG_TEST_GMP

@@ -5,7 +5,9 @@ import os
 OPERATOR_REGEX = '\+|-'
 
 def readNextSetOfLines(lines):
-    """Given a set of lines beginning with the input type, return a pair with n and the list of the next n lines, and remove the content of the tuple from the input"""
+    """Given a set of lines beginning with the input type, return a pair
+    with n and the list of the next n lines, and remove the content of
+    the tuple from the input"""
     nLines = []
     if lines[0].strip() == 'End':
         return (0, [])

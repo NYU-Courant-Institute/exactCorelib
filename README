@@ -18,10 +18,12 @@ we have in this folder,
 	-- download tar file from gmplib.org
 		Then do ./configure, make, make install.
 	-- put a link from $COREPATH/gmp to this gmp.
+	-- aug24: gmp-6.3.0
 2. How to install mpfr:
-	-- download tar file from mpfr.org
+	-- download tar file from mpfr.org (https://www.mpfr.org/)
 		Then do ./configure, make
 	-- put a link from $COREPATH/mpfr to this mpfr.
+	-- aug24: mpfr-6.3.0
 3. May2021: I asked andy to remove need to have an account
 	("guest") with password ("guest") to browse our trunk folder.
 	I now can directly provide links on my webpages to 

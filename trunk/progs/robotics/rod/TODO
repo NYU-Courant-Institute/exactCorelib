@@ -1,11 +1,26 @@
-Extract logic for ball and rob robots to the robot subdirectory
-Modularize modules
+TODO LIST
 
-Ziyao, please factorize the code following the outline in README.
+Aug2024: 
+	-- the fileProcessor.cpp is not fully yet integrated into
+		this system (see ../disc/ for how to do it)
 
+	-- NOTE: we renamed the input files that have the
+		extended geometry format as ".ext" extension;
+		the files with basic geometry format has the ".txt" extension.
+		The SSS path planner assumes the basic format, so
+		the .ext files must first be converted to .txt files.
+	-- we must use the fileProcessor to cleanup the .txt or .ext
+		files.  Then the clean .ext files are transformed
+		into .txt files using the input_intepretor.py.
+		This 2 step process should be combined into one.
+
+1. Extract logic for ball and rob robots to the robot subdirectory
+2. Modularize modules
+
+3. Ziyao, please factorize the code following the outline in README.
 	To help this process, I have already created these
 	subdirectories.
-
-Enums for sides - x+, x-, y+, y-, z+, z-
-Animation speed
-Half edge list
+		
+		Enums for sides - x+, x-, y+, y-, z+, z-
+		Animation speed
+		Half edge list

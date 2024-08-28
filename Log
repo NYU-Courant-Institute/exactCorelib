@@ -1,0 +1,23 @@
+LOG file
+
+7aug2024: In Korea, thoughts of reviving CoreLib for IVP work!
+	(1) Tried to install core library on my Cygwin on Windows Surface8
+	-- In COREHOME:
+			> cd $(COREHOME)
+			> ln -s ../gmp
+			> ln -s ../mpfr
+	-- missing m4 macro processor.  Downloaded successfully from
+		m4 cygwin site.
+	-- error in "make first".  "-lgmp" not found.
+	-- So went to COREHOME/../gmp 
+			* downloaded gmp from gmphome (version gmp-6.3.0)
+			* linked from COREHOME/gmp to COREHOME/../gmp-6.3.0
+			* make first,second,third,testgmp.  SUCCESS!!!!
+	-- Download mpfr (mpfr-4.2.1)
+			* CHECK the configure options in INSTALL file!
+				e.g., ./configure --with-gmp=../gmp-6.3.0
+			* ./configure \
+				--with-gmp-include=../gmp-6.3.0 \
+				--enable-static \
+				--disable-shared
+			* still failed (said the libgmp uses a different ABI)
