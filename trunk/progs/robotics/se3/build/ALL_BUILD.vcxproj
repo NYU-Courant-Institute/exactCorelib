@@ -1,0 +1,286 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ResolveNugetPackages>false</ResolveNugetPackages>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3E6729A2-BA7C-311D-856A-9DDE4F4A000B}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\main\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/main/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/main -BC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build --check-stamp-file C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\WindowsPaths.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeCCompiler.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeCXXCompiler.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeRCCompiler.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeSystem.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3Config.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3ConfigVersion.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3Targets.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/main/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/main -BC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build --check-stamp-file C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\WindowsPaths.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeCCompiler.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeCXXCompiler.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeRCCompiler.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeSystem.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3Config.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3ConfigVersion.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3Targets.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/main/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/main -BC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build --check-stamp-file C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\WindowsPaths.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeCCompiler.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeCXXCompiler.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeRCCompiler.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeSystem.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3Config.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3ConfigVersion.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3Targets.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/main/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/main -BC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build --check-stamp-file C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\Platform\WindowsPaths.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeCCompiler.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeCXXCompiler.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeRCCompiler.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\3.24.0\CMakeSystem.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3Config.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3ConfigVersion.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3Targets.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ZERO_CHECK.vcxproj">
+      <Project>{C326051E-2322-31A0-9980-20F950854E7B}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\FeatureSet\WtFp\Bimap\Bimap.vcxproj">
+      <Project>{5B984C94-EB42-370A-B4FE-C9E74E7F948F}</Project>
+      <Name>Bimap</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\DefMesh\DefMesh.vcxproj">
+      <Project>{62FB4195-0739-3C22-B4AC-BFF0E352AC4E}</Project>
+      <Name>DefMesh</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\FeatureSet\FeatureSet.vcxproj">
+      <Project>{49CC842B-27CD-3FC2-9C57-E4CE879C6DEA}</Project>
+      <Name>FeatureSet</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ReadControl\FileCheck\FileCheck.vcxproj">
+      <Project>{34467112-12E5-3FE2-8DC2-F155F9E94B82}</Project>
+      <Name>FileCheck</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ViewerControl\Graph\Graph.vcxproj">
+      <Project>{0CDDD371-FEB7-3F01-B6C8-06115DA289A4}</Project>
+      <Name>Graph</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\InteractiveControl\InteractiveControl.vcxproj">
+      <Project>{7E47A3F8-59AF-364B-BE15-64D1C2FEE735}</Project>
+      <Name>InteractiveControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\FeatureSet\WtFp\Interval\Interval.vcxproj">
+      <Project>{CB5DDDD9-6196-35CB-9934-53A62046B1BB}</Project>
+      <Name>Interval</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ViewerControl\IntroControl\IntroControl.vcxproj">
+      <Project>{29771233-A9CD-3127-82BC-A6411BAEF8DE}</Project>
+      <Name>IntroControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ReadControl\JSON\JSON.vcxproj">
+      <Project>{D747FD19-DCE4-380B-8EA4-8FF173D0226B}</Project>
+      <Name>JSON</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ReadControl\ReadControl.vcxproj">
+      <Project>{1D8B7426-6564-32E9-B239-91BEAD3513CA}</Project>
+      <Name>ReadControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ReadSSSCommand\ReadSSSCommand.vcxproj">
+      <Project>{7726A434-ABAB-3FB2-B53F-04CC8BBAFA8A}</Project>
+      <Name>ReadSSSCommand</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\FeatureSet\ReadWriteOFF\ReadWriteOFF.vcxproj">
+      <Project>{B815F503-8FB8-3FCB-8A86-808C49B53617}</Project>
+      <Name>ReadWriteOFF</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\RunControl\RunControl.vcxproj">
+      <Project>{C621CB32-89BD-3456-A07A-150F0AB5F3A0}</Project>
+      <Name>RunControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ViewerControl\SE3Box\SE3Box.vcxproj">
+      <Project>{EA8DBE1D-B6DA-3854-ABC7-BFDBFC1E840E}</Project>
+      <Name>SE3Box</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\FeatureSet\WtFp\SO3\SO3.vcxproj">
+      <Project>{2C987EE4-D5B8-30D9-A688-606B624B472E}</Project>
+      <Name>SO3</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\RunControl\SSS\SSS.vcxproj">
+      <Project>{5DCE3BD2-9F8A-33BA-873C-16470F0CB19A}</Project>
+      <Name>SSS</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\FeatureSet\WtFp\Solid\Solid.vcxproj">
+      <Project>{61056578-1496-3D5D-8C4A-FBD3496FE927}</Project>
+      <Name>Solid</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ViewerControl\ViewerControl.vcxproj">
+      <Project>{3B57ACAB-54A8-383D-BE75-0074F57D75BE}</Project>
+      <Name>ViewerControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\FeatureSet\WtFp\WtFp.vcxproj">
+      <Project>{A6F172EB-9C69-3158-A34E-D4B03F0330CF}</Project>
+      <Name>WtFp</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glad-build\glad.vcxproj">
+      <Project>{6F1AAB4A-6185-3E64-BF7A-7BDF2F25803B}</Project>
+      <Name>glad</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glfw-build\src\glfw.vcxproj">
+      <Project>{49CDAA5C-7C13-3B30-A67E-B6296651E230}</Project>
+      <Name>glfw</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-build\igl_core.vcxproj">
+      <Project>{D2BE009A-1D66-33D0-842B-08981B30FB18}</Project>
+      <Name>igl_core</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ViewerControl\igl_glfw.vcxproj">
+      <Project>{26707AC7-2F32-3C5F-A38A-942D790A067A}</Project>
+      <Name>igl_glfw</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ViewerControl\igl_opengl.vcxproj">
+      <Project>{11A30B67-D04D-35A0-BC8F-92628F2BC967}</Project>
+      <Name>igl_opengl</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\main.vcxproj">
+      <Project>{5702E351-5F60-3758-B43D-B3A7B3835D8C}</Project>
+      <Name>main</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

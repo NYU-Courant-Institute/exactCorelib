@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{11A30B67-D04D-35A0-BC8F-92628F2BC967}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>igl_opengl</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" />
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\ViewerControl\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/ViewerControl/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/main -BC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build --check-stamp-file C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/ViewerControl/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.24\Modules\FetchContent.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FetchContent\CMakeLists.cmake.in;C:\Program Files\CMake\share\cmake-3.24\Modules\FindGit.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\GNUInstallDirs.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\igl\modules\glfw.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\igl\modules\opengl.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\recipes\external\glad.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\recipes\external\glfw.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\libigl\libigl.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3Config.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3ConfigVersion.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ViewerControl\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/ViewerControl/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/main -BC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build --check-stamp-file C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/ViewerControl/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.24\Modules\FetchContent.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FetchContent\CMakeLists.cmake.in;C:\Program Files\CMake\share\cmake-3.24\Modules\FindGit.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\GNUInstallDirs.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\igl\modules\glfw.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\igl\modules\opengl.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\recipes\external\glad.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\recipes\external\glfw.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\libigl\libigl.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3Config.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3ConfigVersion.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ViewerControl\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/ViewerControl/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/main -BC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build --check-stamp-file C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/ViewerControl/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.24\Modules\FetchContent.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FetchContent\CMakeLists.cmake.in;C:\Program Files\CMake\share\cmake-3.24\Modules\FindGit.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\GNUInstallDirs.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\igl\modules\glfw.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\igl\modules\opengl.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\recipes\external\glad.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\recipes\external\glfw.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\libigl\libigl.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3Config.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3ConfigVersion.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ViewerControl\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/ViewerControl/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/main -BC:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build --check-stamp-file C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/ViewerControl/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.24\Modules\FetchContent.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FetchContent\CMakeLists.cmake.in;C:\Program Files\CMake\share\cmake-3.24\Modules\FindGit.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.24\Modules\GNUInstallDirs.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\igl\modules\glfw.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\igl\modules\opengl.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\recipes\external\glad.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\cmake\recipes\external\glfw.cmake;C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\libigl\libigl.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3Config.cmake;C:\Users\zhaoq\source\repos\eigen\out\build\x64-Debug\Eigen3ConfigVersion.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ViewerControl\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\MeshGL.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\ViewerCore.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\ViewerData.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\bind_vertex_attrib_array.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\create_index_vbo.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\create_mesh_vbo.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\create_shader_program.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\create_vector_vbo.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\destroy_shader_program.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\gl.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\gl_type_size.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\init_render_to_texture.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\load_shader.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\print_program_info_log.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\print_shader_info_log.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\read_pixels.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\report_gl_error.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\uniform_type_to_string.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\verasansmono_compressed.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\vertex_array.h">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\MeshGL.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\ViewerCore.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\ViewerData.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\bind_vertex_attrib_array.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\create_index_vbo.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\create_mesh_vbo.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\create_shader_program.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\create_vector_vbo.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\destroy_shader_program.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\gl_type_size.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\init_render_to_texture.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\load_shader.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\print_program_info_log.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\print_shader_info_log.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\read_pixels.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\report_gl_error.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\uniform_type_to_string.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\verasansmono_compressed.cpp">
+    </None>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\libigl-src\include\igl\opengl\vertex_array.cpp">
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\ZERO_CHECK.vcxproj">
+      <Project>{C326051E-2322-31A0-9980-20F950854E7B}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

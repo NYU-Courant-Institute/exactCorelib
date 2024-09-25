@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/glad-subbuild/CMakeFiles/glad-populate"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/glad-subbuild/CMakeFiles/b9415eb706395ff1fa8c654f98a60d3b/glad-populate.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/glad-subbuild/CMakeFiles/8a2427c20489e1eb722c22366b10461c/glad-populate-complete.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/glad-subbuild/CMakeFiles/7256fad2ade6003029ee48cf608e89b0/glad-populate-build.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/glad-subbuild/CMakeFiles/7256fad2ade6003029ee48cf608e89b0/glad-populate-configure.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/glad-subbuild/CMakeFiles/7256fad2ade6003029ee48cf608e89b0/glad-populate-download.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/glad-subbuild/CMakeFiles/7256fad2ade6003029ee48cf608e89b0/glad-populate-install.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/glad-subbuild/CMakeFiles/7256fad2ade6003029ee48cf608e89b0/glad-populate-mkdir.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/glad-subbuild/CMakeFiles/7256fad2ade6003029ee48cf608e89b0/glad-populate-patch.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/glad-subbuild/CMakeFiles/7256fad2ade6003029ee48cf608e89b0/glad-populate-test.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/glad-subbuild/CMakeFiles/7256fad2ade6003029ee48cf608e89b0/glad-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"glad-populate"
+		],
+		"name" : "glad-populate"
+	}
+}

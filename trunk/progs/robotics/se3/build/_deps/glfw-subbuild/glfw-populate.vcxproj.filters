@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glfw-subbuild\CMakeFiles\a80416a5d47b568393f27e00180f1680\glfw-populate-mkdir.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glfw-subbuild\CMakeFiles\a80416a5d47b568393f27e00180f1680\glfw-populate-download.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glfw-subbuild\CMakeFiles\a80416a5d47b568393f27e00180f1680\glfw-populate-update.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glfw-subbuild\CMakeFiles\a80416a5d47b568393f27e00180f1680\glfw-populate-patch.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glfw-subbuild\CMakeFiles\a80416a5d47b568393f27e00180f1680\glfw-populate-configure.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glfw-subbuild\CMakeFiles\a80416a5d47b568393f27e00180f1680\glfw-populate-build.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glfw-subbuild\CMakeFiles\a80416a5d47b568393f27e00180f1680\glfw-populate-install.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glfw-subbuild\CMakeFiles\a80416a5d47b568393f27e00180f1680\glfw-populate-test.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glfw-subbuild\CMakeFiles\a27b2888fae8278d8cdbc211478f073a\glfw-populate-complete.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glfw-subbuild\CMakeFiles\e4d37601110a46157b75f1d45a84fbdf\glfw-populate.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glfw-subbuild\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glfw-subbuild\CMakeFiles\glfw-populate" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{D8C5B916-FFA5-375F-871A-A5A4B5067DE6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ALL_BUILD", "ALL_BUILD.vcxproj", "{61DED307-E0F6-30FF-9290-1E0ECDC2B65D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{09DEF692-C441-365C-99F8-0C2477946D94} = {09DEF692-C441-365C-99F8-0C2477946D94}
+		{5A51ACDB-AD3F-3EBB-A4D9-33B0F2461874} = {5A51ACDB-AD3F-3EBB-A4D9-33B0F2461874}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZERO_CHECK", "ZERO_CHECK.vcxproj", "{09DEF692-C441-365C-99F8-0C2477946D94}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libigl-populate", "libigl-populate.vcxproj", "{5A51ACDB-AD3F-3EBB-A4D9-33B0F2461874}"
+	ProjectSection(ProjectDependencies) = postProject
+		{09DEF692-C441-365C-99F8-0C2477946D94} = {09DEF692-C441-365C-99F8-0C2477946D94}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{61DED307-E0F6-30FF-9290-1E0ECDC2B65D}.Debug|x64.ActiveCfg = Debug|x64
+		{09DEF692-C441-365C-99F8-0C2477946D94}.Debug|x64.ActiveCfg = Debug|x64
+		{09DEF692-C441-365C-99F8-0C2477946D94}.Debug|x64.Build.0 = Debug|x64
+		{5A51ACDB-AD3F-3EBB-A4D9-33B0F2461874}.Debug|x64.ActiveCfg = Debug|x64
+		{5A51ACDB-AD3F-3EBB-A4D9-33B0F2461874}.Debug|x64.Build.0 = Debug|x64
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {15AF8363-1BFB-3259-9DA3-732CC8F36A7E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

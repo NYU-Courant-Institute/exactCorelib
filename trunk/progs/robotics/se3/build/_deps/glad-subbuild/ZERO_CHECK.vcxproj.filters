@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\zhaoq\Desktop\Study\GitHub\6DOF_Robot\build\_deps\glad-subbuild\CMakeFiles\b9415eb706395ff1fa8c654f98a60d3b\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{984B58BE-152A-3BDB-A187-7EA75F1EB325}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

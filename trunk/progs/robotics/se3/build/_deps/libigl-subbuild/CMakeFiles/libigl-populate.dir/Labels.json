@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/libigl-subbuild/CMakeFiles/libigl-populate"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/libigl-subbuild/CMakeFiles/986d449fad2c66545f55049f9cd130cd/libigl-populate.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/libigl-subbuild/CMakeFiles/b8da8c5da7c3a96de83d365dbd2b611e/libigl-populate-complete.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/libigl-subbuild/CMakeFiles/14d4e061fde259e48c03c0103d45a6d1/libigl-populate-build.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/libigl-subbuild/CMakeFiles/14d4e061fde259e48c03c0103d45a6d1/libigl-populate-configure.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/libigl-subbuild/CMakeFiles/14d4e061fde259e48c03c0103d45a6d1/libigl-populate-download.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/libigl-subbuild/CMakeFiles/14d4e061fde259e48c03c0103d45a6d1/libigl-populate-install.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/libigl-subbuild/CMakeFiles/14d4e061fde259e48c03c0103d45a6d1/libigl-populate-mkdir.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/libigl-subbuild/CMakeFiles/14d4e061fde259e48c03c0103d45a6d1/libigl-populate-patch.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/libigl-subbuild/CMakeFiles/14d4e061fde259e48c03c0103d45a6d1/libigl-populate-test.rule"
+		},
+		{
+			"file" : "C:/Users/zhaoq/Desktop/Study/GitHub/6DOF_Robot/build/_deps/libigl-subbuild/CMakeFiles/14d4e061fde259e48c03c0103d45a6d1/libigl-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"libigl-populate"
+		],
+		"name" : "libigl-populate"
+	}
+}
