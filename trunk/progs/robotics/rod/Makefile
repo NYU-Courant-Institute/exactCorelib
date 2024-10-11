@@ -396,7 +396,11 @@ main: $(OBJ_FILES) main.o
 # Processing environment
 #=================================================
 f=input11
+ 
+ # .ext files are in the extended syntax
+processExt:
 
+ # .txt files are in the basic syntax
 process:
 	cp inputs/$(f).txt output-tmp.txt
 	python input_interpreter.py
