@@ -8,7 +8,9 @@
 ###################################################
 
 # TARGETS:
-TARGETS=interval polynomial eval evalF evalR evalT2min evalT2 evalT3 evalT4 evalL3 evalL3cheap evalL4 evalL4cheap t all table1 table2 table3
+TARGETS=interval polynomial eval evalF evalR evalT2min \
+	evalT2 evalT3 evalT4 evalL3 evalL3cheap evalL4 evalL4cheap \
+	t all table1 table2 table3
 
 # main file
 p=eval
@@ -61,7 +63,8 @@ r run: ${p}
 	${p}${exe} ${def_file}
 
 ############################### general Eval with choice
-eval:   eval.h eval.cpp evalT2.h evalT3.h evalT4.h evalL3.h interval.h polynomial.h base.h
+eval:   eval.h eval.cpp evalT2.h evalT3.h evalT4.h evalL3.h \
+			interval.h polynomial.h base.h
 	make p=eval
 
 t-eval: eval
