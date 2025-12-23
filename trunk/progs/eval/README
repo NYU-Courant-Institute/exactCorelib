@@ -1,7 +1,6 @@
 README for eval folder
 
-May2021: The subfolder
-			"TaylorLagrange"
+1. May2021: Subfolder "TaylorLagrange"
 	contains the code and data used in our ISSAC 2021 paper,
 
 		"Novel Range Functions via Taylor Expansions and Recursive
@@ -12,14 +11,23 @@ May2021: The subfolder
 	You should be able to reproduce our results using
 	the Makefile targets.
 
-May2023:  The subfolder
-			"hermiteLevel"
+2. May2023:  Subfolder "hermiteLevel"
 	contains the code and data used in our 2023 CASC paper,
 
 		"Range Functions of Any Convergence Order and
 					their Amortized Complexity Analysis"
-		by
+			by
 		Kai Hormann, Chee Yap and Ya Shi Zhang
+
+	You should be able to reproduce our results using
+	the Makefile targets.
+
+3. Dec2025:  Subfolder "bivariateRange"
+	contains the code and data used in our 2025 GMP submission,
+
+		"Bivariate range functions with superior convergence order"
+			by
+		Thomas Chen, Kai Hormann, Chee Yap and Bingwei Zhang
 
 	You should be able to reproduce our results using
 	the Makefile targets.

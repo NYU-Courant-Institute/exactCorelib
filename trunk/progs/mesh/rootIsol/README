@@ -2,7 +2,7 @@ README for progs/mesh/rootIsol
 
 This is adapted from Miranda, focusing only on root isolation.
 
-To by fixed:
+To be fixed:
     -- Display is distorted if the input box is non square
     -- Need GUI type feedback on the location of roots/ambiguous regions
     -- Reading of polynomials from files only works if directly in current

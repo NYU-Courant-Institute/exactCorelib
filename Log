@@ -1,5 +1,26 @@
 LOG file
 
+dec2025: I had this error committing svn/exact/collab:
+	==================
+	> cd ~/svn/exact; svn commit collab
+		svn: E170013: Commit failed (details follow):
+		svn: E170013: Unable to connect to a repository at URL
+			'https://exact@subversive.cims.nyu.edu/exact/collab/robotics'
+		svn: E175013: Access to '/exact/collab/robotics' forbidden
+		make: *** [Makefile:153: commit-surf8] Error 1
+	==================
+	So tried to commit corelib2 (by adding this to the Log file
+		and then do "svn commit corelib2").  Same error:
+	==================
+		svn: E170013: Unable to connect to a repository at URL
+			'https://exact@subversive.cims.nyu.edu/exact/corelib2'
+		svn: E175013: Access to '/exact/corelib2' forbidden
+		Sat Dec 13 16:19:10 KST 2025
+	==================
+	Note: decided to contact Comment.  It may be related to
+	the BigFix that that ask all of us to install for the university
+	wide security measures.  I have installed this already.
+
 7aug2024: In Korea, thoughts of reviving CoreLib for IVP work!
 	(1) Tried to install core library on my Cygwin on Windows Surface8
 	-- In COREHOME:
