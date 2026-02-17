@@ -1,0 +1,56 @@
+Notes
+
+Oct25:  Dear Bw,
+
+Thanks for your nice Makefile.
+I really like your target "run-%" which I did not know about!
+
+I want to change a few things.  The main thing is that
+I want to make the number of input variables
+to be INDEPENDENT of the dimension n.  Here are the changes:
+
+(1) If n=2, then
+	var ?= x, y
+	ff  ?= 2*x-2*x*y,  -y+x*y
+
+	(i.e., var and ff are n-vectors, comma separated)
+
+	NOTE: I want the "comma" separated list because
+	it is easier to understand for humans.
+	I note that you later convert a comma-separated
+	list into a "space" separated list. 
+	
+	There is probably a Makefile function to do this directly
+	(just specify that it is "comma-separated").
+
+(2) I want initial box to be written in the centered form:
+	Instead of 
+			lo1 ?= 0.9
+			hi1 ?= 1.1
+			lo2 ?= 2.9
+			hi2 ?= 3.1
+	I want
+		cen ?= 1.0, 3.0
+		wid ?= 0.1, 0.1
+
+(3) Similarly, I want outputs to be in centered form.
+		Also, wid can be a single number, say 0.1.
+		In that case it is an n-vector of all 0.1.
+
+(4) Each of the inputfiles in examples should
+	be given meaningful names!  Call them
+		egVolterra.mk
+		egAlso, every inputfile
+	must have some comments!!! 
+
+	I have started doing this for input1.mk,
+	which I renamed to egVolterra.mk.
+	Please look at the restructure.
+
+	The ONLY requiree information we want these files
+		are the INPUT/OUTPUT information for radicalIVP!!!
+		EVERYTHING ELSE should be optional.
+
+
+
+

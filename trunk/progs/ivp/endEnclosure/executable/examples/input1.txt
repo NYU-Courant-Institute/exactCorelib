@@ -1,0 +1,19 @@
+# file: input1.txt
+#
+# Example 1:
+#	This runs the Volterra system
+
+# 
+iflag=3
+method=0
+stepB=2
+stepA=0
+n=2
+vars="x,y"
+fns="2*x-2*x*y,-y+x*y" 
+eps=1.0
+order=5
+T=1.0
+debug=0
+box0="0.9,1.1;2.9,3.1"
+
