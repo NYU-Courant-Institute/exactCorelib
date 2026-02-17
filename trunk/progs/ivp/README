@@ -1,0 +1,20 @@
+README file for Corelib/progs/ivp
+
+This folder contains our IVP project.
+There are 2 subfolders:
+	1) endEnclosure:	this software is described in our paper
+			"A Novel Approach to the Initial Value Problem
+					with a Complete Validated Algorithm",
+   			http://arxiv.org/abs/2502.00503.
+			Jan 2025 (revised Jan 2026).
+	2) endCover:	This software is described in our
+			"End Cover for Initial Value Problem:
+				Complete Validated Algorithms with Complexity Analysis",
+			http://arxiv.org/abs/2602.00162.
+			Feb 2026.
+
+Please contact us if you for any questions
+or help in using this software!
+
+-- Bingwei Zhang and Chee Yap
+Feb 2026
