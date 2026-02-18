@@ -1,4 +1,128 @@
-﻿#include <iostream>
+﻿/* file: Refine-new.h
+ *
+ *      Purpose:
+ *              This file implements the refinement phase ("Refine") of our
+ *              staged enclosure algorithm.  Given a Stage object S containing
+ *              a time grid and enclosures (end/full boxes), we iteratively
+ *              tighten the enclosures until the final end-enclosure width
+ *              satisfies a target tolerance veps.
+ *
+ *              Refinement is performed stage-by-stage and, within each stage,
+ *              potentially mini-step-by-mini-step.  Two main mechanisms are used:
+ *
+ *                      (1) Bisect:
+ *                              Subdivide each stage interval into finer mini-steps
+ *                              (doubling the number of segments by increasing ell)
+ *                              and recompute/validate enclosures on subsegments.
+ *
+ *                      (2) EulerTube (Subroutine7):
+ *                              Propagate a point in transformed coordinates using
+ *                              an Euler-like update and derive tighter tubes/boxes
+ *                              using growth bounds (mu1/mu2) and transform bounds.
+ *
+ *      Key routines:
+ *
+ *              Bisect(S, idx, dim, f, stepBtype, degree, debuglevel):
+ *                      Refines stage idx by splitting each existing mini-step
+ *                      into two parts (ell := ell + 1).  For each segment it:
+ *                              - recomputes a local full-enclosure approximation
+ *                                using CAPD Taylor coefficients,
+ *                              - intersects with stored bfF/bfE to enforce
+ *                                consistency,
+ *                              - updates growth bounds mu1 and carries mu2.
+ *                      Finally, updates S.E[idx] and S.F[idx] by intersection with
+ *                      the accumulated hull IF and the refined end box.
+ *
+ *              Subroutine7(S, idx, dim, f, SVar, debug):
+ *                      "Euler tube" refinement using a nonlinear transform pi3:
+ *                              - build p3, inp3, and transformed vector field gg
+ *                                from S.G[idx].Xform
+ *                              - propagate q in transformed space (Euler step)
+ *                              - compute bounds r1/r2 from mu1/mu2 and delta/delta1
+ *                              - transform back and intersect to tighten bfF/bfE
+ *                      Updates S.E[idx] and S.F[idx] with the tightened boxes.
+ *
+ *              Subroutine7notransform(...):
+ *                      Same pattern as Subroutine7 but with identity transform:
+ *                              p3 = id, inp3 = id, gg = f.
+ *
+ *              Refinenew(...):
+ *                      Main refinement loop until wmax(S.E.back()) <= veps.
+ *                      For each iteration:
+ *                              - shrink the initial box S.E[0] (and related fields)
+ *                              - for each stage i = 1..end:
+ *                                      let h = (Ti - T(i-1)) / 2^ell
+ *                                      if h > heuler:
+ *                                              Bisect(...)
+ *                                              recompute heuler based on transform
+ *                                      else:
+ *                                              Subroutine7(...)
+ *                                              halve delta and update heuler
+ *
+ *              Variants:
+ *                      Refinenewsimple:
+ *                              Uses Subroutine7notransform only (no transform).
+ *
+ *                      RefinenewsimpleT:
+ *                              Always uses Subroutine7 (transform), no Bisect gate.
+ *
+ *                      Refinenewnotransform:
+ *                              Uses Bisect gate but uses no transform in tube step.
+ *
+ *                      Refinenewnoeuler:
+ *                              Always Bisect (no Euler tube gate).
+ *
+ *                      Refinenewcp:
+ *                              Like Refinenew but shrinks initial box towards a
+ *                              user-specified target center (component-wise).
+ *
+ *      Inputs (typical):
+ *
+ *              S:
+ *                      Stage object updated in-place. Must already contain:
+ *                              - time grid S.T
+ *                              - initial enclosures S.E / S.F
+ *                              - per-stage mini-step records S.G[i]
+ *
+ *              SVar:
+ *                      Variable names used to build CAPD IMap transforms p3/inp3.
+ *
+ *              dim:
+ *                      ODE dimension (matches interval box dimension).
+ *
+ *              f:
+ *                      CAPD IMap for the original ODE vector field.
+ *
+ *              stepBtype, degree:
+ *                      Select and parameterize stepB methods used in Bisect.
+ *
+ *              veps:
+ *                      Target tolerance for the final end-enclosure (wmax).
+ *
+ *              debug / debuglevel:
+ *                      If enabled, prints diagnostics when intersections become
+ *                      empty or when enclosure consistency checks fail.
+ *
+ *      Output:
+ *              Refine routines update S in-place:
+ *                      - S.E[i] and S.F[i] are tightened by intersections/hulls
+ *                      - S.G[i] is updated (ell, bfE/bfF, mu1, mu2, delta, heuler)
+ *              The loop stops once wmax(S.E.back()) <= veps.
+ *
+ *      Dependencies / references:
+ *              - CAPD: capd/capdlib.h
+ *              - Transform module: Transform-new.h
+ *              - Shared utilities (defined elsewhere):
+ *                      Box, IntersectB, center, wmax, computeJacobian, computemu,
+ *                      TransformBound, eulerstep, and stepB variants.
+ *
+
+ *
+ *      Author: <Bingwei Zhang>  (<Feb 2026>)
+ */
+
+
+#include <iostream>
 #include <stdexcept>
 #include "capd/capdlib.h"
 #include "Transform-new.h"

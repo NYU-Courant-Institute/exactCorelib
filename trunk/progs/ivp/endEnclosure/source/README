@@ -1,3 +1,44 @@
-README for source
+README file
 
-...how to compile...
+
+**radicalIVP_v0**
+	Version 0 of Rigorous ODE Solver with Enclosure Guarantees
+	August 2025
+
+This folder contains the source files for
+compiling the radicalIVP software described in the paper 
+
+**A Novel Approach to the Initial Value Problem with
+	a Complete Validated Algorithm** 
+by
+	_Chee Yap and Bingwei Zhang_
+
+
+To compile, just type 
+
+		> make compile
+
+ solves the following IVP problem
+
+INPUT:
+------
+- An initial value problem (IVP) defined by:
+    n-dimensional ODE system: dx/dt = f(x)
+- Initial hyperrectangle B₀ in RR^n
+- Time horizon T>0
+
+OUTPUT:
+-------
+1. Validated subset ulB₀ (a subset of B₀)
+2. End enclosure B₁ of IVP(ulB₀,T), containing all solutions at time T.
+
+
+Compiler Dependencies
+------------
+- g++ compiler
+- CAPD library
+- SymEngine
+- MPFR, GMP, MPC libraries
+
+
+

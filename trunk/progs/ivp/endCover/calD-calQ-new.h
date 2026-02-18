@@ -1,4 +1,89 @@
-﻿#pragma once
+﻿/* file: calD-calQ-new.h
+ *
+ *      Purpose:
+ *              Defines the core data structures and utility routines for the
+ *              staged enclosure / refinement pipeline built on CAPD interval
+ *              arithmetic (boxes, jets, Jacobians, etc.).
+ *
+ *      Main data structures:
+ *
+ *              ReturnType:
+ *                      Per-stage transformation record:
+ *                      - symbolic forms of transforms and inverses (p2/p3, inp2/inp3)
+ *                      - CAPD maps for p3 and its inverse (fp3, finp3)
+ *                      - transformed vector field (gg as strings, gg1 as IMap)
+ *                      - enclosures before/after transforms (B3, B4)
+ *                      - interval Jacobian matrix of the transformed ODE (J)
+ *                      - mu2 container (log-norm/growth-related values; see ministeps)
+ *
+ *              ministeps:
+ *                      Mini-step bookkeeping inside a stage:
+ *                      - Xform: transformation info (ReturnType)
+ *                      - mu1: log-norm list in the original space (x-space)
+ *                      - delta: user-specified delta (typically eps/10)
+ *                      - heuler: coarse Euler step size used in the stage
+ *                      - ell: refinement level
+ *                      - bfE / bfF: end-/full-enclosure sequences for the mini-steps
+ *
+ *              Stage:
+ *                      The main container for a staged run:
+ *                      - T: time grid [t0, t1, ...]
+ *                      - E: end-enclosure sequence (boxes)
+ *                      - F: full-enclosure sequence (boxes)
+ *                      - G: per-time-step mini-step records (ministeps)
+ *
+ *              StageBound:
+ *                      Boundary/cover outputs:
+ *                      - E0: list of input sub-boxes (initial boxes processed)
+ *                      - E1: list of resulting boxes (typically at final time)
+ *                      - E : overall hull box (component-wise hull of E1)
+ *
+ *              StageE:
+ *                      Convenience wrapper: a Stage together with a single box E.
+ *
+ *              ReturnType2:
+ *                      Lightweight bundle of a Stage with its tolerance veps.
+ *
+ *      Utility routines:
+ *
+ *              Convert_to_IMap(vars, funs):
+ *                      Builds a CAPD IMap definition string:
+ *                          "var:x,y; fun:f1,f2; "
+ *
+ *              Box(B1, B2):
+ *                      Component-wise hull of two interval boxes.
+ *
+ *              IntersectB(B1, B2):
+ *                      Component-wise intersection of two boxes.
+ *                      NOTE: current behavior prints "intersecterror" and returns B2
+ *                      if any coordinate intersects empty (lower > upper).
+ *
+ *              computeJacobian(f, B):
+ *                      Evaluates the interval Jacobian J_f(B) via CAPD jets.
+ *
+ *              wmax(B):
+ *                      Returns max coordinate width among intervals in B.
+ *
+ *              center(B):
+ *                      Returns the coordinate-wise midpoints as std::vector<double>.
+ *
+ *              computemu(J):
+ *                      Computes a conservative scalar surrogate for a growth/log-norm
+ *                      bound from a 2×2 interval block of J.
+ *
+ *      Dependencies:
+ *              - CAPD: capd/capdlib.h
+ *
+ *      Notes / cautions:
+ *              - Many routines assume consistent dimensions and do not check mismatches.
+ *              - computemu assumes a specific 2×2 indexing pattern; it must be updated
+ *                if used outside the intended block/dimension.
+ *
+ *      Author: Bingwei Zhang and Chee Yap  (Feb 2026)
+ */
+
+
+#pragma once
 
 #include <iostream>
 #include "capd/capdlib.h"

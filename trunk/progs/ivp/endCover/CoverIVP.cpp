@@ -1,4 +1,108 @@
-﻿#include <iostream>
+﻿/* file: CoverIVP.cpp
+ *
+ *      Usage:
+ *              > CoverIVP.exe iflag mode method stepB stepA n \
+ *                    <var1 ... varn> <fun1 ... funn> eps order T debug \
+ *                    <lo1 hi1> ... <lon hin>
+ *
+ *      This program computes rigorous enclosures (interval boxes) for an
+ *      initial value problem (IVP) defined by an ODE system:
+ *
+ *              x' = f(x),   x(0) ∈ B0
+ *
+ *      where B0 is an n-dimensional interval box.  The program advances
+ *      the enclosure up to final time T using CAPD-based validated integration
+ *      and additional refinement / subdivision strategies.
+ *
+ *      INPUT FORMAT (command line):
+ *
+ *              iflag   : output level (progressive; larger includes smaller)
+ *              mode    : 1 -> boundary-based algorithms (2D/3D)
+ *                        0 -> EndCover-based subdivision (cover at time T)
+ *              method  : refinement strategy selector (0..6)
+ *              stepB   : stepper type for B-space propagation (passed to Extendnew/stepB*)
+ *              stepA   : stepper type for auxiliary computations (passed through Extendnew)
+ *              n       : system dimension
+ *
+ *              <var1 ... varn>   : variable names (strings)
+ *              <fun1 ... funn>   : RHS expressions f_i (strings)
+ *
+ *              eps     : target tolerance (veps)
+ *              order   : Taylor/Cn degree used by CAPD solvers
+ *              T       : final time horizon
+ *              debug   : debug level (0/1)
+ *
+ *              <lo_i hi_i>       : 2*n numbers specifying initial box B0
+ *
+ *      ALTERNATE INPUT:
+ *
+ *              If iflag == -1, parameters are read from "input1.txt" with format:
+ *                  method stepB stepA n
+ *                  <var1 ... varn>
+ *                  <fun1 ... funn>
+ *                  eps order T debug
+ *                  <lo1 hi1> ... <lon hin>
+ *
+ *      OUTPUT (controlled by iflag):
+ *
+ *              iflag >= 0:
+ *                      prints running time in milliseconds.
+ *
+ *              iflag >= 1:
+ *                      prints the axis-aligned hull (minimal bounding box)
+ *                      of all boxes at time T.
+ *
+ *              iflag >= 2:
+ *                      prints number of generated initial sub-boxes (E0Boxes).
+ *
+ *              iflag >= 3:
+ *                      writes:
+ *                          "E0.txt" : all initial boxes used for propagation
+ *                          "E1.txt" : the resulting cover at time T
+ *
+ *              iflag >= 4:
+ *                      additionally writes plotting-friendly files:
+ *                          "E_0.txt" : E0 plus extra corner boxes (2D)
+ *                          "E_1.txt" : E1 at time T plus intermediate snapshots
+ *                                     at times {0.1, 0.4, 0.7} (if <= T)
+ *
+
+ *
+ *      IMPORTANT NOTES:
+ *
+ *              - Expressions in <fun_i> are expanded via expand_expression()
+ *                before being converted into a CAPD IMap.
+ *
+ *              - The refinement method is selected by 'method' and dispatched to:
+ *                    Refinenewcp / Refinenewsimple / RefinenewsimpleT /
+ *                    Refinenewnotransform / Refinenewnoeuler /
+ *                    Refinenewnoeulerplus / (none)
+ *
+ *              - Boundary algorithms include guards against non-finite or
+ *                excessively large interval bounds to prevent downstream failures.
+ *
+ *      KNOWN ISSUES / TODO:
+ *
+ *              - Some interactive/debug printing and legacy code blocks remain
+ *                (guarded by comments / #if 0) and can be cleaned up.
+ *
+ *              - Several loops contain manual safeguards to avoid stagnation
+ *                when interval endpoints do not advance due to floating precision.
+ *
+ *              - Buffer sizes and max split depths (e.g., EndCover maxSplits,
+ *                TwoDimEncAlgo maxSplitDepth) are fixed constants and may need
+ *                tuning for large problems.
+ *
+ *      REFERENCES:
+ *
+ *              CAPD library: validated ODE integration and interval arithmetic.
+ *
+ *      Author: <Bingwei Zhang and Chee Yap>
+ *      Date:   <Feb 2026>
+ */
+
+
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <regex>

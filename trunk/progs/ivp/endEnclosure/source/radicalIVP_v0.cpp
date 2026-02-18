@@ -1,4 +1,66 @@
-﻿#include <iostream>
+﻿/* file: StageDriver.cpp
+ *
+ *      Usage:
+ *              > StageDriver iflag method stepB stepA n
+ *                         var1 ... varn
+ *                         fun1 ... funn
+ *                         eps order T debug
+ *                         lo1 hi1 ... lon hin
+ *
+ *      This program drives a staged enclosure / refinement pipeline
+ *      for an n-dimensional ODE system using CAPD interval arithmetic.
+ *
+ *      The user specifies:
+ *              - n variables (var1..varn)
+ *              - n RHS functions (fun1..funn), one for each variable
+ *              - an initial box B = [lo1,hi1] × ... × [lon,hin]
+ *              - tolerance eps, Taylor order, and a final time horizon T
+ *              - algorithmic controls (method, stepB, stepA, debug)
+ *              - output verbosity / interactive mode (iflag)
+ *
+ *      Internally, we build an interval vector field F from (vars, funs),
+ *      compute an interval Jacobian at the initial box, then run:
+ *
+ *              Extendnew(...)     // forward extension to create new stage(s)
+ *              Refinenew*(...)    // refinement variant selected by method
+ *
+ *      The computation proceeds from t=0 to t=T, possibly using chunked steps
+ *      (default: step size 1 unless the remaining time is < 1).
+ *
+ *      Output behavior is controlled by iflag:
+ *              iflag >= 1 : print initial/end enclosure (center & width)
+ *              iflag >= 2 : print number of stages and estimated mini-step boxes
+ *              iflag >= 3 : print per-stage time, center, and width
+ *              iflag == 4 : enter an interactive shell to query Stage S
+ *              iflag == 8/9 : print formatted per-stage / per-ministep summaries
+ *
+ *      Interactive shell:
+ *              - type "exit" to quit
+ *              - supports queries like: S.T, S.E, S.F, mu1, mu2
+ *                (some queries will prompt for indices; negative => print all)
+ *
+ *      Notes / conventions:
+ *              - Functions are preprocessed by expand_expression(...)
+ *              - Vector field is constructed via Convert_to_IMap(...)
+ *              - CAPD objects used include IMap, IVector, IMatrix, intervals
+ *
+ *      Known issues / cautions (as currently written):
+ *              - Argument parsing expects a strict order; missing parameters
+ *                fall back to a hard-coded default example (2D system).
+ *              - In the mu1/mu2 query branches, some index handling appears
+ *                inconsistent (e.g., using j_index when j_index < 0, or
+ *                using S.G[index] instead of S.G[i_index] in one prompt).
+ *                (These are logic bugs in the interactive printing code only.)
+ *
+ *      References / dependencies:
+ *              - CAPD library: capd/capdlib.h
+ *              - Project headers: Extend-new.h, EndEnc.h
+ *
+ *      Author: <Bingwei Zhang and Chee Yap>  (<Feb 2026>)
+ */
+
+
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <regex>

@@ -1,4 +1,98 @@
-﻿#include <iostream>
+﻿/* file: Extend-new.cpp
+ *
+ *      Purpose:
+ *              This file implements the "Extend" step for our staged
+ *              enclosure/refinement algorithm based on CAPD interval
+ *              arithmetic.
+ *
+ *              Given the current stage (time t0, end-enclosure E0),
+ *              we compute:
+ *                      - a forward full-enclosure F1 over a time increment h
+ *                        using stepA / stepA0,
+ *                      - an end-enclosure E1 using one of several stepB variants,
+ *                      - a log-norm / growth bound mu (stored in S.G[m].mu1),
+ *                      - bookkeeping data for mini-step records inside Stage S.
+ *
+ *      Main routines:
+ *
+ *              Extendnew(...):
+ *                      Extends the stage by one step, updating:
+ *                              S.T  (append t0 + h)
+ *                              S.F  (append full-enclosure B1)
+ *                              S.E  (append end-enclosure E1)
+ *                              S.G  (append a new ministeps record)
+ *
+ *                      Options:
+ *                              stepAtype:
+ *                                      0 -> stepA(F, B0, H, veps)
+ *                                      1 -> stepA0(F, B0, H, veps)
+ *
+ *                              stepBtype:
+ *                                      0 -> stepBcrlohner(...)
+ *                                      1 -> stepBcrlohnerwithmu(...)
+ *                                      2 -> directmethodwithmu(...)
+ *                                      3 -> puredirectmethod(...)
+ *
+ *                      Debug:
+ *                              If debuglevel == 1, the code checks containment
+ *                              relations between enclosures and prints
+ *                              diagnostic messages when violated.
+ *
+ *              Extendnewnoaffine(...):
+ *                      A pure extend method without transformation.
+ *
+ *      Inputs (common parameters):
+ *
+ *              SVar, SFun:
+ *                      Variable names and RHS strings for the ODE system.
+ *
+ *              F:
+ *                      CAPD IMap representing the ODE vector field.
+ *
+ *              S:
+ *                      Stage object (passed by reference) containing time and
+ *                      enclosure history; this function appends a new stage.
+ *
+ *              veps:
+ *                      Target tolerance (used by stepA/stepA0).
+ *
+ *              delta:
+ *                      Input delta (currently stored and/or used by downstream
+ *                      refinement; not always consumed directly here).
+ *
+ *              degree:
+ *                      Taylor degree / order used by stepB methods.
+ *
+ *              H:
+ *                      Maximum time horizon for stepA; stepA may return a
+ *                      smaller h <= H if needed.
+ *
+ *              stepBtype, stepAtype:
+ *                      Select implementations for stepB and stepA.
+ *
+ *              debuglevel:
+ *                      Enables containment diagnostics when set to 1.
+ *
+ *      Output:
+ *              The stage object S is updated in-place by appending:
+ *                      - new time entry t0 + h
+ *                      - a new full-enclosure B1 in S.F
+ *                      - a new end-enclosure E1 in S.E
+ *                      - mini-step bookkeeping in S.G[m]
+ *
+ *      Dependencies / references:
+ *              - CAPD: capd/capdlib.h
+ *              - Refinement interface: Refine-new.h
+ *              - Utility routines from shared modules:
+ *                      computeJacobian(...), computemu(...),
+ *                      Transformnoaffine(...), TransformBound(...), eulerstep(...)
+ *
+ *       
+ *      Author: <Bingwei Zhang and Chee Yap>  (<Feb 2026>)
+ */
+
+
+#include <iostream>
 #include "capd/capdlib.h"
 #include "Refine-new.h"
 using namespace capd;
@@ -71,7 +165,7 @@ void Extendnew(
     double mu;
     int nn = B0.dimension();
     IMatrix J = computeJacobian(F, B1);
-    if ( nn= 2) {
+    if ( nn== 2) {
         mu = computemu(J);
       
     }
@@ -264,7 +358,7 @@ void Extendnewnoaffine(
     double mu;
     int nn = B0.dimension();
     IMatrix J = computeJacobian(F, B1);
-    if (nn = 2) {
+    if (nn == 2) {
         mu = computemu(J);
 
     }

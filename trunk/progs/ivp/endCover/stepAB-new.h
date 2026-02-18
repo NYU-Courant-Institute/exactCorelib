@@ -1,4 +1,106 @@
-﻿#include <iostream>
+﻿/* file: stepAB-new.h
+ *
+ *      Purpose:
+ *              This file provides the core building blocks for computing
+ *              enclosures over one time step for an ODE system using CAPD
+ *              interval arithmetic.  It implements:
+ *
+ *                      (A) StepA / StepA0:
+ *                              An admissible full-enclosure constructor.
+ *                              Given an end-enclosure B0, a time horizon H,
+ *                              tolerance eps, and Taylor order k, it returns
+ *                              (h, F1) where 0 < h <= H and F1 is an interval
+ *                              box intended to enclose the flow from B0 over
+ *                              time h (a "full-enclosure candidate").
+ *
+ *                      (B) StepB variants:
+ *                              Methods to compute an end-enclosure E1 at time h
+ *                              from an initial end-enclosure E0, using either:
+ *                              - CAPD C^n (C^r) Lohner type sets, or
+ *                              - CAPD direct (C0HO) methods,
+ *                              optionally tightened by a growth bound mu.
+ *
+ *      Main routines:
+ *
+ *              stepA(f, B0, H, eps, degree=MAX_TAYLOR_ORDER) -> (h, B0_bar)
+ *                      Computes a candidate full-enclosure B0_bar by evaluating
+ *                      the degree-(k-1) Taylor polynomial of the flow over [0,H]
+ *                      and inflating it by [-eps, eps]^n.
+ *
+ *                      Then estimates the k-th derivative bound M over B0_bar
+ *                      and chooses a step size
+ *                              h = (eps / M)^(1/k),
+ *                      halving H repeatedly until h >= H/2 (or H becomes small).
+ *                      Returns (h, B0_bar) with h <= H1.
+ *
+ *              stepA0(f, B0, H, eps, degree=MAX_TAYLOR_ORDER) -> (h, B0_bar)
+ *                      A non-halving variant: constructs B0_bar using H1 directly,
+ *                      computes M over B0_bar, and sets
+ *                              h = min(H1, (eps / M)^(1/k)).
+ *
+ *              stepBcrlohner(f, degree, h, E0) -> E1
+ *                      Uses CAPD ICnOdeSolver + ICnTimeMap with CnRect2Set to
+ *                      compute an end-enclosure after time h.
+ *
+ *              stepBcrlohnerwithmu(f, degree, h, E0, mu) -> E1
+ *                      Computes a CAPD end-enclosure and then tightens it by:
+ *                              - extracting the center P of the result
+ *                              - expanding a symmetric box of radius
+ *                                      L * exp(mu * h)
+ *                                where L = wmax(E0)/2
+ *                              - adding a remainder term derived from CAPD
+ *                                remainder coefficients
+ *                              - intersecting with the original CAPD enclosure.
+ *
+ *              directmethodwithmu(f, degree, h, E0, mu) -> E1
+ *                      Similar to stepBcrlohnerwithmu but uses IOdeSolver +
+ *                      ITimeMap + C0HORect2Set (direct method) and then applies
+ *                      the same mu-based tightening + remainder + intersection.
+ *
+ *              puredirectmethod(f, degree, h, E0) -> E1
+ *                      Direct method end-enclosure without mu-based tightening.
+ *
+ *              pureTaylormethod(f, B0, B1, H, degree) -> approx box
+ *                      A helper routine that combines Taylor coefficients
+ *                      computed at B0 and B1 (used experimentally).
+ *
+ *      Parameters / conventions:
+ *
+ *              degree:
+ *                      Taylor order k used in CAPD solvers and StepA logic.
+ *                      Default is MAX_TAYLOR_ORDER (typically 5).
+ *
+ *              epsilon (eps):
+ *                      Target inflation radius used to build B0_bar and to set h.
+ *
+ *              mu:
+ *                      A scalar growth/log-norm bound used to tighten enclosures
+ *                      via radius expansion L * exp(mu*h) around the center.
+ *
+ *      Output:
+ *              These routines return an interval vector (IVector) enclosure or
+ *              (h, enclosure) as a std::pair<double, IVector>.  They are used by
+ *              higher-level modules (Extend/Refine) to build and tighten Stage S.
+ *
+ *      Dependencies:
+ *              - CAPD library: capd/capdlib.h
+ *              - Shared utilities (defined elsewhere):
+ *                      wmax(...), center(...), IntersectB(...)
+ *              - External global:
+ *                      MAX_TAYLOR_ORDER
+ *
+ *      Notes / cautions:
+ *              - stepA uses an adaptive halving strategy on H; stepA0 does not.
+ *                They may yield different h for the same inputs.
+ *              - The mu-tightening versions rely on remainder coefficients from
+ *                CAPD solvers; correctness depends on consistent use of degree.
+ *              - The type name "vector P = center(result);" assumes an alias;
+ *                in standard C++ it should typically be "std::vector<double>".
+ *
+ *      Author: <Bingwei Zhang and Chee Yap>  (<Feb 2026>)
+ */
+
+#include <iostream>
 #include "capd/capdlib.h"
 #include "calD-calQ-new.h"
 using namespace capd;

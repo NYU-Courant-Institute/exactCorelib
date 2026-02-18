@@ -1,4 +1,119 @@
-﻿#include <iostream>
+﻿/* file: Transform.cpp
+ *
+ *      Purpose:
+ *              This file implements the coordinate transformation machinery
+ *              used by the refinement algorithm to reduce growth bounds
+ *              (log norms) and to derive tighter Euler-tube estimates.
+ *
+ *              Given an ODE vector field f and a current enclosure box B,
+ *              we attempt to construct a sequence of maps:
+ *
+ *                      (1) pi1 : an affine linear map (matrix P) chosen so that
+ *                          one component of f(B) stays away from zero
+ *                          (used to improve monotonicity / sign structure).
+ *
+ *                      (2) pi2 : a pure translation map (shift by C) used to
+ *                          move the transformed box away from the origin.
+ *
+ *                      (3) pi3 : a radical/power map parameterized by d:
+ *                              y_i = 1 / (x_i)^d
+ *                          together with its inverse map.
+ *
+ *              The combined transform defines a new ODE g in transformed
+ *              coordinates, along with transformed boxes (B3, B4) and
+ *              corresponding growth bounds mu1 (original) and mu2 (transformed).
+ *
+ *      Main routines:
+ *
+ *              eulerstep(H, M, mu, delta) -> h
+ *                      Computes an admissible Euler step size h based on:
+ *                              H     : stage horizon,
+ *                              M     : bound on || J * g || (or similar),
+ *                              mu    : log-norm / growth rate,
+ *                              delta : error budget in the working space.
+ *                      Uses different formulas depending on the sign of mu.
+ *
+ *              lPi1(f, B) -> P
+ *                      Constructs a linear map matrix P (initialized as I),
+ *                      by selecting an index k such that f_k(B) does not cross 0
+ *                      (i.e., f_k(B).left * f_k(B).right > 0).  If such k exists,
+ *                      certain entries in column k are adjusted to control sign.
+ *                      Throws an exception if no such k exists.
+ *
+ *              lPi2(B) -> C
+ *                      Returns a translation vector C.
+ *
+ *              lPi3(f, B) -> d
+ *                      Chooses a radical exponent d based on the Jacobian norm
+ *                      over B.
+ *
+ *              TransformBound(invpi, xi, B) -> xi2
+ *                      Given a desired error bound xi in primal space,
+ *                      estimates the corresponding error bound xi2 needed
+ *                      in the transformed space using:
+ *                              xi2 = xi / sup( || J_{invpi}(B) ||_2 ).
+ *
+ *              AvoidsZero(F, B) / AvoidsZeroplus(F, B)
+ *                      Predicates used to decide whether the transformation is
+ *                      applicable.  AvoidsZeroplus additionally requires that
+ *                      both F(B) and B do not cross zero component-wise.
+ *
+ *              Transformp3(...)
+ *                      Given affine/translation data (p2, invP, C, inp2) and
+ *                      radical exponent d, constructs:
+ *                              - p3 and inp3 (forward/inverse radical maps)
+ *                              - transformed vector field gg (string form + IMap)
+ *                              - transformed boxes B4 (radical image of B3)
+ *                              - Jacobian J of gg over B4 and its log norm mu2
+ *                      Returns a ReturnType record containing all transformation
+ *                      artifacts needed by the refinement pipeline.
+ *
+ *              Transform(SVar, SFun, F, B, S, mu) -> ReturnType
+ *                      The main transformation constructor used in the pipeline:
+ *                              - checks AvoidsZeroplus and mu conditions
+ *                              - builds pi1 (P) and its inverse
+ *                              - builds pi2 (translation C) and shifted box B3
+ *                              - forms intermediate transformed field ggv
+ *                              - selects an exponent d (via lPi3) and calls
+ *                                Transformp3 for candidate d values
+ *                              - returns the first transform that improves
+ *                                the growth bound (heuristic selection).
+ *                      If the transform is not applicable or not beneficial,
+ *                      returns S.G[0].Xform (a default / identity transform).
+ *
+ *              Transformnoaffine(...) and Transformnoaffinetmp(...)
+ *                      Variants that skip the affine steps (pi1 and pi2),
+ *                      effectively using identity P and no translation, while
+ *                      still attempting the radical transform pi3 selection.
+ *
+ *      Inputs / outputs:
+ *              Inputs are CAPD IMap / IVector objects plus symbolic strings
+ *              (SVar, SFun).  The output is a ReturnType structure containing
+ *              the maps (p2/p3 and inverses), transformed vector field gg,
+ *              transformed boxes, Jacobian, and mu2 values.
+ *
+ *      Dependencies:
+ *              - CAPD: capd/capdlib.h
+ *              - StepA/StepB utilities: stepAB-new.h
+ *              - Symbolic expansion helper: SymbolCompute.h (expand_expression)
+ *              - Shared utilities (defined elsewhere):
+ *                      Convert_to_IMap, computeJacobian, computemu, wmax, center,
+ *                      matrixAlgorithms::inverseMatrix, etc.
+ *
+ *      Notes / cautions:
+ *              - Many string substitutions are character-based (e.g., matching
+ *                variables by first character).  Multi-character variable names
+ *                require care.
+ *              - The transform selection over d is heuristic (scans candidate d
+ *                values and accepts those that flip the sign of mu2 or reduce it).
+ *              - eulerstep assumes denominators are nonzero; callers should ensure
+ *                parameters produce a valid step size.
+ *
+ *      Author: <Bingwei Zhang and Chee Yap>  (<Feb 2026>)
+ */
+
+
+#include <iostream>
 #include "capd/capdlib.h"
 #include "stepAB-new.h"
 #include "SymbolCompute.h"

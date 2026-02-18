@@ -1,3 +1,78 @@
+/* file: EndCover-new.h
+ *
+ *      Purpose:
+ *              Implements a simple subdivision-based covering routine (EndCover)
+ *              for validated end-enclosures.  Given an initial interval box B0,
+ *              a tolerance veps, and a final time H, it repeatedly calls a user-
+ *              supplied enclosure routine endEnc(B, veps, p, H) and subdivides
+ *              B whenever the enclosure indicates it is not yet "resolved" or
+ *              whenever endEnc throws an exception.
+ *
+ *      Core idea:
+ *              Maintain a worklist S0 of boxes to be processed.
+ *              For each box B in S0:
+ *                (1) Let p = midpoint(B) (a representative point).
+ *                (2) Call endEnc(B, veps, p, H) which returns (ulB, olB):
+ *                        ulB : "inner / updated" box (used as a progress signal)
+ *                        olB : outer end-enclosure at time H for initial set B
+ *                (3) Always append olB to the output cover.
+ *                (4) If ulB differs from B (within equalTol), split B in all
+ *                    dimensions into 2^n children and push them back to S0.
+ *                (5) If endEnc throws, do NOT abort and do NOT drop B; instead
+ *                    force subdivision and retry on the children.
+ *
+ *      Main types:
+ *
+ *              EndCoverResult:
+ *                      - cover : vector<IVector> storing the union (as a list of boxes)
+ *                                of outer end-enclosures produced by endEnc.
+ *
+ *      Main routines:
+ *
+ *              midpoint(box):
+ *                      Returns the coordinate-wise midpoint vector<double>.
+ *
+ *              almostEqualBox(a, b, tol):
+ *                      Compares two interval boxes by endpoint differences
+ *                      (|aL-bL| and |aR-bR|), with tolerance tol.
+ *
+ *              splitBoxAllDims(box):
+ *                      Splits a box in every dimension at its midpoint, producing
+ *                      2^n child boxes (cartesian product of lower/upper halves).
+ *
+ *              EndCover(B0, veps, H, endEnc, maxSplits=..., equalTol=...):
+ *                      Runs the cover construction described above.  The split
+ *                      counter is global across the run; exceeding maxSplits
+ *                      raises an exception.
+ *
+ *      Required callback:
+ *
+ *              endEnc must have signature:
+ *                  std::pair<IVector,IVector> endEnc(const IVector& B,
+ *                                                   double veps,
+ *                                                   const std::vector<double>& p,
+ *                                                   double H);
+ *              and returns (ulB, olB).
+ *
+ *      Notes / cautions:
+ *              - The output "cover" is a list of boxes; it is not simplified by
+ *                merging, intersection pruning, or redundancy removal.
+ *              - Subdivision is exponential in dimension (2^n children per split).
+ *              - The rule "split when ulB != B" is a protocol between EndCover
+ *                and endEnc; it assumes endEnc uses ulB as a progress indicator.
+ *              - On exceptions in endEnc, EndCover forces subdivision rather than
+ *                dropping boxes; this is robust but may cause many splits.
+ *              - almostEqualBox compares endpoints only; it does not reason about
+ *                set containment when rounding effects occur.
+ *
+ *      Dependencies:
+ *              - CAPD library: capd/capdlib.h
+ *              - Project core definitions: calD-calQ-new.h (IVector, helpers, etc.)
+ *
+ *      Author: <Bingwei Zhang and Chee Yap>  (<Feb 2026>)
+ */
+
+
 #pragma once
 
 #include <vector>

@@ -1,4 +1,102 @@
-﻿#include <iostream>
+﻿/* file: Extend-new.h  (or Extend-new.cpp)
+ *
+ *      Purpose:
+ *              Implements the stage-advancement routine Extendnew and several
+ *              variants used in our validated ODE enclosure pipeline built on
+ *              CAPD.  An "Extend" step advances a Stage from its current time
+ *              t to t+h by computing:
+ *
+ *                  - a full enclosure (coarse, safe)    F_{t+h}
+ *                  - an end enclosure  (tighter)        E_{t+h}
+ *                  - auxiliary growth/log-norm estimate mu
+ *                  - per-step bookkeeping in Stage::G (bfE/bfF, mu1, etc.)
+ *
+ *      Main routines:
+ *
+ *              Extendnew(SVar, SFun, F, S, veps, delta, degree, H,
+ *                        stepBtype, stepAtype, debuglevel):
+ *                      Advances Stage S by one adaptive step.
+ *
+ *                      Inputs:
+ *                          SVar/SFun : variable names and RHS expressions (for optional transforms)
+ *                          F         : CAPD IMap for the ODE RHS
+ *                          S         : Stage container (updated in-place)
+ *                          veps      : target tolerance for enclosure/refinement
+ *                          delta     : auxiliary tolerance parameter (typically veps/10)
+ *                          degree    : Taylor / Cn degree for CAPD solvers
+ *                          H         : remaining time horizon (upper bound for step)
+ *                          stepAtype : selects full-enclosure routine:
+ *                                      0 -> stepA(...)
+ *                                      1 -> stepA0(...)
+ *                          stepBtype : selects end-enclosure routine:
+ *                                      0 -> stepBcrlohner(...)
+ *                                      1 -> stepBcrlohnerwithmu(...)
+ *                                      2 -> directmethodwithmu(...)
+ *                                      3 -> puredirectmethod(...)
+ *                          debuglevel: if 1, prints containment diagnostics
+ *
+ *                      Outputs (via Stage S):
+ *                          - appends new time t+h to S.T
+ *                          - appends full enclosure to S.F
+ *                          - appends end enclosure to S.E
+ *                          - appends a new ministeps record to S.G (copied from S.G[0])
+ *                          - records bfF, bfE, and mu1 for the new step
+ *
+ *              Extendnewnoaffine(...):
+ *                      Similar to Extendnew, but also computes a transformation
+ *                      without the affine component (Transformnoaffine) and
+ *                      stores it in S.G[m].Xform; additionally computes an Euler
+ *                      step heuristic heuler from transformed quantities.
+ *
+ *              fullenclosure(f, B0, h, B1, degree):
+ *                      Utility to build a conservative full enclosure by summing
+ *                      Taylor coefficients over [0,h] plus a remainder term
+ *                      evaluated at B1.
+ *
+ *              Extendlohner(...), ExtendlohnerT(...):
+ *                      Lohner-type enclosure routines using QR decomposition and
+ *                      moving frames (Q,R) to control wrapping effect.  These are
+ *                      alternative propagation strategies producing an enclosure
+ *                      at final time T.
+ *
+ *      Key quantities:
+ *
+ *              - Full enclosure (B1 / S.F.back()):
+ *                      A safe outer enclosure computed by stepA/stepA0.
+ *
+ *              - End enclosure (E1 / S.E.back()):
+ *                      A (typically tighter) enclosure computed by stepB* or
+ *                      direct methods, optionally using a growth bound mu.
+ *
+ *              - mu (stored in S.G[m].mu1):
+ *                      A scalar growth/log-norm surrogate computed from the
+ *                      interval Jacobian of F over the full enclosure.
+ *                      For n==2 it uses computemu(J) (custom 2×2 bound);
+ *                      otherwise uses CAPD EuclLNorm(J) upper bound.
+ *
+ *      Notes / cautions:
+ *
+ *              - Dimension-dependent mu:
+ *                      The special-case computemu(J) assumes a specific 2×2 block
+ *                      convention; ensure the Jacobian indexing matches the state
+ *                      dimension and coordinate ordering.
+ *
+ *              - Containment checks (debuglevel==1):
+ *                      The code performs diagnostics intended to verify that the
+ *                      tighter enclosure is contained in the coarse one.  These
+ *                      checks are for debugging only and do not stop execution.
+ *
+
+ *
+ *      Dependencies:
+ *              - CAPD library: capd/capdlib.h (ICnOdeSolver, IMap, IVector, jets, norms)
+ *              - Project headers: Refine-new.h, calD-calQ-new.h (Stage/ministeps utilities)
+ *
+ *      Author: <Bingwei Zhang and Chee Yap>  (<Feb 2026>)
+ */
+
+
+#include <iostream>
 #include "capd/capdlib.h"
 #include "Refine-new.h"
 using namespace capd;

@@ -1,4 +1,86 @@
-﻿#include <iostream>
+﻿/* file: calD-calQ.h
+ *
+ *      Purpose:
+ *              This file defines the core data structures and utility
+ *              routines used by our staged enclosure / refinement code
+ *              built on top of CAPD interval arithmetic.
+ *
+ *      Main data structures:
+ *
+ *              ReturnType:
+ *                      Stores transformation-related information for one stage:
+ *                      - symbolic forms of affine / radical transforms (pi2, pi3)
+ *                      - function representations (IMap) for p3 and its inverse
+ *                      - transformed vector fields (as strings and as IMap)
+ *                      - enclosures before/after transforms (B3, B4)
+ *                      - Jacobian matrix of the transformed ODE
+ *                      - log-norm related quantities (mu1/mu2 stored elsewhere)
+ *
+ *              ministeps:
+ *                      Stores mini-step level information inside a stage:
+ *                      - Xform: transformation data (ReturnType)
+ *                      - mu1: log-norms in original space
+ *                      - delta: input delta
+ *                      - heuler: Euler step size used in the coarse step
+ *                      - ell: refinement level
+ *                      - bfE / bfF: end/full enclosures for each mini-step
+ *
+ *              Stage:
+ *                      The main container for the staged computation:
+ *                      - T: time sequence [t0, t1, ...]
+ *                      - E: end-enclosure sequence
+ *                      - F: full-enclosure sequence
+ *                      - G: per-stage mini-step records
+ *
+ *              ReturnType2:
+ *                      A lightweight wrapper bundling a stage with veps.
+ *
+ *      Utility routines:
+ *
+ *              Convert_to_IMap(vars, funs):
+ *                      Converts vectors of variable names and RHS strings
+ *                      into a CAPD IMap definition string:
+ *                              "var:x,y; fun:f1,f2; "
+ *
+ *              Box(B1, B2):
+ *                      Returns the smallest axis-aligned interval box
+ *                      enclosing both boxes B1 and B2 (component-wise hull).
+ *
+ *              IntersectB(B1, B2):
+ *                      Returns the component-wise intersection of B1 and B2.
+ *                      (Current implementation does not explicitly signal
+ *                      emptiness beyond skipping updates when lower > upper.)
+ *
+ *              computeJacobian(f, B):
+ *                      Evaluates the interval Jacobian J_f(B) using CAPD jets.
+ *
+ *              wmax(B):
+ *                      Returns max width among coordinates of an interval box.
+ *
+ *              center(B):
+ *                      Returns the midpoint of each coordinate interval as
+ *                      a std::vector<double>.
+ *
+ *              computemu(J):
+ *                      Computes a (conservative) scalar "mu" from a 2×2 block
+ *                      of an interval Jacobian using a discriminant-like
+ *                      expression; intended as an upper bound surrogate for
+ *                      a log-norm / growth rate estimate.
+ *
+ *      Dependencies:
+ *              - CAPD library: capd/capdlib.h
+ *
+ *      Notes / cautions:
+ *              - Several routines assume consistent dimensions (e.g., Box,
+ *                IntersectB) and do not defensively check mismatches.
+ *              - computemu currently assumes a specific indexing pattern
+ *                (a 2×2 block), and should be generalized if used for n>2.
+ *
+ *      Author: <Bingwei Zhang and Chee Yap>  (<Feb 2026>)
+ */
+
+
+#include <iostream>
 #include "capd/capdlib.h"
 using namespace capd;
 using namespace std;

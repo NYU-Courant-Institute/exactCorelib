@@ -1,4 +1,17 @@
-﻿#include <iostream>
+﻿*      Usage:
+ *              This file provides a helper routine
+ *
+ *                      expand_expression(inputString) -> outputString
+ *
+ *              where inputString is an algebraic expression written in a
+ *              CAPD-style / C-style syntax (using '^' for powers),
+ *              and outputString is an expanded / normalized expression string.
+*      Author: <Bingwei Zhang and Chee Yap>  (<Feb 2026>)
+ */
+
+
+
+#include <iostream>
 
 
 #include <symengine/basic.h>
