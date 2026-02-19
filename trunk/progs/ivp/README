@@ -1,4 +1,5 @@
-README file for Corelib/progs/ivp
+README file for https://subversive.cims.nyu.edu/exact/corelib2/trunk/progs/ivp/ 
+with username: guest and password: guest
 
 This folder contains our IVP project.
 There are 2 subfolders:
@@ -12,7 +13,7 @@ There are 2 subfolders:
 				Complete Validated Algorithms with Complexity Analysis",
 			http://arxiv.org/abs/2602.00162.
 			Feb 2026.
-
+You can download the .zip files directly
 Please contact us if you for any questions
 or help in using this software!
 
