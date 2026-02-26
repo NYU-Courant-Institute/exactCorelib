@@ -38,11 +38,14 @@
 				of size < m will be split
 			(This prevents an infinite loop at singularies)
 		-- drawbox is true means we will display the subdivision boxes
-		   (Otherwise, we just display the isotopic curve -- may look odd, but OK)
+		   (Otherwise, we just display the isotopic curve -- may look
+		   odd, but OK)
 		-- display is false means do not show anything.
-	           THIS IS IMPORTANT in non-interactive mode (e.g., make test).
+			   THIS IS IMPORTANT in non-interactive mode (e.g., make
+			   test).
 		   Logically, "display" should come after "drawbox".
-		   Also, we ought to print some information about the analyzed curve,
+		   Also, we ought to print some information about the analyzed
+		   curve,
 		   e.g., number of components, etc.  Future work.
 
 	E.g.,
