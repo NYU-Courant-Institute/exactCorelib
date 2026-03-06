@@ -1,0 +1,14 @@
+# This file contains multivariate polynomials 
+# It is formatted and separated by commas: 
+# The first part represents the polynomial to be evaluated, the next parts specify the values of each variable to evaluate at, followed by a desired list of derivatives and the last part is optional and if included, it will print out the description to the screen.
+# Note, the description should be wrapped around with quotation marks
+
+3x^2y + 5xy^2 + 4z^3 - 6,x=[2,5],y=[2,4],z=[8,9], [x=1,y=1,z=2], "curve a" 
+-xy^2, x=5, y=2, [x=3,y=2,z=4], "curve b" 
+x^10, x= [2,4], [x=3]
+(x + 1)y, x = [1,2], y =[4,10]
+(x^2+3)^3, x = 2, "test"  
+-12x^4y^4 + 78x^2y^6 + 5y^8 + 65x^2y^3 + 81x^3y -91xy^2, x = [0.3, 0.309], y = [2.1, 2.109]
+x^2y^2 -x + y - 1, x = 0, y = -2
+
+

@@ -1,0 +1,116 @@
+----------
+input.txt:
+----------
+Polynomial: 3x^2y + 5xy^2 + 4z^3 - 6
+Variable assignments: OrderedDict{Symbol, Union{Float64, myInterval}}(:x => myInterval(2.0, 5.0), :y => myInterval(2.0, 4.0), :z => myInterval(8.0, 9.0))
+Max orders: x=1, y=1, z=2
+Description curve a
+Final Value: myInterval(2106.0, 3610.0)
+Computed Taylor Series at Final Node: 
+  Derivative f : myInterval(2106.0, 3610.0)
+  Derivative x : myInterval(44.0, 200.0)
+  Derivative y : myInterval(52.0, 275.0)
+  Derivative z : myInterval(768.0, 972.0)
+  Derivative xy : myInterval(32.0, 70.0)
+  Derivative z^2 : myInterval(192.0, 216.0)
+--------------------------------------------------
+Polynomial: -xy^2
+Variable assignments: OrderedDict{Symbol, Union{Float64, myInterval}}(:x => 5.0, :y => 2.0)
+Max orders: x=3, y=2, z=4
+Description curve b
+Final Value: -20.0
+Computed Taylor Series at Final Node: 
+  Derivative f : -20.0
+  Derivative x : -4.0
+  Derivative y : -20.0
+  Derivative xy : -4.0
+  Derivative y^2 : -10.0
+  Derivative xy^2 : -2.0
+--------------------------------------------------
+Polynomial: x^10
+Variable assignments: OrderedDict{Symbol, Union{Float64, myInterval}}(:x => myInterval(2.0, 4.0))
+Max orders: x=3
+Final Value: myInterval(1024.0, 1.048576e6)
+Computed Taylor Series at Final Node: 
+  Derivative f : myInterval(1024.0, 1.048576e6)
+  Derivative x : myInterval(5120.0, 2.62144e6)
+  Derivative x^2 : myInterval(23040.0, 5.89824e6)
+  Derivative x^3 : myInterval(92160.0, 1.179648e7)
+--------------------------------------------------
+Polynomial: (x + 1)y
+Variable assignments: OrderedDict{Symbol, Union{Float64, myInterval}}(:x => myInterval(1.0, 2.0), :y => myInterval(4.0, 10.0))
+Max orders: (all orders)
+Final Value: myInterval(8.0, 30.0)
+Computed Taylor Series at Final Node: 
+  Derivative f : myInterval(8.0, 30.0)
+  Derivative x : myInterval(4.0, 10.0)
+  Derivative y : myInterval(2.0, 3.0)
+  Derivative xy : myInterval(1.0, 1.0)
+--------------------------------------------------
+Polynomial: (x^2+3)^3
+Variable assignments: OrderedDict{Symbol, Union{Float64, myInterval}}(:x => 2.0)
+Max orders: (all orders)
+Final Value: 343.0
+Computed Taylor Series at Final Node: 
+  Derivative f : 343.0
+  Derivative x : 588.0
+  Derivative x^2 : 966.0
+  Derivative x^3 : 1392.0
+  Derivative x^4 : 1656.0
+  Derivative x^5 : 1440.0
+  Derivative x^6 : 720.0
+--------------------------------------------------
+Polynomial: -12x^4y^4 + 78x^2y^6 + 5y^8 + 65x^2y^3 + 81x^3y -91xy^2
+Variable assignments: OrderedDict{Symbol, Union{Float64, myInterval}}(:x => myInterval(0.3, 0.309), :y => myInterval(2.1, 2.109))
+Max orders: (all orders)
+Final Value: myInterval(2424.756401581052, 2553.284800411063)
+Computed Taylor Series at Final Node: 
+  Derivative f : myInterval(2424.756401581052, 2553.284800411063)
+  Derivative x : myInterval(3988.186203774774, 4240.961436070489)
+  Derivative y : myInterval(8881.449141341402, 9254.65525078213)
+  Derivative x^2 : myInterval(14617.614312648298, 15011.411992665013)
+  Derivative xy : myInterval(11569.019460963065, 12196.504757879155)
+  Derivative y^2 : myInterval(28121.916590841254, 29077.646031432945)
+  Derivative x^2y : myInterval(39576.98101983556, 40458.14815766717)
+  Derivative x^3 : myInterval(-739.9861705612076, -655.3418400000003)
+  Derivative xy^2 : myInterval(27538.944708624556, 28867.252131619625)
+  Derivative y^3 : myInterval(76443.92583711832, 78511.61389245956)
+  Derivative x^2y^2 : myInterval(91921.246918685, 93546.63722595348)
+  Derivative x^3y : myInterval(-2853.1866677310722, -2714.6016)
+  Derivative x^4 : myInterval(-5697.689872366367, -5601.052800000001)
+  Derivative xy^3 : myInterval(52172.094927097736, 54437.484950629914)
+  Derivative y^4 : myInterval(174506.36641304806, 178105.53104872126)
+  Derivative x^2y^3 : myInterval(173449.98725337602, 175731.29286288)
+  Derivative x^3y^2 : myInterval(-4749.909911424001, -4572.288)
+  Derivative x^4y : myInterval(-10806.429345408, -10668.672)
+  Derivative xy^4 : myInterval(74265.69181939201, 77154.93206064)
+  Derivative y^5 : myInterval(321783.8400000001, 326496.42970704)
+  Derivative x^2y^4 : myInterval(247335.61766400005, 249481.95696)
+  Derivative x^3y^3 : myInterval(-4504.419072000001, -4354.56)
+  Derivative x^4y^2 : myInterval(-15371.876736, -15240.960000000001)
+  Derivative xy^5 : myInterval(70761.6, 73196.80991999999)
+  Derivative y^6 : myInterval(449582.40000000014, 453708.61776)
+  Derivative x^2y^5 : myInterval(235872.00000000003, 236882.87999999998)
+  Derivative x^3y^4 : myInterval(-2135.808, -2073.6)
+  Derivative x^4y^3 : myInterval(-14577.408, -14515.2)
+  Derivative xy^6 : myInterval(33696.0, 34706.88)
+  Derivative y^7 : myInterval(423360.00000000006, 425174.39999999997)
+  Derivative x^2y^6 : myInterval(112320.0, 112320.0)
+  Derivative x^4y^4 : myInterval(-6912.0, -6912.0)
+  Derivative y^8 : myInterval(201600.0, 201600.0)
+--------------------------------------------------
+Polynomial: x^2y^2 -x + y - 1
+Variable assignments: OrderedDict{Symbol, Union{Float64, myInterval}}(:x => 0.0, :y => -2.0)
+Max orders: (all orders)
+Final Value: -3.0
+Computed Taylor Series at Final Node: 
+  Derivative f : -3.0
+  Derivative x : -1.0
+  Derivative y : 1.0
+  Derivative x^2 : 8.0
+  Derivative xy : -0.0
+  Derivative y^2 : 0.0
+  Derivative x^2y : -8.0
+  Derivative xy^2 : 0.0
+  Derivative x^2y^2 : 4.0
+--------------------------------------------------

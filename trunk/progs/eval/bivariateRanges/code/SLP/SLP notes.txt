@@ -1,0 +1,132 @@
+**Runtime Setup**
+- ARGS come from Makefile defaults: ["input.txt", "0", "5", "1"] .
+	- file_args = ["input.txt"] (list of polynomials )
+	- mode = 0 (all derivatives) (3 for third derivatives)
+	- digits = 5 (display precision)
+	- c = 1 (centered interval display true) or 0 (native interval notation)
+- Input file title header is written to output.txt via writeTitle .
+
+**Input Parsing**
+- Line read: 2x^8 - 3x^2y^3 + 4y + 5, x = 2, y = 2, "<optional description>"
+- Optionally we can denote as x^2(2x^6 - 3y^3)  + 4y + 5, x = [-5, 5], y = [-5, 5]
+- utils.parse_line:
+	- Output triple:
+		- poly::String = "2x^8 - 3x^2y^3 + 4y + 5"
+		- assignments::Dict{Symbol,Union{Float64,myInterval}} = Dict(:x => 2.0, :y => 2.0)
+			- or Dict(:x => myInterval(-5.0, 5.0) , :y => myInterval(-5.0, 5.0))
+		- description::String = ""
+
+**Tokenization And AST**
+- parser.tokenize on "2x^8 - 3x^2y^3 + 4y + 5" yields tokens:
+	- ["2","x","^","8","-","3","x","^","2","y","^","3","+","4","y","+","5"]
+-  ParserState: tokens = above , pos = 1
+- parser.parse_expr builds AST using:
+- Implicit multiplication (e.g., 2x ), explicit ^ , + , -, *
+- Final AST shape (high level):
+	- AddNode(AddNode(MinusNode( MulNode(FloatNode(2.0), PowNode(VarNode(:x), 8.0)), MulNode( FloatNode(3.0), MulNode(PowNode(VarNode(:x), 2.0),PowNode(VarNode(:y), 3.0))) ), MulNode( FloatNode(4.0), VarNode(:y) )),FloatNode(5.0))
+
+**Base SLP Construction**
+- Key locals:
+	- var_dict = Dict{Symbol,Int}() (Maps variables to negative indices)
+	- vars::Vector{Tuple{Int, Symbol, valueType}} = [] (Should be called values)
+	- codeList::Vector{Tuple{Int, Symbol, Union{Int,String}, Union{Int,String}, valueType}} = []
+	- nextVarIndex = Ref(-1) ; nextTempIndex = Ref(1)
+	- zero_interval = myInterval(0.0, 0.0)
+	- INSTRUCTION_HASH is emptied before building (Stores already computed codes)
+- Variable indices (negative by convention):
+	- x => -1 , y => -2
+	- vars = [(-1, :x, [0,0]), (-2, :y, [0,0])] 
+- Represent scalar multiplication as: "@3 * 2" = 3 * code (2)
+- Build steps and resulting base codelist:
+| Index | operator                | comment                    |
+| ----- | ----------------------- | -------------------------- |
+| -2    | y                       |                            |
+| -1    | x                       |                            |
+| 1     | exp((-1), 8)            | x^8                        |
+| 2     | exp((-1), 2)            | x^2                        |
+| 3     | exp((-2), 3)            | y^3                        |
+| 4     | mul(scalar(3, (2)), (3))   | 3x^2 * y^3                 |
+| 5     | minus(scalar(2, (1)), (4)) | 2x^8 - 3x^2 * y^3          |
+| 6     | plus((5), scalar(4, (-2))) | 2x^8 - 3x^2 * y^3 + 4y     |
+| 7     | plus((6), 5)            | 2x^8 - 3x^2 * y^3 + 4y + 5 |
+- Base ranges:
+	- slp_ranges[""] = (1, 7) -- "" represents null derivative(function evaluation)
+	- For instance, slp_ranges["xy^2"] = (a,b) represents the derivative w.r.t xy^2 is from code a to b. 
+- INSTRUCTION_HASH populated with keys for speedup:
+	- Examples: (:^,-1,"@8.0")->1 , (:^,-1,"@2.0")->2 , (:^,-2,"@3.0")->3 , (:* ,2,3)->4 , (:* ,3,2)->4 , (:-, "@2.0*1", "@3.0*4")->5 , (:+, 5, "@4.0*-2")->6 , (:+, 6, "@5.0")->7
+
+- We are going to encapsulate the SLP into a Polynomial data structure:
+	- Polynomial Metadata
+		- Polynomial.variables = { :x, :y }
+		- Polynomial.max_orders = Dict(:x => 8, :y => 3)
+		- Polynomial.total_degree = 8 (max over term degrees = max(8, 5, 1, 0))
+		- Polynomial.slp = the SLP above
+
+
+### Derivatives - All Derivatives(mode = 0)
+**Entrypoint: derivatives.compute_all_derivatives!(polynomial)**
+- Internal state while starting:
+	- to_compute = [ Dict(:x => 1), Dict(:y => 1) ]
+	- computed = Set([""])
+	- INSTRUCTION_HASH in derivatives.jl is a fresh Dict used while adding derivative instructions
+- global_deriv_map = Dict{Tuple{Int,Symbol},Union{Int,String}}() 
+**Derivative seed growth rule (breadth-first):**
+- Each time a derivative current_deriv is computed (e.g., "x"), push neighbors by incrementing each variable up to its max_order . Examples:
+	- From x → enqueue x^2, and xy
+	- From y → enqueue y^2
+	- Similarly from x^2 → enqueue x^3 and x^2y , etc., until all keys with k≤8 and l≤3 are covered(k is max order in the x_direction and l is max order in y direction)
+	- Avoids duplicates
+**First derivatives codelists (stored back into the shared codelist of the base SLP):**
+- With respect to y (key "y" ):
+  - Start index: start_idx = 8 (right after base SLP)
+  - Per-instruction derivative mapping computed via create_derivative_mapping and rules:
+    - For (:^) : d/dx(z^n) = n*z^(n-1) * d/dx z 
+    - For (:* ) : product rule
+    - For (:+) , (:-) : linearity
+  - New instructions and final range:
+    - 8: (8,  :^, -2, "@2.0",  [0,0]) // y^2 
+    - 9, (9, :* , "@3.0* 2", "@3.0 * 8", [0,0])  // (3x^2) * (3y^2) = 9x^2 y^2 
+    - 10: (10, :-, "@0.0", 19,  [0,0])  // -9x^2 y^2 
+    - 11: (11, :+, 10, "@4.0", [0,0]) //  -9x^2 y^2  + 4
+  - Range: slp_ranges["y"] = (8, 11)
+  - Skips zero entries but records corresponding derivatives in global_deriv_map
+  - global_deriv_map partial entries:
+    - (-1,:y) => "@0.0 // d/dy x = 0
+    - (-2,:y) -> "@1.0" // d/dy y = 1
+    - (1,:y) -> "@0.0" // d/dy(x^8) = 0
+    - (2,:y) -> "@0.0" // d/dy(x^2) = 0
+    - (3,:y) -> "@3.0* 8" // d/dy(y^3) = 3y^2 
+    - (4,:y) -> 9 // d/dy(3x^2y^3) = 9x^2 * y^2 
+    - (5,:y) -> 10 //d/dy(2x^8 - 3x^2 * y^3) =  -9x^2 y^2 
+    - (6,:y) -> 11 //d/dy(2x^8 - 3x^2 * y^3 + 4y) = -9x^2 y^2  + 4
+    - (7,:y) -> 11 // d/dy(2x^8 - 3x^2 * y^3 + 4y + 5) = -9x^2 y^2  + 5
+-  INSTRUCTION_HASH used to check for duplicate instructions and adds to codelist if the instruction does not already exist in the codelist
+- Each time a new instruction is generated, we check for any trivial reduction cases, ex. (:+, @2.0, @1.0) is trivially simplified to @3.0. 
+	- Addition, subtraction by 0 -> remains the same
+	- multiplication by 0 -> 0
+	- power by 0 -> 1 
+	- power by 1 -> remains the same
+-  Higher derivatives follow the same procedure
+
+### Derivatives - Third Derivatives(mode = 3)
+- Entrypoint: derivatives.compute_third_derivatives_2D!(polynomial)
+- Preconditions: polynomial must be 2D (x,y).
+
+The only difference here is in **Derivative seed growth rule (breadth-first):**
+- Internal branching rules per current derivative key x^k y^l :
+- Increment y up to max_order(:y) (Rule 2).
+- If k % 3 == 0 , branch both: increment x and increment y up to max_order(:y) (Rule 1).
+- Else, only increment x.
+- Increment up to max_order(:x)
+- For this polynomial ( max_order : x=8, y=3), typical sequence:
+- Seeds: x , y
+- y path: y → y^2 → y^3 (stops at 3)
+- x path: x → x^2 → x^3 (3 is multiple of 3) → branch into both
+  - x^4 and x^3y 
+  - From x^3y ,continue y-only: x^3y^2 → x^3y^3 (stop at y^3)
+  - From x^4 continue x-only until next multiple of 3: x^5 → x^6 (6 multiple of 3) → branch both
+    - x^7 and x^6y → x^6y^2 → x^6y^3 
+  - Finalize at x^8 (stop at x^8)
+
+Remark: We probably should have explicit differentiation rules for mode 3
+		- Skip x and x^2 -> go to x^3 directly
