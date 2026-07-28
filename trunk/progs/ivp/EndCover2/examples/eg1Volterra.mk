@@ -4,20 +4,19 @@
 #		x' = 2*x-2*x*y
 #		y' = -y+x*y
 #
-# How to run (from build/examples/Boundarymethod/ourcode):
+# How to run (from build/examples/EndCover_algo):
 #		> make run-eg1Volterra
 #		> make run-eg1Volterra iflag=4          # also writes E_0.txt / E_1.txt for plotting
-#		> make run-eg1Volterra mode=0           # use EndCover mode
 #
 # Current CLI order (for reference):
-#		./radicalIVP-new.exe iflag mode method stepB stepA n <vars...> <funs...> eps order T debug <intervals...>
+#		./endcover.exe iflag stepB stepA n <vars...> <funs...> eps order T debug tubedegree <intervals...>
 #
 # iflag is progressive (iflag>=k includes all smaller outputs):
-#		0+: print total runtime (ms)
-#		1+: print Hull(T): minimal axis-aligned hull of the time-T cover
+#		0+: reserved for interactive (prints nothing)
+#		1+: print total runtime (ms) and Hull(T)
 #		2+: print E0Boxes: number of initial sub-boxes
 #		3+: write E0.txt and E1.txt (E1.txt contains ONLY time-T cover)
-#		4+: additionally write E_0.txt and E_1.txt for plotting:
+#		4+: additionally write output/E_0.txt and output/E_1.txt for plotting:
 #			- E_0.txt contains E0 (and in 2D also the 4 corner points)
 #			- E_1.txt contains time-T cover plus propagated images at times 0.1/0.4/0.7 (if <= T)
 #			  and in 2D also corner propagation
@@ -54,24 +53,14 @@ T = 1
 order = 20 
 
 # iflag is progressive (iflag>=k includes all smaller outputs):
-#	0+: print total runtime (ms)
-#	1+: print Hull(T): minimal axis-aligned hull of the time-T cover
+#	0+: reserved for interactive (prints nothing)
+#	1+: print total runtime (ms) and Hull(T)
 #	2+: print E0Boxes: number of initial sub-boxes
 #	3+: write E0.txt and E1.txt (E1.txt contains ONLY time-T cover)
-#	4+: additionally write E_0.txt and E_1.txt for plotting (adds 0.1/0.4/0.7 tracking if <=T)
+#	4+: additionally write output/E_0.txt and output/E_1.txt for plotting (adds 0.1/0.4/0.7 tracking if <=T)
 iflag = 2
 
-# mode: 1 = Boundary algorithm (TwoDimEncAlgo / ThreeDimEncAlgo), 0 = EndCover subdivision
-mode = 1
 
-# method (see Makefile header / radicalIVP-new.cpp):
-#	0: our method
-#	1: oursimple method (Euler)
-#	2: oursimpleT method (Euler + transformation)
-#	4: ourNoEuler method
-#	5: Lohner method
-
-method = 5 
 
 # stepB:
 #	0: crlohner

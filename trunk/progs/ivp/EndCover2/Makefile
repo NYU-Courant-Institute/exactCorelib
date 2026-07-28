@@ -1,34 +1,64 @@
 # ===========================================================================
 #  Makefile for the clean EndCover implementation.
 #  ---------------------------------------------------------------------------
+#  Authors : Bingwei Zhang, Chee Yap
+#  Updated : 2026-07-27
+#  References: B. Zhang and C. Yap, "End Cover for Initial Value Problem:
+#              Complete Validated Algorithm with Complexity Analysis."
+#              B. Zhang and C. Yap, "Taylor Tube Method for Validated IVP."
+#  ---------------------------------------------------------------------------
 #  Quick start:
 #    make                 -- compile endcover.exe and run the default example
 #    make eg              -- run the built-in Volterra example
-#    make run-eg7Lorenz   -- run using a shared example parameter file
+#    make run-eg7Lorenz   -- run using a example parameter file
 #    make run FILE=examples/eg8Rossler.mk
 #    make eg-lorenz eps=0.05 T=2
+#    make eg tube=taylor tubedegree=19   -- use the Taylor tube (degree 19)
 #
-#  CLI (the leading iflag only controls output; it never changes the result):
-#    ./endcover.exe iflag stepB stepA n <vars..> <funs..> eps order T debug <lo hi ..>
+#  CLI(Command Line Interface) (leading iflag + trailing tubedegree only affect I/O and the tube;):
+#    ./endcover.exe iflag stepB stepA n <vars..> <funs..> eps order T debug tubedegree <lo hi ..>
 #
-#    iflag : progressive (iflag>=k includes the output of all smaller k)
-#              0+: print total runtime (ms)
-#              1+: print Hull(T): the minimal axis-aligned hull of the time-T cover
-#              2+: print E0Boxes: number of initial sub-boxes
+#  Full names of the command-line arguments (in order):
+#    iflag       integer output-verbosity flag              (see below)
+#    stepB       StepB (end-enclosure) method               (see below)
+#    stepA       StepA (step-size selection) method          0 adaptive | 1 fixed
+#    n           dimension / number of state variables
+#    <vars..>    the n variable names                        e.g.  x y
+#    <funs..>    the n right-hand-side functions (quoted)    e.g.  "2*x-2*x*y" "-y+x*y"
+#    eps         epsilon: cover tolerance (max box width)
+#    order       Taylor order of the integrator
+#    T           target (time horizon) to integrate to
+#    debug       debug flag                                   0 off | 1 diagnostics
+#    tubedegree  Taylor-tube degree                           -1 auto (= order-1)
+#    <lo hi ..>  interval bounds of B0, one lo/hi pair per variable
+#
+#    iflag : progressive output-verbosity flag (iflag>=k includes all smaller k)
+#              0+: RESERVED for a future interactive shell (prints nothing yet)
+#              1+: print total runtime (ms) and Hull(T), the minimal
+#                  axis-aligned hull of the time-T cover
+#              2+: print E0Boxes: number of scaffolds(size of the cover set)
 #              3+: write E0.txt and E1.txt (E1.txt contains ONLY the time-T cover)
-#              4+: additionally write E_0.txt and E_1.txt for plotting:
+#              4+: additionally write output/E_0.txt and output/E_1.txt for plotting:
 #                    - E_0.txt contains E0 (and in 2D also the 4 corner points)
-#                    - E_1.txt contains the time-T cover plus propagated images
+#                    - E_1.txt contains the time-T cover 
 #                      at times 0.1/0.4/0.7 (those <= T), 2D also corner propagation
-#    stepB : 0 crlohner | 1 crlohner+logNorm | 2 direct+logNorm | 3 direct
-#            4 SIAM + logNorm StepB + endpoint tightening + longest-dim Split
-#            5 Boundary-compatible endpoint refine + longest-dim Split
-#            6 SIAM scaffold + Boundary endpoint-refine hybrid
-#    stepA : 0 adaptive  | 1 non-adaptive
-#    debug : 0 off | 1 print admissibility diagnostics
+#    stepB : StepB method
+#              0 C^r-Lohner | 1 C^r-Lohner+logNorm | 2 Direct+logNorm | 3 Direct
+#              4 SIAM + logNorm StepB + longest-dim Split(An optimization.)
+#              5 Boundary-compatible endpoint refine + longest-dim Split
+#              6 SIAM scaffold + Boundary endpoint-refine hybrid
+#    stepA : StepA method            0 adaptive | 1 non-adaptive
+#    debug : debug flag              0 off | 1 print admissibility diagnostics
 #
-#  This tool IS the EndCover subdivision method, so the "mode" and "method"
-#  fields present in the shared example files are simply ignored here.
+#  Tube method (how Refine tightens each stage):
+#    tube       = euler (default) | rk2 | taylor   -> exported as CAPD_TUBE_METHOD
+#    tubedegree = degree of the centre Taylor polynomial used by the Taylor tube
+#                 (only meaningful when tube=taylor).  Empty / -1 means the best
+#                 default, tubedegree = order-1, so the tube reuses (inherits)
+#                 the Taylor coefficients StepB already computes.
+#
+#  This tool is the EndCover subdivision method; if an example file happens to
+#  carry extra "mode" / "method" fields, they are simply ignored.
 # ===========================================================================
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -49,7 +79,7 @@ FILIB_OVERRIDE = -I/cygdrive/c/Users/69592/OneDrive/Desktop/CAPD/capdExt/filibsr
 
 EXE  = endcover.exe
 SRC  = endcover.cpp
-HDRS = calD-calQ-new.h stepAB-new.h Extend-new.h Refine-new.h EndCover-new.h
+HDRS = calD-calQ-new.h stepAB-new.h Extend-new.h Refine-new.h EndCover-new.h TaylorTube-new.h
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # INPUT PARAMETERS (override on the command line, or via an included FILE)
@@ -62,6 +92,14 @@ eps   ?= 0.1
 order ?= 20
 T     ?= 1
 debug ?= 0
+
+# Tube configuration.
+#   tube       : euler (default) | rk2 | taylor    (exported as CAPD_TUBE_METHOD)
+#   tubedegree : Taylor-tube degree; empty => auto = order-1 (passed to the exe)
+tube       ?= euler
+tubedegree ?=
+export CAPD_TUBE_METHOD = $(tube)
+TUBEDEG := $(if $(strip $(tubedegree)),$(tubedegree),-1)
 
 # Comma-separated variable list and function list (used by run / run-%).
 var ?= x,y
@@ -83,11 +121,10 @@ wid ?=
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # EXAMPLE PARAMETER FILES
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Directory holding the shared example .mk files.  By default we reuse the ones
-# that ship with the Boundary-method tool, so `make run-eg7Lorenz` reads
-# ../Boundarymethod/ourcode/examples/eg7Lorenz.mk.  Override with
-# EXAMPLES_DIR=... to point elsewhere.
-EXAMPLES_DIR ?= ./examples
+# Directory holding the example .mk files.  They ship in this folder (examples/)
+# so the tool is self-contained, e.g. `make run-eg7Lorenz` reads
+# examples/eg7Lorenz.mk.  Override with EXAMPLES_DIR=... to point elsewhere.
+EXAMPLES_DIR ?= examples
 
 # Optional single parameter file to include, e.g.
 #   make run FILE=$(EXAMPLES_DIR)/eg8Rossler.mk
@@ -157,11 +194,12 @@ show-runargs:
 	-@echo "	-- stepB, stepA=" $(stepB) $(stepA)
 	-@echo "	-- n=" $(n) "  var=" $(var) "  ff=" $(ff)
 	-@echo "	-- eps=" $(eps) "  order=" $(order) "  T=" $(T) "  debug=" $(debug)
+	-@echo "	-- tube=" $(tube) "  tubedegree=" $(TUBEDEG)
 	-@echo "	-- LOHI=" $(LOHI)
 
 # Run using var / ff / LOHI (supports FILE=examples/*.mk).
 run: compile show-runargs
-	./$(EXE) $(iflag) $(stepB) $(stepA) $(n) $(VAR_ARGS) $(FF_ARGS) $(eps) $(order) $(T) $(debug) $(LOHI)
+	./$(EXE) $(iflag) $(stepB) $(stepA) $(n) $(VAR_ARGS) $(FF_ARGS) $(eps) $(order) $(T) $(debug) $(TUBEDEG) $(LOHI)
 
 # Convenience: `make run-eg7Lorenz` loads $(EXAMPLES_DIR)/eg7Lorenz.mk.
 run-%:
@@ -170,28 +208,29 @@ run-%:
 # `make eg`: the default (Volterra) example, no parameter file needed.
 eg: compile
 	-@echo "Volterra system (default example)"
-	./$(EXE) $(iflag) $(stepB) $(stepA) 2 x y "2*x-2*x*y" "-y+x*y" $(eps) $(order) $(T) $(debug) 0.9 1.1 2.9 3.1
+	./$(EXE) $(iflag) $(stepB) $(stepA) 2 x y "2*x-2*x*y" "-y+x*y" $(eps) $(order) $(T) $(debug) $(TUBEDEG) 0.9 1.1 2.9 3.1
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # NAMED EXAMPLES (accept the usual overrides, e.g. `make eg-lorenz eps=0.05 T=2`)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 eg-volterra: compile
-	./$(EXE) $(iflag) $(stepB) $(stepA) 2 x y "2*x-2*x*y" "-y+x*y" $(eps) $(order) $(T) $(debug) 0.9 1.1 2.9 3.1
+	./$(EXE) $(iflag) $(stepB) $(stepA) 2 x y "2*x-2*x*y" "-y+x*y" $(eps) $(order) $(T) $(debug) $(TUBEDEG) 0.9 1.1 2.9 3.1
 
 eg-vanderpol: compile
-	./$(EXE) $(iflag) $(stepB) $(stepA) 2 x y "y" "-x^2*y+y-x" $(eps) $(order) $(T) $(debug) -3.1 -2.9 2.9 3.1
+	./$(EXE) $(iflag) $(stepB) $(stepA) 2 x y "y" "-x^2*y+y-x" $(eps) $(order) $(T) $(debug) $(TUBEDEG) -3.1 -2.9 2.9 3.1
 
 eg-asymptote: compile
-	./$(EXE) $(iflag) $(stepB) $(stepA) 2 x y "x^2" "-y^2+7*x" $(eps) $(order) $(T) $(debug) -1.51 -1.49 8.49 8.51
+	./$(EXE) $(iflag) $(stepB) $(stepA) 2 x y "x^2" "-y^2+7*x" $(eps) $(order) $(T) $(debug) $(TUBEDEG) -1.51 -1.49 8.49 8.51
 
 eg-lorenz: compile
-	./$(EXE) $(iflag) $(stepB) $(stepA) 3 x y z "10*y-10*x" "28*x-x*z-y" "x*y-8*z/3" $(eps) $(order) $(T) $(debug) 14.999 15.001 14.999 15.001 35.999 36.001
+	./$(EXE) $(iflag) $(stepB) $(stepA) 3 x y z "10*y-10*x" "28*x-x*z-y" "x*y-8*z/3" $(eps) $(order) $(T) $(debug) $(TUBEDEG) 14.999 15.001 14.999 15.001 35.999 36.001
 
 eg-rossler: compile
-	./$(EXE) $(iflag) $(stepB) $(stepA) 3 x y z "-y-z" "x+0.2*y" "0.2+x*z-5.7*z" $(eps) $(order) $(T) $(debug) 0.9 1.1 1.9 2.1 2.9 3.1
+	./$(EXE) $(iflag) $(stepB) $(stepA) 3 x y z "-y-z" "x+0.2*y" "0.2+x*z-5.7*z" $(eps) $(order) $(T) $(debug) $(TUBEDEG) 0.9 1.1 1.9 2.1 2.9 3.1
 
 clean:
 	rm -f $(EXE) E0.txt E1.txt E_0.txt E_1.txt
+	rm -rf output
 
 .PHONY: default compile run show-runargs eg clean \
 	eg-volterra eg-vanderpol eg-asymptote eg-lorenz eg-rossler

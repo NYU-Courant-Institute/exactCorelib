@@ -118,8 +118,8 @@ struct EndCoverResult {
 //   endEnc(B, eps, p, H) must return (ulB, olB) where olB is an eps-small
 //   end-enclosure of End(B, H) and ulB == B iff the scaffold reached time H
 //   eps-small without needing a Split.  By default B is subdivided into 2^n
-//   boxes; endpoint-refine modes can request longest-dimension bisection,
-//   matching the efficient Boundarymethod implementation.
+//   boxes; endpoint-refine modes can request the faster longest-dimension
+//   bisection instead.
 inline EndCoverResult EndCover(
     const IVector& B0,
     double veps,

@@ -7,31 +7,34 @@
 //          End(B0, H)  subset of  union(C)  subset of  End(B0,H) (+) [-eps,eps]^n.
 //
 //  Structure (see the per-file headers for the paper section references):
-//      calD-calQ-new.h : scaffold data structures + interval/logNorm helpers
-//      stepAB-new.h    : StepA and StepB           (Section 4)
-//      Extend-new.h    : the Extend subroutine     (Section 4)
-//      Refine-new.h    : Refine, Bisect, EulerTube (Section 5)
-//      EndCover-new.h  : the global EndCover queue  (Section 3.3)
+//      calD-calQ-new.h  : scaffold data structures + interval/logNorm helpers
+//      stepAB-new.h     : StepA and StepB           (Section 4)
+//      Extend-new.h     : the Extend subroutine     (Section 4)
+//      Refine-new.h     : Refine, Bisect, EulerTube, RK2Tube (Section 5)
+//      TaylorTube-new.h : the Taylor Tube (degree-p generalisation of EulerTube)
+//      EndCover-new.h   : the global EndCover queue  (Section 3.3)
 //
-//  CLI (note the leading iflag; the algorithm itself is unchanged, only the
-//  input parsing and the amount/format of output depend on iflag):
-//      ./endcover.exe iflag stepB stepA n <vars..> <funs..> eps order T debug <lo hi ..>
+//  CLI (the leading iflag and the trailing tubedegree only affect I/O and the
+//  tube; the EndCover algorithm itself is unchanged):
+//      ./endcover.exe iflag stepB stepA n <vars..> <funs..> eps order T debug tubedegree <lo hi ..>
 //  e.g. Volterra:
-//      ./endcover.exe 2 0 0 2 x y "2*x-2*x*y" "-y+x*y" 0.1 20 1 0 0.9 1.1 2.9 3.1
+//      ./endcover.exe 2 0 0 2 x y "2*x-2*x*y" "-y+x*y" 0.1 20 1 0 -1 0.9 1.1 2.9 3.1
 //
 //  iflag is progressive (iflag >= k includes every output of smaller k):
-//      0+: print total runtime (ms)
-//      1+: print Hull(T): the minimal axis-aligned hull of the time-T cover
+//      0+: (reserved for a future interactive shell -- prints nothing on its own)
+//      1+: print total runtime (ms) and Hull(T), the axis-aligned hull of the cover
 //      2+: print E0Boxes: number of initial sub-boxes
 //      3+: write E0.txt and E1.txt (E1.txt contains ONLY the time-T cover)
-//      4+: additionally write E_0.txt and E_1.txt for plotting:
+//      4+: additionally write output/E_0.txt and output/E_1.txt for plotting:
 //            - E_0.txt contains E0 (and in 2D also the 4 corner points)
 //            - E_1.txt contains the time-T cover plus propagated images at
 //              times 0.1/0.4/0.7 (those <= T), and in 2D also corner propagation
 //
-//  This matches the CLI / iflag convention of the sibling Boundary-method tool
-//  (build/examples/Boundarymethod/ourcode), so the same example parameter files
-//  and Makefile idioms (make eg, make run-egXXX) work here too.
+//  tubedegree : order of the centre Taylor polynomial for the Taylor tube
+//               (active when CAPD_TUBE_METHOD=taylor).  -1 => auto = order-1.
+//
+//  The Makefile drives all of this: `make eg` runs a built-in example, and
+//  `make run-egNAME` reads a parameter file from the local examples/ folder.
 // ===========================================================================
 
 #include <iostream>
@@ -40,6 +43,7 @@
 #include <vector>
 #include <chrono>
 #include <iomanip>
+#include <filesystem>
 
 #include "capd/capdlib.h"
 #include "Extend-new.h"
@@ -71,16 +75,17 @@ static void saveBoxes(const std::vector<IVector>& boxes, const std::string& file
 //  that EndCover already returned and adds a validated "tube" so a viewer can
 //  see how End(B0, t) evolves.  Nothing here changes the algorithm.
 //
-//      E_1.txt = [ cover@T ]                         (the eps-cover)
+//      output/E_1.txt = [ cover@T ]                  (the eps-cover)
 //              + [ E0 sub-boxes ]                    (their initial boxes)
 //              + [ image of each E0 sub-box at t = 0.1/0.4/0.7, those <= T ]
 //              + [ 2D only: 4 corner points, then each corner's images ]
-//      E_0.txt = [ E0 sub-boxes ] + [ 2D only: the 4 corners of B0 ]
+//      output/E_0.txt = [ E0 sub-boxes ] + [ 2D only: the 4 corners of B0 ]
 //
-//  This is the box layout the bundled MATLAB reader (Boundarymethod/
-//  two_dim_E1.m) expects, so it can colour each E0 box and its images alike.
-//  Every image is a rigorous C^r-Lohner time-t map, so the plot data is
-//  validated as well.
+//  (The two files are written under ./output so they stay separate from the
+//  machine-readable E0.txt / E1.txt written at iflag>=3.)
+//  The layout groups each E0 box with its own images, so a plotter can colour
+//  a box and its propagation the same.  Every image is a rigorous C^r-Lohner
+//  time-t map, so the plot data is validated as well.
 // ---------------------------------------------------------------------------
 
 // The intermediate times at which E0 boxes / corners are propagated for plots.
@@ -95,7 +100,8 @@ static IVector safeImage(IMap F, int degree, double t, const IVector& box) {
 }
 
 static void writePlotFiles(const endcover::EndCoverResult& C, IMap F, int degree,
-                           double T, const IVector& B0) {
+                           double T, const IVector& B0,
+                           const std::string& outDir) {
     const int n = B0.dimension();
 
     // Which of 0.1/0.4/0.7 fall inside the horizon [0, T].
@@ -129,8 +135,9 @@ static void writePlotFiles(const endcover::EndCoverResult& C, IMap F, int degree
         }
     }
 
-    saveBoxes(plot1, "E_1.txt");
-    saveBoxes(plot0, "E_0.txt");
+    const std::string prefix = outDir.empty() ? std::string() : (outDir + "/");
+    saveBoxes(plot1, prefix + "E_1.txt");
+    saveBoxes(plot0, prefix + "E_0.txt");
 }
 
 static void BoundaryEndpointRefine(Stage& S, IMap F, int degree, double H,
@@ -201,12 +208,15 @@ int main(int argc, char* argv[]) {
     // EndCover computes (see the file header for the progressive levels).
     int iflag = 2;
     int stepB = 0, stepA = 0, n = 0, order = 0, debug = 0;
+    // Taylor-tube degree (order of the centre Taylor polynomial when the Taylor
+    // tube is active).  -1 means "auto" = order-1, the tightest default.
+    int tubedegree = -1;
     double eps = 0.0, T = 0.0;
     std::vector<std::string> SVar, SFun;
     IVector B;
 
     try {
-        if (argc < 11) throw std::runtime_error("not enough arguments");
+        if (argc < 12) throw std::runtime_error("not enough arguments");
         int a = 1;
         iflag = std::stoi(argv[a++]);
         stepB = std::stoi(argv[a++]);
@@ -215,10 +225,11 @@ int main(int argc, char* argv[]) {
         if (n <= 0) throw std::runtime_error("n must be positive");
         for (int i = 0; i < n; ++i) SVar.push_back(argv[a++]);
         for (int i = 0; i < n; ++i) SFun.push_back(argv[a++]);
-        eps   = std::stod(argv[a++]);
-        order = std::stoi(argv[a++]);
-        T     = std::stod(argv[a++]);
-        debug = std::stoi(argv[a++]);
+        eps        = std::stod(argv[a++]);
+        order      = std::stoi(argv[a++]);
+        T          = std::stod(argv[a++]);
+        debug      = std::stoi(argv[a++]);
+        tubedegree = std::stoi(argv[a++]);
         if (argc < a + 2 * n) throw std::runtime_error("not enough interval bounds");
         B.resize(n);
         for (int i = 0; i < n; ++i) {
@@ -229,9 +240,10 @@ int main(int argc, char* argv[]) {
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n"
                   << "Usage: endcover.exe iflag stepB stepA n <vars..> <funs..> "
-                     "eps order T debug <lo hi ..>\n"
+                     "eps order T debug tubedegree <lo hi ..>\n"
                   << "Falling back to the default Volterra example.\n";
-        iflag = 2; stepB = 0; stepA = 0; n = 2; eps = 0.1; order = 20; T = 1.0; debug = 0;
+        iflag = 2; stepB = 0; stepA = 0; n = 2; eps = 0.1; order = 20; T = 1.0;
+        debug = 0; tubedegree = -1;
         SVar = { "x", "y" };
         SFun = { "2*x-2*x*y", "-y+x*y" };
         B.resize(2);
@@ -245,6 +257,10 @@ int main(int argc, char* argv[]) {
     // CAPD syntax (explicit '*', '^' and parentheses are fine, e.g. "(x+y)^2").
     IMap F(Convert_to_IMap(SVar, SFun), 3.0);
     int degree = order;
+
+    // Hand the requested Taylor-tube degree to Refine (used only when the tube
+    // method is "taylor", selected via CAPD_TUBE_METHOD).  -1 => auto = order-1.
+    taylorTubeDegreeRef() = tubedegree;
 
     // Template mini-scaffold for stage 0 of every fresh scaffold.
     ministeps G;
@@ -285,16 +301,18 @@ int main(int argc, char* argv[]) {
 
     // --- Progressive output (iflag >= k prints/writes everything for <= k) ---
 
-    // 0+: total runtime.
-    if (iflag >= 0)
-        std::cout << "time(ms)= " << ms << std::endl;
+    // 0+: reserved for a future interactive shell; prints nothing on its own.
 
-    // 1+: the minimal axis-aligned hull of the time-T cover (and its max width).
-    if (iflag >= 1 && !C.cover.empty()) {
-        IVector hull = C.cover.front();
-        for (size_t i = 1; i < C.cover.size(); ++i) hull = Box(hull, C.cover[i]);
-        std::cout << "Hull(T)= " << hull << std::endl;
-        std::cout << "wmax= "    << wmax(hull) << std::endl;
+    // 1+: total runtime, plus the minimal axis-aligned hull of the time-T
+    //     cover and its max width.
+    if (iflag >= 1) {
+        std::cout << "time(ms)= " << ms << std::endl;
+        if (!C.cover.empty()) {
+            IVector hull = C.cover.front();
+            for (size_t i = 1; i < C.cover.size(); ++i) hull = Box(hull, C.cover[i]);
+            std::cout << "Hull(T)= " << hull << std::endl;
+            std::cout << "wmax= "    << wmax(hull) << std::endl;
+        }
     }
 
     // 2+: number of initial sub-boxes produced by the space cover of B0.
@@ -308,9 +326,13 @@ int main(int argc, char* argv[]) {
         saveBoxes(C.initialBoxes, "E0.txt");
     }
 
-    // 4+: plotting files with the validated propagation tube (see writePlotFiles).
-    if (iflag >= 4)
-        writePlotFiles(C, F, degree, T, B);
+    // 4+: plotting files with the validated propagation tube, written into the
+    //     ./output subfolder (created if needed) to keep them apart from E0/E1.
+    if (iflag >= 4) {
+        std::error_code ec;
+        std::filesystem::create_directories("output", ec);
+        writePlotFiles(C, F, degree, T, B, "output");
+    }
 
     return 0;
 }
