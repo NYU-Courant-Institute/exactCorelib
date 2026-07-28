@@ -5,7 +5,7 @@
 #		y' = 28*x - x*z - y
 #		z' = x*y - 8*z/3
 #
-# How to run (from build/examples/Boundarymethod/ourcode):
+# How to run (from build/examples/EndCover_algo):
 #		> make run-eg7Lorenz
 #		> make run-eg7Lorenz iflag=4
 #		> make run-eg7Lorenz mode=0
@@ -31,8 +31,6 @@ wid = 0.001,0.001,0.001
 T = 1
 order = 20
 iflag = 2
-mode = 1
-method = 5
 stepB = 2
 stepA = 0
 debug = 0

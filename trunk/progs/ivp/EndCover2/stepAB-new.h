@@ -36,8 +36,9 @@ extern int MAX_TAYLOR_ORDER;
 // Public StepB choices used by the CLI.
 // Type 4 keeps the SIAM scaffold, but uses the stronger local logNorm StepB
 // and endpoint-tightened splitting.
-// Type 5 is a Boundarymethod-compatible endpoint-refine path for comparison.
-// Type 6 first runs the SIAM scaffold, then uses Boundary endpoint refine as a
+// Type 5 is an endpoint-refine path: the whole-horizon validated Lohner image
+// drives acceptance / splitting directly.
+// Type 6 first runs the SIAM scaffold, then applies the endpoint refine as a
 // verified completion/splitting oracle.
 static int localStepBType(int stepBtype) {
     if (stepBtype == 4 || stepBtype == 6) return 1;

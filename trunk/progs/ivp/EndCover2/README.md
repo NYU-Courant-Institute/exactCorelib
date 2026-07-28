@@ -78,9 +78,8 @@ make CAPD_CONFIG=$HOME/capd/bin/capd-config INCLUDE_PATH= FILIB_OVERRIDE=
 
 ## Usage
 
-The easiest way to run is through the Makefile, which mirrors the sibling
-Boundary-method tool: you can either use a built-in example, or feed a
-parameter file.
+The easiest way to run is through the Makefile: you can either use a built-in
+example, or feed a parameter file.
 
 ```sh
 make eg                       # the built-in Volterra example
@@ -90,20 +89,18 @@ make run-eg7Lorenz            # read a shared example file (see below)
 make run-eg8Rossler iflag=4   # …with an override
 ```
 
-`make run-egNAME` includes the parameter file
-`../Boundarymethod/ourcode/examples/egNAME.mk` — the *same* files the
-Boundary-method tool uses. Point elsewhere with `EXAMPLES_DIR=...`, or name a
-file directly:
+`make run-egNAME` includes the parameter file `examples/egNAME.mk`, which ships
+in this folder (so the tool is self-contained). Point elsewhere with
+`EXAMPLES_DIR=...`, or name a file directly:
 
 ```sh
-make run FILE=../Boundarymethod/ourcode/examples/eg2Vanderpol.mk
+make run FILE=examples/eg2Vanderpol.mk
 ```
 
 Those `.mk` files describe the system in centered form (`cen`, `wid`) plus
 `var`, `ff`, `eps`, `order`, `T`, `iflag`, `stepB`, `stepA`, `debug`; the
-Makefile converts `(cen, wid)` into `[cen-wid, cen+wid]` bounds. The `mode` and
-`method` fields in those files are for the Boundary-method tool and are simply
-ignored here (this program *is* the EndCover / mode-0 method).
+Makefile converts `(cen, wid)` into `[cen-wid, cen+wid]` bounds. (If a file
+happens to carry extra `mode` / `method` fields, they are simply ignored.)
 
 Every override may be passed on the command line, e.g.
 `make run-eg7Lorenz iflag=4 T=2`; command-line values win over the file.
@@ -111,14 +108,15 @@ Every override may be passed on the command line, e.g.
 ### Calling the executable directly
 
 ```
-./endcover.exe  iflag stepB stepA n  <vars...> <funs...>  eps order T debug  <lo hi ...>
+./endcover.exe  iflag stepB stepA n  <vars...> <funs...>  eps order T debug tubedegree  <lo hi ...>
 ```
 
 For example, the Volterra predator–prey system on `[0.9,1.1] × [2.9,3.1]`,
-integrated to `T = 1` with `eps = 0.1`, printing time + hull + box count:
+integrated to `T = 1` with `eps = 0.1`, printing time + hull + box count
+(`tubedegree = -1` means "auto"):
 
 ```sh
-./endcover.exe 2 0 0 2 x y "2*x-2*x*y" "-y+x*y" 0.1 20 1 0  0.9 1.1 2.9 3.1
+./endcover.exe 2 0 0 2 x y "2*x-2*x*y" "-y+x*y" 0.1 20 1 0 -1  0.9 1.1 2.9 3.1
 ```
 
 | argument | meaning |
@@ -133,6 +131,7 @@ integrated to `T = 1` with `eps = 0.1`, printing time + hull + box count:
 | `order` | Taylor order (20 is a sensible default) |
 | `T` | time horizon |
 | `debug` | `1` prints admissibility diagnostics, `0` stays quiet |
+| `tubedegree` | Taylor-tube degree; `-1` = auto (= `order-1`). Used only by the Taylor tube (see below). |
 | `<lo hi ...>` | bounds of `B0`, one `lo hi` pair per variable |
 
 ### Output levels (`iflag`)
@@ -142,13 +141,14 @@ It is **progressive**: level `k` includes everything from all smaller levels.
 
 | iflag | adds |
 |-------|------|
-| `0+` | prints the total runtime in milliseconds (`time(ms)=`) |
-| `1+` | prints `Hull(T)=`, the minimal axis-aligned hull of the time-`T` cover, and its max width `wmax=` |
+| `0+` | reserved for a future interactive shell — prints nothing on its own |
+| `1+` | prints the total runtime (`time(ms)=`), then `Hull(T)=`, the minimal axis-aligned hull of the time-`T` cover, and its max width `wmax=` |
 | `2+` | prints `E0Boxes=`, the number of initial sub-boxes in the space cover of `B0` |
 | `3+` | writes `E0.txt` and `E1.txt` — `E1.txt` is **only** the time-`T` cover, `E0.txt` the matching initial sub-boxes (same order, one box per line) |
-| `4+` | additionally writes `E_0.txt` and `E_1.txt` for plotting (see below) |
+| `4+` | additionally writes `output/E_0.txt` and `output/E_1.txt` for plotting (see below) |
 
-The two plotting files hold a validated propagation *tube*:
+The two plotting files (written into the `output/` subfolder, created on demand)
+hold a validated propagation *tube*:
 
 - `E_0.txt` — the initial sub-boxes `E0`, and (in 2D) the 4 corner points of `B0`.
 - `E_1.txt` — the time-`T` cover, then each `E0` sub-box's rigorous image at
@@ -156,10 +156,11 @@ The two plotting files hold a validated propagation *tube*:
   propagation. Every image is a C^r-Lohner time-`t` map, so the tube is
   guaranteed too.
 
-All box files use the `Box i: [lo, hi] x [lo, hi] ...` format read by the
-bundled plotters. To draw the tube, point the MATLAB scripts at the plotting
-files — e.g. in `../Boundarymethod/two_dim_E1.m` set `filenameE1 = 'E_1.txt'`
-and `filenameE0 = 'E_0.txt'` (2D), or use `three_dim_E1_E0.m` for 3D.
+All box files use the plain `Box i: [lo, hi] x [lo, hi] ...` text format (one
+box per line), so any plotting script — MATLAB, Python/matplotlib, gnuplot —
+can read them directly by parsing the `[lo, hi]` intervals. The plotting files
+to draw are `output/E_1.txt` (the tube) and `output/E_0.txt` (the initial
+boxes).
 
 ### Notes
 
@@ -171,10 +172,31 @@ decide acceptance/splitting, without importing the Boundary-method transform
 machinery. `6` first runs the SIAM scaffold and then applies the Boundary
 endpoint refine as a verified final-time completion/splitting step.
 
-For an experimental Runge-Kutta tube center, set `CAPD_TUBE_METHOD=rk2`. This
-uses the midpoint RK2 method inside `Refine`'s tube step and bounds the center
-local error by Taylor coefficients on the current full enclosure. Leaving the
-variable unset keeps the original Euler-tube behavior.
+#### Tube method
+
+Inside `Refine`, each stage is tightened by a *tube* around the centre
+trajectory. Three tubes are available, selected with `CAPD_TUBE_METHOD` (the
+Makefile exposes this as `tube=...`):
+
+- `euler` (default) — the first-order Euler tube of the paper (Section 5.2).
+- `rk2` — an experimental midpoint-RK2 centre; the local error is bounded by
+  Taylor coefficients on the current full enclosure.
+- `taylor` — the **Taylor tube of degree `p`** (`TaylorTube-new.h`), the
+  degree-`p` generalisation of the Euler tube (`p = 1`). It marches the centre
+  with a degree-`tubedegree` Taylor polynomial plus a rigorous remainder, so it
+  stays a validated enclosure while admitting much larger steps (fewer
+  bisections). The degree defaults to `order-1`, which lets the tube *inherit*
+  the Taylor coefficients StepB already computes; set it explicitly with
+  `tubedegree`.
+
+```sh
+make eg tube=taylor                  # Taylor tube, degree = order-1 (best default)
+make eg tube=taylor tubedegree=5     # Taylor tube, degree 5
+```
+
+All three tubes only ever tighten by intersection with the already-validated
+scaffold, so switching tube changes the *cost* (bisection count / time), not the
+soundness of the cover.
 
 Write `f` in CAPD's expression syntax: multiplication is explicit (`2*x`, not
 `2x`), and `^`, `/` and parentheses behave as expected (`"x*y-8*z/3"`,
@@ -228,11 +250,15 @@ section.
 | `calD-calQ-new.h` | scaffold data structures, interval helpers, logNorm, Euler-tube step |
 | `stepAB-new.h`    | StepA and StepB |
 | `Extend-new.h`    | the Extend subroutine |
-| `Refine-new.h`    | Refine, Bisect, EulerTube |
+| `Refine-new.h`    | Refine, Bisect, EulerTube, RK2Tube |
+| `TaylorTube-new.h`| the Taylor tube of degree `p` (generalises the Euler tube) |
 | `EndCover-new.h`  | the outer EndCover queue |
 | `endcover.cpp`    | command-line front end |
 
-## Reference
+## References
 
-B. Zhang and C. Yap. *End Cover for Initial Value Problem: Complete Validated
-Algorithm with Complexity Analysis.*
+- B. Zhang and C. Yap. *End Cover for Initial Value Problem: Complete Validated
+  Algorithm with Complexity Analysis.*
+- B. Zhang and C. Yap. *Taylor Tube Method for Validated IVP.* — the Taylor tube
+  of degree `p`, its step-size bound (Lemma 2) and enclosure theorem (Theorem 1),
+  implemented in `TaylorTube-new.h`.

@@ -5,7 +5,7 @@
 #		y' = x + 0.2*y
 #		z' = 0.2 + x*z - 5.7*z
 #
-# How to run (from build/examples/Boundarymethod/ourcode):
+# How to run (from build/examples/EndCover_algo):
 #		> make run-eg8Rossler
 #		> make run-eg8Rossler iflag=4
 #		> make run-eg8Rossler mode=0
@@ -31,8 +31,6 @@ wid = 0.1,0.1,0.1
 T = 1
 order = 20
 iflag = 2
-mode = 1
-method = 5
 stepB = 2
 stepA = 0
 debug = 0

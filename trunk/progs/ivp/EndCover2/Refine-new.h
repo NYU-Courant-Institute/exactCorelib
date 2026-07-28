@@ -28,6 +28,7 @@
 #include <cctype>
 #include "capd/capdlib.h"
 #include "stepAB-new.h"
+#include "TaylorTube-new.h"   // the Taylor tube (higher-order EulerTube analogue)
 
 using namespace capd;
 using namespace std;
@@ -36,6 +37,7 @@ struct TubeStats {
     long long bisectCalls = 0;
     long long eulerTubeCalls = 0;
     long long rk2TubeCalls = 0;
+    long long taylorTubeCalls = 0;
 };
 
 static TubeStats& tubeStats() {
@@ -57,7 +59,8 @@ static void printTubeStats() {
     const TubeStats& s = tubeStats();
     std::cout << "TubeStats: bisect=" << s.bisectCalls
               << " euler=" << s.eulerTubeCalls
-              << " rk2=" << s.rk2TubeCalls << std::endl;
+              << " rk2=" << s.rk2TubeCalls
+              << " taylor=" << s.taylorTubeCalls << std::endl;
 }
 
 static int endpointMinPhasesOverride() {
@@ -76,7 +79,8 @@ static int endpointMinPhasesOverride() {
 
 enum class TubeMethod {
     Euler,
-    RK2Midpoint
+    RK2Midpoint,
+    Taylor          // higher-order Taylor tube (see TaylorTube-new.h)
 };
 
 static TubeMethod selectedTubeMethod() {
@@ -88,9 +92,27 @@ static TubeMethod selectedTubeMethod() {
                        [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
         if (s == "rk2" || s == "midpoint" || s == "improved-euler")
             return TubeMethod::RK2Midpoint;
+        if (s == "taylor" || s == "taylortube" || s == "taylor-tube")
+            return TubeMethod::Taylor;
         return TubeMethod::Euler;
     }();
     return method;
+}
+
+// Requested Taylor-tube degree (the order of the centre Taylor polynomial),
+// set once from the CLI in main().  A value <= 0 means "auto" = order - 1,
+// which reuses the coefficients StepB already needs (see TaylorTube-new.h).
+inline int& taylorTubeDegreeRef() {
+    static int degree = -1;
+    return degree;
+}
+
+// Resolve the effective tube degree given the method's Taylor `order`.
+// Default (auto) is order-1; an explicit request is clamped to [1, order-1].
+static int resolveTaylorTubeDegree(int order) {
+    int requested = taylorTubeDegreeRef();
+    int deg = (requested > 0) ? std::min(requested, order - 1) : (order - 1);
+    return std::max(1, deg);
 }
 
 // Diagnostic only: warn when two boxes that should overlap are disjoint.
@@ -455,15 +477,30 @@ void Refine(Stage& S, int dim, IMap f, int stepBtype, int degree,
                 S.G[i].delta = S.G[i].delta / 2;
             } else if (h > S.G[i].heuler) { // Lemma 2.2 not yet applicable -> Bisect
                 Bisect(S, i, dim, f, stepBtype, degree, debug);
+            } else if (tubeMethod == TubeMethod::Taylor) {
+                // mini-step admissible -> tighten with the higher-order Taylor tube
+                tubeStats().taylorTubeCalls += 1;
+                TaylorTube(S, i, dim, f, resolveTaylorTubeDegree(degree), debug);
+                S.G[i].delta = S.G[i].delta / 2;
             } else {                        // mini-step small enough -> EulerTube
                 EulerTube(S, i, dim, f, debug);
                 S.G[i].delta = S.G[i].delta / 2;
             }
 
-            // Update the Euler-tube threshold h^euler for the next phase.
+            // Update the tube-admissibility threshold h^euler for the next
+            // phase.  The Taylor tube of degree p tolerates larger steps, so it
+            // uses the Taylor step (Cbar = ||f^[p+1]||) instead of the order-2
+            // Euler step; without this the tube branch would almost never fire.
             double mu = *std::max_element(S.G[i].mu2.begin(), S.G[i].mu2.end());
-            double MM = secondTaylorNorm(f, S.F[i]);
-            double htmp = eulerstep(H, MM, mu, S.G[i].delta);
+            double htmp;
+            if (tubeMethod == TubeMethod::Taylor) {
+                int td = resolveTaylorTubeDegree(degree);
+                double Cbar = taylorCoeffNormUpperBound(f, S.F[i], td);
+                htmp = hTaylorStep(H, Cbar, mu, S.G[i].delta, td);
+            } else {
+                double MM = secondTaylorNorm(f, S.F[i]);
+                htmp = eulerstep(H, MM, mu, S.G[i].delta);
+            }
             S.G[i].heuler = (h > S.G[i].heuler) ? htmp
                                                 : std::min(htmp, S.G[i].heuler);
         }

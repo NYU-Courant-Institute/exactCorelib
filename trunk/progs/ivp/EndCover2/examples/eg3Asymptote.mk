@@ -4,20 +4,19 @@
 #		x' = x^2
 #		y' = -y^2 + 7*x
 #
-# How to run (from build/examples/Boundarymethod/ourcode):
+# How to run (from build/examples/EndCover_algo):
 #		> make run-eg3Asymptote
 #		> make run-eg3Asymptote iflag=4          # also writes E_0.txt / E_1.txt for plotting
-#		> make run-eg3Asymptote mode=0           # use EndCover mode
 #
 # Current CLI order (for reference):
-#		./radicalIVP-new.exe iflag mode method stepB stepA n <vars...> <funs...> eps order T debug <intervals...>
+#		./endcover.exe iflag stepB stepA n <vars...> <funs...> eps order T debug tubedegree <intervals...>
 #
 # iflag is progressive (iflag>=k includes all smaller outputs):
-#		0+: print total runtime (ms)
-#		1+: print Hull(T): minimal axis-aligned hull of the time-T cover
+#		0+: reserved for interactive (prints nothing)
+#		1+: print total runtime (ms) and Hull(T)
 #		2+: print E0Boxes: number of initial sub-boxes
 #		3+: write E0.txt and E1.txt (E1.txt contains ONLY time-T cover)
-#		4+: additionally write E_0.txt and E_1.txt for plotting
+#		4+: additionally write output/E_0.txt and output/E_1.txt for plotting
 #
 # Authors: Bingwei, Chee (Jan'26)
 
@@ -47,8 +46,6 @@ wid = 0.01,0.01
 T = 1
 order = 20
 iflag = 2
-mode = 1
-method = 5
 stepB = 2
 stepA = 0
 debug = 0
