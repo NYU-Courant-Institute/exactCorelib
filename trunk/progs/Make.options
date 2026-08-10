@@ -16,12 +16,22 @@ CORE_INC=-I. -I$(CORE_PATH)/inc -I$(CORE_PATH)/mpfr/include \
 CORE_LIB=-L$(CORE_PATH)/lib -L$(CORE_PATH)/mpfr/lib \
 	-L$(CORE_PATH)/gmp/lib -lcore++$(VAR) -lmpfr -lgmp
 
-COREX_LIB_LEVEL=-lcoreex++$(VAR)_level
+COREX_LIB_LEVEL=-lcorex++$(VAR)_level
 
 COREX_LIB_LEVEL3=-lcorex++$(VAR)_level3
 COREX_LIB_LEVEL2=-lcorex++$(VAR)_level2
 COREX_LIB_LEVEL1=-lcorex++$(VAR)_level1
 
+# A few sample programs recurse very deeply and need a large stack (80MB).
+# On PE targets (cygwin/mingw) the stack size is baked into the executable
+# by the linker, so we ask for it here.  Elsewhere the stack size is a
+# runtime limit instead -- raise it with "ulimit -s" before running.
+# NOTE: the "-Wl," prefix is required; "--stack" is a linker option, and
+# passing it bare makes g++ reject it as an unknown driver option.
+BIGSTACK=
+ifeq (${EXETYPE}, .exe)
+	BIGSTACK=-Wl,--stack,83886080
+endif
 
 # This works for GCC 3.x, but not for 2.9x, so I removed it
 # The user have to set LD_LIBRARY_PATH environment variable.
