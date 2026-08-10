@@ -592,8 +592,14 @@ public:
 		    //    This is because eval(val) is exact!!!
         return val; // val is the exact root, before the last iteration
       }
-      del = (f/ff).getLeft(); // But the accuracy of "f/ff" must be controllable
-		    // by the caller...
+      // "del" is used by our callers as a CERTIFIED bound: newtonRefine
+      // relies on |del| >= |f/f'| (see LEMMA 2 there) to build the output
+      // interval [x, x+|del|].  getLeft() returns the left endpoint of the
+      // quotient interval, which is the SMALLEST value in it when the
+      // quotient is positive -- an under-estimate, breaking that guarantee.
+      // get_max() returns the endpoint of largest absolute value, which is
+      // exactly the "DEL with |DEL| >= |del|" that LEMMA 2 asks for.
+      del = (f/ff).get_max();
       err = BigFloat(del,getDefaultBFdivPrec());
       val -= del;
     }

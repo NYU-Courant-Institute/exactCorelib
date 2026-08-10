@@ -119,7 +119,19 @@ BigFloat2 evalExactSign(Polynomial<NT> &p, const BigFloat& val,
     r = 1 + height(p).uMSB() + ceilLg(long(p.getTrueDegree()+1));
     if (val > 1)
       r += p.getTrueDegree() * val.uMSB();
-    r += (std::max)(extLong(0), oldMSB);
+    // oldMSB is an estimate of lg|p(val)|, so it is NEGATIVE when p(val) is
+    // tiny -- which is precisely the situation near a root, where this
+    // function is called from Newton iteration.  Resolving a value of
+    // magnitude 2^oldMSB needs about |oldMSB| EXTRA bits, so we must add the
+    // magnitude here.  The old code was "max(0, oldMSB)", which added bits
+    // only when oldMSB was positive; near a root it therefore added nothing
+    // and the evaluation error stayed pinned at a fixed floor no matter how
+    // close to the root we got.  That made p(val) come back as a hugely wide
+    // interval (correct sign, but useless magnitude), which in turn made
+    // Newton's correction f/f' meaningless -- see newtonIterN in Descartes.h.
+    // Using the magnitude keeps the old behaviour for oldMSB >= 0 (in
+    // particular for the default oldMSB=54) and fixes the oldMSB < 0 case.
+    r += (oldMSB < 0) ? -oldMSB : oldMSB;
 
     BigFloat2 rVal = evalApprox(p, val, r);
     if (rVal.isZeroIn()) {
