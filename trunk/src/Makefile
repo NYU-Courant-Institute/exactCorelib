@@ -64,7 +64,7 @@ ${CORE_LIB}:	$(EXPROBJS)
 	$(AR) $@ $^
 
 ${CORE_SHARED_LIB}:	$(EXPROBJS)
-	$(CXX) $(DEPS) $(CORE_LDFLAGS) -o $@ $^
+	$(CXX) $(CORE_LDFLAGS) -o $@ $^ $(DEPS)
 
 %${VAR}.o:	%.cpp
 	${CXX} $(CORE_CXXFLAGS) $(INCLUDE) -c $< -o $@
