@@ -71,30 +71,30 @@ graphicsTools:
 
 
 ${COREX_LIB_LEVEL3}: ${L3_OBJS}
-	-@rm -rf $@ 
-	$(AR) $@ $?
+	-@rm -rf $@
+	$(AR) $@ $^
 
-COREX_SHARED_DEPS=-L${GMP_PREFIX}/lib -lgmp -L${MPFR_PREFIX}/lib -lmpfr -L${CORE_PATH}/lib -lcore++${VAR}
+COREX_SHARED_DEPS=-L${CORE_PATH}/lib -lcore++${VAR} -L${MPFR_PREFIX}/lib -lmpfr -L${GMP_PREFIX}/lib -lgmp
 
 ${COREX_SHARED_LIB_LEVEL3}: ${L3_OBJS}
-	-@rm -rf $@ 
-	$(CXX) $(COREX_SHARED_DEPS) $(CORE_LDFLAGS) -o $@ $?
+	-@rm -rf $@
+	$(CXX) $(CORE_LDFLAGS) -o $@ $^ $(COREX_SHARED_DEPS)
 
 ${COREX_LIB_LEVEL2}: ${L2_OBJS}
-	-@rm -rf $@ 
-	$(AR) $@ $?
+	-@rm -rf $@
+	$(AR) $@ $^
 
 ${COREX_SHARED_LIB_LEVEL2}: ${L2_OBJS}
-	-@rm -rf $@ 
-	$(CXX) $(COREX_SHARED_DEPS) $(CORE_LDFLAGS) -o $@ $?
+	-@rm -rf $@
+	$(CXX) $(CORE_LDFLAGS) -o $@ $^ $(COREX_SHARED_DEPS)
 
 ${COREX_LIB_LEVEL1}: ${L1_OBJS}
-	-@rm -rf $@ 
-	$(AR) $@ $?
+	-@rm -rf $@
+	$(AR) $@ $^
 
 ${COREX_SHARED_LIB_LEVEL1}: ${L1_OBJS}
-	-@rm -rf $@ 
-	$(CXX) $(COREX_SHARED_DEPS) $(CORE_LDFLAGS) -o $@ $?
+	-@rm -rf $@
+	$(CXX) $(CORE_LDFLAGS) -o $@ $^ $(COREX_SHARED_DEPS)
 
 %_level3.o:	%.cpp
 	${CXX} $(CORE_CXXFLAGS) -DCORE_LEVEL=3 $(INCLUDE) -c $< -o $@
