@@ -59,7 +59,7 @@ tSumALL: tSum1 tSum2
 
 tSum1: tSum.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC)  tSum.cpp -o tSum1.o
-	${CXX} $(LDFLAGS) --stack,83886080 tSum1.o $(CORE_LIB) -o tSum1
+	${CXX} $(LDFLAGS) $(BIGSTACK) tSum1.o $(CORE_LIB) -o tSum1
 
 tSum2: tSum.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_USE_SUM tSum.cpp -o tSum2.o
