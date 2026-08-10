@@ -71,7 +71,7 @@ sum: tSumAll
 
 tSum1: tSum.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC)  tSum.cpp -o tSum1.o
-	${CXX} $(LDFLAGS) --stack,83886080 tSum1.o $(CORE_LIB) -o tSum1
+	${CXX} $(LDFLAGS) $(BIGSTACK) tSum1.o $(CORE_LIB) -o tSum1
 
 tSum2: tSum.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_USE_SUM tSum.cpp -o tSum2.o
@@ -83,7 +83,7 @@ harmonic: tHarmonicAll
 
 tHarmonic1: tHarmonic.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC)  tHarmonic.cpp -o tHarmonic1.o
-	${CXX} $(LDFLAGS) --stack,83886080 tHarmonic1.o $(CORE_LIB) -o tHarmonic1
+	${CXX} $(LDFLAGS) $(BIGSTACK) tHarmonic1.o $(CORE_LIB) -o tHarmonic1
 
 tHarmonic2: tHarmonic.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_USE_SUM tSum.cpp -o tHarmonic2.o
@@ -119,21 +119,21 @@ prod: tProdAll
 
 tProdConverge: tProdConverge.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC)  tProdConverge.cpp -o tProdConverge.o
-	${CXX} $(LDFLAGS) --stack,83886080 tProdConverge.o $(CORE_LIB) -o tProdConverge
+	${CXX} $(LDFLAGS) $(BIGSTACK) tProdConverge.o $(CORE_LIB) -o tProdConverge
 
 tProdAll: tProd1 tProd2 tProdConverge1 tProdConverge2
 
 tProdConverge1: tProdConverge.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC)  tProdConverge.cpp -o tProdConverge1.o
-	${CXX} $(LDFLAGS) --stack,83886080 tProdConverge1.o $(CORE_LIB) -o tProdConverge1
+	${CXX} $(LDFLAGS) $(BIGSTACK) tProdConverge1.o $(CORE_LIB) -o tProdConverge1
 
 tProdConverge2: tProdConverge.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC)  -D_USE_PROD tProdConverge.cpp -o tProdConverge2.o
-	${CXX} $(LDFLAGS) --stack,83886080 tProdConverge2.o $(CORE_LIB) -o tProdConverge2
+	${CXX} $(LDFLAGS) $(BIGSTACK) tProdConverge2.o $(CORE_LIB) -o tProdConverge2
 
 tProd1: tProd.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC)  tProd.cpp -o tProd1.o
-	${CXX} $(LDFLAGS) --stack,83886080 tProd1.o $(CORE_LIB) -o tProd1
+	${CXX} $(LDFLAGS) $(BIGSTACK) tProd1.o $(CORE_LIB) -o tProd1
 
 tProd2: tProd.cpp
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) -D_USE_PROD tProd.cpp -o tProd2.o
