@@ -46,12 +46,13 @@ tCutOffBound : tCutOffBound.o
 %: %.o $(DEPEND)
 	${CXX} $(LDFLAGS) $< $(CORE_LIB) -o $@
 
+# NOTE: this used to pass -ffriend-injection on non-mac platforms, to work
+# around the friend-name-injection issue described in README.  That is no
+# longer needed (the workaround now lives in Expr.h, via a static pi(Expr)),
+# and the flag was removed from g++ in GCC 8 -- it now only warns, and other
+# compilers reject it outright.
 .cpp.o:
-ifeq ($(PLATFORM), mac)
 	${CXX} -c $(CXXFLAGS) $(CORE_INC) $< -o $@
-else
-	${CXX} -c $(CXXFLAGS) -ffriend-injection $(CORE_INC) $< -o $@
-endif
 
 #=================================================
 # Clean object files
