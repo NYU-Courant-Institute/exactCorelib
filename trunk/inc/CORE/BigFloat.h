@@ -1368,7 +1368,13 @@ public:
   { return mpfr_cbrt(mp(), x.mp(), rnd); }
   /// kth root
   int r_root(const BigFloat& x, unsigned long k, rnd_t rnd = MPFR_RND)
+#if MPFR_VERSION_MAJOR >= 4
+  // mpfr_root is deprecated since MPFR 4.0 and slated for removal;
+  // mpfr_rootn_ui is its IEEE 754-2008 conformant replacement.
+  { return mpfr_rootn_ui(mp(), x.mp(), k, rnd); }
+#else
   { return mpfr_root(mp(), x.mp(), k, rnd); }
+#endif
   /// negation
   int r_neg(const BigFloat& x, rnd_t rnd = MPFR_RND)
   { return mpfr_neg(mp(), x.mp(), rnd); }
